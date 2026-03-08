@@ -1,0 +1,50 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+# Required for Workload Identity Federation
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-west1
+  SERVICE_NAME: cherry-admin-app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
+
+      - name: Build and Push Container
+        run: |-
+          docker build -t "us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cherry-admin-app/app:${{ github.sha }}" .
+          docker push "us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cherry-admin-app/app:${{ github.sha }}"
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cherry-admin-app/app:${{ github.sha }}
+          flags: '--allow-unauthenticated'

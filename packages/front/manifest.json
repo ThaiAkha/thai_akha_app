@@ -1,0 +1,16 @@
+
+{
+  "short_name": "Akha Kitchen",
+  "name": "Thai Akha Kitchen AI",
+  "icons": [
+    {
+      "src": "https://www.thaiakhakitchen.com/wp-content/uploads/2018/11/tak-logo-new.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1d1d1d",
+  "background_color": "#1d1d1d"
+}

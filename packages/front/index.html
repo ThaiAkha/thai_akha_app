@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
+    <title>Thai Akha Kitchen | Heritage Cooking School</title>
+    
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Sarabun:wght@300;400;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD87iA_wUpn7lBofGzFKbPPqrUDpqWppxw&libraries=geometry,marker&loading=async" async defer></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        secondary: 'var(--color-secondary)',
+                        action: 'var(--color-action)',
+                        
+                        /* ✨ RGB CHANNEL SUPPORT FOR OPACITY MODIFIERS */
+                        allergy: 'rgb(var(--color-allergy) / <alpha-value>)',
+                        'allergy-secondary': 'rgb(var(--color-allergy-secondary) / <alpha-value>)',
+                        quiz: 'rgb(var(--color-quiz) / <alpha-value>)',
+                        
+                        background: 'var(--color-background)',
+                        surface: 'var(--color-surface)',
+                        title: 'var(--color-title)',
+                        desc: 'var(--color-desc)',
+                        border: 'var(--color-border)',
+                    },
+                    fontFamily: {
+                        display: ['Raleway', 'Sarabun', 'sans-serif'],
+                        sans: ['Nunito', 'Sarabun', 'sans-serif'],
+                        accent: ['Roboto Condensed', 'Sarabun', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brand-glow': '0 15px 30px -5px rgba(224,0,134,0.4)',
+                        'action-glow': '0 15px 30px -5px rgba(152,201,60,0.4)',
+                        'glow-allergy': '0 0 25px -5px rgba(255 109 0, 0.5)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 8s ease-in-out infinite',
+                        'shine': 'shine 4s infinite linear',
+                    },
+                    keyframes: {
+                        shine: {
+                            '0%': { left: '-100%' },
+                            '100%': { left: '200%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-primary: #e31f33;
+                --color-secondary: #ccff33;
+                --color-action: #98C93C;
+                
+                /* RGB TRIPLETS FOR OPACITY SUPPORT */
+                --color-allergy: 255 109 0;
+                --color-allergy-secondary: 254 226 226;
+                --color-quiz: 254 202 42;
+
+                --color-background: #FAFAFA;
+                --color-surface: #FFFFFF;
+                --color-title: #1A1A1A;
+                --color-desc: #4A4A4A;
+                --color-border: #E2E8F0;
+                --glass-bg: rgba(255, 255, 255, 0.7);
+                --glass-border: rgba(255, 255, 255, 0.5);
+                --glass-blur: 20px;
+            }
+            .dark {
+                --color-background: #0a0a0a;
+                --color-surface: #121212;
+                --color-title: #EDF2EF;
+                --color-desc: #D2DCD5;
+                --color-border: #2D2D2D;
+                
+                /* DARK MODE RGB ADJUSTMENTS */
+                --color-allergy: 255 109 0;
+                --color-allergy-secondary: 127 29 29;
+
+                --glass-bg: rgba(255, 255, 255, 0.05);
+                --glass-border: rgba(255, 255, 255, 0.1);
+            }
+            body {
+                @apply bg-background text-desc antialiased selection:bg-primary selection:text-white;
+                transition: background-color 0.5s ease, color 0.3s ease;
+            }
+
+            .material-symbols-rounded, .material-symbols-outlined {
+                font-family: 'Material Symbols Rounded';
+                font-weight: normal;
+                font-style: normal;
+                font-size: 24px;
+                display: inline-block;
+                line-height: 1;
+                text-transform: none;
+                letter-spacing: normal;
+                word-wrap: normal;
+                white-space: nowrap;
+                direction: ltr;
+                -webkit-font-smoothing: antialiased;
+                font-feature-settings: 'liga';
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+            .icon-filled {
+                font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+        }
+        @layer utilities {
+            .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            
+            .glass-shine {
+                position: relative;
+                overflow: hidden;
+            }
+            .glass-shine::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+                transform: skewX(-25deg);
+                animation: shine 4s infinite linear;
+            }
+        }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react-dom": "https://esm.sh/react-dom@^19.2.4",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "tailwind-merge": "https://esm.sh/tailwind-merge@^3.4.0",
+    "html2canvas": "https://esm.sh/html2canvas@^1.4.1",
+    "file-saver": "https://esm.sh/file-saver@^2.0.5",
+    "clsx": "https://esm.sh/clsx@^2.1.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

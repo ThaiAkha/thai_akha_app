@@ -96,7 +96,7 @@ export const AdminThreeColumnLayout: React.FC<AdminThreeColumnLayoutProps> = ({
 
         </div>
       </div>
-    </AdminThreeColumnLayout>
+    </AdminPageLayout>
   );
 };
 

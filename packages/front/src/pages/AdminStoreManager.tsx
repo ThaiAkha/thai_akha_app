@@ -11,8 +11,8 @@ import {
   Toggle,
   Divider
 } from '../components/ui/index';
-import { supabase } from '../lib/supabase';
-import { cn } from '../lib/utils';
+import { supabase } from '@thaiakha/shared/lib/supabase';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface Product {
   id?: string;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { getSessionCapacity } from '../config/sessionDefaults';
 import { getDateKey } from '../utils/dateKeyUtils';
 import { useCalendarAvailability, SessionStatus, DayData } from './useCalendarAvailability';

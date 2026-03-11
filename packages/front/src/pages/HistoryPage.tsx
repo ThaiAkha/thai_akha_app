@@ -4,7 +4,7 @@ import HeaderMenu from '../components/layout/HeaderMenu';
 import { Typography, Card, Badge, Icon, Divider } from '../components/ui/index';
 import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
 import { AKHA_CULTURE_DB, Section } from '../data/akhaCulture';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 const HistoryPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);

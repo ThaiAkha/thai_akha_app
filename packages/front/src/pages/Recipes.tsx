@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout, MegaMenu, HeaderMenu } from '../components/layout/index';
 import { Typography, Icon, Badge, Chip, Button, Toggle } from '../components/ui/index';
 import { MenuCard, RecipeView, RecipeData } from '../components/menu/index';
@@ -7,7 +7,7 @@ import { mapToRecipeData } from '../lib/recipeHelpers';
 import { adaptRecipeToDiet } from '../lib/recipeAdapter';
 import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { RecipeCategoryDB } from '../types/index';
 import { UserProfile } from '../services/authService';
 import { contentService } from '../services/contentService';

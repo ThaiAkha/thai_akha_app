@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata } from '../types';
 
 // Cache Version Key: Aggiornala per invalidare la cache locale se cambi la struttura dati

@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 
 /**
  * 👤 USER PROFILE INTERFACE

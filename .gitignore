@@ -1,7 +1,58 @@
-node_modules/
-dist/
-.DS_Store
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+dist
+dist-ssr
 *.local
+**/*.env.local
+**/*.env.*.local
+**/*.log
+
+# Build outputs
+*.tsbuildinfo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+*.env
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+
+# Deployment
+.vercel
+.netlify
+
+# Supabase (project-wide)
+supabase/.branches
+supabase/.temp
+supabase/.env.keys
+supabase/functions/*/node_modules
+
+# Claude AI
+.claude/
+
+# Google Drive Credentials
+credentials.json
+token.json
+
+# App snapshots
+App_Snapshot*
+App_Full_Snapshot*

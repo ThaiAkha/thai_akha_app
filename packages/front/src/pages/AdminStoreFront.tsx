@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { AdminThreeColumnLayout } from '../components/layout/index';
 import { 
   AdminHeader, 
@@ -15,7 +15,7 @@ import {
   Tabs,
   Divider 
 } from '../components/ui/index';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // --- TYPES ---
 interface Guest {

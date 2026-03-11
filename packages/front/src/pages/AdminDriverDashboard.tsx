@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout } from '../components/layout/PageLayout';
 import { Typography, Icon, Badge, Avatar, Button, Card } from '../components/ui/index'; // Assicurati che Button e Card siano exportati in ui/index
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { authService } from '../services/authService';
 
 // --- CONFIGURAZIONE STATI ---

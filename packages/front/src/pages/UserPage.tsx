@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
 import { Tabs } from '../components/ui';

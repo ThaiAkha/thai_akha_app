@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { SessionType } from '../components/common/ClassPicker';
 
 // --- TYPES ---

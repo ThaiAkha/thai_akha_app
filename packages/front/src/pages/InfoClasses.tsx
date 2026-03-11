@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout } from '../components/layout/PageLayout';
 import { 
   Button, Card, Typography, Badge, Icon, InfoCard, 
@@ -8,7 +8,7 @@ import {
 } from '../components/ui/index';
 import GalleryModal, { GalleryItem } from '../components/ui/GalleryModal';
 import { CookingClassDB } from '../types/index';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import HeaderMenu from '../components/layout/HeaderMenu';
 
 // --- FALLBACK DATA ---

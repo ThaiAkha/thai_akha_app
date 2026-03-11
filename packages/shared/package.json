@@ -1,0 +1,31 @@
+{
+  "name": "@thaiakha/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./lib": "./dist/lib/index.js",
+    "./lib/supabase": "./dist/lib/supabase.js",
+    "./lib/utils": "./dist/lib/utils.js",
+    "./lib/geoUtils": "./dist/lib/geoUtils.js",
+    "./data": "./dist/data/index.js",
+    "./types": "./dist/types/index.js",
+    "./services": "./dist/services/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.2",
+    "@types/node": "^22.14.0"
+  }
+}

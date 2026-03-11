@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { AdminThreeColumnLayout } from '../components/layout/index';
 import { 
   AdminHeader, 
@@ -21,7 +21,7 @@ import {
 import MiniCalendar from '../components/ui/MiniCalendar';
 import NumericKeypad from '../components/ui/NumericKeypad';
 import { ShopItemCard } from '../components/market/ShopItemCard';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // --- TYPES ---
 interface LibraryItem {

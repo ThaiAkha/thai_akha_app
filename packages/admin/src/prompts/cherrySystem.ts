@@ -1,6 +1,6 @@
 
-import { classData } from '../data/classData';
-import { DIETARY_KNOWLEDGE_BASE } from '../data/dietaryKnowledge';
+import { classData } from '@thaiakha/shared/data';
+import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
 
 /**
  * 🤖 SYSTEM CONFIGURATION: CHERRY (MASTER v5 - SUPABASE INTEGRATED)

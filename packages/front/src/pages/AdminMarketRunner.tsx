@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout } from '../components/layout/PageLayout';
 import { 
   Typography, 
@@ -11,7 +11,7 @@ import {
   Divider,
   Tabs
 } from '../components/ui/index';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface ShoppingItem {
   id: string;

@@ -17,7 +17,7 @@ import {
   Tooltip, 
   Pagination 
 } from '../components/ui/index';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 const DisplayPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate }) => {
   

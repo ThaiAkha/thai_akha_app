@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { getAvatarUrl } from '../utils/avatarUtils';
 import { SESSION_DEFAULTS, getSessionCapacity, getSessionPrice, getInitialAvailability } from '../config/sessionDefaults';

@@ -6,7 +6,7 @@ import { QuizCard, Typography, Button, Icon, Badge, Card } from '../components/u
 import { contentService } from '../services/contentService';
 import { BONUS_CARDS } from '../lib/bonusQuiz';
 import { QuizLevel, QuizModule } from '../types/index';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 type View = 'HOME' | 'LEVEL_SELECT' | 'PLAYING' | 'RESULT';
 

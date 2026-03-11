@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Button, Icon, Badge } from '../components/ui/index';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
 import { MenuCard, RecipeView, RecipeData } from '../components/menu/index';
 import { authService, UserProfile } from '../services/authService';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 const normalizeCat = (cat: string) => {
   const lower = cat.toLowerCase();

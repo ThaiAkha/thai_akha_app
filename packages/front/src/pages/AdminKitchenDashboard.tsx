@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { AdminPageLayout } from '../components/layout/AdminPageLayout';
 import { Typography, Card, Icon, Table, Tabs, Badge, ClassPicker } from '../components/ui/index';
 import { SessionType } from '../components/ui/ClassPicker';
-import { cn } from '../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // --- CONFIGURAZIONE NAVIGAZIONE ---
 const NAV_TABS = [

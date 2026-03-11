@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
-import { GEOJSON_MASTER } from '../data/mapZones';
-import { isPointInPolygon } from '../lib/geoUtils';
+import { supabase } from '@thaiakha/shared/lib/supabase';
+import { GEOJSON_MASTER } from '@thaiakha/shared/data';
+import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────────
 

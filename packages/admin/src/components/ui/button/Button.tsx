@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { cn } from "../../../lib/utils";
+import { cn } from "@thaiakha/shared/lib/utils";
 
 interface ButtonProps {
   children: ReactNode; // Button text or content

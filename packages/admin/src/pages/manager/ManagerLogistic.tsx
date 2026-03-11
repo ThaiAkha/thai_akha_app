@@ -14,8 +14,8 @@ import LogisticInspectorActions from '../../components/manager/logistic/Logistic
 
 // Logic Hook
 import { useManagerLogistic, LogisticsItem } from '../../hooks/useManagerLogistic';
-import { supabase } from '../../lib/supabase';
-import { cn } from '../../lib/utils';
+import { supabase } from '@thaiakha/shared/lib/supabase';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate: _onNavigate }) => {
     const {

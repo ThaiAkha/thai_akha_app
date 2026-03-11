@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { useAuth } from '../../context/AuthContext';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Label from '../../components/form/Label';
 import Button from '../../components/ui/button/Button';
 import Badge from '../../components/ui/badge/Badge';

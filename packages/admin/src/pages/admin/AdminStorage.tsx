@@ -10,7 +10,7 @@ import {
     DataExplorerInspector,
 } from '../../components/data-explorer';
 import { PRIMARY_BTN } from '../../components/data-explorer/DataExplorerToolbar';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // Modular Components
 import StorageSidebar from '../../components/admin/storage/StorageSidebar';

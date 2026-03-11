@@ -2,7 +2,7 @@
 
 export type PatternName = | 'logo' | 'diamond' | 'flower' | 'line_simple' | 'line' | 'mountain' | 'zig_zag';
 
-interface PatternDef {
+export interface PatternDef {
   data: number[];
   columns: number;
 }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Badge, Typography, Button, Icon, Modal } from '../ui/index';
-import { cn } from '../../lib/utils';
-import { DIETARY_KNOWLEDGE_BASE } from '../../data/dietaryKnowledge';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
 
 // --- INTERFACCE ---
 

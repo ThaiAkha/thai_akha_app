@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from './Icon.tsx';
 import { Typography } from './Typography.tsx';
-import { cn } from '../../lib/utils.ts';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface StatCardProps {
   icon: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { cn } from '../../lib/utils';
-import { AKHA_PATTERNS, PatternName } from '../../data/pixelPatterns';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { AKHA_PATTERNS, PatternName } from '@thaiakha/shared/data';
 
 const COLOR_MAP: Record<number, string> = {
     0: 'bg-transparent',

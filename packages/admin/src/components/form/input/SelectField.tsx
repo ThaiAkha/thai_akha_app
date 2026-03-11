@@ -1,5 +1,5 @@
 import { ChangeEvent, ReactNode, useState } from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import SectionHeader from '../../ui/SectionHeader';
 import { ChevronDown } from 'lucide-react';
 

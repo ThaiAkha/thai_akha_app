@@ -1,5 +1,5 @@
 import Button from '../../ui/button/Button';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Search, Receipt, Trash2, CreditCard, X } from 'lucide-react';
 import { Guest, OrderItem } from '../../../hooks/useManagerPos';
 

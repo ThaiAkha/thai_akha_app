@@ -2,7 +2,7 @@ import { Trash2 } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { READ_ONLY_COLUMNS } from '../../../hooks/useAdminDatabase';
 
 interface DbInspectorProps {

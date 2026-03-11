@@ -1,6 +1,6 @@
 import React from 'react';
 import { TableRow } from '../ui/table';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DataExplorerRowProps {
     children: React.ReactNode;

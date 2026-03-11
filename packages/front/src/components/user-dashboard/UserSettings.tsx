@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { UserProfile } from '../../services/authService';
 import { contentService } from '../../services/contentService';
-import { DIETARY_KNOWLEDGE_BASE } from '../../data/dietaryKnowledge'; 
+import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data'; 
 import {
   Card, Typography, Button, Icon, Slider, Badge, Input, Alert, Divider, Avatar
 } from '../ui';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface UserSettingsProps {
   userProfile: UserProfile | null;

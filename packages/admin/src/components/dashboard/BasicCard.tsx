@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import type { IconName } from '../../lib/iconRegistry';
 import Icon from '../ui/Icon';
 import { Heading, Paragraph } from '../typography';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Card from '../ui/Card';
 
 export interface BasicCardProps {

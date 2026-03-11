@@ -7,7 +7,7 @@ import {
     TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@thaiakha/shared/lib/supabase";
 
 interface Booking {
     internal_id: string; // Changed from id

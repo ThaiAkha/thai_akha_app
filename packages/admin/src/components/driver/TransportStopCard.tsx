@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle2, Map, MessageSquare, ArrowRight } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Badge from '../ui/badge/Badge';
 import Avatar from '../ui/avatar/Avatar';
 

@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Icon, Badge, Tabs, Button } from '../ui'; // [Source: UI Index]
 import { MenuCard } from '../menu';
 import RecipeView, { RecipeData } from '../menu/RecipeView';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
 
 interface MenuManagerProps {

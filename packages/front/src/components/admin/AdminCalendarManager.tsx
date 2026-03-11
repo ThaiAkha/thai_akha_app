@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Icon, Button, Modal, Toggle, Input, Badge } from '../ui/index';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // --- TIPI ---
 interface DayOverride {

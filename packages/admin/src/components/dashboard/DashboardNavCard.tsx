@@ -3,7 +3,7 @@ import { Link } from 'react-router'; /* Using react-router per the project's set
 import { ArrowRight } from 'lucide-react';
 import { getIcon, type IconName } from '../../lib/iconRegistry';
 import { Heading, Paragraph } from '../typography';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Card from '../ui/Card';
 
 export interface DashboardNavCardProps {

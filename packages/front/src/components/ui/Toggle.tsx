@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils'; // [Source 81]
+import { cn } from '@thaiakha/shared/lib/utils'; // [Source 81]
 
 export interface ToggleProps {
   checked: boolean;

@@ -4,7 +4,7 @@ import Input from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import TextArea from '../../../components/form/input/TextArea';
 import DeleteZone from '../../../components/ui/DeleteZone';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Product, Category } from '../../../hooks/useAdminInventory';
 
 interface InventoryInspectorProps {

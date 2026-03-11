@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "../../../lib/utils";
+import { cn } from "@thaiakha/shared/lib/utils";
 import Button from "../../ui/button/Button";
 import InputField from "../../form/input/InputField";
 import { LucideIcon } from "lucide-react";

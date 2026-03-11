@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileRow, ProfileFooter } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
-import { searchCountries, getCountryByCode } from "../../data/countries";
+import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
 
 /**
  * UserAddressCard - Identity & Agency.

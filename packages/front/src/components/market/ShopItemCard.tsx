@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography, Badge, Tooltip, Icon } from '../ui/index';
 
 interface LibraryItem {

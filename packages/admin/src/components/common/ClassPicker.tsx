@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Sun, Moon, Layers, Calendar } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import MiniCalendar from './MiniCalendar';
 

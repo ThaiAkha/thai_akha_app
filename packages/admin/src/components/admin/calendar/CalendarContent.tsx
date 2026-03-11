@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { DayData, BulkSessionType, getDateKey } from '../../../hooks/useAdminCalendar';
 import CalendarMaster, { CalendarDay, LegendItem } from '../../common/CalendarMaster';
 

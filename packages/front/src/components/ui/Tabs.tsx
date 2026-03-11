@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Icon from './Icon';
 
 // --- TYPES ---

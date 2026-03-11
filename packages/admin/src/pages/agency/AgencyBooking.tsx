@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import PageContainer from '../../components/layout/PageContainer';
 import Button from '../../components/ui/button/Button';
 import InputField from '../../components/form/input/InputField';

@@ -4,7 +4,7 @@ import {
   Typography, Button, Input, Icon, Divider, Alert, Badge 
 } from '../ui/index';
 import { authService } from '../../services/authService';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface AuthFormProps {
   onSuccess: () => void;

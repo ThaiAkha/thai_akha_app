@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../ui/button/Button';
 
 interface CalendarHeaderProps {

@@ -4,7 +4,7 @@ import Input from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
 import DeleteZone from '../../../components/ui/DeleteZone';
 import Tooltip from '../../../components/ui/Tooltip';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { FileObject, formatBytes } from '../../../hooks/useAdminStorage';
 
 interface StorageInspectorProps {

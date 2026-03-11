@@ -4,7 +4,7 @@ import { Camera, BadgeCheck, Mail, Loader2, Globe, CheckCircle2 } from "lucide-r
 import { ProfileCard, ProfileFooter, ProfileRow } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
 import { getSmartAvatarUrl, isSmartAvatar } from "../../lib/avatarSystem";
-import { searchCountries, getCountryByCode } from "../../data/countries";
+import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
 
 /**
  * UserMetaCard - Unified Personal Details Card.

@@ -1,6 +1,6 @@
 import { Lock, Edit2, Minus, Plus } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
 import Card from '../../ui/Card';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon, Badge, Button, Input } from '../ui/index';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 export type MegaMenuVariant = 'diet' | 'grid' | 'search' | 'info';
 

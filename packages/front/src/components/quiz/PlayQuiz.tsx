@@ -1,6 +1,6 @@
 import React from 'react';
 import { QuizLevel, QuizModule } from '../../types/index'; // ✅ Importa i nuovi tipi centralizzati
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon } from '../ui';
 
 interface PlayQuizProps {

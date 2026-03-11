@@ -1,6 +1,6 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface PageHeaderWithBadgeProps {
   badge?: string;

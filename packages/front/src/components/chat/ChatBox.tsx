@@ -6,7 +6,7 @@ import { useGeminiLive } from '../../hooks/useGeminiLive';
 import { UserProfile } from '../../services/authService';
 import { ChatMessage } from '../../types';
 import { Button, Icon, Typography } from '../ui/index'; 
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface ChatBoxProps {
   isDarkMode: boolean;

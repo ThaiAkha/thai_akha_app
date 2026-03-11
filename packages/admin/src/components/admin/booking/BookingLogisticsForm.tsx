@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Truck, CheckCircle2, Package, HelpCircle } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import TextArea from '../../../components/form/input/TextArea';

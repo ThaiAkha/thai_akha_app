@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils'; // Assicurati che utils esista
+import { cn } from '@thaiakha/shared/lib/utils'; // Assicurati che utils esista
 
 // Definizione Locale per slegarlo dal vecchio file
 export interface QuizButtonConfig {

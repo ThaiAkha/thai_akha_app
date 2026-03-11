@@ -4,7 +4,7 @@ import { DataExplorerContent, GridCard, DataExplorerRow, DataCardContent, DataRo
 import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
 import Checkbox from '../../../components/form/input/Checkbox';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { GRID_PRIMARY_FIELDS } from '../../../hooks/useAdminDatabase';
 
 interface DbContentProps {

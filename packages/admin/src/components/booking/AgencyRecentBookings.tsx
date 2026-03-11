@@ -7,7 +7,7 @@ import {
     TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge"; // Default import assuming Badge.tsx has export default
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@thaiakha/shared/lib/supabase";
 
 interface Booking {
     internal_id: string;

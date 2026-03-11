@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { ChevronUp, ChevronDown, MapPin } from 'lucide-react';
 import Avatar from '../../ui/avatar/Avatar';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils'; // [Source 336]
+import { cn } from '@thaiakha/shared/lib/utils'; // [Source 336]
 
 export interface DividerProps {
   className?: string;

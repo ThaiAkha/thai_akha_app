@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Typography, Toggle, Badge } from '../ui/index';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/authService';
 import { contentService } from '../../services/contentService';
 

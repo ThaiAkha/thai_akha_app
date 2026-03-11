@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from './Icon';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // --- TIPI ---
 export type SessionType = 'morning_class' | 'evening_class' | 'all';

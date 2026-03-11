@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Sun, Moon, Calendar as CalendarIcon } from 'lucide-react';
 import BookingCalendarModal from '../booking/BookingCalendarModal';
 

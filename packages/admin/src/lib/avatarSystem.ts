@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 
 /**
  * 🎨 SMART AVATAR 4.8 SYSTEM

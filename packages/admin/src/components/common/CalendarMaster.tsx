@@ -6,7 +6,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import SessionStatusBadge from '../admin/calendar/SessionStatusBadge';
 import CalendarHeader from '../admin/calendar/CalendarHeader';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';

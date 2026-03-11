@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Header, CinematicBackground } from './index';
 import { contentService } from '../../services/contentService';
 import { HeaderMetadata } from './Header';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { AkhaLoader } from '../ui/index';
 
 interface PageLayoutProps {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Typography } from './index';
 
 // 1. DEFINIZIONE INTERFACCE

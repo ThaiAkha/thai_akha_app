@@ -1,5 +1,5 @@
 import DataRowText from './DataRowText';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DataCardContentProps {
     title: string;

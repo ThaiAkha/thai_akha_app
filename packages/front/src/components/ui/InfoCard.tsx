@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography } from './index';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // 1. DEFINIZIONE DELLE INTERFACCE (Fondamentale!)
 export interface CardItem {

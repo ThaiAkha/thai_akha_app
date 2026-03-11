@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { Sun, Moon, LogOut, User } from "lucide-react";
 import Tooltip from "../ui/Tooltip";
-import { cn } from "../../lib/utils";
+import { cn } from "@thaiakha/shared/lib/utils";
 
 export default function UserDropdown() {
   const { user, signOut } = useAuth();

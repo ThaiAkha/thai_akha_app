@@ -3,7 +3,7 @@ import { ComponentConfig } from '../../config/componentsConfig';
 import { generateDefaultProps } from '../../utils/showcaseUtils';
 import PropControl from './PropControl';
 import { RefreshCw, Code, Copy, Check } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface ViewPlaygroundProps {
     component: ComponentConfig;

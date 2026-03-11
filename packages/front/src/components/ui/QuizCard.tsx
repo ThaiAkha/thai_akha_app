@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Icon, Card, Badge } from './index';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // Interfaccia Reward Dinamica
 interface Reward {

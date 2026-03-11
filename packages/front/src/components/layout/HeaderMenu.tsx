@@ -3,7 +3,7 @@ import Typography from '../ui/Typography';
 import { contentService } from '../../services/contentService'; // ✅ Usa il Service (Cache)
 import { HeaderMetadata } from './Header';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface HeaderMenuProps {
   currentStep?: 1 | 2;

@@ -8,8 +8,8 @@ import { createClient } from '@supabase/supabase-js';
 // Helper per environment variables cross-platform
 const getEnvVar = (key: string, fallback: string): string => {
   // Vite environment (browser)
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[key] || fallback;
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env[key] || fallback;
   }
   // Node environment (SSR/Edge Functions)
   if (typeof process !== 'undefined' && process.env) {

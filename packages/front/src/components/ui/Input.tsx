@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils'; // [Source 339]
+import { cn } from '@thaiakha/shared/lib/utils'; // [Source 339]
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   variant?: 'default' | 'outline' | 'ghost' | 'filled' | 'mineral';

@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutGrid, List, RefreshCw, Share2, Plus, Upload } from 'lucide-react';
 import SearchInput from '../form/input/SearchInput';
 import Tooltip from '../ui/Tooltip';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 type ViewMode = 'table' | 'grid';
 

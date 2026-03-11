@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import Button from '../../components/ui/button/Button';
 import Badge from '../../components/ui/badge/Badge';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import {
     CalendarDays, ShoppingCart, Store, Phone, MessageCircle,
     CheckCircle2, Circle, Plus, RefreshCw, Check,

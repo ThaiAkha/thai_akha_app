@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Badge, Icon, Button, Divider, Modal } from '../ui/index';
 import GalleryModal, { GalleryItem } from '../ui/GalleryModal';
-import { cn } from '../../lib/utils';
-import { DIETARY_KNOWLEDGE_BASE } from '../../data/dietaryKnowledge';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
 
 // --- INTERFACCE ---
 

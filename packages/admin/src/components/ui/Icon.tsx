@@ -23,7 +23,7 @@
 import React from 'react';
 import { getIcon, type IconName } from '../../lib/iconRegistry';
 import type { LucideIcon } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // ============================================================================
 // VARIANT STYLES (for styled mode)

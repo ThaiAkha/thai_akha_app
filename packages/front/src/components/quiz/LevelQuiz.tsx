@@ -1,7 +1,7 @@
 import React from 'react';
 import { QuizLevel } from '../../types/index'; // ✅ Importa i nuovi tipi
 import ButtonQuiz from './ButtonQuiz';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon } from '../ui';
 
 // --- CONFIGURAZIONE BOTTONI LOCALE (Decoupling) ---

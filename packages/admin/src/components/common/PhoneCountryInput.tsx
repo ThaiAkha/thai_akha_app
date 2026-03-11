@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import ReactCountryFlag from 'react-country-flag';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Globe } from 'lucide-react';
 import SectionHeader from '../ui/SectionHeader';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Minus, Plus } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import AdminClassPicker from '../common/AdminClassPicker';
 import Card from '../ui/Card';
 import { SectionTitle } from '../typography';

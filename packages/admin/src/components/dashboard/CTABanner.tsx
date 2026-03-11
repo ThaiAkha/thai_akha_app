@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { Heading, Paragraph } from '../typography';
 import { ArrowRight } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface CTABannerProps {
   /** Banner title */

@@ -1,5 +1,5 @@
 import { Rocket, Check } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Card from '../../ui/Card';
 import { PaymentStatus } from '../../../hooks/useAdminBooking';

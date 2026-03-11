@@ -20,7 +20,7 @@ import { ArrowRight } from 'lucide-react';
 import type { IconName } from '../../lib/iconRegistry';
 import Icon from '../ui/Icon';
 import { Heading, Paragraph } from '../typography';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface FeatureCardProps {
   /** Card title */

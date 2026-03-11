@@ -1,7 +1,7 @@
 import React from 'react';
 import PageContainer from '../layout/PageContainer';
 import PageGrid from '../layout/PageGrid';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DataExplorerLayoutProps {
     sidebar: React.ReactNode;

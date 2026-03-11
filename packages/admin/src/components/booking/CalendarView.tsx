@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../../lib/supabase';
-import { cn } from '../../lib/utils';
+import { supabase } from '@thaiakha/shared/lib/supabase';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { ChevronLeft, ChevronRight, Ban } from 'lucide-react';
 import { getSessionCapacity } from '../../config/sessionDefaults';
 import { getDateKey } from '../../utils/dateKeyUtils';

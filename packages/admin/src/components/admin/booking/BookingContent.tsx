@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, Search, Briefcase } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import Card from '../../ui/Card';
 import { UserMode, NewUser } from '../../../hooks/useAdminBooking';
 import BookingNewUserForm from './BookingNewUserForm';

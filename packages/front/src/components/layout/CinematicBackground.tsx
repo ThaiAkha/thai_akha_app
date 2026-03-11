@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface CinematicBackgroundProps {
   isLoaded: boolean;

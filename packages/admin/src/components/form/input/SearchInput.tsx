@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     onClear?: () => void;

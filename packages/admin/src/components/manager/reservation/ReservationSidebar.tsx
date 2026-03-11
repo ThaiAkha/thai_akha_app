@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Users, Sun, Moon } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
 

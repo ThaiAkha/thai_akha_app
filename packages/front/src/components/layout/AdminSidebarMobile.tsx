@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography, Icon, Button } from '../ui/index';
 import { UserProfile } from '../../services/authService';
 

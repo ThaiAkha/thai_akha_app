@@ -1,7 +1,7 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
 import { getIcon, type IconName } from '../../lib/iconRegistry';
-import { cn } from '../../lib/utils';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface WelcomeHeroProps {
     badge?: string;

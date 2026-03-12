@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from '@thaiakha/shared/lib/supabase';
 // IMPORT PAGINE PUBBLICHE
 import HomePage from './pages/HomePage';
 import QuizPage from './pages/QuizPage';
@@ -27,7 +28,7 @@ type Page = string;
 const App: React.FC = () => {
   // Hook per gestire l'altezza reale su mobile (100vh fix)
   useViewportHeight();
-  
+
   const mainScrollRef = useRef<HTMLElement>(null);
 
   // --- STATO GLOBALE ---
@@ -56,7 +57,32 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchUser();
+    const bootstrap = async () => {
+      // --- SESSION HAND-OFF (from Admin App) ---
+      // If the admin app passed tokens in the URL fragment, restore the session first.
+      const hash = window.location.hash;
+      if (hash.includes('access_token=')) {
+        try {
+          const params = new URLSearchParams(hash.slice(1)); // strip the leading '#'
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          if (accessToken && refreshToken) {
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+          }
+        } catch (e) {
+          console.warn('[Front] Session hand-off failed:', e);
+        } finally {
+          // Clean the tokens from the URL so they aren't accidentally shared
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+      // --- NORMAL PROFILE FETCH ---
+      await fetchUser();
+    };
+    bootstrap();
   }, []);
 
   // --- NAVIGAZIONE ---
@@ -64,7 +90,7 @@ const App: React.FC = () => {
     setPage(targetPage);
     if (sectionId) setTargetSection(sectionId);
     else setTargetSection(null);
-    
+
     if (topic) {
       window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));
     }
@@ -93,17 +119,17 @@ const App: React.FC = () => {
       case 'home': return <HomePage onNavigate={handleNavigate} />;
       case 'quiz': return <QuizPage onNavigate={handleNavigate} />;
       case 'classes': return <InfoClasses onNavigate={handleNavigate} />;
-      case 'recipes': return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile}/> ;
+      case 'recipes': return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} />;
       case 'history': return <HistoryPage onNavigate={handleNavigate} />;
       case 'location': return <LocationPage onNavigate={handleNavigate} />;
       case 'display': return <DisplayPage onNavigate={handleNavigate} />;
-      
+
       // Flows Operativi Utente
-      case 'booking': 
+      case 'booking':
         return <BookingPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} />;
-      case 'menu': 
+      case 'menu':
         return <MenuPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} sectionId={targetSection} />;
-      case 'auth': 
+      case 'auth':
         return <AuthPage onNavigate={handleNavigate} onAuthSuccess={fetchUser} />;
       case 'user':
         return <UserPage onNavigate={handleNavigate} userProfile={userProfile} onProfileRefresh={fetchUser} sectionId={targetSection} />;
@@ -146,7 +172,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <main 
+      <main
         ref={mainScrollRef}
         className="flex-grow h-full overflow-y-auto overflow-x-hidden no-scrollbar relative z-10"
         id="main-scroll-container"
@@ -156,9 +182,9 @@ const App: React.FC = () => {
 
       {/* Global Chat Assistant (Abilitato per TUTTI gli utenti ora!) */}
       <div className="no-print">
-        <ChatBox 
-          isDarkMode={isDarkMode} 
-          onNavigate={handleNavigate} 
+        <ChatBox
+          isDarkMode={isDarkMode}
+          onNavigate={handleNavigate}
           userProfile={userProfile}
         />
       </div>

@@ -223,13 +223,5 @@ WHERE agency_id = (SELECT agency_id FROM profiles WHERE id = auth.uid())
 
 ---
 
-## 📚 Documenti Correlati
-
-- **[ROLE_ROUTING_STRATEGY.md](./ROLE_ROUTING_STRATEGY.md)** - Dettagli del routing tra app
-- **[ADMIN_PAGES_CLEANUP.md](./ADMIN_PAGES_CLEANUP.md)** - Analisi della rimozione delle pagine duplicate
-- **[Booking System Rules.md](./Booking%20System%20Rules.md)** - Regole di business per i booking
-
----
-
 **Ultimo Aggiornamento**: Mar 12, 2026
 **Status**: Production Ready ✅

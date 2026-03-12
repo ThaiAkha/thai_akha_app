@@ -50,9 +50,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
         if (user) {
           const profile = await authService.getCurrentUserProfile();
           onSuccess();
-          if (profile?.role === 'admin') onNavigate('admin-kitchen');
-          else if (profile?.role === 'agency') onNavigate('agency-portal');
-          else onNavigate('user');
+
+          // Staff roles (admin, manager, driver, kitchen, logistics, agency) redirect to Admin App
+          if (profile?.role && ['admin', 'manager', 'driver', 'kitchen', 'logistics', 'agency'].includes(profile.role)) {
+            const adminUrl = import.meta.env.VITE_ADMIN_APP_URL || 'http://localhost:3001';
+            // Redirect to admin app
+            window.location.href = `${adminUrl}?token=${user.id}&app=front`;
+          } else {
+            // Customers (guest, customer) stay in Front App
+            onNavigate('user');
+          }
         }
       } else {
         if (role === 'agency') {
@@ -61,7 +68,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
           await authService.signUp(email, password, fullName);
         }
         onSuccess();
-        onNavigate(role === 'agency' ? 'agency-portal' : 'user');
+        // New signups always go to user page (guests and customers)
+        onNavigate('user');
       }
     } catch (err: any) {
       console.error(err);

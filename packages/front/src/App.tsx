@@ -12,23 +12,11 @@ import RecipesPage from './pages/Recipes';
 import BookingPage from './pages/BookingPage';
 import DisplayPage from './pages/DisplayPage';
 
-// PORTALI OPERATIVI & ADMIN
-import AdminKitchenDashboard from './pages/AdminKitchenDashboard';
-import AdminStoreFront from './pages/AdminStoreFront';
-import AdminStoreManager from './pages/AdminStoreManager';
-import AdminMarketShop from './pages/AdminMarketShop'; 
-import AdminMarketRunner from './pages/AdminMarketRunner'; // 👈 NUOVO
-import AdminDriverDashboard from './pages/AdminDriverDashboard';
-import AdminLogistics from './pages/AdminLogistics';
-import AgencyDashboard from './pages/AgencyDashboard';
-import AdminCalendar from './pages/AdminCalendar';
 
 // LAYOUT & NAVIGATION
 import {
   Sidebar,
   SidebarMobile,
-  AdminSidebar,
-  AdminSidebarMobile
 } from './components/layout/index';
 import { ChatBox } from './components/chat/index';
 import { authService, UserProfile } from './services/authService';
@@ -117,21 +105,8 @@ const App: React.FC = () => {
         return <MenuPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} sectionId={targetSection} />;
       case 'auth': 
         return <AuthPage onNavigate={handleNavigate} onAuthSuccess={fetchUser} />;
-      case 'user': 
+      case 'user':
         return <UserPage onNavigate={handleNavigate} userProfile={userProfile} onProfileRefresh={fetchUser} sectionId={targetSection} />;
-
-      // --- ADMIN CONSOLE ---
-      case 'admin-kitchen': return <AdminKitchenDashboard onNavigate={handleNavigate} />;
-      case 'admin-logistics': return <AdminLogistics onNavigate={handleNavigate} />;
-      case 'admin-store': return <AdminStoreFront onNavigate={handleNavigate} />;
-      case 'admin-store-manager': return <AdminStoreManager />;
-      case 'admin-market-plan': return <AdminMarketShop />; // (Planner)
-      case 'admin-market-run': return <AdminMarketRunner />; // (Runner) 👈 NUOVO
-      case 'admin-driver': return <AdminDriverDashboard onNavigate={handleNavigate} />;
-      case 'admin-calendar': return <AdminCalendar onNavigate={handleNavigate} />;
-
-      // --- B2B PORTAL ---
-      case 'agency-portal': return <AgencyDashboard onNavigate={handleNavigate} userProfile={userProfile} />;
 
       default: return <HomePage onNavigate={handleNavigate} />;
     }
@@ -143,64 +118,32 @@ const App: React.FC = () => {
     handleNavigate('home');
   };
 
-  // 👇 LOGICA SIDEBAR: I Driver ora vedono il layout Admin (ma filtrato internamente)
-  const isUserAdmin = ['admin', 'manager', 'driver', 'kitchen'].includes(userProfile?.role || '');
-
   return (
     <div className="relative w-full h-[calc(var(--vh,1vh)*100)] bg-background text-desc transition-colors duration-700 flex overflow-hidden">
-      
-      {/* --- SIDEBAR SWITCH BASATO SUL RUOLO --- */}
-      {isUserAdmin ? (
-        // 🔴 ADMIN MODE (Admin + Driver + Kitchen)
-        <>
-          <div className="hidden lg:flex h-full no-print z-50">
-            <AdminSidebar 
-              currentPage={page} 
-              onNavigate={handleNavigate} 
-              isOpen={isSidebarOpen} 
-              onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-              isDarkMode={isDarkMode}
-              onToggleTheme={() => setIsDarkMode(!isDarkMode)}
-              onLogout={handleLogout}
-              userProfile={userProfile} 
-            />
-          </div>
-          <div className="no-print z-50">
-            <AdminSidebarMobile 
-              currentPage={page}
-              onNavigate={handleNavigate}
-              onExit={() => handleNavigate('home')}
-              userProfile={userProfile} 
-            />
-          </div>
-        </>
-      ) : (
-        // 🟢 PUBLIC MODE (Guest + Agency)
-        <>
-          <div className="hidden lg:flex h-full no-print z-50">
-            <Sidebar 
-              currentPage={page} 
-              onNavigate={handleNavigate} 
-              isOpen={isSidebarOpen} 
-              onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-              isDarkMode={isDarkMode}
-              onToggleTheme={() => setIsDarkMode(!isDarkMode)}
-              userProfile={userProfile}
-              onLogout={handleLogout}
-            />
-          </div>
-          <div className="no-print z-50">
-            <SidebarMobile 
-              currentPage={page} 
-              onNavigate={handleNavigate} 
-              isDarkMode={isDarkMode} 
-              onToggleTheme={() => setIsDarkMode(!isDarkMode)}
-              userProfile={userProfile}
-              onLogout={handleLogout}
-            />
-          </div>
-        </>
-      )}
+
+      {/* --- SIDEBAR --- */}
+      <div className="hidden lg:flex h-full no-print z-50">
+        <Sidebar
+          currentPage={page}
+          onNavigate={handleNavigate}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          isDarkMode={isDarkMode}
+          onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+          userProfile={userProfile}
+          onLogout={handleLogout}
+        />
+      </div>
+      <div className="no-print z-50">
+        <SidebarMobile
+          currentPage={page}
+          onNavigate={handleNavigate}
+          isDarkMode={isDarkMode}
+          onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+          userProfile={userProfile}
+          onLogout={handleLogout}
+        />
+      </div>
 
       {/* Main Content Area */}
       <main 

@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "thai-akha-app-2026"
+  },
+  "targets": {
+    "thai-akha-app-2026": {
+      "hosting": {
+        "frontend": [
+          "thai-akha-front"
+        ],
+        "admin": [
+          "thai-akha-admin"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

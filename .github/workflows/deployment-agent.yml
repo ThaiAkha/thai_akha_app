@@ -106,17 +106,41 @@ jobs:
       matrix:
         include:
           - package: front
-            service: thaiakha-front
-            dockerfile: packages/front/Dockerfile
+            target: frontend
             enabled: ${{ needs.check_changes.outputs.deploy_front }}
           - package: admin
-            service: thaiakha-admin
-            dockerfile: packages/admin/Dockerfile
+            target: admin
             enabled: ${{ needs.check_changes.outputs.deploy_admin }}
     steps:
       - name: Checkout code
         if: ${{ matrix.enabled == 'true' }}
         uses: actions/checkout@v4
+
+      - name: Install pnpm
+        if: ${{ matrix.enabled == 'true' }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        if: ${{ matrix.enabled == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        if: ${{ matrix.enabled == 'true' }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Package
+        if: ${{ matrix.enabled == 'true' }}
+        run: pnpm --filter ${{ matrix.package }} build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
       - name: Authenticate to Google Cloud
         if: ${{ matrix.enabled == 'true' }}
@@ -125,33 +149,13 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
 
-      - name: Set up Cloud SDK
+      - name: Deploy to Firebase Hosting
         if: ${{ matrix.enabled == 'true' }}
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Configure Docker
-        if: ${{ matrix.enabled == 'true' }}
-        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --quiet
-
-      - name: Build and Push Container
-        if: ${{ matrix.enabled == 'true' }}
-        run: |-
-          IMAGE_NAME="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:${{ github.sha }}"
-          docker build -t "$IMAGE_NAME" -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:latest" -f ${{ matrix.dockerfile }} .
-          docker push "$IMAGE_NAME"
-          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:latest"
-
-      - name: Deploy to Cloud Run
-        if: ${{ matrix.enabled == 'true' }}
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: w9jds/firebase-action@master
         with:
-          service: ${{ matrix.service }}
-          region: ${{ env.REGION }}
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:${{ github.sha }}
-          flags: '--allow-unauthenticated'
-          env_vars: |-
-            VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
-            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
-            VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}
-            VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          args: deploy --only hosting:${{ matrix.target }}
+        env:
+          GCP_SA_KEY: ${{ steps.auth.outputs.credentials_json }}

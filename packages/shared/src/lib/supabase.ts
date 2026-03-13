@@ -23,10 +23,11 @@ const supabaseUrl = getEnvVar(
   'https://mtqullobcsypkqgdkaob.supabase.co'
 );
 
-const supabaseAnonKey = getEnvVar(
-  'VITE_SUPABASE_ANON_KEY',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cXVsbG9iY3N5cGtxZ2RrYW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NDEwMzgsImV4cCI6MjA4NDMxNzAzOH0.nPpgbaFS8A6HTKZ6jr6a9YePXIKak3UMtsY1N_5f_Io'
-);
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY', '');
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('⚠️ Supabase environment variables are missing! Check your .env files.');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {

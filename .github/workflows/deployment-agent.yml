@@ -139,4 +139,6 @@ jobs:
         if: ${{ matrix.enabled == 'true' }}
         run: |
           pnpm add -g firebase-tools
-          firebase deploy --only hosting:${{ matrix.target }} --project ${{ secrets.GCP_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+          firebase deploy --only hosting:${{ matrix.target }} --project ${{ secrets.GCP_PROJECT_ID }} --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

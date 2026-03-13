@@ -139,7 +139,7 @@ const AppSidebar: React.FC = () => {
         {/* Logo icon — always centered in icon column */}
         <div className="w-[108px] shrink-0 flex items-center justify-center">
           <Link to="/">
-            <img src="/images/logo/logo-icon.svg" alt="Logo" width={32} height={32} />
+            <img src="/favicon.svg" alt="Logo" width={32} height={32} />
           </Link>
         </div>
 
@@ -149,9 +149,10 @@ const AppSidebar: React.FC = () => {
           transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
           ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
         `}>
-          <Link to="/">
-            <img className="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width={140} height={30} />
-            <img className="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width={140} height={30} />
+          <Link to="/" className="flex items-center gap-3">
+            <span className="text-xl font-display font-bold tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
+              Thai Akha <span className="text-brand-500">Kitchen</span>
+            </span>
           </Link>
         </div>
       </div>

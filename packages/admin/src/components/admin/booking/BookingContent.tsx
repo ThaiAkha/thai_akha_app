@@ -7,6 +7,36 @@ import BookingNewUserForm from './BookingNewUserForm';
 import BookingUserSearchForm from './BookingUserSearchForm';
 import BookingLogisticsForm from './BookingLogisticsForm';
 
+interface UserProfile {
+    id: string;
+    full_name: string;
+    email: string;
+    role: string;
+    agency_company_name?: string;
+    agency_phone?: string;
+    phone_number?: string;
+}
+
+interface PickupZone {
+    id: string;
+    name: string;
+    morning_pickup_time: string;
+    evening_pickup_time: string;
+}
+
+interface HotelLocation {
+    id: string;
+    name: string;
+    lat?: number;
+    lng?: number;
+    pickup_zones?: PickupZone;
+}
+
+interface MeetingPoint {
+    id: string;
+    name: string;
+}
+
 interface BookingContentProps {
     userMode: UserMode;
     onUserModeChange: (m: UserMode) => void;
@@ -14,22 +44,22 @@ interface BookingContentProps {
     onNewUserChange: (u: NewUser) => void;
     searchTerm: string;
     onSearchTermChange: (s: string) => void;
-    searchResults: any[];
-    selectedUser: any | null;
-    onSelectedUserChange: (u: any) => void;
+    searchResults: UserProfile[];
+    selectedUser: UserProfile | null;
+    onSelectedUserChange: (u: UserProfile | null) => void;
     hotelSearchQuery: string;
     onHotelSearchQueryChange: (q: string) => void;
-    hotelSearchResults: any[];
-    onHotelSelect: (h: any) => void;
-    pickupZone: any | null;
+    hotelSearchResults: HotelLocation[];
+    onHotelSelect: (h: HotelLocation) => void;
+    pickupZone: PickupZone | null;
     notes: string;
     onNotesChange: (n: string) => void;
     hasLuggage: boolean;
     onHasLuggageChange: (l: boolean) => void;
-    meetingPoints: any[];
+    meetingPoints: MeetingPoint[];
     meetingPoint: string;
     onMeetingPointChange: (m: string) => void;
-    onSetHotel: (h: any) => void;
+    onSetHotel: (h: HotelLocation) => void;
     session: 'morning_class' | 'evening_class';
 }
 

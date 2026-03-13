@@ -44,7 +44,7 @@ export default function UserDropdown() {
           {/* Avatar (Right in Desktop, Main in Mobile) */}
           <span className="shrink-0 overflow-hidden rounded-full h-10 w-10 border-2 border-brand-500/10 group-hover:border-brand-500/30 transition-all relative flex items-center justify-center bg-gray-50 dark:bg-gray-800 shadow-sm">
             <img
-              src={user?.avatar_url || "/images/user/owner.jpg"}
+              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random`}
               alt="User"
               className="object-cover w-full h-full"
             />

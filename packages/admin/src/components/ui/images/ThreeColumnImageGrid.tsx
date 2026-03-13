@@ -3,7 +3,7 @@ export default function ThreeColumnImageGrid() {
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
       <div>
         <img
-          src="/images/grid-image/image-04.png"
+          src="https://placehold.co/600x400?text=Grid+1"
           alt=" grid"
           className="border border-gray-200 rounded-xl dark:border-gray-800"
         />
@@ -11,7 +11,7 @@ export default function ThreeColumnImageGrid() {
 
       <div>
         <img
-          src="/images/grid-image/image-05.png"
+          src="https://placehold.co/600x400?text=Grid+2"
           alt=" grid"
           className="border border-gray-200 rounded-xl dark:border-gray-800"
         />
@@ -19,7 +19,7 @@ export default function ThreeColumnImageGrid() {
 
       <div>
         <img
-          src="/images/grid-image/image-06.png"
+          src="https://placehold.co/600x400?text=Grid+3"
           alt=" grid"
           className="border border-gray-200 rounded-xl dark:border-gray-800"
         />

@@ -8,7 +8,7 @@
  * <FeatureCard
  *   title="Hotel List"
  *   description="Add hotels, map GPS coordinates..."
- *   imageUrl="/images/hotel.jpg"
+ *   imageUrl="https://placehold.co/600x400"
  *   icon="Hotel"
  *   path="/admin-hotels"
  * />

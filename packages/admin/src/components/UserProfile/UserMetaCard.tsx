@@ -116,7 +116,7 @@ export default function UserMetaCard() {
         <div className="relative group shrink-0">
           <div className="w-28 h-28 lg:w-40 lg:h-40 overflow-hidden border-4 border-white dark:border-gray-800 rounded-full transition-all duration-500 group-hover:scale-105 shadow-2xl shadow-brand-500/10">
             <img
-              src={user?.avatar_url || "/images/user/owner.jpg"}
+              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random&size=128`}
               alt="Profile"
               className="object-cover w-full h-full"
             />

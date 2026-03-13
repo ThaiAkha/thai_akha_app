@@ -28,16 +28,16 @@ const tableData: Order[] = [
   {
     id: 1,
     user: {
-      image: "/images/user/user-17.jpg",
+      image: "https://ui-avatars.com/api/?name=Lindsey+Curtis&background=random",
       name: "Lindsey Curtis",
       role: "Web Designer",
     },
     projectName: "Agency Website",
     team: {
       images: [
-        "/images/user/user-22.jpg",
-        "/images/user/user-23.jpg",
-        "/images/user/user-24.jpg",
+        "https://ui-avatars.com/api/?name=Team+1&background=random",
+        "https://ui-avatars.com/api/?name=Team+2&background=random",
+        "https://ui-avatars.com/api/?name=Team+3&background=random",
       ],
     },
     budget: "3.9K",
@@ -46,13 +46,13 @@ const tableData: Order[] = [
   {
     id: 2,
     user: {
-      image: "/images/user/user-18.jpg",
+      image: "https://ui-avatars.com/api/?name=Kaiya+George&background=random",
       name: "Kaiya George",
       role: "Project Manager",
     },
     projectName: "Technology",
     team: {
-      images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
+      images: ["https://ui-avatars.com/api/?name=Team+4&background=random", "https://ui-avatars.com/api/?name=Team+5&background=random"],
     },
     budget: "24.9K",
     status: "Pending",
@@ -60,13 +60,13 @@ const tableData: Order[] = [
   {
     id: 3,
     user: {
-      image: "/images/user/user-17.jpg",
+      image: "https://ui-avatars.com/api/?name=Zain+Geidt&background=random",
       name: "Zain Geidt",
       role: "Content Writing",
     },
     projectName: "Blog Writing",
     team: {
-      images: ["/images/user/user-27.jpg"],
+      images: ["https://ui-avatars.com/api/?name=Team+6&background=random"],
     },
     budget: "12.7K",
     status: "Active",
@@ -74,16 +74,16 @@ const tableData: Order[] = [
   {
     id: 4,
     user: {
-      image: "/images/user/user-20.jpg",
+      image: "https://ui-avatars.com/api/?name=Abram+Schleifer&background=random",
       name: "Abram Schleifer",
       role: "Digital Marketer",
     },
     projectName: "Social Media",
     team: {
       images: [
-        "/images/user/user-28.jpg",
-        "/images/user/user-29.jpg",
-        "/images/user/user-30.jpg",
+        "https://ui-avatars.com/api/?name=Team+7&background=random",
+        "https://ui-avatars.com/api/?name=Team+8&background=random",
+        "https://ui-avatars.com/api/?name=Team+9&background=random",
       ],
     },
     budget: "2.8K",
@@ -92,16 +92,16 @@ const tableData: Order[] = [
   {
     id: 5,
     user: {
-      image: "/images/user/user-21.jpg",
+      image: "https://ui-avatars.com/api/?name=Carla+George&background=random",
       name: "Carla George",
       role: "Front-end Developer",
     },
     projectName: "Website",
     team: {
       images: [
-        "/images/user/user-31.jpg",
-        "/images/user/user-32.jpg",
-        "/images/user/user-33.jpg",
+        "https://ui-avatars.com/api/?name=Team+10&background=random",
+        "https://ui-avatars.com/api/?name=Team+11&background=random",
+        "https://ui-avatars.com/api/?name=Team+12&background=random",
       ],
     },
     budget: "4.5K",

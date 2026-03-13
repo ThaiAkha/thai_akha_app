@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PageContainer from '../../components/layout/PageContainer';
 import WelcomeHero from '../../components/dashboard/WelcomeHero';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
-import { contentService } from '../../services/content.service';
+import { contentService } from '@thaiakha/shared/services';
 import Badge from '../../components/ui/badge/Badge';
 import { Clock, Calendar, ChevronRight, Newspaper } from 'lucide-react';
 import ArticleModal from '../../components/agency/ArticleModal';

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { 
   Typography, Button, Input, Icon, Divider, Alert, Badge 
 } from '../ui/index';
-import { authService } from '../../services/authService';
+import { authService } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface AuthFormProps {

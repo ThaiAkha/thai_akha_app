@@ -6,20 +6,22 @@ export const authService = {
     ...authCoreService, // Eredita signIn, signOut, getCurrentUserProfile, ecc.
 
     /**
-     * 📝 SIGN UP (STANDARD)
-     * Registrazione standard — assegna ruolo 'agency' di default.
+     * 📝 SIGN UP (GUEST/USER STANDARD)
+     * Registrazione classica per i turisti.
      */
     async signUp(email: string, password: string, fullName: string) {
+        // 1. Crea Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                data: { full_name: fullName }
+                data: { full_name: fullName } // Metadati passati al Trigger SQL (se presente)
             }
         });
 
         if (authError) throw authError;
 
+        // 2. Safety Upsert: Garantisce che il profilo esista anche se il Trigger SQL fallisce
         if (authData.user) {
             const { error: profileError } = await supabase
                 .from('profiles')
@@ -27,11 +29,12 @@ export const authService = {
                     id: authData.user.id,
                     email: email,
                     full_name: fullName,
-                    role: 'agency',
+                    role: 'guest', // Ruolo di default
+                    dietary_profile: 'diet_regular',
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });
 
-            if (profileError) console.warn("Profile upsert warning:", profileError.message);
+            if (profileError) console.warn("Guest profile warning:", profileError.message);
         }
 
         return authData;
@@ -44,40 +47,37 @@ export const authService = {
     async signUpAgency(
         email: string,
         password: string,
-        contactName: string,
         companyName: string,
         taxId: string,
         phone: string
     ) {
+        // 1. Crea Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                data: { full_name: contactName }
+                data: { full_name: companyName } // Usa il nome azienda come nome utente
             }
         });
 
         if (authError) throw authError;
 
+        // 2. Scrivi Profilo Agenzia Esteso
         if (authData.user) {
             const { error: profileError } = await supabase
                 .from('profiles')
                 .upsert({
                     id: authData.user.id,
                     email: email,
-                    full_name: contactName,
-                    role: 'agency',
+                    full_name: companyName,     // Nome visualizzato
+                    role: 'agency',             // 👈 FORZA IL RUOLO B2B
+
+                    // Dati Specifici Agenzia
                     agency_company_name: companyName,
                     agency_tax_id: taxId,
                     agency_phone: phone,
-                    agency_commission_rate: 20,
-                    commission_config: {
-                        mode: 'tiered',
-                        tiers: [
-                            { threshold: 1, rate: 20 },
-                            { threshold: 10, rate: 25 }
-                        ]
-                    },
+                    agency_commission_rate: 20, // Default 20% (Modificabile solo da Admin)
+
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });
 
@@ -88,15 +88,17 @@ export const authService = {
     },
 
     /** 
-     * 👤 GET CURRENT USER PROFILE (Override per admin cache)
+     * 👤 GET CURRENT USER PROFILE (Override per front cache)
      */
     async getCurrentUserProfile(): Promise<UserProfile | null> {
-        return authCoreService.getCurrentUserProfile('agency');
+        return authCoreService.getCurrentUserProfile('guest');
     },
 
-    /** 🚪 LOGOUT (Override per admin cache) */
+    /** 🚪 LOGOUT (Override per front cache) */
     async signOut() {
-        await authCoreService.signOut('akha_user_profile_cache_v1');
+        // Usa un remove brute-force come nell'originale front authService
+        localStorage.clear();
+        await supabase.auth.signOut();
     }
 };
 

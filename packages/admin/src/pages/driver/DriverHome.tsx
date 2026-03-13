@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import PageContainer from '../../components/layout/PageContainer';
-import { contentService } from '../../services/content.service';
+import { contentService } from '@thaiakha/shared/services';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import WelcomeHero from '../../components/dashboard/WelcomeHero';
 import FeatureCardsGrid from '../../components/dashboard/FeatureCardsGrid';

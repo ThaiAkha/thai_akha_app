@@ -3,7 +3,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
 import { Tabs } from '../components/ui';
-import { UserProfile } from '../services/authService';
+import { UserProfile } from '../services/auth.service';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
 import {
   DashboardTab,

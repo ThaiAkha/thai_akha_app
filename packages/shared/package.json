@@ -5,14 +5,15 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./lib": "./dist/lib/index.js",
-    "./lib/supabase": "./dist/lib/supabase.js",
-    "./lib/utils": "./dist/lib/utils.js",
-    "./lib/geoUtils": "./dist/lib/geoUtils.js",
-    "./data": "./dist/data/index.js",
-    "./types": "./dist/types/index.js",
-    "./services": "./dist/services/index.js"
+    ".": "./src/index.ts",
+    "./lib": "./src/lib/index.ts",
+    "./lib/supabase": "./src/lib/supabase.ts",
+    "./lib/utils": "./src/lib/utils.ts",
+    "./lib/geoUtils": "./src/lib/geoUtils.ts",
+    "./lib/icons": "./src/lib/icons.ts",
+    "./data": "./src/data/index.ts",
+    "./types": "./src/types/index.ts",
+    "./services": "./src/services/index.ts"
   },
   "scripts": {
     "build": "tsc",
@@ -22,7 +23,11 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "lucide-react": "^0.474.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "typescript": "~5.7.2",

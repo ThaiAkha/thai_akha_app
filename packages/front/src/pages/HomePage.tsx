@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import InfoCard from '../components/ui/InfoCard';
 import { Typography, Button, Icon, Badge, Card } from '../components/ui/index';
-import { contentService } from '../services/contentService';
+import { contentService } from '@thaiakha/shared/services';
 import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
 
 const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ onNavigate }) => {

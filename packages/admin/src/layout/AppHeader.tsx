@@ -3,7 +3,7 @@ import { useSidebar } from "../context/SidebarContext";
 import UserDropdown from "../components/header/UserDropdown";
 import { usePageHeader } from "../context/PageHeaderContext";
 import { useLocation } from "react-router";
-import { contentService } from "../services/content.service";
+import { contentService } from "@thaiakha/shared/services";
 import { Menu, X, ExternalLink } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import { supabase } from "@thaiakha/shared/lib/supabase";
@@ -17,7 +17,7 @@ const AppHeader: React.FC = () => {
   useEffect(() => {
     const fetchMetadata = async () => {
       const slug = location.pathname.substring(1) || "home";
-      const metadata = await contentService.getPageMetadata(slug);
+      const metadata = await contentService.getPageMetadata(slug, 'site_metadata_admin');
       if (metadata) {
         setPageHeader(
           metadata.titleMain || metadata.badge || "Dashboard",

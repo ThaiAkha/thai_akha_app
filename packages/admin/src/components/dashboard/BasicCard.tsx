@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import type { IconName } from '../../lib/iconRegistry';
+import { type IconName } from '@thaiakha/shared/lib/icons';
 import Icon from '../ui/Icon';
 import { Heading, Paragraph } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';

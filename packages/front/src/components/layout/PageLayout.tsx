@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Header, CinematicBackground } from './index';
-import { contentService } from '../../services/contentService';
+import { contentService } from '@thaiakha/shared/services';
 import { HeaderMetadata } from './Header';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { AkhaLoader } from '../ui/index';

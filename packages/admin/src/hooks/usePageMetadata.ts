@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { contentService } from '../services/content.service';
+import { contentService } from '@thaiakha/shared/services';
 
 /**
  * Hook per pagine che hanno bisogno di metadata locale
@@ -21,7 +21,7 @@ export function usePageMetadata(slug: string) {
         const loadMetadata = async () => {
             setLoading(true);
             try {
-                const meta = await contentService.getPageMetadata(slug);
+                const meta = await contentService.getPageMetadata(slug, 'site_metadata_admin');
                 setPageMeta(meta);
             } catch (error) {
                 console.error(`Failed to load metadata for ${slug}:`, error);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Typography from '../ui/Typography';
-import { contentService } from '../../services/contentService'; // ✅ Usa il Service (Cache)
+import { contentService } from '@thaiakha/shared/services'; // ✅ Usa il Service (Cache)
 import { HeaderMetadata } from './Header';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';

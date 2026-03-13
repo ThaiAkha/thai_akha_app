@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { UserProfile } from '../../services/authService';
-import { contentService } from '../../services/contentService';
+import { UserProfile } from '../../services/auth.service';
+import { contentService } from '@thaiakha/shared/services';
 import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data'; 
 import {
   Card, Typography, Button, Icon, Slider, Badge, Input, Alert, Divider, Avatar

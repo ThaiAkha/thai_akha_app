@@ -30,6 +30,17 @@ export interface UserProfile {
   agency_commission_rate?: number;
   agency_tax_id?: string;
   agency_phone?: string;
+  commission_config?: {
+    mode: 'flat' | 'tiered';
+    tiers?: { threshold: number; rate: number }[];
+    reset_period?: string;
+    included_statuses?: string[];
+  };
+  agency_address?: string;
+  agency_city?: string;
+  agency_province?: string;
+  agency_country?: string;
+  agency_postal_code?: string;
 
   // Optional metadata
   whatsapp?: boolean;

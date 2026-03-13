@@ -4,7 +4,7 @@ import { Typography, Button, Icon, Badge } from '../components/ui/index';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
 import { MenuCard, RecipeView, RecipeData } from '../components/menu/index';
-import { authService, UserProfile } from '../services/authService';
+import { authService, UserProfile } from '../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 const normalizeCat = (cat: string) => {

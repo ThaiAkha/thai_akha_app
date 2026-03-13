@@ -3,7 +3,7 @@ import { Typography, Button, Icon, Badge, Card } from '../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 // Assicurati che l'import includa sia la costante che il TIPO
 import { BONUS_CARDS, BonusCard } from '../../lib/bonusQuiz'; 
-import { UserProfile } from '../../services/authService';
+import { UserProfile } from '../../services/auth.service';
 
 interface QuizWidgetProps {
   onNavigate: (page: string) => void;

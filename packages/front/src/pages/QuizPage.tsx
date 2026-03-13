@@ -3,7 +3,7 @@ import { PageLayout } from '../components/layout/PageLayout';
 import { HeaderQuiz } from '../components/layout/index'; // 🟢 Manteniamo l'Header
 import { LevelQuiz, PlayQuiz, ResultQuiz } from '../components/quiz/index';
 import { QuizCard, Typography, Button, Icon, Badge, Card } from '../components/ui/index';
-import { contentService } from '../services/contentService';
+import { contentService } from '@thaiakha/shared/services';
 import { BONUS_CARDS } from '../lib/bonusQuiz';
 import { QuizLevel, QuizModule } from '../types/index';
 import { cn } from '@thaiakha/shared/lib/utils';

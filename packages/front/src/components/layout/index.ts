@@ -11,6 +11,7 @@ export { default as MegaMenu } from './MegaMenu';
 export { default as Header } from './Header';
 export { default as HeaderMenu } from './HeaderMenu';
 export { default as HeaderQuiz } from './HeaderQuiz';
+export { default as SEOHead } from './SEOHead';
 
 // Types
 export type { HeaderMetadata } from './Header';

@@ -3,8 +3,8 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
 import { Typography, Button, Card, Input, Textarea, Icon, Modal, Badge } from '../components/ui/index';
-import { authService, UserProfile } from '../services/authService';
-import { contentService } from '../services/contentService';
+import { authService, UserProfile } from '../services/auth.service';
+import { contentService } from '@thaiakha/shared/services';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CalendarView } from '../components/booking/CalendarView';
 

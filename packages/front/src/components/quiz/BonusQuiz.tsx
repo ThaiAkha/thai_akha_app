@@ -2,6 +2,7 @@ import React from 'react';
 import { BONUS_CARDS } from '../../lib/bonusQuiz';
 import ButtonQuiz from './ButtonQuiz';
 import { QUIZ_BUTTONS } from '../../data/quizData';
+import { Icon } from '../ui';
 
 interface BonusQuizProps {
   levelId: number;
@@ -26,7 +27,7 @@ const BonusQuiz: React.FC<BonusQuizProps> = ({ levelId, onClaim, onReturn }) => 
               {bonus.reward_mp3 && (
                  <div className="absolute inset-0 flex items-center justify-center">
                     <div className="size-20 rounded-full bg-primary/20 backdrop-blur-md border border-white/20 flex items-center justify-center animate-pulse">
-                        <span className="material-symbols-outlined text-white text-4xl">music_note</span>
+                        <Icon name="Music" className="text-white text-4xl" />
                     </div>
                  </div>
               )}
@@ -37,7 +38,10 @@ const BonusQuiz: React.FC<BonusQuizProps> = ({ levelId, onClaim, onReturn }) => 
               {bonus.reward_mp3 && (
                 <div className="absolute -top-10 -right-10 size-40 bg-primary/10 rounded-full blur-[40px] animate-pulse"></div>
               )}
-              <span className={`material-symbols-outlined text-primary text-6xl mb-4 ${bonus.reward_mp3 ? 'animate-bounce' : ''}`}>{bonus.icon}</span>
+              <Icon 
+                name={bonus.icon || 'Star'} 
+                className={`text-primary text-6xl mb-4 ${bonus.reward_mp3 ? 'animate-bounce' : ''}`} 
+              />
               <h2 className="text-3xl font-black text-white uppercase mb-2 tracking-tight">{bonus.prizeTitle}</h2>
               <h2 className="text-white/60 font-medium leading-relaxed mb-6">{bonus.prizeDescription}</h2>
               
@@ -47,7 +51,7 @@ const BonusQuiz: React.FC<BonusQuizProps> = ({ levelId, onClaim, onReturn }) => 
                     download 
                     className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all mb-4"
                 >
-                    <span className="material-symbols-outlined">download</span>
+                    <Icon name="Download" />
                     Download Song kha!
                 </a>
               )}

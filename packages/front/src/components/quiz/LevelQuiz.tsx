@@ -6,9 +6,9 @@ import { Icon } from '../ui';
 
 // --- CONFIGURAZIONE BOTTONI LOCALE (Decoupling) ---
 const BUTTON_CONFIG = {
-  START: { label: 'Start Quiz', icon: 'play_arrow', variant: 'primary' as const },
-  RESUME: { label: 'Resume', icon: 'play_circle', variant: 'primary' as const },
-  RETAKE: { label: 'Retake', icon: 'replay', variant: 'secondary' as const },
+  START: { label: 'Start Quiz', icon: 'Play', variant: 'primary' as const },
+  RESUME: { label: 'Resume', icon: 'PlayCircle', variant: 'primary' as const },
+  RETAKE: { label: 'Retake', icon: 'RotateCcw', variant: 'secondary' as const },
 };
 
 interface LevelQuizProps {
@@ -30,7 +30,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
 }) => {
 
   const getModuleTheme = (isPerfect: boolean, idx: number) => {
-    const icons = ["potted_plant", "local_fire_department", "soup_kitchen"];
+    const icons = ["Sprout", "Flame", "ChefHat"];
     const icon = level.modules[idx]?.icon || icons[idx % icons.length]; // Usa icona DB o fallback
 
     if (isPerfect) {
@@ -63,7 +63,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
           onClick={onBack}
           className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300"
         >
-          <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          <Icon name="ArrowBack" className="text-sm group-hover:-translate-x-1 transition-transform" />
           Back to Levels
         </button>
 
@@ -118,12 +118,12 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
 
                   {isPerfect ? (
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-                      <Icon name="stars" size="xs" className="text-emerald-400" />
+                      <Icon name="Sparkles" size="xs" className="text-emerald-400" />
                       <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Mastered</span>
                     </div>
                   ) : isAttempted ? (
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20">
-                      <Icon name="timelapse" size="xs" className="text-yellow-500" />
+                      <Icon name="Timer" size="xs" className="text-yellow-500" />
                       <span className="text-[9px] font-black text-yellow-500 uppercase tracking-widest">In Progress</span>
                     </div>
                   ) : null}

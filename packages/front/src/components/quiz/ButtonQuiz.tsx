@@ -1,5 +1,6 @@
 import React from 'react';
-import { cn } from '@thaiakha/shared/lib/utils'; // Assicurati che utils esista
+import { cn } from '@thaiakha/shared/lib/utils';
+import { Icon } from '../ui';
 
 // Definizione Locale per slegarlo dal vecchio file
 export interface QuizButtonConfig {
@@ -33,7 +34,7 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
       disabled={disabled}
       className={cn(baseStyles, variants[config.variant], fullWidth && 'w-full', className)}
     >
-      <span className="material-symbols-outlined text-lg">{config.icon}</span>
+      <Icon name={config.icon} className="text-lg" />
       {config.label}
     </button>
   );

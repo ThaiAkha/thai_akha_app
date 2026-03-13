@@ -2,7 +2,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata } from '../types';
 
 // Cache Version Key: Aggiornala per invalidare la cache locale se cambi la struttura dati
-const GLOBAL_CACHE_KEY = 'akha_cache_content_v6';
+const GLOBAL_CACHE_KEY = 'akha_cache_content_v7';
 
 /**
  * 🧠 INTELLIGENT CACHE MANAGER
@@ -46,10 +46,10 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>):
 export const contentService = {
 
     /** 📄 METADATA PAGINE: Titoli, descrizioni e immagini header */
-    async getPageMetadata(slug: string): Promise<HeaderMetadata & { imageUrl: string } | null> {
-        return fetchWithCache(`meta_${slug}`, async () => {
+    async getPageMetadata(slug: string, table = 'site_metadata'): Promise<HeaderMetadata & { imageUrl: string } | null> {
+        return fetchWithCache(`meta_${table}_${slug}`, async () => {
             const { data, error } = await supabase
-                .from('site_metadata_admin')
+                .from(table)
                 .select('header_badge, header_icon, header_title_main, header_title_highlight, page_description, hero_image_url')
                 .eq('page_slug', slug)
                 .maybeSingle();
@@ -68,10 +68,10 @@ export const contentService = {
     },
 
     /** 🎴 MENU SIDEBAR: Dinamico con livelli di accesso */
-    async getMenuItems() {
-        return fetchWithCache('sidebar_menu_v6', async () => {
+    async getMenuItems(table = 'site_metadata') {
+        return fetchWithCache(`sidebar_menu_${table}_v7`, async () => {
             const { data, error } = await supabase
-                .from('site_metadata_admin')
+                .from(table)
                 .select('page_slug, menu_label, header_icon, menu_order, access_level, page_description')
                 .eq('show_in_menu', true)
                 .order('menu_order', { ascending: true });

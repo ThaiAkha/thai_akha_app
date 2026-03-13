@@ -1,28 +1,11 @@
-/**
- * 🎨 ICON REGISTRY - Sistema Universale di Icone
- *
- * Centralized icon system using Lucide React
- * - Tutte le icone sono registrate qui
- * - Usato in: Sidebar, Dashboard, Forms, Headers, ovunque
- * - Compatibile con database (salva nomi come stringhe)
- *
- * HOW TO ADD NEW ICONS:
- * 1. Import from 'lucide-react'
- * 2. Add to iconRegistry object
- * 3. Use the icon name as string everywhere
- *
- * @example
- * // In database: header_icon = "Package"
- * // In component: <Icon name="Package" />
- */
-
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-// ============================================================================
-// ICON REGISTRY - Add all icons here
-// ============================================================================
-
+/**
+ * 🎨 ICON REGISTRY - Sistema Universale di Icone
+ * 
+ * Centralizzato nel pacchetto shared per essere usato sia da front che da admin.
+ */
 export const iconRegistry: Record<string, LucideIcon> = {
   // ===== NAVIGATION & UI =====
   Home: LucideIcons.Home,
@@ -36,7 +19,14 @@ export const iconRegistry: Record<string, LucideIcon> = {
   ArrowRight: LucideIcons.ArrowRight,
   ArrowLeft: LucideIcons.ArrowLeft,
   ArrowUpRight: LucideIcons.ArrowUpRight,
+  ArrowForward: LucideIcons.ArrowRight,
+  ArrowBack: LucideIcons.ArrowLeft,
+
   ExternalLink: LucideIcons.ExternalLink,
+  Circle: LucideIcons.Circle,
+  Moon: LucideIcons.Moon,
+  Sun: LucideIcons.Sun,
+
 
   // ===== ADMIN TOOLS =====
   Database: LucideIcons.Database,
@@ -48,6 +38,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   Settings: LucideIcons.Settings,
   Users: LucideIcons.Users,
   UserCog: LucideIcons.UserCog,
+  ShieldCheck: LucideIcons.ShieldCheck,
 
   // ===== MANAGER OPERATIONS =====
   CalendarPlus: LucideIcons.CalendarPlus,
@@ -137,6 +128,11 @@ export const iconRegistry: Record<string, LucideIcon> = {
   Clock: LucideIcons.Clock,
   Timer: LucideIcons.Timer,
   Hourglass: LucideIcons.Hourglass,
+  Play: LucideIcons.Play,
+  PlayCircle: LucideIcons.PlayCircle,
+  RotateCcw: LucideIcons.RotateCcw,
+  Music: LucideIcons.Music,
+
 
   // ===== FOOD & KITCHEN =====
   Coffee: LucideIcons.Coffee,
@@ -168,19 +164,10 @@ export const iconRegistry: Record<string, LucideIcon> = {
   Sparkles: LucideIcons.Sparkles,
 };
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
+export type IconName = keyof typeof iconRegistry;
 
 /**
  * Get icon component by name (string)
- * @param iconName - Name of the icon (e.g., "Home", "Package", "hotel")
- * @param fallback - Fallback icon if not found (default: AlertCircle)
- * @returns Lucide icon component
- *
- * @example
- * const IconComponent = getIcon("Package");
- * return <IconComponent className="w-5 h-5" />;
  */
 export function getIcon(iconName: string | undefined | null, fallback: LucideIcon = LucideIcons.AlertCircle): LucideIcon {
   if (!iconName) return fallback;
@@ -188,34 +175,11 @@ export function getIcon(iconName: string | undefined | null, fallback: LucideIco
   // Try exact match first
   if (iconRegistry[iconName]) return iconRegistry[iconName];
 
-  // Try PascalCase normalization (handles "hotel" → "Hotel")
+  // Try PascalCase normalization
   const pascalCased = iconName.charAt(0).toUpperCase() + iconName.slice(1);
   if (iconRegistry[pascalCased]) return iconRegistry[pascalCased];
 
   return fallback;
 }
-
-/**
- * Check if icon exists in registry
- */
-export function hasIcon(iconName: string): boolean {
-  return iconName in iconRegistry;
-}
-
-/**
- * Get all available icon names (for autocomplete, docs, etc.)
- */
-export function getAvailableIcons(): string[] {
-  return Object.keys(iconRegistry).sort();
-}
-
-/**
- * Type for icon names (useful for TypeScript autocomplete)
- */
-export type IconName = keyof typeof iconRegistry;
-
-// ============================================================================
-// DEFAULT EXPORT
-// ============================================================================
 
 export default iconRegistry;

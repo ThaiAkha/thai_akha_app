@@ -1,9 +1,9 @@
 import { Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
-import { getIcon } from "../lib/iconRegistry";
+import { getIcon } from "@thaiakha/shared/lib/icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
-import { contentService } from "../services/content.service";
+import { contentService } from "@thaiakha/shared/services";
 import Tooltip from "../components/ui/Tooltip";
 
 type NavItem = {
@@ -23,7 +23,7 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     const loadMenu = async () => {
       try {
-        const items = await contentService.getMenuItems();
+        const items = await contentService.getMenuItems('site_metadata_admin');
 
         if (!items) {
           console.error('No menu items returned from database');

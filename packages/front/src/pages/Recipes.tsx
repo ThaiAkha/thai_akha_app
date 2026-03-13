@@ -9,8 +9,8 @@ import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { RecipeCategoryDB } from '../types/index';
-import { UserProfile } from '../services/authService';
-import { contentService } from '../services/contentService';
+import { UserProfile } from '../services/auth.service';
+import { contentService } from '@thaiakha/shared/services';
 
 const ALLERGY_OPTIONS = ['Peanuts', 'Shellfish', 'Gluten', 'Soy', 'Eggs', 'Dairy', 'Sesame'];
 

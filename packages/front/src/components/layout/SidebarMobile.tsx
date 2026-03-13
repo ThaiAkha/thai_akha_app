@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Typography, Toggle, Badge } from '../ui/index';
+import { Typography, Toggle, Badge, Icon } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { UserProfile } from '../../services/authService';
-import { contentService } from '../../services/contentService';
+import { UserProfile } from '../../services/auth.service';
+import { contentService } from '@thaiakha/shared/services';
 
 type Page = string;
 
@@ -63,7 +63,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
 
       // 🛡️ ADMIN: Nascondi voci operative dalla sidebar pubblica
       // L'admin userà il tasto "Console" nel footer
-      if (level === 'admin') return false; 
+      if (level === 'admin' || level === 'manager') return false; 
 
       // 🏢 AGENCY: Mostra SOLO se l'utente è un'agenzia
       if (level === 'agency') return userProfile?.role === 'agency';
@@ -127,7 +127,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
           isOpen ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100"
         )}
       >
-        <span className="material-symbols-outlined text-2xl">menu</span>
+        <Icon name="Menu" className="text-2xl" />
       </button>
 
       {/* BACKDROP */}
@@ -156,7 +156,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                 onClick={handleToggle}
                 className="size-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-action/50 transition-all active:scale-95"
             >
-                <span className="material-symbols-outlined text-xl">close</span>
+                <Icon name="X" className="text-xl" />
             </button>
             <div className="text-right">
                 <Typography variant="h3" className="font-black italic uppercase tracking-tighter text-white leading-none">
@@ -194,16 +194,18 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                             )}
                             style={{ transitionDelay: stage === 'opening' ? '0ms' : '0ms' }}
                         >
-                            <span className={cn("material-symbols-outlined text-2xl mr-5 transition-colors", isActive ? "text-action" : "text-white/40 group-hover:text-white")}>
-                                {item.header_icon || 'circle'}
-                            </span>
+                            <Icon 
+                              name={item.header_icon || 'Circle'} 
+                              className={cn("text-2xl mr-5 transition-colors", isActive ? "text-action" : "text-white/40 group-hover:text-white")} 
+                            />
                             <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-action" : "text-current")}>
                                 {item.menu_label}
                             </Typography>
                             {/* Freccia Hover */}
-                            <span className="material-symbols-outlined absolute right-4 opacity-0 -translate-x-4 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-300 text-sm">
-                                arrow_forward
-                            </span>
+                            <Icon 
+                              name="ArrowForward" 
+                              className="absolute right-4 opacity-0 -translate-x-4 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-300 text-sm" 
+                            />
                         </button>
                     );
                 })
@@ -219,7 +221,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                     onClick={() => handleItemClick('admin-kitchen')}
                     className="w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 font-black uppercase tracking-widest text-xs hover:bg-red-500 hover:text-white transition-all shadow-lg"
                 >
-                    <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+                    <Icon name="ShieldCheck" className="text-lg" />
                     Admin Console
                 </button>
             )}
@@ -227,9 +229,10 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
             {/* Theme Toggle */}
             <div className="flex h-16 items-center justify-between px-5 rounded-2xl border border-white/5 bg-white/5">
                 <div className="flex items-center gap-3">
-                    <span className={cn("material-symbols-outlined text-xl", isDarkMode ? "text-quiz" : "text-slate-400")}>
-                        {isDarkMode ? 'dark_mode' : 'light_mode'}
-                    </span>
+                    <Icon 
+                      name={isDarkMode ? 'Moon' : 'Sun'} 
+                      className={cn("text-xl", isDarkMode ? "text-quiz" : "text-slate-400")} 
+                    />
                     <Typography variant="caption" className="font-black uppercase tracking-widest text-[10px] text-white/80">
                         {isDarkMode ? 'Dark Mode' : 'Light Mode'}
                     </Typography>
@@ -247,7 +250,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                         : "bg-primary text-white shadow-lg hover:brightness-110"
                 )}
             >
-                <span className="material-symbols-outlined text-sm">{userProfile ? 'logout' : 'login'}</span>
+                <Icon name={userProfile ? 'LogOut' : 'LogIn'} className="text-sm" />
                 {userProfile ? 'Sign Out' : 'Log In'}
             </button>
         </div>

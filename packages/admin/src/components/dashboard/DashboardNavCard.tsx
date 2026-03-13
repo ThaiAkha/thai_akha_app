@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router'; /* Using react-router per the project's setup */
 import { ArrowRight } from 'lucide-react';
-import { getIcon, type IconName } from '../../lib/iconRegistry';
+import { getIcon, type IconName } from '@thaiakha/shared/lib/icons';
 import { Heading, Paragraph } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Card from '../ui/Card';

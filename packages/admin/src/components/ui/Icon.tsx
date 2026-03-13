@@ -21,7 +21,7 @@
  */
 
 import React from 'react';
-import { getIcon, type IconName } from '../../lib/iconRegistry';
+import { getIcon, type IconName } from '@thaiakha/shared/lib/icons';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 

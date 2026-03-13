@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { contentService } from '../services/content.service';
+import { contentService } from '@thaiakha/shared/services';
 
 
 export const useContent = () => {
@@ -9,7 +9,7 @@ export const useContent = () => {
     const getPageMetadata = useCallback(async (slug: string) => {
         try {
             setLoading(true);
-            const data = await contentService.getPageMetadata(slug);
+            const data = await contentService.getPageMetadata(slug, 'site_metadata_admin');
             return data;
         } catch (err) {
             setError(err as Error);
@@ -22,7 +22,7 @@ export const useContent = () => {
     const getMenuItems = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await contentService.getMenuItems();
+            const data = await contentService.getMenuItems('site_metadata_admin');
             return data;
         } catch (err) {
             setError(err as Error);

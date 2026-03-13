@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Card, Button, Icon, Badge, Avatar } from '../ui';
-import { UserProfile } from '../../services/authService';
+import { UserProfile } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DashboardTabProps {

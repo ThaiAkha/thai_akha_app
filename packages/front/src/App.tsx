@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+// Importiamo supabase per la gestione sessione
 import { supabase } from '@thaiakha/shared/lib/supabase';
 // IMPORT PAGINE PUBBLICHE
 import HomePage from './pages/HomePage';
@@ -11,16 +12,17 @@ import AuthPage from './pages/AuthPage';
 import UserPage from './pages/UserPage';
 import RecipesPage from './pages/Recipes';
 import BookingPage from './pages/BookingPage';
-import DisplayPage from './pages/DisplayPage';
+
 
 
 // LAYOUT & NAVIGATION
 import {
   Sidebar,
   SidebarMobile,
+  SEOHead,
 } from './components/layout/index';
 import { ChatBox } from './components/chat/index';
-import { authService, UserProfile } from './services/authService';
+import { authService, UserProfile } from './services/auth.service';
 import { useViewportHeight } from './hooks/useViewportHeight';
 
 type Page = string;
@@ -34,7 +36,24 @@ const App: React.FC = () => {
   // --- STATO GLOBALE ---
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [page, setPage] = useState<Page>('home');
+  
+  // Deriviamo 'page' dall'URL o dallo stato iniziale
+  const getPageFromPath = () => {
+    const path = window.location.pathname.split('/')[1];
+    return path || 'home';
+  };
+
+  const [page, setPage] = useState<Page>(getPageFromPath());
+
+  // Ascoltiamo i tasti Avanti/Indietro del browser
+  useEffect(() => {
+    const handlePopState = () => {
+      setPage(getPageFromPath());
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [targetSection, setTargetSection] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -87,7 +106,10 @@ const App: React.FC = () => {
 
   // --- NAVIGAZIONE ---
   const handleNavigate = (targetPage: string, topic?: string, sectionId?: string) => {
+    const path = targetPage === 'home' ? '/' : `/${targetPage}`;
+    window.history.pushState({}, '', path);
     setPage(targetPage);
+    
     if (sectionId) setTargetSection(sectionId);
     else setTargetSection(null);
 
@@ -122,7 +144,6 @@ const App: React.FC = () => {
       case 'recipes': return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} />;
       case 'history': return <HistoryPage onNavigate={handleNavigate} />;
       case 'location': return <LocationPage onNavigate={handleNavigate} />;
-      case 'display': return <DisplayPage onNavigate={handleNavigate} />;
 
       // Flows Operativi Utente
       case 'booking':
@@ -146,6 +167,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full h-[calc(var(--vh,1vh)*100)] bg-background text-desc transition-colors duration-700 flex overflow-hidden">
+      <SEOHead />
 
       {/* --- SIDEBAR --- */}
       <div className="hidden lg:flex h-full no-print z-50">

@@ -59,6 +59,9 @@ jobs:
       - name: Lint Admin
         run: pnpm --filter admin lint
 
+      - name: Lint Frontend
+        run: pnpm --filter front lint
+
       - name: Build Dry-Run
         run: pnpm build
 

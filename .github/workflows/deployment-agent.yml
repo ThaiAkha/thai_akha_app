@@ -33,10 +33,6 @@ permissions:
   contents: 'write'
   id-token: 'write'
 
-env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GAR_LOCATION: us-west1
-  REGION: us-west1
 
 jobs:
   validate:
@@ -142,20 +138,10 @@ jobs:
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
-      - name: Authenticate to Google Cloud
-        if: ${{ matrix.enabled == 'true' }}
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          create_credentials_file: true
-          export_environment_variables: true
-
       - name: Deploy to Firebase Hosting
         if: ${{ matrix.enabled == 'true' }}
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting:${{ matrix.target }}
+          args: deploy --only hosting:${{ matrix.target }} --project thai-akha-app-2026
         env:
-          GCP_SA_KEY: ${{ steps.auth.outputs.credentials_json }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

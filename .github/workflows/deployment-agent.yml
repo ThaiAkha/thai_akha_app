@@ -135,16 +135,8 @@ jobs:
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
-      - name: Authenticate to Google Cloud
-        if: ${{ matrix.enabled == 'true' }}
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          create_credentials_file: true
-          export_environment_variables: true
-
       - name: Deploy to Firebase Hosting
         if: ${{ matrix.enabled == 'true' }}
-        run: npx firebase-tools deploy --only hosting:${{ matrix.target }} --non-interactive
+        run: |
+          pnpm add -g firebase-tools
+          firebase deploy --only hosting:${{ matrix.target }} --project ${{ secrets.GCP_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}

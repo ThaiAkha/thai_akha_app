@@ -115,7 +115,6 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
               const isSelected = opt === selectedOption;
               
               let stateClass = "border-white/10 hover:border-white/30 hover:bg-white/5";
-              let iconClass = "bg-white/5 text-white/40";
 
               // Logica Feedback Visivo
               if (showFeedback) {

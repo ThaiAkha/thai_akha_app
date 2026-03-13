@@ -14,7 +14,7 @@ export const adaptRecipeToDiet = (
   const dietKey = `diet_${cleanDiet}`;
   
   // 1. CLONAZIONE
-  let adapted = { ...recipe };
+  const adapted = { ...recipe };
 
   // 2. ADATTAMENTO BASE (DIETA)
   // Verifica se esiste variante nel DB, altrimenti fallback algoritmico

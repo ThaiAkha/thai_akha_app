@@ -166,13 +166,13 @@ const QuizPage: React.FC<{ onNavigate?: (p: string, t?: string) => void }> = ({ 
     let newTotalScore = 0;
     Object.values(newBestScores).forEach(s => newTotalScore += (s * 10));
 
-    let newCompleted = [...completedModules];
+    const newCompleted = [...completedModules];
     if (!newCompleted.includes(currentModule.id)) newCompleted.push(currentModule.id);
 
-    let newPerfect = [...perfectModules];
+    const newPerfect = [...perfectModules];
     if (isPerfect && !newPerfect.includes(currentModule.id)) newPerfect.push(currentModule.id);
 
-    let newBonuses = [...awardedBonuses];
+    const newBonuses = [...awardedBonuses];
     const levelModuleIds = currentLevel.modules.map(m => m.id);
     const allPerfect = levelModuleIds.every(id => newPerfect.includes(id));
     

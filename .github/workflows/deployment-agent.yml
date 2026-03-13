@@ -1,0 +1,157 @@
+name: Deployment Agent (CI/CD)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/admin/**'
+      - 'packages/front/**'
+      - 'packages/shared/**'
+      - '.github/workflows/deployment-agent.yml'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'packages/admin/**'
+      - 'packages/front/**'
+      - 'packages/shared/**'
+  workflow_dispatch:
+    inputs:
+      deploy_front:
+        description: 'Deploy Frontend?'
+        type: boolean
+        default: true
+      deploy_admin:
+        description: 'Deploy Admin?'
+        type: boolean
+        default: true
+
+permissions:
+  contents: 'write'
+  id-token: 'write'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GAR_LOCATION: us-west1
+  REGION: us-west1
+
+jobs:
+  validate:
+    name: Validate and Build Dry-Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint Admin
+        run: pnpm --filter admin lint
+
+      - name: Lint Front
+        run: pnpm --filter front lint
+
+      - name: Build Dry-Run
+        run: pnpm build
+
+  check_changes:
+    name: Check what to deploy
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_front: ${{ steps.filter.outputs.front == 'true' || github.event.inputs.deploy_front == 'true' || github.event_name == 'push' && (steps.filter.outputs.shared == 'true' || steps.filter.outputs.root == 'true') }}
+      deploy_admin: ${{ steps.filter.outputs.admin == 'true' || github.event.inputs.deploy_admin == 'true' || github.event_name == 'push' && (steps.filter.outputs.shared == 'true' || steps.filter.outputs.root == 'true') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            front:
+              - 'packages/front/**'
+            admin:
+              - 'packages/admin/**'
+            shared:
+              - 'packages/shared/**'
+            root:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/deployment-agent.yml'
+
+  deploy:
+    name: Build, Push and Deploy
+    needs: [validate, check_changes]
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: front
+            service: thaiakha-front
+            dockerfile: packages/front/Dockerfile
+            enabled: ${{ needs.check_changes.outputs.deploy_front }}
+          - package: admin
+            service: thaiakha-admin
+            dockerfile: packages/admin/Dockerfile
+            enabled: ${{ needs.check_changes.outputs.deploy_admin }}
+    steps:
+      - name: Checkout code
+        if: ${{ matrix.enabled == 'true' }}
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        if: ${{ matrix.enabled == 'true' }}
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        if: ${{ matrix.enabled == 'true' }}
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        if: ${{ matrix.enabled == 'true' }}
+        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --quiet
+
+      - name: Build and Push Container
+        if: ${{ matrix.enabled == 'true' }}
+        run: |-
+          IMAGE_NAME="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:${{ github.sha }}"
+          docker build -t "$IMAGE_NAME" -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:latest" -f ${{ matrix.dockerfile }} .
+          docker push "$IMAGE_NAME"
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:latest"
+
+      - name: Deploy to Cloud Run
+        if: ${{ matrix.enabled == 'true' }}
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ matrix.service }}
+          region: ${{ env.REGION }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/thaiakha-app/${{ matrix.service }}:${{ github.sha }}
+          flags: '--allow-unauthenticated'
+          env_vars: |-
+            VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}
+            VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}

@@ -134,7 +134,7 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col h-full py-6 pt-[40px]">
 
         {/* HEADER: LOGO */}
-        <div className="flex items-center mb-8 h-12">
+        <div className="flex items-center mb-8 h-12 mx-2">
           <div className={`w-[108px] shrink-0 flex items-center justify-center`}>
             <Link to="/">
               <img

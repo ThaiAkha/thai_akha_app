@@ -24,9 +24,9 @@ export default {
     // Pill active states (increased opacity for visibility)
     'bg-lime-500/25',
     'dark:bg-lime-500/40',
-    // Pill hover state
-    'hover:bg-gray-100',
-    'dark:hover:bg-white/5',
+    // Pill hover state (now using lime color instead of gray)
+    'hover:bg-lime-500/50',
+    'dark:hover:bg-lime-500/60',
     // Active text & icon
     'text-lime-700',
     'dark:text-lime-400',

@@ -107,7 +107,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
             )}
           />
           <span className="font-black uppercase tracking-widest text-[10px] text-white/80">
-            {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+            {isDarkMode ? 'Dark' : 'Light'}
           </span>
         </div>
 
@@ -145,7 +145,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
               <MoonIcon className="w-4.5 h-4.5 text-gray-400 group-hover:text-brand-500 transition-colors" />
             )}
           </div>
-          <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+          <span>{isDarkMode ? 'Light' : 'Dark'}</span>
         </div>
 
         {/* Custom Toggle Switch */}

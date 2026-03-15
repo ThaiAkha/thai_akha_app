@@ -233,6 +233,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             isDarkMode={isDarkMode}
             onToggle={onToggleTheme}
             variant="sidebar"
+            accentColor="action"
             isOpen={isOpen}
           />
 

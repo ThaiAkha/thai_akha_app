@@ -223,6 +223,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
               isDarkMode={isDarkMode}
               onToggle={onToggleTheme}
               variant="mobile"
+              accentColor="action"
             />
 
             {/* Auth Action (Login/Logout) */}

@@ -87,6 +87,7 @@ export default function UserDropdown() {
               isDarkMode={theme === 'dark'}
               onToggle={toggleTheme}
               variant="dropdown"
+              accentColor="brand"
             />
           </div>
         </div>

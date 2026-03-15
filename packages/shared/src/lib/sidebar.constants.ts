@@ -61,7 +61,7 @@ export const SIDEBAR_CONSTANTS = {
   // ============================================================================
   SIDEBAR_BASE: `
     fixed top-0 left-0 h-screen z-[99] flex flex-col
-    bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900
+    bg-white dark:bg-gray-dark dark:border-gray-800 text-gray-900
     border-r border-gray-200
     transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
   `,
@@ -94,7 +94,7 @@ export const SIDEBAR_CONSTANTS = {
   // ============================================================================
   // ANIMATION TIMING
   // ============================================================================
-  SIDEBAR_TRANSITION_DURATION: '500ms', // Sidebar collapse/expand duration
+  SIDEBAR_TRANSITION_DURATION: '800ms', // Sidebar collapse/expand duration (matches actual implementation)
   STAGGER_DELAY: '60ms',               // Mobile menu item stagger delay
 };
 

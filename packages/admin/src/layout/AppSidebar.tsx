@@ -4,7 +4,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { contentService } from "@thaiakha/shared/services";
-import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider } from "@thaiakha/shared";
+import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider, SIDEBAR_CONSTANTS } from "@thaiakha/shared";
 import { supabase } from "@thaiakha/shared/lib/supabase";
 import Tooltip from "../components/ui/Tooltip";
 import { ExternalLink } from "lucide-react";
@@ -83,6 +83,7 @@ const AppSidebar: React.FC = () => {
         }}
         isOpen={isSidebarOpen}
         isDarkMode={theme === 'dark'}
+        centerIcon={true}
       />
     );
 
@@ -124,12 +125,12 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen z-[99] border-r border-gray-200
+      style={{ transitionDuration: SIDEBAR_CONSTANTS.SIDEBAR_TRANSITION_DURATION }}
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-dark dark:border-gray-800 text-gray-900 h-screen z-[99] border-r border-gray-200
         transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
         ${isSidebarOpen ? "w-80" : "w-[108px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0 overflow-visible`}
-      style={{ transitionDuration: '500ms' }}
     >
       <div className="flex flex-col h-full py-6 pt-[40px] px-2">
 
@@ -155,7 +156,7 @@ const AppSidebar: React.FC = () => {
 
         {/* DIVIDER */}
         <div className="my-2">
-          <SidebarDivider className="my-0" />
+          <SidebarDivider className="my-0 mb-4" />
         </div>
 
         {/* MENU LIST */}

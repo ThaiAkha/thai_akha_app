@@ -81,9 +81,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <nav
       id="sidebar-nav"
+      style={{ transitionDuration: SIDEBAR_CONSTANTS.SIDEBAR_TRANSITION_DURATION }}
       className={`
         relative h-full shrink-0 z-50 flex flex-col border-r border-gray-200 dark:border-gray-800
-        transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+        transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
         bg-white dark:bg-gray-900
         ${isOpen ? 'w-80' : SIDEBAR_CONSTANTS.CLOSED_WIDTH}
       `}

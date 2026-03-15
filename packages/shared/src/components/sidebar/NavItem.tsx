@@ -83,8 +83,8 @@ const NavItem: React.FC<NavItemProps> = ({
   const getActivePillClasses = () => {
     if (!isActive || !showPillOnActive) return '';
 
-    const brandActive = 'bg-brand-500/25 dark:bg-brand-500/40';
-    const actionActive = 'bg-lime-500/25 dark:bg-lime-500/40';
+    const brandActive = 'bg-brand-500/20 dark:bg-brand-500/20';
+    const actionActive = 'bg-lime-500/20 dark:bg-lime-500/20';
 
     if (pillVariant === 'outline') {
       const brandOutline = 'border border-brand-200 dark:border-brand-800';
@@ -107,8 +107,8 @@ const NavItem: React.FC<NavItemProps> = ({
     if (!showPillOnHover || isActive) return '';
 
     // Use accent color for hover state (brand or action)
-    const brandHover = 'hover:bg-brand-500/50 dark:hover:bg-brand-500/60';
-    const actionHover = 'hover:bg-lime-500/50 dark:hover:bg-lime-500/60';
+    const brandHover = 'hover:bg-brand-500/10 dark:hover:bg-brand-500/10';
+    const actionHover = 'hover:bg-lime-500/10 dark:hover:bg-lime-500/10';
 
     return accentColor === 'brand' ? brandHover : actionHover;
   };

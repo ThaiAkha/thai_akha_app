@@ -21,12 +21,12 @@ export default {
   ],
   safelist: [
     // ========== FRONT SIDEBAR COLORS (action = lime) ==========
-    // Pill active states (increased opacity for visibility)
-    'bg-lime-500/25',
-    'dark:bg-lime-500/40',
-    // Pill hover state (now using lime color instead of gray)
-    'hover:bg-lime-500/50',
-    'dark:hover:bg-lime-500/60',
+    // Pill active states
+    'bg-lime-500/20',
+    'dark:bg-lime-500/20',
+    // Pill hover state
+    'hover:bg-lime-500/10',
+    'dark:hover:bg-lime-500/10',
     // Active text & icon
     'text-lime-700',
     'dark:text-lime-400',

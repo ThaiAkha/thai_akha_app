@@ -18,12 +18,12 @@ export default {
     ],
     safelist: [
         // ========== ADMIN SIDEBAR COLORS (brand red) ==========
-        // Pill active states (increased opacity for visibility)
-        'bg-brand-500/25',
-        'dark:bg-brand-500/40',
-        // Pill hover state (now using brand color instead of gray)
-        'hover:bg-brand-500/50',
-        'dark:hover:bg-brand-500/60',
+        // Pill active states
+        'bg-brand-500/20',
+        'dark:bg-brand-500/20',
+        // Pill hover state
+        'hover:bg-brand-500/10',
+        'dark:hover:bg-brand-500/10',
         // Active text & icon
         'text-brand-600',
         'dark:text-brand-400',

@@ -42,16 +42,16 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
         />
       )}
 
-      <div className="relative group/phone h-14">
-        <div className="absolute left-0 top-0 flex items-center justify-center text-gray-400 transition-colors duration-300 group-hover/phone:text-brand-500 z-10 h-14 w-12">
+      <div className="relative group/phone">
+        <div className="absolute left-0 top-0 flex items-center justify-center text-gray-400 transition-colors duration-300 group-hover/phone:text-brand-500 z-10 h-12 w-12 pointer-events-none">
           {country && country.code ? (
             <ReactCountryFlag
               countryCode={country.code}
               svg
-              className="!w-6 !h-6 rounded-sm shadow-sm"
+              className="w-5 h-5 rounded-sm shadow-sm"
             />
           ) : (
-            <Globe size={20} />
+            <Globe size={18} />
           )}
         </div>
 
@@ -69,13 +69,16 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
             onCountryChange?.(info);
           }}
           inputProps={{
+            id: 'phone',
             name: 'phone',
+            autoComplete: 'tel',
             className: cn(
-              "w-full h-full rounded-2xl border transition-all duration-300 outline-none ring-brand-500/20 shadow-theme-xs",
-              "pl-12 pr-4 py-2.5 text-base font-bold bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white placeholder:text-gray-400 hover:border-brand-500/30 focus:border-brand-500 focus:ring-4"
+              "w-full rounded-xl border appearance-none transition-all duration-300 outline-none ring-green-500/20 shadow-theme-xs",
+              "h-12 px-4 text-base font-bold bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 hover:border-green-500/30 focus:border-green-500 focus:ring-4",
+              "pl-12"
             )
           }}
-          containerClass="!w-full !h-full"
+          containerClass="w-full"
           buttonClass="!hidden"
           placeholder="e.g. +66 81 234 5678"
         />

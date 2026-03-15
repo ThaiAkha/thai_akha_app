@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import { getIcon } from "@thaiakha/shared/lib/icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { contentService } from "@thaiakha/shared/services";
+import { LogoIconLight, LogoIconDark } from "@thaiakha/shared";
 import Tooltip from "../components/ui/Tooltip";
 
 type NavItem = {
@@ -16,6 +18,7 @@ type NavItem = {
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, toggleMobileSidebar } = useSidebar();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const location = useLocation();
   const [menuItems, setMenuItems] = useState<NavItem[]>([]);
 
@@ -134,43 +137,111 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0 overflow-visible`}
       style={{ transitionDuration: '500ms' }}
     >
-      {/* HEADER: LOGO + TOGGLE */}
-      <div className="flex items-center h-16 lg:h-auto lg:py-8">
-        {/* Logo icon — always centered in icon column */}
-        <div className="w-[108px] shrink-0 flex items-center justify-center">
-          <Link to="/">
-            <img src="/favicon.svg" alt="Logo" width={32} height={32} />
-          </Link>
-        </div>
+      <div className="flex flex-col h-full py-6 pt-[40px]">
 
-        {/* Logo text + toggle — visible when expanded */}
-        <div className={`
-          flex items-center justify-between flex-1 pr-4 overflow-hidden
-          transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
-          ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-        `}>
-          <Link to="/" className="flex items-center gap-3">
-            <span className="text-xl font-display font-bold tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
-              Thai Akha <span className="text-brand-500">Kitchen</span>
-            </span>
-          </Link>
-        </div>
-      </div>
+        {/* HAMBURGER TOGGLE (Desktop only, aligned with menu items) */}
+        <div className="hidden lg:block mb-8 space-y-1">
+          <button
+            onClick={() => toggleMobileSidebar()}
+            title="Toggle Sidebar"
+            className={`relative flex items-center w-full h-14 mb-1 transition-all duration-200 group`}
+          >
+            {/* BACKGROUND */}
+            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
 
-
-
-      {/* NAV */}
-      <div className={`flex flex-col flex-1 no-scrollbar ${isSidebarOpen ? 'overflow-y-auto overflow-x-hidden' : 'overflow-visible'}`} style={{ overflow: isSidebarOpen ? undefined : 'visible' }}>
-        <nav className="mb-6" style={{ overflow: 'visible' }}>
-          <div className="flex flex-col gap-4" style={{ overflow: 'visible' }}>
-            {/* All Menu Items — loaded from database */}
-            <div style={{ overflow: 'visible' }}>
-              <ul className="flex flex-col gap-1" style={{ overflow: 'visible' }}>
-                {filterByRole(menuItems).map(renderNavItem)}
-              </ul>
+            {/* ICON CONTAINER (Fixed position) */}
+            <div className={`w-[108px] shrink-0 flex items-center justify-center z-10`}>
+              {(() => {
+                const ToggleIcon = isExpanded ? getIcon('ChevronLeft') : getIcon('Menu');
+                return <ToggleIcon className={`w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400`} />;
+              })()}
             </div>
+
+            {/* TEXT CONTAINER (Appears when open) */}
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${isSidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
+              <span className="font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">Close Menu</span>
+            </div>
+          </button>
+        </div>
+
+        {/* HEADER: LOGO */}
+        <div className="flex items-center mb-8 h-12">
+          <div className={`w-[108px] shrink-0 flex items-center justify-center`}>
+            <Link to="/">
+              <img
+                src={theme === "dark" ? LogoIconDark : LogoIconLight}
+                alt="Logo"
+                width={40}
+                height={40}
+              />
+            </Link>
           </div>
-        </nav>
+
+          <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isSidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+            <span className={`font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white`}>
+              Thai <span className="text-brand-500">Akha</span>
+            </span>
+          </div>
+        </div>
+
+        {/* MENU LIST */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
+          <ul className="flex flex-col gap-0">
+            {filterByRole(menuItems).map(renderNavItem)}
+          </ul>
+        </div>
+
+        {/* FOOTER */}
+        <div className={`mt-auto pt-4 space-y-1 border-t border-gray-200 dark:border-gray-700`}>
+
+          {/* SIGN IN/OUT BUTTON */}
+          <button
+            onClick={() => {
+              if (user) {
+                // Logout functionality would be added here
+                window.location.href = '/signin';
+              } else {
+                window.location.href = '/signin';
+              }
+            }}
+            className={`relative flex items-center w-full h-14 rounded-xl transition-all group text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400`}
+          >
+            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
+            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
+              {(() => {
+                const AuthIcon = user ? getIcon('LogOut') : getIcon('LogIn');
+                return <AuthIcon className="w-6 h-6" />;
+              })()}
+            </div>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{user ? 'Sign Out' : 'Log In'}</span>
+            </div>
+          </button>
+
+          {/* THEME TOGGLE BUTTON */}
+          <button
+            onClick={() => {
+              // Theme toggle functionality already handled by ThemeContext
+              const newTheme = theme === 'dark' ? 'light' : 'dark';
+              localStorage.setItem('theme', newTheme);
+              window.location.reload();
+            }}
+            className={`relative flex items-center w-full h-14 rounded-xl transition-all group text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-yellow-400`}
+          >
+            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
+            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
+              {(() => {
+                const ThemeIcon = theme === 'dark' ? getIcon('Sun') : getIcon('Moon');
+                return <ThemeIcon className="w-6 h-6" />;
+              })()}
+            </div>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            </div>
+          </button>
+
+        </div>
+
       </div>
 
     </aside>

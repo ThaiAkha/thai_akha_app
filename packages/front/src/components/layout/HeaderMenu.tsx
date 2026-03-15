@@ -4,6 +4,7 @@ import { contentService } from '@thaiakha/shared/services'; // ✅ Usa il Servic
 import { HeaderMetadata } from './Header';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { LogoFullLight, LogoFullDark } from '@thaiakha/shared';
 
 interface HeaderMenuProps {
   currentStep?: 1 | 2;
@@ -17,11 +18,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
     const fetchMenuMeta = async () => {
       try {
         const targetSlug = customSlug || (currentStep === 1 ? 'menu-step-1' : 'menu-step-2');
-        
-        // ✅ FIX: Usa contentService invece di Supabase diretto.
-        // Questo sfrutta la cache generata dal PageLayout per un render istantaneo.
         const meta = await contentService.getPageMetadata(targetSlug);
-
         if (meta) {
           setData(meta);
         }
@@ -31,6 +28,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
     };
     fetchMenuMeta();
   }, [currentStep, customSlug]);
+
+  const isDark = document.documentElement.classList.contains('dark');
 
   // ✅ FIX: Rimosso il loader/skeleton.
   // Se i dati non ci sono ancora (raro con la cache), rendiamo null per non occupare spazio
@@ -51,9 +50,13 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
         "min-h-[200px]" 
       )}>
       
-      {/* 1. DECORATIVE LINE (Logo) */}
-      <div className="mb-4 mx-auto opacity-90 hover:opacity-100 transition-opacity">
-        <AkhaPixelPattern variant="logo" size={4} speed={40}/>
+      {/* 1. BRAND LOGO */}
+      <div className="mb-8 mx-auto opacity-90 hover:opacity-100 transition-opacity">
+        <img 
+          src={isDark ? LogoFullDark : LogoFullLight} 
+          alt="Thai Akha Kitchen" 
+          className="h-16 md:h-20 object-contain"
+        />
       </div>
 
       {/* 2. TITOLO CENTRATO */}

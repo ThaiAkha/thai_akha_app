@@ -1,7 +1,7 @@
 import React from "react";
 import GridShape from "../../components/common/GridShape";
-import { Link } from "react-router";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
+import { LogoAuth } from "@thaiakha/shared";
 
 export default function AuthLayout({
   children,
@@ -27,14 +27,14 @@ export default function AuthLayout({
             {/* <!-- ===== Common Grid Shape Start ===== --> */}
             <GridShape />
             <div className="flex flex-col items-center max-w-xs">
-              <Link to="/" className="block mb-4">
+              <div className="block mb-4">
                 <img
                   width={180}
                   height={180}
-                  src="/favicon.svg"
+                  src={LogoAuth}
                   alt="Logo"
                 />
-              </Link>
+              </div>
    <p className="text-center text-gray-500 dark:text-white/80 text-base md:text-lg font-medium leading-relaxed mt-4">
     Step into the heritage of the Akha tribe. <br className="hidden md:block" /> 
     Your culinary journey begins here.

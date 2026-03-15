@@ -56,3 +56,7 @@ token.json
 # App snapshots
 App_Snapshot*
 App_Full_Snapshot*
+
+# CI/CD output files
+lint_errors.txt
+*build_output.txt

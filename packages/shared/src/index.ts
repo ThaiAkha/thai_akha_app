@@ -11,3 +11,12 @@ export * from './types';
 
 // Services
 export * from './services';
+
+// Assets
+export {
+  LogoFullLight,
+  LogoFullDark,
+  LogoIconLight,
+  LogoIconDark,
+  LogoAuth
+} from './assets/logo';

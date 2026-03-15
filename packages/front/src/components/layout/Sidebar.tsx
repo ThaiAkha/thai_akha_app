@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { getIcon } from '@thaiakha/shared/lib/icons';
+import { LogoIconLight, LogoIconDark } from '@thaiakha/shared';
 
 // --- TYPES ---
 interface MenuItem {
@@ -157,32 +158,39 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <div className="flex flex-col h-full py-6 pt-[40px]">
 
-        {/* HAMBURGER TOGGLE (Spostato in alto per ergonomia mobile-like) */}
-        <div className="pt-2 pb-3 flex justify-center">
+        {/* HAMBURGER TOGGLE (Aligned with other menu items) */}
+        <div className="mb-8 space-y-1">
           <button
             onClick={onToggle}
-            className={`
-                    w-full h-14 rounded-2xl flex items-center justify-center transition-all border 
-                    ${isDarkMode
-                ? 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20'
-                : 'bg-slate-100 border-slate-200 text-slate-900 hover:bg-slate-200 hover:border-slate-300'}
-                    ${isOpen ? 'mx-0' : 'mx-0 aspect-square'}
-                `}
             title="Toggle Sidebar"
+            className={`relative flex items-center w-full h-14 mb-1 transition-all duration-200 group ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-action'}`}
           >
-            {(() => {
-              const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
-              return <ToggleIcon className={`w-8 h-8 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />;
-            })()}
+            {/* BACKGROUND */}
+            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
+
+            {/* ICON CONTAINER (Fixed position) */}
+            <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+              {(() => {
+                const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
+                return <ToggleIcon className={`w-8 h-8 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />;
+              })()}
+            </div>
+
+            {/* TEXT CONTAINER (Appears when open) */}
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
+              <span className="font-display text-lb tracking-wide font-bold ml-1">Close Menu</span>
+            </div>
           </button>
         </div>
 
         {/* ================= HEADER: LOGO ================= */}
         <div className="flex items-center mb-8 h-12">
           <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
-            <div className="size-10 bg-action rounded-xl flex items-center justify-center shadow-lg shadow-action/30">
-              <span className="font-display font-black text-white text-xl">TA</span>
-            </div>
+            <img 
+              src={isDarkMode ? LogoIconDark : LogoIconLight} 
+              alt="Logo" 
+              className="size-10 object-contain shadow-lg shadow-action/10" 
+            />
           </div>
 
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
@@ -210,40 +218,22 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* ================= FOOTER ================= */}
-        <div className={`mt-auto pt-4 space-y-2 border-t mx-2 ${isDarkMode ? 'border-white/10' : 'border-slate-100'}`}>
-
-          {/* 🔴 ADMIN CONSOLE ENTRY (Solo se l'utente è admin) */}
-          {userProfile?.role === 'admin' && (
-            <button
-              onClick={() => onNavigate('admin-kitchen')}
-              className="relative flex items-center w-full h-14 mb-2 rounded-xl transition-all group bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20"
-            >
-              <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
-                {(() => {
-                  const AdminIcon = getIcon('ShieldCheck');
-                  return <AdminIcon className="w-8 h-8" />;
-                })()}
-              </div>
-              <div className={`flex-1 overflow-hidden whitespace-nowrap transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-                <span className="font-bold text-base uppercase tracking-widest">Console</span>
-              </div>
-            </button>
-          )}
+        <div className={`mt-auto pt-4 space-y-1 border-t ${isDarkMode ? 'border-white/10' : 'border-slate-100'}`}>
 
           {/* AUTH BUTTON */}
           <button
             onClick={userProfile ? onLogout : () => onNavigate('auth')}
             className={`relative flex items-center w-full h-14 rounded-xl transition-all group ${isDarkMode ? 'text-slate-400 hover:text-red-400' : 'text-slate-500 hover:text-red-500'}`}
           >
-            <div className={`absolute inset-0 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
+            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
             <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
               {(() => {
                 const AuthIcon = userProfile ? getIcon('LogOut') : getIcon('LogIn');
                 return <AuthIcon className="w-8 h-8" />;
               })()}
             </div>
-            <div className={`flex-1 overflow-hidden whitespace-nowrap transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-bold text-base">{userProfile ? 'Sign Out' : 'Log In'}</span>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-display text-lb tracking-wide font-bold ml-1">{userProfile ? 'Sign Out' : 'Log In'}</span>
             </div>
           </button>
 
@@ -252,15 +242,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={onToggleTheme}
             className={`relative flex items-center w-full h-14 rounded-xl transition-all group ${isDarkMode ? 'text-slate-400 hover:text-quiz' : 'text-slate-500 hover:text-action'}`}
           >
-            <div className={`absolute inset-0 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
+            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
             <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
               {(() => {
                 const ThemeIcon = isDarkMode ? getIcon('Sun') : getIcon('Moon');
                 return <ThemeIcon className="w-8 h-8" />;
               })()}
             </div>
-            <div className={`flex-1 overflow-hidden whitespace-nowrap transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-bold text-base">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-display text-lb tracking-wide font-bold ml-1">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
             </div>
           </button>
         </div>

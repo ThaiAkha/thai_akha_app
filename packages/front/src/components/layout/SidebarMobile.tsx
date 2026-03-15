@@ -62,7 +62,6 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       if (['auth', 'login'].includes(item.page_slug)) return false;
 
       // 🛡️ ADMIN: Nascondi voci operative dalla sidebar pubblica
-      // L'admin userà il tasto "Console" nel footer
       if (level === 'admin' || level === 'manager') return false; 
 
       // 🏢 AGENCY: Mostra SOLO se l'utente è un'agenzia
@@ -214,17 +213,6 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
 
         {/* FOOTER */}
         <div className="p-6 border-t border-white/5 bg-black/20 space-y-4">
-            
-            {/* 🔴 ADMIN CONSOLE ENTRY (Solo per Admin) */}
-            {userProfile?.role === 'admin' && (
-                <button 
-                    onClick={() => handleItemClick('admin-kitchen')}
-                    className="w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 font-black uppercase tracking-widest text-xs hover:bg-red-500 hover:text-white transition-all shadow-lg"
-                >
-                    <Icon name="ShieldCheck" className="text-lg" />
-                    Admin Console
-                </button>
-            )}
 
             {/* Theme Toggle */}
             <div className="flex h-16 items-center justify-between px-5 rounded-2xl border border-white/5 bg-white/5">

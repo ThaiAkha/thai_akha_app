@@ -157,11 +157,21 @@
    FRONT-SPECIFIC COMPONENTS
    ======================================================================== */
 
+/* ========================================================================
+   SIDEBAR DARK MODE (Explicit rule - not relying on Tailwind modifiers)
+   ======================================================================== */
+
+#sidebar-nav {
+  background-color: white;
+}
+
+.dark #sidebar-nav {
+  background-color: #080808;
+}
+
 @layer components {
   /* Sidebar dark mode background (from theme.css --color-gray-dark) */
-  #sidebar-nav {
-    @apply bg-white dark:bg-[#080808];
-  }
+  /* Note: CSS rule above handles dark mode for better browser compatibility */
 
   /* Mineral panel: Glass effect component for layered cards and modals */
   .mineral-panel {

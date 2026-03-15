@@ -88,7 +88,12 @@
     transition: background-color 0.5s ease, color 0.3s ease;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     color: rgb(var(--color-title));
     font-weight: 900;
@@ -119,9 +124,10 @@
    ======================================================================== */
 
 @layer utilities {
+
   /* Card gradient overlay for images and hero sections */
   .card-gradient-overlay {
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
   }
 
   /* Glass shine animation effect for premium components */
@@ -137,7 +143,7 @@
     left: -100%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
     transform: skewX(-25deg);
     animation: shine 4s infinite linear;
   }
@@ -147,6 +153,7 @@
     0% {
       left: -100%;
     }
+
     100% {
       left: 200%;
     }
@@ -157,21 +164,7 @@
    FRONT-SPECIFIC COMPONENTS
    ======================================================================== */
 
-/* ========================================================================
-   SIDEBAR DARK MODE (Explicit rule - not relying on Tailwind modifiers)
-   ======================================================================== */
-
-#sidebar-nav {
-  background-color: white !important;
-}
-
-.dark #sidebar-nav {
-  background-color: #080808 !important;
-}
-
 @layer components {
-  /* Sidebar dark mode background (from theme.css --color-gray-dark) */
-  /* Note: CSS rule above handles dark mode for better browser compatibility */
 
   /* Mineral panel: Glass effect component for layered cards and modals */
   .mineral-panel {

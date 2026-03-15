@@ -171,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* ========== MENU SECTION ========== */}
-        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-0">
           {visibleItems.map((item) => (
             <li key={item.page_slug}>
               <SidebarNavItem
@@ -183,6 +183,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 isDarkMode={isDarkMode}
                 badge={item.header_badge}
                 accentColor="action"
+                showPillOnHover={true}       // 🟢 Front: Show pill on hover
+                showPillOnActive={true}      // ✅ Front: Show pill when active
+                pillVariant="filled"
               />
             </li>
           ))}

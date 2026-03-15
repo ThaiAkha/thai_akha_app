@@ -118,9 +118,9 @@ const NavItem: React.FC<NavItemProps> = ({
       onClick={onClick}
       title={label}
       className={`
-        relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
-        ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl mx-1
+        relative flex items-center w-full h-14
+        transition-colors duration-200
+        rounded-xl px-2
         ${getActivePillClasses()}
         ${getHoverPillClasses()}
       `}
@@ -135,10 +135,9 @@ const NavItem: React.FC<NavItemProps> = ({
             ${SIDEBAR_CONSTANTS.ICON_SIZE}
             transition-transform duration-300
             ${SIDEBAR_CONSTANTS.ICON_ACTIVE_SCALE}
-            ${
-              isActive
-                ? colors.activeIcon
-                : `${SIDEBAR_CONSTANTS.INACTIVE_ICON} ${SIDEBAR_CONSTANTS.HOVER_ICON}`
+            ${isActive
+              ? colors.activeIcon
+              : `${SIDEBAR_CONSTANTS.INACTIVE_ICON} ${SIDEBAR_CONSTANTS.HOVER_ICON}`
             }
           `}
         />
@@ -170,10 +169,9 @@ const NavItem: React.FC<NavItemProps> = ({
             className={`
               px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ml-3
               transition-colors duration-200
-              ${
-                isActive
-                  ? `${colors.badgeBg} text-white shadow-sm`
-                  : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+              ${isActive
+                ? `${colors.badgeBg} text-white shadow-sm`
+                : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300'
               }
             `}
           >

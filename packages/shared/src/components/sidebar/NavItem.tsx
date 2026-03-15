@@ -44,7 +44,7 @@ const NavItem: React.FC<NavItemProps> = ({
     },
     action: {
       active: 'rgba(132, 204, 22, 0.25)',     // lime-500/25
-      activeText: '#65a30d',                   // lime-700
+      activeText: '#4d7c0f',                   // lime-800 (darker)
       inactiveText: '#374151',                 // gray-700
       hover: 'rgba(229, 231, 235, 0.5)',      // gray-100
     },
@@ -73,7 +73,7 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl
+        rounded-xl mx-2 my-0.5 px-2 py-1
       `}
       style={{
         backgroundColor: getBgColor(),

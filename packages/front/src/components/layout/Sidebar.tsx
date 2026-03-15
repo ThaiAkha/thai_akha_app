@@ -171,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* ========== MENU SECTION ========== */}
-        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-0">
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
           {visibleItems.map((item) => (
             <li key={item.page_slug}>
               <SidebarNavItem

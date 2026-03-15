@@ -120,7 +120,7 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full h-14 mt-2
         transition-colors duration-200
-        rounded-xl px-2
+        rounded-xl pl-0 pr-2
         ${getActivePillClasses()}
         ${getHoverPillClasses()}
       `}

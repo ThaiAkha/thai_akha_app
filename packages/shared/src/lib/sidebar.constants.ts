@@ -10,7 +10,7 @@ export const SIDEBAR_CONSTANTS = {
   // ============================================================================
   CLOSED_WIDTH: 'w-[108px]',           // Closed sidebar width
   OPEN_WIDTH: 'w-80',                  // Open sidebar width
-  ICON_CONTAINER_WIDTH: 'w-[108px]',   // Fixed icon area width
+  ICON_CONTAINER_WIDTH: 'w-[108px]',   // Fixed icon area width (must match CLOSED_WIDTH for alignment)
   ITEM_HEIGHT: 'h-14',                 // Menu item height (56px)
 
   // ============================================================================
@@ -54,22 +54,16 @@ export const SIDEBAR_CONSTANTS = {
   TRANSITION_STANDARD: 'transition-colors duration-200',
   TRANSITION_EXTENDED: 'transition-all duration-300',
   EASE_CUBIC: 'ease-[cubic-bezier(0.25,1,0.5,1)]',
-  EASE_STANDARD: 'ease-[cubic-bezier(0.32,0.72,0,1)]',
 
   // ============================================================================
   // SIDEBAR CONTAINER STYLING
   // ============================================================================
   SIDEBAR_BASE: `
     fixed top-0 left-0 h-screen z-[99] flex flex-col
-    bg-white dark:bg-gray-dark dark:border-gray-800 text-gray-900
-    border-r border-gray-200
+    bg-white dark:bg-gray-dark dark:border-gray-900 text-gray-900
+    border-r border-gray-100
     transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
   `,
-
-  SIDEBAR_MOBILE_OFFSET: {
-    desktop: 'lg:mt-0',    // Desktop: no offset
-    mobile: 'mt-16',       // Mobile: space for header
-  },
 
   // ============================================================================
   // LOGO STYLING
@@ -107,15 +101,6 @@ export const SIDEBAR_CONSTANTS = {
  */
 export function getSidebarWidthClass(isOpen: boolean): string {
   return isOpen ? SIDEBAR_CONSTANTS.OPEN_WIDTH : SIDEBAR_CONSTANTS.CLOSED_WIDTH;
-}
-
-/**
- * Get mobile offset class for sidebar (mt-16 on mobile, lg:mt-0 on desktop)
- */
-export function getMobileOffsetClass(isDesktop: boolean): string {
-  return isDesktop
-    ? SIDEBAR_CONSTANTS.SIDEBAR_MOBILE_OFFSET.desktop
-    : SIDEBAR_CONSTANTS.SIDEBAR_MOBILE_OFFSET.mobile;
 }
 
 /**

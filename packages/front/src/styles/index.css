@@ -162,11 +162,11 @@
    ======================================================================== */
 
 #sidebar-nav {
-  background-color: white;
+  background-color: white !important;
 }
 
 .dark #sidebar-nav {
-  background-color: #080808;
+  background-color: #080808 !important;
 }
 
 @layer components {

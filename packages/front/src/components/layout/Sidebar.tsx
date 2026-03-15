@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* ================= LISTA MENU ================= */}
         <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
           {visibleItems.map((item) => (
-            <li key={item.page_slug}>
+            <li key={item.page_slug} className="group">
               <SidebarNavItem
                 icon={item.header_icon || 'circle'}
                 label={item.menu_label}

@@ -135,7 +135,7 @@ const AppSidebar: React.FC = () => {
 
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
-          <div className={`w-[108px] shrink-0 flex items-center justify-start pl-[2.1rem] -ml-2`}>
+          <div className={`w-[108px] shrink-0 flex items-center justify-center pr-4`}>
             <Link to="/">
               <img
                 src={theme === "dark" ? LogoIconDark : LogoIconLight}

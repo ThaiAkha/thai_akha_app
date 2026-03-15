@@ -128,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-            <span className={`font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white`}>
+            <span className={`ml-2 font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white`}>
               Thai <span className="text-brand-500">Akha</span>
             </span>
           </div>

@@ -163,9 +163,9 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
           </button>
           <div className="text-right ml-2 mt-1">
             <Typography variant="h3" className="font-black italic uppercase tracking-tighter text-white leading-none">
-              Thai <span className="text-primary">Akha</span>
+              Thai <span className="text-action">Akha</span>
             </Typography>
-            <Typography variant="caption" className="text-white/40 font-bold tracking-[0.3em] text-[10px] mt-1 block">
+            <Typography variant="caption" className="text-white/60 font-bold tracking-[0.3em] text-xs mt-1 block">
               COOKING SCHOOL
             </Typography>
           </div>

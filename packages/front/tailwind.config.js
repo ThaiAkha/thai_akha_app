@@ -22,6 +22,7 @@ export default {
   safelist: [
     // ========== SIDEBAR BACKGROUND ==========
     'dark:bg-gray-dark',
+    'dark:bg-gray-900',  // Front sidebar uses gray-900 (#222827)
     // ========== FRONT SIDEBAR COLORS (action = lime) ==========
     // Pill active states
     'bg-lime-500/20',

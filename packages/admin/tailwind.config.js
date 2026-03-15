@@ -7,7 +7,7 @@
  * - plugins
  */
 
-import { getBaseThemeExtension } from '@thaiakha/shared/styles/tailwind.config.base';
+import { getBaseThemeExtension } from '@thaiakha/shared';
 
 /** @type {import('tailwindcss').Config} */
 export default {

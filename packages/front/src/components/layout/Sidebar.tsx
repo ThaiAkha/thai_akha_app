@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {userProfile && (
           <>
             <div className="mt-2 mb-2">
-              <li className="group">
+              <li>
                 <button
                   onClick={() => onNavigate('user')}
                   className="relative flex items-center w-full h-14 rounded-xl transition-all group"
@@ -173,7 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* ========== MENU SECTION ========== */}
         <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-0">
           {visibleItems.map((item) => (
-            <li key={item.page_slug} className="group">
+            <li key={item.page_slug}>
               <SidebarNavItem
                 icon={item.header_icon || 'circle'}
                 label={item.menu_label}

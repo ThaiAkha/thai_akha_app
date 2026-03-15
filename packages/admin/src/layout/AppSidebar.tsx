@@ -88,7 +88,7 @@ const AppSidebar: React.FC = () => {
     );
 
     return (
-      <li key={nav.path} className="group">
+      <li key={nav.path}>
         {!isSidebarOpen ? (
           <Tooltip content={nav.name} position="right" className="w-full">
             {navItem}

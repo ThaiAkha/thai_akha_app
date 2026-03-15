@@ -118,6 +118,19 @@
   --color-sys-info: #3B82F6;
 
   /* ========================================================================
+     🎨 BRAND SEMANTIC COLORS — Front app specific (RGB for alpha support)
+     ======================================================================== */
+  --color-primary: 251 46 88;        /* Cherry/Brand red (#FB2E58) */
+  --color-secondary: 141 26 49;      /* Dark cherry (#8D1A31) */
+  --color-action: 152 201 60;        /* Lime green action color (#98C93C) */
+  --color-special: 255 109 0;        /* Orange special CTA (#FF6D00) */
+
+  /* 🌟 FUNCTIONAL COLORS (Safety & Feedback) */
+  --color-allergy: 255 109 0;            /* Safety orange (#FF6D00) */
+  --color-allergy-secondary: 254 226 226; /* Light red feedback (#FEE2E2) */
+  --color-quiz: 154 0 80;                /* Purple quiz state (#9A0050) */
+
+  /* ========================================================================
      ☀️ SEMANTIC TOKENS — Light Mode (used by components)
      ======================================================================== */
   --bg: #F6FCFC;              /* gray-25 — background pagina */
@@ -130,6 +143,13 @@
   --text-body: #4A504F;       /* gray-800 — body text · WCAG AAA */
   --text-sub: #727878;        /* gray-600 — secondary text · WCAG AA */
   --text-muted: #9AA0A0;      /* gray-400 — decorative only */
+
+  /* Semantic color variants for light mode */
+  --color-background: 250 250 250;   /* Light gray background (#FAFAFA) */
+  --color-surface: 255 255 255;      /* White surface (#FFFFFF) */
+  --color-title: 26 26 26;           /* Dark text for titles (#1A1A1A) */
+  --color-desc: 74 74 74;            /* Medium text for descriptions (#4A4A4A) */
+  --color-border: 226 232 240;       /* Light border color (#E2E8F0) */
 
   /* ========================================================================
      🌟 GLOW SHADOWS — Button effects for CTA
@@ -172,6 +192,17 @@ body.dark,
     --text-body: #D6DCDC;       /* gray-100 — body text · WCAG AAA */
     --text-sub: #9AA0A0;        /* gray-400 — secondary text · WCAG AA */
     --text-muted: #727878;      /* gray-600 — decorative only */
+
+    /* 🌑 BRAND SEMANTIC COLORS — Dark Mode */
+    --color-background: 10 10 10;      /* Dark background (#0a0a0a) */
+    --color-surface: 18 18 18;         /* Dark surface (#121212) */
+    --color-title: 237 242 239;        /* Light text for dark mode (#EDF2EF) */
+    --color-desc: 210 220 213;         /* Light-medium text (#D2DCD5) */
+    --color-border: 45 45 45;          /* Dark border (#2D2D2D) */
+
+    /* Adjust RGB Channels for Dark Mode Legibility */
+    --color-allergy: 248 113 113;          /* Lighter red for dark mode (#F87171) */
+    --color-allergy-secondary: 127 29 29;  /* Dark red feedback (#7F1D1D) */
   }
 }
 

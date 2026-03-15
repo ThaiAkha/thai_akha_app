@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ========================================================================
+   CENTRALIZED UTILITIES & ANIMATIONS
+   Imported from @thaiakha/shared/styles/utilities.css
+   ======================================================================== */
+@import "../../shared/src/styles/utilities.css";
+
 @theme {
   --font-*: initial;
   --font-sans: Roboto, Noto Sans Thai, sans-serif;
@@ -187,26 +193,7 @@
   --glass-blur: blur(8px);
 }
 
-@utility cherry-glass {
-  @apply bg-white/3 dark:bg-black/3 backdrop-blur-[8px] border border-white/10 dark:border-white/5;
-}
 
-@utility cherry-btn-animation {
-  @apply transition-all duration-300 ease-[var(--transition-bezier)] active:scale-95 hover:-translate-y-0.5;
-}
-
-@utility cherry-shadow-brand {
-  @apply shadow-[var(--shadow-cherry)] hover:shadow-[var(--shadow-cherry-hover)];
-}
-
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
 
   *,

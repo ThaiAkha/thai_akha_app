@@ -48,7 +48,7 @@ const NavItem: React.FC<{
       onClick={onClick}
       title={label}
       className={`
-        relative flex items-center w-full h-14 mb-1 transition-all duration-200 group
+        relative flex items-center w-full h-14 transition-all duration-200 group
       `}
     >
       {/* SFONDO ACTIVE/HOVER */}
@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onToggle}
             title="Toggle Sidebar"
-            className="relative flex items-center w-full h-14 mb-1 transition-all duration-200 group"
+            className="relative flex items-center w-full h-14 transition-all duration-200 group"
           >
             {/* BACKGROUND */}
             <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />

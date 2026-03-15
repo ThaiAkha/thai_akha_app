@@ -159,7 +159,7 @@ const AppSidebar: React.FC = () => {
         </div>
 
         {/* MENU LIST */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-2">
           <ul className="flex flex-col gap-0">
             {filterByRole(menuItems).map(renderNavItem)}
           </ul>

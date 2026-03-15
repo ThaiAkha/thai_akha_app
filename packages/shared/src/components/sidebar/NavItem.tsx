@@ -120,7 +120,7 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl mx-1 px-2
+        rounded-xl mx-1
         ${getActivePillClasses()}
         ${getHoverPillClasses()}
       `}

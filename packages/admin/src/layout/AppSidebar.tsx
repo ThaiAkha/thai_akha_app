@@ -87,7 +87,7 @@ const AppSidebar: React.FC = () => {
     );
 
     return (
-      <li key={nav.path}>
+      <li key={nav.path} className="mx-3">
         {!isSidebarOpen ? (
           <Tooltip content={nav.name} position="right" className="w-full">
             {navItem}
@@ -131,10 +131,10 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0 overflow-visible`}
       style={{ transitionDuration: '500ms' }}
     >
-      <div className="flex flex-col h-full py-6 pt-[40px] px-3">
+      <div className="flex flex-col h-full py-6 pt-[40px]">
 
         {/* HEADER: LOGO */}
-        <div className="flex items-center mb-8 h-12 -ml-3">
+        <div className="flex items-center mb-8 h-12">
           <div className={`w-[108px] shrink-0 flex items-center justify-center`}>
             <Link to="/">
               <img

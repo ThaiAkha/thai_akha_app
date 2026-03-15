@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         ${isOpen ? 'w-80' : SIDEBAR_CONSTANTS.CLOSED_WIDTH}
       `}
     >
-      <div className="flex flex-col h-full py-6 pt-[20px] px-3">
+      <div className="flex flex-col h-full py-6 pt-[20px]">
 
         {/* ========== TOP SECTION ========== */}
 
@@ -94,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onToggle}
             title="Toggle Sidebar"
-            className="relative flex items-center w-full h-14 transition-all duration-200 group"
+            className="relative flex items-center w-full h-14 mx-3 transition-all duration-200 group"
           >
             {/* BACKGROUND */}
             <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
@@ -143,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li>
                 <button
                   onClick={() => onNavigate('user')}
-                  className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+                  className="relative flex items-center w-full h-14 mx-3 rounded-xl transition-all group"
                   title="User Profile"
                 >
                   <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
@@ -173,7 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* ========== MENU SECTION ========== */}
         <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-2">
           {visibleItems.map((item) => (
-            <li key={item.page_slug}>
+            <li key={item.page_slug} className="mx-3">
               <SidebarNavItem
                 icon={item.header_icon || 'circle'}
                 label={item.menu_label}
@@ -192,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ul>
 
         {/* ========== FOOTER SECTION ========== */}
-        <div className="mt-auto pt-4 space-y-2">
+        <div className="mt-auto pt-4 space-y-2 mx-3">
 
           {/* DIVIDER 3 */}
           <SidebarDivider className="my-1" />

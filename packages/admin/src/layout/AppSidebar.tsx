@@ -142,9 +142,6 @@ const AppSidebar: React.FC = () => {
                 isOpen={isSidebarOpen}
                 isDarkMode={theme === 'dark'}
                 accentColor="brand"
-                showPillOnHover={true}
-                showPillOnActive={true}
-                pillVariant="filled"
               />
             </li>
           ))}

@@ -118,7 +118,7 @@ const NavItem: React.FC<NavItemProps> = ({
       onClick={onClick}
       title={label}
       className={`
-        relative flex items-center w-full h-14
+        relative flex items-center w-full h-12
         transition-colors duration-200
         rounded-xl pl-0 pr-1
         ${getActivePillClasses()}

@@ -81,6 +81,7 @@ const NavItem: React.FC<NavItemProps> = ({
           absolute ${SIDEBAR_CONSTANTS.BG_INSET} ${SIDEBAR_CONSTANTS.BG_ROUNDED}
           ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
           ${isActive ? colors.activeBg : SIDEBAR_CONSTANTS.HOVER_BG}
+          pointer-events-none z-0
         `}
       />
 

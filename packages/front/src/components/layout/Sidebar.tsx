@@ -120,21 +120,22 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* ================= LISTA MENU ================= */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
           {visibleItems.map((item) => (
-            <SidebarNavItem
-              key={item.id}
-              icon={item.header_icon || 'circle'}
-              label={item.menu_label}
-              isActive={currentPage === item.page_slug}
-              onClick={() => onNavigate(item.page_slug)}
-              isOpen={isOpen}
-              isDarkMode={isDarkMode}
-              badge={item.header_badge}
-              accentColor="action"
-            />
+            <li key={item.page_slug}>
+              <SidebarNavItem
+                icon={item.header_icon || 'circle'}
+                label={item.menu_label}
+                isActive={currentPage === item.page_slug}
+                onClick={() => onNavigate(item.page_slug)}
+                isOpen={isOpen}
+                isDarkMode={isDarkMode}
+                badge={item.header_badge}
+                accentColor="action"
+              />
+            </li>
           ))}
-        </div>
+        </ul>
 
         {/* FOOTER */}
         <div className="mt-auto pt-4 space-y-1 border-t border-gray-200 dark:border-gray-700">

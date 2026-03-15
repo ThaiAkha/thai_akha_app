@@ -59,6 +59,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       // 🚫 EXCLUDE: Student Hub (will be shown in avatar menu)
       if (item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub') return false;
 
+      // 🚫 EXCLUDE: User profile (shown in avatar section only)
+      if (item.page_slug?.toLowerCase() === 'user') return false;
+
       const level = item.access_level || 'public';
 
       // 🛡️ ADMIN: Hide from public front app
@@ -133,7 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* DIVIDER 1 */}
         <div className="my-2">
-          <SidebarDivider className="my-0" />
+          <SidebarDivider className="my-0 mb-4" />
         </div>
 
         {/* USER AVATAR SECTION (if logged in) */}

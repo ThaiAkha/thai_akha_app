@@ -29,9 +29,6 @@ export default {
         'dark:text-brand-400',
         // Badge & indicator
         'bg-brand-600',
-        // ========== SIDEBAR ICON PADDING ==========
-        'pl-5',
-        'pl-7',
     ],
     theme: {
         extend: getBaseThemeExtension(),

@@ -99,8 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* BACKGROUND */}
             <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
 
-            {/* ICON CONTAINER (Fixed position, left-aligned) */}
-            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-7 z-10`}>
+            {/* ICON CONTAINER (Fixed position, centered) */}
+            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
               {(() => {
                 const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
                 return <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400" />;
@@ -109,14 +109,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* TEXT CONTAINER (Appears when open) */}
             <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
-              <span className="font-display font-bold tracking-wide text-gray-500 ml-2 opacity-50">Close Menu</span>
+              <span className="font-display font-bold tracking-wide text-gray-500 opacity-50">Close Menu</span>
             </div>
           </button>
         </div>
 
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-4 h-12">
-          <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-5`}>
+          <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
             <img
               src={isDarkMode ? LogoIconDark : LogoIconLight}
               alt="Logo"
@@ -147,7 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   title="User Profile"
                 >
                   <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
-                  <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-5 z-10`}>
+                  <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
                     <SidebarAvatar
                       name={userProfile.full_name || userProfile.email}
                       src={userProfile.avatar_url}
@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     />
                   </div>
                   <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-                    <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-2">
+                    <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
                       {userProfile.full_name || 'Profile'}
                     </span>
                   </div>

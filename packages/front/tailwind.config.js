@@ -32,6 +32,9 @@ export default {
     'dark:text-lime-400',
     // Badge & indicator
     'bg-lime-700',
+    // ========== SIDEBAR ICON PADDING ==========
+    'pl-5',
+    'pl-7',
   ],
   theme: {
     extend: {

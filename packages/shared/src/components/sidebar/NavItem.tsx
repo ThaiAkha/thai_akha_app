@@ -120,7 +120,7 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl mx-2
+        rounded-xl mx-1
         ${getActivePillClasses()}
         ${getHoverPillClasses()}
       `}
@@ -128,7 +128,7 @@ const NavItem: React.FC<NavItemProps> = ({
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10 -ml-2`}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10 -ml-1`}
       >
         <IconComponent
           className={`

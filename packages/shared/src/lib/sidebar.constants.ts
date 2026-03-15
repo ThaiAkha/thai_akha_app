@@ -16,7 +16,7 @@ export const SIDEBAR_CONSTANTS = {
   // ============================================================================
   // BACKGROUND STYLING
   // ============================================================================
-  BG_INSET: 'inset-y-1 inset-x-2',     // Active/hover background inset
+  BG_INSET: 'inset-1',                 // Active/hover background inset (1px all sides)
   BG_ROUNDED: 'rounded-xl',             // Background border radius
   HOVER_BG: 'group-hover:bg-gray-100 dark:group-hover:bg-white/5',
 

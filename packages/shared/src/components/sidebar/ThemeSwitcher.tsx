@@ -56,7 +56,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
       >
         {/* BACKGROUND - Hover state */}
         <div
-          className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5"
+          className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5"
         />
 
         {/* Icon Container - Fixed width, always visible */}

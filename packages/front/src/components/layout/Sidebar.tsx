@@ -97,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="relative flex items-center w-full h-14 transition-all duration-200 group"
           >
             {/* BACKGROUND */}
-            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
 
             {/* ICON CONTAINER (Fixed position) */}
             <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
@@ -146,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   className="relative flex items-center w-full h-14 rounded-xl transition-all group"
                   title="User Profile"
                 >
-                  <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+                  <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
                   <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
                     <SidebarAvatar
                       name={userProfile.full_name || userProfile.email}
@@ -199,7 +199,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="relative flex items-center w-full h-14 rounded-xl transition-all group"
             title="Languages"
           >
-            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
             <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
               {(() => {
                 const LangIcon = getIcon('Globe');
@@ -216,7 +216,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={userProfile ? onLogout : () => onNavigate('auth')}
             className="relative flex items-center w-full h-14 rounded-xl transition-all group"
           >
-            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
             <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
               {(() => {
                 const AuthIcon = userProfile ? getIcon('LogOut') : getIcon('LogIn');

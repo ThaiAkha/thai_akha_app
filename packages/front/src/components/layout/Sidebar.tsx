@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
-          <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
+          <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
             <img
               src={isDarkMode ? LogoIconDark : LogoIconLight}
               alt="Logo"

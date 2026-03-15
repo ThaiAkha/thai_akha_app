@@ -83,10 +83,6 @@ const AppSidebar: React.FC = () => {
         }}
         isOpen={isSidebarOpen}
         isDarkMode={theme === 'dark'}
-        accentColor="brand"
-        showPillOnHover={true}      // ✅ Admin: Show hover pills
-        showPillOnActive={true}      // ✅ Admin: Show pill when active (more visible)
-        pillVariant="filled"
       />
     );
 

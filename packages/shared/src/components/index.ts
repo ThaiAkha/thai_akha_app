@@ -6,6 +6,8 @@
 // Sidebar
 export { default as SidebarNavItem } from './sidebar/NavItem';
 export type { NavItemProps as SidebarNavItemProps } from './sidebar/NavItem';
+export { default as SidebarActionButton } from './sidebar/ActionButton';
+export type { ActionButtonProps as SidebarActionButtonProps } from './sidebar/ActionButton';
 export { default as SidebarDivider } from './sidebar/Divider';
 export type { DividerProps as SidebarDividerProps } from './sidebar/Divider';
 export { default as SidebarAvatar } from './sidebar/Avatar';

@@ -79,7 +79,7 @@ export default function SignUpForm() {
   return (
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
       <div className="flex flex-col justify-center flex-1 w-full max-w-lg mx-auto">
-        <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-cherry">
+        <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
           <div className="mb-8 sm:mb-10">
             <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
               Create New Account
@@ -240,7 +240,7 @@ export default function SignUpForm() {
                 </div>
                 {/* <!-- Button --> */}
                 <div className="pt-2">
-                  <button className="cherry-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-brand-500 shadow-cherry hover:bg-brand-600 tracking-wider" disabled={loading}>
+                  <button className="brand-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-brand-500 shadow-brand hover:bg-brand-600 tracking-wider" disabled={loading}>
                     {loading ? "Registering Agency..." : "Create Partner Account"}
                   </button>
                 </div>

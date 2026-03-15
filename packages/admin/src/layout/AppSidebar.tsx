@@ -4,7 +4,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { contentService } from "@thaiakha/shared/services";
-import { LogoIconLight, LogoIconDark, SidebarNavItem } from "@thaiakha/shared";
+import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider } from "@thaiakha/shared";
 import { supabase } from "@thaiakha/shared/lib/supabase";
 import Tooltip from "../components/ui/Tooltip";
 import { ExternalLink } from "lucide-react";
@@ -152,6 +152,11 @@ const AppSidebar: React.FC = () => {
               Thai <span className="text-brand-500">Akha</span>
             </span>
           </div>
+        </div>
+
+        {/* DIVIDER */}
+        <div className="my-2">
+          <SidebarDivider className="my-0" />
         </div>
 
         {/* MENU LIST */}

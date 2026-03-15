@@ -48,7 +48,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
   const ThemeIcon = isDarkMode ? SunIcon : MoonIcon;
 
   // Map accent to Tailwind classes for toggle switch
-  const toggleDarkColor = accentColor === 'brand' ? 'bg-cherry-500' : 'bg-lime-600';
+  const toggleDarkColor = accentColor === 'brand' ? 'bg-brand-500' : 'bg-lime-600';
 
   // ========== SIDEBAR VARIANT (Desktop) ==========
   if (variant === 'sidebar') {
@@ -86,7 +86,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
           {/* Toggle Switch - Inside collapsible text container */}
           <div
             className={cn(
-              'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ml-auto mr-1',
+              'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ml-auto mr-8',
               isDarkMode ? toggleDarkColor : 'bg-gray-300 dark:bg-gray-600'
             )}
           >

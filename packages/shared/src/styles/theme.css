@@ -227,8 +227,8 @@
   /* ============================================================================
      GLASS EFFECT VARIABLES
      ============================================================================ */
-  --shadow-cherry: 0 10px 30px -10px rgba(227, 31, 51, 0.3);
-  --shadow-cherry-hover: 0 20px 40px -15px rgba(227, 31, 51, 0.4);
+  --shadow-brand: 0 10px 30px -10px rgba(227, 31, 51, 0.3);
+  --shadow-brand-hover: 0 20px 40px -15px rgba(227, 31, 51, 0.4);
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.1);

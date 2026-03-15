@@ -147,7 +147,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
           <button
             onClick={handleAskClick}
             disabled={isDemo}
-            className="h-10 md:h-12 rounded-xl bg-primary/10 border border-white/20 hover:bg-primary hover:text-white text-primary font-black uppercase text-[10px] md:text-xs tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-primary/20 group/cherry"
+            className="h-10 md:h-12 rounded-xl bg-primary/10 border border-white/20 hover:bg-primary hover:text-white text-primary font-black uppercase text-[10px] md:text-xs tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-primary/20 group/brand"
           >
             <Icon name="chat" size="sm" />
             Ask Cherry

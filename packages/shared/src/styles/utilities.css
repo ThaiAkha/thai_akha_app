@@ -15,7 +15,7 @@
    GLASS EFFECTS
    ============================================================================ */
 
-@utility cherry-glass {
+@utility brand-glass {
   @apply bg-white/3 dark:bg-black/3 backdrop-blur-[8px] border border-white/10 dark:border-white/5;
 }
 
@@ -27,12 +27,12 @@
    BUTTON & ANIMATION EFFECTS
    ============================================================================ */
 
-@utility cherry-btn-animation {
+@utility brand-btn-animation {
   @apply transition-all duration-300 ease-[var(--transition-bezier)] active:scale-95 hover:-translate-y-0.5;
 }
 
-@utility cherry-shadow-brand {
-  @apply shadow-[var(--shadow-cherry)] hover:shadow-[var(--shadow-cherry-hover)];
+@utility brand-shadow {
+  @apply shadow-[var(--shadow-brand)] hover:shadow-[var(--shadow-brand-hover)];
 }
 
 /* ============================================================================

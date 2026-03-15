@@ -17,15 +17,15 @@ export default {
         "../shared/src/**/*.{js,ts,jsx,tsx}",
     ],
     safelist: [
-        // ========== ADMIN SIDEBAR COLORS (brand = cherry) ==========
+        // ========== ADMIN SIDEBAR COLORS (brand red) ==========
         // Active background
-        'bg-cherry-500/10',
-        'dark:bg-cherry-500/20',
+        'bg-brand-500/10',
+        'dark:bg-brand-500/20',
         // Active text & icon
-        'text-cherry-600',
-        'dark:text-cherry-400',
+        'text-brand-600',
+        'dark:text-brand-400',
         // Badge & indicator
-        'bg-cherry-600',
+        'bg-brand-600',
     ],
     theme: {
         extend: getBaseThemeExtension(),

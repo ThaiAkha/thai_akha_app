@@ -50,7 +50,7 @@ export interface NavItemProps {
  * - Hover effects on icons and background
  * - Badge support for labels like "NEW"
  * - Dark mode support
- * - Two color schemes: brand (cherry red) and action (lime green)
+ * - Two color schemes: brand (primary red) and action (lime green)
  */
 const NavItem: React.FC<NavItemProps> = ({
   icon,

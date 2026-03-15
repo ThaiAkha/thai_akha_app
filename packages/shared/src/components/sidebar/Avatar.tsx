@@ -49,7 +49,7 @@ const Avatar: React.FC<AvatarProps> = ({
     <div
       className={`
         ${sizeClass} rounded-full flex items-center justify-center
-        bg-gradient-to-br from-cherry-500 to-cherry-600 dark:from-cherry-600 dark:to-cherry-700
+        bg-gradient-to-br from-brand-500 to-brand-600 dark:from-brand-600 dark:to-brand-700
         text-white font-bold overflow-hidden flex-shrink-0 ${className}
       `}
     >

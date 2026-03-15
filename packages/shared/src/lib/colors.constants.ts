@@ -11,15 +11,16 @@
 // ============================================================================
 
 export const COLORS = {
-  // 🔴 Cherry Red — Brand primary (Front App CTA)
-  cherry: {
+  // 🔴 Brand Red — Primary brand color (Admin sidebar, front CTA)
+  brand: {
+    50: '#FBDDE4',
     100: '#FBDDE4',
     200: '#F6BCCB',
     300: '#F09AB2',
     400: '#ED7A93',
-    500: '#E54063', // Primary CTA button
-    600: '#C9334F', // Hover
-    700: '#A82741', // Pressed
+    500: '#E54063', // Primary button & brand accent
+    600: '#C9334F', // Hover state
+    700: '#A82741', // Pressed state
     800: '#861D32',
     900: '#641425',
     950: '#420C18',
@@ -102,6 +103,9 @@ export const COLORS = {
 /**
  * Light mode semantic colors
  * Apply in components without worrying about dark mode switching
+ *
+ * Note: COLORS.brand is the primary brand color (#E54063)
+ * used for admin sidebar, buttons, and accent elements across both apps.
  */
 export const SEMANTIC_TOKENS_LIGHT = {
   // Background & Surface
@@ -147,24 +151,24 @@ export const SEMANTIC_TOKENS_DARK = {
 
 /**
  * Color schemes for sidebar menu items
- * - 'brand': Admin app (cherry red)
- * - 'action': Front app (lime green / action color)
+ * - 'brand': Admin app (primary red #E54063)
+ * - 'action': Front app (lime green #BAD879)
  */
 export const SIDEBAR_COLOR_SCHEMES = {
   brand: {
     // Active state styling
-    activeBg: 'bg-cherry-500/10 dark:bg-cherry-500/20',
-    activeText: 'text-cherry-600 dark:text-cherry-400',
-    activeIcon: 'text-cherry-600 dark:text-cherry-400',
-    badgeBg: 'bg-cherry-600',
-    indicator: 'bg-cherry-600',
+    activeBg: 'bg-brand-500/10 dark:bg-brand-500/20',
+    activeText: 'text-brand-600 dark:text-brand-400',
+    activeIcon: 'text-brand-600 dark:text-brand-400',
+    badgeBg: 'bg-brand-600',
+    indicator: 'bg-brand-600',
 
     // Hex values for non-Tailwind use
     hex: {
-      activeBg: COLORS.cherry[100],
-      activeText: COLORS.cherry[600],
-      icon: COLORS.cherry[600],
-      indicator: COLORS.cherry[600],
+      activeBg: COLORS.brand[100],
+      activeText: COLORS.brand[600],
+      icon: COLORS.brand[600],
+      indicator: COLORS.brand[600],
     }
   },
 
@@ -192,8 +196,8 @@ export const SIDEBAR_COLOR_SCHEMES = {
 
 export const BUTTON_COLORS = {
   primary: {
-    light: COLORS.cherry[500],      // Front: Cherry
-    dark: COLORS.lime[500],         // Admin: Lime
+    light: COLORS.brand[500],       // Brand red (#E54063)
+    dark: COLORS.lime[500],         // Lime green (#BAD879)
   },
   secondary: {
     light: COLORS.orange[500],      // Front: Orange
@@ -208,7 +212,7 @@ export const BUTTON_COLORS = {
 // ============================================================================
 
 export const GRADIENTS = {
-  sunset: `linear-gradient(135deg, ${COLORS.orange[500]}, ${COLORS.cherry[500]})`,
+  sunset: `linear-gradient(135deg, ${COLORS.orange[500]}, ${COLORS.brand[500]})`,
   nightBlue: `linear-gradient(135deg, ${COLORS.blue[500]}, ${COLORS.purple[500]})`,
   quizChat: `linear-gradient(135deg, ${COLORS.purple[500]}, ${COLORS.magenta[500]})`,
 };
@@ -218,8 +222,8 @@ export const GRADIENTS = {
 // ============================================================================
 
 export const GLOW_SHADOWS = {
-  cherry: '0 4px 20px rgba(229, 64, 99, 0.40)',
-  cherryHeavy: '0 8px 36px rgba(229, 64, 99, 0.60)',
+  brand: '0 4px 20px rgba(229, 64, 99, 0.40)',
+  brandHeavy: '0 8px 36px rgba(229, 64, 99, 0.60)',
 
   lime: '0 4px 16px rgba(186, 216, 121, 0.40)',
   limeHeavy: '0 8px 28px rgba(186, 216, 121, 0.55)',

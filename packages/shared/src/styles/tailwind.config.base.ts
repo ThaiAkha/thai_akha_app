@@ -22,8 +22,9 @@
 // ============================================================================
 
 const baseColors = {
-  // 🔴 Cherry Red — Brand primary (Admin sidebar, front CTA)
-  cherry: {
+  // 🔴 Brand Red — Primary brand color (Admin sidebar, front CTA)
+  brand: {
+    50: '#FBDDE4',
     100: '#FBDDE4',
     200: '#F6BCCB',
     300: '#F09AB2',
@@ -36,7 +37,7 @@ const baseColors = {
     950: '#420C18',
   },
 
-  // 🟢 Lime Green — Admin secondary + action color (Front sidebar active)
+  // 🟢 Lime Green — Secondary + action color (Front sidebar active)
   lime: {
     100: '#EEF7D4',
     200: '#E3F2BB',
@@ -65,14 +66,6 @@ const baseColors = {
     400: '#60A5FA',
     500: '#3B82F6',
     600: '#2563EB',
-  },
-
-  // 🎨 Brand colors (cherry alias)
-  brand: {
-    50: '#FBDDE4',
-    100: '#FBDDE4',
-    500: '#E54063',
-    600: '#C9334F',
   },
 };
 
@@ -197,6 +190,12 @@ const baseKeyframes = {
  *     extend: getBaseThemeExtension()
  *   }
  * }
+ *
+ * Color palette:
+ * - brand: Primary brand red (#E54063) - admin sidebar, buttons, accents
+ * - lime: Secondary lime green (#BAD879) - front sidebar active states
+ * - orange: Secondary CTA (#FF6D00)
+ * - blue: Info & navigation (#3B82F6)
  */
 export function getBaseThemeExtension() {
   return {

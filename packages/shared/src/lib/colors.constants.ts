@@ -153,24 +153,24 @@ export const SEMANTIC_TOKENS_DARK = {
 export const SIDEBAR_COLOR_SCHEMES = {
   brand: {
     // Active state styling
-    activeBg: 'bg-cherry-100 dark:bg-cherry-500/[0.12]',
-    activeText: 'text-cherry-500 dark:text-cherry-400',
-    activeIcon: 'text-cherry-500 dark:text-cherry-400',
-    badgeBg: 'bg-cherry-500',
-    indicator: 'bg-cherry-500',
+    activeBg: 'bg-cherry-500/10 dark:bg-cherry-500/20',
+    activeText: 'text-cherry-600 dark:text-cherry-400',
+    activeIcon: 'text-cherry-600 dark:text-cherry-400',
+    badgeBg: 'bg-cherry-600',
+    indicator: 'bg-cherry-600',
 
     // Hex values for non-Tailwind use
     hex: {
       activeBg: COLORS.cherry[100],
-      activeText: COLORS.cherry[500],
-      icon: COLORS.cherry[500],
-      indicator: COLORS.cherry[500],
+      activeText: COLORS.cherry[600],
+      icon: COLORS.cherry[600],
+      indicator: COLORS.cherry[600],
     }
   },
 
   action: {
     // Active state styling
-    activeBg: 'bg-lime-100 dark:bg-lime-500/[0.12]',
+    activeBg: 'bg-lime-500/10 dark:bg-lime-500/20',
     activeText: 'text-lime-700 dark:text-lime-400',
     activeIcon: 'text-lime-700 dark:text-lime-400',
     badgeBg: 'bg-lime-700',

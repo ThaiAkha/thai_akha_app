@@ -9,8 +9,8 @@ export default {
   safelist: [
     // ========== FRONT SIDEBAR COLORS (action = lime) ==========
     // Active background
-    'bg-lime-100',
-    'dark:bg-lime-500/[0.12]',
+    'bg-lime-500/10',
+    'dark:bg-lime-500/20',
     // Active text & icon
     'text-lime-700',
     'dark:text-lime-400',

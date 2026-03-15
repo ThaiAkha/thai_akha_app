@@ -115,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* HEADER: LOGO */}
-        <div className="flex items-center mb-4 h-12">
+        <div className="flex items-center mt-4 mb-4 h-12">
           <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] -ml-2`}>
             <img
               src={isDarkMode ? LogoIconDark : LogoIconLight}
@@ -171,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* ========== MENU SECTION ========== */}
-        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-2">
           {visibleItems.map((item) => (
             <li key={item.page_slug}>
               <SidebarNavItem
@@ -192,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ul>
 
         {/* ========== FOOTER SECTION ========== */}
-        <div className="mt-auto pt-4 space-y-1">
+        <div className="mt-auto pt-4 space-y-2">
 
           {/* DIVIDER 3 */}
           <SidebarDivider className="my-1" />

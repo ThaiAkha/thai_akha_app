@@ -49,6 +49,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       const authSlugs = ['auth', 'login', 'logout', 'register', 'sign-in', 'sign-up'];
       if (authSlugs.includes(item.page_slug.toLowerCase())) return false;
 
+      // 🚫 EXCLUDE: Student Hub (will be shown in avatar menu)
+      if (item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub') return false;
+
       const level = item.access_level || 'public';
 
       // 🛡️ ADMIN: Hide from public front app

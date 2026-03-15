@@ -62,8 +62,11 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       // Nascondi pagine Auth tecniche
       if (['auth', 'login'].includes(item.page_slug)) return false;
 
+      // 🚫 EXCLUDE: Student Hub (will be shown in avatar menu)
+      if (item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub') return false;
+
       // 🛡️ ADMIN: Nascondi voci operative dalla sidebar pubblica
-      if (level === 'admin' || level === 'manager') return false; 
+      if (level === 'admin' || level === 'manager') return false;
 
       // 🏢 AGENCY: Mostra SOLO se l'utente è un'agenzia
       if (level === 'agency') return userProfile?.role === 'agency';

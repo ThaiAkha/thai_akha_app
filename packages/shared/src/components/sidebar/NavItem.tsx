@@ -73,7 +73,7 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl mx-2 my-0.5 px-2 py-1
+        rounded-xl mx-2
       `}
       style={{
         backgroundColor: getBgColor(),

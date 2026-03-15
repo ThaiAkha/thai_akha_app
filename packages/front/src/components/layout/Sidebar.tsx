@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { getIcon } from '@thaiakha/shared/lib/icons';
-import { LogoIconLight, LogoIconDark, SidebarNavItem, SIDEBAR_CONSTANTS } from '@thaiakha/shared';
+import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider, SidebarAvatar, SIDEBAR_CONSTANTS } from '@thaiakha/shared';
 
 // --- TYPES ---
 interface MenuItem {
@@ -77,8 +77,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <div className="flex flex-col h-full py-6 pt-[40px]">
 
+        {/* ========== TOP SECTION ========== */}
+
         {/* HAMBURGER TOGGLE */}
-        <div className="mb-8 space-y-1">
+        <div className="mb-1 px-2">
           <button
             onClick={onToggle}
             title="Toggle Sidebar"
@@ -102,8 +104,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
+        {/* DIVIDER 1 */}
+        <div className="px-2 my-2">
+          <SidebarDivider className="my-0" />
+        </div>
+
         {/* HEADER: LOGO */}
-        <div className="flex items-center mb-8 h-12">
+        <div className="flex items-center mb-6 h-12 px-2">
           <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
             <img
               src={isDarkMode ? LogoIconDark : LogoIconLight}
@@ -119,8 +126,41 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* ================= LISTA MENU ================= */}
-        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
+        {/* USER PAGE SECTION (if logged in) */}
+        {userProfile && (
+          <>
+            <div className="px-2 mb-2">
+              <li className="group">
+                <button
+                  onClick={() => onNavigate('user-profile')}
+                  className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+                >
+                  <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+                  <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+                    <SidebarAvatar
+                      name={userProfile.full_name || userProfile.email}
+                      src={userProfile.avatar_url}
+                      size="md"
+                    />
+                  </div>
+                  <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+                    <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">
+                      {userProfile.full_name || 'Profile'}
+                    </span>
+                  </div>
+                </button>
+              </li>
+            </div>
+
+            {/* DIVIDER 2 */}
+            <div className="px-2 my-2">
+              <SidebarDivider className="my-0" />
+            </div>
+          </>
+        )}
+
+        {/* ========== MENU SECTION ========== */}
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1 px-2">
           {visibleItems.map((item) => (
             <li key={item.page_slug} className="group">
               <SidebarNavItem
@@ -137,8 +177,28 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </ul>
 
-        {/* FOOTER */}
-        <div className="mt-auto pt-4 space-y-1 border-t border-gray-200 dark:border-gray-700">
+        {/* ========== FOOTER SECTION ========== */}
+        <div className="mt-auto pt-4 space-y-2 px-2">
+
+          {/* DIVIDER 3 */}
+          <SidebarDivider className="my-1" />
+
+          {/* LANGUAGE SWITCHER */}
+          <button
+            className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+            title="Languages"
+          >
+            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+              {(() => {
+                const LangIcon = getIcon('Globe');
+                return <LangIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />;
+              })()}
+            </div>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">Languages</span>
+            </div>
+          </button>
 
           {/* SIGN IN/OUT BUTTON */}
           <button

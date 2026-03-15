@@ -1,0 +1,120 @@
+/**
+ * Thai Akha Kitchen — Centralized CSS Variables
+ * Auto-generated from colors.constants.ts
+ *
+ * SINGLE SOURCE OF TRUTH for all color tokens across Admin, Front, and Shared.
+ * These variables are used by:
+ * - Tailwind v4 @theme directives in both apps
+ * - CSS-in-JS color mapping in components
+ * - Direct CSS variable references (var(--color-...))
+ *
+ * Update: Edit colors.constants.ts and regenerate this file
+ */
+
+:root {
+  /* ========================================================================
+     🔴 CHERRY RED — Brand primary (Admin sidebar, Front CTA)
+     ======================================================================== */
+  --color-cherry-100: #FBDDE4;
+  --color-cherry-200: #F6BCCB;
+  --color-cherry-300: #F09AB2;
+  --color-cherry-400: #ED7A93;
+  --color-cherry-500: #E54063;
+  --color-cherry-600: #C9334F;
+  --color-cherry-700: #A82741;
+  --color-cherry-800: #861D32;
+  --color-cherry-900: #641425;
+  --color-cherry-950: #420C18;
+
+  /* ========================================================================
+     🟢 LIME GREEN — Admin secondary + action color (Front sidebar active)
+     ======================================================================== */
+  --color-lime-100: #EEF7D4;
+  --color-lime-200: #E3F2BB;
+  --color-lime-300: #D6EBA8;
+  --color-lime-400: #CDE89A;
+  --color-lime-500: #BAD879;
+  --color-lime-600: #9EBF63;
+  --color-lime-700: #82A64D;
+  --color-lime-800: #65843A;
+  --color-lime-900: #4A6229;
+  --color-lime-950: #2E3D19;
+
+  /* ========================================================================
+     🟠 ORANGE — Secondary CTA
+     ======================================================================== */
+  --color-orange-300: #FFBA80;
+  --color-orange-400: #FF9040;
+  --color-orange-500: #FF6D00;
+  --color-orange-600: #E56000;
+  --color-orange-700: #CC5500;
+
+  /* ========================================================================
+     🔵 BLUE — Info & Navigation
+     ======================================================================== */
+  --color-blue-300: #93C5FD;
+  --color-blue-400: #60A5FA;
+  --color-blue-500: #3B82F6;
+  --color-blue-600: #2563EB;
+
+  /* ========================================================================
+     🎨 BRAND ALIASES (for explicit brand context)
+     ======================================================================== */
+  --color-brand-50: #FBDDE4;
+  --color-brand-100: #FBDDE4;
+  --color-brand-500: #E54063;
+  --color-brand-600: #C9334F;
+
+  /* ========================================================================
+     ⚪ SYSTEM GRAYS (Neutral scale)
+     ======================================================================== */
+  --color-gray-25: #F6FCFC;
+  --color-gray-50: #E6ECEC;
+  --color-gray-100: #D6DCDC;
+  --color-gray-200: #C2C8C8;
+  --color-gray-300: #AEB4B4;
+  --color-gray-400: #9AA0A0;
+  --color-gray-500: #868C8C;
+  --color-gray-600: #727878;
+  --color-gray-700: #5E6464;
+  --color-gray-800: #4A504F;
+  --color-gray-900: #222827;
+  --color-gray-950: #121311;
+
+  /* ========================================================================
+     🚨 SYSTEM UI COLORS (Functional)
+     ======================================================================== */
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-notice: #EAB308;
+  --color-success: #22C55E;
+  --color-info: #3B82F6;
+}
+
+/**
+ * Dark Mode Adjustments
+ * Note: If you need dark-mode-specific color values, define them here
+ * Currently using the same palette for both modes (managed via CSS filters in theme CSS)
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode can override specific variables if needed */
+    /* Example: --color-surface: #121212; */
+  }
+}
+
+/**
+ * Thai Language Support
+ * Adjust typography for proper Thai character rendering
+ */
+html:lang(th) {
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  font-family: 'Noto Sans Thai', 'Sarabun', sans-serif;
+}
+
+/* Ensure Thai text in elements also uses proper spacing */
+html:lang(th) body,
+html:lang(th) * {
+  line-height: 1.6;
+}

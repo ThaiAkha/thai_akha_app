@@ -1,5 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto:wght@400;700&family=Noto+Sans+Thai:wght@400;700&display=swap") layer(base);
 
+/* Import centralized color tokens from shared package */
+@import "../../shared/src/styles/tokens.css";
+
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));

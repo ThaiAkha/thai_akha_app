@@ -1,3 +1,6 @@
+/* Import centralized color tokens from shared package */
+@import '@thaiakha/shared/styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

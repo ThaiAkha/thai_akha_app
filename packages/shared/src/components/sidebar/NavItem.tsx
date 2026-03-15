@@ -120,44 +120,38 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl mx-1
+        rounded-xl mx-2
+        ${getActivePillClasses()}
+        ${getHoverPillClasses()}
       `}
     >
-      {/* PILL WRAPPER - Contains icon and text with pill styling and spacing */}
+
+      {/* ICON CONTAINER - Fixed width, always visible */}
+      <div
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10`}
+      >
+        <IconComponent
+          className={`
+            ${SIDEBAR_CONSTANTS.ICON_SIZE}
+            transition-transform duration-300
+            ${SIDEBAR_CONSTANTS.ICON_ACTIVE_SCALE}
+            ${
+              isActive
+                ? colors.activeIcon
+                : `${SIDEBAR_CONSTANTS.INACTIVE_ICON} ${SIDEBAR_CONSTANTS.HOVER_ICON}`
+            }
+          `}
+        />
+      </div>
+
+      {/* TEXT CONTAINER - Appears only when sidebar is open */}
       <div
         className={`
-          flex items-center flex-1 rounded-lg py-1 px-2
-          ${getActivePillClasses()}
-          ${getHoverPillClasses()}
+          flex items-center flex-1 overflow-hidden whitespace-nowrap relative z-10
+          transition-all duration-300 ${SIDEBAR_CONSTANTS.EASE_CUBIC} origin-left
+          ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
         `}
       >
-
-        {/* ICON CONTAINER - Fixed width, always visible */}
-        <div
-          className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10`}
-        >
-          <IconComponent
-            className={`
-              ${SIDEBAR_CONSTANTS.ICON_SIZE}
-              transition-transform duration-300
-              ${SIDEBAR_CONSTANTS.ICON_ACTIVE_SCALE}
-              ${
-                isActive
-                  ? colors.activeIcon
-                  : `${SIDEBAR_CONSTANTS.INACTIVE_ICON} ${SIDEBAR_CONSTANTS.HOVER_ICON}`
-              }
-            `}
-          />
-        </div>
-
-        {/* TEXT CONTAINER - Appears only when sidebar is open */}
-        <div
-          className={`
-            flex items-center flex-1 overflow-hidden whitespace-nowrap relative z-10
-            transition-all duration-300 ${SIDEBAR_CONSTANTS.EASE_CUBIC} origin-left
-            ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
-          `}
-        >
         {/* Label text */}
         <span
           className={`
@@ -186,7 +180,6 @@ const NavItem: React.FC<NavItemProps> = ({
             {badge}
           </span>
         )}
-      </div>
       </div>
     </button>
   );

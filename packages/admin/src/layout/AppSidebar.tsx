@@ -166,7 +166,7 @@ const AppSidebar: React.FC = () => {
         </div>
 
         {/* FOOTER - GO LIVE WEB CARD */}
-        <div className={`mt-auto px-4 pb-6 transition-all duration-500 ${isSidebarOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+        <div className={`mt-auto mx-2 pb-6 transition-all duration-500 ${isSidebarOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
           <a
             href={FRONT_APP_URL}
             onClick={handleGoToLiveWeb}

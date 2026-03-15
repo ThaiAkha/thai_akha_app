@@ -67,7 +67,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
         />
 
         {/* Icon Container - Fixed width, always visible, left-aligned */}
-        <div className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-7 z-10`}>
+        <div className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-5 z-10`}>
           <ThemeIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />
         </div>
 
@@ -79,7 +79,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
             ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
           `}
         >
-          <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-2">
+          <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
             {isDarkMode ? 'Light' : 'Dark'}
           </span>
 

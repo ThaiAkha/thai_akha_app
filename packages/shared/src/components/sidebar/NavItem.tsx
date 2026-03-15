@@ -128,7 +128,7 @@ const NavItem: React.FC<NavItemProps> = ({
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-7 relative z-10 `}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-5 relative z-10 `}
       >
         <IconComponent
           className={`
@@ -157,7 +157,6 @@ const NavItem: React.FC<NavItemProps> = ({
             ${SIDEBAR_CONSTANTS.FONT_DISPLAY}
             ${SIDEBAR_CONSTANTS.FONT_STYLE}
             ${isActive ? colors.activeText : SIDEBAR_CONSTANTS.INACTIVE_TEXT}
-            ml-2
           `}
         >
           {label}

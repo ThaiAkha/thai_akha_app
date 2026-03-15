@@ -20,6 +20,8 @@ export default {
     "./**/*.{js,ts,jsx,tsx}",
   ],
   safelist: [
+    // ========== SIDEBAR BACKGROUND ==========
+    'dark:bg-gray-dark',
     // ========== FRONT SIDEBAR COLORS (action = lime) ==========
     // Pill active states
     'bg-lime-500/20',

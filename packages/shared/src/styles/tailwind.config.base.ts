@@ -82,6 +82,22 @@ const baseColors = {
     600: '#7C3AED',
   },
 
+  // ⚪ Gray — Neutral palette (Warm gray from design system)
+  gray: {
+    25: '#F6FCFC',
+    50: '#E6ECEC',
+    100: '#D6DCDC',
+    200: '#C2C8C8',
+    300: '#AEB4B4',
+    400: '#9AA0A0',
+    500: '#868C8C',
+    600: '#727878',
+    700: '#5E6464',
+    800: '#4A504F',
+    900: '#222827',  // Surface dark mode (warm gray)
+    950: '#121311',  // Background dark mode
+  },
+
   // 🚨 System UI Colors — Functional
   'sys-error': '#EF4444',
   'sys-warning': '#F59E0B',

@@ -17,6 +17,8 @@ export default {
         "../shared/src/**/*.{js,ts,jsx,tsx}",
     ],
     safelist: [
+        // ========== SIDEBAR BACKGROUND ==========
+        'dark:bg-gray-dark',
         // ========== ADMIN SIDEBAR COLORS (brand red) ==========
         // Pill active states
         'bg-brand-500/20',
@@ -33,7 +35,9 @@ export default {
         'pl-5',
     ],
     theme: {
-        extend: getBaseThemeExtension(),
+        extend: {
+            ...getBaseThemeExtension(),
+        },
     },
     plugins: [],
 }

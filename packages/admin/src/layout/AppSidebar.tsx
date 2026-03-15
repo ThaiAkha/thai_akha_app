@@ -1,12 +1,16 @@
 import { Link, useLocation } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getIcon } from "@thaiakha/shared/lib/icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { contentService } from "@thaiakha/shared/services";
 import { LogoIconLight, LogoIconDark } from "@thaiakha/shared";
+import { supabase } from "@thaiakha/shared/lib/supabase";
 import Tooltip from "../components/ui/Tooltip";
+import { ExternalLink } from "lucide-react";
+
+const FRONT_APP_URL = import.meta.env.VITE_FRONT_APP_URL || 'http://localhost:3000';
 
 type NavItem = {
   name: string;
@@ -126,6 +130,27 @@ const AppSidebar: React.FC = () => {
     );
   };
 
+  /**
+   * Hand-off the current Supabase session to the front app via URL tokens.
+   * The front app will pick up #access_token&refresh_token and call setSession().
+   */
+  const handleGoToLiveWeb = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token && session?.refresh_token) {
+        // Pass tokens in the URL fragment (never in query string — it looks cleaner & avoids server logs)
+        const url = `${FRONT_APP_URL}#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}&token_type=bearer`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        // No active session — just open the front app normally
+        window.open(FRONT_APP_URL, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      window.open(FRONT_APP_URL, '_blank', 'noopener,noreferrer');
+    }
+  }, []);
+
 
 
   return (
@@ -191,55 +216,24 @@ const AppSidebar: React.FC = () => {
           </ul>
         </div>
 
-        {/* FOOTER */}
-        <div className={`mt-auto pt-4 space-y-1 border-t border-gray-200 dark:border-gray-700`}>
-
-          {/* SIGN IN/OUT BUTTON */}
-          <button
-            onClick={() => {
-              if (user) {
-                // Logout functionality would be added here
-                window.location.href = '/signin';
-              } else {
-                window.location.href = '/signin';
-              }
-            }}
-            className={`relative flex items-center w-full h-14 rounded-xl transition-all group text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400`}
+        {/* FOOTER - GO LIVE WEB CARD */}
+        <div className={`mt-auto px-2 transition-all duration-500 ${isSidebarOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+          <a
+            href={FRONT_APP_URL}
+            onClick={handleGoToLiveWeb}
+            className="block p-4 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 transition-all duration-300 no-underline"
           >
-            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
-            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
-              {(() => {
-                const AuthIcon = user ? getIcon('LogOut') : getIcon('LogIn');
-                return <AuthIcon className="w-6 h-6" />;
-              })()}
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-white">Visit Live Site</h3>
+                <p className="text-xs text-brand-100 mt-1">Explore the public website</p>
+              </div>
+              <ExternalLink size={16} className="text-white shrink-0 mt-1" />
             </div>
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{user ? 'Sign Out' : 'Log In'}</span>
-            </div>
-          </button>
-
-          {/* THEME TOGGLE BUTTON */}
-          <button
-            onClick={() => {
-              // Theme toggle functionality already handled by ThemeContext
-              const newTheme = theme === 'dark' ? 'light' : 'dark';
-              localStorage.setItem('theme', newTheme);
-              window.location.reload();
-            }}
-            className={`relative flex items-center w-full h-14 rounded-xl transition-all group text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-yellow-400`}
-          >
-            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
-            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
-              {(() => {
-                const ThemeIcon = theme === 'dark' ? getIcon('Sun') : getIcon('Moon');
-                return <ThemeIcon className="w-6 h-6" />;
-              })()}
-            </div>
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-            </div>
-          </button>
-
+            <button className="w-full py-2 px-3 mt-2 bg-white hover:bg-gray-50 text-brand-600 font-bold text-sm rounded-lg transition-colors duration-200">
+              Go Live Web
+            </button>
+          </a>
         </div>
 
       </div>

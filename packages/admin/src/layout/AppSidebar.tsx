@@ -126,7 +126,7 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       style={{ transitionDuration: SIDEBAR_CONSTANTS.SIDEBAR_TRANSITION_DURATION }}
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-dark dark:border-gray-800 text-gray-900 h-screen z-[99] border-r border-gray-200
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white/20 dark:bg-gray-dark dark:border-gray-900 text-gray-900 h-screen z-[99] border-r border-gray-100
         transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
         ${isSidebarOpen ? "w-80" : "w-[108px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}

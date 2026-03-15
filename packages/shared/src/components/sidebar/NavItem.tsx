@@ -49,6 +49,9 @@ export interface NavItemProps {
 
   /** Pill style variant: 'filled' (background), 'outline' (border), 'subtle' (faded) */
   pillVariant?: PillVariant;
+
+  /** Center icon in container (admin sidebar) or left-align (front sidebar) */
+  centerIcon?: boolean;
 }
 
 /**
@@ -75,6 +78,7 @@ const NavItem: React.FC<NavItemProps> = ({
   showPillOnHover = true,
   showPillOnActive = true,
   pillVariant = 'filled',
+  centerIcon = false,
 }: NavItemProps) => {
   const IconComponent = getIcon(icon);
   const colors = SIDEBAR_COLOR_SCHEMES[accentColor as AccentColorScheme];
@@ -128,7 +132,8 @@ const NavItem: React.FC<NavItemProps> = ({
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] relative z-10 `}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center relative z-10 ${centerIcon ? 'justify-center pr-4' : 'justify-start pl-[2.1rem]'
+          }`}
       >
         <IconComponent
           className={`

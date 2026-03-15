@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Typography, Toggle, Badge, Icon } from '../ui/index';
-import { ThemeSwitcher } from '@thaiakha/shared';
+import { ThemeSwitcher, SidebarAvatar, SidebarDivider, SidebarActionButton } from '@thaiakha/shared';
+import { getIcon } from '@thaiakha/shared/lib/icons';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
+import { GraduationCap } from 'lucide-react';
 
 type Page = string;
 
@@ -148,24 +150,24 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         className={cn(
           "fixed inset-y-0 left-0 z-[3] w-[min(320px,85vw)] flex flex-col",
           "transition-transform duration-500 ease-cinematic border-r",
-          "bg-[#0a0b0d]/95 backdrop-blur-2xl border-white/5 shadow-[20px_0_60px_rgba(0,0,0,0.5)]",
+          "bg-white dark:bg-gray-dark backdrop-blur-sm border-gray-100 dark:border-gray-900 shadow-[20px_0_60px_rgba(0,0,0,0.5)]",
           (stage === 'opening' || stage === 'open') ? "translate-x-0" : "-translate-x-full"
         )}
       >
 
         {/* HEADER */}
-        <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-white/5">
+        <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-gray-100 dark:border-gray-900">
           <button
             onClick={handleToggle}
-            className="size-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-action/50 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
+            className="size-12 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 hover:border-brand-500 dark:hover:border-brand-400 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
           >
             <Icon name="X" className="text-2xl" />
           </button>
           <div className="text-right ml-2 mt-1">
-            <Typography variant="h3" className="font-black italic uppercase tracking-tighter text-white leading-none">
-              Thai <span className="text-action">Akha</span>
+            <Typography variant="h3" className="text-base font-black italic uppercase tracking-tighter text-gray-700 dark:text-gray-300 leading-none">
+              Thai <span className="text-brand-500 dark:text-brand-400">Akha</span>
             </Typography>
-            <Typography variant="caption" className="text-white/60 font-bold tracking-[0.3em] text-xs mt-1 block">
+            <Typography variant="caption" className="text-gray-500 dark:text-gray-400 font-bold tracking-[0.3em] text-xs mt-1 block">
               COOKING SCHOOL
             </Typography>
           </div>
@@ -176,7 +178,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
           {filteredNavItems.length === 0 ? (
             // Loading Skeleton
             <div className="space-y-4 px-2 opacity-50">
-              {[4, 5, 6, 7].map(i => <div key={i} className="h-14 rounded-2xl bg-white/5 animate-pulse" />)}
+              {[4, 5, 6, 7].map(i => <div key={i} className="h-14 rounded-2xl bg-gray-100 dark:bg-white/5 animate-pulse" />)}
             </div>
           ) : (
             filteredNavItems.map((item, index) => {
@@ -192,16 +194,16 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                     isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
                     // Active State
                     isActive
-                      ? "bg-action/10 text-action shadow-[inset_4px_0_0_0_#98C93C]"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                      ? "bg-brand-50 dark:bg-brand-500/[0.12] text-brand-500 dark:text-brand-400 shadow-[inset_4px_0_0_0_rgb(var(--color-brand))]"
+                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300"
                   )}
                   style={{ transitionDelay: stage === 'opening' ? '0ms' : '0ms' }}
                 >
                   <Icon
                     name={item.header_icon || 'Circle'}
-                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-action" : "text-white/40 group-hover:text-white")}
+                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-brand-500 dark:text-brand-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300")}
                   />
-                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-action" : "text-current")}>
+                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-brand-500 dark:text-brand-400" : "text-current")}>
                     {item.menu_label}
                   </Typography>
                   {/* Freccia Hover */}
@@ -216,14 +218,14 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         </div>
 
         {/* FOOTER */}
-        <div className="p-6 border-t border-white/5 bg-black/20 space-y-4">
+        <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-white/5 space-y-4">
 
           {/* Theme Toggle */}
           <ThemeSwitcher
             isDarkMode={isDarkMode}
             onToggle={onToggleTheme}
             variant="mobile"
-            accentColor="action"
+            accentColor="brand"
           />
 
           {/* Auth Action (Login/Logout) */}
@@ -232,8 +234,8 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
             className={cn(
               "w-full flex items-center justify-center gap-2 py-3 rounded-2xl transition-colors text-xs font-black uppercase tracking-widest",
               userProfile
-                ? "text-white/40 hover:text-red-400"
-                : "bg-primary text-white shadow-lg hover:brightness-110"
+                ? "text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+                : "bg-brand-500 text-white shadow-lg hover:brightness-110"
             )}
           >
             <Icon name={userProfile ? 'LogOut' : 'LogIn'} className="text-sm" />

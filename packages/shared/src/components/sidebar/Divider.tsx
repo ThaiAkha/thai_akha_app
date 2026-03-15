@@ -15,7 +15,7 @@ const Divider: React.FC<DividerProps> = ({
 }) => {
   return (
     <div
-      className={`h-px bg-gray-200 dark:bg-gray-700 ${className}`}
+      className={`h-px bg-gray-100 dark:bg-gray-900 ${className}`}
       role="separator"
     />
   );

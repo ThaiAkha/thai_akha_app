@@ -99,8 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* BACKGROUND */}
             <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
 
-            {/* ICON CONTAINER (Fixed position) */}
-            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+            {/* ICON CONTAINER (Fixed position, left-aligned) */}
+            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-7 z-10`}>
               {(() => {
                 const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
                 return <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400" />;

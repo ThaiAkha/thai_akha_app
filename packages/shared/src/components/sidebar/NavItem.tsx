@@ -80,8 +80,15 @@ const NavItem: React.FC<NavItemProps> = ({
         className={`
           absolute ${SIDEBAR_CONSTANTS.BG_INSET} ${SIDEBAR_CONSTANTS.BG_ROUNDED}
           ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-          ${isActive ? colors.activeBg : SIDEBAR_CONSTANTS.HOVER_BG}
           pointer-events-none z-0
+          ${accentColor === 'brand'
+            ? isActive
+              ? 'bg-brand-500/15 dark:bg-brand-500/25'
+              : 'group-hover:bg-gray-100 dark:group-hover:bg-white/5'
+            : isActive
+            ? 'bg-lime-500/15 dark:bg-lime-500/25'
+            : 'group-hover:bg-gray-100 dark:group-hover:bg-white/5'
+          }
         `}
       />
 

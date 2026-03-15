@@ -46,18 +46,15 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
   // ========== SIDEBAR VARIANT (Desktop) ==========
   if (variant === 'sidebar') {
     return (
-      <button
-        onClick={onToggle}
+      <div
         className={cn(
-          'relative flex items-center w-full h-14 rounded-xl transition-all group',
+          'relative flex items-center w-full h-14 rounded-xl transition-all group hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer px-2',
           className
         )}
+        onClick={onToggle}
       >
-        {/* Background - Hover state */}
-        <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
-
         {/* Icon Container */}
-        <div className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+        <div className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center z-10 -ml-2`}>
           <ThemeIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />
         </div>
 
@@ -65,14 +62,30 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
         <div
           className={cn(
             'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300',
+            isOpen ? 'opacity-100' : 'opacity-0 -translate-x-2'
+          )}
+        >
+          <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
+            {isDarkMode ? 'Light' : 'Dark'}
+          </span>
+        </div>
+
+        {/* Toggle Switch */}
+        <div
+          className={cn(
+            'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
+            isDarkMode ? 'bg-cherry-500' : 'bg-gray-300 dark:bg-gray-600',
             isOpen ? 'opacity-100' : 'opacity-0'
           )}
         >
-          <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">
-            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-          </span>
+          <span
+            className={cn(
+              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
+              isDarkMode ? 'translate-x-4' : 'translate-x-0'
+            )}
+          />
         </div>
-      </button>
+      </div>
     );
   }
 

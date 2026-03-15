@@ -135,7 +135,7 @@ const AppSidebar: React.FC = () => {
 
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
-          <div className={`w-[108px] shrink-0 flex items-center justify-start pl-[2.1rem]`}>
+          <div className={`w-[108px] shrink-0 flex items-center justify-start pl-[2.1rem] -ml-2`}>
             <Link to="/">
               <img
                 src={theme === "dark" ? LogoIconDark : LogoIconLight}
@@ -159,7 +159,7 @@ const AppSidebar: React.FC = () => {
         </div>
 
         {/* MENU LIST */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-2">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
           <ul className="flex flex-col gap-0">
             {filterByRole(menuItems).map(renderNavItem)}
           </ul>

@@ -94,8 +94,9 @@ const baseColors = {
     600: '#727878',
     700: '#5E6464',
     800: '#4A504F',
-    900: '#222827',  // Surface dark mode (warm gray)
-    950: '#121311',  // Background dark mode
+    900: '#222827',   // Surface dark mode (warm gray)
+    950: '#121311',   // Background dark mode
+    dark: '#080808',  // Very dark (almost black) - from theme.css --color-gray-dark
   },
 
   // 🚨 System UI Colors — Functional

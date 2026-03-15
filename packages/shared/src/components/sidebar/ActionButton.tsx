@@ -61,18 +61,17 @@ const ActionButton: React.FC<ActionButtonProps> = ({
         `}
       />
 
-      {/* ICON CONTAINER - Fixed width, always visible, perfectly centered */}
+      {/* ICON CONTAINER - Fixed width, always visible, left-aligned */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center z-10`}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-7 z-10`}
       >
         <IconComponent className={`${SIDEBAR_CONSTANTS.ICON_SIZE} text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300`} />
       </div>
 
       {/* TEXT CONTAINER - Appears when sidebar is open */}
       <div
-        className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 ${SIDEBAR_CONSTANTS.TRANSITION_EXTENDED} origin-left ${
-          isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
-        }`}
+        className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 ${SIDEBAR_CONSTANTS.TRANSITION_EXTENDED} origin-left ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
+          }`}
       >
         <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
           {label}

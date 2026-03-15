@@ -139,13 +139,6 @@ const NavItem: React.FC<NavItemProps> = ({
           </span>
         )}
       </div>
-
-      {/* ACTIVE INDICATOR - Left border when active */}
-      {isActive && (
-        <div
-          className={`${SIDEBAR_CONSTANTS.LEFT_INDICATOR_BASE} ${colors.indicator}`}
-        />
-      )}
     </button>
   );
 };

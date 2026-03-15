@@ -139,7 +139,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* USER AVATAR SECTION (if logged in) */}
         {userProfile && (
           <>
-            <div className="px-2 mb-2">
+            <div className="px-2 mt-4 mb-4">
               <li className="group">
                 <button
                   onClick={() => onNavigate('user')}

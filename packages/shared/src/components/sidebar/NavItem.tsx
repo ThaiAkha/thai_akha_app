@@ -72,7 +72,7 @@ const NavItem: React.FC<NavItemProps> = ({
       title={label}
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
-        ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD} group
+        ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
       `}
     >
       {/* BACKGROUND - Active/Hover state */}

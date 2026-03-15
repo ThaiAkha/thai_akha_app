@@ -100,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="relative flex items-center w-full h-14 transition-all duration-200 group"
           >
             {/* BACKGROUND */}
-            <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className="absolute inset-1 rounded-xl transition-colors duration-300" />
 
             {/* ICON CONTAINER (Fixed position, left-aligned) */}
             <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
@@ -112,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* TEXT CONTAINER (Appears when open) */}
             <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
-              <span className="font-display font-bold tracking-wide text-gray-500 opacity-50">Close Menu</span>
+              <span className="font-display font-bold tracking-wide text-gray-500 opacity-30">Close Menu</span>
             </div>
           </button>
         </div>
@@ -168,7 +168,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* DIVIDER 2 */}
             <div className="my-2">
-              <SidebarDivider className="my-0" />
+              <SidebarDivider className="my-0 my-4" />
             </div>
           </>
         )}
@@ -198,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="mt-auto space-y-2">
 
           {/* DIVIDER 3 */}
-          <SidebarDivider className="my-1" />
+          <SidebarDivider className="my-1 mb-4" />
 
           {/* LANGUAGE SWITCHER */}
           <SidebarActionButton

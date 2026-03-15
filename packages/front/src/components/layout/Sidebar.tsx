@@ -183,6 +183,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 isDarkMode={isDarkMode}
                 badge={item.header_badge}
                 accentColor="action"
+                showPillOnHover={true}       // 🟢 Front: Show pill on hover
+                showPillOnActive={true}      // ✅ Front: Show pill when active
+                pillVariant="filled"
               />
             </li>
           ))}

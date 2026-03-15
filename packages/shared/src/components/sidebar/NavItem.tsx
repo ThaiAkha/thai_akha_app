@@ -11,6 +11,7 @@ import { SIDEBAR_CONSTANTS } from '../../lib/sidebar.constants';
 import { SIDEBAR_COLOR_SCHEMES } from '../../lib/colors.constants';
 
 export type AccentColorScheme = 'brand' | 'action';
+export type PillVariant = 'filled' | 'outline' | 'subtle';
 
 export interface NavItemProps {
   /** Icon name (must exist in icon library) */
@@ -39,6 +40,15 @@ export interface NavItemProps {
 
   /** Color scheme: 'brand' (admin red) or 'action' (front green) */
   accentColor?: AccentColorScheme;
+
+  /** Show background pill on hover state */
+  showPillOnHover?: boolean;
+
+  /** Show background pill on active state */
+  showPillOnActive?: boolean;
+
+  /** Pill style variant: 'filled' (background), 'outline' (border), 'subtle' (faded) */
+  pillVariant?: PillVariant;
 }
 
 /**
@@ -62,9 +72,41 @@ const NavItem: React.FC<NavItemProps> = ({
   badge,
   highlight: _highlight,
   accentColor = 'brand',
+  showPillOnHover = true,
+  showPillOnActive = true,
+  pillVariant = 'filled',
 }: NavItemProps) => {
   const IconComponent = getIcon(icon);
   const colors = SIDEBAR_COLOR_SCHEMES[accentColor as AccentColorScheme];
+
+  // Determine active pill styling based on pillVariant
+  const getActivePillClasses = () => {
+    if (!isActive || !showPillOnActive) return '';
+
+    const brandActive = 'bg-brand-500/15 dark:bg-brand-500/25';
+    const actionActive = 'bg-lime-500/15 dark:bg-lime-500/25';
+
+    if (pillVariant === 'outline') {
+      const brandOutline = 'border border-brand-200 dark:border-brand-800';
+      const actionOutline = 'border border-lime-200 dark:border-lime-800';
+      return accentColor === 'brand' ? brandOutline : actionOutline;
+    }
+
+    if (pillVariant === 'subtle') {
+      const brandSubtle = 'bg-brand-50/30 dark:bg-brand-900/20';
+      const actionSubtle = 'bg-lime-50/30 dark:bg-lime-900/20';
+      return accentColor === 'brand' ? brandSubtle : actionSubtle;
+    }
+
+    // Default: 'filled'
+    return accentColor === 'brand' ? brandActive : actionActive;
+  };
+
+  // Determine hover pill styling
+  const getHoverPillClasses = () => {
+    if (!showPillOnHover || isActive) return '';
+    return 'hover:bg-gray-100 dark:hover:bg-white/5';
+  };
 
   return (
     <button
@@ -73,29 +115,15 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        group
+        rounded-xl
+        ${getActivePillClasses()}
+        ${getHoverPillClasses()}
       `}
     >
-      {/* BACKGROUND - Active/Hover state */}
-      <div
-        className={`
-          absolute ${SIDEBAR_CONSTANTS.BG_INSET} ${SIDEBAR_CONSTANTS.BG_ROUNDED}
-          ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-          pointer-events-none z-0
-          ${accentColor === 'brand'
-            ? isActive
-              ? 'bg-brand-500/15 dark:bg-brand-500/25'
-              : 'group-hover:bg-gray-100 dark:group-hover:bg-white/5'
-            : isActive
-            ? 'bg-lime-500/15 dark:bg-lime-500/25'
-            : 'group-hover:bg-gray-100 dark:group-hover:bg-white/5'
-          }
-        `}
-      />
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center z-10`}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center`}
       >
         <IconComponent
           className={`
@@ -114,7 +142,7 @@ const NavItem: React.FC<NavItemProps> = ({
       {/* TEXT CONTAINER - Appears only when sidebar is open */}
       <div
         className={`
-          flex items-center flex-1 overflow-hidden whitespace-nowrap z-10
+          flex items-center flex-1 overflow-hidden whitespace-nowrap
           transition-all duration-300 ${SIDEBAR_CONSTANTS.EASE_CUBIC} origin-left
           ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
         `}

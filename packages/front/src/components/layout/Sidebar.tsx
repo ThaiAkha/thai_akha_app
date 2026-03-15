@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* TEXT CONTAINER (Appears when open) */}
             <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
-              <span className="font-display font-bold tracking-wide text-gray-500 ml-1 opacity-50">Close Menu</span>
+              <span className="font-display font-bold tracking-wide text-gray-500 ml-2 opacity-50">Close Menu</span>
             </div>
           </button>
         </div>
@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     />
                   </div>
                   <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-                    <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">
+                    <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-2">
                       {userProfile.full_name || 'Profile'}
                     </span>
                   </div>

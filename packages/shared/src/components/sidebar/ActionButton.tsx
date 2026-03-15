@@ -73,7 +73,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
         className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 ${SIDEBAR_CONSTANTS.TRANSITION_EXTENDED} origin-left ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
           }`}
       >
-        <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
+        <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-2">
           {label}
         </span>
       </div>

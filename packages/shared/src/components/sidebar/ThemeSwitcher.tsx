@@ -79,7 +79,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
             ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
           `}
         >
-          <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">
+          <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-2">
             {isDarkMode ? 'Light' : 'Dark'}
           </span>
 

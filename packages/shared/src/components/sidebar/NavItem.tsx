@@ -157,7 +157,7 @@ const NavItem: React.FC<NavItemProps> = ({
             ${SIDEBAR_CONSTANTS.FONT_DISPLAY}
             ${SIDEBAR_CONSTANTS.FONT_STYLE}
             ${isActive ? colors.activeText : SIDEBAR_CONSTANTS.INACTIVE_TEXT}
-            ml-1
+            ml-2
           `}
         >
           {label}

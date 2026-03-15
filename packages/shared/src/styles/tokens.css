@@ -1,14 +1,20 @@
 /**
- * Thai Akha Kitchen — Centralized CSS Variables
- * Auto-generated from colors.constants.ts
+ * Thai Akha Kitchen — Centralized CSS Color System
+ * Single Source of Truth - implements COLOR_SYSTEM.md
  *
- * SINGLE SOURCE OF TRUTH for all color tokens across Admin, Front, and Shared.
+ * Contains all color tokens used across Admin, Front, and Shared:
+ * - 11 color palettes (gray, cherry, lime, orange, blue, magenta, purple)
+ * - System UI colors (error, warning, notice, success, info)
+ * - Semantic tokens for components (--bg, --surface, --text-title, etc.)
+ * - Glow shadows for CTA buttons
+ * - Easing functions for animations
+ *
  * These variables are used by:
  * - Tailwind v4 @theme directives in both apps
  * - CSS-in-JS color mapping in components
- * - Direct CSS variable references (var(--color-...))
+ * - Direct CSS variable references (var(--color-*), var(--text-*), etc.)
  *
- * Update: Edit colors.constants.ts and regenerate this file
+ * Update: Edit this file or COLOR_SYSTEM.md and regenerate
  */
 
 :root {
@@ -82,6 +88,20 @@
   --color-gray-950: #121311;
 
   /* ========================================================================
+     🔴 MAGENTA — Quiz primary color
+     ======================================================================== */
+  --color-magenta-400: #E879A0;
+  --color-magenta-500: #D6366E;
+  --color-magenta-600: #B52A5B;
+
+  /* ========================================================================
+     🟣 PURPLE — Quiz secondary color
+     ======================================================================== */
+  --color-purple-400: #A78BFA;
+  --color-purple-500: #8B5CF6;
+  --color-purple-600: #7C3AED;
+
+  /* ========================================================================
      🚨 SYSTEM UI COLORS (Functional)
      ======================================================================== */
   --color-error: #EF4444;
@@ -89,17 +109,69 @@
   --color-notice: #EAB308;
   --color-success: #22C55E;
   --color-info: #3B82F6;
+
+  /* Legacy aliases for system UI */
+  --color-sys-error: #EF4444;
+  --color-sys-warning: #F59E0B;
+  --color-sys-notice: #EAB308;
+  --color-sys-success: #22C55E;
+  --color-sys-info: #3B82F6;
+
+  /* ========================================================================
+     ☀️ SEMANTIC TOKENS — Light Mode (used by components)
+     ======================================================================== */
+  --bg: #F6FCFC;              /* gray-25 — background pagina */
+  --surface: #FFFFFF;         /* white — card, modal, input */
+  --surface-2: #EEF4F4;       /* derived — secondary surface */
+  --border: #D6DCDC;          /* gray-100 — light borders */
+  --border-2: #C2C8C8;        /* gray-200 — standard borders */
+
+  --text-title: #121311;      /* gray-950 — titles, H1-H3 · WCAG AAA */
+  --text-body: #4A504F;       /* gray-800 — body text · WCAG AAA */
+  --text-sub: #727878;        /* gray-600 — secondary text · WCAG AA */
+  --text-muted: #9AA0A0;      /* gray-400 — decorative only */
+
+  /* ========================================================================
+     🌟 GLOW SHADOWS — Button effects for CTA
+     ======================================================================== */
+  --glow-cherry: 0 4px 20px rgba(229, 64, 99, 0.40);
+  --glow-cherry-h: 0 8px 36px rgba(229, 64, 99, 0.60);    /* hover */
+
+  --glow-lime: 0 4px 16px rgba(186, 216, 121, 0.40);
+  --glow-lime-h: 0 8px 28px rgba(186, 216, 121, 0.55);
+
+  --glow-orange: 0 4px 20px rgba(255, 109, 0, 0.40);
+  --glow-orange-h: 0 8px 36px rgba(255, 109, 0, 0.60);
+
+  --glow-blue: 0 4px 16px rgba(59, 130, 246, 0.35);
+  --glow-blue-h: 0 8px 28px rgba(59, 130, 246, 0.55);
+
+  /* ========================================================================
+     ⚡ EASING FUNCTIONS — Animation timing
+     ======================================================================== */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);       /* Bounce - buttons, cards */
+  --ease-cinematic: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth - page transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);            /* Color/opacity hover */
 }
 
 /**
- * Dark Mode Adjustments
- * Note: If you need dark-mode-specific color values, define them here
- * Currently using the same palette for both modes (managed via CSS filters in theme CSS)
+ * Dark Mode — Semantic Token Overrides
+ * Swaps light mode semantic tokens for dark mode equivalents
  */
+body.dark,
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Dark mode can override specific variables if needed */
-    /* Example: --color-surface: #121212; */
+    /* 🌑 SEMANTIC TOKENS — Dark Mode */
+    --bg: #121311;              /* gray-950 — background pagina */
+    --surface: #222827;         /* gray-900 — card, modal, input */
+    --surface-2: #1a1f1e;       /* derived — secondary surface */
+    --border: #4A504F;          /* gray-800 — light borders */
+    --border-2: #5E6464;        /* gray-700 — standard borders */
+
+    --text-title: #F6FCFC;      /* gray-25 — titles · WCAG AAA */
+    --text-body: #D6DCDC;       /* gray-100 — body text · WCAG AAA */
+    --text-sub: #9AA0A0;        /* gray-400 — secondary text · WCAG AA */
+    --text-muted: #727878;      /* gray-600 — decorative only */
   }
 }
 

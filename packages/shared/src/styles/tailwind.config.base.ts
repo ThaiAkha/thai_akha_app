@@ -67,6 +67,27 @@ const baseColors = {
     500: '#3B82F6',
     600: '#2563EB',
   },
+
+  // 🔴 Magenta — Quiz primary color
+  magenta: {
+    400: '#E879A0',
+    500: '#D6366E',
+    600: '#B52A5B',
+  },
+
+  // 🟣 Purple — Quiz secondary color
+  purple: {
+    400: '#A78BFA',
+    500: '#8B5CF6',
+    600: '#7C3AED',
+  },
+
+  // 🚨 System UI Colors — Functional
+  'sys-error': '#EF4444',
+  'sys-warning': '#F59E0B',
+  'sys-notice': '#EAB308',
+  'sys-success': '#22C55E',
+  'sys-info': '#3B82F6',
 };
 
 // ============================================================================
@@ -90,6 +111,16 @@ const baseBoxShadow = {
   'card-hover': '0 0 40px rgba(255, 117, 151, 0.4)',
   'glow-special': '0 0 20px -5px rgba(255, 109, 0, 0.5)',
   'glow-allergy': '0 0 25px -5px rgba(255, 109, 0, 0.5)',
+
+  // 🌟 Glow shadows for CTA buttons
+  'glow-cherry': '0 4px 20px rgba(229, 64, 99, 0.40)',
+  'glow-cherry-h': '0 8px 36px rgba(229, 64, 99, 0.60)',
+  'glow-lime': '0 4px 16px rgba(186, 216, 121, 0.40)',
+  'glow-lime-h': '0 8px 28px rgba(186, 216, 121, 0.55)',
+  'glow-orange': '0 4px 20px rgba(255, 109, 0, 0.40)',
+  'glow-orange-h': '0 8px 36px rgba(255, 109, 0, 0.60)',
+  'glow-blue': '0 4px 16px rgba(59, 130, 246, 0.35)',
+  'glow-blue-h': '0 8px 28px rgba(59, 130, 246, 0.55)',
 };
 
 // ============================================================================
@@ -99,6 +130,8 @@ const baseBoxShadow = {
 const baseTransitionTimingFunction = {
   'cinematic': 'cubic-bezier(0.25, 1, 0.5, 1)',
   'elastic': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',     // Bounce effect for buttons, cards
+  'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',          // Color/opacity hover
 };
 
 // ============================================================================

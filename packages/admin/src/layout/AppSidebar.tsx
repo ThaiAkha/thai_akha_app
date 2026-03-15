@@ -164,31 +164,6 @@ const AppSidebar: React.FC = () => {
     >
       <div className="flex flex-col h-full py-6 pt-[40px]">
 
-        {/* HAMBURGER TOGGLE (Desktop only, aligned with menu items) */}
-        <div className="hidden lg:block mb-8 space-y-1">
-          <button
-            onClick={() => toggleMobileSidebar()}
-            title="Toggle Sidebar"
-            className={`relative flex items-center w-full h-14 mb-1 transition-all duration-200 group`}
-          >
-            {/* BACKGROUND */}
-            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
-
-            {/* ICON CONTAINER (Fixed position) */}
-            <div className={`w-[108px] shrink-0 flex items-center justify-center z-10`}>
-              {(() => {
-                const ToggleIcon = isExpanded ? getIcon('ChevronLeft') : getIcon('Menu');
-                return <ToggleIcon className={`w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400`} />;
-              })()}
-            </div>
-
-            {/* TEXT CONTAINER (Appears when open) */}
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${isSidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
-              <span className="font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">Close Menu</span>
-            </div>
-          </button>
-        </div>
-
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
           <div className={`w-[108px] shrink-0 flex items-center justify-center`}>

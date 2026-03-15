@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { getIcon } from '@thaiakha/shared/lib/icons';
-import { LogoIconLight, LogoIconDark } from '@thaiakha/shared';
+import { LogoIconLight, LogoIconDark, SidebarNavItem, SIDEBAR_CONSTANTS } from '@thaiakha/shared';
 
 // --- TYPES ---
 interface MenuItem {
@@ -26,85 +26,6 @@ interface SidebarProps {
   userProfile?: UserProfile | null;
   onLogout?: () => void;
 }
-
-// COSTANTE PER LA LARGHEZZA DELLA BARRA CHIUSA
-const CLOSED_WIDTH = 'w-[108px]';
-
-// --- NAV ITEM (Icona immobile + Testo a comparsa) ---
-const NavItem: React.FC<{
-  icon: string;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-  isOpen: boolean;
-  isDarkMode: boolean;
-  badge?: string;
-  highlight?: boolean;
-}> = ({ icon, label, isActive, onClick, isOpen, isDarkMode, badge, highlight }) => {
-  const IconComponent = getIcon(icon);
-
-  return (
-    <button
-      onClick={onClick}
-      title={label}
-      className={`
-        relative flex items-center w-full h-14 transition-all duration-200 group
-      `}
-    >
-      {/* SFONDO ACTIVE/HOVER */}
-      <div className={`
-        absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-200
-        ${isActive
-          ? 'bg-brand-50 dark:bg-brand-500/[0.12]'
-          : 'group-hover:bg-gray-100 dark:group-hover:bg-white/5'
-        }
-      `} />
-
-      {/* 1. CONTENITORE ICONA (FISSO E IMMOBILE) */}
-      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
-        <IconComponent
-          className={`
-            w-6 h-6 transition-transform duration-300 group-active:scale-95
-            ${isActive
-              ? 'text-brand-500 dark:text-brand-400'
-              : 'text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300'
-            }
-          `}
-        />
-      </div>
-
-      {/* 2. CONTENITORE TESTO (Scorre a destra) */}
-      <div className={`
-        flex items-center flex-1 overflow-hidden whitespace-nowrap z-10
-        transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left
-        ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
-      `}>
-        <span className={`font-display font-bold tracking-wide ${isActive
-          ? 'text-brand-500 dark:text-brand-400'
-          : 'text-gray-700 dark:text-gray-300'
-        } ml-1`}>
-          {label}
-        </span>
-
-        {badge && (
-          <span className={`
-            px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ml-3
-            ${isActive
-              ? "bg-brand-500 text-white shadow-sm"
-              : "bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300"}
-          `}>
-            {badge}
-          </span>
-        )}
-      </div>
-
-      {/* ACTIVE INDICATOR */}
-      {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-brand-500 rounded-r-full z-10" />
-      )}
-    </button>
-  );
-};
 
 // --- SIDEBAR MAIN ---
 const Sidebar: React.FC<SidebarProps> = ({
@@ -167,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
 
             {/* ICON CONTAINER (Fixed position) */}
-            <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
               {(() => {
                 const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
                 return <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400" />;
@@ -201,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* ================= LISTA MENU ================= */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
           {visibleItems.map((item) => (
-            <NavItem
+            <SidebarNavItem
               key={item.id}
               icon={item.header_icon || 'circle'}
               label={item.menu_label}
@@ -210,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               isOpen={isOpen}
               isDarkMode={isDarkMode}
               badge={item.header_badge}
-              highlight={item.is_highlighted}
+              accentColor="action"
             />
           ))}
         </div>
@@ -224,7 +145,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="relative flex items-center w-full h-14 rounded-xl transition-all group"
           >
             <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
-            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
+            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
               {(() => {
                 const AuthIcon = userProfile ? getIcon('LogOut') : getIcon('LogIn');
                 return <AuthIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />;
@@ -241,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="relative flex items-center w-full h-14 rounded-xl transition-all group"
           >
             <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
-            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
+            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
               {(() => {
                 const ThemeIcon = isDarkMode ? getIcon('Sun') : getIcon('Moon');
                 return <ThemeIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />;

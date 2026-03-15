@@ -158,6 +158,11 @@
    ======================================================================== */
 
 @layer components {
+  /* Sidebar dark mode background (from theme.css --color-gray-dark) */
+  #sidebar-nav {
+    @apply bg-white dark:bg-[#080808];
+  }
+
   /* Mineral panel: Glass effect component for layered cards and modals */
   .mineral-panel {
     background-color: var(--glass-bg);

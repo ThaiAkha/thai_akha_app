@@ -153,7 +153,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     />
                   </div>
                   <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-                    <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
+                    <span className="ml-2 font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
                       {userProfile.full_name || 'Profile'}
                     </span>
                   </div>

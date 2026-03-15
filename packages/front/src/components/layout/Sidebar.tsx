@@ -20,11 +20,8 @@ interface SidebarProps {
   currentPage: string;
   onNavigate: (page: string, topic?: string) => void;
   isOpen: boolean;
-  onToggle: () => void;
   isDarkMode: boolean;
-  onToggleTheme: () => void;
   userProfile?: UserProfile | null;
-  onLogout?: () => void;
 }
 
 // COSTANTE PER LA LARGHEZZA DELLA BARRA CHIUSA
@@ -59,31 +56,36 @@ const NavItem: React.FC<{
     >
       {/* SFONDO ACTIVE/HOVER */}
       <div className={`
-        absolute inset-y-1 inset-x-2 rounded-xl transition-all duration-300
+        absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-200
         ${isActive
-          ? 'bg-action/10'
-          : highlight
-            ? 'bg-action/5'
-            : isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}
+          ? 'bg-brand-50 dark:bg-brand-500/[0.12]'
+          : 'group-hover:bg-gray-100 dark:group-hover:bg-white/5'
+        }
       `} />
 
       {/* 1. CONTENITORE ICONA (FISSO E IMMOBILE) */}
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
         <IconComponent
           className={`
-            w-8 h-8 transition-transform duration-300 group-active:scale-95
-            ${isActive || highlight ? 'text-action' : ''}
+            w-6 h-6 transition-transform duration-300 group-active:scale-95
+            ${isActive
+              ? 'text-brand-500 dark:text-brand-400'
+              : 'text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300'
+            }
           `}
         />
       </div>
 
       {/* 2. CONTENITORE TESTO (Scorre a destra) */}
       <div className={`
-        flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 
+        flex items-center flex-1 overflow-hidden whitespace-nowrap z-10
         transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left
         ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
       `}>
-        <span className="font-display text-lb tracking-wide font-bold ml-1">
+        <span className={`font-bold tracking-wide ${isActive
+          ? 'text-brand-500 dark:text-brand-400'
+          : 'text-gray-700 dark:text-gray-300'
+        } ml-1`}>
           {label}
         </span>
 
@@ -99,9 +101,9 @@ const NavItem: React.FC<{
         )}
       </div>
 
-      {/* Indicatore Laterale */}
+      {/* ACTIVE INDICATOR */}
       {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-action rounded-r-full" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-brand-500 rounded-r-full z-10" />
       )}
     </button>
   );
@@ -109,7 +111,7 @@ const NavItem: React.FC<{
 
 // --- SIDEBAR MAIN ---
 const Sidebar: React.FC<SidebarProps> = ({
-  currentPage, onNavigate, isOpen, onToggle, isDarkMode, onToggleTheme, userProfile, onLogout
+  currentPage, onNavigate, isOpen, isDarkMode, userProfile
 }) => {
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -131,8 +133,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       const level = item.access_level || 'public';
 
-      // 🛡️ ADMIN & MANAGER: Hide from public front app
-      if (level === 'admin' || level === 'manager') return false;
+      // 🛡️ ADMIN: Hide from public front app
+      if (level === 'admin') return false;
 
       // 🏢 AGENCY: Only show if user is agency
       if (level === 'agency') return userProfile?.role === 'agency';
@@ -158,32 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <div className="flex flex-col h-full py-6 pt-[40px]">
 
-        {/* HAMBURGER TOGGLE (Aligned with other menu items) */}
-        <div className="mb-8 space-y-1">
-          <button
-            onClick={onToggle}
-            title="Toggle Sidebar"
-            className={`relative flex items-center w-full h-14 mb-1 transition-all duration-200 group ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-action'}`}
-          >
-            {/* BACKGROUND */}
-            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
-
-            {/* ICON CONTAINER (Fixed position) */}
-            <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
-              {(() => {
-                const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
-                return <ToggleIcon className={`w-8 h-8 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />;
-              })()}
-            </div>
-
-            {/* TEXT CONTAINER (Appears when open) */}
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
-              <span className="font-display text-lb tracking-wide font-bold ml-1">Close Menu</span>
-            </div>
-          </button>
-        </div>
-
-        {/* ================= HEADER: LOGO ================= */}
+        {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
           <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
             <img 
@@ -194,8 +171,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-            <span className={`font-display font-black text-2xl tracking-tighter ${isDarkMode ? "text-white" : "text-slate-900"}`}>
-              Thai <span className="text-action">Akha</span>
+            <span className={`font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white`}>
+              Thai <span className="text-brand-500">Akha</span>
             </span>
           </div>
         </div>
@@ -217,43 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        {/* ================= FOOTER ================= */}
-        <div className={`mt-auto pt-4 space-y-1 border-t ${isDarkMode ? 'border-white/10' : 'border-slate-100'}`}>
-
-          {/* AUTH BUTTON */}
-          <button
-            onClick={userProfile ? onLogout : () => onNavigate('auth')}
-            className={`relative flex items-center w-full h-14 rounded-xl transition-all group ${isDarkMode ? 'text-slate-400 hover:text-red-400' : 'text-slate-500 hover:text-red-500'}`}
-          >
-            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
-            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
-              {(() => {
-                const AuthIcon = userProfile ? getIcon('LogOut') : getIcon('LogIn');
-                return <AuthIcon className="w-8 h-8" />;
-              })()}
-            </div>
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-display text-lb tracking-wide font-bold ml-1">{userProfile ? 'Sign Out' : 'Log In'}</span>
-            </div>
-          </button>
-
-          {/* THEME BUTTON */}
-          <button
-            onClick={onToggleTheme}
-            className={`relative flex items-center w-full h-14 rounded-xl transition-all group ${isDarkMode ? 'text-slate-400 hover:text-quiz' : 'text-slate-500 hover:text-action'}`}
-          >
-            <div className={`absolute inset-y-1 inset-x-2 rounded-xl transition-colors ${isDarkMode ? 'group-hover:bg-white/5' : 'group-hover:bg-slate-100'}`} />
-            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
-              {(() => {
-                const ThemeIcon = isDarkMode ? getIcon('Sun') : getIcon('Moon');
-                return <ThemeIcon className="w-8 h-8" />;
-              })()}
-            </div>
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-display text-lb tracking-wide font-bold ml-1">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-            </div>
-          </button>
-        </div>
+        {/* FOOTER - PLACEHOLDER */}
 
       </div>
     </nav>

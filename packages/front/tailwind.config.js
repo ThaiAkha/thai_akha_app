@@ -42,6 +42,24 @@ export default {
     extend: {
       ...getBaseThemeExtension(),
       colors: {
+        // ========== GRAY PALETTE OVERRIDE (ensure correct values from theme.css) ==========
+        // Explicit override to ensure Tailwind uses our gray values, not defaults
+        gray: {
+          25: '#F6FCFC',
+          50: '#E6ECEC',
+          100: '#D6DCDC',
+          200: '#C2C8C8',
+          300: '#AEB4B4',
+          400: '#9AA0A0',
+          500: '#868C8C',
+          600: '#727878',
+          700: '#5E6464',
+          800: '#4A504F',
+          900: '#222827',
+          950: '#121311',
+          dark: '#080808',
+        },
+
         // ========== SEMANTIC COLORS (Front-specific) ==========
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',

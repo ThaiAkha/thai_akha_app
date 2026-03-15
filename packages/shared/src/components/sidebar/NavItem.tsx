@@ -115,15 +115,21 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-        rounded-xl
-        ${getActivePillClasses()}
-        ${getHoverPillClasses()}
       `}
     >
+      {/* PILL WRAPPER - Creates inset effect and spacing */}
+      <div
+        className={`
+          absolute inset-1 rounded-xl ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
+          pointer-events-none
+          ${getActivePillClasses()}
+          ${getHoverPillClasses()}
+        `}
+      />
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center`}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10`}
       >
         <IconComponent
           className={`
@@ -142,7 +148,7 @@ const NavItem: React.FC<NavItemProps> = ({
       {/* TEXT CONTAINER - Appears only when sidebar is open */}
       <div
         className={`
-          flex items-center flex-1 overflow-hidden whitespace-nowrap
+          flex items-center flex-1 overflow-hidden whitespace-nowrap relative z-10
           transition-all duration-300 ${SIDEBAR_CONSTANTS.EASE_CUBIC} origin-left
           ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
         `}

@@ -192,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ul>
 
         {/* ========== FOOTER SECTION ========== */}
-        <div className="mt-auto pt-4 space-y-2">
+        <div className="mt-auto space-y-2">
 
           {/* DIVIDER 3 */}
           <SidebarDivider className="my-1" />

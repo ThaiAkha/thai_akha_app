@@ -63,7 +63,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
       {/* ICON CONTAINER - Fixed width, always visible, left-aligned */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-5 z-10`}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-start pl-7 z-10`}
       >
         <IconComponent className={`${SIDEBAR_CONSTANTS.ICON_SIZE} text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300`} />
       </div>

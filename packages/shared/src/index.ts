@@ -1,6 +1,7 @@
 // Lib
 export * from './lib/utils';
 export * from './lib/geoUtils';
+export * from './lib/colors.constants';
 export { supabase } from './lib/supabase';
 
 // Data

@@ -4,6 +4,17 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    safelist: [
+        // ========== ADMIN SIDEBAR COLORS (brand = cherry) ==========
+        // Active background
+        'bg-cherry-100',
+        'dark:bg-cherry-500/[0.12]',
+        // Active text & icon
+        'text-cherry-500',
+        'dark:text-cherry-400',
+        // Badge & indicator
+        'bg-cherry-500',
+    ],
     theme: {
         extend: {
             colors: {

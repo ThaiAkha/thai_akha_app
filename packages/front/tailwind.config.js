@@ -6,6 +6,17 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    // ========== FRONT SIDEBAR COLORS (action = lime) ==========
+    // Active background
+    'bg-lime-100',
+    'dark:bg-lime-500/[0.12]',
+    // Active text & icon
+    'text-lime-700',
+    'dark:text-lime-400',
+    // Badge & indicator
+    'bg-lime-700',
+  ],
   theme: {
     extend: {
       colors: {
@@ -14,7 +25,7 @@ export default {
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         action: 'rgb(var(--color-action) / <alpha-value>)',
         special: 'rgb(var(--color-special) / <alpha-value>)',
-        
+
         // 🌟 SPECIAL CHANNELS
         allergy: 'rgb(var(--color-allergy) / <alpha-value>)',
         'allergy-secondary': 'rgb(var(--color-allergy-secondary) / <alpha-value>)',
@@ -26,6 +37,33 @@ export default {
         title: 'rgb(var(--color-title) / <alpha-value>)',
         desc: 'rgb(var(--color-desc) / <alpha-value>)',
         border: 'rgb(var(--color-border) / <alpha-value>)',
+
+        // 🔴 Cherry Red — Brand primary (Sidebar in admin)
+        cherry: {
+          100: '#FBDDE4',
+          200: '#F6BCCB',
+          300: '#F09AB2',
+          400: '#ED7A93',
+          500: '#E54063',
+          600: '#C9334F',
+          700: '#A82741',
+          800: '#861D32',
+          900: '#641425',
+          950: '#420C18',
+        },
+        // 🟢 Lime Green — Action color (Sidebar active in front)
+        lime: {
+          100: '#EEF7D4',
+          200: '#E3F2BB',
+          300: '#D6EBA8',
+          400: '#CDE89A',
+          500: '#BAD879',
+          600: '#9EBF63',
+          700: '#82A64D',
+          800: '#65843A',
+          900: '#4A6229',
+          950: '#2E3D19',
+        },
       },
       fontFamily: {
         display: ['var(--font-display)'],

@@ -75,12 +75,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         ${isOpen ? 'w-80' : SIDEBAR_CONSTANTS.CLOSED_WIDTH}
       `}
     >
-      <div className="flex flex-col h-full py-6 pt-[40px]">
+      <div className="flex flex-col h-full py-6 pt-[20px]">
 
         {/* ========== TOP SECTION ========== */}
 
         {/* HAMBURGER TOGGLE */}
-        <div className="mb-1 px-2">
+        <div className="mb-1 px-2 -mt-2">
           <button
             onClick={onToggle}
             title="Toggle Sidebar"
@@ -104,13 +104,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* DIVIDER 1 */}
-        <div className="px-2 my-2">
-          <SidebarDivider className="my-0" />
-        </div>
-
         {/* HEADER: LOGO */}
-        <div className="flex items-center mb-6 h-12 px-2">
+        <div className="flex items-center mb-4 h-12 px-2">
           <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
             <img
               src={isDarkMode ? LogoIconDark : LogoIconLight}
@@ -126,14 +121,20 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* USER PAGE SECTION (if logged in) */}
+        {/* DIVIDER 1 */}
+        <div className="px-2 my-2">
+          <SidebarDivider className="my-0" />
+        </div>
+
+        {/* USER AVATAR SECTION (if logged in) */}
         {userProfile && (
           <>
             <div className="px-2 mb-2">
               <li className="group">
                 <button
-                  onClick={() => onNavigate('user-profile')}
+                  onClick={() => onNavigate('user')}
                   className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+                  title="User Profile"
                 >
                   <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
                   <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
@@ -160,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* ========== MENU SECTION ========== */}
-        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1 px-2">
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-0 px-2">
           {visibleItems.map((item) => (
             <li key={item.page_slug} className="group">
               <SidebarNavItem

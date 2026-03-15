@@ -154,7 +154,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       >
         
         {/* HEADER */}
-        <div className="h-28 flex items-center justify-between px-6 pt-4 border-b border-white/5">
+        <div className="h-28 flex items-center justify-between px-6 pt-6 border-b border-white/5">
             <button
                 onClick={handleToggle}
                 className="size-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-action/50 transition-all active:scale-95 shadow-lg backdrop-blur-xl"

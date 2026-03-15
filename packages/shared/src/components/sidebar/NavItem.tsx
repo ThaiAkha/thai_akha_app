@@ -120,17 +120,11 @@ const NavItem: React.FC<NavItemProps> = ({
       className={`
         relative flex items-center w-full ${SIDEBAR_CONSTANTS.ITEM_HEIGHT}
         ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
+        rounded-xl mx-1 px-2
+        ${getActivePillClasses()}
+        ${getHoverPillClasses()}
       `}
     >
-      {/* PILL WRAPPER - Creates inset effect and spacing */}
-      <div
-        className={`
-          absolute inset-1 rounded-xl ${SIDEBAR_CONSTANTS.TRANSITION_STANDARD}
-          pointer-events-none
-          ${getActivePillClasses()}
-          ${getHoverPillClasses()}
-        `}
-      />
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div

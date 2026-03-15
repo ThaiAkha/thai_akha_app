@@ -18,9 +18,9 @@ export default {
     ],
     safelist: [
         // ========== ADMIN SIDEBAR COLORS (brand red) ==========
-        // Active background
-        'bg-brand-500/10',
-        'dark:bg-brand-500/20',
+        // Active background (increased opacity for visibility)
+        'bg-brand-500/15',
+        'dark:bg-brand-500/25',
         // Active text & icon
         'text-brand-600',
         'dark:text-brand-400',

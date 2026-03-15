@@ -157,7 +157,7 @@ export const SEMANTIC_TOKENS_DARK = {
 export const SIDEBAR_COLOR_SCHEMES = {
   brand: {
     // Active state styling
-    activeBg: 'bg-brand-500/10 dark:bg-brand-500/20',
+    activeBg: 'bg-brand-500/15 dark:bg-brand-500/25',
     activeText: 'text-brand-600 dark:text-brand-400',
     activeIcon: 'text-brand-600 dark:text-brand-400',
     badgeBg: 'bg-brand-600',
@@ -174,7 +174,7 @@ export const SIDEBAR_COLOR_SCHEMES = {
 
   action: {
     // Active state styling
-    activeBg: 'bg-lime-500/10 dark:bg-lime-500/20',
+    activeBg: 'bg-lime-500/15 dark:bg-lime-500/25',
     activeText: 'text-lime-700 dark:text-lime-400',
     activeIcon: 'text-lime-700 dark:text-lime-400',
     badgeBg: 'bg-lime-700',

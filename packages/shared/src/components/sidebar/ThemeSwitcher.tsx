@@ -48,7 +48,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
     return (
       <button
         onClick={onToggle}
-        title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+        title={isDarkMode ? 'Light' : 'Dark'}
         className={cn(
           'relative flex items-center w-full h-14 rounded-xl transition-all group',
           className

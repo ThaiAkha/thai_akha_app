@@ -6,7 +6,6 @@ import { useTheme } from "../context/ThemeContext";
 import { contentService } from "@thaiakha/shared/services";
 import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider } from "@thaiakha/shared";
 import { supabase } from "@thaiakha/shared/lib/supabase";
-import Tooltip from "../components/ui/Tooltip";
 import { ExternalLink } from "lucide-react";
 
 const FRONT_APP_URL = import.meta.env.VITE_FRONT_APP_URL || 'http://localhost:3000';
@@ -65,42 +64,6 @@ const AppSidebar: React.FC = () => {
       }
       return false;
     });
-  };
-
-  const renderNavItem = (nav: NavItem) => {
-    const active = isActive(nav.path);
-
-    const navItem = (
-      <SidebarNavItem
-        icon={nav.icon}
-        label={nav.name}
-        isActive={active}
-        onClick={() => {
-          if (location.pathname !== nav.path) {
-            navigate(nav.path);
-          }
-          isMobileOpen && toggleMobileSidebar();
-        }}
-        isOpen={isSidebarOpen}
-        isDarkMode={theme === 'dark'}
-        accentColor="brand"
-        showPillOnHover={false}     // 🔴 Admin: No hover pills
-        showPillOnActive={true}      // ✅ Admin: Show pill only when active
-        pillVariant="filled"
-      />
-    );
-
-    return (
-      <li key={nav.path}>
-        {!isSidebarOpen ? (
-          <Tooltip content={nav.name} position="right" className="w-full">
-            {navItem}
-          </Tooltip>
-        ) : (
-          navItem
-        )}
-      </li>
-    );
   };
 
   /**
@@ -163,11 +126,29 @@ const AppSidebar: React.FC = () => {
         </div>
 
         {/* MENU LIST */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-1">
-          <ul className="flex flex-col gap-0">
-            {filterByRole(menuItems).map(renderNavItem)}
-          </ul>
-        </div>
+        <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-0">
+          {filterByRole(menuItems).map((nav) => (
+            <li key={nav.path}>
+              <SidebarNavItem
+                icon={nav.icon}
+                label={nav.name}
+                isActive={isActive(nav.path)}
+                onClick={() => {
+                  if (location.pathname !== nav.path) {
+                    navigate(nav.path);
+                  }
+                  isMobileOpen && toggleMobileSidebar();
+                }}
+                isOpen={isSidebarOpen}
+                isDarkMode={theme === 'dark'}
+                accentColor="brand"
+                showPillOnHover={true}
+                showPillOnActive={true}
+                pillVariant="filled"
+              />
+            </li>
+          ))}
+        </ul>
 
         {/* FOOTER - GO LIVE WEB CARD */}
         <div className={`mt-auto px-4 pb-6 transition-all duration-500 ${isSidebarOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>

@@ -44,6 +44,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     loadMenu();
   }, [userProfile?.role]); // Ricarica se cambia il ruolo
 
+  // Extract Student Hub metadata (excluded from menu but available for avatar section)
+  const studentHubItem = useMemo(() => {
+    return menuItems.find((item) =>
+      item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub'
+    );
+  }, [menuItems]);
+
   const visibleItems = useMemo(() => {
     return menuItems.filter((item) => {
       const authSlugs = ['auth', 'login', 'logout', 'register', 'sign-in', 'sign-up'];

@@ -116,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-4 h-12">
-          <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
+          <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-5`}>
             <img
               src={isDarkMode ? LogoIconDark : LogoIconLight}
               alt="Logo"
@@ -147,7 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   title="User Profile"
                 >
                   <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
-                  <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+                  <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-5 z-10`}>
                     <SidebarAvatar
                       name={userProfile.full_name || userProfile.email}
                       src={userProfile.avatar_url}

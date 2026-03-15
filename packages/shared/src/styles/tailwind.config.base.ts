@@ -109,6 +109,21 @@ const baseTransitionTimingFunction = {
 };
 
 // ============================================================================
+// RESPONSIVE BREAKPOINTS (Unified across Admin & Front)
+// ============================================================================
+
+const baseBreakpoints = {
+  '2xsm': '375px',   // iPhone SE, small phones
+  'xsm': '425px',    // Smaller phones
+  'sm': '640px',     // Tailwind default
+  'md': '768px',     // Tablet
+  'lg': '1024px',    // Desktop
+  'xl': '1280px',    // Large desktop
+  '2xl': '1536px',   // Extra large desktop
+  '3xl': '2000px',   // Ultra-wide displays
+};
+
+// ============================================================================
 // CUSTOM ANIMATIONS
 // ============================================================================
 
@@ -189,6 +204,7 @@ export function getBaseThemeExtension() {
     fontFamily: baseFontFamily,
     boxShadow: baseBoxShadow,
     transitionTimingFunction: baseTransitionTimingFunction,
+    screens: baseBreakpoints,
     animation: baseAnimation,
     keyframes: baseKeyframes,
   };
@@ -198,7 +214,7 @@ export function getBaseThemeExtension() {
 // EXPORTS FOR INDIVIDUAL USE
 // ============================================================================
 
-export { baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction, baseAnimation, baseKeyframes };
+export { baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction, baseBreakpoints, baseAnimation, baseKeyframes };
 
 // ============================================================================
 // TYPE EXPORTS (for TypeScript)
@@ -206,4 +222,5 @@ export { baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction
 
 export type BaseColors = typeof baseColors;
 export type BaseFontFamily = typeof baseFontFamily;
+export type BaseBreakpoints = typeof baseBreakpoints;
 export type BaseAnimation = typeof baseAnimation;

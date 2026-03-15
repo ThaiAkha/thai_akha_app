@@ -6,7 +6,7 @@ export * from './lib/sidebar.constants';
 export { supabase } from './lib/supabase';
 
 // Styles & Configuration
-export { getBaseThemeExtension, baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction, baseAnimation, baseKeyframes } from './styles/tailwind.config.base';
+export { getBaseThemeExtension, baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction, baseBreakpoints, baseAnimation, baseKeyframes } from './styles/tailwind.config.base';
 
 // Components
 export * from './components';

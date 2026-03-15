@@ -128,7 +128,7 @@ const NavItem: React.FC<NavItemProps> = ({
 
       {/* ICON CONTAINER - Fixed width, always visible */}
       <div
-        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10`}
+        className={`${SIDEBAR_CONSTANTS.ICON_CONTAINER_WIDTH} shrink-0 flex items-center justify-center relative z-10 -ml-1`}
       >
         <IconComponent
           className={`

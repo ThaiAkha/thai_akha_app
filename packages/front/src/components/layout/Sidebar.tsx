@@ -20,6 +20,7 @@ interface SidebarProps {
   currentPage: string;
   onNavigate: (page: string, topic?: string) => void;
   isOpen: boolean;
+  onToggle: () => void;
   isDarkMode: boolean;
   onToggleTheme?: () => void;
   userProfile?: UserProfile | null;
@@ -107,7 +108,7 @@ const NavItem: React.FC<{
 
 // --- SIDEBAR MAIN ---
 const Sidebar: React.FC<SidebarProps> = ({
-  currentPage, onNavigate, isOpen, isDarkMode, userProfile, onToggleTheme, onLogout
+  currentPage, onNavigate, isOpen, onToggle, isDarkMode, userProfile, onToggleTheme, onLogout
 }) => {
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -158,7 +159,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* HAMBURGER TOGGLE */}
         <div className="mb-8 space-y-1">
           <button
-            onClick={() => onNavigate('')}
+            onClick={onToggle}
             title="Toggle Sidebar"
             className="relative flex items-center w-full h-14 mb-1 transition-all duration-200 group"
           >

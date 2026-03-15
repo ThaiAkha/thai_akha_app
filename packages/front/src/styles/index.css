@@ -1,66 +1,103 @@
-/* Import centralized color tokens from shared package */
-@import '@thaiakha/shared/styles/tokens.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/**
+ * Thai Akha Kitchen — Front App Global Styles
+ *
+ * Tailwind v4 unified configuration with shared centralized theme and utilities.
+ *
+ * Structure:
+ * 1. Shared imports from @thaiakha/shared (tokens, theme, utilities)
+ * 2. Tailwind v4 @import (replaces @tailwind directives from v3)
+ * 3. Dark mode custom variant
+ * 4. FRONT-SPECIFIC semantic colors (primary, action, special, allergy)
+ * 5. FRONT-SPECIFIC base styles, utilities, components
+ *
+ * NOTE: Shared utilities (scrollbar, glass-card, menu items) are imported from
+ * @thaiakha/shared/styles/utilities.css and should not be duplicated here.
+ */
 
 /* ========================================================================
-   1. DESIGN TOKENS & THEME VARIABLES (:root)
-   ------------------------------------------------------------------------
-   Refactored for System 4.8 Alpha Channel support.
-   Colors defined as raw RGB triplets (R G B) to allow Tailwind /opacity.
+   SHARED IMPORTS FROM @thaiakha/shared
+   ======================================================================== */
+
+/* Centralized CSS color variables for all color tokens */
+@import '@thaiakha/shared/styles/tokens.css';
+
+/* Tailwind v4 @theme directives (font families, breakpoints, shadows, etc.) */
+@import '@thaiakha/shared/styles/theme.css';
+
+/* Shared @utility definitions (glass-card, menu items, scrollbar) */
+@import '@thaiakha/shared/styles/utilities.css';
+
+/* ========================================================================
+   TAILWIND V4 CORE (replaces v3 @tailwind directives)
+   ======================================================================== */
+
+@import "tailwindcss";
+
+/* ========================================================================
+   DARK MODE CUSTOM VARIANT (aligned with admin app)
+   ======================================================================== */
+
+@custom-variant dark (&:is(.dark *));
+
+/* ========================================================================
+   FRONT-SPECIFIC SEMANTIC COLORS (RGB triplets for alpha support)
+   Mapped to shared base colors but kept separate for front design system
    ======================================================================== */
 
 :root {
-  /* 🎨 BRAND IDENTITY (Core) */
-  --color-primary: 251 46 88;    /* #FB2E58 */
-  --color-secondary: 141 26 49;  /* #8D1A31 */
-  --color-action: 152 201 60;    /* #98C93C */
-  --color-special: 255 109 0;    /* #FF6D00 */
+  /* 🎨 BRAND IDENTITY (Core - mapped to shared cherry/lime) */
+  --color-primary: 251 46 88;        /* Cherry/Brand red (#FB2E58) */
+  --color-secondary: 141 26 49;      /* Dark cherry (#8D1A31) */
+  --color-action: 152 201 60;        /* Lime green action color (#98C93C) */
+  --color-special: 255 109 0;        /* Orange special CTA (#FF6D00) */
 
-  /* 🌟 RGB CHANNELS (Safety & Feedback) */
-  --color-allergy: 255 109 0;           /* #FF6D00 (Matches Special/Orange for Safety) */
-  --color-allergy-secondary: 254 226 226; /* #FEE2E2 */
-  --color-quiz: 154 0 80;                /* #9A0050 */
+  /* 🌟 FUNCTIONAL COLORS (Safety & Feedback) */
+  --color-allergy: 255 109 0;            /* Safety orange (#FF6D00) */
+  --color-allergy-secondary: 254 226 226; /* Light red feedback (#FEE2E2) */
+  --color-quiz: 154 0 80;                /* Purple quiz state (#9A0050) */
 
-  /* ☀️ LIGHT THEME (Semantic Layers) */
-  --color-background: 250 250 250; /* #FAFAFA */
-  --color-surface: 255 255 255;    /* #FFFFFF */
-  --color-title: 26 26 26;         /* #1A1A1A */
-  --color-desc: 74 74 74;          /* #4A4A4A */
-  --color-border: 226 232 240;     /* #E2E8F0 */
+  /* ☀️ LIGHT THEME (Semantic Layers - Light backgrounds) */
+  --color-background: 250 250 250;   /* Light gray background (#FAFAFA) */
+  --color-surface: 255 255 255;      /* White surface (#FFFFFF) */
+  --color-title: 26 26 26;           /* Dark text for titles (#1A1A1A) */
+  --color-desc: 74 74 74;            /* Medium text for descriptions (#4A4A4A) */
+  --color-border: 226 232 240;       /* Light border color (#E2E8F0) */
 
-  /* 🌫️ MINERAL GLASS TOKENS */
-  /* Nota: Qui manteniamo RGBA esplicito per le variabili 'glass' specifiche, 
-     oppure usiamo i colori base con opacità in Tailwind */
+  /* 🌫️ GLASS TOKENS (Mineral glass effect - front-specific) */
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-blur: 20px;
 
+  /* 🔤 FONT FAMILIES (Front-specific overrides) */
   --font-display: 'Raleway', 'Sarabun', sans-serif;
   --font-sans: 'Nunito', 'Sarabun', sans-serif;
   --font-accent: 'Roboto Condensed', 'Sarabun', sans-serif;
 
+  /* ⚡ TIMING FUNCTIONS (Front-specific easing) */
   --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* 🌑 DARK THEME OVERRIDES */
 .dark {
-  --color-background: 10 10 10;    /* #0a0a0a */
-  --color-surface: 18 18 18;       /* #121212 */
-  --color-title: 237 242 239;      /* #EDF2EF */
-  --color-desc: 210 220 213;       /* #D2DCD5 */
-  --color-border: 45 45 45;        /* #2D2D2D */
+  --color-background: 10 10 10;      /* Dark background (#0a0a0a) */
+  --color-surface: 18 18 18;         /* Dark surface (#121212) */
+  --color-title: 237 242 239;        /* Light text for dark mode (#EDF2EF) */
+  --color-desc: 210 220 213;         /* Light-medium text (#D2DCD5) */
+  --color-border: 45 45 45;          /* Dark border (#2D2D2D) */
 
   /* Adjust RGB Channels for Dark Mode Legibility */
-  --color-allergy: 248 113 113;           /* #F87171 */
-  --color-allergy-secondary: 127 29 29;   /* #7F1D1D */
+  --color-allergy: 248 113 113;          /* Lighter red for dark mode (#F87171) */
+  --color-allergy-secondary: 127 29 29;  /* Dark red feedback (#7F1D1D) */
 
+  /* Dark mode glass effect */
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
 }
+
+/* ========================================================================
+   FRONT-SPECIFIC BASE STYLES
+   ======================================================================== */
 
 @layer base {
   html {
@@ -69,7 +106,7 @@
   }
 
   body {
-    /* ⚠️ IMPORTANTE: Usiamo rgb() wrapper perché le variabili sono ora triplette pure */
+    /* Use rgb() wrapper because variables are RGB triplets */
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-desc));
     font-family: var(--font-sans);
@@ -85,6 +122,7 @@
     font-weight: 900;
   }
 
+  /* Material Design Icons support */
   .material-symbols-rounded,
   .material-symbols-outlined {
     font-family: 'Material Symbols Rounded';
@@ -101,23 +139,25 @@
   }
 }
 
+/* ========================================================================
+   FRONT-SPECIFIC UTILITIES
+
+   NOTE: Shared utilities (custom-scrollbar, no-scrollbar) are imported from
+   @thaiakha/shared/styles/utilities.css. Only add front-specific utilities here.
+   ======================================================================== */
+
 @layer utilities {
-  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-primary)); }
-
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+  /* Card gradient overlay for images and hero sections */
   .card-gradient-overlay {
     background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
   }
 
+  /* Glass shine animation effect for premium components */
   .glass-shine {
     position: relative;
     overflow: hidden;
   }
+
   .glass-shine::after {
     content: '';
     position: absolute;
@@ -129,9 +169,24 @@
     transform: skewX(-25deg);
     animation: shine 4s infinite linear;
   }
+
+  /* Shine animation keyframes for glass-shine utility */
+  @keyframes shine {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 200%;
+    }
+  }
 }
 
+/* ========================================================================
+   FRONT-SPECIFIC COMPONENTS
+   ======================================================================== */
+
 @layer components {
+  /* Mineral panel: Glass effect component for layered cards and modals */
   .mineral-panel {
     background-color: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -140,6 +195,7 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
   }
 
+  /* App header layout: Centered max-width container for page headers */
   .app-header-layout {
     @apply w-full max-w-[85rem] mx-auto flex flex-col items-start pb-6;
   }

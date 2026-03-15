@@ -107,8 +107,8 @@ const NavItem: React.FC<NavItemProps> = ({
     if (!showPillOnHover || isActive) return '';
 
     // Use accent color for hover state (brand or action)
-    const brandHover = 'hover:bg-brand-500/20 dark:hover:bg-brand-500/30';
-    const actionHover = 'hover:bg-lime-500/20 dark:hover:bg-lime-500/30';
+    const brandHover = 'hover:bg-brand-500/50 dark:hover:bg-brand-500/60';
+    const actionHover = 'hover:bg-lime-500/50 dark:hover:bg-lime-500/60';
 
     return accentColor === 'brand' ? brandHover : actionHover;
   };

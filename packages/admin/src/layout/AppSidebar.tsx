@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router";
+import { useLocation, Link, useNavigate } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
@@ -23,6 +23,7 @@ const AppSidebar: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<NavItem[]>([]);
 
   // Load menu items from database
@@ -75,7 +76,9 @@ const AppSidebar: React.FC = () => {
         label={nav.name}
         isActive={active}
         onClick={() => {
-          location.pathname !== nav.path && window.history.pushState({}, '', nav.path);
+          if (location.pathname !== nav.path) {
+            navigate(nav.path);
+          }
           isMobileOpen && toggleMobileSidebar();
         }}
         isOpen={isSidebarOpen}

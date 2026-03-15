@@ -131,7 +131,7 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0 overflow-visible`}
       style={{ transitionDuration: '500ms' }}
     >
-      <div className="flex flex-col h-full py-6 pt-[40px]">
+      <div className="flex flex-col h-full py-6 pt-[40px] px-3">
 
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">

@@ -21,7 +21,9 @@ interface SidebarProps {
   onNavigate: (page: string, topic?: string) => void;
   isOpen: boolean;
   isDarkMode: boolean;
+  onToggleTheme?: () => void;
   userProfile?: UserProfile | null;
+  onLogout?: () => void;
 }
 
 // COSTANTE PER LA LARGHEZZA DELLA BARRA CHIUSA
@@ -105,7 +107,7 @@ const NavItem: React.FC<{
 
 // --- SIDEBAR MAIN ---
 const Sidebar: React.FC<SidebarProps> = ({
-  currentPage, onNavigate, isOpen, isDarkMode, userProfile
+  currentPage, onNavigate, isOpen, isDarkMode, userProfile, onToggleTheme, onLogout
 }) => {
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -153,6 +155,31 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <div className="flex flex-col h-full py-6 pt-[40px]">
 
+        {/* HAMBURGER TOGGLE */}
+        <div className="mb-8 space-y-1">
+          <button
+            onClick={() => onNavigate('')}
+            title="Toggle Sidebar"
+            className="relative flex items-center w-full h-14 mb-1 transition-all duration-200 group"
+          >
+            {/* BACKGROUND */}
+            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+
+            {/* ICON CONTAINER (Fixed position) */}
+            <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
+              {(() => {
+                const ToggleIcon = isOpen ? getIcon('ChevronLeft') : getIcon('Menu');
+                return <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400" />;
+              })()}
+            </div>
+
+            {/* TEXT CONTAINER (Appears when open) */}
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}`}>
+              <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">Close Menu</span>
+            </div>
+          </button>
+        </div>
+
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
           <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
@@ -187,7 +214,44 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        {/* FOOTER - PLACEHOLDER */}
+        {/* FOOTER */}
+        <div className="mt-auto pt-4 space-y-1 border-t border-gray-200 dark:border-gray-700">
+
+          {/* SIGN IN/OUT BUTTON */}
+          <button
+            onClick={userProfile ? onLogout : () => onNavigate('auth')}
+            className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+          >
+            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
+              {(() => {
+                const AuthIcon = userProfile ? getIcon('LogOut') : getIcon('LogIn');
+                return <AuthIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />;
+              })()}
+            </div>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{userProfile ? 'Sign Out' : 'Log In'}</span>
+            </div>
+          </button>
+
+          {/* THEME TOGGLE BUTTON */}
+          <button
+            onClick={onToggleTheme}
+            className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+          >
+            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+            <div className="w-[108px] shrink-0 flex items-center justify-center z-10">
+              {(() => {
+                const ThemeIcon = isDarkMode ? getIcon('Sun') : getIcon('Moon');
+                return <ThemeIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />;
+              })()}
+            </div>
+            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+            </div>
+          </button>
+
+        </div>
 
       </div>
     </nav>

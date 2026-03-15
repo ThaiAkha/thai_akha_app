@@ -78,9 +78,9 @@ export const SIDEBAR_CONSTANTS = {
   LOGO_CONTAINER: 'h-12 flex items-center',
 
   // ============================================================================
-  // LEFT INDICATOR (Active state)
+  // LEFT INDICATOR (Active state - INTERNAL to pill)
   // ============================================================================
-  LEFT_INDICATOR_BASE: 'absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full z-10',
+  LEFT_INDICATOR_BASE: 'absolute left-2 top-1/2 -translate-y-1/2 h-8 w-1 rounded-full z-10',
 
   // ============================================================================
   // TOOLTIP STYLING (For closed sidebar)

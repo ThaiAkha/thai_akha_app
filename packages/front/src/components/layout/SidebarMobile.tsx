@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Typography, Toggle, Badge, Icon } from '../ui/index';
+import { ThemeSwitcher } from '@thaiakha/shared';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
@@ -215,18 +216,11 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         <div className="p-6 border-t border-white/5 bg-black/20 space-y-4">
 
             {/* Theme Toggle */}
-            <div className="flex h-16 items-center justify-between px-5 rounded-2xl border border-white/5 bg-white/5">
-                <div className="flex items-center gap-3">
-                    <Icon 
-                      name={isDarkMode ? 'Moon' : 'Sun'} 
-                      className={cn("text-xl", isDarkMode ? "text-quiz" : "text-slate-400")} 
-                    />
-                    <Typography variant="caption" className="font-black uppercase tracking-widest text-[10px] text-white/80">
-                        {isDarkMode ? 'Dark Mode' : 'Light Mode'}
-                    </Typography>
-                </div>
-                <Toggle checked={isDarkMode} onChange={onToggleTheme} />
-            </div>
+            <ThemeSwitcher
+              isDarkMode={isDarkMode}
+              onToggle={onToggleTheme}
+              variant="mobile"
+            />
 
             {/* Auth Action (Login/Logout) */}
             <button 

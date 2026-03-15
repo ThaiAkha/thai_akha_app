@@ -3,9 +3,9 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
-import { Sun, Moon, LogOut, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Tooltip from "../ui/Tooltip";
-import { cn } from "@thaiakha/shared/lib/utils";
+import { ThemeSwitcher } from "@thaiakha/shared";
 
 export default function UserDropdown() {
   const { user, signOut } = useAuth();
@@ -82,36 +82,12 @@ export default function UserDropdown() {
             <span className="flex-1">Edit profile</span>
           </DropdownItem>
 
-          <div
-            className="flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-theme-sm hover:bg-brand-50 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-all cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleTheme();
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
-                {theme === 'dark' ? (
-                  <Sun size={18} className="text-gray-400 group-hover:text-brand-400 transition-colors" />
-                ) : (
-                  <Moon size={18} className="text-gray-400 group-hover:text-brand-500 transition-colors" />
-                )}
-              </div>
-              <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-            </div>
-            <div
-              className={cn(
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                theme === 'dark' ? "bg-brand-500" : "bg-gray-200 dark:bg-gray-700"
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out",
-                  theme === 'dark' ? "translate-x-4" : "translate-x-0"
-                )}
-              />
-            </div>
+          <div onClick={(e) => e.stopPropagation()}>
+            <ThemeSwitcher
+              isDarkMode={theme === 'dark'}
+              onToggle={toggleTheme}
+              variant="dropdown"
+            />
           </div>
         </div>
 

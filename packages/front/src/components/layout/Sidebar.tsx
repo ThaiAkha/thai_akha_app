@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { getIcon } from '@thaiakha/shared/lib/icons';
-import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider, SidebarAvatar, SIDEBAR_CONSTANTS } from '@thaiakha/shared';
+import { LogoIconLight, LogoIconDark, SidebarNavItem, SidebarDivider, SidebarAvatar, ThemeSwitcher, SIDEBAR_CONSTANTS } from '@thaiakha/shared';
 
 // --- TYPES ---
 interface MenuItem {
@@ -219,21 +219,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
 
           {/* THEME TOGGLE BUTTON */}
-          <button
-            onClick={onToggleTheme}
-            className="relative flex items-center w-full h-14 rounded-xl transition-all group"
-          >
-            <div className="absolute inset-y-1 inset-x-2 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
-            <div className={`${SIDEBAR_CONSTANTS.CLOSED_WIDTH} shrink-0 flex items-center justify-center z-10`}>
-              {(() => {
-                const ThemeIcon = isDarkMode ? getIcon('Sun') : getIcon('Moon');
-                return <ThemeIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />;
-              })()}
-            </div>
-            <div className={`flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-              <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300 ml-1">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-            </div>
-          </button>
+          <ThemeSwitcher
+            isDarkMode={isDarkMode}
+            onToggle={onToggleTheme}
+            variant="sidebar"
+            isOpen={isOpen}
+          />
 
         </div>
 

@@ -46,12 +46,6 @@ const NavItem: React.FC<{
       title={label}
       className={`
         relative flex items-center w-full h-14 mb-1 transition-all duration-200 group
-        ${isActive
-          ? 'text-action font-bold'
-          : highlight
-            ? 'text-action'
-            : `text-slate-500 ${isDarkMode ? 'hover:text-white' : 'hover:text-action'}`
-        }
       `}
     >
       {/* SFONDO ACTIVE/HOVER */}
@@ -82,7 +76,7 @@ const NavItem: React.FC<{
         transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left
         ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
       `}>
-        <span className={`font-bold tracking-wide ${isActive
+        <span className={`font-display font-bold tracking-wide ${isActive
           ? 'text-brand-500 dark:text-brand-400'
           : 'text-gray-700 dark:text-gray-300'
         } ml-1`}>
@@ -93,8 +87,8 @@ const NavItem: React.FC<{
           <span className={`
             px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ml-3
             ${isActive
-              ? "bg-action text-white shadow-sm"
-              : "bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-300"}
+              ? "bg-brand-500 text-white shadow-sm"
+              : "bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300"}
           `}>
             {badge}
           </span>
@@ -151,10 +145,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     <nav
       id="sidebar-nav"
       className={`
-        relative h-full shrink-0 z-50 flex flex-col border-r 
+        relative h-full shrink-0 z-50 flex flex-col border-r border-gray-200 dark:border-gray-800
         transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
-        ${isDarkMode ? 'bg-[#0a0b0d]/95 border-white/5' : 'bg-white border-slate-200 shadow-xl'}
-        backdrop-blur-xl
+        bg-white dark:bg-gray-900
         ${isOpen ? 'w-80' : CLOSED_WIDTH}
       `}
     >
@@ -163,10 +156,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* HEADER: LOGO */}
         <div className="flex items-center mb-8 h-12">
           <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-center`}>
-            <img 
-              src={isDarkMode ? LogoIconDark : LogoIconLight} 
-              alt="Logo" 
-              className="size-10 object-contain shadow-lg shadow-action/10" 
+            <img
+              src={isDarkMode ? LogoIconDark : LogoIconLight}
+              alt="Logo"
+              className="size-10 object-contain"
             />
           </div>
 

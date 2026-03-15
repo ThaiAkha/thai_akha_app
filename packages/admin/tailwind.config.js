@@ -18,9 +18,12 @@ export default {
     ],
     safelist: [
         // ========== ADMIN SIDEBAR COLORS (brand red) ==========
-        // Active background (increased opacity for visibility)
-        'bg-brand-500/15',
-        'dark:bg-brand-500/25',
+        // Pill active states (increased opacity for visibility)
+        'bg-brand-500/25',
+        'dark:bg-brand-500/40',
+        // Pill hover state
+        'hover:bg-gray-100',
+        'dark:hover:bg-white/5',
         // Active text & icon
         'text-brand-600',
         'dark:text-brand-400',

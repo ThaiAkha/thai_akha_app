@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         ${isOpen ? 'w-80' : SIDEBAR_CONSTANTS.CLOSED_WIDTH}
       `}
     >
-      <div className="flex flex-col h-full py-6 pt-[20px]">
+      <div className="flex flex-col h-full py-6 pt-[20px] px-3">
 
         {/* ========== TOP SECTION ========== */}
 

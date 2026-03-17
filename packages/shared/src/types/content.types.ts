@@ -44,4 +44,10 @@ export interface HeaderMetadata {
   titleMain?: string | null;
   titleHighlight?: string | null;
   description?: string | null;
+  seoTitle?: string | null;
+  ogImage?: string | null;
+  robots?: string | null;
+  canonicalUrl?: string | null;
+  ogType?: string | null;
+  twitterCard?: string | null;
 }

@@ -122,7 +122,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
   const isSelected = Object.values(selections).some((s: any) => s?.id === dish.id);
 
   return (
-    <div className="fixed inset-0 z-[1] flex flex-col bg-[#0a0a0a] text-desc animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[1] flex flex-col bg-surface-overlay text-desc animate-in fade-in duration-500">
       
       {/* BACKGROUND CINEMATIC */}
       <div className="absolute inset-0 z-0">
@@ -217,7 +217,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
                        className={cn(
                          "relative h-32 rounded-2xl border flex flex-col items-center justify-center gap-3 p-4 transition-all duration-300 group overflow-hidden",
                          hasDetails 
-                           ? "bg-[#1a1a1a] border-white/10 hover:border-primary/50 hover:bg-white/5 cursor-pointer" 
+                           ? "bg-surface-elevated border-white/10 hover:border-primary/50 hover:bg-white/5 cursor-pointer" 
                            : "bg-white/5 border-transparent cursor-default"
                        )}
                      >
@@ -249,7 +249,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
       </div>
 
       {/* FOOTER ACTION */}
-      <div className="p-6 border-t border-white/10 bg-[#0a0b0d]/90 backdrop-blur-xl relative z-20">
+      <div className="p-6 border-t border-white/10 bg-surface-overlay/90 backdrop-blur-xl relative z-20">
          <div className="max-w-4xl mx-auto">
             <Button 
                variant={isSelected ? "mineral" : "action"} 
@@ -269,7 +269,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
         isOpen={!!activeIngredient} 
         onClose={() => setActiveIngredient(null)}
         variant="cinema"
-        className="bg-[#1a1a1a] border border-white/10 max-w-sm w-full mx-6 p-0 overflow-hidden rounded-[2.5rem]"
+        className="bg-surface-elevated border border-white/10 max-w-sm w-full mx-6 p-0 overflow-hidden rounded-[2.5rem]"
       >
          {activeIngredient && (
            <div className="flex flex-col relative">

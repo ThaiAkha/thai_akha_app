@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Search, Briefcase } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Card from '../../ui/Card';
 import { UserMode, NewUser } from '../../../hooks/useAdminBooking';
@@ -88,6 +89,8 @@ const BookingContent: React.FC<BookingContentProps> = ({
     onSetHotel,
     session
 }) => {
+    const { t } = useTranslation('booking');
+
     return (
         <div className="lg:col-span-6 space-y-6">
             <Card className="relative min-h-[400px] !p-0 overflow-hidden">
@@ -96,9 +99,9 @@ const BookingContent: React.FC<BookingContentProps> = ({
                 <div className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 rounded-t-xl overflow-hidden">
                     <div className="flex overflow-x-auto no-scrollbar">
                         {[
-                            { id: 'new', label: 'New Guest', icon: User },
-                            { id: 'existing', label: 'Existing User', icon: Search },
-                            { id: 'agency', label: 'Agency', icon: Briefcase },
+                            { id: 'new', label: t('tabs.newGuest'), icon: User },
+                            { id: 'existing', label: t('tabs.existingUser'), icon: Search },
+                            { id: 'agency', label: t('tabs.agency'), icon: Briefcase },
                         ].map((mode) => (
                             <button
                                 key={mode.id}
@@ -121,14 +124,14 @@ const BookingContent: React.FC<BookingContentProps> = ({
                     {/* Dynamic Title based on Mode */}
                     <div className="mb-6 pb-3 border-b border-gray-200 dark:border-gray-800">
                         <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
-                            {userMode === 'new' && <><User className="w-5 h-5 text-green-500" /> New Guest</>}
-                            {userMode === 'existing' && <><Search className="w-5 h-5 text-green-500" /> Existing User</>}
-                            {userMode === 'agency' && <><Briefcase className="w-5 h-5 text-green-500" /> Agency</>}
+                            {userMode === 'new' && <><User className="w-5 h-5 text-green-500" /> {t('tabs.newGuest')}</>}
+                            {userMode === 'existing' && <><Search className="w-5 h-5 text-green-500" /> {t('tabs.existingUser')}</>}
+                            {userMode === 'agency' && <><Briefcase className="w-5 h-5 text-green-500" /> {t('tabs.agency')}</>}
                         </h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">
-                            {userMode === 'new' && 'Create a new user profile and booking.'}
-                            {userMode === 'existing' && 'Search database for returning guests.'}
-                            {userMode === 'agency' && 'Book on behalf of a partner/agency.'}
+                            {userMode === 'new' && t('mode.newDesc')}
+                            {userMode === 'existing' && t('mode.existingDesc')}
+                            {userMode === 'agency' && t('mode.agencyDesc')}
                         </p>
                     </div>
 

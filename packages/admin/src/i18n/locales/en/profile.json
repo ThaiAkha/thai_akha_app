@@ -1,0 +1,51 @@
+{
+  "personal": {
+    "title": "User Account",
+    "roleDefault": "GUEST",
+    "fieldFullName": "Full Name",
+    "fieldPhone": "Phone",
+    "fieldNationality": "Nationality",
+    "searchCountry": "Search country...",
+    "editLabel": "Edit Profile",
+    "saveLabel": "Save Details",
+    "notSpecified": "Not specified"
+  },
+  "avatar": {
+    "uploadFail": "Upload failed: {{message}}"
+  },
+  "agency": {
+    "fieldCompany": "Company / Agency Name",
+    "placeholderCompany": "Official Agency Name",
+    "fieldAddress": "Billing Address",
+    "placeholderAddress": "Street name, Number",
+    "fieldCountry": "Country",
+    "searchCountry": "Search country...",
+    "fieldCity": "City",
+    "placeholderCity": "Official City",
+    "fieldProvince": "Province / Region",
+    "placeholderProvince": "Province",
+    "fieldPostalCode": "Postal Code",
+    "fieldTaxId": "Tax ID / VAT Number",
+    "placeholderTaxId": "VAT Registration Number",
+    "fieldCommission": "Commission Rate",
+    "commissionDefault": "Standard Tier",
+    "editLabel": "Edit Agency Details",
+    "saveLabel": "Update Identity"
+  },
+  "security": {
+    "fieldNewPassword": "New Password",
+    "fieldConfirmPassword": "Confirm New Password",
+    "errorMismatch": "Passwords do not match",
+    "errorMinLength": "Password must be at least 6 characters",
+    "successUpdated": "Password updated successfully!",
+    "errorFailed": "Failed to update password",
+    "btnUpdating": "Updating...",
+    "btnUpdate": "Update Password",
+    "dangerZoneTitle": "Danger Zone",
+    "dangerZoneDesc": "Account deactivation is permanent. All your preferences and data associated with this session will be locked.",
+    "btnDeactivate": "Deactivate Account",
+    "confirmRequired": "Critical Confirmation Required",
+    "btnCancel": "Cancel",
+    "btnConfirm": "Confirm"
+  }
+}

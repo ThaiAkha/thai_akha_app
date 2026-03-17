@@ -1,0 +1,22 @@
+{
+  "sidebar": {
+    "title": "แขก",
+    "guest": "แขก"
+  },
+  "content": {
+    "loading": "กำลังโหลด..."
+  },
+  "meta": {
+    "title": "ร้านค้า | ไทยอาข่าคิทเชน",
+    "description": "จัดการการขายในสถานที่ สินค้า และบิลแขกระหว่างชั้นเรียน"
+  },
+  "inspector": {
+    "customerName": "ชื่อลูกค้า",
+    "selectGuest": "เลือกแขก",
+    "emptySelectHint": "เลือกแขกก่อน",
+    "emptyTab": "ไม่มีรายการ",
+    "totalAmount": "ยอดรวม",
+    "saveTab": "บันทึกรายการ",
+    "payCash": "ชำระด้วยเงินสด"
+  }
+}

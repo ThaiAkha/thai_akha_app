@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Typography, Toggle, Badge, Icon } from '../ui/index';
-import { ThemeSwitcher, SidebarAvatar, SidebarDivider, SidebarActionButton } from '@thaiakha/shared';
+import { Sun, Moon } from 'lucide-react';
 import { getIcon } from '@thaiakha/shared/lib/icons';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
@@ -194,7 +194,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                     isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
                     // Active State
                     isActive
-                      ? "bg-brand-50 dark:bg-brand-500/[0.12] text-brand-500 dark:text-brand-400 shadow-[inset_4px_0_0_0_rgb(var(--color-brand))]"
+                      ? "bg-brand-50 dark:bg-brand-500/[0.12] text-brand-500 dark:text-brand-400 shadow-[inset_4px_0_0_0_var(--color-brand-500)]"
                       : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300"
                   )}
                   style={{ transitionDelay: stage === 'opening' ? '0ms' : '0ms' }}
@@ -221,12 +221,29 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-white/5 space-y-4">
 
           {/* Theme Toggle */}
-          <ThemeSwitcher
-            isDarkMode={isDarkMode}
-            onToggle={onToggleTheme}
-            variant="mobile"
-            accentColor="brand"
-          />
+          <div className="flex h-16 items-center justify-between px-5 rounded-2xl border border-white/5 bg-white/5">
+            <div className="flex items-center gap-3">
+              {isDarkMode
+                ? <Sun className="text-xl text-quiz" />
+                : <Moon className="text-xl text-slate-400" />
+              }
+              <span className="font-black uppercase tracking-widest text-[10px] text-white/80">
+                {isDarkMode ? 'Dark' : 'Light'}
+              </span>
+            </div>
+            <div
+              onClick={onToggleTheme}
+              className={cn(
+                'relative inline-flex h-6 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
+                isDarkMode ? 'bg-brand-500' : 'bg-gray-300 dark:bg-gray-700'
+              )}
+            >
+              <span className={cn(
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
+                isDarkMode ? 'translate-x-4' : 'translate-x-0'
+              )} />
+            </div>
+          </div>
 
           {/* Auth Action (Login/Logout) */}
           <button

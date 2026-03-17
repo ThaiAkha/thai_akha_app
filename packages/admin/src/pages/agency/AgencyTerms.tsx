@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import PageHeaderWithBadge from '../../components/common/PageHeaderWithBadge';
 import {
@@ -13,6 +14,7 @@ import PageMeta from '../../components/common/PageMeta';
 
 
 const AgencyTerms: React.FC = () => {
+    const { t } = useTranslation('pages');
     // ✅ AppHeader handles setPageHeader automatically
     // Hook only for metadata used in rendering (PageHeaderWithBadge)
     const { pageMeta } = usePageMetadata('agency-terms');
@@ -20,14 +22,14 @@ const AgencyTerms: React.FC = () => {
     return (
         <PageContainer variant="wide">
             <PageMeta
-                title="Admin Dashboard | Thai Akha Kitchen"
-                description="To be set up later."
+                title={pageMeta?.seoTitle || t('agencyTerms.metaTitle')}
+                description={pageMeta?.description || t('agencyTerms.metaDesc')}
             />
             <div className="pb-20 space-y-8">
                 <div>
                     <PageHeaderWithBadge
-                        badge={pageMeta?.badge || 'Legal Framework'}
-                        title={pageMeta?.titleMain || 'Partner Policies'}
+                        badge={pageMeta?.badge || t('agencyTerms.badgeFallback')}
+                        title={pageMeta?.titleMain || t('agencyTerms.titleFallback')}
                         titleHighlight={pageMeta?.titleHighlight}
                         description={pageMeta?.description}
                         alignment="left"
@@ -42,17 +44,17 @@ const AgencyTerms: React.FC = () => {
                                 <Ban className="w-6 h-6" />
                             </div>
                             <div className="space-y-3">
-                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">Cancellation Policy</h4>
+                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">{t('agencyTerms.cancellationTitle')}</h4>
                                 <ul className="space-y-2">
                                     {[
-                                        '24h+ notice: Free cancellation',
-                                        'Less than 24h: 50% charge',
-                                        'No-show: 100% service fee',
-                                        'Guest sickness: Free with medical cert'
-                                    ].map((t, i) => (
+                                        t('agencyTerms.cancellationItem1'),
+                                        t('agencyTerms.cancellationItem2'),
+                                        t('agencyTerms.cancellationItem3'),
+                                        t('agencyTerms.cancellationItem4'),
+                                    ].map((item, i) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
                                             <div className="mt-1 size-1.5 rounded-full bg-red-400 shrink-0" />
-                                            {t}
+                                            {item}
                                         </li>
                                     ))}
                                 </ul>
@@ -67,9 +69,9 @@ const AgencyTerms: React.FC = () => {
                                 <Clock className="w-6 h-6" />
                             </div>
                             <div className="space-y-3">
-                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">Logistics & Pickup</h4>
+                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">{t('agencyTerms.logisticsTitle')}</h4>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                                    Guests must be ready in the hotel lobby 10 minutes before the scheduled pickup time. Drivers will wait a maximum of 15 minutes before proceeding with the route.
+                                    {t('agencyTerms.logisticsDesc')}
                                 </p>
                             </div>
                         </div>
@@ -82,13 +84,13 @@ const AgencyTerms: React.FC = () => {
                                 <Gavel className="w-6 h-6" />
                             </div>
                             <div className="space-y-3">
-                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">Invoicing & Settlement</h4>
+                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">{t('agencyTerms.invoicingTitle')}</h4>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                                    Statements are issued on the 1st of each month. Any discrepancies must be reported within 48 hours. Delayed payments may result in temporary portal suspension.
+                                    {t('agencyTerms.invoicingDesc')}
                                 </p>
                                 <div className="flex items-center gap-2 mt-4">
                                     <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                    <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Signed & Verified for 2026 Season</span>
+                                    <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{t('agencyTerms.verified')}</span>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +99,7 @@ const AgencyTerms: React.FC = () => {
                     <div className="p-6 bg-brand-500/5 border border-brand-500/20 rounded-2xl flex items-center gap-4">
                         <AlertCircle className="w-6 h-6 text-brand-500 shrink-0" />
                         <p className="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wide">
-                            Need a custom contract for large group incentive tours? Contact operations at hello@tak.kitchen
+                            {t('agencyTerms.customContract')}
                         </p>
                     </div>
                 </div>

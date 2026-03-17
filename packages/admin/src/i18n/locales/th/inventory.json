@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "สินค้าคงคลัง | แอดมิน",
+    "description": "จัดการแคตาล็อกสินค้า ระดับสต็อก และราคา"
+  },
+  "sidebar": {
+    "title": "หมวดหมู่",
+    "allItems": "สินค้าทั้งหมด",
+    "status": "สินค้าคงคลังสด"
+  },
+  "content": {
+    "searchPlaceholder": "ค้นหาสินค้าหรือรหัส SKU...",
+    "noProducts": "ไม่พบสินค้า",
+    "colSku": "รหัสสินค้า",
+    "colName": "ชื่อสินค้า",
+    "colCategory": "หมวดหมู่",
+    "colStock": "สต็อก",
+    "colPrice": "ราคา",
+    "lowStock": "สต็อกต่ำ: {{count}}",
+    "inactive": "ปิดใช้งาน"
+  },
+  "inspector": {
+    "noImage": "ไม่มีรูปภาพ",
+    "updateImageUrl": "อัปเดต URL รูปภาพ",
+    "fieldName": "ชื่อสินค้า",
+    "placeholderName": "ป้อนชื่อสินค้า...",
+    "fieldSku": "รหัสสินค้า",
+    "fieldCategory": "หมวดหมู่",
+    "selectCategory": "เลือกหมวดหมู่",
+    "fieldStock": "จำนวนสต็อก",
+    "fieldPrice": "ราคา (บาท)",
+    "fieldDescription": "คำอธิบายภายใน",
+    "descPlaceholder": "หมายเหตุ/คำอธิบายภายใน...",
+    "statusLabel": "สถานะ",
+    "active": "เปิดใช้งาน",
+    "inactive": "ปิดใช้งาน",
+    "visibilityLabel": "การมองเห็น",
+    "visOnline": "ออนไลน์",
+    "visHidden": "ซ่อน",
+    "deleteProduct": "ลบสินค้า"
+  },
+  "actions": {
+    "new": "ใหม่",
+    "exportFormats": "รูปแบบการส่งออก",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "รูปแบบสเปรดชีตมาตรฐาน",
+    "exportJson": "รูปแบบ JSON",
+    "exportJsonDesc": "โครงสร้างข้อมูลดิบ",
+    "copyClipboard": "คัดลอกไปยังคลิปบอร์ด",
+    "copyClipboardDesc": "แชร์เป็นข้อความด่วน",
+    "edit": "แก้ไข",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "tooltipEdit": "แก้ไขข้อมูลนี้",
+    "tooltipSave": "บันทึกการเปลี่ยนแปลง"
+  }
+}

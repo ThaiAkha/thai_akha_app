@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@thaiakha/shared": "workspace:*",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
@@ -21,9 +20,13 @@
     "@react-jvectormap/core": "^1.0.4",
     "@react-jvectormap/world": "^1.1.2",
     "@supabase/supabase-js": "^2.95.3",
+    "@thaiakha/shared": "workspace:*",
     "apexcharts": "^4.1.0",
     "country-flag-icons": "^1.6.13",
     "flatpickr": "^4.6.13",
+    "i18next": "^24.2.3",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "i18next-resources-to-backend": "^1.2.1",
     "lucide-react": "^0.563.0",
     "react": "^19.0.0",
     "react-apexcharts": "^1.7.0",
@@ -33,6 +36,7 @@
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
     "react-helmet-async": "^2.0.5",
+    "react-i18next": "^15.7.4",
     "react-phone-input-2": "^2.15.1",
     "react-router": "^7.1.5",
     "swiper": "^11.2.3"

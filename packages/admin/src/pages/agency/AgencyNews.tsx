@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import WelcomeHero from '../../components/dashboard/WelcomeHero';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
@@ -20,6 +21,7 @@ interface Article {
 }
 
 const AgencyNews: React.FC = () => {
+    const { t } = useTranslation('pages');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('agency-news');
     const [news, setNews] = useState<Article[]>([]);
@@ -55,15 +57,20 @@ const AgencyNews: React.FC = () => {
     return (
         <PageContainer variant="wide">
             <PageMeta
-                title="Agency News | Thai Akha Kitchen"
-                description="Resta aggiornato su tutte le novità e gli annunci ufficiali."
+                title={pageMeta?.seoTitle || t('agencyNews.metaTitle')}
+                description={pageMeta?.description || t('agencyNews.metaDesc')}
+                ogImage={pageMeta?.ogImage}
+                robots={pageMeta?.robots}
+                canonicalUrl={pageMeta?.canonicalUrl}
+                ogType={pageMeta?.ogType}
+                twitterCard={pageMeta?.twitterCard}
             />
 
             {/* Hero Banner (from CMS metadata) */}
             {pageMeta && (
                 <WelcomeHero
-                    badge={pageMeta.badge || 'Agenzia'}
-                    titleMain={pageMeta.titleMain || 'Agency News'}
+                    badge={pageMeta.badge || t('agencyNews.badgeFallback')}
+                    titleMain={pageMeta.titleMain || t('agencyNews.titleFallback')}
                     titleHighlight={pageMeta.titleHighlight}
                     description={pageMeta.description}
                     imageUrl={pageMeta.imageUrl}
@@ -149,7 +156,7 @@ const AgencyNews: React.FC = () => {
                 ) : (
                     <div className="col-span-full py-20 text-center">
                         <Newspaper className="w-20 h-20 mx-auto opacity-10 mb-4" />
-                        <h4 className="text-xl font-black uppercase text-gray-300">Nessuna notizia trovata</h4>
+                        <h4 className="text-xl font-black uppercase text-gray-300">{t('agencyNews.noNews')}</h4>
                     </div>
                 )}
             </div>

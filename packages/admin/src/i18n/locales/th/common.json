@@ -1,0 +1,84 @@
+{
+  "breadcrumb": {
+    "home": "หน้าหลัก"
+  },
+  "buttons": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "create": "สร้าง",
+    "upload": "อัปโหลด",
+    "download": "ดาวน์โหลด",
+    "preview": "ตัวอย่าง",
+    "search": "ค้นหา",
+    "filter": "กรอง",
+    "apply": "นำไปใช้",
+    "clear": "ล้าง",
+    "confirm": "ยืนยัน",
+    "back": "ย้อนกลับ",
+    "next": "ถัดไป",
+    "close": "ปิด"
+  },
+  "status": {
+    "pending": "รอดำเนินการ",
+    "paid": "ชำระเงินแล้ว",
+    "confirmed": "ยืนยันแล้ว",
+    "cancelled": "ยกเลิกแล้ว",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน"
+  },
+  "feedback": {
+    "loading": "กำลังโหลด...",
+    "saving": "กำลังบันทึก...",
+    "success": "สำเร็จ",
+    "error": "เกิดข้อผิดพลาด",
+    "noData": "ไม่มีข้อมูล"
+  },
+  "language": {
+    "switch": "เปลี่ยนภาษา",
+    "current": "ภาษาปัจจุบัน",
+    "en": "อังกฤษ",
+    "th": "ไทย"
+  },
+  "user": {
+    "menu": "เมนูผู้ใช้",
+    "editProfile": "แก้ไขโปรไฟล์",
+    "signOut": "ออกจากระบบ",
+    "fallbackName": "ผู้ใช้"
+  },
+  "header": {
+    "toggleMenu": "เปิด/ปิดเมนู",
+    "toggleSidebar": "เปิด/ปิดแถบด้านข้าง",
+    "visitSite": "ไปยังเว็บไซต์",
+    "exploreSite": "สำรวจเว็บไซต์สาธารณะ",
+    "goLive": "ไปยังเว็บ"
+  },
+  "theme": {
+    "light": "สว่าง",
+    "dark": "มืด",
+    "toggle": "สลับธีม"
+  },
+  "aria": {
+    "menuToggle": "เปิด/ปิดแถบด้านข้าง",
+    "userAvatar": "รูปโปรไฟล์ผู้ใช้"
+  },
+  "yesNo": {
+    "yes": "ใช่",
+    "no": "ไม่"
+  },
+  "actions": {
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "cancel": "ยกเลิก",
+    "edit": "แก้ไข",
+    "confirm": "ยืนยัน",
+    "deleteRecord": "ลบข้อมูล",
+    "editAvailability": "แก้ไขความพร้อม",
+    "viewMore": "ดูเพิ่มเติม"
+  },
+  "notifications": {
+    "title": "การแจ้งเตือน",
+    "viewAll": "ดูการแจ้งเตือนทั้งหมด"
+  }
+}

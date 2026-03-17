@@ -1,0 +1,106 @@
+{
+  "notFound": {
+    "error": "ERROR",
+    "errorLabel": "ERROR",
+    "code": "404",
+    "message": "We can't seem to find the page you are looking for!",
+    "backHome": "Back to Home Page",
+    "copyright": "{{year}} - Thai Akha Kitchen",
+    "pageTitle": "404 - Page Not Found | Thai Akha Kitchen Admin",
+    "pageDesc": "The page you are looking for could not be found."
+  },
+  "profile": {
+    "metaTitle": "Profile Dashboard | Cherry Admin",
+    "metaDesc": "Manage your personal details, agency identity, and security settings."
+  },
+  "agencyNews": {
+    "metaTitle": "Agency News | Thai Akha Kitchen",
+    "metaDesc": "Stay updated with the latest news and announcements from Thai Akha Kitchen.",
+    "badgeFallback": "Agency",
+    "titleFallback": "Agency News",
+    "noNews": "No news found"
+  },
+  "agencyRates": {
+    "metaTitle": "Contract Rates 2026 | Thai Akha Kitchen Partner Portal",
+    "metaDesc": "View your confidential partner net rates and commission structure for 2026.",
+    "badgeFallback": "Confidential",
+    "titleFallback": "Contract Rates 2026",
+    "colClass": "Class Type",
+    "colRack": "Rack Rate",
+    "colNet": "Partner Net",
+    "colCommission": "Commission",
+    "rateMorning": "Morning Class",
+    "rateEvening": "Evening Class",
+    "rateFullDay": "Full Day Package",
+    "ratePrivate": "Private Session (1-4 pax)",
+    "guaranteeTitle": "Price Guarantee",
+    "guaranteeDesc": "Seasonal rates are locked for all contracts signed before March 2026. Any price adjustments will be notified 60 days in advance.",
+    "paymentTitle": "Payment Terms",
+    "paymentDesc": "Net rates are payable via monthly invoice. Payments should be settled within the first 5 working days of the following month."
+  },
+  "agencyTerms": {
+    "metaTitle": "Partner Policies | Thai Akha Kitchen Partner Portal",
+    "metaDesc": "Review the official terms, cancellation policy, and invoicing rules for partner agencies.",
+    "badgeFallback": "Legal Framework",
+    "titleFallback": "Partner Policies",
+    "cancellationTitle": "Cancellation Policy",
+    "cancellationItem1": "24h+ notice: Free cancellation",
+    "cancellationItem2": "Less than 24h: 50% charge",
+    "cancellationItem3": "No-show: 100% service fee",
+    "cancellationItem4": "Guest sickness: Free with medical cert",
+    "logisticsTitle": "Logistics & Pickup",
+    "logisticsDesc": "Guests must be ready in the hotel lobby 10 minutes before the scheduled pickup time. Drivers will wait a maximum of 15 minutes before proceeding with the route.",
+    "invoicingTitle": "Invoicing & Settlement",
+    "invoicingDesc": "Statements are issued on the 1st of each month. Any discrepancies must be reported within 48 hours. Delayed payments may result in temporary portal suspension.",
+    "verified": "Signed & Verified for 2026 Season",
+    "customContract": "Need a custom contract for large group incentive tours? Contact operations at hello@tak.kitchen"
+  },
+  "agencyReservations": {
+    "metaTitle": "Reservations | Thai Akha Kitchen Partner Portal",
+    "metaDesc": "View and manage all bookings made through your agency account.",
+    "sessionMorning": "Morning Class",
+    "sessionEvening": "Evening Class"
+  },
+  "agencyAssets": {
+    "badgeFallback": "Legal Framework",
+    "titleFallback": "Partner Policies",
+    "assetPhotos": "High-Res Photos",
+    "assetVideo": "Promo Video (4K)",
+    "assetBrochure": "Menu Brochure 2026",
+    "assetLogo": "Logo KIT (Vector)",
+    "downloadFile": "Download File",
+    "showcaseAlt": "Showcase",
+    "socialMediaTitle": "Social Media Pack",
+    "socialMediaDesc": "Pre-sized Vertical Stories and Posts for Instagram and Facebook.",
+    "accessFolder": "Access Folder",
+    "needHelpTitle": "Need More Help?",
+    "needHelpDesc": "Looking for something specific or custom branding materials? Our marketing team is ready to assist.",
+    "requestAssets": "Request Custom Assets"
+  },
+  "driver": {
+    "status": {
+      "waiting": "WAITING",
+      "enRoute": "EN ROUTE",
+      "atLobby": "AT LOBBY",
+      "onBoard": "ON BOARD",
+      "completed": "COMPLETED"
+    },
+    "action": {
+      "startPickup": "START PICKUP",
+      "iAmHere": "I AM HERE",
+      "pickUpPax": "PICK UP PAX",
+      "dropComplete": "DROP COMPLETE",
+      "done": "DONE"
+    },
+    "pickup": "Pickup",
+    "dropoff": "Drop-off",
+    "startPickupRoute": "Start Pickup Route",
+    "startDropoffRoute": "Start Drop-off Route",
+    "clickConfirm": "CLICK AGAIN TO CONFIRM",
+    "pax": "/ {{total}} PAX",
+    "payoutTitle": "All Rides Completed!",
+    "payoutEarnings": "Daily Earnings",
+    "payoutReturn": "Return to Home",
+    "whatsappMsg": "Sawasdee%20kha%20Driver%20is%20at%20lobby"
+  }
+}

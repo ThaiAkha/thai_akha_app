@@ -1,0 +1,126 @@
+{
+  "tabs": {
+    "newGuest": "แขกใหม่",
+    "existingUser": "ผู้ใช้เดิม",
+    "agency": "เอเจนซี"
+  },
+  "mode": {
+    "newDesc": "สร้างโปรไฟล์และการจองสำหรับแขกใหม่",
+    "existingDesc": "ค้นหาในฐานข้อมูลสำหรับแขกที่เคยมาแล้ว",
+    "agencyDesc": "จองในนามของพาร์ตเนอร์หรือเอเจนซี"
+  },
+  "inspector": {
+    "selectedClass": "ชั้นเรียนที่เลือก",
+    "morningClass": "ชั้นเรียนตอนเช้า",
+    "eveningClass": "ชั้นเรียนตอนเย็น",
+    "numGuests": "จำนวนแขก",
+    "guestDetails": "รายละเอียดแขก",
+    "fieldName": "ชื่อ",
+    "fieldEmail": "อีเมล",
+    "fieldPhone": "โทรศัพท์",
+    "fieldNationality": "สัญชาติ",
+    "fieldAge": "อายุ",
+    "fieldGender": "เพศ",
+    "fieldWhatsapp": "วอทส์แอป",
+    "logistics": "การขนส่ง",
+    "fieldHotel": "โรงแรม",
+    "fieldMeetingPoint": "จุดนัดหมาย",
+    "fieldLuggage": "สัมภาระ",
+    "fieldNotes": "หมายเหตุ",
+    "totalAmount": "ยอดรวม",
+    "payment": "การชำระเงิน",
+    "unpaid": "ยังไม่ชำระ",
+    "paid": "ชำระแล้ว",
+    "confirmBtn": "ยืนยันการจอง"
+  },
+  "logistics": {
+    "sectionTitle": "การขนส่งและหมายเหตุ",
+    "needPickup": "ต้องการรับส่งหรือไม่?",
+    "fieldHotel": "โรงแรม",
+    "hotelPlaceholder": "ค้นหาโรงแรม (อย่างน้อย 2 ตัวอักษร)...",
+    "noZone": "ไม่มีโซน",
+    "meetingPoint": "จุดนัดหมาย",
+    "selectMeetingPoint": "เลือกจุดนัดหมาย...",
+    "luggage": "สัมภาระ",
+    "extraNotes": "หมายเหตุเพิ่มเติม",
+    "notesPlaceholder": "คำขอพิเศษ ข้อจำกัดด้านอาหาร หรือข้อมูลเพิ่มเติม..."
+  },
+  "newUser": {
+    "fieldFullName": "ชื่อ-นามสกุล",
+    "placeholderName": "เช่น สมชาย ใจดี",
+    "fieldAge": "อายุ",
+    "fieldGender": "เพศ",
+    "genderSelect": "เลือก",
+    "genderMale": "ชาย",
+    "genderFemale": "หญิง",
+    "genderOther": "อื่นๆ",
+    "fieldEmail": "อีเมล",
+    "fieldPassword": "รหัสผ่าน",
+    "passwordHint": "อย่างน้อย 8 ตัวอักษร",
+    "fieldNationality": "สัญชาติ",
+    "searchCountry": "ค้นหาประเทศ...",
+    "fieldPhone": "หมายเลขโทรศัพท์",
+    "whatsapp": "วอทส์แอป"
+  },
+  "search": {
+    "labelGuest": "ค้นหาแขก",
+    "labelAgency": "ค้นหาพาร์ตเนอร์ / เอเจนซี",
+    "placeholderGuest": "พิมพ์ชื่อ...",
+    "placeholderAgency": "ค้นหาชื่อเอเจนซี...",
+    "noUsersFound": "ไม่พบผู้ใช้",
+    "selectBtn": "เลือก",
+    "removeBtn": "ลบออก"
+  },
+  "session": {
+    "morning": "เช้า",
+    "evening": "เย็น"
+  },
+  "picker": {
+    "cardTitle": "วันที่และรอบ",
+    "selectDate": "เลือกวันที่",
+    "morning": "ตอนเช้า",
+    "evening": "ตอนเย็น",
+    "available": "ว่าง",
+    "fullyBooked": "เต็มแล้ว",
+    "closed": "ปิด",
+    "selected": "ที่เลือก",
+    "selectDatePrompt": "เลือกวันที่สำหรับการจอง",
+    "paxCount": "จำนวนผู้เข้าร่วม",
+    "paxAvailable": "{{pax}} จาก {{max}} ที่นั่ง"
+  },
+  "zone": {
+    "morningPickup": "เวลารับตอนเช้า",
+    "eveningPickup": "เวลารับตอนเย็น"
+  },
+  "meta": {
+    "manualTitle": "จองด้วยตนเอง",
+    "manualDesc": "สร้างการจองใหม่ด้วยตนเอง",
+    "agencyTitle": "การจองใหม่ | ไทยอาข่าคิทเชน",
+    "agencyDesc": "จองชั้นเรียนทำอาหารในนามของลูกค้าของคุณ"
+  },
+  "agencyBooking": {
+    "stepGuest": "1. ข้อมูลแขก",
+    "fieldFullName": "ชื่อ-นามสกุล",
+    "placeholderName": "กรอกชื่อแขก",
+    "fieldEmail": "อีเมล (สำหรับรายละเอียดชั้นเรียน)",
+    "placeholderEmail": "guest@example.com",
+    "stepClass": "2. วันและเวลาของชั้นเรียน",
+    "stepPickup": "3. การรับส่ง",
+    "fieldHotel": "ชื่อโรงแรม",
+    "placeholderHotel": "กรอกชื่อโรงแรมหรือจุดนัดหมาย",
+    "fieldPickupTime": "เวลารับ",
+    "fieldZone": "โซน",
+    "fieldNotes": "หมายเหตุเพิ่มเติมสำหรับครัว",
+    "placeholderNotes": "ข้อจำกัดด้านอาหารหรือคำขอพิเศษ...",
+    "summaryTitle": "สรุปการจอง",
+    "summaryParticipants": "จำนวนผู้เข้าร่วม",
+    "summaryNetRate": "อัตราสุทธิสำหรับพาร์ตเนอร์",
+    "summaryDiscount": "% ส่วนลด",
+    "summaryNetPayable": "ยอดสุทธิที่ต้องชำระ",
+    "invoiceNote": "การจองนี้จะได้รับการยืนยันทันทีและเพิ่มในใบแจ้งหนี้รายเดือนของคุณ",
+    "btnSyncing": "กำลังซิงค์...",
+    "btnConfirm": "ยืนยันการจอง",
+    "errorNameRequired": "กรุณากรอกชื่อแขก",
+    "successConfirmed": "ยืนยันการจองแล้ว! ลูกค้าของคุณได้รับการลงทะเบียนเรียบร้อยแล้ว"
+  }
+}

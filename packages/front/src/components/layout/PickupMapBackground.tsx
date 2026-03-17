@@ -227,7 +227,7 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
     updateUserMarker();
   }, [selectedLocation, mapReady]);
 
-  return <div ref={mapRef} className="w-full h-full bg-[#1d1d1d]" />;
+  return <div ref={mapRef} className="w-full h-full bg-map-bg" />;
 };
 
 export default PickupMapBackground;

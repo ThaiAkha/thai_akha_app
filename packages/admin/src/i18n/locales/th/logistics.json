@@ -1,0 +1,58 @@
+{
+  "sidebar": {
+    "title": "ชั้นเรียนทำอาหาร",
+    "morningClass": "ชั้นเรียนตอนเช้า",
+    "eveningClass": "ชั้นเรียนตอนเย็น"
+  },
+  "content": {
+    "syncing": "กำลังซิงค์..."
+  },
+  "column": {
+    "hotel_one": "โรงแรม",
+    "hotel_other": "โรงแรม"
+  },
+  "walkIn": {
+    "title": "วอล์กอิน",
+    "booking_one": "การจอง",
+    "booking_other": "การจอง"
+  },
+  "list": {
+    "empty": "ว่างเปล่า",
+    "assign": "มอบหมาย",
+    "guest": "แขก",
+    "unsavedChanges": "มีการเปลี่ยนแปลงลำดับเส้นทางที่ยังไม่ได้บันทึก"
+  },
+  "inspector": {
+    "emptyTitle": "เลือกผู้โดยสาร",
+    "emptyHint": "คลิกการ์ดใดก็ได้เพื่อตรวจสอบและจัดการรายละเอียด",
+    "routeAssignment": "การมอบหมายเส้นทาง",
+    "fieldPickupDriver": "คนขับรับ",
+    "unassigned": "-- ยังไม่มอบหมาย --",
+    "pickupDetails": "รายละเอียดการรับ",
+    "pickupAtHotel": "รับที่โรงแรม",
+    "walkInMP": "วอล์กอิน / จุดนัดหมาย",
+    "fieldHotel": "โรงแรม / สถานที่",
+    "fieldMP": "จุดนัดหมาย",
+    "selectMP": "-- เลือกจุดนัดหมาย --",
+    "pickupTime": "เวลารับ",
+    "resetToZone": "รีเซ็ตเป็นเวลาโซน ({{time}})",
+    "pickup": "รับ",
+    "dropoff": "ส่ง",
+    "sameLocation": "ที่เดิม",
+    "differentLocation": "สถานที่อื่น",
+    "fieldDropoffHotel": "โรงแรม / สถานที่ส่ง",
+    "fieldDropoffDriver": "คนขับส่ง",
+    "sameAsPickup": "-- เหมือนกับคนขับรับ --",
+    "searchHotel": "ค้นหาโรงแรม..."
+  },
+  "actions": {
+    "tooltipSave": "บันทึกการเปลี่ยนแปลง",
+    "saveOrder": "บันทึกลำดับ",
+    "saving": "กำลังบันทึก...",
+    "save": "บันทึก"
+  },
+  "meta": {
+    "title": "โลจิสติกส์ | ไทยอาข่าคิทเชน",
+    "description": "จัดการคนขับ การรับ และการมอบหมายเส้นทาง"
+  }
+}

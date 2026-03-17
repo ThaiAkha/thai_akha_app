@@ -1,0 +1,58 @@
+{
+  "sidebar": {
+    "title": "Cooking Class",
+    "morningClass": "Morning Class",
+    "eveningClass": "Evening Class"
+  },
+  "content": {
+    "syncing": "Syncing..."
+  },
+  "column": {
+    "hotel_one": "Hotel",
+    "hotel_other": "Hotels"
+  },
+  "walkIn": {
+    "title": "Walk In",
+    "booking_one": "Booking",
+    "booking_other": "Bookings"
+  },
+  "list": {
+    "empty": "Empty",
+    "assign": "Assign",
+    "guest": "Guest",
+    "unsavedChanges": "Unsaved changes to routing order"
+  },
+  "inspector": {
+    "emptyTitle": "Select a Passenger",
+    "emptyHint": "Click any card to inspect and manage details.",
+    "routeAssignment": "Route Assignment",
+    "fieldPickupDriver": "Pickup Driver",
+    "unassigned": "-- UNASSIGNED --",
+    "pickupDetails": "Pickup Details",
+    "pickupAtHotel": "Pickup at Hotel",
+    "walkInMP": "Walk-in / Meeting Point",
+    "fieldHotel": "Hotel / Location",
+    "fieldMP": "Meeting Point",
+    "selectMP": "-- Select meeting point --",
+    "pickupTime": "Pickup Time",
+    "resetToZone": "Reset to zone ({{time}})",
+    "pickup": "Pickup",
+    "dropoff": "Drop-off",
+    "sameLocation": "Same Location",
+    "differentLocation": "Different Location",
+    "fieldDropoffHotel": "Drop-off Hotel / Location",
+    "fieldDropoffDriver": "Drop-off Driver",
+    "sameAsPickup": "-- Same as pickup --",
+    "searchHotel": "Search hotel..."
+  },
+  "actions": {
+    "tooltipSave": "Save changes",
+    "saveOrder": "Save Order",
+    "saving": "Saving...",
+    "save": "SAVE"
+  },
+  "meta": {
+    "title": "Logistics | Thai Akha Kitchen",
+    "description": "Coordinate drivers, pickups, and route assignments."
+  }
+}

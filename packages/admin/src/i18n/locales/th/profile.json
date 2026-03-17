@@ -1,0 +1,51 @@
+{
+  "personal": {
+    "title": "บัญชีผู้ใช้",
+    "roleDefault": "แขก",
+    "fieldFullName": "ชื่อ-นามสกุล",
+    "fieldPhone": "เบอร์โทรศัพท์",
+    "fieldNationality": "สัญชาติ",
+    "searchCountry": "ค้นหาประเทศ...",
+    "editLabel": "แก้ไขโปรไฟล์",
+    "saveLabel": "บันทึกรายละเอียด",
+    "notSpecified": "ไม่ระบุ"
+  },
+  "avatar": {
+    "uploadFail": "อัปโหลดล้มเหลว: {{message}}"
+  },
+  "agency": {
+    "fieldCompany": "ชื่อบริษัท / เอเจนซี",
+    "placeholderCompany": "ชื่อเอเจนซีอย่างเป็นทางการ",
+    "fieldAddress": "ที่อยู่สำหรับออกใบเสร็จ",
+    "placeholderAddress": "ชื่อถนน, หมายเลข",
+    "fieldCountry": "ประเทศ",
+    "searchCountry": "ค้นหาประเทศ...",
+    "fieldCity": "เมือง",
+    "placeholderCity": "เมืองอย่างเป็นทางการ",
+    "fieldProvince": "จังหวัด / ภูมิภาค",
+    "placeholderProvince": "จังหวัด",
+    "fieldPostalCode": "รหัสไปรษณีย์",
+    "fieldTaxId": "เลขประจำตัวผู้เสียภาษี / เลข VAT",
+    "placeholderTaxId": "หมายเลขจดทะเบียน VAT",
+    "fieldCommission": "อัตราค่าคอมมิชชัน",
+    "commissionDefault": "ระดับมาตรฐาน",
+    "editLabel": "แก้ไขข้อมูลเอเจนซี",
+    "saveLabel": "อัปเดตข้อมูล"
+  },
+  "security": {
+    "fieldNewPassword": "รหัสผ่านใหม่",
+    "fieldConfirmPassword": "ยืนยันรหัสผ่านใหม่",
+    "errorMismatch": "รหัสผ่านไม่ตรงกัน",
+    "errorMinLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+    "successUpdated": "อัปเดตรหัสผ่านสำเร็จ!",
+    "errorFailed": "ไม่สามารถอัปเดตรหัสผ่านได้",
+    "btnUpdating": "กำลังอัปเดต...",
+    "btnUpdate": "อัปเดตรหัสผ่าน",
+    "dangerZoneTitle": "โซนอันตราย",
+    "dangerZoneDesc": "การปิดใช้งานบัญชีเป็นการถาวร ข้อมูลและการตั้งค่าทั้งหมดที่เกี่ยวข้องกับเซสชันนี้จะถูกล็อก",
+    "btnDeactivate": "ปิดใช้งานบัญชี",
+    "confirmRequired": "ต้องการการยืนยันที่สำคัญ",
+    "btnCancel": "ยกเลิก",
+    "btnConfirm": "ยืนยัน"
+  }
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import { DataExplorerLayout, DataExplorerInspector } from '../../components/data-explorer';
 import ClassPicker from '../../components/common/ClassPicker';
@@ -13,6 +14,7 @@ import ReservationInspectorActions from '../../components/manager/reservation/Re
 import { useManagerReservation } from '../../hooks/useManagerReservation';
 
 const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate: _onNavigate }) => {
+    const { t } = useTranslation('reservation');
     const {
         bookings,
         selectedBooking,
@@ -37,8 +39,8 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
     return (
         <>
             <PageMeta
-                title="Manager Reservation | Thai Akha Kitchen"
-                description="Manage daily reservations and client details."
+                title={t('meta.title')}
+                description={t('meta.description')}
             />
 
             <DataExplorerLayout

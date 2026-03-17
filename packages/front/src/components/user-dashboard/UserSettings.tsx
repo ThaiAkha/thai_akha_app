@@ -125,7 +125,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
 
         {/* === COLONNA SINISTRA: PERSONAL DATA (30%) === */}
         <div className="lg:col-span-4 space-y-6">
-          <Card variant="glass" className="p-6 md:p-8 bg-surface dark:bg-[#121212]/60 border-border dark:border-white/10 shadow-xl relative overflow-hidden">
+          <Card variant="glass" className="p-6 md:p-8 bg-surface dark:bg-surface/60 border-border dark:border-white/10 shadow-xl relative overflow-hidden">
             
             {/* Background Pattern */}
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-action opacity-80" />
@@ -136,9 +136,9 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                   src={userProfile?.avatar_url} 
                   initials={fullName} 
                   size="2xl" 
-                  className="border-4 border-surface dark:border-[#121212] shadow-2xl" 
+                  className="border-4 border-surface dark:border-surface shadow-2xl" 
                 />
-                <div className="absolute bottom-0 right-0 bg-action text-white p-1.5 rounded-full border-4 border-surface dark:border-[#121212] shadow-sm">
+                <div className="absolute bottom-0 right-0 bg-action text-white p-1.5 rounded-full border-4 border-surface dark:border-surface shadow-sm">
                   <Icon name="verified_user" size="sm" />
                 </div>
               </div>
@@ -178,7 +178,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
         {/* === COLONNA DESTRA: SETTINGS (70%) === */}
         <div className="lg:col-span-8 space-y-8">
           
-          <Card variant="glass" padding="none" className="bg-surface dark:bg-[#1a1a1a] border-border dark:border-white/10 overflow-hidden shadow-2xl">
+          <Card variant="glass" padding="none" className="bg-surface dark:bg-surface-elevated border-border dark:border-white/10 overflow-hidden shadow-2xl">
             
             <div className="p-6 md:p-10 space-y-10">
 

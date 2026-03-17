@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Badge from '../../ui/badge/Badge';
 import SelectField from '../../form/input/SelectField';
 import InputField from '../../form/input/InputField';
@@ -145,12 +146,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
     onUpdateLocal,
     onSubmit,
 }) => {
+    const { t } = useTranslation('logistics');
+
     if (!selectedBooking) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-400">
                 <Search className="w-12 h-12 mb-4 opacity-50" />
-                <h5 className="uppercase font-bold text-sm text-gray-900 dark:text-white">Select a Passenger</h5>
-                <p className="text-xs mt-2 text-gray-500">Click any card to inspect and manage details.</p>
+                <h5 className="uppercase font-bold text-sm text-gray-900 dark:text-white">{t('inspector.emptyTitle')}</h5>
+                <p className="text-xs mt-2 text-gray-500">{t('inspector.emptyHint')}</p>
             </div>
         );
     }
@@ -204,14 +207,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                 {/* ── Route Assignment ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
                     <h6 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
-                        <User className="w-3.5 h-3.5" /> Route Assignment
+                        <User className="w-3.5 h-3.5" /> {t('inspector.routeAssignment')}
                     </h6>
                     <SelectField
-                        label="Pickup Driver"
+                        label={t('inspector.fieldPickupDriver')}
                         value={selectedBooking.pickup_driver_uid || ''}
                         onChange={(e) => onAssign(selectedBooking.id, e.target.value || null)}
                     >
-                        <option value="">-- UNASSIGNED --</option>
+                        <option value="">{t('inspector.unassigned')}</option>
                         {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
                     </SelectField>
                 </div>
@@ -219,7 +222,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                 {/* ── Pickup Details ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
                     <h6 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5" /> Pickup Details
+                        <MapPin className="w-3.5 h-3.5" /> {t('inspector.pickupDetails')}
                     </h6>
 
                     {/* Pickup / Walk-in toggle */}
@@ -232,7 +235,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            Pickup at Hotel
+                            {t('inspector.pickupAtHotel')}
                         </button>
                         <button
                             type="button"
@@ -251,17 +254,18 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            Walk-in / Meeting Point
+                            {t('inspector.walkInMP')}
                         </button>
                     </div>
 
                     {/* Hotel Search — only when Pickup at Hotel */}
                     {selectedBooking.meeting_point === null && (
                         <SearchableHotelSelect
-                            label="Hotel / Location"
+                            label={t('inspector.fieldHotel')}
                             value={selectedBooking.hotel_name || ''}
                             hotels={hotels}
                             zones={pickupZones}
+                            placeholder={t('inspector.searchHotel')}
                             onChange={handleHotelChange}
                         />
                     )}
@@ -269,7 +273,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     {/* Meeting Point — only when Walk-in */}
                     {selectedBooking.meeting_point !== null && (
                         <SelectField
-                            label="Meeting Point"
+                            label={t('inspector.fieldMP')}
                             value={selectedBooking.meeting_point || ''}
                             onChange={(e) => {
                                 const mpId = e.target.value;
@@ -284,7 +288,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 onUpdateLocal(selectedBooking.id, updates);
                             }}
                         >
-                            <option value="">-- Select meeting point --</option>
+                            <option value="">{t('inspector.selectMP')}</option>
                             {meetingPoints.map(mp => (
                                 <option key={mp.id} value={mp.id}>
                                     {mp.name}{mp.morning_pickup_time ? ` · ${selectedBooking.session_id === 'morning_class' ? mp.morning_pickup_time.slice(0, 5) : (mp.evening_pickup_time?.slice(0, 5) ?? '')}` : ''}
@@ -296,14 +300,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     {/* Pickup Time */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Pickup Time</span>
+                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('inspector.pickupTime')}</span>
                             {zoneDefaultTime && (
                                 <button
                                     type="button"
                                     className="text-xs text-brand-500 hover:text-brand-600 font-medium transition-colors"
                                     onClick={() => onUpdateLocal(selectedBooking.id, { pickup_time: zoneDefaultTime })}
                                 >
-                                    Reset to zone ({zoneDefaultTime.slice(0, 5)})
+                                    {t('inspector.resetToZone', { time: zoneDefaultTime.slice(0, 5) })}
                                 </button>
                             )}
                         </div>
@@ -319,7 +323,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                 {/* ── Drop-off Management ── */}
                 <div className="p-6 space-y-4">
                     <h6 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
-                        <Truck className="w-3.5 h-3.5" /> Drop-off
+                        <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
                     </h6>
 
                     {/* Same / Different Location toggle */}
@@ -332,7 +336,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            Same Location
+                            {t('inspector.sameLocation')}
                         </button>
                         <button
                             type="button"
@@ -342,7 +346,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
-                            Different Location
+                            {t('inspector.differentLocation')}
                         </button>
                     </div>
 
@@ -350,20 +354,21 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <>
                             {/* Drop-off Hotel */}
                             <SearchableHotelSelect
-                                label="Drop-off Hotel / Location"
+                                label={t('inspector.fieldDropoffHotel')}
                                 value={selectedBooking.dropoff_hotel || ''}
                                 hotels={hotels}
                                 zones={pickupZones}
+                                placeholder={t('inspector.searchHotel')}
                                 onChange={handleDropoffHotelChange}
                             />
 
                             {/* Drop-off Driver */}
                             <SelectField
-                                label="Drop-off Driver"
+                                label={t('inspector.fieldDropoffDriver')}
                                 value={selectedBooking.dropoff_driver_uid || ''}
                                 onChange={(e) => onUpdateLocal(selectedBooking.id, { dropoff_driver_uid: e.target.value || null })}
                             >
-                                <option value="">-- Same as pickup --</option>
+                                <option value="">{t('inspector.sameAsPickup')}</option>
                                 {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
                             </SelectField>
                         </>

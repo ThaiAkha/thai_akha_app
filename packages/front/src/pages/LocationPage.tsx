@@ -282,7 +282,7 @@ const LocationPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavi
         {/* ================= SIDEBAR UI (Z-10) ================= */}
         <div className={cn(
             "relative z-10 flex flex-col shadow-2xl transition-all duration-700 ease-cinematic",
-            "bg-[#0a0b0d]/95 backdrop-blur-xl border-t lg:border border-white/10",
+            "bg-surface-overlay/95 backdrop-blur-xl border-t lg:border border-white/10",
             "w-full h-[75vh] mt-auto rounded-t-[3rem]",
             "lg:absolute lg:left-8 lg:top-8 lg:bottom-8 lg:w-[480px] lg:h-auto lg:rounded-[3rem] lg:mt-0"
         )}>
@@ -340,7 +340,7 @@ const LocationPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavi
                                 
                                 {/* Suggestions Dropdown */}
                                 {activeField === 'pickup' && showSuggestions && filteredHotels.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-white/10 rounded-2xl z-50 shadow-2xl">
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-white/10 rounded-2xl z-50 shadow-2xl">
                                         {filteredHotels.map(h => (
                                             <div key={h.id} onClick={() => { 
                                                 setPickupLoc({ type: 'db_hotel', name: h.name, lat: h.latitude, lng: h.longitude, zoneId: h.zone_id }); 
@@ -363,7 +363,7 @@ const LocationPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavi
                         <div className="relative flex items-center justify-center py-2">
                             <div className="w-px h-8 bg-white/10 absolute top-0"></div>
                             <div className="w-px h-8 bg-white/10 absolute bottom-0"></div>
-                            <div onClick={() => setIsDropoffSame(!isDropoffSame)} className="relative z-10 bg-[#121212] border border-white/20 px-4 py-2 rounded-full cursor-pointer flex items-center gap-3 hover:border-white/40 transition-all">
+                            <div onClick={() => setIsDropoffSame(!isDropoffSame)} className="relative z-10 bg-surface border border-white/20 px-4 py-2 rounded-full cursor-pointer flex items-center gap-3 hover:border-white/40 transition-all">
                                 <span className="text-[10px] font-bold uppercase text-white/60">Same Drop-off?</span>
                                 <Toggle checked={isDropoffSame} onChange={setIsDropoffSame} className="scale-75" />
                             </div>

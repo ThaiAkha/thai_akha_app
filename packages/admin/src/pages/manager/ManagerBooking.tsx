@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import PageMeta from '../../components/common/PageMeta';
 import { useAdminBooking } from '../../hooks/useAdminBooking';
@@ -9,6 +10,7 @@ import BookingContent from '../../components/admin/booking/BookingContent';
 import BookingInspector from '../../components/admin/booking/BookingInspector';
 
 const ManagerBooking: React.FC = () => {
+    const { t } = useTranslation('booking');
     const {
         date, setDate,
         session, setSession,
@@ -38,7 +40,7 @@ const ManagerBooking: React.FC = () => {
 
     return (
         <PageContainer variant="full">
-            <PageMeta title="Manual Booking" description="Create a new booking manually." />
+            <PageMeta title={t('meta.manualTitle')} description={t('meta.manualDesc')} />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-full">
 

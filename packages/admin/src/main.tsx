@@ -9,15 +9,18 @@ import App from "./App.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
+import { I18nProvider } from "./context/I18nContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <AuthProvider>
-        <AppWrapper>
-          <App />
-        </AppWrapper>
-      </AuthProvider>
-    </ThemeProvider>
+    <I18nProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppWrapper>
+            <App />
+          </AppWrapper>
+        </AuthProvider>
+      </ThemeProvider>
+    </I18nProvider>
   </StrictMode>,
 );

@@ -2,7 +2,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata } from '../types';
 
 // Cache Version Key: Aggiornala per invalidare la cache locale se cambi la struttura dati
-const GLOBAL_CACHE_KEY = 'akha_cache_content_v7';
+const GLOBAL_CACHE_KEY = 'akha_cache_content_v10';
 
 /**
  * 🧠 INTELLIGENT CACHE MANAGER
@@ -43,11 +43,74 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T | null>):
     return await updateCache();
 }
 
+/** 🛠️ NORMALIZZA LINGUA (es. th-TH -> th) */
+const normalizeLang = (lang: string) => lang?.split('-')[0].toLowerCase() || 'en';
+
 export const contentService = {
 
     /** 📄 METADATA PAGINE: Titoli, descrizioni e immagini header */
-    async getPageMetadata(slug: string, table = 'site_metadata'): Promise<HeaderMetadata & { imageUrl: string } | null> {
-        return fetchWithCache(`meta_${table}_${slug}`, async () => {
+    async getPageMetadata(slug: string, table = 'site_metadata', lang = 'en'): Promise<HeaderMetadata & { imageUrl: string } | null> {
+        const normalizedLang = normalizeLang(lang);
+        return fetchWithCache(`meta_${table}_${slug}_${normalizedLang}_v5`, async () => {
+            // Se la tabella è site_metadata_admin, cerchiamo le traduzioni
+            if (table === 'site_metadata_admin') {
+                const { data, error } = await supabase
+                    .from(table)
+                    .select(`
+                        id,
+                        page_slug,
+                        header_badge,
+                        header_icon,
+                        hero_image_url,
+                        seo_robots,
+                        og_image,
+                        canonical_url,
+                        og_type,
+                        twitter_card,
+                        translations:site_metadata_admin_translations (
+                            language,
+                            title,
+                            subtitle,
+                            description,
+                            seo_title
+                        )
+                    `)
+                    .eq('page_slug', slug)
+                    .maybeSingle();
+
+                if (error) {
+                    console.error("❌ Database error fetching metadata:", error);
+                    return null;
+                }
+
+                if (!data) {
+                    console.warn(`⚠️ No metadata found for slug: ${slug}`);
+                    return null;
+                }
+
+                // Fallback logico: cerchiamo la lingua richiesta, altrimenti 'en'
+                const translations = (data as any).translations || [];
+                const translation = translations.find((t: any) => t.language === normalizedLang) ||
+                    translations.find((t: any) => t.language === 'en') ||
+                    translations[0];
+
+                return {
+                    badge: data.header_badge,
+                    icon: data.header_icon,
+                    titleMain: translation?.title || (slug.charAt(0).toUpperCase() + slug.slice(1).replace('-', ' ')),
+                    titleHighlight: translation?.subtitle || "",
+                    description: translation?.description || "",
+                    seoTitle: translation?.seo_title || translation?.title || "Thai Akha Kitchen",
+                    imageUrl: data.hero_image_url,
+                    ogImage: (data as any).og_image || data.hero_image_url,
+                    robots: (data as any).seo_robots,
+                    canonicalUrl: (data as any).canonical_url,
+                    ogType: (data as any).og_type,
+                    twitterCard: (data as any).twitter_card,
+                };
+            }
+
+            // Fallback per site_metadata (front app) - manteniamo compatibilità
             const { data, error } = await supabase
                 .from(table)
                 .select('header_badge, header_icon, header_title_main, header_title_highlight, page_description, hero_image_url')
@@ -68,8 +131,46 @@ export const contentService = {
     },
 
     /** 🎴 MENU SIDEBAR: Dinamico con livelli di accesso */
-    async getMenuItems(table = 'site_metadata') {
-        return fetchWithCache(`sidebar_menu_${table}_v7`, async () => {
+    async getMenuItems(table = 'site_metadata', lang = 'en') {
+        const normalizedLang = normalizeLang(lang);
+        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v14`, async () => {
+            if (table === 'site_metadata_admin') {
+                const { data, error } = await supabase
+                    .from(table)
+                    .select(`
+                        page_slug, 
+                        header_icon, 
+                        menu_order, 
+                        access_level, 
+                        translations:site_metadata_admin_translations (
+                            language,
+                            menu_label,
+                            description
+                        )
+                    `)
+                    .eq('show_in_menu', true)
+                    .order('menu_order', { ascending: true });
+
+                if (error) {
+                    console.error("Errore Menu DB:", error);
+                    return [];
+                }
+
+                return data.map((item: any) => {
+                    const translations = item.translations || [];
+                    const translation = translations.find((t: any) => t.language === normalizedLang) ||
+                        translations.find((t: any) => t.language === 'en') ||
+                        translations[0];
+
+                    return {
+                        ...item,
+                        menu_label: translation?.menu_label || item.page_slug,
+                        page_description: translation?.description || ""
+                    };
+                });
+            }
+
+            // Fallback per site_metadata (front app)
             const { data, error } = await supabase
                 .from(table)
                 .select('page_slug, menu_label, header_icon, menu_order, access_level, page_description')
@@ -85,16 +186,39 @@ export const contentService = {
     },
 
     /** 🏠 HOME CARDS: Le card della home page */
-    async getHomeCards(): Promise<any[]> {
-        const data = await fetchWithCache('home_cards_dynamic', async () => {
+    async getHomeCards(lang = 'en'): Promise<any[]> {
+        const normalizedLang = normalizeLang(lang);
+        const data = await fetchWithCache(`home_cards_${normalizedLang}_v4`, async () => {
             const { data, error } = await supabase
                 .from('home_cards')
-                .select('*')
+                .select(`
+                    *,
+                    translations:home_cards_translations (*)
+                `)
                 .eq('is_active', true)
                 .order('display_order', { ascending: true });
 
-            return error ? [] : (data || []);
+            if (error) {
+                console.error("❌ Errore Fetch Home Cards:", error);
+                return [];
+            }
+
+            return (data || []).map((item: any) => {
+                // Estrai traduzione: matching lingua o fallback su 'en'
+                const translations = item.translations || [];
+                const translation = translations.find((t: any) => t.language === normalizedLang) ||
+                    translations.find((t: any) => t.language === 'en') ||
+                    translations[0]; // Fallback estremo
+
+                return {
+                    ...item,
+                    title: translation?.title || item.title || item.card_title || `Card ${item.id}`,
+                    description: translation?.description || item.description || item.card_description || '',
+                    link_label: translation?.link_label || item.link_label || 'Explore'
+                };
+            });
         });
+
         return data || [];
     },
 

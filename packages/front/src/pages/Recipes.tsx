@@ -245,7 +245,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ onNavigate, userProfile }) =>
 
       {/* IDENTITY CARD (Setup Your Profile) */}
       <div className="w-full max-w-2xl mx-auto mt-4 animate-in fade-in slide-in-from-top-1 duration-500 px-4 md:px-0">
-        <div className="bg-[#121212] border-2 border-white/10 rounded-[2rem] p-8 shadow-2xl flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:border-action/30 transition-all">
+        <div className="bg-surface border-2 border-white/10 rounded-[2rem] p-8 shadow-2xl flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:border-action/30 transition-all">
           <div className="absolute top-0 right-0 w-32 h-32 bg-action/5 rounded-full blur-3xl pointer-events-none" />
           <div className="size-20 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0 shadow-inner group-hover:scale-105 transition-transform">
              <Icon name="tune" size="xl" className="text-white/20"/>

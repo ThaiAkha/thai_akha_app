@@ -1,11 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto:wght@400;700&family=Noto+Sans+Thai:wght@400;700&display=swap") layer(base);
 
 /* ========================================================================
-   CENTRALIZED STYLES FROM SHARED PACKAGE
-   Must be imported BEFORE tailwindcss to ensure utilities are available
+   STYLE SYSTEM — Import order matters
+   1. Base palette  (raw colors — shared)
+   2. App tokens    (semantic vars — admin-specific)
+   3. Base theme    (Tailwind @theme: breakpoints, shadows, animations — shared)
+   4. App theme     (Tailwind @theme: fonts — admin-specific)
+   5. Utilities     (glass, menu-item, scrollbar — shared components)
    ======================================================================== */
-@import "../../shared/src/styles/tokens.css";
-@import "../../shared/src/styles/theme.css";
+@import "../../shared/src/styles/base-palette.css";
+@import "./styles/tokens.css";
+@import "../../shared/src/styles/base-theme.css";
+@import "./styles/theme.css";
 @import "../../shared/src/styles/utilities.css";
 
 @import "tailwindcss";

@@ -1,0 +1,65 @@
+/**
+ * Admin App — Semantic Tokens
+ *
+ * App-specific CSS variables built on top of base-palette.
+ * Controls the visual language of the Admin Dashboard.
+ *
+ * To change admin dark mode bg → update --surface below.
+ * To change admin light bg   → update --bg below.
+ */
+
+:root {
+  /* ========================================================================
+     ☀️ LIGHT MODE — Semantic tokens
+     ======================================================================== */
+  --bg:        #F6FCFC;  /* gray-25 — page background */
+  --surface:   #FFFFFF;  /* white — cards, modals, inputs */
+  --surface-2: #EEF4F4;  /* secondary surface */
+  --border:    #D6DCDC;  /* gray-100 — light borders */
+  --border-2:  #C2C8C8;  /* gray-200 — standard borders */
+
+  --text-title: #121311;  /* gray-950 — H1-H3, WCAG AAA */
+  --text-body:  #4A504F;  /* gray-800 — body text, WCAG AAA */
+  --text-sub:   #727878;  /* gray-600 — secondary text, WCAG AA */
+  --text-muted: #9AA0A0;  /* gray-400 — decorative only */
+
+  /* ========================================================================
+     🔘 BUTTON COLORS (Admin-specific)
+     ======================================================================== */
+  --color-button-primary:        #BAD879;  /* lime-500 */
+  --color-button-primary-hover:  #9EBF63;  /* lime-600 */
+  --color-button-primary-active: #82A64D;  /* lime-700 */
+}
+
+/* ========================================================================
+   🌑 DARK MODE — Semantic token overrides
+   ======================================================================== */
+body.dark,
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #121311;  /* gray-950 — page background */
+    --surface:   #222827;  /* gray-900 — cards, modals, inputs */
+    --surface-2: #1a1f1e;  /* derived — secondary surface */
+    --border:    #4A504F;  /* gray-800 — light borders */
+    --border-2:  #5E6464;  /* gray-700 — standard borders */
+
+    --text-title: #F6FCFC;  /* gray-25  — titles, WCAG AAA */
+    --text-body:  #D6DCDC;  /* gray-100 — body text, WCAG AAA */
+    --text-sub:   #9AA0A0;  /* gray-400 — secondary text, WCAG AA */
+    --text-muted: #727878;  /* gray-600 — decorative only */
+  }
+}
+
+/* ========================================================================
+   🇹🇭 THAI LANGUAGE SUPPORT
+   ======================================================================== */
+html:lang(th) {
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  font-family: 'Noto Sans Thai', 'Sarabun', sans-serif;
+}
+
+html:lang(th) body,
+html:lang(th) * {
+  line-height: 1.6;
+}

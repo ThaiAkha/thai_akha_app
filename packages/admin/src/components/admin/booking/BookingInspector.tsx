@@ -1,4 +1,5 @@
 import { Rocket, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Card from '../../ui/Card';
@@ -66,8 +67,10 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
     onConfirm,
     loading
 }) => {
+    const { t } = useTranslation('booking');
+    const { t: tc } = useTranslation('common');
     const guestData = userMode === 'new' ? newUser : selectedUser;
-    const sessionLabel = session === 'morning_class' ? 'Morning Class' : 'Evening Class';
+    const sessionLabel = session === 'morning_class' ? t('inspector.morningClass') : t('inspector.eveningClass');
     const isWhatsapp = userMode === 'new' ? newUser?.isWhatsapp : selectedUser?.is_whatsapp;
 
     let guestName: string | undefined = undefined;
@@ -86,7 +89,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
 
                     {/* 1. Class Selection - PROMINENT */}
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                        <SectionTitle>Selected Class</SectionTitle>
+                        <SectionTitle>{t('inspector.selectedClass')}</SectionTitle>
                         <div className={cn(
                             "p-3 rounded-lg font-black text-lg uppercase tracking-wide text-center",
                             session === 'morning_class'
@@ -99,56 +102,56 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
 
                     {/* 2. Pax Count */}
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
-                        <SectionTitle>Number of Guests</SectionTitle>
+                        <SectionTitle>{t('inspector.numGuests')}</SectionTitle>
                         <div className="text-3xl font-black text-gray-900 dark:text-white flex items-center h-10">{pax}</div>
                     </div>
 
                     {/* 3. Guest Details */}
                     {guestData && (
                         <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                            <SectionTitle>Guest Details</SectionTitle>
+                            <SectionTitle>{t('inspector.guestDetails')}</SectionTitle>
                             <div className="space-y-2 text-sm">
                                 {guestName && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">Name</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldName')}</span>
                                         <span className="font-medium text-gray-900 dark:text-white">{guestName}</span>
                                     </div>
                                 )}
                                 {guestData.email && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">Email</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldEmail')}</span>
                                         <span className="font-medium text-gray-900 dark:text-white text-xs truncate ml-2">{guestData.email}</span>
                                     </div>
                                 )}
                                 {guestData.phone && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">Phone</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldPhone')}</span>
                                         <span className="font-medium text-gray-900 dark:text-white">{guestData.phone}</span>
                                     </div>
                                 )}
                                 {guestData.nationality && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">Nationality</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldNationality')}</span>
                                         <span className="font-medium text-gray-900 dark:text-white">{guestData.nationality}</span>
                                     </div>
                                 )}
                                 {guestData.age && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">Age</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldAge')}</span>
                                         <span className="font-medium text-gray-900 dark:text-white">{guestData.age}</span>
                                     </div>
                                 )}
                                 {guestData.gender && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">Gender</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldGender')}</span>
                                         <span className="font-medium text-gray-900 dark:text-white capitalize">{guestData.gender}</span>
                                     </div>
                                 )}
                                 {isWhatsapp !== undefined && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">WhatsApp</span>
+                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldWhatsapp')}</span>
                                         <span className={cn("font-medium text-sm", isWhatsapp ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400")}>
-                                            {isWhatsapp ? "Yes" : "No"}
+                                            {isWhatsapp ? tc('yesNo.yes') : tc('yesNo.no')}
                                         </span>
                                     </div>
                                 )}
@@ -158,29 +161,29 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
 
                     {/* 4. Hotel & Logistics */}
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                        <SectionTitle>Logistics</SectionTitle>
+                        <SectionTitle>{t('inspector.logistics')}</SectionTitle>
                         <div className="space-y-2 text-sm">
                             {hotel && (
                                 <div className="flex justify-between items-center">
-                                    <span className="text-gray-600 dark:text-gray-400">Hotel</span>
+                                    <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldHotel')}</span>
                                     <span className="font-medium text-gray-900 dark:text-white">{hotel}</span>
                                 </div>
                             )}
                             {!hotel && meetingPoint && (
                                 <div className="flex justify-between items-center">
-                                    <span className="text-gray-600 dark:text-gray-400">Meeting Point</span>
+                                    <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldMeetingPoint')}</span>
                                     <span className="font-medium text-gray-900 dark:text-white">{meetingPoint}</span>
                                 </div>
                             )}
                             <div className="flex justify-between items-center">
-                                <span className="text-gray-600 dark:text-gray-400">Luggage</span>
+                                <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldLuggage')}</span>
                                 <span className={cn("font-medium text-sm", hasLuggage ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400")}>
-                                    {hasLuggage ? "Yes" : "No"}
+                                    {hasLuggage ? tc('yesNo.yes') : tc('yesNo.no')}
                                 </span>
                             </div>
                             {notes && (
                                 <div className="flex justify-between items-start">
-                                    <span className="text-gray-600 dark:text-gray-400">Notes</span>
+                                    <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldNotes')}</span>
                                     <span className="font-medium text-gray-900 dark:text-white text-xs text-right line-clamp-2">{notes}</span>
                                 </div>
                             )}
@@ -189,7 +192,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
 
                     {/* 5. Total Amount - PROMINENT */}
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
-                        <SectionTitle>Total Amount</SectionTitle>
+                        <SectionTitle>{t('inspector.totalAmount')}</SectionTitle>
                         <div className="text-3xl font-black flex items-center gap-1 h-10">
                             <span className="text-brand-600">{amount.toLocaleString()}</span>
                             <span className="text-gray-400 text-sm">THB</span>
@@ -198,7 +201,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
 
                     {/* 6. Payment Status Toggle */}
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                        <SectionTitle>Payment</SectionTitle>
+                        <SectionTitle>{t('inspector.payment')}</SectionTitle>
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 onClick={() => onPaymentStatusChange('unpaid')}
@@ -209,7 +212,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                         : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300"
                                 )}
                             >
-                                Unpaid
+                                {t('inspector.unpaid')}
                             </button>
                             <button
                                 onClick={() => onPaymentStatusChange('paid')}
@@ -221,7 +224,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                 )}
                             >
                                 <Check className="w-4 h-4" />
-                                Paid
+                                {t('inspector.paid')}
                             </button>
                         </div>
                     </div>
@@ -237,7 +240,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                         isLoading={loading}
                         startIcon={<Rocket className="w-4 h-4" />}
                     >
-                        Confirm Booking
+                        {t('inspector.confirmBtn')}
                     </Button>
                 </Card.Footer>
             </Card>

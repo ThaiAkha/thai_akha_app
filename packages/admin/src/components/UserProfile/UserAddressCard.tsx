@@ -4,12 +4,14 @@ import { Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileRow, ProfileFooter } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
 import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
+import { useTranslation } from "react-i18next";
 
 /**
  * UserAddressCard - Identity & Agency.
  * Focus: Company details, Billing address, and Agency identity.
  */
 export default function UserAddressCard() {
+  const { t } = useTranslation("profile");
   const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -90,30 +92,30 @@ export default function UserAddressCard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
           <div className="md:col-span-2">
             <ProfileRow
-              label="Company / Agency Name"
+              label={t("agency.fieldCompany")}
               name="companyName"
               value={formData.companyName}
               onChange={handleChange}
               isEditing={isEditing}
-              placeholder="Official Agency Name"
+              placeholder={t("agency.placeholderCompany")}
             />
           </div>
 
           <div className="md:col-span-2">
             <ProfileRow
-              label="Billing Address"
+              label={t("agency.fieldAddress")}
               name="address"
               value={formData.address}
               onChange={handleChange}
               isEditing={isEditing}
-              placeholder="Street name, Number"
+              placeholder={t("agency.placeholderAddress")}
             />
           </div>
 
           <div className="relative group/field">
             <InputField
-              label="Country"
-              placeholder="Search country..."
+              label={t("agency.fieldCountry")}
+              placeholder={t("agency.searchCountry")}
               value={countrySearchQuery || (formData.country ? getCountryByCode(formData.country)?.name || formData.country : '')}
               onChange={e => {
                 const val = e.target.value;
@@ -151,25 +153,25 @@ export default function UserAddressCard() {
           </div>
 
           <ProfileRow
-            label="City"
+            label={t("agency.fieldCity")}
             name="city"
             value={formData.city}
             onChange={handleChange}
             isEditing={isEditing}
-            placeholder="Official City"
+            placeholder={t("agency.placeholderCity")}
           />
 
           <ProfileRow
-            label="Province / Region"
+            label={t("agency.fieldProvince")}
             name="province"
             value={formData.province}
             onChange={handleChange}
             isEditing={isEditing}
-            placeholder="Province"
+            placeholder={t("agency.placeholderProvince")}
           />
 
           <ProfileRow
-            label="Postal Code"
+            label={t("agency.fieldPostalCode")}
             name="postalCode"
             value={formData.postalCode}
             onChange={handleChange}
@@ -178,17 +180,17 @@ export default function UserAddressCard() {
           />
 
           <ProfileRow
-            label="Tax ID / VAT Number"
+            label={t("agency.fieldTaxId")}
             name="taxId"
             value={formData.taxId}
             onChange={handleChange}
             isEditing={isEditing}
-            placeholder="VAT Registration Number"
+            placeholder={t("agency.placeholderTaxId")}
           />
 
           <ProfileRow
-            label="Commission Rate"
-            value={user?.agency_commission_rate ? `${user.agency_commission_rate}%` : "Standard Tier"}
+            label={t("agency.fieldCommission")}
+            value={user?.agency_commission_rate ? `${user.agency_commission_rate}%` : t("agency.commissionDefault")}
             isEditing={false}
           />
         </div>
@@ -200,8 +202,8 @@ export default function UserAddressCard() {
         onSave={handleSave}
         onCancel={() => setIsEditing(false)}
         onEdit={() => setIsEditing(true)}
-        editLabel="Edit Agency Details"
-        saveLabel="Update Identity"
+        editLabel={t("agency.editLabel")}
+        saveLabel={t("agency.saveLabel")}
       />
     </ProfileCard>
   );

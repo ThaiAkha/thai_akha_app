@@ -467,7 +467,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
             {session && isPaxSelected && sessionConfig[session] && (
               <section className="animate-in fade-in slide-in-from-bottom-8 duration-700 pb-8">
                 <StepTitle number="04" title="Review & Continue" />
-                <div className="relative w-full bg-surface dark:bg-[#1a1a1a] border-2 border-action/20 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden group hover:border-action/50 transition-all duration-500">
+                <div className="relative w-full bg-surface dark:bg-surface-elevated border-2 border-action/20 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden group hover:border-action/50 transition-all duration-500">
                   
                   <div className="absolute top-0 right-0 w-64 h-64 bg-action/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                   
@@ -646,7 +646,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
         )}
       </div>
 
-      <Modal isOpen={showCalendarModal} onClose={() => setShowCalendarModal(false)} title="" size="xl" className="p-0 overflow-hidden bg-surface dark:bg-[#1a1a1a] border-border w-full max-w-[85rem]" hideCloseButton={true}>
+      <Modal isOpen={showCalendarModal} onClose={() => setShowCalendarModal(false)} title="" size="xl" className="p-0 overflow-hidden bg-surface dark:bg-surface-elevated border-border w-full max-w-[85rem]" hideCloseButton={true}>
         <CalendarView currentDate={selectedDate} onSelectDate={(date) => { setSelectedDate(date); setShowCalendarModal(false); setSession(null); }} onClose={() => setShowCalendarModal(false)} />
       </Modal>
 

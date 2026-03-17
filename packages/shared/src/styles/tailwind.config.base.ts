@@ -1,20 +1,20 @@
 /**
- * Base Tailwind Configuration for Thai Akha Kitchen
+ * Thai Akha Kitchen — JS Color & Theme Constants
  *
- * This is the single source of truth for:
- * - Brand colors (cherry, lime, orange, blue, gray, system)
- * - Font family definitions
- * - Custom animations and keyframes
- * - Custom box shadows and timing functions
+ * ⚠️  NOT a Tailwind config file.
  *
- * Both admin and front apps import from this file and extend with their own app-specific:
- * - content paths
- * - safelist (different active state colors per app)
- * - plugins
- * - dark mode strategy (if different)
+ * Tailwind theme tokens (colors, fonts, animations, shadows, breakpoints)
+ * are defined CSS-first in:
+ *   packages/shared/src/styles/theme.css  (via @theme)
+ *   packages/shared/src/styles/tokens.css (via :root)
  *
- * @see packages/admin/tailwind.config.js (imports this config)
- * @see packages/front/tailwind.config.js (imports this config)
+ * This file exports JS constants for use in:
+ * - Component logic (color lookups, dynamic class mapping)
+ * - Non-Tailwind contexts (inline styles, canvas, chart libraries)
+ * - Type-safe color references in TypeScript
+ *
+ * @see packages/shared/src/styles/theme.css   — Tailwind @theme source of truth
+ * @see packages/shared/src/styles/tokens.css  — CSS variable definitions
  */
 
 // ============================================================================

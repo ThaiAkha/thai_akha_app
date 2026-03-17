@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
+import './styles/index.css';
 
 // Verifica caricamento in console
 console.log('%c Thai Akha Kitchen: Tailwind CSS Loaded kha! ', 'background: #98C93C; color: #fff; font-weight: bold;');

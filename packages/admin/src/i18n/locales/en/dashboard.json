@@ -1,0 +1,27 @@
+{
+  "metrics": {
+    "customers": "Customers",
+    "orders": "Orders"
+  },
+  "recentBookings": {
+    "title": "Recent Bookings",
+    "loading": "Loading bookings...",
+    "colUser": "User",
+    "colDate": "Date",
+    "colClass": "Class",
+    "colPax": "Pax",
+    "colStatus": "Status",
+    "sessionMorning": "Morning Tour",
+    "sessionEvening": "Evening Feast",
+    "guestDefault": "Guest"
+  },
+  "agencyBookings": {
+    "title": "Agency Bookings",
+    "loading": "Loading agency bookings...",
+    "colRef": "Agency Ref / Guest",
+    "colDate": "Date",
+    "colPax": "Pax",
+    "colStatus": "Status",
+    "guest": "Guest"
+  }
+}

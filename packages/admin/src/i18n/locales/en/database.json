@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "title": "Database Explorer | Thai Akha Kitchen",
+    "description": "Manage raw system tables with safety constraints."
+  },
+  "sidebar": {
+    "title": "Tables",
+    "status": "Live edits"
+  },
+  "content": {
+    "searchPlaceholder": "Search {{table}}...",
+    "noData": "No data found in {{table}}"
+  },
+  "inspector": {
+    "readOnly": "READ ONLY",
+    "noSchema": "No schema data available.",
+    "deleteRecord": "DELETE RECORD",
+    "confirm": "CONFIRM",
+    "cancel": "CANCEL"
+  },
+  "actions": {
+    "exportFormats": "Export formats",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "Standard spreadsheet format",
+    "exportJson": "JSON Format",
+    "exportJsonDesc": "Raw data structure",
+    "copyClipboard": "Copy to Clipboard",
+    "copyClipboardDesc": "Quick share as text",
+    "insertRecord": "Insert new record",
+    "newRow": "New Row",
+    "deleteRestricted": "Delete restricted for safety.",
+    "edit": "EDIT",
+    "save": "SAVE",
+    "saving": "SAVING...",
+    "tooltipEdit": "Edit this record",
+    "tooltipSave": "Save modifications"
+  }
+}

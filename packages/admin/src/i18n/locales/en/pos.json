@@ -1,0 +1,22 @@
+{
+  "sidebar": {
+    "title": "Guests",
+    "guest": "Guest"
+  },
+  "content": {
+    "loading": "Loading..."
+  },
+  "meta": {
+    "title": "Store Front | Thai Akha Kitchen",
+    "description": "Manage on-site sales, merchandise, and guest tabs during classes."
+  },
+  "inspector": {
+    "customerName": "Customer Name",
+    "selectGuest": "Select Guest",
+    "emptySelectHint": "Select a guest first",
+    "emptyTab": "Empty Tab",
+    "totalAmount": "Total Amount",
+    "saveTab": "Save Tab",
+    "payCash": "Pay Cash"
+  }
+}

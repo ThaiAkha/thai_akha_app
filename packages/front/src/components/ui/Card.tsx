@@ -40,7 +40,7 @@ const Card: React.FC<CardProps> = ({
   };
 
   const variantStyles = {
-    default: 'bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 shadow-2xl',
+    default: 'bg-white dark:bg-surface border border-black/5 dark:border-white/5 shadow-2xl',
     
     // Glassmorphism ultra-pulito con bordo luminoso
     glass: 'bg-white/80 dark:bg-black/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]',

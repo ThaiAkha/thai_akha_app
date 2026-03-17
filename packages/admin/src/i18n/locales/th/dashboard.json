@@ -1,0 +1,27 @@
+{
+  "metrics": {
+    "customers": "ลูกค้า",
+    "orders": "คำสั่งซื้อ"
+  },
+  "recentBookings": {
+    "title": "การจองล่าสุด",
+    "loading": "กำลังโหลดการจอง...",
+    "colUser": "ผู้ใช้",
+    "colDate": "วันที่",
+    "colClass": "ชั้นเรียน",
+    "colPax": "จำนวนคน",
+    "colStatus": "สถานะ",
+    "sessionMorning": "ทัวร์ตอนเช้า",
+    "sessionEvening": "งานเลี้ยงตอนเย็น",
+    "guestDefault": "แขก"
+  },
+  "agencyBookings": {
+    "title": "การจองของเอเจนซี",
+    "loading": "กำลังโหลดการจองของเอเจนซี...",
+    "colRef": "รหัสอ้างอิง / แขก",
+    "colDate": "วันที่",
+    "colPax": "จำนวนคน",
+    "colStatus": "สถานะ",
+    "guest": "แขก"
+  }
+}

@@ -1,0 +1,27 @@
+/**
+ * Admin App — Tailwind @theme
+ *
+ * Admin-specific theme overrides.
+ * Currently: font families only (Inter/Roboto — professional dashboard feel).
+ *
+ * All colors, breakpoints, shadows, animations → base-theme.css
+ * Semantic tokens (--bg, --surface, etc.)       → tokens.css (this package)
+ */
+
+@theme {
+  /* ============================================================================
+     FONT FAMILIES — Admin Dashboard (Inter/Roboto — clean, professional)
+     ============================================================================ */
+  --font-*: initial;
+  --font-sans:    Roboto, 'Noto Sans Thai', sans-serif;
+  --font-display: Inter, 'Noto Sans Thai', sans-serif;
+  --font-accent:  Inter, 'Noto Sans Thai', sans-serif;
+}
+
+/* Override for Thai language — prioritize Noto Sans Thai for better readability */
+/* Moved outside @theme block to comply with Tailwind v4 rules */
+html:lang(th) {
+  --font-sans:    'Noto Sans Thai', sans-serif;
+  --font-display: 'Noto Sans Thai', sans-serif;
+  --font-accent:  'Noto Sans Thai', sans-serif;
+}

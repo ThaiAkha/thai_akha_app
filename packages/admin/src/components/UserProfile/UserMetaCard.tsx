@@ -5,12 +5,14 @@ import { ProfileCard, ProfileFooter, ProfileRow } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
 import { getSmartAvatarUrl, isSmartAvatar } from "../../lib/avatarSystem";
 import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
+import { useTranslation } from "react-i18next";
 
 /**
  * UserMetaCard - Unified Personal Details Card.
  * Focused on Primary Identity and Nationality.
  */
 export default function UserMetaCard() {
+  const { t } = useTranslation("profile");
   const { user, updateProfile, uploadAvatar } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -101,7 +103,7 @@ export default function UserMetaCard() {
         await uploadAvatar(user.id, file);
       } catch (error: any) {
         console.error("Avatar upload failed:", error);
-        alert(`Upload failed: ${error.message || "Unknown error"}.`);
+        alert(t("avatar.uploadFail", { message: error.message || "Unknown error" }));
       } finally {
         setIsUploading(false);
       }
@@ -142,13 +144,13 @@ export default function UserMetaCard() {
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/5 transition-all hover:bg-brand-500/20 w-fit">
               <BadgeCheck size={18} className="text-brand-500" />
               <span className="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">
-                {user?.role ? user.role : "GUEST"}
+                {user?.role ? user.role : t("personal.roleDefault")}
               </span>
             </div>
 
             <div className="flex flex-col items-center lg:items-start gap-1">
               <h1 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-gray-900 dark:text-white leading-tight">
-                {user?.full_name || "User Account"}
+                {user?.full_name || t("personal.title")}
               </h1>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Mail size={18} className="text-brand-500/50" />
@@ -161,7 +163,7 @@ export default function UserMetaCard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 w-full">
             {/* Full Name */}
             <ProfileRow
-              label="Full Name"
+              label={t("personal.fieldFullName")}
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
@@ -170,7 +172,7 @@ export default function UserMetaCard() {
 
             {/* Phone */}
             <ProfileRow
-              label="Phone"
+              label={t("personal.fieldPhone")}
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -180,8 +182,8 @@ export default function UserMetaCard() {
             {/* Nationality with specialized search */}
             <div className="relative group/field">
               <InputField
-                label="Nationality"
-                placeholder="Search country..."
+                label={t("personal.fieldNationality")}
+                placeholder={t("personal.searchCountry")}
                 value={nationalitySearchQuery || (formData.nationality ? getCountryByCode(formData.nationality)?.name || formData.nationality : '')}
                 onChange={e => {
                   const val = e.target.value;
@@ -227,8 +229,8 @@ export default function UserMetaCard() {
         onSave={handleSave}
         onCancel={() => setIsEditing(false)}
         onEdit={() => setIsEditing(true)}
-        editLabel="Edit Profile"
-        saveLabel="Save Details"
+        editLabel={t("personal.editLabel")}
+        saveLabel={t("personal.saveLabel")}
       />
     </ProfileCard>
   );

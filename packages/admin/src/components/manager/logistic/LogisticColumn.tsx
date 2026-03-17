@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LogisticsItem, DriverProfile } from '../../../hooks/useManagerLogistic';
 import LogisticItemList from './LogisticItemList';
 import Avatar from '../../ui/avatar/Avatar';
@@ -26,6 +27,8 @@ export const LogisticColumn: React.FC<LogisticColumnProps> = ({
     showAvatar = true,
     showAssignDriver = true
 }) => {
+    const { t } = useTranslation('logistics');
+
     return (
         <div className="w-[320px] flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
             {/* Header */}
@@ -38,7 +41,7 @@ export const LogisticColumn: React.FC<LogisticColumnProps> = ({
                         <div className="font-bold text-gray-900 dark:text-white uppercase text-md tracking-wider truncate leading-tight">
                             {title}
                         </div>
-                        <div className="text-sm text-gray-500 font-mono">{items.length} {items.length === 1 ? 'Hotel' : 'Hotels'}</div>
+                        <div className="text-sm text-gray-500 font-mono">{t('column.hotel', { count: items.length })}</div>
                     </div>
                 </div>
             </div>

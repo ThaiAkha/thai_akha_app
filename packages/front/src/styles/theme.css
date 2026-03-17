@@ -1,0 +1,61 @@
+/**
+ * Front App — Tailwind @theme
+ *
+ * Front-specific theme overrides.
+ * Currently: font families only (Raleway/Nunito — premium consumer feel).
+ *
+ * All colors, breakpoints, shadows, animations → base-theme.css
+ * Semantic tokens (--bg, --surface, --color-*, etc.) → tokens.css (this package)
+ */
+
+@theme {
+  /* ============================================================================
+     FONT FAMILIES — Front App (Raleway/Nunito — premium, warm, consumer-facing)
+     ============================================================================ */
+  --font-*: initial;
+  --font-sans:    Nunito, Sarabun, sans-serif;
+  --font-display: Raleway, Sarabun, sans-serif;
+  --font-accent:  'Roboto Condensed', Sarabun, sans-serif;
+
+  /* ============================================================================
+     SEMANTIC UTILITY COLORS — Light mode defaults
+     Generates: bg-primary, text-action, border-quiz, bg-surface, etc.
+     Dark mode overrides below via @variant dark.
+     ============================================================================ */
+
+  /* Brand & action */
+  --color-primary:            #FB2E58;
+  --color-secondary:          #8D1A31;
+  --color-action:             #98C93C;
+  --color-special:            #FF6D00;
+
+  /* Quiz & dietary */
+  --color-quiz:               #9A0050;
+  --color-allergy:            #FF6D00;
+  --color-allergy-secondary:  #FEE2E2;
+
+  /* Semantic layer — light mode */
+  --color-background:         #FAFAFA;
+  --color-surface:            #FFFFFF;
+  --color-title:              #1A1A1A;
+  --color-desc:               #4A4A4A;
+  --color-border:             #E2E8F0;
+
+  /* Fixed dark surfaces (always dark, never theme-switched) */
+  --color-surface-elevated:   #1a1a1a;
+  --color-surface-overlay:    #0a0b0d;
+  --color-map-bg:             #1d1d1d;
+}
+
+/* Dark mode overrides for theme-responsive semantic colors */
+@variant dark {
+  @theme {
+    --color-background:         #0A0A0A;
+    --color-surface:            #121212;
+    --color-title:              #EDF2EF;
+    --color-desc:               #D2DCD5;
+    --color-border:             #2D2D2D;
+    --color-allergy:            #F87171;
+    --color-allergy-secondary:  #7F1D1D;
+  }
+}

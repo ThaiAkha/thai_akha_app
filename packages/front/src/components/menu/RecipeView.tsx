@@ -220,7 +220,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       {/* --- STICKY ISLAND NAV --- */}
       <div className="sticky top-6 z-50 flex justify-center px-4 w-full pointer-events-none">
          <div ref={menuRef} className="pointer-events-auto relative w-full md:w-1/2 lg:w-1/3">
-            <div className="flex items-center gap-3 bg-[#121212]/95 backdrop-blur-2xl p-2 pl-3 rounded-[2rem] border border-white/10 shadow-2xl relative z-50">
+            <div className="flex items-center gap-3 bg-surface/95 backdrop-blur-2xl p-2 pl-3 rounded-[2rem] border border-white/10 shadow-2xl relative z-50">
                <button onClick={onBack} className="size-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-white/60 hover:text-white transition-all active:scale-95 shrink-0"><Icon name="arrow_back" size="sm" /></button>
                <div className="w-px h-6 bg-white/10 mx-1"></div>
                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex-1 flex items-center justify-between px-4 py-2 rounded-xl transition-all hover:bg-white/5 group min-w-0">
@@ -234,7 +234,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
 
             {/* DROPDOWN COLLECTIONS */}
             {isMenuOpen && (
-               <div className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 bg-[#0a0a0a]/95 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 origin-top z-50 max-h-[75vh] flex flex-col w-[92vw] md:w-[66vw] lg:w-[85rem]">
+               <div className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 bg-surface-overlay/95 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 origin-top z-50 max-h-[75vh] flex flex-col w-[92vw] md:w-[66vw] lg:w-[85rem]">
                   <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-center shrink-0">
                      <Typography variant="h5" className="text-white italic">Heritage Collection</Typography>
                      <Badge variant="mineral" className="bg-primary/10 text-primary">{allRecipes.length} Options</Badge>
@@ -245,7 +245,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                            <Badge variant="outline" className="border-white/20 text-white/40 px-3">{CATEGORY_LABELS[catKey]}</Badge>
                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
                               {groupedRecipes[catKey].map((item) => (
-                                 <button key={item.id} onClick={() => { onSelectDish(item); setIsMenuOpen(false); }} className={cn("relative group w-full h-20 rounded-2xl overflow-hidden border transition-all duration-300 flex items-center text-left", item.id === recipe.id ? "bg-secondary/20 border-secondary/50 text-secondary shadow-lg" : "bg-[#1a1a1a] border-white/5 text-white/60 hover:bg-white/5")}>
+                                 <button key={item.id} onClick={() => { onSelectDish(item); setIsMenuOpen(false); }} className={cn("relative group w-full h-20 rounded-2xl overflow-hidden border transition-all duration-300 flex items-center text-left", item.id === recipe.id ? "bg-secondary/20 border-secondary/50 text-secondary shadow-lg" : "bg-surface-elevated border-white/5 text-white/60 hover:bg-white/5")}>
                                     <div className="w-1/4 h-full border-r border-white/5 overflow-hidden"><img src={item.image} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all"/></div>
                                     <div className="flex-1 px-4 py-2 min-w-0"><span className="font-display font-black uppercase text-sm truncate block">{item.name}</span><span className="text-[9px] opacity-40 uppercase truncate block">{item.thai_name || 'Authentic'}</span></div>
                                  </button>
@@ -281,7 +281,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               ))}
            </div>
            <div className="grid grid-cols-2 gap-3 mt-2">
-              <button onClick={() => toggleAudio('story')} className={cn("flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all bg-[#121212]", activeAudio === 'story' ? "bg-primary/20 border-primary text-primary animate-pulse" : "border-white/10 text-desc")}>
+              <button onClick={() => toggleAudio('story')} className={cn("flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all bg-surface", activeAudio === 'story' ? "bg-primary/20 border-primary text-primary animate-pulse" : "border-white/10 text-desc")}>
                  <Icon name="graphic_eq" size="md" /><span className="text-[9px] font-black uppercase tracking-widest">Story</span>
               </button>
               <button onClick={handleAskCherry} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-action/10 border border-action/20 text-action hover:bg-action hover:text-white transition-all shadow-sm">
@@ -361,7 +361,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       <GalleryModal isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} items={galleryItems} startIndex={galleryStartIndex} />
       <audio ref={audioRef} className="hidden" onEnded={() => setActiveAudio(null)} />
 
-      <Modal isOpen={!!activeIngredient} onClose={() => setActiveIngredient(null)} variant="cinema" className="bg-[#1a1a1a] border border-white/10 max-w-sm w-full mx-auto p-0 overflow-hidden rounded-[2.5rem]">
+      <Modal isOpen={!!activeIngredient} onClose={() => setActiveIngredient(null)} variant="cinema" className="bg-surface-elevated border border-white/10 max-w-sm w-full mx-auto p-0 overflow-hidden rounded-[2.5rem]">
          {activeIngredient && (
            <div className="flex flex-col relative">
               <div className="h-64 w-full relative">

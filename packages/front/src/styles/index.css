@@ -1,71 +1,35 @@
 /**
  * Thai Akha Kitchen — Front App Global Styles
  *
- * Tailwind v4 unified configuration with shared centralized theme and utilities.
- *
- * Structure:
- * 1. Shared imports from @thaiakha/shared (tokens, theme, utilities)
- * 2. Tailwind v4 @import (replaces @tailwind directives from v3)
- * 3. Dark mode custom variant
- * 4. FRONT-SPECIFIC semantic colors (primary, action, special, allergy)
- * 5. FRONT-SPECIFIC base styles, utilities, components
- *
- * NOTE: Shared utilities (scrollbar, glass-card, menu items) are imported from
- * @thaiakha/shared/styles/utilities.css and should not be duplicated here.
+ * Style system — import order matters:
+ * 1. base-palette  (raw colors — shared)
+ * 2. tokens        (semantic vars, RGB tokens, glass — front-specific)
+ * 3. base-theme    (Tailwind @theme: breakpoints, shadows, animations — shared)
+ * 4. theme         (Tailwind @theme: fonts — front-specific)
+ * 5. utilities     (glass-card, menu-item, scrollbar — shared components)
+ * 6. tailwindcss
  */
 
 /* ========================================================================
-   SHARED IMPORTS FROM @thaiakha/shared
+   STYLE SYSTEM IMPORTS
    ======================================================================== */
-
-/* Centralized CSS color variables for all color tokens */
-@import '@thaiakha/shared/styles/tokens.css';
-
-/* Tailwind v4 @theme directives (font families, breakpoints, shadows, etc.) */
-@import '@thaiakha/shared/styles/theme.css';
-
-/* Shared @utility definitions (glass-card, menu items, scrollbar) */
-@import '@thaiakha/shared/styles/utilities.css';
+@import '../../../shared/src/styles/base-palette.css';
+@import './tokens.css';
+@import '../../../shared/src/styles/base-theme.css';
+@import './theme.css';
+@import '../../../shared/src/styles/utilities.css';
 
 /* ========================================================================
-   TAILWIND V4 CORE (replaces v3 @tailwind directives)
+   TAILWIND V4 CORE
    ======================================================================== */
 
 @import "tailwindcss";
 
 /* ========================================================================
-   DARK MODE CUSTOM VARIANT (aligned with admin app)
+   DARK MODE CUSTOM VARIANT
    ======================================================================== */
 
 @custom-variant dark (&:is(.dark *));
-
-/* ========================================================================
-   FRONT-SPECIFIC OVERRIDES (Glass tokens, fonts, easing)
-   Semantic colors are now defined in shared/styles/tokens.css
-   ======================================================================== */
-
-:root {
-  /* 🌫️ GLASS TOKENS (Mineral glass effect - front-specific) */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-blur: 20px;
-
-  /* 🔤 FONT FAMILIES (Front-specific overrides) */
-  --font-display: 'Raleway', 'Sarabun', sans-serif;
-  --font-sans: 'Nunito', 'Sarabun', sans-serif;
-  --font-accent: 'Roboto Condensed', 'Sarabun', sans-serif;
-
-  /* ⚡ TIMING FUNCTIONS (Front-specific easing) */
-  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* 🌑 DARK THEME OVERRIDES (Glass effect only) */
-.dark {
-  /* Dark mode glass effect */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
 
 /* ========================================================================
    FRONT-SPECIFIC BASE STYLES
@@ -78,9 +42,8 @@
   }
 
   body {
-    /* Use rgb() wrapper because variables are RGB triplets */
-    background-color: rgb(var(--color-background));
-    color: rgb(var(--color-desc));
+    background-color: var(--color-background);
+    color: var(--color-desc);
     font-family: var(--font-sans);
     overscroll-behavior-y: none;
     -webkit-font-smoothing: antialiased;
@@ -95,7 +58,7 @@
   h5,
   h6 {
     font-family: var(--font-display);
-    color: rgb(var(--color-title));
+    color: var(--color-title);
     font-weight: 900;
   }
 

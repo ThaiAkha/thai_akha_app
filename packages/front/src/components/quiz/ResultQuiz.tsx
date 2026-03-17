@@ -38,7 +38,7 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
       <div className="absolute inset-0 bg-black/90 backdrop-blur-3xl"></div>
 
       <main className="relative z-10 w-full max-w-[48rem] animate-in zoom-in-95 duration-700">
-        <div className="bg-[#121212] border border-white/10 rounded-[3rem] p-8 md:p-12 flex flex-col items-center text-center shadow-2xl relative overflow-hidden">
+        <div className="bg-surface border border-white/10 rounded-[3rem] p-8 md:p-12 flex flex-col items-center text-center shadow-2xl relative overflow-hidden">
           
           {/* Sfondo Glow */}
           <div className={`absolute top-0 left-0 right-0 h-32 bg-gradient-to-b ${isPass ? 'from-green-500/20' : 'from-red-500/20'} to-transparent pointer-events-none`} />

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "ปฏิทิน | ไทยอาข่าคิทเชน",
+    "description": "จัดการความพร้อมของรอบและปฏิทินการจอง"
+  },
+  "legend": {
+    "available": "ว่าง",
+    "booked": "จองแล้ว",
+    "closed": "ปิด",
+    "selected": "เลือกแล้ว"
+  },
+  "bulk": {
+    "morning": "เช้า",
+    "evening": "เย็น",
+    "allDay": "ทั้งวัน"
+  },
+  "header": {
+    "bulkEdit": "แก้ไขหลายวัน",
+    "closeBulk": "ปิดโหมดแก้ไขหลายวัน"
+  },
+  "inspector": {
+    "emptyBulk": "เลือกวันสำหรับการแก้ไขหลายวัน",
+    "emptySelect": "เลือกวันที่เพื่อเริ่มต้น",
+    "bulkDays_one": "{{count}} วัน",
+    "bulkDays_other": "{{count}} วัน",
+    "bulkUpdateAll": "อัปเดตหลายวัน: ทั้งวัน",
+    "bulkUpdateMorning": "อัปเดตหลายวัน: เฉพาะเช้า",
+    "bulkUpdateEvening": "อัปเดตหลายวัน: เฉพาะเย็น",
+    "editingDay": "กำลังแก้ไขวัน",
+    "quickPreview": "ดูตัวอย่างด่วน",
+    "morningClass": "ชั้นเรียนตอนเช้า",
+    "eveningClass": "ชั้นเรียนตอนเย็น",
+    "allClasses": "ทุกชั้นเรียน",
+    "session": "รอบ",
+    "booked": "จองแล้ว",
+    "available": "ว่าง",
+    "classClose": "ชั้นเรียนปิด",
+    "forceClose": "บังคับปิด",
+    "closingReason": "เหตุผลในการปิด",
+    "reasonPlaceholder": "เช่น กิจกรรมส่วนตัว",
+    "addRemoveSpots": "เพิ่ม/ลดที่นั่ง",
+    "availableSeats": "ที่นั่งที่ว่าง",
+    "bulkModHint": "การแก้ไขจะเพิ่ม/ลดที่นั่งจากความจุปัจจุบัน",
+    "totalCapacity": "ความจุรวม: {{count}}",
+    "saveDays_one": "บันทึก {{count}} วัน",
+    "saveDays_other": "บันทึก {{count}} วัน",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง"
+  },
+  "sidebar": {
+    "morningClass": "ชั้นเรียนตอนเช้า",
+    "eveningClass": "ชั้นเรียนตอนเย็น",
+    "bulkModeTitle": "โหมดแก้ไขหลายวัน",
+    "bulkModeInfo": "วันที่มีการจองจะถูกล็อกเพื่อความปลอดภัย"
+  },
+  "session": {
+    "booked": "จองแล้ว:",
+    "seatsLeft": "ที่นั่งเหลือ:",
+    "empty": "ไม่มีผู้จอง"
+  }
+}

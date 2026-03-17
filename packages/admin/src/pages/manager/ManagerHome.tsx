@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import { contentService } from '@thaiakha/shared/services';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
@@ -15,6 +16,7 @@ import DashboardNavCard from '../../components/dashboard/DashboardNavCard';
 import CTABanner from '../../components/dashboard/CTABanner';
 
 const ManagerHome: React.FC = () => {
+    const { t, i18n } = useTranslation('common');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('manager-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
@@ -22,8 +24,8 @@ const ManagerHome: React.FC = () => {
     useEffect(() => {
         const loadHomeCards = async () => {
             try {
-                // Load home cards from database (filtered for manager role)
-                const cards = await contentService.getHomeCards();
+                // Load home cards from database with current language
+                const cards = await contentService.getHomeCards(i18n.language);
                 const managerCards = cards.filter((card: any) => card.role === 'manager');
                 console.log('🏠 Manager Home Cards loaded:', managerCards);
                 setHomeCards(managerCards || []);
@@ -32,7 +34,7 @@ const ManagerHome: React.FC = () => {
             }
         };
         loadHomeCards();
-    }, []);
+    }, [i18n.language]);
 
     // Separate cards by type from database
     const featureCards = homeCards.filter(card => card.card_type === 'feature');
@@ -68,7 +70,7 @@ const ManagerHome: React.FC = () => {
                                     key={card.id}
                                     title={card.title || card.card_title}
                                     description={card.description || card.card_description}
-                                    ctaLabel={card.cta_label || card.link_label || 'View More'}
+                                    ctaLabel={card.cta_label || card.link_label || t('actions.viewMore')}
                                     ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
                                     variant={card.variant || 'dark'}
                                     className="flex items-center justify-between gap-6 p-13"

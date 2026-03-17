@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LogisticsItem, DriverProfile } from '../../../hooks/useManagerLogistic';
 import { useLogisticFiltering } from '../../../hooks/useLogisticFiltering';
 import { useLogisticMovement } from '../../../hooks/useLogisticMovement';
@@ -29,6 +30,7 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
     selectedDriverIds,
     onActivateDriver,
 }) => {
+    const { t } = useTranslation('logistics');
     const [reorderedItems, setReorderedItems] = useState<LogisticsItem[]>(items);
 
     // Update when items change from database
@@ -65,7 +67,7 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
             {/* Loading Overlay */}
             {loading && (
                 <div className="absolute inset-0 bg-white/50 dark:bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
-                    <div className="loader font-black uppercase text-xs tracking-widest animate-pulse">Syncing...</div>
+                    <div className="loader font-black uppercase text-xs tracking-widest animate-pulse">{t('content.syncing')}</div>
                 </div>
             )}
 

@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "title": "ฐานข้อมูล | Thai Akha Kitchen",
+    "description": "จัดการตารางข้อมูลระบบพร้อมข้อจำกัดด้านความปลอดภัย"
+  },
+  "sidebar": {
+    "title": "ตาราง",
+    "status": "แก้ไขสด"
+  },
+  "content": {
+    "searchPlaceholder": "ค้นหาใน {{table}}...",
+    "noData": "ไม่พบข้อมูลในตาราง {{table}}"
+  },
+  "inspector": {
+    "readOnly": "อ่านอย่างเดียว",
+    "noSchema": "ไม่มีข้อมูลสคีมา",
+    "deleteRecord": "ลบระเบียน",
+    "confirm": "ยืนยัน",
+    "cancel": "ยกเลิก"
+  },
+  "actions": {
+    "exportFormats": "รูปแบบการส่งออก",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "รูปแบบสเปรดชีตมาตรฐาน",
+    "exportJson": "รูปแบบ JSON",
+    "exportJsonDesc": "โครงสร้างข้อมูลดิบ",
+    "copyClipboard": "คัดลอกไปยังคลิปบอร์ด",
+    "copyClipboardDesc": "แชร์เป็นข้อความด่วน",
+    "insertRecord": "แทรกระเบียนใหม่",
+    "newRow": "แถวใหม่",
+    "deleteRestricted": "การลบถูกจำกัดเพื่อความปลอดภัย",
+    "edit": "แก้ไข",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "tooltipEdit": "แก้ไขข้อมูลนี้",
+    "tooltipSave": "บันทึกการแก้ไข"
+  }
+}

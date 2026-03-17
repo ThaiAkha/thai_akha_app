@@ -1,0 +1,60 @@
+{
+  "sidebar": {
+    "title": "Buckets",
+    "status": "Live Storage"
+  },
+  "meta": {
+    "title": "Storage Explorer | Thai Akha Kitchen",
+    "description": "Manage bucket files and media assets."
+  },
+  "content": {
+    "searchPlaceholder": "Search files...",
+    "noFiles": "No files found",
+    "colFileName": "File Name",
+    "colSize": "Size",
+    "colType": "Type",
+    "colLastModified": "Last Modified"
+  },
+  "inspector": {
+    "noFile": "No file selected",
+    "noFileHint": "Click a file from the list to view details",
+    "stagingAsset": "Staging Asset",
+    "saving": "SAVING...",
+    "confirmUpload": "CONFIRM UPLOAD",
+    "saveChanges": "SAVE CHANGES",
+    "downloadOptions": "Download Options",
+    "origQuality": "Original Quality",
+    "origQualityDesc": "Full resolution asset",
+    "standardMp3": "Standard MP3",
+    "mp3Desc": "Compatible format",
+    "rawDocument": "Raw Document",
+    "rawDocDesc": "Standard file download",
+    "copied": "COPIED",
+    "copyLink": "COPY LINK",
+    "preview": "PREVIEW",
+    "setFilename": "Set Filename",
+    "assetName": "Asset Name",
+    "filenamePlaceholder": "Enter filename...",
+    "newNamePlaceholder": "Enter new name...",
+    "diskSize": "Disk Size",
+    "mimeType": "MIME Type",
+    "tooltipSize": "File size on disk",
+    "tooltipMime": "MIME type of the asset",
+    "createdAt": "Created At",
+    "lastSynced": "Last Synced",
+    "deleteAsset": "DELETE ASSET",
+    "unknownFile": "UNKNOWN FILE",
+    "audioNotSupported": "Your browser does not support the audio element.",
+    "uploadTooltip": "Upload assets to storage",
+    "saveTooltip": "Save changes"
+  },
+  "actions": {
+    "upload": "Upload",
+    "uploading": "Uploading",
+    "edit": "EDIT",
+    "save": "SAVE",
+    "saving": "SAVING...",
+    "tooltipEdit": "Edit file metadata",
+    "tooltipSave": "Save changes"
+  }
+}

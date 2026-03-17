@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { EyeOff, Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import PhoneCountryInput from "../common/PhoneCountryInput";
 import LegalModal from "../legal/LegalModal";
 import { useAuth } from "../../context/AuthContext";
-import { TERMS_OF_SERVICE, PRIVACY_POLICY } from "@thaiakha/shared/data";
+import { useI18n } from "../../context/I18nContext";
+import { TERMS_OF_SERVICE, TERMS_OF_SERVICE_TH, PRIVACY_POLICY, PRIVACY_POLICY_TH } from "@thaiakha/shared/data";
 
 export default function SignUpForm() {
+  const { t } = useTranslation('auth');
+  const { lang } = useI18n();
   const { signUpAgency } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -29,39 +33,17 @@ export default function SignUpForm() {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
-    // Validate all fields are filled
-    if (!contactName.trim()) {
-      setError("Contact Name is required");
-      return;
-    }
-    if (!companyName.trim()) {
-      setError("Company Name is required");
-      return;
-    }
-    if (!taxId.trim()) {
-      setError("Tax ID / VAT is required");
-      return;
-    }
-    if (!phone.trim()) {
-      setError("Phone Number is required");
-      return;
-    }
-    if (!email.trim()) {
-      setError("Email is required");
-      return;
-    }
-    if (!password.trim()) {
-      setError("Password is required");
-      return;
-    }
-    if (!isChecked) {
-      setError("Please accept the Terms and Conditions");
-      return;
-    }
+    if (!contactName.trim()) { setError(t('signUp.validation.contactRequired')); return; }
+    if (!companyName.trim()) { setError(t('signUp.validation.companyRequired')); return; }
+    if (!taxId.trim())       { setError(t('signUp.validation.taxIdRequired')); return; }
+    if (!phone.trim())       { setError(t('signUp.validation.phoneRequired')); return; }
+    if (!email.trim())       { setError(t('signUp.validation.emailRequired')); return; }
+    if (!password.trim())    { setError(t('signUp.validation.passwordRequired')); return; }
+    if (!isChecked)          { setError(t('signUp.validation.termsRequired')); return; }
 
     setLoading(true);
 
@@ -70,7 +52,7 @@ export default function SignUpForm() {
       navigate("/"); // Redirect or show success message
     } catch (err: any) {
       console.error("Signup failed:", err);
-      setError(err.message || "Registration failed");
+      setError(err.message || t('signUp.error'));
     } finally {
       setLoading(false);
     }
@@ -82,10 +64,10 @@ export default function SignUpForm() {
         <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
           <div className="mb-8 sm:mb-10">
             <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
-              Create New Account
+              {t('signUp.title')}
             </h1>
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Join the B2B portal for Thai Akha Kitchen.
+              {t('signUp.subtitle')}
             </p>
           </div>
           <div>
@@ -94,14 +76,14 @@ export default function SignUpForm() {
                 {/* <!-- Company Name --> */}
                 <div className="mb-5">
                   <Label htmlFor="companyName">
-                    Company Name<span className="text-error-500">*</span>
+                    {t('signUp.fields.companyName')}<span className="text-error-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     id="companyName"
                     name="companyName"
                     autoComplete="organization"
-                    placeholder="Enter Agency Name"
+                    placeholder={t('signUp.placeholders.companyName')}
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                   />
@@ -110,14 +92,14 @@ export default function SignUpForm() {
                 {/* <!-- Contact Name --> */}
                 <div className="mb-5">
                   <Label htmlFor="contactName">
-                    Contact Name<span className="text-error-500">*</span>
+                    {t('signUp.fields.contactName')}<span className="text-error-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     id="contactName"
                     name="contactName"
                     autoComplete="name"
-                    placeholder="Enter Your Name"
+                    placeholder={t('signUp.placeholders.contactName')}
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                   />
@@ -126,14 +108,14 @@ export default function SignUpForm() {
                 {/* <!-- Tax ID --> */}
                 <div className="mb-5">
                   <Label htmlFor="taxId">
-                    Tax ID / VAT<span className="text-error-500">*</span>
+                    {t('signUp.fields.taxId')}<span className="text-error-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     id="taxId"
                     name="taxId"
                     autoComplete="off"
-                    placeholder="Tax ID Number"
+                    placeholder={t('signUp.placeholders.taxId')}
                     value={taxId}
                     onChange={(e) => setTaxId(e.target.value)}
                   />
@@ -142,14 +124,14 @@ export default function SignUpForm() {
                 {/* <!-- Email --> */}
                 <div className="mb-5">
                   <Label htmlFor="email">
-                    Email<span className="text-error-500">*</span>
+                    {t('signUp.fields.email')}<span className="text-error-500">*</span>
                   </Label>
                   <Input
                     type="email"
                     id="email"
                     name="email"
                     autoComplete="email"
-                    placeholder="agency@example.com"
+                    placeholder={t('signUp.placeholders.email')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -158,14 +140,14 @@ export default function SignUpForm() {
                 {/* <!-- Password --> */}
                 <div className="mb-5">
                   <Label htmlFor="password">
-                    Password<span className="text-error-500">*</span>
+                    {t('signUp.fields.password')}<span className="text-error-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
                       id="password"
                       name="password"
                       autoComplete="new-password"
-                      placeholder="Enter your password"
+                      placeholder={t('signUp.placeholders.password')}
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -188,7 +170,7 @@ export default function SignUpForm() {
                   {/* <!-- Phone --> */}
                   <div className="sm:col-span-1">
                     <Label htmlFor="phone">
-                      Phone Number<span className="text-error-500">*</span>
+                      {t('signUp.fields.phone')}<span className="text-error-500">*</span>
                     </Label>
                     <PhoneCountryInput
                       value={phone}
@@ -198,14 +180,14 @@ export default function SignUpForm() {
                   {/* <!-- Line ID --> */}
                   <div className="sm:col-span-1">
                     <Label htmlFor="lineId">
-                      Line ID
+                      {t('signUp.fields.lineId')}
                     </Label>
                     <Input
                       type="text"
                       id="lineId"
                       name="lineId"
                       autoComplete="off"
-                      placeholder="Enter Line ID"
+                      placeholder={t('signUp.placeholders.lineId')}
                       value={lineId}
                       onChange={(e) => setLineId(e.target.value)}
                     />
@@ -220,28 +202,28 @@ export default function SignUpForm() {
                     onChange={setIsChecked}
                   />
                   <p className="inline-block text-xs font-medium text-gray-500 dark:text-gray-400 leading-tight">
-                    By creating an account means you agree to the{" "}
+                    {t('signUp.terms')}{" "}
                     <button
                       type="button"
                       onClick={() => setLegalModalOpen('terms')}
                       className="text-gray-800 dark:text-white/90 font-bold underline underline-offset-2 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
                     >
-                      Terms and Conditions
+                      {t('signUp.termsLink')}
                     </button>
-                    {", and our "}
+                    {` ${t('signUp.termsAnd')} `}
                     <button
                       type="button"
                       onClick={() => setLegalModalOpen('privacy')}
                       className="text-gray-800 dark:text-white font-bold underline underline-offset-2 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
                     >
-                      Privacy Policy
+                      {t('signUp.privacyLink')}
                     </button>
                   </p>
                 </div>
                 {/* <!-- Button --> */}
                 <div className="pt-2">
                   <button className="brand-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-brand-500 shadow-brand hover:bg-brand-600 tracking-wider" disabled={loading}>
-                    {loading ? "Registering Agency..." : "Create Partner Account"}
+                    {loading ? t('signUp.loading') : t('signUp.button')}
                   </button>
                 </div>
               </div>
@@ -249,12 +231,12 @@ export default function SignUpForm() {
 
             <div className="mt-6 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Already have an account? {""}
+                {t('signUp.alreadyAccount')}{" "}
                 <Link
                   to="/signin"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400 font-bold underline underline-offset-4"
                 >
-                  Sign In
+                  {t('signUp.signInLink')}
                 </Link>
               </p>
             </div>
@@ -264,9 +246,9 @@ export default function SignUpForm() {
         <LegalModal
           document={
             legalModalOpen === 'terms'
-              ? TERMS_OF_SERVICE
+              ? (lang === 'th' ? TERMS_OF_SERVICE_TH : TERMS_OF_SERVICE)
               : legalModalOpen === 'privacy'
-                ? PRIVACY_POLICY
+                ? (lang === 'th' ? PRIVACY_POLICY_TH : PRIVACY_POLICY)
                 : null
           }
           isOpen={legalModalOpen !== null}

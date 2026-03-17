@@ -75,7 +75,7 @@ const HistoryPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavig
 
   // 4. TECH SPECS (Caffè)
   const renderTechSpecs = (specs: any) => (
-    <div className="mt-6 bg-[#1a1a1a] border border-white/10 p-6 rounded-3xl relative overflow-hidden">
+    <div className="mt-6 bg-surface-elevated border border-white/10 p-6 rounded-3xl relative overflow-hidden">
         <div className="absolute top-0 right-0 p-10 bg-primary/10 blur-3xl rounded-full pointer-events-none"/>
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6">
             {Object.entries(specs).map(([key, val]) => (
@@ -107,7 +107,7 @@ const HistoryPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavig
       <div key={section.id} className="scroll-mt-32 relative group" id={section.id}>
         {/* Timeline Connector */}
         <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-white/5 -translate-x-1/2 group-last:bottom-auto group-last:h-full" />
-        <div className="hidden lg:flex absolute left-1/2 top-10 -translate-x-1/2 size-4 rounded-full bg-[#0a0a0a] border-2 border-white/20 z-10 items-center justify-center">
+        <div className="hidden lg:flex absolute left-1/2 top-10 -translate-x-1/2 size-4 rounded-full bg-surface-overlay border-2 border-white/20 z-10 items-center justify-center">
             <div className={cn("size-1.5 rounded-full", section.featured ? "bg-action animate-pulse" : "bg-white/40")} />
         </div>
 
@@ -154,7 +154,7 @@ const HistoryPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavig
 
             {/* 2. RICH MEDIA CARD */}
             <div className="flex-1 w-full">
-                <Card variant="glass" padding="none" className="overflow-hidden border-white/10 bg-[#121212] relative group/card">
+                <Card variant="glass" padding="none" className="overflow-hidden border-white/10 bg-surface relative group/card">
                     {/* Visualizzazione Condizionale basata sui dati */}
                     <div className="p-8">
                         {section.recipes ? (

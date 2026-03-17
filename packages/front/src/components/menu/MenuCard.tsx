@@ -105,7 +105,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
 
         {/* Checkmark (Angolo Destro) */}
         {isSelected && !isDemo && (
-          <div className="absolute top-3 right-3 z-30 size-8 md:size-9 rounded-full bg-action text-white flex items-center justify-center shadow-lg animate-in zoom-in spin-in-12 duration-300 border-2 border-white dark:border-[#121212]">
+          <div className="absolute top-3 right-3 z-30 size-8 md:size-9 rounded-full bg-action text-white flex items-center justify-center shadow-lg animate-in zoom-in spin-in-12 duration-300 border-2 border-white dark:border-surface">
             <Icon name="check" size="sm" className="font-black" />
           </div>
         )}

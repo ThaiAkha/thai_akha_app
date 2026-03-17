@@ -88,6 +88,11 @@ function App() {
               <Route path="/admin-calendar" element={<ProtectedRoute allowedRoles={['admin']}><AdminCalendar /></ProtectedRoute>} />
               <Route path="/admin-inventory" element={<ProtectedRoute allowedRoles={['admin']}><AdminInventory /></ProtectedRoute>} />
               <Route path="/admin-home" element={<ProtectedRoute allowedRoles={['admin']}><AdminHome /></ProtectedRoute>} />
+              
+              {/* New B2B Slugs (Placeholders - using AdminHome as temporary view if specific page missing) */}
+              <Route path="/admin-recipes" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><AdminHome /></ProtectedRoute>} />
+              <Route path="/admin-classes" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><AdminHome /></ProtectedRoute>} />
+              <Route path="/admin-transport" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><AdminHome /></ProtectedRoute>} />
 
               {/* Kitchen & Logistics Home */}
               <Route path="/kitchen-home" element={<ProtectedRoute allowedRoles={['admin', 'manager', 'kitchen']}><KitchenHome /></ProtectedRoute>} />

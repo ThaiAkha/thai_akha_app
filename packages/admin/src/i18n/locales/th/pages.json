@@ -1,0 +1,106 @@
+{
+  "notFound": {
+    "error": "ข้อผิดพลาด",
+    "errorLabel": "ข้อผิดพลาด",
+    "code": "404",
+    "message": "ไม่พบหน้าที่คุณกำลังมองหา!",
+    "backHome": "กลับหน้าหลัก",
+    "copyright": "{{year}} - Thai Akha Kitchen",
+    "pageTitle": "404 - ไม่พบหน้านี้ | Thai Akha Kitchen Admin",
+    "pageDesc": "ไม่พบหน้าที่คุณกำลังมองหา"
+  },
+  "profile": {
+    "metaTitle": "แดชบอร์ดโปรไฟล์ | Cherry Admin",
+    "metaDesc": "จัดการข้อมูลส่วนตัว ข้อมูลเอเจนซี และการตั้งค่าความปลอดภัย"
+  },
+  "agencyNews": {
+    "metaTitle": "ข่าวเอเจนซี | ไทยอาข่าคิทเชน",
+    "metaDesc": "รับทราบข่าวสารและประกาศล่าสุดจาก Thai Akha Kitchen",
+    "badgeFallback": "เอเจนซี",
+    "titleFallback": "ข่าวเอเจนซี",
+    "noNews": "ไม่พบข่าวสาร"
+  },
+  "agencyRates": {
+    "metaTitle": "อัตราสัญญา 2026 | พอร์ทัลพาร์ทเนอร์ไทยอาข่าคิทเชน",
+    "metaDesc": "ดูอัตราสุทธิและโครงสร้างค่าคอมมิชชันสำหรับพาร์ทเนอร์ของคุณในปี 2026",
+    "badgeFallback": "ข้อมูลลับ",
+    "titleFallback": "อัตราสัญญา 2026",
+    "colClass": "ประเภทคลาส",
+    "colRack": "ราคาปกติ",
+    "colNet": "ราคาสุทธิพาร์ทเนอร์",
+    "colCommission": "ค่าคอมมิชชัน",
+    "rateMorning": "คลาสเช้า",
+    "rateEvening": "คลาสเย็น",
+    "rateFullDay": "แพ็กเกจเต็มวัน",
+    "ratePrivate": "เซสชันส่วนตัว (1-4 คน)",
+    "guaranteeTitle": "การรับประกันราคา",
+    "guaranteeDesc": "อัตราตามฤดูกาลถูกล็อคสำหรับสัญญาทั้งหมดที่ลงนามก่อนเดือนมีนาคม 2026 การปรับราคาใดๆ จะแจ้งให้ทราบล่วงหน้า 60 วัน",
+    "paymentTitle": "เงื่อนไขการชำระเงิน",
+    "paymentDesc": "ราคาสุทธิชำระผ่านใบแจ้งหนี้รายเดือน ควรชำระภายใน 5 วันทำการแรกของเดือนถัดไป"
+  },
+  "agencyTerms": {
+    "metaTitle": "นโยบายพาร์ทเนอร์ | พอร์ทัลพาร์ทเนอร์ไทยอาข่าคิทเชน",
+    "metaDesc": "ทบทวนข้อกำหนด นโยบายการยกเลิก และกฎการออกใบแจ้งหนี้อย่างเป็นทางการ",
+    "badgeFallback": "กรอบกฎหมาย",
+    "titleFallback": "นโยบายพาร์ทเนอร์",
+    "cancellationTitle": "นโยบายการยกเลิก",
+    "cancellationItem1": "แจ้งล่วงหน้า 24 ชั่วโมง+: ยกเลิกฟรี",
+    "cancellationItem2": "น้อยกว่า 24 ชั่วโมง: เก็บ 50%",
+    "cancellationItem3": "ไม่มาโดยไม่แจ้ง: เก็บ 100%",
+    "cancellationItem4": "แขกป่วย: ฟรีพร้อมใบรับรองแพทย์",
+    "logisticsTitle": "การขนส่งและรับแขก",
+    "logisticsDesc": "แขกต้องพร้อมที่ล็อบบี้โรงแรม 10 นาทีก่อนเวลารับ คนขับจะรอสูงสุด 15 นาทีก่อนออกเดินทาง",
+    "invoicingTitle": "การออกใบแจ้งหนี้และการชำระ",
+    "invoicingDesc": "ออกใบแจ้งหนี้วันที่ 1 ของทุกเดือน ต้องรายงานความคลาดเคลื่อนภายใน 48 ชั่วโมง การชำระล่าช้าอาจระงับการใช้พอร์ทัลชั่วคราว",
+    "verified": "ลงนามและยืนยันสำหรับฤดูกาล 2026",
+    "customContract": "ต้องการสัญญาพิเศษสำหรับทัวร์กลุ่มใหญ่? ติดต่อฝ่ายปฏิบัติการที่ hello@tak.kitchen"
+  },
+  "agencyReservations": {
+    "metaTitle": "การจอง | พอร์ทัลพาร์ทเนอร์ไทยอาข่าคิทเชน",
+    "metaDesc": "ดูและจัดการการจองทั้งหมดผ่านบัญชีเอเจนซีของคุณ",
+    "sessionMorning": "คลาสเช้า",
+    "sessionEvening": "คลาสเย็น"
+  },
+  "agencyAssets": {
+    "badgeFallback": "กรอบกฎหมาย",
+    "titleFallback": "นโยบายพาร์ทเนอร์",
+    "assetPhotos": "ภาพถ่ายความละเอียดสูง",
+    "assetVideo": "วิดีโอโปรโม (4K)",
+    "assetBrochure": "โบรชัวร์เมนู 2026",
+    "assetLogo": "ชุดโลโก้ (Vector)",
+    "downloadFile": "ดาวน์โหลดไฟล์",
+    "showcaseAlt": "ตัวอย่าง",
+    "socialMediaTitle": "ชุดสื่อโซเชียลมีเดีย",
+    "socialMediaDesc": "Stories แนวตั้งและโพสต์สำหรับ Instagram และ Facebook",
+    "accessFolder": "เข้าถึงโฟลเดอร์",
+    "needHelpTitle": "ต้องการความช่วยเหลือเพิ่มเติม?",
+    "needHelpDesc": "กำลังมองหาสิ่งที่เฉพาะเจาะจงหรือวัสดุสร้างแบรนด์ที่กำหนดเอง? ทีมการตลาดพร้อมช่วยเหลือ",
+    "requestAssets": "ขอสินทรัพย์ที่กำหนดเอง"
+  },
+  "driver": {
+    "status": {
+      "waiting": "รอ",
+      "enRoute": "กำลังเดินทาง",
+      "atLobby": "ที่ล็อบบี้",
+      "onBoard": "โดยสารแล้ว",
+      "completed": "เสร็จสิ้น"
+    },
+    "action": {
+      "startPickup": "เริ่มรับแขก",
+      "iAmHere": "ฉันมาถึงแล้ว",
+      "pickUpPax": "รับผู้โดยสาร",
+      "dropComplete": "ส่งแขกแล้ว",
+      "done": "เสร็จ"
+    },
+    "pickup": "รับ",
+    "dropoff": "ส่ง",
+    "startPickupRoute": "เริ่มเส้นทางรับแขก",
+    "startDropoffRoute": "เริ่มเส้นทางส่งแขก",
+    "clickConfirm": "คลิกอีกครั้งเพื่อยืนยัน",
+    "pax": "/ {{total}} คน",
+    "payoutTitle": "เดินทางทั้งหมดเสร็จสิ้น!",
+    "payoutEarnings": "รายได้ประจำวัน",
+    "payoutReturn": "กลับหน้าหลัก",
+    "whatsappMsg": "Sawasdee%20kha%20Driver%20is%20at%20lobby"
+  }
+}

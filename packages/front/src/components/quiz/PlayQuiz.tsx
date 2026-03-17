@@ -44,7 +44,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
     <div className="relative z-10 w-full max-w-[72rem] px-4 py-6 md:px-6 md:py-8 h-full md:h-auto flex flex-col justify-center mb-5 animate-in fade-in zoom-in-95 duration-500">
       
       {/* CARD VETROSMORPHICA */}
-      <div className="bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-6 md:p-10 w-full flex flex-col items-center shadow-2xl relative overflow-hidden">
+      <div className="bg-surface-overlay/80 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-6 md:p-10 w-full flex flex-col items-center shadow-2xl relative overflow-hidden">
         
         {/* Glow Ambientale */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent blur-sm" />

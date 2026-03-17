@@ -57,9 +57,9 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   const variantStyles = {
-    mineral: 'bg-surface dark:bg-[#121212] border border-white/10 shadow-2xl',
+    mineral: 'bg-surface dark:bg-surface border border-white/10 shadow-2xl',
     cinema: 'bg-black border-none shadow-none text-white',
-    quiz: 'bg-surface dark:bg-[#18181b] border-2 border-quiz/30 shadow-[0_0_40px_rgba(254,202,42,0.15)]'
+    quiz: 'bg-surface dark:bg-surface-elevated border-2 border-quiz/30 shadow-[0_0_40px_rgba(254,202,42,0.15)]'
   };
 
   const backdropClasses = variant === 'cinema'

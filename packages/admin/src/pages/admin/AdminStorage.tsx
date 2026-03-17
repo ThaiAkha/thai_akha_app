@@ -3,6 +3,7 @@ import {
     Plus,
     Loader2,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import {
     DataExplorerLayout,
@@ -22,13 +23,14 @@ import StorageInspectorActions from '../../components/admin/storage/StorageInspe
 import { useAdminStorage } from '../../hooks/useAdminStorage';
 
 const AdminStorage: React.FC = () => {
+    const { t } = useTranslation('storage');
     const { data, ui, inspector } = useAdminStorage();
 
     return (
         <>
             <PageMeta
-                title="Admin Storage Explorer | Thai Akha Kitchen"
-                description="Manage bucket files and media assets."
+                title={t('meta.title')}
+                description={t('meta.description')}
             />
 
             <DataExplorerLayout
@@ -46,7 +48,7 @@ const AdminStorage: React.FC = () => {
                     <DataExplorerToolbar
                         searchValue={ui.searchTerm}
                         onSearchChange={ui.setSearchTerm}
-                        searchPlaceholder="Search files..."
+                        searchPlaceholder={t('content.searchPlaceholder')}
                         viewMode={ui.viewMode}
                         onViewModeChange={ui.setViewMode}
                         onRefresh={() => data.fetchFiles(ui.selectedBucket)}
@@ -62,7 +64,7 @@ const AdminStorage: React.FC = () => {
                                 />
                                 <span className={cn(PRIMARY_BTN, "cursor-pointer")}>
                                     {inspector.isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                                    {inspector.isUploading ? 'CARICA' : 'CARICA'}
+                                    {inspector.isUploading ? t('actions.uploading') : t('actions.upload')}
                                 </span>
                             </label>
                         }

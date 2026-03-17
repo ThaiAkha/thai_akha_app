@@ -1,13 +1,17 @@
 import React from "react";
 import GridShape from "../../components/common/GridShape";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
+import { LanguageSwitcher } from "../../components/header/LanguageSwitcher";
 import { LogoAuth } from "@thaiakha/shared";
+import { useTranslation } from "react-i18next";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation("auth");
+
   return (
     <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
       <div className="relative flex flex-col justify-center w-full h-screen lg:flex-row dark:bg-gray-900 sm:p-0">
@@ -32,17 +36,18 @@ export default function AuthLayout({
                   width={180}
                   height={180}
                   src={LogoAuth}
-                  alt="Logo"
+                  alt={t("layout.logoAlt")}
                 />
               </div>
-   <p className="text-center text-gray-500 dark:text-white/80 text-base md:text-lg font-medium leading-relaxed mt-4">
-    Step into the heritage of the Akha tribe. <br className="hidden md:block" /> 
-    Your culinary journey begins here.
-  </p>
+              <p className="text-center text-gray-500 dark:text-white/80 text-base md:text-lg font-medium leading-relaxed mt-4">
+                {t("layout.tagline1")} <br className="hidden md:block" />
+                {t("layout.tagline2")}
+              </p>
             </div>
           </div>
         </div>
-        <div className="fixed z-50 hidden bottom-6 right-6 sm:block">
+        <div className="fixed z-50 hidden bottom-6 right-6 sm:flex items-center gap-2">
+          <LanguageSwitcher />
           <ThemeTogglerTwo />
         </div>
       </div>

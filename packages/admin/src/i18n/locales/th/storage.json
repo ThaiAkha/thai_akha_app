@@ -1,0 +1,60 @@
+{
+  "sidebar": {
+    "title": "บัคเก็ต",
+    "status": "สตอเรจสด"
+  },
+  "meta": {
+    "title": "คลังสื่อ | Thai Akha Kitchen",
+    "description": "จัดการไฟล์บัคเก็ตและสื่อดิจิทัล"
+  },
+  "content": {
+    "searchPlaceholder": "ค้นหาไฟล์...",
+    "noFiles": "ไม่พบไฟล์",
+    "colFileName": "ชื่อไฟล์",
+    "colSize": "ขนาด",
+    "colType": "ประเภท",
+    "colLastModified": "แก้ไขล่าสุด"
+  },
+  "inspector": {
+    "noFile": "ยังไม่ได้เลือกไฟล์",
+    "noFileHint": "คลิกไฟล์จากรายการเพื่อดูรายละเอียด",
+    "stagingAsset": "ไฟล์ที่รอการอัปโหลด",
+    "saving": "กำลังบันทึก...",
+    "confirmUpload": "ยืนยันการอัปโหลด",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "downloadOptions": "ตัวเลือกการดาวน์โหลด",
+    "origQuality": "คุณภาพต้นฉบับ",
+    "origQualityDesc": "ไฟล์ความละเอียดเต็ม",
+    "standardMp3": "MP3 มาตรฐาน",
+    "mp3Desc": "รูปแบบที่เข้ากันได้",
+    "rawDocument": "เอกสารต้นฉบับ",
+    "rawDocDesc": "ดาวน์โหลดไฟล์มาตรฐาน",
+    "copied": "คัดลอกแล้ว",
+    "copyLink": "คัดลอกลิงก์",
+    "preview": "ดูตัวอย่าง",
+    "setFilename": "ตั้งชื่อไฟล์",
+    "assetName": "ชื่อไฟล์",
+    "filenamePlaceholder": "ป้อนชื่อไฟล์...",
+    "newNamePlaceholder": "ป้อนชื่อใหม่...",
+    "diskSize": "ขนาดไฟล์",
+    "mimeType": "ประเภทไฟล์ (MIME)",
+    "tooltipSize": "ขนาดไฟล์บนดิสก์",
+    "tooltipMime": "ประเภท MIME ของไฟล์",
+    "createdAt": "วันที่สร้าง",
+    "lastSynced": "ซิงค์ล่าสุด",
+    "deleteAsset": "ลบไฟล์",
+    "unknownFile": "ไฟล์ที่ไม่รู้จัก",
+    "audioNotSupported": "เบราว์เซอร์ของคุณไม่รองรับการเล่นเสียง",
+    "uploadTooltip": "อัปโหลดไฟล์ไปยังสตอเรจ",
+    "saveTooltip": "บันทึกการเปลี่ยนแปลง"
+  },
+  "actions": {
+    "upload": "อัปโหลด",
+    "uploading": "กำลังอัปโหลด",
+    "edit": "แก้ไข",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "tooltipEdit": "แก้ไขข้อมูลเมตาของไฟล์",
+    "tooltipSave": "บันทึกการเปลี่ยนแปลง"
+  }
+}

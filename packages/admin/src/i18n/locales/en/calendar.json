@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Calendar | Thai Akha Kitchen",
+    "description": "Manage session availability and booking calendar."
+  },
+  "legend": {
+    "available": "Available",
+    "booked": "Booked",
+    "closed": "Closed",
+    "selected": "Selected"
+  },
+  "bulk": {
+    "morning": "Morning",
+    "evening": "Evening",
+    "allDay": "All Day"
+  },
+  "header": {
+    "bulkEdit": "Bulk Edit",
+    "closeBulk": "Close Bulk"
+  },
+  "inspector": {
+    "emptyBulk": "Select days for Bulk Edit",
+    "emptySelect": "Select a date to start",
+    "bulkDays_one": "{{count}} Day",
+    "bulkDays_other": "{{count}} Days",
+    "bulkUpdateAll": "Bulk Update: All Day",
+    "bulkUpdateMorning": "Bulk Update: Morning Only",
+    "bulkUpdateEvening": "Bulk Update: Evening Only",
+    "editingDay": "Editing Day",
+    "quickPreview": "Quick Preview",
+    "morningClass": "Morning Class",
+    "eveningClass": "Evening Class",
+    "allClasses": "All Classes",
+    "session": "Session",
+    "booked": "Booked",
+    "available": "Available",
+    "classClose": "Class Close",
+    "forceClose": "Force Close",
+    "closingReason": "Closing Reason",
+    "reasonPlaceholder": "Example: Private Event",
+    "addRemoveSpots": "Add/Remove Spots",
+    "availableSeats": "Available Seats",
+    "bulkModHint": "The modification will add/subtract spots to the current capacity",
+    "totalCapacity": "Total Capacity: {{count}}",
+    "saveDays_one": "SAVE {{count}} DAY",
+    "saveDays_other": "SAVE {{count}} DAYS",
+    "saveChanges": "SAVE CHANGES"
+  },
+  "sidebar": {
+    "morningClass": "Morning Class",
+    "eveningClass": "Evening Class",
+    "bulkModeTitle": "Bulk Edit Mode",
+    "bulkModeInfo": "Days with bookings are locked for security."
+  },
+  "session": {
+    "booked": "Booked:",
+    "seatsLeft": "Seats Left:",
+    "empty": "Empty Session"
+  }
+}

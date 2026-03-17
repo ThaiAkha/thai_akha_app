@@ -18,7 +18,7 @@ const NumericKeypad: React.FC<NumericKeypadProps> = ({
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'];
 
   return (
-    <div className={cn("flex flex-col gap-4 p-6 bg-white dark:bg-[#1a1a1a] rounded-[2.5rem] shadow-2xl border border-white/10", className)}>
+    <div className={cn("flex flex-col gap-4 p-6 bg-white dark:bg-surface-elevated rounded-[2.5rem] shadow-2xl border border-white/10", className)}>
       {/* --- GRID KEYS --- */}
       <div className="grid grid-cols-3 gap-3">
         {keys.map((key) => (

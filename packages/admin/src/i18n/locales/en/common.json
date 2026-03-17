@@ -1,0 +1,84 @@
+{
+  "breadcrumb": {
+    "home": "Home"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "upload": "Upload",
+    "download": "Download",
+    "preview": "Preview",
+    "search": "Search",
+    "filter": "Filter",
+    "apply": "Apply",
+    "clear": "Clear",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close"
+  },
+  "status": {
+    "pending": "Pending",
+    "paid": "Paid",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "feedback": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "success": "Success",
+    "error": "An error occurred",
+    "noData": "No data available"
+  },
+  "language": {
+    "switch": "Switch language",
+    "current": "Current language",
+    "en": "English",
+    "th": "Thai"
+  },
+  "user": {
+    "menu": "User Menu",
+    "editProfile": "Edit profile",
+    "signOut": "Sign out",
+    "fallbackName": "User"
+  },
+  "header": {
+    "toggleMenu": "Toggle Menu",
+    "toggleSidebar": "Toggle Sidebar",
+    "visitSite": "Visit Live Site",
+    "exploreSite": "Explore the public website",
+    "goLive": "Go Live Web"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  },
+  "aria": {
+    "menuToggle": "Toggle Sidebar",
+    "userAvatar": "User avatar"
+  },
+  "yesNo": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "actions": {
+    "save": "SAVE",
+    "saving": "SAVING...",
+    "cancel": "CANCEL",
+    "edit": "EDIT",
+    "confirm": "CONFIRM",
+    "deleteRecord": "DELETE RECORD",
+    "editAvailability": "EDIT AVAILABILITY",
+    "viewMore": "View More"
+  },
+  "notifications": {
+    "title": "Notification",
+    "viewAll": "View All Notifications"
+  }
+}

@@ -52,7 +52,7 @@ const DietaryInsightPanel: React.FC<DietaryInsightPanelProps> = ({
       */}
       <div className={cn(
         "relative overflow-hidden rounded-[2.5rem]",
-        "bg-[#121212] border border-white/10 shadow-2xl", // Base scura solida
+        "bg-surface border border-white/10 shadow-2xl", // Base scura solida
         "p-8 md:p-10 flex flex-col md:flex-row items-center md:items-start gap-8"
       )}>
         

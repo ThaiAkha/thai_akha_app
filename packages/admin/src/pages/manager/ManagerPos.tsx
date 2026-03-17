@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import { DataExplorerLayout } from '../../components/data-explorer';
 import ClassPicker from '../../components/common/ClassPicker';
@@ -12,6 +13,7 @@ import PosInspector from '../../components/manager/pos/PosInspector';
 import { useManagerPos } from '../../hooks/useManagerPos';
 
 const ManagerPos: React.FC = () => {
+    const { t } = useTranslation('pos');
     const {
         filteredGuests,
         displayedProducts,
@@ -42,8 +44,8 @@ const ManagerPos: React.FC = () => {
     return (
         <>
             <PageMeta
-                title="Store Front | Thai Akha Kitchen"
-                description="Manage on-site sales, merchandise, and guest tabs during classes."
+                title={t('meta.title')}
+                description={t('meta.description')}
             />
 
             <DataExplorerLayout

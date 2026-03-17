@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import { contentService } from '@thaiakha/shared/services';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
@@ -16,6 +17,7 @@ import BasicCard from '../../components/dashboard/BasicCard';
 import CTABanner from '../../components/dashboard/CTABanner';
 
 const LogisticHome: React.FC = () => {
+    const { i18n } = useTranslation();
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('logistics-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
@@ -23,8 +25,8 @@ const LogisticHome: React.FC = () => {
     useEffect(() => {
         const loadHomeCards = async () => {
             try {
-                // Load home cards from database (filtered for logistics role)
-                const cards = await contentService.getHomeCards();
+                // Load home cards from database with current language
+                const cards = await contentService.getHomeCards(i18n.language);
                 const logisticsCards = cards.filter((card: any) => card.role === 'logistics');
                 console.log('🏠 Logistics Home Cards loaded:', logisticsCards);
                 setHomeCards(logisticsCards || []);
@@ -33,7 +35,7 @@ const LogisticHome: React.FC = () => {
             }
         };
         loadHomeCards();
-    }, []);
+    }, [i18n.language]);
 
     // Separate cards by type from database
     const featureCards = homeCards.filter(card => card.card_type === 'feature');

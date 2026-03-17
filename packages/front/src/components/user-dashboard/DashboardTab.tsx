@@ -74,7 +74,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* STEP 1: DRIVER STARTED (Route Active) */}
         <div className={cn("relative pl-8 transition-all duration-500", transportStatus === 'waiting' ? "opacity-40" : "opacity-100")}>
             <div className={cn("absolute -left-[9px] top-1 size-4 rounded-full border-2 transition-colors", 
-                transportStatus !== 'waiting' ? "bg-action border-action shadow-[0_0_10px_var(--color-action)]" : "bg-[#1a1a1a] border-white/30")} />
+                transportStatus !== 'waiting' ? "bg-action border-action shadow-[0_0_10px_var(--color-action)]" : "bg-surface-elevated border-white/30")} />
             <div className="flex items-center gap-3">
                 <Icon name="local_shipping" size="sm" className={transportStatus !== 'waiting' ? "text-action" : "text-white/40"}/>
                 <span className="font-bold text-sm text-white/80">Driver Started Route</span>
@@ -116,7 +116,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                             stop.transport_status === 'driver_en_route' ? "bg-blue-500 border-blue-500 text-blue-500 animate-pulse" :
                             stop.transport_status === 'driver_arrived' ? "bg-yellow-500 border-yellow-500 text-yellow-500 animate-bounce" :
                             (stop.transport_status === 'on_board' || stop.transport_status === 'dropped_off') ? "bg-green-500 border-green-500 text-green-500" :
-                            "bg-[#1a1a1a] border-white/20 text-white/20"
+                            "bg-surface-elevated border-white/20 text-white/20"
                         )}></div>
 
                         {/* Card Principale Pickup */}
@@ -166,7 +166,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
             // Fermate di Altri (Piccole)
             return (
                 <div key={stop.internal_id} className="relative pl-8">
-                    <div className={cn("absolute -left-[9px] top-3 size-4 rounded-full border-2 bg-[#1a1a1a]", 
+                    <div className={cn("absolute -left-[9px] top-3 size-4 rounded-full border-2 bg-surface-elevated", 
                         (stop.transport_status === 'on_board' || stop.transport_status === 'dropped_off') ? "border-green-500 bg-green-500" : "border-white/20")}/>
                     
                     <div className={cn("flex items-center justify-between p-3 rounded-xl border text-xs", statusClass)}>
@@ -183,7 +183,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* Fallback se non ci sono route stops (o walk-in) */}
         {(!showFullRoute || isWalkIn) && (
              <div className="relative pl-8">
-                <div className={cn("absolute -left-[11px] top-6 size-5 rounded-full border-4 bg-[#1a1a1a]", hasHotel ? "border-white/20" : "border-yellow-500 animate-pulse")}></div>
+                <div className={cn("absolute -left-[11px] top-6 size-5 rounded-full border-4 bg-surface-elevated", hasHotel ? "border-white/20" : "border-yellow-500 animate-pulse")}></div>
                 <div className="p-5 rounded-2xl border bg-white/5 border-white/10">
                     <div className="font-bold text-lg text-white mb-1">{isWalkIn ? "Meeting at School" : "Your Pickup"}</div>
                     <div className="text-xs text-white/40">{activeBooking.hotel_name || (isWalkIn ? "Thai Akha Kitchen" : "Select Location")}</div>
@@ -195,7 +195,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
 
         {/* STEP 3: ARRIVAL */}
         <div className={cn("relative pl-8 transition-all duration-500", (transportStatus === 'dropped_off' || isPast) ? "opacity-100" : "opacity-30")}>
-            <div className={cn("absolute -left-[9px] top-1 size-4 rounded-full border-2", (transportStatus === 'dropped_off' || isPast) ? "bg-green-500 border-green-500" : "bg-[#1a1a1a] border-white/30")} />
+            <div className={cn("absolute -left-[9px] top-1 size-4 rounded-full border-2", (transportStatus === 'dropped_off' || isPast) ? "bg-green-500 border-green-500" : "bg-surface-elevated border-white/30")} />
             <div className="flex items-center gap-4">
                 <span className="font-mono text-xs font-bold text-white/60 bg-white/5 px-2 py-1 rounded">Finish</span>
                 <span className="text-sm font-bold text-white/60">Thai Akha Kitchen</span>
@@ -211,7 +211,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
       {/* COLONNA SINISTRA: LISTA */}
       <div className="lg:col-span-4 space-y-6">
         {/* Passport Card (Identica a prima) */}
-        <div onClick={onOpenSettings} className="group relative flex items-center gap-5 bg-[#121212] border border-white/10 p-5 rounded-[2rem] shadow-xl overflow-hidden cursor-pointer hover:border-primary/50 transition-all duration-300">
+        <div onClick={onOpenSettings} className="group relative flex items-center gap-5 bg-surface border border-white/10 p-5 rounded-[2rem] shadow-xl overflow-hidden cursor-pointer hover:border-primary/50 transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative shrink-0">
             <Avatar src={userProfile?.avatar_url} initials={userProfile?.full_name} size="lg" className="border-2 border-white/10 group-hover:border-primary shadow-lg transition-colors"/>
@@ -254,7 +254,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
 
       {/* COLONNA DESTRA: MISSION CONTROL */}
       <div className="lg:col-span-8">
-        <Card variant="glass" padding="none" className="bg-[#1a1a1a] border-white/10 overflow-hidden flex flex-col h-fit min-h-[500px] shadow-2xl relative">
+        <Card variant="glass" padding="none" className="bg-surface-elevated border-white/10 overflow-hidden flex flex-col h-fit min-h-[500px] shadow-2xl relative">
           
           {/* Header */}
           <div className="p-6 md:p-8 bg-gradient-to-b from-white/5 to-transparent border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

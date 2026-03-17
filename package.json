@@ -4,6 +4,7 @@
   "private": true,
   "description": "ThaiAkha monorepo — front (www.thaiakha.com) + admin (admin.thaiakha.com)",
   "scripts": {
+    "bootstrap": "pnpm install && npx pnpm build --filter shared",
     "dev:front": "pnpm --filter front dev",
     "dev:admin": "pnpm --filter admin dev",
     "build:front": "pnpm --filter front build",

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import {
     DataExplorerLayout,
@@ -18,11 +19,12 @@ import HotelsInspectorActions from '../../components/admin/hotels/HotelsInspecto
 import { useAdminHotels } from '../../hooks/useAdminHotels';
 
 const AdminHotels: React.FC = () => {
+    const { t } = useTranslation('hotels');
     const { data, ui, inspector } = useAdminHotels();
 
     return (
         <>
-            <PageMeta title="Admin Hotels" description="Manage hotel locations and pickup zones" />
+            <PageMeta title={t('meta.title')} description={t('meta.description')} />
 
             <DataExplorerLayout
                 viewMode={ui.viewMode}

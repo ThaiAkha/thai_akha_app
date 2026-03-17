@@ -8,6 +8,7 @@ import {
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
 import { supabase } from "@thaiakha/shared/lib/supabase";
+import { useTranslation } from "react-i18next";
 
 interface Booking {
     internal_id: string; // Changed from id
@@ -20,6 +21,7 @@ interface Booking {
 }
 
 export default function RecentBookings() {
+    const { t } = useTranslation('dashboard');
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -47,7 +49,7 @@ export default function RecentBookings() {
     };
 
     const getSessionLabel = (id: string) => {
-        return id === 'morning_class' ? 'Morning Tour' : 'Evening Feast';
+        return id === 'morning_class' ? t('recentBookings.sessionMorning') : t('recentBookings.sessionEvening');
     };
 
     const getStatusColor = (status: string) => {
@@ -63,14 +65,14 @@ export default function RecentBookings() {
         return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
-    if (loading) return <div className="p-6 text-center text-gray-500">Loading bookings...</div>;
+    if (loading) return <div className="p-6 text-center text-gray-500">{t('recentBookings.loading')}</div>;
 
     return (
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
             <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Recent Bookings
+                        {t('recentBookings.title')}
                     </h3>
                 </div>
             </div>
@@ -78,11 +80,11 @@ export default function RecentBookings() {
                 <Table>
                     <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
                         <TableRow>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">User</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Date</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Class</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Pax</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Status</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('recentBookings.colUser')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('recentBookings.colDate')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('recentBookings.colClass')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('recentBookings.colPax')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('recentBookings.colStatus')}</TableCell>
                         </TableRow>
                     </TableHeader>
                     <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -95,7 +97,7 @@ export default function RecentBookings() {
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                {booking.guest_name || 'Guest'}
+                                                {booking.guest_name || t('recentBookings.guestDefault')}
                                             </p>
                                         </div>
                                     </div>

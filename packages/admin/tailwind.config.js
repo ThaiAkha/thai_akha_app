@@ -1,13 +1,14 @@
 /**
  * Admin App Tailwind Configuration
  *
- * Extends base theme from shared package with admin-specific:
+ * Theme tokens (colors, fonts, animations, shadows, breakpoints)
+ * are defined in packages/shared/src/styles/theme.css via @theme.
+ *
+ * This file only handles:
  * - content paths
- * - safelist (cherry red active states)
+ * - safelist (dynamic class names not detectable by JIT)
  * - plugins
  */
-
-import { getBaseThemeExtension } from '@thaiakha/shared';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -34,10 +35,5 @@ export default {
         // ========== SIDEBAR ICON PADDING ==========
         'pl-5',
     ],
-    theme: {
-        extend: {
-            ...getBaseThemeExtension(),
-        },
-    },
     plugins: [],
 }

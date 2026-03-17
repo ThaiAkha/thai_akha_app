@@ -36,7 +36,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
       padding="none" 
       onClick={onCardClick}
       className={cn(
-        "flex flex-col bg-[#1a1a1a] border-white/10 overflow-hidden relative group cursor-pointer",
+        "flex flex-col bg-surface-elevated border-white/10 overflow-hidden relative group cursor-pointer",
         className
       )}
     >

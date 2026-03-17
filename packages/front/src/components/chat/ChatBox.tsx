@@ -121,7 +121,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
       {isOpen && (
         <div className={cn(
             "pointer-events-auto w-[360px] md:w-[420px] h-[min(650px,80vh)] flex flex-col overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-3xl transition-all duration-700 ease-cinematic animate-in fade-in slide-in-from-bottom-12",
-            isDarkMode ? "bg-[#0a0b0d]/95" : "bg-white/95"
+            isDarkMode ? "bg-surface-overlay/95" : "bg-white/95"
         )}>
           {/* Header */}
           <div className={cn("h-20 flex items-center justify-between px-6 shrink-0 relative overflow-hidden transition-colors duration-500", isVoiceActive ? "bg-action" : "bg-primary")}>

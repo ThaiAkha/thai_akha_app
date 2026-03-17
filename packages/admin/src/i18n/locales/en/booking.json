@@ -1,0 +1,126 @@
+{
+  "tabs": {
+    "newGuest": "New Guest",
+    "existingUser": "Existing User",
+    "agency": "Agency"
+  },
+  "mode": {
+    "newDesc": "Create a new user profile and booking.",
+    "existingDesc": "Search database for returning guests.",
+    "agencyDesc": "Book on behalf of a partner/agency."
+  },
+  "inspector": {
+    "selectedClass": "Selected Class",
+    "morningClass": "Morning Class",
+    "eveningClass": "Evening Class",
+    "numGuests": "Number of Guests",
+    "guestDetails": "Guest Details",
+    "fieldName": "Name",
+    "fieldEmail": "Email",
+    "fieldPhone": "Phone",
+    "fieldNationality": "Nationality",
+    "fieldAge": "Age",
+    "fieldGender": "Gender",
+    "fieldWhatsapp": "WhatsApp",
+    "logistics": "Logistics",
+    "fieldHotel": "Hotel",
+    "fieldMeetingPoint": "Meeting Point",
+    "fieldLuggage": "Luggage",
+    "fieldNotes": "Notes",
+    "totalAmount": "Total Amount",
+    "payment": "Payment",
+    "unpaid": "Unpaid",
+    "paid": "Paid",
+    "confirmBtn": "Confirm Booking"
+  },
+  "logistics": {
+    "sectionTitle": "Logistics & Notes",
+    "needPickup": "Need Pickup?",
+    "fieldHotel": "Hotel",
+    "hotelPlaceholder": "Search hotel (min. 2 chars)...",
+    "noZone": "No Zone",
+    "meetingPoint": "Meeting Point",
+    "selectMeetingPoint": "Select a meeting point...",
+    "luggage": "Luggage",
+    "extraNotes": "Extra Notes",
+    "notesPlaceholder": "Any special requests, dietary restrictions or additional information..."
+  },
+  "newUser": {
+    "fieldFullName": "Full Name",
+    "placeholderName": "e.g. John Doe",
+    "fieldAge": "Age",
+    "fieldGender": "Gender",
+    "genderSelect": "Select",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "genderOther": "Other",
+    "fieldEmail": "Email Address",
+    "fieldPassword": "Password",
+    "passwordHint": "Min. 8 characters",
+    "fieldNationality": "Nationality",
+    "searchCountry": "Search country...",
+    "fieldPhone": "Phone Number",
+    "whatsapp": "WhatsApp"
+  },
+  "search": {
+    "labelGuest": "Search Guest",
+    "labelAgency": "Search Partner / Agency",
+    "placeholderGuest": "Type name...",
+    "placeholderAgency": "Search agency name...",
+    "noUsersFound": "No users found.",
+    "selectBtn": "Select",
+    "removeBtn": "Remove"
+  },
+  "session": {
+    "morning": "Morning",
+    "evening": "Evening"
+  },
+  "picker": {
+    "cardTitle": "Date & Session",
+    "selectDate": "Select Date",
+    "morning": "Morning",
+    "evening": "Evening",
+    "available": "Available",
+    "fullyBooked": "Fully Booked",
+    "closed": "Closed",
+    "selected": "Selected",
+    "selectDatePrompt": "Select a date for booking",
+    "paxCount": "Pax Count",
+    "paxAvailable": "{{pax}} of {{max}} available"
+  },
+  "zone": {
+    "morningPickup": "Morning Pickup",
+    "eveningPickup": "Evening Pickup"
+  },
+  "meta": {
+    "manualTitle": "Manual Booking",
+    "manualDesc": "Create a new booking manually.",
+    "agencyTitle": "New Booking | Thai Akha Kitchen",
+    "agencyDesc": "Book a cooking class on behalf of your client."
+  },
+  "agencyBooking": {
+    "stepGuest": "1. Guest Information",
+    "fieldFullName": "Full Name",
+    "placeholderName": "Enter guest name",
+    "fieldEmail": "Email (for class details)",
+    "placeholderEmail": "guest@example.com",
+    "stepClass": "2. Class Date & Time",
+    "stepPickup": "3. Pickup Logistics",
+    "fieldHotel": "Hotel Name",
+    "placeholderHotel": "Enter hotel or meeting point",
+    "fieldPickupTime": "Pickup Time",
+    "fieldZone": "Zone",
+    "fieldNotes": "Additional Notes for Kitchen",
+    "placeholderNotes": "Any dietary restrictions or special requests...",
+    "summaryTitle": "Booking Summary",
+    "summaryParticipants": "Participants",
+    "summaryNetRate": "Partner Net Rate",
+    "summaryDiscount": "% Disc.",
+    "summaryNetPayable": "Net Payable",
+    "invoiceNote": "This booking will be confirmed immediately and added to your monthly invoice.",
+    "btnSyncing": "Syncing...",
+    "btnConfirm": "Confirm Booking",
+    "errorNameRequired": "Guest Name is required",
+    "successConfirmed": "Booking Confirmed! Your client has been registered."
+  }
+}

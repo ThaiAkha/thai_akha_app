@@ -67,7 +67,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className 
   };
 
   return (
-    <div className={cn("p-4 bg-surface dark:bg-[#1a1a1a] rounded-[2rem] border border-border shadow-xl", className)}>
+    <div className={cn("p-4 bg-surface dark:bg-surface-elevated rounded-[2rem] border border-border shadow-xl", className)}>
       <div className="flex items-center justify-between mb-4 px-2">
         <Typography variant="h6" className="text-[10px] font-black uppercase tracking-widest text-desc/60">
           {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}

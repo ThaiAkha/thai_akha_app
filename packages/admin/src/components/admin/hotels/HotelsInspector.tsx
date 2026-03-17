@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2, CheckCircle2, XCircle } from 'lucide-react';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
@@ -35,14 +36,16 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
     onManualGPSChange,
     onSelectedMeetingPointChange,
 }) => {
+    const { t } = useTranslation('hotels');
+
     // ── MEETING POINT INSPECTOR ──────────────────────────────────────────
     if (selectedMeetingPoint) {
         return (
             <div className="px-6 py-6 bg-gray-50/10 space-y-5">
                 <div className="space-y-1.5">
-                    <SectionHeader title="Meeting Point Name" />
+                    <SectionHeader title={t('inspector.fieldMPName')} />
                     <InputField
-                        placeholder="e.g. McDonald's Tha Phae"
+                        placeholder={t('inspector.placeholderMPName')}
                         value={selectedMeetingPoint.name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSelectedMeetingPointChange({ ...selectedMeetingPoint, name: e.target.value })}
                         disabled={!isEditing}
@@ -51,7 +54,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                        <SectionHeader title="Latitude" />
+                        <SectionHeader title={t('inspector.fieldLatitude')} />
                         <InputField
                             type="number"
                             step={0.0000001}
@@ -61,7 +64,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <SectionHeader title="Longitude" />
+                        <SectionHeader title={t('inspector.fieldLongitude')} />
                         <InputField
                             type="number"
                             step={0.0000001}
@@ -73,9 +76,9 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Description" />
+                    <SectionHeader title={t('inspector.fieldDescription')} />
                     <InputField
-                        placeholder="Optional description"
+                        placeholder={t('inspector.placeholderDesc')}
                         value={selectedMeetingPoint.description || ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSelectedMeetingPointChange({ ...selectedMeetingPoint, description: e.target.value })}
                         disabled={!isEditing}
@@ -83,7 +86,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Google Maps Link" />
+                    <SectionHeader title={t('inspector.fieldGoogleMaps')} />
                     <InputField
                         placeholder="https://maps.google.com/..."
                         value={selectedMeetingPoint.google_maps_link || ''}
@@ -94,7 +97,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                        <SectionHeader title="Morning Start" />
+                        <SectionHeader title={t('inspector.fieldMorningStart')} />
                         <InputField
                             type="time"
                             value={selectedMeetingPoint.morning_pickup_time || ''}
@@ -103,7 +106,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <SectionHeader title="Morning End" />
+                        <SectionHeader title={t('inspector.fieldMorningEnd')} />
                         <InputField
                             type="time"
                             value={selectedMeetingPoint.morning_pickup_end || ''}
@@ -115,7 +118,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                        <SectionHeader title="Evening Start" />
+                        <SectionHeader title={t('inspector.fieldEveningStart')} />
                         <InputField
                             type="time"
                             value={selectedMeetingPoint.evening_pickup_time || ''}
@@ -124,7 +127,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <SectionHeader title="Evening End" />
+                        <SectionHeader title={t('inspector.fieldEveningEnd')} />
                         <InputField
                             type="time"
                             value={selectedMeetingPoint.evening_pickup_end || ''}
@@ -135,7 +138,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Image URL" />
+                    <SectionHeader title={t('inspector.fieldImageUrl')} />
                     <InputField
                         placeholder="https://..."
                         value={selectedMeetingPoint.image_url || ''}
@@ -145,7 +148,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Icon URL" />
+                    <SectionHeader title={t('inspector.fieldIconUrl')} />
                     <InputField
                         placeholder="https://..."
                         value={selectedMeetingPoint.icon_url || ''}
@@ -155,7 +158,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05]">
-                    <SectionHeader title="Active Status" className="mb-0" />
+                    <SectionHeader title={t('inspector.fieldActiveStatus')} className="mb-0" />
                     <Switch
                         label=""
                         checked={selectedMeetingPoint.is_active || false}
@@ -173,10 +176,10 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-20">
                 <Building2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
                 <p className="text-sm font-black uppercase tracking-widest text-gray-400">
-                    No hotel selected
+                    {t('inspector.noHotelSelected')}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                    Click a hotel from the list to view details
+                    {t('inspector.noHotelHint')}
                 </p>
             </div>
         );
@@ -187,21 +190,21 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
         return (
             <div className="px-6 py-6 bg-gray-50/10 space-y-5">
                 <div className="space-y-1.5">
-                    <SectionHeader title="Hotel Name *" />
+                    <SectionHeader title={t('inspector.fieldHotelName')} />
                     <InputField
-                        placeholder="e.g. Shangri-La Chiang Mai"
+                        placeholder={t('inspector.placeholderHotelName')}
                         value={form.name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFormChange({ name: e.target.value })}
                     />
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Pickup Zone" />
+                    <SectionHeader title={t('inspector.fieldZone')} />
                     <SelectField
                         value={form.zone_id || ''}
                         onChange={(e) => onFormChange({ zone_id: e.target.value })}
                     >
-                        <option value="">— No zone —</option>
+                        <option value="">{t('inspector.noZone')}</option>
                         {zones.map(z => (
                             <option key={z.id} value={z.id}>{z.name}</option>
                         ))}
@@ -209,9 +212,9 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Google Map Link" />
+                    <SectionHeader title={t('inspector.fieldMapLink')} />
                     <InputField
-                        placeholder="Paste Google Maps URL (auto-extracts GPS)"
+                        placeholder={t('inspector.placeholderMapLink')}
                         value={form.map_link || ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onMapLinkChange(e.target.value)}
                         hint={form.latitude && form.longitude ? `📍 GPS: ${form.latitude.toFixed(6)}, ${form.longitude.toFixed(6)}` : undefined}
@@ -221,7 +224,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                        <SectionHeader title="Latitude" />
+                        <SectionHeader title={t('inspector.fieldLatitude')} />
                         <InputField
                             type="number"
                             step={0.0000001}
@@ -231,7 +234,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <SectionHeader title="Longitude" />
+                        <SectionHeader title={t('inspector.fieldLongitude')} />
                         <InputField
                             type="number"
                             step={0.0000001}
@@ -243,25 +246,25 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Address" />
+                    <SectionHeader title={t('inspector.fieldAddress')} />
                     <InputField
-                        placeholder="Full street address"
+                        placeholder={t('inspector.placeholderAddress')}
                         value={form.address || ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFormChange({ address: e.target.value })}
                     />
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Phone" />
+                    <SectionHeader title={t('inspector.fieldPhone')} />
                     <InputField
-                        placeholder="+66 53 123456"
+                        placeholder={t('inspector.placeholderPhone')}
                         value={form.phone_number || ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFormChange({ phone_number: e.target.value })}
                     />
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Website" />
+                    <SectionHeader title={t('inspector.fieldWebsite')} />
                     <InputField
                         placeholder="https://..."
                         value={form.website || ''}
@@ -271,8 +274,8 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
                     <div>
-                        <p className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-200">Active Status</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">Show hotel in pickup options</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-200">{t('inspector.fieldActiveStatus')}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{t('inspector.showInPickup')}</p>
                     </div>
                     <Switch
                         key={selectedHotel?.id || 'new'}
@@ -296,12 +299,12 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
             <div className="space-y-5">
                 <div className="space-y-1.5">
-                    <SectionHeader title="Hotel Name" />
+                    <SectionHeader title={t('inspector.viewFieldHotelName')} />
                     <p className="text-base font-semibold text-gray-900 dark:text-white">{selectedHotel?.name}</p>
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Pickup Zone" />
+                    <SectionHeader title={t('inspector.viewFieldZone')} />
                     <p>
                         <span
                             className="inline-block px-2.5 py-1 rounded text-sm font-medium"
@@ -317,20 +320,20 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 {selectedHotel?.address && (
                     <div className="space-y-1.5">
-                        <SectionHeader title="Address" />
+                        <SectionHeader title={t('inspector.viewFieldAddress')} />
                         <p className="text-sm text-gray-700 dark:text-gray-300">{selectedHotel.address}</p>
                     </div>
                 )}
 
                 {selectedHotel?.phone_number && (
                     <div className="space-y-1.5">
-                        <SectionHeader title="Phone" />
+                        <SectionHeader title={t('inspector.viewFieldPhone')} />
                         <p className="text-sm text-gray-700 dark:text-gray-300">{selectedHotel.phone_number}</p>
                     </div>
                 )}
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Coordinates" />
+                    <SectionHeader title={t('inspector.viewFieldCoordinates')} />
                     <p className="font-mono text-sm text-gray-700 dark:text-gray-300">
                         {selectedHotel?.latitude && selectedHotel?.longitude
                             ? `${selectedHotel.latitude}, ${selectedHotel.longitude}`
@@ -340,7 +343,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 {selectedHotel?.map_link && (
                     <div className="space-y-1.5">
-                        <SectionHeader title="Map Link" />
+                        <SectionHeader title={t('inspector.viewFieldMapLink')} />
                         <a
                             href={selectedHotel.map_link}
                             target="_blank"
@@ -354,7 +357,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 {selectedHotel?.website && (
                     <div className="space-y-1.5">
-                        <SectionHeader title="Website" />
+                        <SectionHeader title={t('inspector.viewFieldWebsite')} />
                         <a
                             href={selectedHotel.website}
                             target="_blank"
@@ -367,11 +370,11 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 )}
 
                 <div className="space-y-1.5">
-                    <SectionHeader title="Status" />
+                    <SectionHeader title={t('inspector.viewFieldStatus')} />
                     <p>
                         {selectedHotel?.is_active
-                            ? <Badge color="success" size="sm" startIcon={<CheckCircle2 className="w-3 h-3" />}>ACTIVE</Badge>
-                            : <Badge color="error" size="sm" startIcon={<XCircle className="w-3 h-3" />}>INACTIVE</Badge>
+                            ? <Badge color="success" size="sm" startIcon={<CheckCircle2 className="w-3 h-3" />}>{t('content.active')}</Badge>
+                            : <Badge color="error" size="sm" startIcon={<XCircle className="w-3 h-3" />}>{t('content.inactive')}</Badge>
                         }
                     </p>
                 </div>

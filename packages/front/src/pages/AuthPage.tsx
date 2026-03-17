@@ -99,7 +99,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
         <div className="md:hidden absolute inset-0 bg-black/60 backdrop-blur-sm -z-10" />
 
         <div className="w-full max-w-[440px] animate-in slide-in-from-bottom-8 duration-1000 ease-cinematic">
-          <Card variant="glass" padding="none" className="bg-[#0a0b0d]/80 border-white/10 shadow-2xl backdrop-blur-xl overflow-hidden rounded-[2.5rem]">
+          <Card variant="glass" padding="none" className="bg-surface-overlay/80 border-white/10 shadow-2xl backdrop-blur-xl overflow-hidden rounded-[2.5rem]">
             <AuthForm onSuccess={onAuthSuccess} onNavigate={onNavigate} />
           </Card>
           

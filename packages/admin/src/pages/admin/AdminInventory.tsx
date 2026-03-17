@@ -5,6 +5,7 @@ import {
     FileJson,
     Copy,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import { PRIMARY_BTN } from '../../components/data-explorer/DataExplorerToolbar';
 import { Dropdown } from '../../components/ui/dropdown/Dropdown';
@@ -25,13 +26,14 @@ import InventoryInspectorActions from '../../components/admin/inventory/Inventor
 import { useAdminInventory } from '../../hooks/useAdminInventory';
 
 const AdminInventory: React.FC = () => {
+    const { t } = useTranslation('inventory');
     const { data, ui, inspector } = useAdminInventory();
 
     return (
         <>
             <PageMeta
-                title="Inventory | Admin"
-                description="Manage product catalog, stock levels, and pricing."
+                title={t('meta.title')}
+                description={t('meta.description')}
             />
 
             <DataExplorerLayout
@@ -50,10 +52,10 @@ const AdminInventory: React.FC = () => {
                         primaryAction={
                             <button type="button" onClick={inspector.handleCreateNew} className={PRIMARY_BTN}>
                                 <Plus className="w-4 h-4" />
-                                NUOVO
+                                {t('actions.new')}
                             </button>
                         }
-                        searchPlaceholder="Search products or SKU..."
+                        searchPlaceholder={t('content.searchPlaceholder')}
                         searchValue={ui.searchTerm}
                         onSearchChange={ui.setSearchTerm}
                         viewMode={ui.viewMode}
@@ -64,28 +66,28 @@ const AdminInventory: React.FC = () => {
                         exportDropdown={
                             <Dropdown isOpen={ui.isExportOpen} onClose={() => ui.setIsExportOpen(false)} className="w-56 mt-2 left-0 shadow-2xl border-brand-100 dark:border-brand-500/20">
                                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Export formats</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('actions.exportFormats')}</p>
                                 </div>
                                 <DropdownItem onClick={ui.exportToCSV} className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors">
                                     <FileSpreadsheet className="w-4 h-4 text-green-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Google Sheets / CSV</p>
-                                        <p className="text-[10px] text-gray-400">Standard spreadsheet format</p>
+                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('actions.exportCsv')}</p>
+                                        <p className="text-[10px] text-gray-400">{t('actions.exportCsvDesc')}</p>
                                     </div>
                                 </DropdownItem>
                                 <DropdownItem onClick={ui.exportToJSON} className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors">
                                     <FileJson className="w-4 h-4 text-blue-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-200">JSON Format</p>
-                                        <p className="text-[10px] text-gray-400">Raw data structure</p>
+                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('actions.exportJson')}</p>
+                                        <p className="text-[10px] text-gray-400">{t('actions.exportJsonDesc')}</p>
                                     </div>
                                 </DropdownItem>
                                 <div className="h-px bg-gray-100 dark:bg-gray-800 my-1" />
                                 <DropdownItem onClick={ui.copyToClipboard} className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors">
                                     <Copy className="w-4 h-4 text-brand-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Copy to Clipboard</p>
-                                        <p className="text-[10px] text-gray-400">Quick share as text</p>
+                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('actions.copyClipboard')}</p>
+                                        <p className="text-[10px] text-gray-400">{t('actions.copyClipboardDesc')}</p>
                                     </div>
                                 </DropdownItem>
                             </Dropdown>

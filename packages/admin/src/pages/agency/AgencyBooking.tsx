@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import Button from '../../components/ui/button/Button';
 import InputField from '../../components/form/input/InputField';
@@ -20,6 +21,7 @@ const ZONES = ['green', 'pink', 'yellow', 'outside', 'walk-in'];
 const AgencyBooking: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { t } = useTranslation('booking');
     const [loading, setLoading] = useState(false);
 
     // --- 1. SESSION DATA ---
@@ -60,7 +62,7 @@ const AgencyBooking: React.FC = () => {
     }, [session]);
 
     const handleCreate = async () => {
-        if (!guest.fullName) return alert("Guest Name is required");
+        if (!guest.fullName) return alert(t('agencyBooking.errorNameRequired'));
         if (!user) return;
 
         setLoading(true);
@@ -104,7 +106,7 @@ const AgencyBooking: React.FC = () => {
 
             if (bError) throw bError;
 
-            alert("Booking Confirmed! Your client has been registered.");
+            alert(t('agencyBooking.successConfirmed'));
             navigate('/agency-dashboard');
 
         } catch (e: any) {
@@ -118,8 +120,8 @@ const AgencyBooking: React.FC = () => {
     return (
         <PageContainer variant="full">
             <PageMeta
-                title="Admin Dashboard | Thai Akha Kitchen"
-                description="To be set up later."
+                title={t('meta.agencyTitle')}
+                description={t('meta.agencyDesc')}
             />
             <div className="pb-20 space-y-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -127,19 +129,19 @@ const AgencyBooking: React.FC = () => {
                     <div className="lg:col-span-7 space-y-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-8">
                             <div>
-                                <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-4">1. Guest Information</h6>
+                                <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-4">{t('agencyBooking.stepGuest')}</h6>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <InputField
-                                        label="Full Name"
+                                        label={t('agencyBooking.fieldFullName')}
                                         value={guest.fullName}
                                         onChange={e => setGuest({ ...guest, fullName: e.target.value })}
-                                        placeholder="Enter guest name"
+                                        placeholder={t('agencyBooking.placeholderName')}
                                     />
                                     <InputField
-                                        label="Email (for class details)"
+                                        label={t('agencyBooking.fieldEmail')}
                                         value={guest.email}
                                         onChange={e => setGuest({ ...guest, email: e.target.value })}
-                                        placeholder="guest@example.com"
+                                        placeholder={t('agencyBooking.placeholderEmail')}
                                     />
                                 </div>
                             </div>
@@ -147,7 +149,7 @@ const AgencyBooking: React.FC = () => {
                             <hr className="border-gray-100 dark:border-gray-800" />
 
                             <div>
-                                <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-4">2. Class Date & Time</h6>
+                                <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-4">{t('agencyBooking.stepClass')}</h6>
                                 <AdminClassPicker
                                     date={date}
                                     session={session}
@@ -158,24 +160,24 @@ const AgencyBooking: React.FC = () => {
                         </div>
 
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-6">
-                            <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-2">3. Pickup Logistics</h6>
+                            <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-2">{t('agencyBooking.stepPickup')}</h6>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <InputField
-                                        label="Hotel Name"
+                                        label={t('agencyBooking.fieldHotel')}
                                         value={hotel}
                                         onChange={e => setHotel(e.target.value)}
-                                        placeholder="Enter hotel or meeting point"
+                                        placeholder={t('agencyBooking.placeholderHotel')}
                                     />
                                 </div>
                                 <InputField
-                                    label="Pickup Time"
+                                    label={t('agencyBooking.fieldPickupTime')}
                                     type="time"
                                     value={pickupTime}
                                     onChange={e => setPickupTime(e.target.value)}
                                 />
                                 <div>
-                                    <label className="text-[10px] uppercase font-black text-gray-500 mb-1.5 block ml-1">Zone</label>
+                                    <label className="text-[10px] uppercase font-black text-gray-500 mb-1.5 block ml-1">{t('agencyBooking.fieldZone')}</label>
                                     <select
                                         value={zone}
                                         onChange={e => setZone(e.target.value)}
@@ -186,11 +188,11 @@ const AgencyBooking: React.FC = () => {
                                 </div>
                             </div>
                             <TextArea
-                                label="Additional Notes for Kitchen"
+                                label={t('agencyBooking.fieldNotes')}
                                 value={notes}
                                 onChange={val => setNotes(val)}
                                 rows={3}
-                                placeholder="Any dietary restrictions or special requests..."
+                                placeholder={t('agencyBooking.placeholderNotes')}
                             />
                         </div>
                     </div>
@@ -198,11 +200,11 @@ const AgencyBooking: React.FC = () => {
                     {/* RIGHT COL: SUMMARY & ACTION */}
                     <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl space-y-8">
-                            <h6 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Booking Summary</h6>
+                            <h6 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">{t('agencyBooking.summaryTitle')}</h6>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700">
-                                    <span className="text-sm font-black uppercase text-gray-400">Participants</span>
+                                    <span className="text-sm font-black uppercase text-gray-400">{t('agencyBooking.summaryParticipants')}</span>
                                     <div className="flex items-center gap-6">
                                         <button onClick={() => setPax(Math.max(1, pax - 1))} className="size-10 rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold">-</button>
                                         <span className="text-3xl font-black text-gray-900 dark:text-white w-8 text-center">{pax}</span>
@@ -213,13 +215,13 @@ const AgencyBooking: React.FC = () => {
 
                             <div className="bg-brand-50 dark:bg-brand-500/5 p-6 rounded-3xl border border-brand-100 dark:border-brand-500/20 space-y-2">
                                 <div className="flex justify-between items-center text-xs font-bold text-brand-600">
-                                    <span>Partner Net Rate</span>
-                                    <span>{user?.agency_commission_rate}% Disc.</span>
+                                    <span>{t('agencyBooking.summaryNetRate')}</span>
+                                    <span>{user?.agency_commission_rate}% {t('agencyBooking.summaryDiscount')}</span>
                                 </div>
                                 <div className="flex justify-between items-end">
                                     <span className="text-xs text-gray-400 line-through mb-1">{(PRICES[session] * pax).toLocaleString()} THB</span>
                                     <div className="text-right">
-                                        <span className="block text-[10px] uppercase font-black text-gray-400 mb-1 tracking-widest">Net Payable</span>
+                                        <span className="block text-[10px] uppercase font-black text-gray-400 mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
                                         <h3 className="text-4xl font-black text-brand-600 dark:text-brand-400 italic">
                                             {amount.toLocaleString()} <span className="text-sm font-normal text-gray-400 not-italic uppercase">THB</span>
                                         </h3>
@@ -229,7 +231,7 @@ const AgencyBooking: React.FC = () => {
 
                             <div className="flex gap-3 text-[10px] text-gray-400 font-bold uppercase tracking-widest px-2">
                                 <Info className="size-4 text-brand-500 shrink-0" />
-                                <span>This booking will be confirmed immediately and added to your monthly invoice.</span>
+                                <span>{t('agencyBooking.invoiceNote')}</span>
                             </div>
 
                             <Button
@@ -239,7 +241,7 @@ const AgencyBooking: React.FC = () => {
                                 className="h-16 w-full rounded-2xl text-lg font-black uppercase italic shadow-lg animate-in zoom-in-95 duration-300"
                                 startIcon={!loading && <Send className="w-5 h-5" />}
                             >
-                                {loading ? "Syncing..." : "Confirm Booking"}
+                                {loading ? t('agencyBooking.btnSyncing') : t('agencyBooking.btnConfirm')}
                             </Button>
                         </div>
                     </div>

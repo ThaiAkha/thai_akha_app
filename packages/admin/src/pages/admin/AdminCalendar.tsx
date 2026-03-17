@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import PageGrid from '../../components/layout/PageGrid';
 import PageMeta from '../../components/common/PageMeta';
@@ -10,6 +11,7 @@ import CalendarContent from '../../components/admin/calendar/CalendarContent';
 import CalendarInspector from '../../components/admin/calendar/CalendarInspector';
 
 const AdminCalendar: React.FC = () => {
+    const { t } = useTranslation('calendar');
     // ✅ AppHeader handles setPageHeader automatically
     const {
         viewDate,
@@ -34,7 +36,7 @@ const AdminCalendar: React.FC = () => {
 
     return (
         <PageContainer variant="full" className="h-[calc(100vh-64px)] overflow-hidden bg-gray-50 dark:bg-gray-950/50">
-            <PageMeta title="Admin Dashboard | Thai Akha Kitchen" description="Gestione calendari." />
+            <PageMeta title={t('meta.title')} description={t('meta.description')} />
             <PageGrid columns={12} className="h-full gap-6">
 
                 {/* LEFT COLUMN (2/12) */}

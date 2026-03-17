@@ -8,6 +8,7 @@ import {
 } from "../ui/table";
 import Badge from "../ui/badge/Badge"; // Default import assuming Badge.tsx has export default
 import { supabase } from "@thaiakha/shared/lib/supabase";
+import { useTranslation } from "react-i18next";
 
 interface Booking {
     internal_id: string;
@@ -21,6 +22,7 @@ interface Booking {
 }
 
 export default function AgencyRecentBookings() {
+    const { t } = useTranslation('dashboard');
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -54,14 +56,14 @@ export default function AgencyRecentBookings() {
         return status === 'paid' ? 'success' : 'warning';
     };
 
-    if (loading) return <div className="p-6 text-center text-gray-500">Loading agency bookings...</div>;
+    if (loading) return <div className="p-6 text-center text-gray-500">{t('agencyBookings.loading')}</div>;
 
     return (
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
             <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Agency Bookings
+                        {t('agencyBookings.title')}
                     </h3>
                 </div>
             </div>
@@ -69,10 +71,10 @@ export default function AgencyRecentBookings() {
                 <Table>
                     <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
                         <TableRow>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Agency Ref / Guest</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Date</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Pax</TableCell>
-                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Status</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('agencyBookings.colRef')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('agencyBookings.colDate')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('agencyBookings.colPax')}</TableCell>
+                            <TableCell isHeader className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{t('agencyBookings.colStatus')}</TableCell>
                         </TableRow>
                     </TableHeader>
                     <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -85,7 +87,7 @@ export default function AgencyRecentBookings() {
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90 truncate max-w-[120px]">
-                                                {booking.guest_name || 'Guest'}
+                                                {booking.guest_name || t('agencyBookings.guest')}
                                             </p>
                                         </div>
                                     </div>

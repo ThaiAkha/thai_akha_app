@@ -44,7 +44,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
       };
     } else {
       return {
-        bg: "bg-[#1a1a1a]",
+        bg: "bg-surface-elevated",
         border: "border-white/10",
         blob: "bg-primary",
         iconColor: "text-primary",

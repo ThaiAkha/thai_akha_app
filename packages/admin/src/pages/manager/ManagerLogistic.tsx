@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import {
     DataExplorerLayout,
@@ -18,6 +19,8 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate: _onNavigate }) => {
+    const { t } = useTranslation('logistics');
+    const { t: tc } = useTranslation('common');
     const {
         items,
         drivers,
@@ -129,8 +132,8 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
     return (
         <>
             <PageMeta
-                title="Manager Dashboard | Thai Akha Kitchen"
-                description="Coordinate drivers, pickups, and route assignments."
+                title={t('meta.title')}
+                description={t('meta.description')}
             />
 
             <DataExplorerLayout
@@ -200,7 +203,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                                         : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                 )}
                             >
-                                Pickup
+                                {t('inspector.pickup')}
                             </button>
                             <button
                                 onClick={() => handleModeChange('dropoff')}
@@ -211,7 +214,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                                         : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                 )}
                             >
-                                Drop-off
+                                {t('inspector.dropoff')}
                             </button>
                         </div>
                     </div>
@@ -263,7 +266,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 dark:border-gray-800 bg-yellow-50 dark:bg-yellow-900/20 flex items-center gap-3">
                             <div className="flex-1">
                                 <p className="text-xs font-bold text-yellow-900 dark:text-yellow-400">
-                                    Unsaved changes to routing order
+                                    {t('list.unsavedChanges')}
                                 </p>
                             </div>
                             <button
@@ -271,14 +274,14 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                                 disabled={isSavingOrder}
                                 className="px-4 py-2 bg-brand-500 text-white text-xs font-bold rounded-lg hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {isSavingOrder ? 'Saving...' : 'Save Order'}
+                                {isSavingOrder ? t('actions.saving') : t('actions.saveOrder')}
                             </button>
                             <button
                                 onClick={() => setPendingReorder(null)}
                                 disabled={isSavingOrder}
                                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                Cancel
+                                {tc('buttons.cancel')}
                             </button>
                         </div>
                     )}

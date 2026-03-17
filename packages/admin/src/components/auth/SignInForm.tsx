@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { EyeOff, Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import { useAuth } from "../../context/AuthContext";
 
 export default function SignInForm() {
+  const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +17,7 @@ export default function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -34,7 +36,7 @@ export default function SignInForm() {
       }
     } catch (err: any) {
       console.error("Login failed:", err);
-      setError(err.message || "Failed to sign in");
+      setError(err.message || t('signIn.error'));
     } finally {
       setLoading(false);
     }
@@ -46,10 +48,10 @@ export default function SignInForm() {
         <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
-              Sign In
+              {t('signIn.title')}
             </h1>
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              {t('signIn.subtitle')}
             </p>
           </div>
 
@@ -58,7 +60,7 @@ export default function SignInForm() {
               <div className="space-y-5">
                 <div>
                   <Label htmlFor="email">
-                    Email<span className="text-error-500">*</span>
+                    {t('signIn.emailLabel')}<span className="text-error-500">*</span>
                   </Label>
                   <Input
                     type="email"
@@ -73,7 +75,7 @@ export default function SignInForm() {
 
                 <div>
                   <Label htmlFor="password">
-                    Password<span className="text-error-500">*</span>
+                    {t('signIn.passwordLabel')}<span className="text-error-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -109,7 +111,7 @@ export default function SignInForm() {
                     to="/reset-password"
                     className="text-xs text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
-                    Forgot password?
+                    {t('signIn.forgotPassword')}
                   </Link>
                 </div>
 
@@ -119,7 +121,7 @@ export default function SignInForm() {
                     className="brand-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-brand-500 shadow-brand hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed tracking-wider"
                     disabled={loading}
                   >
-                    {loading ? "Signing in..." : "Sign In"}
+                    {loading ? t('signIn.loading') : t('signIn.button')}
                   </button>
                 </div>
               </div>
@@ -127,12 +129,12 @@ export default function SignInForm() {
 
             <div className="mt-6 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Don&apos;t have an account? {""}
+                {t('signIn.noAccount')}{" "}
                 <Link
                   to="/signup"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400 font-bold underline underline-offset-4"
                 >
-                  Sign Up
+                  {t('signIn.signUpLink')}
                 </Link>
               </p>
             </div>

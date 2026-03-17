@@ -241,7 +241,7 @@ const QuizPage: React.FC<{ onNavigate?: (p: string, t?: string) => void }> = ({ 
                                     "relative w-full text-left p-1 rounded-[2.5rem] border-2 transition-all duration-500 group overflow-hidden",
                                     isLocked 
                                         ? "border-white/5 bg-white/5 opacity-50 grayscale cursor-not-allowed" 
-                                        : "border-white/10 bg-[#1a1a1a] hover:border-quiz/50 hover:shadow-2xl"
+                                        : "border-white/10 bg-surface-elevated hover:border-quiz/50 hover:shadow-2xl"
                                 )}
                             >
                                 <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity">
@@ -285,7 +285,7 @@ const QuizPage: React.FC<{ onNavigate?: (p: string, t?: string) => void }> = ({ 
                 />
 
                 {/* 2. CHERRY'S DOJO (Rules) */}
-                <Card variant="glass" padding="lg" className="bg-[#121212]/80 border-white/10 relative overflow-hidden">
+                <Card variant="glass" padding="lg" className="bg-surface/80 border-white/10 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-16 bg-action/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"/>
                     
                     <div className="flex items-center gap-3 mb-6">

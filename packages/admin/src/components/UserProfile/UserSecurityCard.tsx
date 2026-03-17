@@ -4,12 +4,14 @@ import { Trash2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@thaiakha/shared/lib/utils";
 import { ProfileCard, ProfileRow } from "./components/ProfileUI";
 import Button from "../ui/button/Button";
+import { useTranslation } from "react-i18next";
 
 /**
  * UserSecurityCard - Extreme DRY Refactoring.
  * Focus: Account protection, password management, and English translation.
  */
 export default function UserSecurityCard() {
+    const { t } = useTranslation("profile");
     const { changePassword, updateProfile, signOut, user } = useAuth();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,12 +24,12 @@ export default function UserSecurityCard() {
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!password || password !== confirmPassword) {
-            setMessage({ type: "error", text: "Passwords do not match" });
+            setMessage({ type: "error", text: t("security.errorMismatch") });
             return;
         }
 
         if (password.length < 6) {
-            setMessage({ type: "error", text: "Password must be at least 6 characters" });
+            setMessage({ type: "error", text: t("security.errorMinLength") });
             return;
         }
 
@@ -36,12 +38,12 @@ export default function UserSecurityCard() {
 
         try {
             await changePassword(password);
-            setMessage({ type: "success", text: "Password updated successfully!" });
+            setMessage({ type: "success", text: t("security.successUpdated") });
             setPassword("");
             setConfirmPassword("");
             setTimeout(() => setMessage({ type: "", text: "" }), 5000);
         } catch (error: any) {
-            setMessage({ type: "error", text: error.message || "Failed to update password" });
+            setMessage({ type: "error", text: error.message || t("security.errorFailed") });
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +70,7 @@ export default function UserSecurityCard() {
                 <form onSubmit={handlePasswordChange} className="space-y-8">
                     <div className="grid grid-cols-1 gap-6">
                         <ProfileRow
-                            label="New Password"
+                            label={t("security.fieldNewPassword")}
                             name="password"
                             type="password"
                             value={password}
@@ -78,7 +80,7 @@ export default function UserSecurityCard() {
                         />
 
                         <ProfileRow
-                            label="Confirm New Password"
+                            label={t("security.fieldConfirmPassword")}
                             name="confirmPassword"
                             type="password"
                             value={confirmPassword}
@@ -109,7 +111,7 @@ export default function UserSecurityCard() {
                                 isLoading && "opacity-70 cursor-not-allowed"
                             )}
                         >
-                            {isLoading ? "Updating..." : "Update Password"}
+                            {isLoading ? t("security.btnUpdating") : t("security.btnUpdate")}
                         </Button>
                     </div>
                 </form>
@@ -121,12 +123,12 @@ export default function UserSecurityCard() {
                         <Trash2 size={20} />
                     </div>
                     <h4 className="text-xl font-black italic uppercase tracking-tighter text-red-600 dark:text-red-400">
-                        Danger Zone
+                        {t("security.dangerZoneTitle")}
                     </h4>
                 </div>
 
                 <p className="text-[10px] text-gray-600 dark:text-gray-400 uppercase tracking-widest font-black mb-8 leading-relaxed">
-                    Account deactivation is permanent. All your preferences and data associated with this session will be locked.
+                    {t("security.dangerZoneDesc")}
                 </p>
 
                 <div className="flex flex-col gap-4">
@@ -135,13 +137,13 @@ export default function UserSecurityCard() {
                             onClick={() => setDeactivateStep(1)}
                             className="w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] text-red-500 border-2 border-red-500/10 bg-white/50 dark:bg-red-900/5 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-all active:scale-95"
                         >
-                            Deactivate Account
+                            {t("security.btnDeactivate")}
                         </button>
                     ) : (
                         <div className="flex flex-col gap-4 bg-white/80 dark:bg-red-950/20 p-5 rounded-2xl border border-red-100 dark:border-red-900/30 animate-in zoom-in-95">
                             <div className="flex items-center gap-3 text-red-600 font-black text-[10px] uppercase tracking-widest">
                                 <AlertTriangle className="w-5 h-5 animate-bounce" />
-                                <span>Critical Confirmation Required</span>
+                                <span>{t("security.confirmRequired")}</span>
                             </div>
                             <div className="flex gap-3">
                                 <Button
@@ -150,7 +152,7 @@ export default function UserSecurityCard() {
                                     onClick={() => setDeactivateStep(0)}
                                     className="flex-1 py-3 rounded-xl text-[10px] font-black border-gray-200"
                                 >
-                                    Cancel
+                                    {t("security.btnCancel", { defaultValue: "Cancel" })}
                                 </Button>
                                 <Button
                                     size="sm"
@@ -158,7 +160,7 @@ export default function UserSecurityCard() {
                                     disabled={isLoading}
                                     className="flex-1 py-3 rounded-xl text-[10px] font-black bg-red-600 hover:bg-red-700 text-white border-none shadow-lg shadow-red-500/20"
                                 >
-                                    {isLoading ? "..." : "Confirm"}
+                                    {isLoading ? "..." : t("security.btnConfirm", { defaultValue: "Confirm" })}
                                 </Button>
                             </div>
                         </div>

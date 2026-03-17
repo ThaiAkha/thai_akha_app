@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Truck, CheckCircle2, Package, HelpCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
@@ -40,6 +41,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
   onSetHotel,
   session,
 }) => {
+  const { t } = useTranslation('booking');
   const [needPickup, setNeedPickup] = useState<boolean | null>(null);
 
   return (
@@ -48,7 +50,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
         <div className="p-2 rounded-xl bg-brand-500/10 text-brand-500">
           <Truck size={20} />
         </div>
-        Logistics & Notes
+        {t('logistics.sectionTitle')}
       </h3>
 
       {/* Logistics Layout - Grid */}
@@ -56,7 +58,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
 
         {/* Need Pickup Toggle */}
         <div className="col-span-12 md:col-span-3">
-          <SectionHeader title="Need Pickup?" className="mb-2" />
+          <SectionHeader title={t('logistics.needPickup')} className="mb-2" />
           <div className="grid grid-cols-2 gap-3 h-14">
             <button
               type="button"

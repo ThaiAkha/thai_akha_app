@@ -1,15 +1,19 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
-import { LogOut, User } from "lucide-react";
+import { useI18n } from "../../context/I18nContext";
+import { LogOut, User, Sun, Moon } from "lucide-react";
 import Tooltip from "../ui/Tooltip";
-import { ThemeSwitcher } from "@thaiakha/shared";
+import { cn } from "@thaiakha/shared/lib/utils";
 
 export default function UserDropdown() {
+  const { t } = useTranslation('common');
   const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { lang, setLang, switching } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -29,16 +33,21 @@ export default function UserDropdown() {
     }
   };
 
+  const toggleLanguage = async () => {
+    const nextLang = lang === 'en' ? 'th' : 'en';
+    await setLang(nextLang);
+  };
+
   return (
     <div className="relative flex items-center h-full">
-      <Tooltip content="Menu Utente" position="bottom">
+      <Tooltip content={t('user.menu')} position="bottom">
         <button
           onClick={toggleDropdown}
           className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400 group h-full focus:outline-none"
         >
           {/* Desktop Name (Left of Avatar) */}
           <span className="hidden lg:block mr-3 font-black text-theme-sm text-gray-800 dark:text-white leading-none whitespace-nowrap">
-            {user?.full_name || "User"}
+            {user?.full_name || t('user.fallbackName')}
           </span>
 
           {/* Avatar (Right in Desktop, Main in Mobile) */}
@@ -60,7 +69,7 @@ export default function UserDropdown() {
         {/* Header Info */}
         <div className="px-4 py-4 mb-2 border-b border-gray-50 dark:border-gray-800/50">
           <span className="block font-black text-gray-900 text-base dark:text-white uppercase tracking-tighter leading-none">
-            {user?.full_name || "User"}
+            {user?.full_name || t('user.fallbackName')}
           </span>
           <span className="mt-2 block text-theme-xs text-gray-400 dark:text-gray-500 truncate font-medium">
             {user?.email || ""}
@@ -79,16 +88,64 @@ export default function UserDropdown() {
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
               <User size={18} className="text-gray-400 group-hover:text-brand-500 transition-colors" />
             </div>
-            <span className="flex-1">Edit profile</span>
+            <span className="flex-1">{t('user.editProfile')}</span>
           </DropdownItem>
 
+          {/* Theme Switcher */}
           <div onClick={(e) => e.stopPropagation()}>
-            <ThemeSwitcher
-              isDarkMode={theme === 'dark'}
-              onToggle={toggleTheme}
-              variant="dropdown"
-              accentColor="brand"
-            />
+            <div
+              className="flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-sm hover:bg-brand-50 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-all cursor-pointer"
+              onClick={toggleTheme}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
+                  {theme === 'dark' ? (
+                    <Sun className="w-4.5 h-4.5 text-gray-400 group-hover:text-brand-400 transition-colors" />
+                  ) : (
+                    <Moon className="w-4.5 h-4.5 text-gray-400 group-hover:text-brand-500 transition-colors" />
+                  )}
+                </div>
+                <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+              </div>
+              <div className={cn(
+                'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
+                theme === 'dark' ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700'
+              )}>
+                <span className={cn(
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
+                  theme === 'dark' ? 'translate-x-4' : 'translate-x-0'
+                )} />
+              </div>
+            </div>
+          </div>
+
+          {/* Language Switcher */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <div
+              className={cn(
+                "flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-sm hover:bg-brand-50 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-all cursor-pointer",
+                switching && "opacity-50 pointer-events-none"
+              )}
+              onClick={toggleLanguage}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
+                  <span className="text-base leading-none">
+                    {lang === 'en' ? '🇬🇧' : '🇹🇭'}
+                  </span>
+                </div>
+                <span>{lang === 'en' ? 'เปลี่ยนเป็นภาษาไทย' : 'Switch to English'}</span>
+              </div>
+              <div className={cn(
+                'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
+                lang === 'th' ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700'
+              )}>
+                <span className={cn(
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
+                  lang === 'th' ? 'translate-x-4' : 'translate-x-0'
+                )} />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -101,7 +158,7 @@ export default function UserDropdown() {
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition-colors">
               <LogOut size={18} className="text-gray-400 group-hover:text-red-500 transition-colors" />
             </div>
-            <span className="flex-1">Sign out</span>
+            <span className="flex-1">{t('user.signOut')}</span>
           </button>
         </div>
       </Dropdown>

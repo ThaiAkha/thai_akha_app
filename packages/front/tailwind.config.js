@@ -1,15 +1,16 @@
 /**
  * Front App Tailwind Configuration
  *
- * Extends base theme from shared package with front-specific:
- * - darkMode explicit configuration
+ * Theme tokens (colors, fonts, animations, shadows, breakpoints)
+ * are defined in packages/shared/src/styles/theme.css via @theme.
+ *
+ * This file only handles:
+ * - darkMode strategy
  * - content paths
- * - safelist (lime green active states)
- * - semantic color variables (primary, secondary, action, etc.)
+ * - safelist (dynamic class names not detectable by JIT)
+ * - front-specific semantic colors (mapped from CSS variables in tokens.css)
  * - plugins
  */
-
-import { getBaseThemeExtension } from '@thaiakha/shared';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -38,33 +39,7 @@ export default {
     'pl-5',
   ],
   theme: {
-    extend: {
-      ...getBaseThemeExtension(),
-      colors: {
-        // ========== SEMANTIC COLORS (Front-specific) ==========
-        primary: 'rgb(var(--color-primary) / <alpha-value>)',
-        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
-        action: 'rgb(var(--color-action) / <alpha-value>)',
-        special: 'rgb(var(--color-special) / <alpha-value>)',
-
-        // 🌟 SPECIAL CHANNELS
-        allergy: 'rgb(var(--color-allergy) / <alpha-value>)',
-        'allergy-secondary': 'rgb(var(--color-allergy-secondary) / <alpha-value>)',
-        quiz: 'rgb(var(--color-quiz) / <alpha-value>)',
-
-        // ☀️ SEMANTIC LAYERS
-        background: 'rgb(var(--color-background) / <alpha-value>)',
-        surface: 'rgb(var(--color-surface) / <alpha-value>)',
-        title: 'rgb(var(--color-title) / <alpha-value>)',
-        desc: 'rgb(var(--color-desc) / <alpha-value>)',
-        border: 'rgb(var(--color-border) / <alpha-value>)',
-      },
-      fontFamily: {
-        display: ['var(--font-display)'],
-        sans: ['var(--font-sans)'],
-        accent: ['var(--font-accent)'],
-      },
-    },
+    extend: {},
   },
   plugins: [],
 };

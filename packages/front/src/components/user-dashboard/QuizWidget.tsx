@@ -74,7 +74,7 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24 space-y-8">
       
       {/* 1. HERO DASHBOARD: PLAYER STATUS */}
-      <div className="relative bg-[#121212] border border-white/10 rounded-[3rem] p-8 overflow-hidden shadow-2xl group">
+      <div className="relative bg-surface border border-white/10 rounded-[3rem] p-8 overflow-hidden shadow-2xl group">
         
         {/* Background Effects */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-quiz/10 rounded-full blur-[80px] group-hover:bg-quiz/20 transition-colors duration-1000" />
@@ -150,7 +150,7 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
         <div className="lg:col-span-2 relative group cursor-pointer" onClick={() => onNavigate('quiz')}>
             <div className="absolute inset-0 bg-quiz/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[3rem]" />
             
-            <Card variant="glass" padding="none" className="h-full bg-[#1a1a1a] border-white/10 overflow-hidden relative min-h-[320px]">
+            <Card variant="glass" padding="none" className="h-full bg-surface-elevated border-white/10 overflow-hidden relative min-h-[320px]">
                 {/* Image BG */}
                 <div className="absolute inset-0">
                     <img src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/Akha01.jpg" className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-[3s]" alt="Challenge" />
@@ -188,7 +188,7 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
         </div>
 
         {/* COL 2: LEADERBOARD (Compact List) */}
-        <Card variant="glass" padding="none" className="bg-[#121212] border-white/10 p-6 flex flex-col h-full min-h-[300px]">
+        <Card variant="glass" padding="none" className="bg-surface border-white/10 p-6 flex flex-col h-full min-h-[300px]">
             <div className="flex justify-between items-center mb-6">
                 <Typography variant="h6" className="text-white flex items-center gap-2 text-sm uppercase">
                     <Icon name="leaderboard" className="text-quiz"/> Top Warriors

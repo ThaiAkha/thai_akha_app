@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import { contentService } from '@thaiakha/shared/services';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
@@ -16,6 +17,7 @@ import BasicCard from '../../components/dashboard/BasicCard';
 import CTABanner from '../../components/dashboard/CTABanner';
 
 const DriverHome: React.FC = () => {
+    const { i18n } = useTranslation();
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('driver-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
@@ -23,8 +25,8 @@ const DriverHome: React.FC = () => {
     useEffect(() => {
         const loadHomeCards = async () => {
             try {
-                // Load home cards from database (filtered for driver role)
-                const cards = await contentService.getHomeCards();
+                // Load home cards from database with current language
+                const cards = await contentService.getHomeCards(i18n.language);
                 const driverCards = cards.filter((card: any) => card.role === 'driver');
                 console.log('🏠 Driver Home Cards loaded:', driverCards);
                 setHomeCards(driverCards || []);
@@ -33,7 +35,7 @@ const DriverHome: React.FC = () => {
             }
         };
         loadHomeCards();
-    }, []);
+    }, [i18n.language]);
 
     // Separate cards by type from database
     const featureCards = homeCards.filter(card => card.card_type === 'feature');

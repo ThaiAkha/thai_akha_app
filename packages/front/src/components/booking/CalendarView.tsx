@@ -220,7 +220,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           const isFullDay = !loading && data && !isMorningOpen && !isEveningOpen;
 
           // Celle vuote (mese precedente/successivo)
-          if (!isCurrentMonth) return <div key={idx} className="bg-background/50 dark:bg-[#121212] opacity-50 pointer-events-none" />;
+          if (!isCurrentMonth) return <div key={idx} className="bg-background/50 dark:bg-surface opacity-50 pointer-events-none" />;
 
           return (
             <button
@@ -231,7 +231,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 "relative flex flex-col justify-between p-2 min-h-[100px] group transition-all text-left",
                 // BACKGROUND COLOR LOGIC
                 isPast 
-                  ? "bg-gray-100 dark:bg-[#121212] opacity-50 grayscale cursor-not-allowed" // Passato: Grigio chiaro (Light) / Scuro (Dark)
+                  ? "bg-gray-100 dark:bg-surface opacity-50 grayscale cursor-not-allowed" // Passato: Grigio chiaro (Light) / Scuro (Dark)
                   : isFullDay
                     ? allowSelectionOnFullDays 
                       ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/20 cursor-pointer"

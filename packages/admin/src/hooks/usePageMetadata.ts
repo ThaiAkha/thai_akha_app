@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { contentService } from '@thaiakha/shared/services';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Hook per pagine che hanno bisogno di metadata locale
@@ -14,6 +15,7 @@ import { contentService } from '@thaiakha/shared/services';
  * Questo hook serve SOLO per ottenere metadata per rendering locale
  */
 export function usePageMetadata(slug: string) {
+    const { i18n } = useTranslation();
     const [pageMeta, setPageMeta] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -21,7 +23,7 @@ export function usePageMetadata(slug: string) {
         const loadMetadata = async () => {
             setLoading(true);
             try {
-                const meta = await contentService.getPageMetadata(slug, 'site_metadata_admin');
+                const meta = await contentService.getPageMetadata(slug, 'site_metadata_admin', i18n.language);
                 setPageMeta(meta);
             } catch (error) {
                 console.error(`Failed to load metadata for ${slug}:`, error);
@@ -31,7 +33,7 @@ export function usePageMetadata(slug: string) {
         };
 
         loadMetadata();
-    }, [slug]);
+    }, [slug, i18n.language]);
 
     return { pageMeta, loading };
 }

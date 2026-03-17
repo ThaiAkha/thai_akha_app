@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "Inventory | Admin",
+    "description": "Manage product catalog, stock levels, and pricing."
+  },
+  "sidebar": {
+    "title": "Categories",
+    "allItems": "All Items",
+    "status": "Live Inventory"
+  },
+  "content": {
+    "searchPlaceholder": "Search products or SKU...",
+    "noProducts": "No products found",
+    "colSku": "SKU",
+    "colName": "Product Name",
+    "colCategory": "Category",
+    "colStock": "Stock",
+    "colPrice": "Price",
+    "lowStock": "LOW STOCK: {{count}}",
+    "inactive": "INACTIVE"
+  },
+  "inspector": {
+    "noImage": "No Image Provided",
+    "updateImageUrl": "Update Image URL",
+    "fieldName": "Product Name",
+    "placeholderName": "Enter product name...",
+    "fieldSku": "SKU",
+    "fieldCategory": "Category",
+    "selectCategory": "Select Category",
+    "fieldStock": "Stock Quantity",
+    "fieldPrice": "Price (THB)",
+    "fieldDescription": "Internal Description",
+    "descPlaceholder": "Internal notes/description...",
+    "statusLabel": "Status",
+    "active": "ACTIVE",
+    "inactive": "INACTIVE",
+    "visibilityLabel": "Visibility",
+    "visOnline": "ONLINE",
+    "visHidden": "HIDDEN",
+    "deleteProduct": "DELETE PRODUCT"
+  },
+  "actions": {
+    "new": "New",
+    "exportFormats": "Export formats",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "Standard spreadsheet format",
+    "exportJson": "JSON Format",
+    "exportJsonDesc": "Raw data structure",
+    "copyClipboard": "Copy to Clipboard",
+    "copyClipboardDesc": "Quick share as text",
+    "edit": "EDIT",
+    "save": "SAVE",
+    "saving": "SAVING...",
+    "tooltipEdit": "Edit this record",
+    "tooltipSave": "Save changes"
+  }
+}

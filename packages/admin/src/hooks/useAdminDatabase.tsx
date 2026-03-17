@@ -46,6 +46,7 @@ export const SYSTEM_TABLES = [
     { id: 'shop_storefront', label: 'Shop Storefront', icon: <Package className="w-5 h-5" /> },
     { id: 'site_metadata', label: 'Site Metadata (Public)', icon: <Settings className="w-5 h-5" /> },
     { id: 'site_metadata_admin', label: 'Site Metadata (Admin)', icon: <Settings className="w-5 h-5" /> },
+    { id: 'site_metadata_admin_translations', label: 'Admin Translations', icon: <Settings className="w-5 h-5" /> },
     { id: 'spiciness_levels', label: 'Spiciness Levels', icon: <Package className="w-5 h-5" /> }
 ];
 
@@ -89,6 +90,9 @@ export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
         'header_icon', 'page_description', 'hero_image_url', 'created_at',
         'show_in_menu', 'menu_order', 'menu_label', 'access_level'
     ],
+    site_metadata_admin_translations: [
+        'id', 'page_id', 'language', 'title', 'subtitle', 'description', 'menu_label', 'created_at'
+    ],
     shop_akha: [
         'id', 'sku', 'item_name', 'description_internal', 'price_thb', 'cost_thb',
         'account_category', 'purchase_account', 'product_type', 'stock_quantity',
@@ -106,6 +110,7 @@ export const GRID_PRIMARY_FIELDS: Record<string, { title: string; subtitle?: str
     shop_akha: { title: 'item_name', subtitle: 'sku', badge: 'product_type' },
     site_metadata: { title: 'page_slug', subtitle: 'header_title_main', badge: 'access_level' },
     site_metadata_admin: { title: 'page_slug', subtitle: 'header_title_main', badge: 'access_level' },
+    site_metadata_admin_translations: { title: 'page_id', subtitle: 'language', badge: 'title' },
     akha_news: { title: 'title', subtitle: 'created_at', badge: 'category' },
 };
 

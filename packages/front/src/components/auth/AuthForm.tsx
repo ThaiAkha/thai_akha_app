@@ -217,7 +217,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
           <>
             <div className="relative py-8">
               <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
-              <div className="relative flex justify-center"><span className="bg-[#0a0b0d] px-4 text-[10px] text-white/30 uppercase tracking-widest font-black">Or continue with</span></div>
+              <div className="relative flex justify-center"><span className="bg-surface-overlay px-4 text-[10px] text-white/30 uppercase tracking-widest font-black">Or continue with</span></div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

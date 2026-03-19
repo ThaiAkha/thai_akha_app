@@ -28,7 +28,7 @@ const STATUS_CONFIG: Record<TransportStatus, { label: string; actionLabel: strin
     driver_en_route: {
         label: 'EN ROUTE',
         actionLabel: 'I AM HERE',
-        color: 'bg-brand-600 text-white hover:bg-brand-700',
+        color: 'bg-primary-600 text-white hover:bg-primary-700',
         next: 'driver_arrived'
     },
     driver_arrived: {
@@ -337,7 +337,7 @@ const DriverRoute: React.FC = () => {
                                 className={cn(
                                     "flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'PICKUP'
-                                        ? "bg-brand-600 text-white shadow-lg"
+                                        ? "bg-primary-600 text-white shadow-lg"
                                         : "text-gray-400 dark:text-white/40 hover:text-white/60"
                                 )}
                             >
@@ -356,9 +356,9 @@ const DriverRoute: React.FC = () => {
                             </button>
                         </div>
 
-                        <div className="bg-brand-50 dark:bg-brand-500/10 px-4 py-2 rounded-xl border border-brand-100 dark:border-brand-500/20 flex items-center gap-3">
-                            <span className="text-xl font-mono font-black text-brand-600 dark:text-brand-400 leading-none">{completedPax}</span>
-                            <span className="text-[10px] font-bold text-brand-400 dark:text-white/40 uppercase tracking-widest">/ {totalPax} PAX</span>
+                        <div className="bg-primary-50 dark:bg-primary-500/10 px-4 py-2 rounded-xl border border-primary-100 dark:border-primary-500/20 flex items-center gap-3">
+                            <span className="text-xl font-mono font-black text-primary-600 dark:text-primary-400 leading-none">{completedPax}</span>
+                            <span className="text-[10px] font-bold text-primary-400 dark:text-white/40 uppercase tracking-widest">/ {totalPax} PAX</span>
                         </div>
                     </div>
                 </div>
@@ -374,7 +374,7 @@ const DriverRoute: React.FC = () => {
                                 "w-full h-16 text-lg font-black transition-all",
                                 phase === 'PICKUP'
                                     ? startRouteClicks === 0
-                                        ? "shadow-[0_0_40px_rgba(227,31,51,0.4)] animate-pulse bg-brand-600 hover:bg-brand-700 text-white"
+                                        ? "shadow-[0_0_40px_rgba(227,31,51,0.4)] animate-pulse bg-primary-600 hover:bg-primary-700 text-white"
                                         : "bg-red-500 text-white animate-pulse shadow-[0_0_60px_rgba(239,68,68,0.6)]"
                                     : startRouteClicks === 0
                                         ? "shadow-[0_0_40px_rgba(34,197,94,0.4)] animate-pulse bg-green-600 hover:bg-green-700 text-white"
@@ -417,9 +417,9 @@ const DriverRoute: React.FC = () => {
                             <h3 className="text-2xl font-black text-gray-900 dark:text-white">
                                 All Rides Completed!
                             </h3>
-                            <div className="bg-brand-50 dark:bg-brand-500/10 p-6 rounded-xl border border-brand-100 dark:border-brand-500/20">
+                            <div className="bg-primary-50 dark:bg-primary-500/10 p-6 rounded-xl border border-primary-100 dark:border-primary-500/20">
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Daily Earnings</p>
-                                <p className="text-4xl font-black text-brand-600 dark:text-brand-400">
+                                <p className="text-4xl font-black text-primary-600 dark:text-primary-400">
                                     {payoutAmount || 0} <span className="text-2xl">THB</span>
                                 </p>
                             </div>

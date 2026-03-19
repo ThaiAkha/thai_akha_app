@@ -69,7 +69,7 @@ const AppHeader: React.FC = () => {
         {/* Center: Title (Always centered) */}
         <div className="flex-1 flex justify-center min-w-0">
           <h1 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-gray-800 dark:text-white leading-tight truncate text-center">
-            {title} {titleHighlight && <span className="text-brand-600 font-black">{titleHighlight}</span>}
+            {title} {titleHighlight && <span className="text-primary-600 font-black">{titleHighlight}</span>}
           </h1>
         </div>
 

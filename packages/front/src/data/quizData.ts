@@ -43,8 +43,8 @@ export const LEVEL_METADATA = [
   { id: 1, subtitle: "Origins & Traditions", icon: "temple_buddhist", color: "from-primary/20" },
   { id: 2, subtitle: "Spirits & Beliefs", icon: "vital_signs", color: "from-blue-500/20" },
   { id: 3, subtitle: "Festivals & Rituals", icon: "groups", color: "from-emerald-500/20" },
-  { id: 4, subtitle: "Food & Foraging", icon: "home", color: "from-orange-500/20" },
-  { id: 5, subtitle: "Clothing & Identity", icon: "accessibility_new", color: "from-purple-500/20" },
+  { id: 4, subtitle: "Food & Foraging", icon: "home", color: "from-btn-p-500/20" },
+  { id: 5, subtitle: "Clothing & Identity", icon: "accessibility_new", color: "from-quiz-s-500/20" },
   { id: 6, subtitle: "Music & Oral Lore", icon: "soup_kitchen", color: "from-pink-500/20" },
   { id: 7, subtitle: "Modern Era & Coffee", icon: "local_cafe", color: "from-amber-500/20" },
 ];

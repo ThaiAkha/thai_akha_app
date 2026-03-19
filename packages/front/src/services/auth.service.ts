@@ -29,7 +29,7 @@ export const authService = {
                     id: authData.user.id,
                     email: email,
                     full_name: fullName,
-                    role: 'guest', // Ruolo di default
+                    role: 'user', // Ruolo di default
                     dietary_profile: 'diet_regular',
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });

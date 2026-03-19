@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // Importiamo supabase per la gestione sessione
 import { supabase } from '@thaiakha/shared/lib/supabase';
 // IMPORT PAGINE PUBBLICHE
@@ -12,6 +12,8 @@ import AuthPage from './pages/AuthPage';
 import UserPage from './pages/UserPage';
 import RecipesPage from './pages/Recipes';
 import BookingPage from './pages/BookingPage';
+import StyleCards from './pages/StyleCards';
+import ColorsPage from './pages/ColorsPage';
 
 
 
@@ -27,6 +29,9 @@ import { useViewportHeight } from './hooks/useViewportHeight';
 
 type Page = string;
 
+const ADMIN_ROLES = new Set(['agency', 'admin', 'manager']);
+const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'http://localhost:3004';
+
 const App: React.FC = () => {
   // Hook per gestire l'altezza reale su mobile (100vh fix)
   useViewportHeight();
@@ -34,7 +39,10 @@ const App: React.FC = () => {
   const mainScrollRef = useRef<HTMLElement>(null);
 
   // --- STATO GLOBALE ---
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const stored = localStorage.getItem('theme');
+    return stored ? stored === 'dark' : true;
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   // Deriviamo 'page' dall'URL o dallo stato iniziale
@@ -61,6 +69,8 @@ const App: React.FC = () => {
   // Gestione Tema
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
+    document.documentElement.classList.toggle('light', !isDarkMode); // evita html:not(.light) override
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   // --- FUNZIONE DI AGGIORNAMENTO PROFILO ---
@@ -106,6 +116,11 @@ const App: React.FC = () => {
 
   // --- NAVIGAZIONE ---
   const handleNavigate = (targetPage: string, topic?: string, sectionId?: string) => {
+    if (targetPage === 'booking' && userProfile && ADMIN_ROLES.has(userProfile.role)) {
+      window.open(`${ADMIN_URL}/booking`, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     const path = targetPage === 'home' ? '/' : `/${targetPage}`;
     window.history.pushState({}, '', path);
     setPage(targetPage);
@@ -144,9 +159,16 @@ const App: React.FC = () => {
       case 'recipes': return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} />;
       case 'history': return <HistoryPage onNavigate={handleNavigate} />;
       case 'location': return <LocationPage onNavigate={handleNavigate} />;
+      case 'style': return <StyleCards />;
+      case 'colors': return <ColorsPage />;
 
       // Flows Operativi Utente
       case 'booking':
+        if (userProfile && ADMIN_ROLES.has(userProfile.role)) {
+          window.open(`${ADMIN_URL}/booking`, '_blank', 'noopener,noreferrer');
+          window.history.replaceState({}, '', '/');
+          return <HomePage onNavigate={handleNavigate} />;
+        }
         return <BookingPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} />;
       case 'menu':
         return <MenuPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} sectionId={targetSection} />;

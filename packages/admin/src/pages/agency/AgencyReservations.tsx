@@ -151,7 +151,7 @@ export default function AgencyReservations() {
                                 placeholder={t('agency.searchPlaceholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border-none rounded-lg text-sm focus:ring-1 focus:ring-brand-500 shadow-sm"
+                                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border-none rounded-lg text-sm focus:ring-1 focus:ring-primary-500 shadow-sm"
                             />
                         </div>
                     </div>
@@ -165,7 +165,7 @@ export default function AgencyReservations() {
                                 className={cn(
                                     "px-3 py-1.5 rounded-full text-xs font-bold capitalize whitespace-nowrap transition-colors",
                                     statusFilter === s
-                                        ? "bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400"
+                                        ? "bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"
                                         : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
                                 )}
                             >
@@ -178,7 +178,7 @@ export default function AgencyReservations() {
                     <div className="flex-1 overflow-y-auto p-2 space-y-1">
                         {loading ? (
                             <div className="p-8 text-center text-gray-400">
-                                <div className="animate-spin w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                                <div className="animate-spin w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-2"></div>
                                 <p className="text-xs">{t('agency.loading')}</p>
                             </div>
                         ) : (
@@ -190,7 +190,7 @@ export default function AgencyReservations() {
                                         className={cn(
                                             "p-3 rounded-xl cursor-pointer transition-all border",
                                             selectedBookingId === b.internal_id
-                                                ? "bg-brand-50 border-brand-200 shadow-sm dark:bg-brand-500/10 dark:border-brand-500/20"
+                                                ? "bg-primary-50 border-primary-200 shadow-sm dark:bg-primary-500/10 dark:border-primary-500/20"
                                                 : "bg-white border-transparent hover:bg-gray-50 dark:bg-transparent dark:hover:bg-gray-800"
                                         )}
                                     >
@@ -233,7 +233,7 @@ export default function AgencyReservations() {
                                 <div className="p-8 md:p-10 space-y-8">
                                     {/* Header */}
                                     <div className="flex justify-between items-start">
-                                        <div className="w-16 h-16 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-600/20">
+                                        <div className="w-16 h-16 rounded-xl bg-primary-600 text-white flex items-center justify-center shadow-lg shadow-primary-600/20">
                                             <FileText className="w-8 h-8" />
                                         </div>
                                         <div className="text-right">
@@ -295,7 +295,7 @@ export default function AgencyReservations() {
                                             </div>
                                             <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between items-baseline">
                                                 <span className="font-black uppercase text-xs text-gray-900 dark:text-white tracking-widest">{t('agency.netPayable')}</span>
-                                                <span className="text-3xl font-black text-brand-600 dark:text-brand-400 font-mono tracking-tighter">
+                                                <span className="text-3xl font-black text-primary-600 dark:text-primary-400 font-mono tracking-tighter">
                                                     {(activeBooking.total_price - activeBooking.commission).toLocaleString()}
                                                     <span className="text-xs text-gray-500 ml-2 font-black">THB</span>
                                                 </span>
@@ -408,12 +408,12 @@ export default function AgencyReservations() {
                                         />
                                     </div>
 
-                                    <div className="bg-brand-50/30 dark:bg-brand-500/5 p-4 rounded-xl border border-brand-100/50 dark:border-brand-500/10">
+                                    <div className="bg-primary-50/30 dark:bg-primary-500/5 p-4 rounded-xl border border-primary-100/50 dark:border-primary-500/10">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <Phone className="w-3 h-3 text-brand-400" />
-                                            <span className="text-[10px] font-black text-brand-400 uppercase tracking-widest">{t('agency.guestContact')}</span>
+                                            <Phone className="w-3 h-3 text-primary-400" />
+                                            <span className="text-[10px] font-black text-primary-400 uppercase tracking-widest">{t('agency.guestContact')}</span>
                                         </div>
-                                        <div className="text-sm font-bold text-gray-900 dark:text-brand-400 pl-5">
+                                        <div className="text-sm font-bold text-gray-900 dark:text-primary-400 pl-5">
                                             {activeBooking.phone_number || t('agency.noPhone')}
                                         </div>
                                     </div>
@@ -432,7 +432,7 @@ export default function AgencyReservations() {
                                                     className={cn(
                                                         "flex-1 py-3 rounded-xl text-[10px] font-black uppercase border transition-all tracking-widest",
                                                         editForm.status === s
-                                                            ? "bg-brand-600 text-white border-brand-600 shadow-lg shadow-brand-600/20"
+                                                            ? "bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-600/20"
                                                             : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500 hover:bg-gray-50"
                                                     )}
                                                 >

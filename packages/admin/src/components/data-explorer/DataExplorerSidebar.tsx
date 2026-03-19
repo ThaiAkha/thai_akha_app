@@ -33,22 +33,22 @@ const Badge: React.FC<{ type: string; value: string | number; isActive?: boolean
         default: cn(
             "bg-gray-100 dark:bg-gray-800",
             "text-gray-700 dark:text-gray-300",
-            isActive && "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+            isActive && "bg-orange-100 dark:bg-btn-p-900/30 text-orange-700 dark:text-orange-300"
         ),
         success: cn(
-            "bg-success-50 dark:bg-success-500/20",
-            "text-success-700 dark:text-success-400",
-            isActive && "bg-success-100 dark:bg-success-500/30"
+            "bg-sys-success/10 dark:bg-sys-success/20",
+            "text-sys-success dark:text-sys-success",
+            isActive && "bg-sys-success/15 dark:bg-sys-success/30"
         ),
         warning: cn(
-            "bg-warning-50 dark:bg-warning-500/20",
-            "text-warning-700 dark:text-warning-400",
-            isActive && "bg-warning-100 dark:bg-warning-500/30"
+            "bg-sys-warning/10 dark:bg-sys-warning/20",
+            "text-sys-warning dark:text-sys-warning",
+            isActive && "bg-sys-warning/15 dark:bg-sys-warning/30"
         ),
         error: cn(
-            "bg-error-50 dark:bg-error-500/20",
-            "text-error-700 dark:text-error-400",
-            isActive && "bg-error-100 dark:bg-error-500/30"
+            "bg-sys-error/10 dark:bg-sys-error/20",
+            "text-sys-error dark:text-sys-error",
+            isActive && "bg-sys-error/15 dark:bg-sys-error/30"
         ),
         info: cn(
             "bg-blue-light-50 dark:bg-blue-light-500/20",

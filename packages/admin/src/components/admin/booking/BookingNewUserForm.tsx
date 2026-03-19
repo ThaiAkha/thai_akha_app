@@ -115,11 +115,11 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
                   key={country.code}
                   type="button"
                   onClick={() => handleNationalitySelect(country.code)}
-                  className="w-full p-4 text-left hover:bg-brand-50 dark:hover:bg-brand-500/10 border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-center justify-between group transition-colors"
+                  className="w-full p-4 text-left hover:bg-primary-50 dark:hover:bg-primary-500/10 border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-center justify-between group transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
-                      <span className="text-sm font-bold text-gray-400 group-hover:text-brand-500">
+                    <div className="size-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-500/20 transition-colors">
+                      <span className="text-sm font-bold text-gray-400 group-hover:text-primary-500">
                         {country.code.substring(0, 2)}
                       </span>
                     </div>
@@ -128,7 +128,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{country.code}</p>
                     </div>
                   </div>
-                  <span className="text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">✓</span>
+                  <span className="text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">✓</span>
                 </button>
               ))}
             </div>
@@ -158,7 +158,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
               className={cn(
                 "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 newUser.isWhatsapp === true
-                  ? "border-brand-500/50 bg-brand-500/10 text-brand-600 dark:text-brand-400 shadow-lg shadow-brand-500/10 scale-[1.02]"
+                  ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
               )}
             >

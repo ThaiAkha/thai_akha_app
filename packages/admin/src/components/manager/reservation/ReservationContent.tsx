@@ -72,7 +72,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
     return (
         <div className="flex flex-col h-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
             {/* Header with booking summary */}
-            <div className="bg-orange-100/80 dark:bg-orange-900/10 p-8 border-b border-gray-100 dark:border-gray-700">
+            <div className="bg-orange-100/80 dark:bg-btn-p-900/10 p-8 border-b border-gray-100 dark:border-gray-700">
                 <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
                         <Avatar

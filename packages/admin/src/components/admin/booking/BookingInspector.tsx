@@ -194,7 +194,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
                         <SectionTitle>{t('inspector.totalAmount')}</SectionTitle>
                         <div className="text-3xl font-black flex items-center gap-1 h-10">
-                            <span className="text-brand-600">{amount.toLocaleString()}</span>
+                            <span className="text-primary-600">{amount.toLocaleString()}</span>
                             <span className="text-gray-400 text-sm">THB</span>
                         </div>
                     </div>
@@ -235,7 +235,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                 <Card.Footer className="flex-col gap-0 pt-6">
                     <Button
                         variant="primary"
-                        className="w-full py-4 text-xs font-black uppercase tracking-widest shadow-lg shadow-brand-500/20"
+                        className="w-full py-4 text-xs font-black uppercase tracking-widest shadow-lg shadow-primary-500/20"
                         onClick={onConfirm}
                         isLoading={loading}
                         startIcon={<Rocket className="w-4 h-4" />}

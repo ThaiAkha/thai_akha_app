@@ -4,12 +4,12 @@ import { Typography, Badge } from '../ui/index';
 // ✅ 1. EXPORT INTERFACCIA (Top Level)
 // Deve stare qui per essere importata da PageLayout senza errori circolari.
 export interface HeaderMetadata {
-  titleMain: string;
-  titleHighlight?: string;
-  description?: string;
-  badge?: string;
-  icon?: string;
-  imageUrl?: string;
+  titleMain?: string | null;
+  titleHighlight?: string | null;
+  description?: string | null;
+  badge?: string | null;
+  icon?: string | null;
+  imageUrl?: string | null;
 }
 
 interface HeaderProps {

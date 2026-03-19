@@ -61,7 +61,7 @@ const AgencyRates: React.FC = () => {
                                     <tr key={i} className="group hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
                                         <td className="py-6 font-black text-gray-900 dark:text-white uppercase italic tracking-tight">{t(rate.nameKey)}</td>
                                         <td className="py-6 text-sm text-gray-400 line-through">{rate.rack}</td>
-                                        <td className="py-6 text-xl font-black text-brand-600 dark:text-brand-400">{rate.net}</td>
+                                        <td className="py-6 text-xl font-black text-primary-600 dark:text-primary-400">{rate.net}</td>
                                         <td className="py-6">
                                             <Badge variant="light" color="info" size="sm">{rate.commission}</Badge>
                                         </td>
@@ -73,8 +73,8 @@ const AgencyRates: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="p-8 rounded-[2rem] border border-brand-100 dark:border-brand-900/30 bg-brand-50/50 dark:bg-brand-500/5 space-y-4">
-                        <ShieldCheck className="w-8 h-8 text-brand-600" />
+                    <div className="p-8 rounded-[2rem] border border-primary-100 dark:border-primary-900/30 bg-primary-50/50 dark:bg-primary-500/5 space-y-4">
+                        <ShieldCheck className="w-8 h-8 text-primary-600" />
                         <h5 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">{t('agencyRates.guaranteeTitle')}</h5>
                         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                             {t('agencyRates.guaranteeDesc')}

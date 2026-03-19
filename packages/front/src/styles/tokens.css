@@ -1,19 +1,17 @@
 /**
- * Front App — Semantic Tokens
+ * Front App — Semantic Tokens & RGB Channels
  *
- * App-specific CSS variables for the consumer-facing app.
- * Richer palette than admin: quiz, allergy, glass effects, dark surfaces.
+ * :root     — structural semantic tokens (--bg, --surface, --border, glass, print)
+ *           — RGB channels for all 9 palettes + system UI (per opacità affidabili)
+ * html.dark — dark mode overrides for all structural tokens
  *
- * Built on top of base-palette.css (raw colors).
- *
- * To change front dark mode bg  → update --bg in .dark block below
- * To change front surface color → update --surface below
- * To change quiz accent color   → update --color-quiz below
+ * Note: brand/action/quiz color SCALES are in base-theme.css @theme
  */
 
 :root {
   /* ========================================================================
-     ☀️ LIGHT MODE — Semantic tokens
+     ☀️ LIGHT MODE — Structural semantic tokens
+     (Brand/action/quiz COLORS are in theme.css @theme — single source of truth)
      ======================================================================== */
   --bg:        #F6FCFC;  /* gray-25 — page background */
   --surface:   #FFFFFF;  /* white — cards, modals, inputs */
@@ -21,35 +19,21 @@
   --border:    #D6DCDC;  /* gray-100 — light borders */
   --border-2:  #C2C8C8;  /* gray-200 — standard borders */
 
-  --text-title: #121311;  /* gray-950 — H1-H3, WCAG AAA */
-  --text-body:  #4A504F;  /* gray-800 — body text, WCAG AAA */
-  --text-sub:   #727878;  /* gray-600 — secondary text, WCAG AA */
-  --text-muted: #9AA0A0;  /* gray-400 — decorative only */
-
-  /* ========================================================================
-     🎨 BRAND SEMANTIC COLORS — Hex format (Tailwind v4 @theme compatible)
-     Tailwind utilities (bg-primary, text-action etc.) generated via @theme in theme.css
-     ======================================================================== */
-  --color-primary:   #FB2E58;   /* Cherry CTA */
-  --color-secondary: #8D1A31;   /* Dark cherry */
-  --color-action:    #98C93C;   /* Lime action */
-  --color-special:   #FF6D00;   /* Orange special CTA */
-
-  /* ========================================================================
-     🎮 QUIZ & FUNCTIONAL COLORS — Hex format
-     ======================================================================== */
-  --color-quiz:              #9A0050;   /* Magenta quiz */
-  --color-allergy:           #FF6D00;   /* Safety orange */
-  --color-allergy-secondary: #FEE2E2;   /* Light red feedback */
+  /* NOTE: --text-* vars removed — use --color-title/desc/sub/muted instead */
 
   /* ========================================================================
      ☀️ SEMANTIC LAYER — Light mode (used in front components)
      ======================================================================== */
   --color-background: #FAFAFA;    /* Light gray */
   --color-surface:    #FFFFFF;    /* White surface */
-  --color-title:      #1A1A1A;    /* Dark titles */
-  --color-desc:       #4A4A4A;    /* Medium text */
   --color-border:     #E2E8F0;    /* Light border */
+
+  /* TEXT COLORS — Standard v4 (gray scale, WCAG AAA) */
+  --color-title:   #121311;  /* gray-950 — H1/H2/H3 */
+  --color-desc:    #222827;  /* gray-900 — paragraphs (alias: --color-body) */
+  --color-sub:     #4A504F;  /* gray-800 — general text, labels */
+  --color-muted:   #4A504F;  /* gray-800 — other text, captions */
+  --color-inverse: #ffffff;  /* white   — text on dark backgrounds */
 
   /* ========================================================================
      🌫️ GLASS TOKENS — Front premium glass effect
@@ -75,6 +59,33 @@
   --color-silver:       #C0C0C0;  /* certificate corner borders */
 
   /* ========================================================================
+     🎨 RGB CHANNELS — 9 palette principali
+     Usage: rgb(var(--action-ch) / 0.2)  →  rgba(152, 201, 60, 0.2)
+     Bypasses color-mix(in oklch, ..., transparent) which darkens colors.
+     ======================================================================== */
+  --primary-ch:    227  31  51;  /* #E31F33 */
+  --action-ch:     152 201  60;  /* #98C93C */
+  --quiz-p-ch:     154   0  80;  /* #9A0050 */
+  --quiz-s-ch:      59  34 122;  /* #3B227A */
+  --btn-p-ch:      255 109   0;  /* #FF6D00 */
+  --btn-s-ch:       28 163 230;  /* #1CA3E6 */
+  --gray-ch:       134 140 140;  /* #868C8C */
+  --secondary-ch:  141  26  49;  /* #8D1A31 */
+  --allergy-ch:    255 109   0;  /* #FF6D00 */
+
+  /* RGB CHANNELS — System UI */
+  --sys-success-ch:  34 197  94;  /* #22C55E */
+  --sys-error-ch:   239  68  68;  /* #EF4444 */
+  --sys-warning-ch: 245 158  11;  /* #F59E0B */
+  --sys-info-ch:     59 130 246;  /* #3B82F6 */
+  --sys-notice-ch:  234 179   8;  /* #EAB308 */
+
+  /* RGB CHANNELS — Semantic (cambiano in dark mode) */
+  --title-ch:  18  19  17;  /* gray-950 #121311 */
+  --desc-ch:   34  40  39;  /* gray-900 #222827 */
+  --border-ch: 226 232 240; /* #E2E8F0 */
+
+  /* ========================================================================
      📜 SCROLLBAR
      ======================================================================== */
   --scrollbar-thumb-dark: #344054;
@@ -91,21 +102,23 @@ html.dark {
   --border:    #4A504F;  /* gray-800 — light borders */
   --border-2:  #5E6464;  /* gray-700 — standard borders */
 
-  --text-title: #F6FCFC;  /* gray-25  — titles, WCAG AAA */
-  --text-body:  #D6DCDC;  /* gray-100 — body text, WCAG AAA */
-  --text-sub:   #9AA0A0;  /* gray-400 — secondary text, WCAG AA */
-  --text-muted: #727878;  /* gray-600 — decorative only */
 
   /* Dark mode semantic layers */
   --color-background: #0A0A0A;    /* Dark background */
   --color-surface:    #121212;    /* Dark surface */
-  --color-title:      #EDF2EF;    /* Light text */
-  --color-desc:       #D2DCD5;    /* Light-medium text */
   --color-border:     #2D2D2D;    /* Dark border */
 
-  /* Allergy adjusted for dark mode legibility */
-  --color-allergy:           #F87171;   /* Lighter red */
-  --color-allergy-secondary: #7F1D1D;   /* Dark red feedback */
+  /* TEXT COLORS — Dark mode v4 */
+  --color-title:   #E6ECEC;  /* gray-50  — H1/H2/H3 */
+  --color-desc:    #D6DCDC;  /* gray-100 — paragraphs */
+  --color-sub:     #D6DCDC;  /* gray-100 — general text */
+  --color-muted:   #D6DCDC;  /* gray-100 — other text */
+  --color-inverse: #121311;  /* gray-950 — text on dark backgrounds */
+
+  /* Dark mode RGB channels (semantic) */
+  --title-ch:  230 236 236;  /* gray-50  #E6ECEC */
+  --desc-ch:   214 220 220;  /* gray-100 #D6DCDC */
+  --border-ch:  45  45  45;  /* #2D2D2D */
 
   /* Dark mode glass */
   --glass-bg:     rgba(255, 255, 255, 0.05);
@@ -127,12 +140,12 @@ html.dark {
 
     --color-background: #0A0A0A;
     --color-surface:    #121212;
-    --color-title:      #EDF2EF;
-    --color-desc:       #D2DCD5;
     --color-border:     #2D2D2D;
-
-    --color-allergy:           #F87171;
-    --color-allergy-secondary: #7F1D1D;
+    --color-title:   #E6ECEC;
+    --color-desc:    #D6DCDC;
+    --color-sub:     #D6DCDC;
+    --color-muted:   #D6DCDC;
+    --color-inverse: #121311;
 
     --glass-bg:     rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);

@@ -107,7 +107,7 @@ export default function UserSecurityCard() {
                             type="submit"
                             disabled={isLoading}
                             className={cn(
-                                "w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand-500/10 hover:shadow-brand-500/25 transition-all active:scale-95 group",
+                                "w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary-500/10 hover:shadow-primary-500/25 transition-all active:scale-95 group",
                                 isLoading && "opacity-70 cursor-not-allowed"
                             )}
                         >

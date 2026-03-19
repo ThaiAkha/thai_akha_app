@@ -21,23 +21,23 @@ const Alert: React.FC<AlertProps> = ({
   const variantClasses = {
     success: {
       container:
-        "border-success-500 bg-success-50 dark:border-success-500/30 dark:bg-success-500/15",
-      icon: "text-success-500",
+        "border-sys-success bg-sys-success/10 dark:border-sys-success/30 dark:bg-sys-success/15",
+      icon: "text-sys-success",
     },
     error: {
       container:
-        "border-error-500 bg-error-50 dark:border-error-500/30 dark:bg-error-500/15",
-      icon: "text-error-500",
+        "border-sys-error bg-sys-error/10 dark:border-sys-error/30 dark:bg-sys-error/15",
+      icon: "text-sys-error",
     },
     warning: {
       container:
-        "border-warning-500 bg-warning-50 dark:border-warning-500/30 dark:bg-warning-500/15",
-      icon: "text-warning-500",
+        "border-sys-warning bg-sys-warning/10 dark:border-sys-warning/30 dark:bg-sys-warning/15",
+      icon: "text-sys-warning",
     },
     info: {
       container:
-        "border-brand-500 bg-brand-50 dark:border-brand-500/30 dark:bg-brand-500/15",
-      icon: "text-brand-500",
+        "border-primary-500 bg-primary-50 dark:border-primary-500/30 dark:bg-primary-500/15",
+      icon: "text-primary-500",
     },
   };
 

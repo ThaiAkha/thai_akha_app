@@ -36,7 +36,7 @@ const PageHeaderWithBadge: React.FC<PageHeaderWithBadgeProps> = ({
       )}
 
       <h2 className="text-4xl font-black uppercase italic tracking-tighter text-gray-900 dark:text-white">
-        {title} {titleHighlight && <span className="text-brand-600">{titleHighlight}</span>}
+        {title} {titleHighlight && <span className="text-primary-600">{titleHighlight}</span>}
       </h2>
 
       {description && (

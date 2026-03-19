@@ -67,13 +67,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         "group relative bg-white dark:bg-gray-900 rounded-3xl overflow-hidden",
         "shadow-sm border border-gray-100 dark:border-gray-800",
         "flex flex-col transition-all duration-300",
-        "hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1",
+        "hover:shadow-xl hover:shadow-primary-500/5 hover:-translate-y-1",
         "no-underline block",
         className
       )}
     >
       {/* Decorative Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       {/* Image Header */}
       {imageUrl && (
@@ -109,7 +109,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
         {/* Link Label */}
         {linkLabel && (
-          <div className="inline-flex items-center text-brand-500 font-bold text-md uppercase tracking-wider transition-colors group-hover:text-brand-600 w-fit">
+          <div className="inline-flex items-center text-primary-500 font-bold text-md uppercase tracking-wider transition-colors group-hover:text-primary-600 w-fit">
             {linkLabel}
             <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
           </div>

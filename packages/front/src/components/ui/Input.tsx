@@ -39,7 +39,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       filled: 'bg-slate-100 dark:bg-white/10 border-0 text-title',
       
       // ✨ NEW MINERAL STYLE (Vetro + Bordo Sottile)
-      mineral: 'bg-white/5 border border-white/10 text-title placeholder:text-desc/40 focus:bg-white/10 focus:border-action/50'
+      mineral: 'bg-black/[0.03] dark:bg-white/5 border-black/10 dark:border-white/10 text-title placeholder:text-desc/40 focus:bg-black/[0.05] dark:focus:bg-white/10 focus:border-action/50'
     };
 
     const sizeStyles = {
@@ -62,7 +62,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className={cn('space-y-2', fullWidth && 'w-full')}>
         
         {label && (
-          <label className="ml-1 font-accent text-[10px] font-black uppercase tracking-widest text-desc/70">
+          <label className="ml-1 font-accent text-xs font-black uppercase tracking-widest text-desc/70">
             {label}
           </label>
         )}

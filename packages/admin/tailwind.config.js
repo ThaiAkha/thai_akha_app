@@ -20,18 +20,18 @@ export default {
     safelist: [
         // ========== SIDEBAR BACKGROUND ==========
         'dark:bg-gray-dark',
-        // ========== ADMIN SIDEBAR COLORS (brand red) ==========
+        // ========== ADMIN SIDEBAR COLORS (primary = cherry red) ==========
         // Pill active states
-        'bg-brand-500/20',
-        'dark:bg-brand-500/20',
+        'bg-primary-500/20',
+        'dark:bg-primary-500/20',
         // Pill hover state
-        'hover:bg-brand-500/10',
-        'dark:hover:bg-brand-500/10',
+        'hover:bg-primary-500/10',
+        'dark:hover:bg-primary-500/10',
         // Active text & icon
-        'text-brand-600',
-        'dark:text-brand-400',
+        'text-primary-600',
+        'dark:text-primary-400',
         // Badge & indicator
-        'bg-brand-600',
+        'bg-primary-600',
         // ========== SIDEBAR ICON PADDING ==========
         'pl-5',
     ],

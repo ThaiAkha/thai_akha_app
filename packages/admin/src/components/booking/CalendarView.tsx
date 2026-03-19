@@ -140,7 +140,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div>
                     <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Select Date</span>
                     <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white italic uppercase leading-none mt-2">
-                        {MONTHS[viewDate.getMonth()]} <span className="text-brand-600 dark:text-brand-400">{viewDate.getFullYear()}</span>
+                        {MONTHS[viewDate.getMonth()]} <span className="text-primary-600 dark:text-primary-400">{viewDate.getFullYear()}</span>
                     </h3>
                 </div>
                 <div className="flex gap-2">
@@ -195,14 +195,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                             ? "bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 border-red-200 dark:border-red-900/30 cursor-pointer"
                                             : "bg-red-50/50 dark:bg-red-900/5 border border-red-100 dark:border-red-900/10 cursor-not-allowed"
                                         : "bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 border-transparent",
-                                isSelected && "bg-brand-50 dark:bg-brand-500/10 ring-2 ring-brand-500/50 z-10"
+                                isSelected && "bg-primary-50 dark:bg-primary-500/10 ring-2 ring-primary-500/50 z-10"
                             )}
                         >
                             <div className="flex justify-between items-start">
                                 <span className={cn(
                                     "text-base font-black leading-none",
-                                    isToday ? "text-brand-600 dark:text-brand-400" : "text-gray-900 dark:text-white/80 group-hover:text-gray-900 dark:group-hover:text-white",
-                                    isSelected && "text-brand-600 dark:text-brand-400",
+                                    isToday ? "text-primary-600 dark:text-primary-400" : "text-gray-900 dark:text-white/80 group-hover:text-gray-900 dark:group-hover:text-white",
+                                    isSelected && "text-primary-600 dark:text-primary-400",
                                     isFullDay && "text-red-500"
                                 )}>
                                     {date.getDate()}

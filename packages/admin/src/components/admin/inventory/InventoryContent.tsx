@@ -73,7 +73,7 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                             </p>
                                         }
                                         footerRight={
-                                            <p className="text-sm font-black text-brand-600 dark:text-brand-400">
+                                            <p className="text-sm font-black text-primary-600 dark:text-primary-400">
                                                 {formatCurrency(p.price_thb)}
                                             </p>
                                         }
@@ -140,7 +140,7 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                             <TableCell className="px-4 py-3 text-right">
                                 <DataRowText
                                     title={formatCurrency(p.price_thb)}
-                                    className="text-brand-600 dark:text-brand-400"
+                                    className="text-primary-600 dark:text-primary-400"
                                 />
                             </TableCell>
                         </DataExplorerRow>

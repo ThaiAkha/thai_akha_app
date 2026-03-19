@@ -76,7 +76,7 @@ export default function SignUpForm() {
                 {/* <!-- Company Name --> */}
                 <div className="mb-5">
                   <Label htmlFor="companyName">
-                    {t('signUp.fields.companyName')}<span className="text-error-500">*</span>
+                    {t('signUp.fields.companyName')}<span className="text-sys-error">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -92,7 +92,7 @@ export default function SignUpForm() {
                 {/* <!-- Contact Name --> */}
                 <div className="mb-5">
                   <Label htmlFor="contactName">
-                    {t('signUp.fields.contactName')}<span className="text-error-500">*</span>
+                    {t('signUp.fields.contactName')}<span className="text-sys-error">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -108,7 +108,7 @@ export default function SignUpForm() {
                 {/* <!-- Tax ID --> */}
                 <div className="mb-5">
                   <Label htmlFor="taxId">
-                    {t('signUp.fields.taxId')}<span className="text-error-500">*</span>
+                    {t('signUp.fields.taxId')}<span className="text-sys-error">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -124,7 +124,7 @@ export default function SignUpForm() {
                 {/* <!-- Email --> */}
                 <div className="mb-5">
                   <Label htmlFor="email">
-                    {t('signUp.fields.email')}<span className="text-error-500">*</span>
+                    {t('signUp.fields.email')}<span className="text-sys-error">*</span>
                   </Label>
                   <Input
                     type="email"
@@ -140,7 +140,7 @@ export default function SignUpForm() {
                 {/* <!-- Password --> */}
                 <div className="mb-5">
                   <Label htmlFor="password">
-                    {t('signUp.fields.password')}<span className="text-error-500">*</span>
+                    {t('signUp.fields.password')}<span className="text-sys-error">*</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -170,7 +170,7 @@ export default function SignUpForm() {
                   {/* <!-- Phone --> */}
                   <div className="sm:col-span-1">
                     <Label htmlFor="phone">
-                      {t('signUp.fields.phone')}<span className="text-error-500">*</span>
+                      {t('signUp.fields.phone')}<span className="text-sys-error">*</span>
                     </Label>
                     <PhoneCountryInput
                       value={phone}
@@ -193,7 +193,7 @@ export default function SignUpForm() {
                     />
                   </div>
                 </div>
-                {error && <p className="text-sm text-error-500 font-bold bg-error-50 dark:bg-error-500/10 p-3 rounded-lg border border-error-100 dark:border-error-500/20">{error}</p>}
+                {error && <p className="text-sm text-sys-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">{error}</p>}
                 {/* <!-- Checkbox --> */}
                 <div className="flex items-center gap-3">
                   <Checkbox
@@ -206,7 +206,7 @@ export default function SignUpForm() {
                     <button
                       type="button"
                       onClick={() => setLegalModalOpen('terms')}
-                      className="text-gray-800 dark:text-white/90 font-bold underline underline-offset-2 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
+                      className="text-gray-800 dark:text-white/90 font-bold underline underline-offset-2 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                     >
                       {t('signUp.termsLink')}
                     </button>
@@ -214,7 +214,7 @@ export default function SignUpForm() {
                     <button
                       type="button"
                       onClick={() => setLegalModalOpen('privacy')}
-                      className="text-gray-800 dark:text-white font-bold underline underline-offset-2 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
+                      className="text-gray-800 dark:text-white font-bold underline underline-offset-2 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                     >
                       {t('signUp.privacyLink')}
                     </button>
@@ -222,7 +222,7 @@ export default function SignUpForm() {
                 </div>
                 {/* <!-- Button --> */}
                 <div className="pt-2">
-                  <button className="brand-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-brand-500 shadow-brand hover:bg-brand-600 tracking-wider" disabled={loading}>
+                  <button className="primary-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-primary-500 shadow-brand hover:bg-primary-600 tracking-wider" disabled={loading}>
                     {loading ? t('signUp.loading') : t('signUp.button')}
                   </button>
                 </div>
@@ -234,7 +234,7 @@ export default function SignUpForm() {
                 {t('signUp.alreadyAccount')}{" "}
                 <Link
                   to="/signin"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 font-bold underline underline-offset-4"
+                  className="text-primary-500 hover:text-primary-600 dark:text-primary-400 font-bold underline underline-offset-4"
                 >
                   {t('signUp.signInLink')}
                 </Link>

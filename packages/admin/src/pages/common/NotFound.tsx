@@ -19,7 +19,7 @@ export default function NotFound() {
             {t("notFound.errorLabel")}
           </h1>
 
-          <div className="text-8xl font-display font-black text-brand-500 opacity-20 my-12 tracking-tighter">
+          <div className="text-8xl font-display font-black text-primary-500 opacity-20 my-12 tracking-tighter">
             {t("notFound.code")}
           </div>
 

@@ -45,7 +45,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
             <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col shrink-0">
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
                     <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
-                        UI <span className="text-brand-500">Showcase</span>
+                        UI <span className="text-primary-500">Showcase</span>
                     </h1>
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Component Library</p>
                 </div>
@@ -58,7 +58,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             placeholder="Search components..."
                             value={searchQuery}
                             onChange={(e) => onSearchChange(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                            className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:outline-none"
                         />
                     </div>
 
@@ -68,7 +68,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                                 activeCategory === null
-                                    ? "bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400"
+                                    ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
                                     : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900"
                             )}
                         >
@@ -93,12 +93,12 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                                             className={cn(
                                                 "w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex items-center justify-between group",
                                                 activeComponent === comp.name
-                                                    ? "text-brand-600 font-bold bg-brand-50 dark:bg-brand-900/10"
+                                                    ? "text-primary-600 font-bold bg-primary-50 dark:bg-primary-900/10"
                                                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
                                             )}
                                         >
                                             {comp.name}
-                                            {activeComponent === comp.name && <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />}
+                                            {activeComponent === comp.name && <div className="w-1.5 h-1.5 rounded-full bg-primary-500" />}
                                         </button>
                                     ))}
                                 </div>

@@ -1,227 +1,364 @@
-# 📖 THAI AKHA 2026: Core Architecture & System Rules
+# 📖 THAI AKHA 2026: Architecture v2 — Real Schema Analysis
 
-**Obiettivo per l'AI**: Utilizza questo documento come "Single Source of Truth" per lo sviluppo dell'infrastruttura, del routing, dei permessi UI e delle query Supabase.
-
----
-
-## 🏗️ 1. Architettura dei Repository (Separazione Netta)
-
-Il progetto è un **monorepo pnpm** con una rigida separazione dei domini:
-
-### **Front App** (`/packages/front`)
-- **Scopo**: PWA pubblica dedicata esclusivamente all'esperienza cliente (B2C)
-- **Destinatari**: Guest, Customer
-- **Restrizioni**:
-  - ❌ Nessuna pagina o componente operativo
-  - ❌ Nessun accesso ai ruoli staff (admin, manager, driver, kitchen, agency)
-  - ✅ Tutte le 9 pagine "Admin" precedentemente incluse (es. AdminDriverDashboard, AgencyDashboard) sono state **tassativamente eliminate** per sicurezza e performance
-- **Porte Dev**: `:3000`
-
-### **Admin App** (`/packages/admin`)
-- **Scopo**: Dashboard operativa per lo staff e portale B2B
-- **Destinatari**: Admin, Manager, Kitchen, Driver, Agency (staff roles)
-- **Funzionalità**:
-  - Kitchen orders management
-  - Logistics coordination
-  - Booking manager (create, edit, delete)
-  - Driver route console
-  - Agency B2B portal
-- **Porte Dev**: `:3001`
-
-### **Shared Module** (`/packages/shared`)
-- **Scopo**: Centralizzare logica comune tra le app
-- **Contenuti**:
-  - Client Supabase unificato (`lib/supabase.ts`)
-  - Autenticazione condivisa (`services/auth.service.ts`)
-  - Data & Types comuni (`data/`, `types/`)
-  - Utilities (cn, geoUtils, etc.)
-  - Design System 4.8 (tailwind configs separate per app)
+> **Generato**: Mar 16, 2026 — Claude + DeepSeek v3.2 + Supabase MCP (schema reale)
+> **Sostituisce**: `ARCHITECTURE.md` (Mar 12, 2026)
+> **Status**: Resoconto — Solo lettura, nessuna modifica applicata ✅
 
 ---
 
-## 🚦 2. Strategia di Routing Globale & Modalità "Sandbox"
+## 1. Overview Sistema (Multi-Tenant)
 
-La gestione degli accessi previene la confusione tra i ruoli e protegge il database.
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MULTI-TENANT ARCHITECTURE                    │
+├────────────────┬───────────────────────┬────────────────────────┤
+│  B2C Customers │   Agency Partners     │    Internal Staff      │
+│  guest/alumni  │   agency (profiles)   │  admin/mgr/drv/ktchn   │
+│  Front App     │   Admin App (B2B)     │   Admin App (ops)      │
+└────────────────┴───────────────────────┴────────────────────────┘
+```
 
-### **A. Login Redirect (Il Confine)**
+**Monorepo pnpm** — 3 package: `front` `:3000` | `admin` `:3001` | `shared`
 
-Nel componente `AuthForm.tsx` della Front App:
+---
 
+## 2. Ruoli — DB vs TypeScript (GAP CRITICO)
+
+### Constraint reale nel DB (`profiles.role`):
+```sql
+role = ANY (ARRAY['admin','manager','agency','kitchen','driver','alumni','guest'])
+```
+
+### Ruoli nel TypeScript (`auth.types.ts`):
 ```typescript
-if (['admin', 'manager', 'driver', 'kitchen', 'logistics', 'agency'].includes(profile?.role)) {
-  // Staff role detected → redirect to Admin App
-  window.location.href = `${VITE_ADMIN_APP_URL}?token=${user.id}&app=front`;
-} else {
-  // Customers (guest, customer) → stay in Front App
-  onNavigate('user');
-}
+type UserRole = 'admin' | 'manager' | 'agency' | 'kitchen' | 'logistics'
+              | 'driver' | 'alumni' | 'guest'
 ```
 
-**Comportamento:**
-- ✅ **Guest/Customer**: Accedono regolarmente alla Front App → UserPage
-- ✅ **Staff** (admin, manager, driver, kitchen, agency): Vengono intercettati e reindirizzati all'URL dell'Admin App tramite `VITE_ADMIN_APP_URL`
+### Discrepanze identificate:
+| Ruolo | DB | TypeScript | Note |
+|-------|----|-----------|------|
+| `admin` | ✅ | ✅ | |
+| `manager` | ✅ | ✅ | |
+| `agency` | ✅ | ✅ | |
+| `kitchen` | ✅ | ✅ | |
+| `driver` | ✅ | ✅ | |
+| `alumni` | ✅ | ✅ | |
+| `guest` | ✅ | ✅ | |
+| `logistics` | ❌ **MANCANTE** | ✅ | Usato nel routing ma non nel DB constraint |
+| `customer` | ❌ **MANCANTE** | ❌ | Citato in doc v1 ma non esiste né in DB né in TS |
 
-### **B. Il "Ponte" (Navigazione Incrociata Sicura)**
-
-Lo staff **può** visitare il sito pubblico per ispezionarlo, ma con regole rigorose:
-
-#### **Da Admin a Front:**
-Nell'Admin App è presente un bottone **"View Live Site"** che apre la Front App passando la sessione autenticata.
-
-#### **La "Staff Top-Bar":**
-Quando un ruolo Staff naviga sulla Front App, il sistema innesca un rendering condizionale che mostra:
-- **Barra flottante in alto** (colore Lime Green `#BAD879`)
-- **Link "Return to Admin Dashboard"** per tornare indietro in qualsiasi momento
-- **Indicatore di stato**: "You are viewing the site as Staff"
-
-#### **Modalità Sandbox (Blocco Checkout):**
-Lo staff sulla Front App può navigare, gestire il proprio profilo dietetico e giocare al Quiz. **Tuttavia**:
-
-```
-🚫 CHECKOUT BLOCCATO
-┌─────────────────────────────────────────┐
-│ Sei in modalità Staff                    │
-│                                          │
-│ Per creare una prenotazione,             │
-│ usa il Booking Manager nell'Admin App    │
-│                                          │
-│ [← Return to Admin Dashboard]            │
-└─────────────────────────────────────────┘
-```
-
-- ❌ Il Funnel di Prenotazione è bloccato
-- ❌ Al momento del checkout, il bottone di pagamento è **nascosto**
-- ✅ Viene mostrato il banner di cui sopra
-- ✅ Possono navigare e visualizzare le classi
+> **Impatto**: Un utente con `role = 'logistics'` non può essere salvato nel DB — il constraint lo rifiuterebbe.
 
 ---
 
-## 👥 3. Matrice dei Permessi Booking (Database & UI)
+## 3. Tabelle DB — Schema Reale (42 tabelle)
 
-### **Livello 1: Utenti B2C Diretti**
+### Dominio Booking
+| Tabella | Colonne | RLS | Note |
+|---------|---------|-----|------|
+| `bookings` | **49** | ✅ | Tabella principale |
+| `booking_participants` | 5 | ✅ | is_leader, joined_at |
+| `menu_selections` | 10 | ✅ | curry/soup/stirfry → recipes |
+| `class_sessions` | 12 | ✅ | Sessioni disponibili |
+| `class_calendar_overrides` | 8 | ✅ | Chiusure/capacità custom |
+| `cooking_classes` | 18 | — | Catalogo classi |
 
-| Entità | DB Flag | Permessi UI & Restrizioni |
-|--------|---------|---------------------------|
-| **Main User** | `booking_participants.is_leader = true` | ✅ Pieno Controllo. Può modificare pick-up, cambiare hotel, cancellare, scegliere il menu e invitare altri. |
-| **Invited User** | Record indipendente in `profiles` | ⚠️ Controllo Limitato. Può gestire SOLO il proprio menu e quiz. 🚫 Blocco totale su cancellazione e logistica pick-up. |
-| **Child User** | `profiles.managed_by = parent_id` | 👶 Ghost Profile. Il genitore compila menu e quiz per conto del figlio tramite un Profile Switcher nella UI, senza alcun login separato. |
+### Dominio Logistica
+| Tabella | Colonne | Note |
+|---------|---------|------|
+| `pickup_zones` | 10 | Zone pickup con orari |
+| `hotel_locations` | 16 | Hotel con zone_id → pickup_zones |
+| `hotel_pickup_rules` | 12 | **Non documentata** — regole custom per hotel/giorno |
+| `meeting_points` | 13 | Punti incontro con coordinate |
+| `driver_payments` | 11 | Pagamenti driver per corsa |
+| `driver_payout_tiers` | 6 | Tariffe per n. fermate |
 
-### **Livello 2: Regole B2B (Agenzie)**
+### Dominio Profili & Utenti
+| Tabella | Colonne | Note |
+|---------|---------|------|
+| `profiles` | **27** | Tutto in una tabella incl. agency fields |
+| `dietary_profiles` | 10 | Profili dietetici catalogo |
+| `dietary_substitutions` | 4 | Sostituzioni per profilo |
+| `spiciness_levels` | 13 | Livelli piccante |
 
-Quando un'agenzia (`profiles.role = 'agency'`) prenota per un cliente:
+### Dominio Shop
+| Tabella | Colonne | Note |
+|---------|---------|------|
+| `shop_akha` | 20 | Prodotti + zoho_item_id |
+| `shop_categories` | 6 | |
+| `shop_orders` | 9 | booking_id → bookings.internal_id ⚠️ |
+| `shop_storefront` | 10 | Vetrina pubblica |
+| `shop_contacts` | 5 | Contatti fornitori |
 
-| Attore | Luogo | Permessi |
-|--------|-------|----------|
-| **L'Agenzia** | Admin App | Controllo totale amministrativo e logistico. Genera il link condiviso per il cliente. |
-| **L'Agency Client** | Front App (link condiviso) | ⚠️ Se usa il link condiviso: ❌ Non può modificare il pick-up, ❌ non può cancellare il booking. ✅ Può solo inserire allergie, scegliere il menu e fare il quiz. |
+### Dominio Content
+| Tabella | Colonne | Note |
+|---------|---------|------|
+| `recipes` | 21 | Con dietary_variants, gallery_images |
+| `recipe_categories` | 13 | |
+| `recipe_composition` | 8 | recipe → ingredients |
+| `recipe_selections` | 4 | Selezioni per categoria |
+| `site_metadata` | 25 | SEO + OG + JSON-LD |
+| `site_metadata_admin` | 25 | |
+| `akha_news` | 15 | Blog |
+| `culture_sections` | 21 | |
+| `ethnic_groups` | 7 | |
+| `gallery_items` | 9 | |
+| `home_cards` | 13 | |
 
-**⚠️ CRITICAL PRICE RULE:**
-> In qualsiasi vista dell'Agency Client, la Front App deve mostrare **esclusivamente il prezzo pieno standard** (`total_price`).
-> È **VIETATO esporre** i dati commissionali dell'agenzia al cliente finale.
+### Dominio Operativo
+| Tabella | Colonne | Note |
+|---------|---------|------|
+| `market_runs` | 11 | + zoho_expense_id |
+| `ingredients_library` | 17 | |
+| `ingredient_categories` | 4 | |
 
-### **Livello 3: Flussi Admin "Booking Manager"**
+### Dominio Quiz
+| Tabella | Note |
+|---------|------|
+| `quiz_levels` | → quiz_rewards |
+| `quiz_modules` | → quiz_levels |
+| `quiz_questions` | → quiz_modules |
+| `quiz_rewards` | |
 
-Quando lo staff interno prenota per conto terzi:
+---
 
-#### **Flow A: New Guest**
+## 4. Mappa FK Reali (da Supabase)
+
 ```
-Admin crea booking per utente non registrato
-    ↓
-Sistema invia email al cliente
-    ↓
-Cliente fa login → eredita Controllo Totale
-    ↓
-Diventa Main User (is_leader = true)
-```
+profiles ──────────────────────────────────────────────────────────────┐
+  └── managed_by → profiles.id (ghost profiles / child users)         │
+                                                                        │
+bookings (49 col)                                                       │
+  ├── user_id            → profiles.id  (Main User / Agency)          │
+  ├── guest_user_id      → profiles.id  (Guest con account)           │
+  ├── pickup_driver_uid  → profiles.id                                 │
+  ├── dropoff_driver_uid → profiles.id                                 │
+  ├── session_id         → class_sessions.id                           │
+  └── parent_booking_id  → bookings.internal_id ⚠️ (split booking)   │
+                                                                        │
+booking_participants                                                    │
+  ├── booking_id → bookings.internal_id ⚠️ (non id!)                 │
+  └── user_id   → profiles.id ─────────────────────────────────────┘
 
-#### **Flow B: Existing User**
-```
-Admin assegna booking a ID esistente
-    ↓
-Cliente riceve Controllo Totale sulla sua app
-    ↓
-Diventa Main User per quel booking
-```
+menu_selections
+  ├── booking_id   → bookings.internal_id ⚠️
+  ├── user_id      → profiles.id
+  ├── curry_id     → recipes.id
+  ├── soup_id      → recipes.id
+  ├── stirfry_id   → recipes.id
+  └── spiciness_id → spiciness_levels.id
 
-#### **Flow C: Agency**
-```
-Admin assegna booking all'ID di un'agenzia
-    ↓
-Booking si trasferisce nel portale dell'agenzia
-    ↓
-Si attivano le regole del Livello 2 (Agency Client)
+shop_orders
+  ├── booking_id → bookings.internal_id ⚠️
+  └── sku        → shop_akha.sku
+
+hotel_locations
+  └── zone_id → pickup_zones.id
+
+hotel_pickup_rules
+  └── hotel_id → hotel_locations.id
+
+profiles
+  └── preferred_spiciness_id → spiciness_levels.id
 ```
 
 ---
 
-## 🔐 4. Regole di Accesso Supabase (RLS Policies)
+## 5. Tabella `bookings` — 49 Colonne Complete
 
-### **Booking Table**
+### Campi Core
+```
+id, internal_id, booking_ref, booking_date, session_type,
+status, created_at, updated_at, booking_source
+```
+
+### Relazioni
+```
+user_id, guest_user_id, session_id
+```
+
+### Dati Cliente
+```
+hotel_name, phone_number, phone_prefix, email_reference,
+guest_name, guest_email,          ← walk-in senza account
+special_requests, customer_note
+```
+
+### Logistica Pickup
+```
+pickup_zone, pickup_time, pickup_lat, pickup_lng,
+pickup_driver_uid, pickup_sequence,
+meeting_point,                     ← override meeting point
+has_luggage                        ← non documentato
+```
+
+### Logistica Dropoff
+```
+requires_dropoff, dropoff_hotel, dropoff_zone,
+dropoff_lat, dropoff_lng,
+dropoff_driver_uid, dropoff_sequence,
+actual_pickup_time, actual_dropoff_time,
+transport_status, route_order
+```
+
+### Pagamento & Commissioni
+```
+pax_count, total_price,
+payment_method, payment_status,
+applied_commission_rate, commission_amount,  ← importo calcolato
+agency_note, reservation_id_agency
+```
+
+### Integrazioni Esterne
+```
+zoho_invoice_id         ← Zoho Books
+```
+
+### Split Booking
+```
+parent_booking_id       ← → bookings.internal_id
+is_split_child          ← boolean flag
+```
+
+---
+
+## 6. Agency: Approccio Attuale (senza tabella dedicata)
+
+Tutto il dato agenzia è su `profiles` con prefisso `agency_*`:
+
+```
+profiles
+  ├── agency_commission_rate (integer)
+  ├── agency_company_name
+  ├── agency_tax_id
+  ├── agency_phone
+  ├── agency_address / city / province / country / postal_code
+  ├── commission_config (JSONB) — {mode: 'flat'|'tiered', tiers:[...]}
+  └── zoho_contact_id
+```
+
+### Pro approccio attuale
+- Zero JOIN extra per recuperare dati agenzia
+- Semplice per agenzie piccole / singolo contatto
+
+### Contro
+- Nessuna relazione `agency → agenti` (più utenti per stessa agenzia)
+- Commissioni non storicizzate
+- Nessuna separazione tra "agenzia come entità" e "agente come utente"
+
+---
+
+## 7. Feature Non Documentate (trovate nel DB)
+
+### Split Booking
+```
+bookings.parent_booking_id + is_split_child
+```
+Un booking principale può essere spezzato in sotto-booking (es. gruppo diviso su più veicoli).
+
+### Hotel Pickup Rules
+```
+hotel_pickup_rules: hotel_id, day_of_week, start_time, end_time,
+                    alt_meeting_point, alt_lat/lng, alt_map_link,
+                    guest_message, is_active
+```
+Regole custom per pickup hotel: orari alternativi, meeting point diverso, messaggio per il guest.
+
+### Walk-in Guest (senza account)
+```
+bookings.guest_name + bookings.guest_email
+```
+Un booking può essere creato per un guest non registrato, senza `guest_user_id`.
+
+### Luggage Flag
+```
+bookings.has_luggage (boolean)
+```
+Flag per gestione bagagli durante pickup.
+
+### Zoho Integration
+```
+bookings.zoho_invoice_id
+profiles.zoho_contact_id
+market_runs.zoho_expense_id
+shop_akha.zoho_item_id
+```
+Integrazione con Zoho Books/CRM su 4 tabelle.
+
+---
+
+## 8. Rischi Prioritizzati (DeepSeek Analysis)
+
+### 🔴 CRITICO
+| # | Problema | Rischio |
+|---|---------|---------|
+| 1 | FK su `internal_id` invece di `id` (3 tabelle) | Se `internal_id` cambia → FK rotte, dati orfani |
+| 2 | `logistics` nel TS ma non nel DB constraint | Inserimento profilo logistics → errore DB silenzioso |
+
+### 🟡 ALTO
+| # | Problema | Note |
+|---|---------|------|
+| 3 | `internal_id` senza UNIQUE constraint (da verificare) | FK senza unicità garantita = dati inconsistenti |
+| 4 | Split booking non documentato | Nessuna validazione delle transizioni |
+| 5 | `guest_name/guest_email` vs `guest_user_id` — doppio path | Logica email divergente |
+
+### 🟢 OK (nessuna azione urgente)
+| Elemento | Perché è OK |
+|---------|------------|
+| `profiles.managed_by` self-reference | Pattern valido per ghost profiles |
+| Agency data su profiles | Accettabile con ≤10 agenzie |
+| `hotel_pickup_rules` non documentata | Funziona, va solo documentata |
+| Zoho integration | Campi presenti, integrazioni esterne OK |
+
+---
+
+## 9. Raccomandazioni (solo documentazione — nessuna modifica)
+
+### Azioni da pianificare (non applicate)
+
+**Fase 1 — Quick wins (quando pronti)**
 ```sql
--- Customers vedono solo i loro booking
-SELECT * FROM bookings
-WHERE user_id = auth.uid()
+-- Verificare se internal_id ha già UNIQUE constraint
+SELECT conname FROM pg_constraint
+WHERE conrelid = 'bookings'::regclass AND contype = 'u';
 
--- Agenzie vedono i booking del loro cliente
-SELECT * FROM bookings
-WHERE agency_id = (
-  SELECT agency_id FROM profiles WHERE id = auth.uid()
-) AND client_user_id = auth.uid()
-
--- Admin vede tutto
--- (IF auth.jwt() ->> 'role' = 'admin')
+-- Aggiungere logistics al role constraint (se necessario)
+-- ALTER TABLE profiles DROP CONSTRAINT profiles_role_check;
+-- ALTER TABLE profiles ADD CONSTRAINT profiles_role_check
+-- CHECK (role = ANY (ARRAY[..., 'logistics']));
 ```
 
-### **Profiles Table**
-```sql
--- Utenti vedono il loro profilo
-SELECT * FROM profiles
-WHERE id = auth.uid()
+**Fase 2 — Documentazione**
+- Aggiungere `hotel_pickup_rules` alla doc ufficiale
+- Documentare split booking flow
+- Allineare TypeScript types con constraint DB reali
 
--- Parents vedono i profili dei figli
-SELECT * FROM profiles
-WHERE managed_by = auth.uid()
-
--- Admin vede tutto
-```
-
-### **Pricing & Commissions**
-```sql
--- Customers NEVER see agency_commission_rate
-SELECT id, user_id, total_price, menu_selections
-FROM bookings
-WHERE user_id = auth.uid()
--- agency_commission_rate è filtrato a livello UI in Frontend
-
--- Agencies vedono le loro commissioni
-SELECT id, total_price, agency_commission_rate
-FROM bookings
-WHERE agency_id = (SELECT agency_id FROM profiles WHERE id = auth.uid())
-```
+**Fase 3 — Valutare (futuro)**
+- Tabella `agencies` separata se agenzie crescono
+- Migrazione FK da `internal_id` a `id`
+- Audit logging su modifiche booking critiche
 
 ---
 
-## 🛠️ 5. Checklist per il Deployment
+## 10. Checklist Allineamento Doc ↔ Codice ↔ DB
 
-### **Variabili d'Ambiente**
-- [ ] `.env.local` (Front): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_ADMIN_APP_URL`, `VITE_GEMINI_API_KEY`, `VITE_GOOGLE_MAPS_API_KEY`
-- [ ] `.env` (Admin): Stessi valori di Front + `SUPABASE_SERVICE_ROLE_KEY` (per edge functions)
-
-### **RLS Policies**
-- [ ] ✅ `bookings` - filtra per `user_id`
-- [ ] ✅ `bookings` - filtra per `agency_id` (se agenzia)
-- [ ] ✅ `profiles` - filtra per `id` (utente)
-- [ ] ✅ `profiles` - mostra profili figli solo al genitore
-- [ ] ✅ Nessun ruolo vede `agency_commission_rate` eccetto Admin e Agenzia
-
-### **Frontend Safeguards**
-- [ ] ✅ Staff login in Front → Redirect a Admin App
-- [ ] ✅ Staff in Front → Staff Top-Bar visibile
-- [ ] ✅ Staff in Front → Checkout bloccato con banner
-- [ ] ✅ Agency Client → Prezzo standard visibile, commissioni nascoste
-- [ ] ✅ Invited User → Menu UI di cancellazione disabilitato
+| Item | Doc v1 | TypeScript | DB Reale | Allineato? |
+|------|--------|-----------|---------|-----------|
+| Ruolo `logistics` | ✅ | ✅ | ❌ | ❌ No |
+| Ruolo `customer` | ✅ | ❌ | ❌ | ❌ No |
+| Split booking | ❌ | ❌ | ✅ | ❌ No |
+| `hotel_pickup_rules` | ❌ | ❌ | ✅ | ❌ No |
+| `has_luggage` | ❌ | ❌ | ✅ | ❌ No |
+| `meeting_point` override | ❌ | ❌ | ✅ | ❌ No |
+| Zoho integration | ❌ | parziale | ✅ | ❌ No |
+| Agency senza tabella | ❌ | ✅ | ✅ | parziale |
+| `guest_name/email` walk-in | ❌ | ❌ | ✅ | ❌ No |
+| FK su `internal_id` | ❌ | ❌ | ✅ | ❌ No |
 
 ---
 
-**Ultimo Aggiornamento**: Mar 12, 2026
-**Status**: Production Ready ✅
+**Generato**: Mar 16, 2026
+**Fonte dati**: Supabase MCP → DB live `mtqullobcsypkqgdkaob`
+**Analisi**: Claude Sonnet 4.6 + DeepSeek v3.2:cloud
+**Azione**: Nessuna modifica applicata — solo lettura e documentazione ✅

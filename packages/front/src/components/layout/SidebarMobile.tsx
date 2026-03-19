@@ -68,7 +68,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       if (item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub') return false;
 
       // 🛡️ ADMIN: Nascondi voci operative dalla sidebar pubblica
-      if (level === 'admin' || level === 'manager') return false;
+      if (level === 'admin') return false;
 
       // 🏢 AGENCY: Mostra SOLO se l'utente è un'agenzia
       if (level === 'agency') return userProfile?.role === 'agency';
@@ -159,13 +159,13 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-gray-100 dark:border-gray-900">
           <button
             onClick={handleToggle}
-            className="size-12 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 hover:border-brand-500 dark:hover:border-brand-400 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
+            className="size-12 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 hover:border-primary-500 dark:hover:border-primary-400 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
           >
             <Icon name="X" className="text-2xl" />
           </button>
           <div className="text-right ml-2 mt-1">
             <Typography variant="h3" className="text-base font-black italic uppercase tracking-tighter text-gray-700 dark:text-gray-300 leading-none">
-              Thai <span className="text-brand-500 dark:text-brand-400">Akha</span>
+              Thai <span className="text-primary-500 dark:text-primary-400">Akha</span>
             </Typography>
             <Typography variant="caption" className="text-gray-500 dark:text-gray-400 font-bold tracking-[0.3em] text-xs mt-1 block">
               COOKING SCHOOL
@@ -194,21 +194,21 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                     isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
                     // Active State
                     isActive
-                      ? "bg-brand-50 dark:bg-brand-500/[0.12] text-brand-500 dark:text-brand-400 shadow-[inset_4px_0_0_0_var(--color-brand-500)]"
+                      ? "bg-primary-50 dark:bg-primary-500/[0.12] text-primary-500 dark:text-primary-400 shadow-[inset_4px_0_0_0_var(--color-primary-500)]"
                       : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300"
                   )}
                   style={{ transitionDelay: stage === 'opening' ? '0ms' : '0ms' }}
                 >
                   <Icon
                     name={item.header_icon || 'Circle'}
-                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-brand-500 dark:text-brand-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300")}
+                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-primary-500 dark:text-primary-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300")}
                   />
-                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-brand-500 dark:text-brand-400" : "text-current")}>
+                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-primary-500 dark:text-primary-400" : "text-current")}>
                     {item.menu_label}
                   </Typography>
                   {/* Freccia Hover */}
                   <Icon
-                    name="ArrowForward"
+                    name="chevron_right"
                     className="absolute right-4 opacity-0 -translate-x-4 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-300 text-sm"
                   />
                 </button>
@@ -235,7 +235,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
               onClick={onToggleTheme}
               className={cn(
                 'relative inline-flex h-6 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                isDarkMode ? 'bg-brand-500' : 'bg-gray-300 dark:bg-gray-700'
+                isDarkMode ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-700'
               )}
             >
               <span className={cn(
@@ -252,7 +252,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
               "w-full flex items-center justify-center gap-2 py-3 rounded-2xl transition-colors text-xs font-black uppercase tracking-widest",
               userProfile
                 ? "text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
-                : "bg-brand-500 text-white shadow-lg hover:brightness-110"
+                : "bg-primary-500 text-white shadow-lg hover:brightness-110"
             )}
           >
             <Icon name={userProfile ? 'LogOut' : 'LogIn'} className="text-sm" />

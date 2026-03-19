@@ -1,0 +1,308 @@
+/**
+ * Thai Akha Kitchen — Admin App Base Tailwind @theme
+ *
+ * All @theme tokens: colors, breakpoints, shadows, animations, easing.
+ * ⚠️  NO font families here — defined in theme.css
+ */
+
+@theme {
+  /* ============================================================================
+     RESPONSIVE BREAKPOINTS
+     ============================================================================ */
+  --breakpoint-*: initial;
+  --breakpoint-2xsm: 375px;
+  --breakpoint-xsm:  425px;
+  --breakpoint-sm:   640px;
+  --breakpoint-md:   768px;
+  --breakpoint-lg:   1024px;
+  --breakpoint-xl:   1280px;
+  --breakpoint-2xl:  1536px;
+  --breakpoint-3xl:  2000px;
+
+  /* ============================================================================
+     TEXT SIZES & LINE HEIGHTS
+     ============================================================================ */
+  --text-title-2xl: 72px;
+  --text-title-2xl--line-height: 90px;
+  --text-title-xl: 60px;
+  --text-title-xl--line-height: 72px;
+  --text-title-lg: 48px;
+  --text-title-lg--line-height: 60px;
+  --text-title-md: 36px;
+  --text-title-md--line-height: 44px;
+  --text-title-sm: 30px;
+  --text-title-sm--line-height: 38px;
+  --text-theme-xl: 20px;
+  --text-theme-xl--line-height: 30px;
+  --text-theme-sm: 14px;
+  --text-theme-sm--line-height: 20px;
+  --text-theme-xs: 12px;
+  --text-theme-xs--line-height: 18px;
+
+  /* ============================================================================
+     SEMANTIC COLORS — Base
+     ============================================================================ */
+  --color-current:     currentColor;
+  --color-transparent: transparent;
+  --color-white:       #ffffff;
+  --color-black:       #181C1D;
+
+  /* ============================================================================
+     COLOR PALETTES — design-tokens-v2 (Thai Akha Kitchen)
+     ============================================================================ */
+
+  /* PRIMARY — Cherry Red (anchor 500 = #E31F33) */
+  --color-primary-25:   #fef1f2;
+  --color-primary-50:   #fddfe2;
+  --color-primary-100:  #fbc0c5;
+  --color-primary-200:  #f8a1a9;
+  --color-primary-300:  #f2828d;
+  --color-primary-400:  #e3515f;
+  --color-primary-500:  #E31F33;
+  --color-primary-600:  #c11c2e;
+  --color-primary-700:  #9e1725;
+  --color-primary-800:  #7c121d;
+  --color-primary-900:  #590d15;
+  --color-primary-950:  #37080d;
+  --color-primary-1000: #150305;
+
+  /* ACTION — Lime Green (anchor 500 = #98C93C) */
+  --color-action-25:   #f5fce8;
+  --color-action-50:   #eaf7d0;
+  --color-action-100:  #d4ee90;
+  --color-action-200:  #c0e468;
+  --color-action-300:  #aedd4e;
+  --color-action-400:  #a2d244;
+  --color-action-500:  #98C93C;
+  --color-action-600:  #7dab2e;
+  --color-action-700:  #628d22;
+  --color-action-800:  #476f18;
+  --color-action-900:  #30500f;
+  --color-action-950:  #1e3308;
+  --color-action-1000: #0e1a03;
+
+  /* QUIZ-P — Deep Magenta (anchor 500 = #9A0050) */
+  --color-quiz-p-25:   #fff0f7;
+  --color-quiz-p-50:   #ffe0ee;
+  --color-quiz-p-100:  #ffb8d9;
+  --color-quiz-p-200:  #ff80bc;
+  --color-quiz-p-300:  #f0449c;
+  --color-quiz-p-400:  #c8207a;
+  --color-quiz-p-500:  #9A0050;
+  --color-quiz-p-600:  #820044;
+  --color-quiz-p-700:  #680038;
+  --color-quiz-p-800:  #50002c;
+  --color-quiz-p-900:  #380020;
+  --color-quiz-p-950:  #280018;
+  --color-quiz-p-1000: #1a0010;
+
+  /* QUIZ-S — Deep Purple (anchor 500 = #3B227A) */
+  --color-quiz-s-25:   #f4f0ff;
+  --color-quiz-s-50:   #eae0ff;
+  --color-quiz-s-100:  #d4bfff;
+  --color-quiz-s-200:  #b898ff;
+  --color-quiz-s-300:  #9470e8;
+  --color-quiz-s-400:  #6844b0;
+  --color-quiz-s-500:  #3B227A;
+  --color-quiz-s-600:  #311a66;
+  --color-quiz-s-700:  #261454;
+  --color-quiz-s-800:  #1c0e40;
+  --color-quiz-s-900:  #14082e;
+  --color-quiz-s-950:  #0c0420;
+  --color-quiz-s-1000: #060212;
+
+  /* BTN-P — Orange (anchor 500 = #FF6D00) */
+  --color-btn-p-25:   #fff6ee;
+  --color-btn-p-50:   #ffead4;
+  --color-btn-p-100:  #ffd5a8;
+  --color-btn-p-200:  #ffba6e;
+  --color-btn-p-300:  #ffa040;
+  --color-btn-p-400:  #ff8618;
+  --color-btn-p-500:  #FF6D00;
+  --color-btn-p-600:  #d95a00;
+  --color-btn-p-700:  #b34800;
+  --color-btn-p-800:  #8c3800;
+  --color-btn-p-900:  #662a00;
+  --color-btn-p-950:  #401900;
+  --color-btn-p-1000: #200d00;
+
+  /* BTN-S — Blue Light (anchor 500 = #1CA3E6) */
+  --color-btn-s-25:   #f5fbff;
+  --color-btn-s-50:   #f0f9ff;
+  --color-btn-s-100:  #e0f2fe;
+  --color-btn-s-200:  #b9e6fe;
+  --color-btn-s-300:  #7cd4fd;
+  --color-btn-s-400:  #36bffa;
+  --color-btn-s-500:  #1ca3e6;
+  --color-btn-s-600:  #0086c9;
+  --color-btn-s-700:  #026aa2;
+  --color-btn-s-800:  #065986;
+  --color-btn-s-900:  #0b4a6f;
+  --color-btn-s-950:  #062c41;
+  --color-btn-s-1000: #021520;
+
+  /* GRAY — Warm Neutral */
+  --color-gray-25:   #F6FCFC;
+  --color-gray-50:   #E6ECEC;
+  --color-gray-100:  #D6DCDC;
+  --color-gray-200:  #C2C8C8;
+  --color-gray-300:  #AEB4B4;
+  --color-gray-400:  #9AA0A0;
+  --color-gray-500:  #868C8C;
+  --color-gray-600:  #727878;
+  --color-gray-700:  #5E6464;
+  --color-gray-800:  #4A504F;
+  --color-gray-900:  #222827;
+  --color-gray-950:  #121311;
+  --color-gray-1000: #0A0906;
+  --color-gray-dark: #080808;  /* legacy alias — used by sidebar components */
+
+  /* SYSTEM UI */
+  --color-sys-success: #22C55E;
+  --color-sys-error:   #EF4444;
+  --color-sys-warning: #F59E0B;
+  --color-sys-info:    #3B82F6;
+  --color-sys-notice:  #EAB308;
+
+  /* ============================================================================
+     FLAT ALIAS TOKENS — bg-primary, text-action, bg-action/50 etc.
+     ============================================================================ */
+  --color-primary: #E31F33;
+  --color-action:  #98C93C;
+  --color-quiz-p:  #9A0050;
+  --color-quiz-s:  #3B227A;
+  --color-btn-p:   #FF6D00;
+  --color-btn-s:   #1CA3E6;
+
+  /* ============================================================================
+     SHADOWS
+     ============================================================================ */
+  --shadow-theme-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-theme-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.1),
+                     0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+  --shadow-theme-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1),
+                     0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-theme-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08),
+                     0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-theme-xl: 0px 20px 24px -4px rgba(16, 24, 40, 0.08),
+                     0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+
+  --shadow-datepicker:        -5px 0 0 #262d3c, 5px 0 0 #262d3c;
+  --shadow-focus-ring:        0px 0px 0px 4px rgba(70, 95, 255, 0.12);
+  --shadow-slider-navigation: 0px 1px 2px 0px rgba(16, 24, 40, 0.1),
+                               0px 1px 3px 0px rgba(16, 24, 40, 0.1);
+  --shadow-tooltip:           0px 4px 6px -2px rgba(16, 24, 40, 0.05),
+                               -8px 0px 20px 8px rgba(16, 24, 40, 0.05);
+  --drop-shadow-4xl:          0 35px 35px rgba(0, 0, 0, 0.25),
+                               0 45px 65px rgba(0, 0, 0, 0.15);
+
+  --shadow-brand:       0 10px 30px -10px rgba(227, 31, 51, 0.3);
+  --shadow-brand-hover: 0 20px 40px -15px rgba(227, 31, 51, 0.4);
+  --shadow-glass:       0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+  --shadow-brand-glow:    0 15px 30px -5px rgba(224, 0, 134, 0.4);
+  --shadow-action-glow:   0 15px 30px -5px rgba(152, 201, 60, 0.4);
+  --shadow-badge-glow:    0 8px 16px -4px rgba(224, 0, 134, 0.2);
+  --shadow-card-hover:    0 0 40px rgba(255, 117, 151, 0.4);
+  --shadow-glow-cherry:   0 4px 20px rgba(229, 64, 99, 0.40);
+  --shadow-glow-cherry-h: 0 8px 36px rgba(229, 64, 99, 0.60);
+  --shadow-glow-lime:     0 4px 16px rgba(186, 216, 121, 0.40);
+  --shadow-glow-lime-h:   0 8px 28px rgba(186, 216, 121, 0.55);
+  --shadow-glow-orange:   0 4px 20px rgba(255, 109, 0, 0.40);
+  --shadow-glow-orange-h: 0 8px 36px rgba(255, 109, 0, 0.60);
+  --shadow-glow-blue:     0 4px 16px rgba(59, 130, 246, 0.35);
+  --shadow-glow-blue-h:   0 8px 28px rgba(59, 130, 246, 0.55);
+
+  /* ============================================================================
+     Z-INDEX SCALE
+     ============================================================================ */
+  --z-index-1:      1;
+  --z-index-9:      9;
+  --z-index-99:     99;
+  --z-index-999:    999;
+  --z-index-9999:   9999;
+  --z-index-99999:  99999;
+  --z-index-999999: 999999;
+
+  /* ============================================================================
+     EASING FUNCTIONS
+     ============================================================================ */
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-cinematic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-elastic:   cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ============================================================================
+     TRANSITIONS
+     ============================================================================ */
+  --transition-bezier: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast:   150ms var(--transition-bezier);
+  --transition-base:   300ms var(--transition-bezier);
+  --transition-slow:   500ms var(--transition-bezier);
+
+  /* ============================================================================
+     GLASS EFFECT VARIABLES
+     ============================================================================ */
+  --glass-bg:     rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur:   blur(8px);
+
+  /* ============================================================================
+     ANIMATIONS
+     ============================================================================ */
+  --animate-fade-slide-down: fade-slide-down 0.9s ease-out both;
+  --animate-fade-slide-up:   fade-slide-up 0.9s ease-out both;
+  --animate-pulse-slow:      pulse-slow 10s ease-in-out infinite;
+  --animate-flash:           flash 0.6s ease-out forwards;
+  --animate-icon-pulse:      icon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-mic-listening:   mic-listening 1.5s ease-in-out infinite;
+  --animate-shine:           shine 4s infinite linear;
+  --animate-shine-oblique:   shine-oblique 4s infinite linear;
+}
+
+/* ============================================================================
+   KEYFRAMES
+   ============================================================================ */
+
+@keyframes fade-slide-down {
+  0%   { opacity: 0; transform: translateY(-3rem); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-slide-up {
+  0%   { opacity: 0; transform: translateY(3rem); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.1); }
+}
+
+@keyframes flash {
+  0%   { opacity: 0; transform: translateX(-100%) skewX(-15deg); }
+  50%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(100%) skewX(-15deg); }
+}
+
+@keyframes icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(0.95); }
+}
+
+@keyframes mic-listening {
+  0%   { box-shadow: 0 0 0 0 rgba(227, 31, 51, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(227, 31, 51, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(227, 31, 51, 0); }
+}
+
+@keyframes shine {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes shine-oblique {
+  0%   { left: -150%; }
+  20%  { left: 150%; }
+  100% { left: 150%; }
+}

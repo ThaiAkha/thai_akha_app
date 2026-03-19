@@ -92,7 +92,7 @@ export default function RecentBookings() {
                             <TableRow key={booking.internal_id}>
                                 <TableCell className="py-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-[40px] w-[40px] overflow-hidden rounded-full uppercase bg-brand-50 flex items-center justify-center text-brand-600 font-bold text-xs ring-2 ring-white dark:ring-gray-800">
+                                        <div className="h-[40px] w-[40px] overflow-hidden rounded-full uppercase bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-xs ring-2 ring-white dark:ring-gray-800">
                                             {booking.guest_name?.substring(0, 2) || 'GU'}
                                         </div>
                                         <div>

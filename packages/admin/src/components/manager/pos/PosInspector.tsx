@@ -58,7 +58,7 @@ const PosInspector: React.FC<PosInspectorProps> = ({
                                 <div className="flex items-center gap-3 overflow-hidden">
                                     <div className={cn(
                                         "size-6 rounded flex items-center justify-center text-[10px] font-bold text-white shrink-0",
-                                        item.status === 'new' ? "bg-brand-500" : "bg-gray-300 dark:bg-gray-700"
+                                        item.status === 'new' ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-700"
                                     )}>
                                         {item.quantity}
                                     </div>

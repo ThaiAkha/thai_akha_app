@@ -94,7 +94,7 @@ const DbContent: React.FC<DbContentProps> = ({
                                     idx={idx}
                                     selected={isRowSelected}
                                     onClick={() => onRowSelect(row)}
-                                    className={cn(selectedIds.has(currentRowId) && "!bg-brand-500/5")}
+                                    className={cn(selectedIds.has(currentRowId) && "!bg-primary-500/5")}
                                 >
                                     <TableCell className="px-4 w-10" onClick={(e) => e.stopPropagation()}>
                                         <Checkbox

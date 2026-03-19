@@ -18,7 +18,7 @@ const BadgeLuggageStatus: React.FC<BadgeLuggageStatusProps> = ({ hasLuggage, siz
 
     return (
         <Tooltip content="Has luggage" position="left">
-            <div className={`flex items-center justify-center ${sizeClasses} bg-orange-50 dark:bg-orange-900/20 rounded-md border border-orange-500 dark:border-orange-500 shrink-0`}>
+            <div className={`flex items-center justify-center ${sizeClasses} bg-orange-50 dark:bg-btn-p-900/20 rounded-md border border-orange-500 dark:border-orange-500 shrink-0`}>
                 <Luggage className={`${iconSize} text-orange-500`} />
             </div>
         </Tooltip>

@@ -129,7 +129,7 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
                 className="w-full md:w-auto bg-white/5 border border-white/10 p-1 pr-6 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-white/10 hover:border-quiz/30 transition-all group/reward" 
                 onClick={() => onNavigate('quiz')}
             >
-                <div className="size-14 rounded-xl bg-gradient-to-br from-quiz to-orange-500 flex items-center justify-center text-black shadow-lg group-hover/reward:scale-105 transition-transform">
+                <div className="size-14 rounded-xl bg-gradient-to-br from-quiz to-btn-p-500 flex items-center justify-center text-black shadow-lg group-hover/reward:scale-105 transition-transform">
                     {/* ✅ ORA FUNZIONA: nextReward è un oggetto singolo */}
                     <Icon name={nextReward.icon} size="md"/>
                 </div>
@@ -202,7 +202,7 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
                         <div className={cn("size-6 rounded flex items-center justify-center font-black text-xs", 
                             i === 0 ? "bg-yellow-500 text-black shadow-lg shadow-yellow-500/20" : 
                             i === 1 ? "bg-gray-400 text-black" : 
-                            i === 2 ? "bg-orange-700 text-white" : "bg-white/10 text-white/60")}>
+                            i === 2 ? "bg-btn-p-700 text-white" : "bg-white/10 text-white/60")}>
                             {p.rank}
                         </div>
                         <div className="size-8 rounded-full bg-white/10 flex items-center justify-center text-sm">

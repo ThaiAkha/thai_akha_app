@@ -37,7 +37,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
         return (
             <div className="flex flex-col items-center justify-center h-full p-8">
                 <div className="max-w-sm w-full bg-white dark:bg-gray-900 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-3xl p-10 flex flex-col items-center text-center shadow-xl shadow-gray-100/50 dark:shadow-none animate-in fade-in zoom-in duration-500">
-                    <div className="size-20 bg-brand-50 dark:bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-500 mb-6 drop-shadow-sm">
+                    <div className="size-20 bg-primary-50 dark:bg-primary-500/10 rounded-2xl flex items-center justify-center text-primary-500 mb-6 drop-shadow-sm">
                         {emptyIcon || <TableIcon size={40} />}
                     </div>
                     <h3 className="text-lg font-black text-gray-800 dark:text-gray-100 uppercase tracking-tight mb-2">
@@ -46,7 +46,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                     <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
                         Inserire primo contenuto per iniziare
                     </p>
-                    <div className="mt-8 size-1.5 rounded-full bg-brand-500 animate-pulse" />
+                    <div className="mt-8 size-1.5 rounded-full bg-primary-500 animate-pulse" />
                 </div>
             </div>
         );

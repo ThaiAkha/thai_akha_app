@@ -60,7 +60,7 @@ export default function SignInForm() {
               <div className="space-y-5">
                 <div>
                   <Label htmlFor="email">
-                    {t('signIn.emailLabel')}<span className="text-error-500">*</span>
+                    {t('signIn.emailLabel')}<span className="text-sys-error">*</span>
                   </Label>
                   <Input
                     type="email"
@@ -75,7 +75,7 @@ export default function SignInForm() {
 
                 <div>
                   <Label htmlFor="password">
-                    {t('signIn.passwordLabel')}<span className="text-error-500">*</span>
+                    {t('signIn.passwordLabel')}<span className="text-sys-error">*</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -101,7 +101,7 @@ export default function SignInForm() {
                 </div>
 
                 {error && (
-                  <p className="text-sm text-error-500 font-bold bg-error-50 dark:bg-error-500/10 p-3 rounded-lg border border-error-100 dark:border-error-500/20">
+                  <p className="text-sm text-sys-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">
                     {error}
                   </p>
                 )}
@@ -109,7 +109,7 @@ export default function SignInForm() {
                 <div className="text-right">
                   <Link
                     to="/reset-password"
-                    className="text-xs text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                    className="text-xs text-primary-500 hover:text-primary-600 dark:text-primary-400"
                   >
                     {t('signIn.forgotPassword')}
                   </Link>
@@ -118,7 +118,7 @@ export default function SignInForm() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="brand-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-brand-500 shadow-brand hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed tracking-wider"
+                    className="primary-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-primary-500 shadow-brand hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed tracking-wider"
                     disabled={loading}
                   >
                     {loading ? t('signIn.loading') : t('signIn.button')}
@@ -132,7 +132,7 @@ export default function SignInForm() {
                 {t('signIn.noAccount')}{" "}
                 <Link
                   to="/signup"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400 font-bold underline underline-offset-4"
+                  className="text-primary-500 hover:text-primary-600 dark:text-primary-400 font-bold underline underline-offset-4"
                 >
                   {t('signIn.signUpLink')}
                 </Link>

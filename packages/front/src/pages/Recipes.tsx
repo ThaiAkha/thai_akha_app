@@ -73,7 +73,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ onNavigate, userProfile }) =>
   const activeProfileData = useMemo(() => {
     return dietProfiles.find(p => p.id === activeDiet) || {
       name: 'Regular Diet',
-      icon: '🍽️',
+      icon: 'restaurant',
       description: 'Standard authentic preparation.'
     };
   }, [activeDiet, dietProfiles]);

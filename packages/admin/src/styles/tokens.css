@@ -29,6 +29,13 @@
   --color-button-primary:        #BAD879;  /* lime-500 */
   --color-button-primary-hover:  #9EBF63;  /* lime-600 */
   --color-button-primary-active: #82A64D;  /* lime-700 */
+
+  /* ========================================================================
+     🎨 RGB CHANNELS — for reliable opacity modifiers
+     Usage: rgb(var(--action-ch) / 0.2)  →  rgba(152, 201, 60, 0.2)
+     ======================================================================== */
+  --action-ch:   152 201 60;   /* #98C93C */
+  --primary-ch:  227  31 51;   /* #E31F33 */
 }
 
 /* ========================================================================

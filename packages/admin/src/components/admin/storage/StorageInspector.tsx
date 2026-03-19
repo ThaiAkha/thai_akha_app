@@ -83,8 +83,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
                     />
                 ) : (selectedFile && selectedFile.metadata?.mimetype?.startsWith('audio/')) ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-brand-50/20 dark:bg-brand-500/5">
-                        <Music className="w-12 h-12 text-brand-500 mb-6 animate-bounce-slow" />
+                    <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-primary-50/20 dark:bg-primary-500/5">
+                        <Music className="w-12 h-12 text-primary-500 mb-6 animate-bounce-slow" />
                         <audio
                             controls
                             className="w-full h-12 rounded-full"
@@ -138,15 +138,15 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                             <div className="grid grid-cols-1 gap-2">
                                 {(selectedFile && selectedFile.metadata?.mimetype?.startsWith('image/')) ? (
                                     <>
-                                        <a href={getFilePreview(selectedFile.name)} download={selectedFile.name} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-brand-500 transition-colors group text-decoration-none">
+                                        <a href={getFilePreview(selectedFile.name)} download={selectedFile.name} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary-500 transition-colors group text-decoration-none">
                                             <div className="flex items-center gap-3">
-                                                <ImageIcon className="w-4 h-4 text-brand-500" />
+                                                <ImageIcon className="w-4 h-4 text-primary-500" />
                                                 <div className="text-left">
                                                     <p className="text-[11px] font-bold text-gray-700 dark:text-gray-200">Original Quality</p>
                                                     <p className="text-[9px] text-gray-400 tracking-tight">Full resolution asset</p>
                                                 </div>
                                             </div>
-                                            <Check className="w-3 h-3 text-gray-300 group-hover:text-brand-500" />
+                                            <Check className="w-3 h-3 text-gray-300 group-hover:text-primary-500" />
                                         </a>
                                     </>
                                 ) : (selectedFile && selectedFile.metadata?.mimetype?.startsWith('audio/')) ? (
@@ -208,7 +208,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <Input
                             value={pendingFileName}
                             onChange={(e) => onPendingFileNameChange(e.target.value)}
-                            className="h-11 text-[12px] font-bold border-brand-300 focus:border-brand-600 bg-brand-50/30 shadow-inner"
+                            className="h-11 text-[12px] font-bold border-primary-300 focus:border-primary-600 bg-primary-50/30 shadow-inner"
                             placeholder="Enter filename..."
                         />
                     ) : isEditing ? (

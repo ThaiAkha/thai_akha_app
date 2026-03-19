@@ -38,7 +38,7 @@ const WelcomeHero: React.FC<WelcomeHeroProps> = ({
                     </Badge>
                 )}
                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 dark:text-white leading-none">
-                    {titleMain} {titleHighlight && <span className="text-brand-600 drop-shadow-sm">{titleHighlight}</span>}
+                    {titleMain} {titleHighlight && <span className="text-primary-600 drop-shadow-sm">{titleHighlight}</span>}
                 </h1>
                 {description && (
                     <p className="text-lg font-medium text-gray-900 dark:text-gray-300 max-w-lg leading-relaxed">
@@ -65,7 +65,7 @@ const WelcomeHero: React.FC<WelcomeHeroProps> = ({
                 </div>
             ) : (
                 <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-10 pointer-events-none">
-                    {IconComponent && <IconComponent className="w-64 h-64 text-brand-600" />}
+                    {IconComponent && <IconComponent className="w-64 h-64 text-primary-600" />}
                 </div>
             )}
         </div>

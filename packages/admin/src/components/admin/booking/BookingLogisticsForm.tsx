@@ -47,7 +47,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
   return (
     <div className="mt-12 pt-12 border-t border-gray-100 dark:border-gray-800 space-y-8">
       <h3 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900 dark:text-white flex items-center gap-3">
-        <div className="p-2 rounded-xl bg-brand-500/10 text-brand-500">
+        <div className="p-2 rounded-xl bg-primary-500/10 text-primary-500">
           <Truck size={20} />
         </div>
         {t('logistics.sectionTitle')}
@@ -66,7 +66,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
               className={cn(
                 "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 needPickup === true
-                  ? "border-brand-500/50 bg-brand-500/10 text-brand-600 dark:text-brand-400 shadow-lg shadow-brand-500/10 scale-[1.02]"
+                  ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
               )}
             >
@@ -112,18 +112,18 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                             onHotelSelect(h);
                             onMeetingPointChange('');
                           }}
-                          className="w-full p-4 text-left hover:bg-brand-50 dark:hover:bg-brand-500/10 border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-center justify-between group transition-colors"
+                          className="w-full p-4 text-left hover:bg-primary-50 dark:hover:bg-primary-500/10 border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-center justify-between group transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="size-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
-                              <MapPin className="w-5 h-5 text-gray-400 group-hover:text-brand-500" />
+                            <div className="size-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-500/20 transition-colors">
+                              <MapPin className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                             </div>
                             <div>
                               <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{h.name}</p>
                               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{h.pickup_zones?.name || 'No Zone'}</p>
                             </div>
                           </div>
-                          <CheckCircle2 className="w-5 h-5 text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
                       ))}
                     </div>
@@ -160,7 +160,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   className={cn(
                     "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                     hasLuggage === true
-                      ? "border-brand-500/50 bg-brand-500/10 text-brand-600 dark:text-brand-400 shadow-lg shadow-brand-500/10 scale-[1.02]"
+                      ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
                       : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
                   )}
                 >

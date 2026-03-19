@@ -54,7 +54,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                     <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
                         {isBulkMode ? `${selectedDates.size} Days` : new Date(selectedDate!).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </h3>
-                    <p className="text-sm text-brand-600 dark:text-brand-400 mt-1 uppercase font-black tracking-widest">
+                    <p className="text-sm text-primary-600 dark:text-primary-400 mt-1 uppercase font-black tracking-widest">
                         {isBulkMode ? `Bulk Update: ${bulkSessionType === 'all' ? 'All Day' : (bulkSessionType === 'morning_class' ? 'Morning Only' : 'Evening Only')}` : (isEditing ? 'Editing Day' : 'Quick Preview')}
                     </p>
                 </div>
@@ -82,7 +82,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                             </div>
                                             <div className="p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl">
                                                 <p className="text-sm font-black uppercase text-gray-500 dark:text-gray-400 mb-1">Available</p>
-                                                <span className="text-xl font-black text-brand-600 dark:text-brand-400">{safeSeats}</span>
+                                                <span className="text-xl font-black text-primary-600 dark:text-primary-400">{safeSeats}</span>
                                             </div>
                                         </div>
                                         {sess.status === 'CLOSED' && <div className="mt-3 p-3 bg-red-50/50 dark:bg-red-900/20 rounded-xl text-sm font-bold text-red-600 dark:text-red-300 border border-red-100 dark:border-red-900">{sess.reason || 'Class Close'}</div>}
@@ -122,7 +122,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                                             updateEditState(key, 'isClosed', e.target.checked);
                                                             if (s === 'all') updateEditState('evening_class', 'isClosed', e.target.checked);
                                                         }}
-                                                        className="size-4 rounded text-brand-600 dark:bg-gray-800 dark:border-gray-700"
+                                                        className="size-4 rounded text-primary-600 dark:bg-gray-800 dark:border-gray-700"
                                                     />
                                                 </div>
                                             </div>

@@ -23,23 +23,19 @@ export default {
   safelist: [
     // ========== SIDEBAR BACKGROUND ==========
     'dark:bg-gray-dark',
-    // ========== FRONT SIDEBAR COLORS (action = lime) ==========
+    // ========== FRONT SIDEBAR COLORS (action scale) ==========
     // Pill active states
-    'bg-lime-500/20',
-    'dark:bg-lime-500/20',
+    'bg-action-500/20',
+    'dark:bg-action-500/20',
     // Pill hover state
-    'hover:bg-lime-500/10',
-    'dark:hover:bg-lime-500/10',
+    'hover:bg-action-500/10',
+    'dark:hover:bg-action-500/10',
     // Active text & icon
-    'text-lime-700',
-    'dark:text-lime-400',
+    'text-action-700',
+    'dark:text-action-400',
     // Badge & indicator
-    'bg-lime-700',
+    'bg-action-700',
     // ========== SIDEBAR ICON PADDING ==========
     'pl-5',
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
 };

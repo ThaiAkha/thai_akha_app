@@ -107,7 +107,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
 
                 <div className="flex gap-2">
                     <button onClick={() => onOpenMap(displayHotel)} className="flex-1 flex items-center gap-3 p-4 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-black/40 hover:bg-gray-200 dark:hover:bg-white/5 transition-all text-left group">
-                        <Map className="w-5 h-5 text-brand-500 dark:text-brand-400 shrink-0 group-hover:scale-110 transition-transform" />
+                        <Map className="w-5 h-5 text-primary-500 dark:text-primary-400 shrink-0 group-hover:scale-110 transition-transform" />
                         <div className="min-w-0">
                             <span className="text-sm font-bold truncate text-gray-900 dark:text-white/90 block">{displayHotel}</span>
                             {phase === 'DROPOFF' && stop.dropoff_hotel && (

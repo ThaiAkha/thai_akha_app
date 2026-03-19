@@ -86,7 +86,7 @@ export const BookingCalendarView: React.FC<BookingCalendarViewProps> = ({
     { label: 'Available', color: 'bg-green-500' },
     { label: 'Fully Booked', color: 'bg-red-500' },
     { label: 'Closed', color: 'bg-orange-400' },
-    { label: 'Selected', color: 'bg-brand-500', borderColor: 'border-brand-400' },
+    { label: 'Selected', color: 'bg-primary-500', borderColor: 'border-primary-400' },
   ];
 
   return (

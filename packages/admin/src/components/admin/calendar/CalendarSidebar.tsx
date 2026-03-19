@@ -39,10 +39,10 @@ const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
                         />
                     </div>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-brand-50/20 dark:bg-brand-500/5 rounded-2xl border border-dashed border-brand-200 dark:border-brand-900/30">
-                        <Calendar className="w-10 h-10 text-brand-300 mb-4" />
-                        <p className="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Bulk Edit Mode</p>
-                        <p className="text-xs text-brand-600 mt-2 italic">Days with bookings are locked for security.</p>
+                    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-primary-50/20 dark:bg-primary-500/5 rounded-2xl border border-dashed border-primary-200 dark:border-primary-900/30">
+                        <Calendar className="w-10 h-10 text-primary-300 mb-4" />
+                        <p className="text-xs font-black uppercase tracking-widest text-primary-600 dark:text-primary-400">Bulk Edit Mode</p>
+                        <p className="text-xs text-primary-600 mt-2 italic">Days with bookings are locked for security.</p>
                     </div>
                 )}
             </div>

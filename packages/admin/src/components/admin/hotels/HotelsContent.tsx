@@ -171,7 +171,7 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                             <div className="flex items-center gap-2">
                                                 {mp.google_maps_link && (
                                                     <a href={mp.google_maps_link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} title={t('content.openInMaps')}>
-                                                        <MapPin className="w-4 h-4 text-brand-500 hover:scale-110 transition-transform" />
+                                                        <MapPin className="w-4 h-4 text-primary-500 hover:scale-110 transition-transform" />
                                                     </a>
                                                 )}
                                                 {mp.image_url && (

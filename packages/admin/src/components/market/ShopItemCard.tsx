@@ -37,8 +37,8 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
       className={cn(
         "group relative flex flex-col rounded-[2rem] overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer active:scale-95",
         isAdded
-          ? "bg-brand-50 data-[mode=dark]:bg-brand-900/10 border-brand-500 shadow-lg scale-[1.02] z-10"
-          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-md"
+          ? "bg-primary-50 data-[mode=dark]:bg-primary-900/10 border-primary-500 shadow-lg scale-[1.02] z-10"
+          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md"
       )}
     >
       {/* IMAGE LAYER */}
@@ -54,8 +54,8 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
 
         {/* CHECKMARK OVERLAY */}
         {isAdded && (
-          <div className="absolute inset-0 bg-brand-500/20 flex items-center justify-center animate-in zoom-in fade-in duration-300">
-            <div className="size-12 rounded-full bg-white text-brand-600 flex items-center justify-center shadow-2xl ring-4 ring-brand-500/20">
+          <div className="absolute inset-0 bg-primary-500/20 flex items-center justify-center animate-in zoom-in fade-in duration-300">
+            <div className="size-12 rounded-full bg-white text-primary-600 flex items-center justify-center shadow-2xl ring-4 ring-primary-500/20">
               <CheckCircle2 className="w-8 h-8" />
             </div>
           </div>
@@ -74,7 +74,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         <div className="flex flex-col min-w-0">
           <h6 className={cn(
             "text-xs font-black uppercase truncate leading-tight transition-colors mb-1",
-            isAdded ? "text-brand-600 dark:text-brand-400" : "text-gray-900 dark:text-white"
+            isAdded ? "text-primary-600 dark:text-primary-400" : "text-gray-900 dark:text-white"
           )}
           >
             {item.name_en}
@@ -85,11 +85,11 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         {/* PRICE DISPLAY (Teacher Mode) */}
         {!isLogistics && (
           <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-2 rounded-xl border border-transparent group-hover:border-brand-200 dark:group-hover:border-brand-700 transition-all">
+            <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-2 rounded-xl border border-transparent group-hover:border-primary-200 dark:group-hover:border-primary-700 transition-all">
               <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Reported Cost</span>
               <span className={cn(
                 "font-mono font-black text-sm",
-                price > 0 ? "text-brand-600 dark:text-brand-400" : "text-gray-300 dark:text-gray-600"
+                price > 0 ? "text-primary-600 dark:text-primary-400" : "text-gray-300 dark:text-gray-600"
               )}>
                 {price || '0'} THB
               </span>
@@ -99,7 +99,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
 
         {/* LOGISTICS HINT */}
         {isLogistics && (
-          <div className="mt-auto flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity text-brand-600 dark:text-brand-400">
+          <div className="mt-auto flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity text-primary-600 dark:text-primary-400">
             {isAdded ? <Check className="w-4 h-4" /> : <PlusCircle className="w-4 h-4" />}
             <span className="text-[9px] font-black uppercase tracking-widest">{isAdded ? 'Added to list' : 'Click to add'}</span>
           </div>

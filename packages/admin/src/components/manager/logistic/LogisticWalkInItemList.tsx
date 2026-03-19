@@ -52,8 +52,8 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                         className={cn(
                             "p-3 rounded-xl border transition-all cursor-pointer bg-white dark:bg-gray-800 shadow-sm group",
                             isSelected
-                                ? "border-brand-500 ring-1 ring-brand-500"
-                                : "border-gray-100 dark:border-gray-700 hover:border-brand-300"
+                                ? "border-primary-500 ring-1 ring-primary-500"
+                                : "border-gray-100 dark:border-gray-700 hover:border-primary-300"
                         )}
                     >
                         {/* Row 1: Icon + Name + Badges */}
@@ -63,7 +63,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                                 alt={item.guest_name}
                                 size="medium"
                                 fallback={<MapPin className="w-5 h-5 text-orange-500 dark:text-orange-400" />}
-                                fallbackClassName="bg-orange-100 dark:bg-orange-900/30"
+                                fallbackClassName="bg-orange-100 dark:bg-btn-p-900/30"
                             />
                             <div className="flex-1 min-w-0">
                                 <span className="font-bold text-base text-gray-900 dark:text-white truncate">

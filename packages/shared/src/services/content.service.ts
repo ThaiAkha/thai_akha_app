@@ -351,6 +351,32 @@ export const contentService = {
         });
     },
 
+    /** 🖼️ GALLERY ITEMS: Fetch items for a specific gallery by gallery_id */
+    async getGalleryItems(galleryId: string): Promise<any[]> {
+        const data = await fetchWithCache(`gallery_${galleryId}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('gallery_items')
+                .select('image_url, title, description, quote, icons, photo_id')
+                .eq('gallery_id', galleryId)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                console.error(`Gallery fetch error [${galleryId}]:`, error);
+                return [];
+            }
+
+            return (data || []).map((item: any) => ({
+                ...item,
+                icons: Array.isArray(item.icons)
+                    ? item.icons
+                    : typeof item.icons === 'string'
+                        ? JSON.parse(item.icons)
+                        : [],
+            }));
+        });
+        return data || [];
+    },
+
     /** 📰 AGENCY NEWS: Fetch latest articles from akha_news */
     async getLatestNews(): Promise<any[]> {
         const data = await fetchWithCache('agency_news_v1', async () => {

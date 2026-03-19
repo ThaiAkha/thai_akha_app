@@ -26,7 +26,7 @@ export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
                     <Avatar
                         size="xlarge"
                         fallback={<MapPin className="w-6 h-6 text-orange-100 dark:text-orange-400" />}
-                        fallbackClassName="bg-orange-400 dark:bg-orange-900/30"
+                        fallbackClassName="bg-orange-400 dark:bg-btn-p-900/30"
                     />
                     <div className="flex-1 min-w-0 space-y-0.5">
                         <div className="font-bold text-gray-900 dark:text-white uppercase text-md tracking-wider truncate leading-tight">

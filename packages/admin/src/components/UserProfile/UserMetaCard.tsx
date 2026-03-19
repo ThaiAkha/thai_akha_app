@@ -116,7 +116,7 @@ export default function UserMetaCard() {
 
         {/* Avatar Section */}
         <div className="relative group shrink-0">
-          <div className="w-28 h-28 lg:w-40 lg:h-40 overflow-hidden border-4 border-white dark:border-gray-800 rounded-full transition-all duration-500 group-hover:scale-105 shadow-2xl shadow-brand-500/10">
+          <div className="w-28 h-28 lg:w-40 lg:h-40 overflow-hidden border-4 border-white dark:border-gray-800 rounded-full transition-all duration-500 group-hover:scale-105 shadow-2xl shadow-primary-500/10">
             <img
               src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random&size=128`}
               alt="Profile"
@@ -131,7 +131,7 @@ export default function UserMetaCard() {
           <button
             onClick={handleAvatarClick}
             disabled={isUploading}
-            className="absolute bottom-2 right-2 flex items-center justify-center w-10 h-10 text-white transition-all duration-300 bg-brand-500 rounded-full hover:scale-110 hover:bg-brand-600 disabled:bg-gray-400 shadow-lg border-4 border-white dark:border-gray-900 group-hover:rotate-12"
+            className="absolute bottom-2 right-2 flex items-center justify-center w-10 h-10 text-white transition-all duration-300 bg-primary-500 rounded-full hover:scale-110 hover:bg-primary-600 disabled:bg-gray-400 shadow-lg border-4 border-white dark:border-gray-900 group-hover:rotate-12"
           >
             <Camera className="w-5 h-5" />
           </button>
@@ -141,9 +141,9 @@ export default function UserMetaCard() {
         {/* Identity & Personal Info Section */}
         <div className="flex-1 w-full flex flex-col items-center lg:items-start">
           <div className="flex flex-col items-center lg:items-start gap-3 mb-10 w-full">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/5 transition-all hover:bg-brand-500/20 w-fit">
-              <BadgeCheck size={18} className="text-brand-500" />
-              <span className="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/5 transition-all hover:bg-primary-500/20 w-fit">
+              <BadgeCheck size={18} className="text-primary-500" />
+              <span className="text-xs font-black uppercase tracking-widest text-primary-600 dark:text-primary-400">
                 {user?.role ? user.role : t("personal.roleDefault")}
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function UserMetaCard() {
                 {user?.full_name || t("personal.title")}
               </h1>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <Mail size={18} className="text-brand-500/50" />
+                <Mail size={18} className="text-primary-500/50" />
                 <span className="text-md font-medium">{user?.email}</span>
               </div>
             </div>
@@ -202,18 +202,18 @@ export default function UserMetaCard() {
                       key={country.code}
                       type="button"
                       onClick={() => handleNationalitySelect(country.code)}
-                      className="w-full p-4 text-left hover:bg-brand-50 dark:hover:bg-brand-500/10 border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-center justify-between group transition-colors"
+                      className="w-full p-4 text-left hover:bg-primary-50 dark:hover:bg-primary-500/10 border-b border-gray-50 dark:border-gray-800 last:border-0 flex items-center justify-between group transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
-                          <Globe className="w-5 h-5 text-gray-400 group-hover:text-brand-500" />
+                        <div className="size-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-500/20 transition-colors">
+                          <Globe className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                         </div>
                         <div>
                           <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{country.name}</p>
                           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{country.code}</p>
                         </div>
                       </div>
-                      <CheckCircle2 className="w-5 h-5 text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                   ))}
                 </div>

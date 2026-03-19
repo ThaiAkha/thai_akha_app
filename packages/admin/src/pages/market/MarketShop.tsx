@@ -303,7 +303,7 @@ const MarketShop: React.FC = () => {
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all",
                   activeTab === tab.id
-                    ? "bg-white dark:bg-gray-700 text-brand-600 dark:text-brand-400 shadow-sm"
+                    ? "bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm"
                     : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-200"
                 )}
               >
@@ -330,9 +330,9 @@ const MarketShop: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* LOGISTICS CARD */}
-                <div className="group p-8 rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-brand-500/50 transition-all duration-300">
+                <div className="group p-8 rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary-500/50 transition-all duration-300">
                   <div className="flex items-center gap-5 mb-8">
-                    <div className="size-16 rounded-2xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center text-brand-600 dark:text-brand-400 group-hover:scale-110 transition-transform duration-500">
+                    <div className="size-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-500">
                       <Truck className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">Logistics</h3>
@@ -373,7 +373,7 @@ const MarketShop: React.FC = () => {
                     size="md"
                     startIcon={isEditSelectionMode ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                     onClick={() => setIsEditSelectionMode(!isEditSelectionMode)}
-                    className={cn("border-transparent", isEditSelectionMode && "bg-brand-50 text-brand-600 hover:bg-brand-100")}
+                    className={cn("border-transparent", isEditSelectionMode && "bg-primary-50 text-primary-600 hover:bg-primary-100")}
                   >
                     {isEditSelectionMode ? 'Cancel' : 'Edit Report'}
                   </Button>
@@ -407,7 +407,7 @@ const MarketShop: React.FC = () => {
                           onClick={() => setSelectedRun(row)}
                           className={cn(
                             "hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors",
-                            selectedRun?.id === row.id && "bg-brand-50 dark:bg-brand-900/10"
+                            selectedRun?.id === row.id && "bg-primary-50 dark:bg-primary-900/10"
                           )}
                         >
                           <td className="px-6 py-4 font-mono font-bold">{row.run_date}</td>
@@ -415,7 +415,7 @@ const MarketShop: React.FC = () => {
                             <Badge variant="light" color="light" size="sm" className="uppercase border">{row.status}</Badge>
                           </td>
                           <td className="px-6 py-4 text-center font-medium">{row.items_snapshot.length}</td>
-                          <td className="px-6 py-4 text-right font-mono font-black text-brand-600 dark:text-brand-400">{row.total_cost.toLocaleString()} <span className="text-[10px] text-gray-400">THB</span></td>
+                          <td className="px-6 py-4 text-right font-mono font-black text-primary-600 dark:text-primary-400">{row.total_cost.toLocaleString()} <span className="text-[10px] text-gray-400">THB</span></td>
                           <td className="px-6 py-4 text-right">
                             {(isEditSelectionMode && selectedRun?.id === row.id) && (
                               <Button size="md" onClick={(e) => { e?.stopPropagation(); hydrateDraft(row); }}>Modify</Button>
@@ -457,7 +457,7 @@ const MarketShop: React.FC = () => {
                       className={cn(
                         "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                         activeShopTab === s
-                          ? "bg-white dark:bg-gray-700 text-brand-600 dark:text-brand-400 shadow-sm"
+                          ? "bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm"
                           : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
                       )}
                     >
@@ -513,7 +513,7 @@ const MarketShop: React.FC = () => {
           "p-8 rounded-3xl border text-center transition-all duration-300",
           activeTab === 'teacher'
             ? "bg-purple-50 border-purple-200 dark:bg-purple-900/10 dark:border-purple-800"
-            : "bg-brand-50 border-brand-200 dark:bg-brand-900/10 dark:border-brand-800"
+            : "bg-primary-50 border-primary-200 dark:bg-primary-900/10 dark:border-primary-800"
         )}>
           <span className="text-xs font-black uppercase text-gray-400 tracking-widest block mb-2">
             {activeTab === 'teacher' ? 'Total Expenses' : 'Items Required'}
@@ -541,7 +541,7 @@ const MarketShop: React.FC = () => {
                   onClick={() => viewMode === 'planner' && activeTab === 'teacher' && openKeypad(item.id)}
                   className={cn(
                     "flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 rounded-xl transition-all",
-                    (viewMode === 'planner' && activeTab === 'teacher') && "cursor-pointer hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20"
+                    (viewMode === 'planner' && activeTab === 'teacher') && "cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20"
                   )}
                 >
                   <div className="min-w-0">
@@ -550,7 +550,7 @@ const MarketShop: React.FC = () => {
                   </div>
                   {(activeTab === 'teacher' || (selectedRun && selectedRun.shopper_role === 'teacher')) && (
                     <div className="text-right">
-                      <div className="font-mono font-black text-brand-600 dark:text-brand-400 text-sm">{item.price} <span className="text-[9px] opacity-40">THB</span></div>
+                      <div className="font-mono font-black text-primary-600 dark:text-primary-400 text-sm">{item.price} <span className="text-[9px] opacity-40">THB</span></div>
                       {viewMode === 'planner' && <span className="text-[8px] uppercase font-bold text-gray-300 block">Tap to edit</span>}
                     </div>
                   )}
@@ -571,7 +571,7 @@ const MarketShop: React.FC = () => {
         <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
           <Button
             variant="primary"
-            className="w-full h-14 rounded-2xl shadow-xl shadow-brand-500/30"
+            className="w-full h-14 rounded-2xl shadow-xl shadow-primary-500/30"
             size="md"
             startIcon={<CheckCircle2 className="w-5 h-5" />}
             disabled={isSaving}
@@ -620,8 +620,8 @@ const MarketShop: React.FC = () => {
         {/* Numerical Keypad Modal */}
         <Modal isOpen={keypadOpen} onClose={() => setKeypadOpen(false)} className="bg-transparent border-none shadow-none max-w-sm p-0">
           <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border-2 border-brand-500 text-center shadow-2xl">
-              <span className="uppercase font-black text-brand-600 tracking-widest mb-1 block text-xs">Input THB</span>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border-2 border-primary-500 text-center shadow-2xl">
+              <span className="uppercase font-black text-primary-600 tracking-widest mb-1 block text-xs">Input THB</span>
               <div className="font-mono text-gray-900 dark:text-white text-4xl font-bold flex items-center justify-center gap-2">
                 {tempPrice}<span className="text-xl opacity-50">฿</span>
               </div>

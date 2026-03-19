@@ -25,22 +25,22 @@ const StatCard: React.FC<StatCardProps> = ({
 
     const colorStyles = {
         primary: {
-            bg: 'bg-brand-500/10',
-            icon: 'bg-brand-500 text-white',
-            text: 'text-brand-500',
-            border: 'border-brand-500/20'
+            bg: 'bg-primary-500/10',
+            icon: 'bg-primary-500 text-white',
+            text: 'text-primary-500',
+            border: 'border-primary-500/20'
         },
         warning: {
-            bg: 'bg-warning-500/10',
-            icon: 'bg-warning-500 text-white',
-            text: 'text-warning-500',
-            border: 'border-warning-500/20'
+            bg: 'bg-sys-warning/10',
+            icon: 'bg-sys-warning text-white',
+            text: 'text-sys-warning',
+            border: 'border-sys-warning/20'
         },
         success: {
-            bg: 'bg-success-500/10',
-            icon: 'bg-success-500 text-white',
-            text: 'text-success-500',
-            border: 'border-success-500/20'
+            bg: 'bg-sys-success/10',
+            icon: 'bg-sys-success text-white',
+            text: 'text-sys-success',
+            border: 'border-sys-success/20'
         },
         action: {
             bg: 'bg-blue-500/10',
@@ -49,10 +49,10 @@ const StatCard: React.FC<StatCardProps> = ({
             border: 'border-blue-500/20'
         },
         error: {
-            bg: 'bg-error-500/10',
-            icon: 'bg-error-500 text-white',
-            text: 'text-error-500',
-            border: 'border-error-500/20'
+            bg: 'bg-sys-error/10',
+            icon: 'bg-sys-error text-white',
+            text: 'text-sys-error',
+            border: 'border-sys-error/20'
         }
     };
 

@@ -21,7 +21,7 @@ export const ProfileCard = ({ children, className }: { children: React.ReactNode
  */
 export const ProfileHeader = ({ title, icon: Icon }: { title: string; icon: LucideIcon }) => (
     <div className="flex items-center gap-3 border-b border-gray-100 dark:border-white/5 pb-5 mb-8">
-        <div className="p-2 rounded-xl bg-brand-500/10 text-brand-500">
+        <div className="p-2 rounded-xl bg-primary-500/10 text-primary-500">
             <Icon size={20} />
         </div>
         <h4 className="text-xl font-black italic uppercase tracking-tighter text-gray-900 dark:text-white">
@@ -102,7 +102,7 @@ export const ProfileFooter = ({
                         onClick={onSave}
                         disabled={isLoading}
                         className={cn(
-                            "flex-1 sm:flex-none px-10 py-3 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand-500/20 transition-all active:scale-95",
+                            "flex-1 sm:flex-none px-10 py-3 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary-500/20 transition-all active:scale-95",
                             isLoading && "opacity-70 cursor-not-allowed"
                         )}
                     >
@@ -113,7 +113,7 @@ export const ProfileFooter = ({
                 <Button
                     onClick={onEdit}
                     variant="outline"
-                    className="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-sm hover:shadow-md hover:bg-brand-500 hover:text-white hover:border-brand-500 dark:hover:bg-brand-500 transition-all active:scale-95"
+                    className="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-sm hover:shadow-md hover:bg-primary-500 hover:text-white hover:border-primary-500 dark:hover:bg-primary-500 transition-all active:scale-95"
                 >
                     {editLabel}
                 </Button>

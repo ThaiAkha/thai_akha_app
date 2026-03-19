@@ -10,7 +10,6 @@ export { default as MegaMenu } from './MegaMenu';
 // Headers
 export { default as Header } from './Header';
 export { default as HeaderMenu } from './HeaderMenu';
-export { default as HeaderQuiz } from './HeaderQuiz';
 export { default as SEOHead } from './SEOHead';
 
 // Types

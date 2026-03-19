@@ -35,13 +35,13 @@ function NavItem({ icon, label, isActive, onClick, isOpen }: NavItemProps) {
       className={`
         relative flex items-center w-full h-12
         transition-colors duration-200 rounded-xl pl-0 pr-1
-        ${isActive ? 'bg-brand-500/20 dark:bg-brand-500/20' : 'hover:bg-brand-500/10 dark:hover:bg-brand-500/10'}
+        ${isActive ? 'bg-primary-500/20 dark:bg-primary-500/20' : 'hover:bg-primary-500/10 dark:hover:bg-primary-500/10'}
       `}
     >
       <div className="w-[108px] shrink-0 flex items-center justify-center pr-4 z-10">
         <IconComponent className={`
           w-6 h-6 transition-transform duration-300 group-active:scale-95
-          ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}
+          ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}
         `} />
       </div>
       <div className={`
@@ -49,7 +49,7 @@ function NavItem({ icon, label, isActive, onClick, isOpen }: NavItemProps) {
         transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left
         ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
       `}>
-        <span className={`font-display font-bold tracking-wide ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-700 dark:text-gray-300'}`}>
+        <span className={`font-display font-bold tracking-wide ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
           {label}
         </span>
       </div>
@@ -168,7 +168,7 @@ const AppSidebar: React.FC = () => {
           </div>
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isSidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
             <span className="font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white">
-              Thai <span className="text-brand-500">Akha</span>
+              Thai <span className="text-primary-500">Akha</span>
             </span>
           </div>
         </div>
@@ -190,16 +190,16 @@ const AppSidebar: React.FC = () => {
           <a
             href={FRONT_APP_URL}
             onClick={handleGoToLiveWeb}
-            className="block p-4 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 transition-all duration-300 no-underline"
+            className="block p-4 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300 no-underline"
           >
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex-1">
                 <h3 className="text-sm font-bold text-white">{t('sidebar.visitSite')}</h3>
-                <p className="text-xs text-brand-100 mt-1">{t('sidebar.exploreSite')}</p>
+                <p className="text-xs text-primary-100 mt-1">{t('sidebar.exploreSite')}</p>
               </div>
               <ExternalLink size={16} className="text-white shrink-0 mt-1" />
             </div>
-            <button className="w-full py-2 px-3 mt-2 bg-white hover:bg-gray-50 text-brand-600 font-bold text-sm rounded-lg transition-colors duration-200">
+            <button className="w-full py-2 px-3 mt-2 bg-white hover:bg-gray-50 text-primary-600 font-bold text-sm rounded-lg transition-colors duration-200">
               {t('sidebar.goLive')}
             </button>
           </a>

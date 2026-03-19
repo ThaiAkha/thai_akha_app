@@ -60,9 +60,9 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
                         disabled && "opacity-30 cursor-not-allowed",
                         !disabled && "active:scale-95",
                         isSelected
-                            ? "bg-brand-600 text-white shadow-md shadow-brand-500/20"
+                            ? "bg-primary-600 text-white shadow-md shadow-primary-500/20"
                             : isToday
-                                ? "bg-brand-50 text-brand-600 border border-brand-200 dark:bg-brand-900/20 dark:text-brand-400 dark:border-brand-800"
+                                ? "bg-primary-50 text-primary-600 border border-primary-200 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800"
                                 : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     )}
                 >

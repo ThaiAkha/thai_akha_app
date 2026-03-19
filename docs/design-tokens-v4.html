@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thai Akha Kitchen — Design Tokens v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════════════════════════════
+   DESIGN TOKENS — unified system v4
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  /* PRIMARY — Cherry Red */
+  --primary-25:  #fef1f2; --primary-50:  #fddfe2; --primary-100: #fbc0c5;
+  --primary-200: #f8a1a9; --primary-300: #f2828d; --primary-400: #e3515f;
+  --primary-500: #E31F33;
+  --primary-600: #c11c2e; --primary-700: #9e1725; --primary-800: #7c121d;
+  --primary-900: #590d15; --primary-950: #37080d; --primary-dark: #150305;
+
+  /* ACTION — Lime Green (was Secondary) */
+  --action-25:  #f5fce8; --action-50:  #eaf7d0; --action-100: #d4ee90;
+  --action-200: #c0e468; --action-300: #aedd4e; --action-400: #a2d244;
+  --action-500: #98C93C;
+  --action-600: #7dab2e; --action-700: #628d22; --action-800: #476f18;
+  --action-900: #30500f; --action-950: #1e3308; --action-dark: #0e1a03;
+
+  /* SECONDARY — Dark Cherry (new) */
+  --secondary-25:  #FFF0F3; --secondary-50:  #FDE8EC; --secondary-100: #F9D6DC;
+  --secondary-200: #F0A8B5; --secondary-300: #E37A8E; --secondary-400: #CC4D67;
+  --secondary-500: #AD2645;
+  --secondary-600: #8D1A31; --secondary-700: #6E1026; --secondary-800: #50091C;
+  --secondary-900: #320412; --secondary-950: #1A0109; --secondary-dark: #0D0007;
+
+  /* ALLERGY — Orange/Red (new) */
+  --allergy-25:  #fff7ed; --allergy-50:  #ffedd5; --allergy-100: #fed7aa;
+  --allergy-200: #fdba74; --allergy-300: #fb923c; --allergy-400: #f97316;
+  --allergy-500: #FF6D00;
+  --allergy-600: #ea580c; --allergy-700: #c2410c; --allergy-800: #9a3412;
+  --allergy-900: #7c2d12; --allergy-950: #4a1e0b; --allergy-dark: #2b1106;
+
+  /* QUIZ PRIMARY — Deep Magenta */
+  --quiz-p-25:  #fff0f7; --quiz-p-50:  #ffe0ee; --quiz-p-100: #ffb8d9;
+  --quiz-p-200: #ff80bc; --quiz-p-300: #f0449c; --quiz-p-400: #c8207a;
+  --quiz-p-500: #9A0050;
+  --quiz-p-600: #820044; --quiz-p-700: #680038; --quiz-p-800: #50002c;
+  --quiz-p-900: #380020; --quiz-p-950: #280018; --quiz-p-dark: #1a0010;
+
+  /* QUIZ SECONDARY — Deep Purple */
+  --quiz-s-25:  #f4f0ff; --quiz-s-50:  #eae0ff; --quiz-s-100: #d4bfff;
+  --quiz-s-200: #b898ff; --quiz-s-300: #9470e8; --quiz-s-400: #6844b0;
+  --quiz-s-500: #3B227A;
+  --quiz-s-600: #311a66; --quiz-s-700: #261454; --quiz-s-800: #1c0e40;
+  --quiz-s-900: #14082e; --quiz-s-950: #0c0420; --quiz-s-dark: #060212;
+
+  /* BUTTON PRIMARY — Orange */
+  --btn-p-25:  #fff6ee; --btn-p-50:  #ffead4; --btn-p-100: #ffd5a8;
+  --btn-p-200: #ffba6e; --btn-p-300: #ffa040; --btn-p-400: #ff8618;
+  --btn-p-500: #FF6D00;
+  --btn-p-600: #d95a00; --btn-p-700: #b34800; --btn-p-800: #8c3800;
+  --btn-p-900: #662a00; --btn-p-950: #401900; --btn-p-dark: #200d00;
+
+  /* BUTTON SECONDARY — Blue Light */
+  --btn-s-25:  #f5fbff; --btn-s-50:  #f0f9ff; --btn-s-100: #e0f2fe;
+  --btn-s-200: #b9e6fe; --btn-s-300: #7cd4fd; --btn-s-400: #36bffa;
+  --btn-s-500: #1ca3e6;
+  --btn-s-600: #0086c9; --btn-s-700: #026aa2; --btn-s-800: #065986;
+  --btn-s-900: #0b4a6f; --btn-s-950: #062c41; --btn-s-dark: #021520;
+
+  /* SYSTEM GRAY — Warm Neutral */
+  --gray-25:   #F6FCFC; --gray-50:   #E6ECEC; --gray-100:  #D6DCDC;
+  --gray-200:  #C2C8C8; --gray-300:  #AEB4B4; --gray-400:  #9AA0A0;
+  --gray-500:  #868C8C;
+  --gray-600:  #727878; --gray-700:  #5E6464; --gray-800:  #4A504F;
+  --gray-900:  #222827; --gray-950:  #121311; --gray-dark: #080808;
+
+  /* FLAT ALIAS TOKENS */
+  --color-primary:   var(--primary-500);
+  --color-action:    var(--action-500);
+  --color-secondary: var(--secondary-600);
+  --color-allergy:   var(--allergy-500);
+  --color-quiz-p:    var(--quiz-p-500);
+  --color-quiz-s:    var(--quiz-s-500);
+  --color-btn-p:     var(--btn-p-500);
+  --color-btn-s:     var(--btn-s-500);
+
+  /* RGB CHANNEL VARIABLES */
+  --primary-ch:     227  31  51;
+  --action-ch:      152 201  60;
+  --secondary-ch:   141  26  49;
+  --allergy-ch:     255 109   0;
+  --quiz-p-ch:      154   0  80;
+  --quiz-s-ch:       59  34 122;
+  --btn-p-ch:       255 109   0;
+  --btn-s-ch:        28 163 230;
+  --gray-ch:        134 140 140;
+  --sys-success-ch:  34 197  94;
+  --sys-error-ch:   239  68  68;
+  --sys-warning-ch: 245 158  11;
+  --sys-info-ch:     59 130 246;
+  --sys-notice-ch:  234 179   8;
+
+  /* SYSTEM UI COLORS — Tailwind 500 only, same in light & dark */
+  --sys-error:   #ef4444;  /* red-500    — errori, azioni distruttive */
+  --sys-success: #22c55e;  /* green-500  — conferme, completamento */
+  --sys-warning: #f59e0b;  /* amber-500  — avvisi (≠ orange brand) */
+  --sys-info:    #3b82f6;  /* blue-500   — info (≠ btn-secondary #1ca3e6) */
+  --sys-notice:  #eab308;  /* yellow-500 — suggerimenti, neutro */
+
+  /* EASING */
+  --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* LIGHT MODE SEMANTIC VARS */
+.light-mode {
+  --bg:          var(--gray-25);
+  --bg-subtle:   var(--gray-50);
+  --surface:     #ffffff;
+  --surface-2:   var(--gray-50);
+  --border:      var(--gray-200);
+  --border-subtle: var(--gray-100);
+  --text-title:  var(--gray-900);
+  --text-body:   var(--gray-700);
+  --text-sub:    var(--gray-500);
+  --text-ghost:  var(--gray-400);
+}
+
+/* DARK MODE SEMANTIC VARS */
+.dark-mode {
+  --bg:          var(--gray-950);
+  --bg-subtle:   var(--gray-950);
+  --surface:     var(--gray-950);
+  --surface-2:   var(--gray-900);
+  --border:      var(--gray-800);
+  --border-subtle: var(--gray-900);
+  --text-title:  var(--gray-25);
+  --text-body:   var(--gray-200);
+  --text-sub:    var(--gray-400);
+  --text-ghost:  var(--gray-600);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE SHELL
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+
+body {
+  background: var(--gray-dark);
+  color: var(--gray-200);
+  font-family: 'Inter', 'Noto Sans Thai', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.page { max-width: 1400px; margin: 0 auto; padding: 48px 24px 100px; }
+
+/* ── HEADER ────────────────────────────────────────────────── */
+.ds-header {
+  text-align: center;
+  padding-bottom: 48px;
+  margin-bottom: 64px;
+  border-bottom: 1px solid var(--gray-900);
+}
+.ds-header .eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gray-600); margin-bottom: 14px;
+}
+.ds-header h1 {
+  font-size: 40px; font-weight: 800; letter-spacing: -1px;
+  background: linear-gradient(135deg, #E31F33, #FF6D00, #98C93C);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+.ds-header p { font-size: 13px; color: var(--gray-600); letter-spacing: 1px; }
+
+/* ── SECTION ─────────────────────────────────────────────── */
+.section { margin-bottom: 80px; }
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gray-700);
+  margin-bottom: 28px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--gray-900);
+  display: flex; align-items: center; gap: 12px;
+}
+.tag {
+  padding: 3px 9px; border-radius: 20px; font-size: 9px;
+  font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COLOR SCALE COMPONENT
+   ══════════════════════════════════════════════════════════════ */
+.palette-grid { display: flex; flex-direction: column; gap: 32px; }
+.palette-row { }
+.palette-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.palette-title .dot { width: 10px; height: 10px; border-radius: 50%; }
+.palette-anchor { font-family: monospace; font-size: 10px; color: var(--gray-700); }
+
+.scale-strip {
+  display: grid; grid-template-columns: repeat(13, 1fr);
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.scale-cell {
+  position: relative;
+  transition: transform 0.2s var(--ease);
+  cursor: default;
+}
+.scale-cell:hover { transform: scaleY(1.08) translateY(-4px); z-index: 5; }
+.scale-cell .swatch { height: 72px; width: 100%; display: block; }
+.scale-cell .meta {
+  background: var(--gray-950);
+  border-top: 1px solid rgba(255,255,255,0.03);
+  padding: 7px 6px;
+}
+.scale-cell .step-n {
+  font-size: 9px; font-weight: 700; color: var(--gray-700);
+  display: block; margin-bottom: 2px;
+}
+.scale-cell.is-anchor .step-n { color: var(--gray-400); }
+.scale-cell .hex-v {
+  font-size: 9px; font-family: monospace; color: var(--gray-800);
+  display: block;
+}
+.scale-cell.is-anchor .hex-v { color: var(--gray-500); }
+.scale-cell.is-anchor::before {
+  content: '★'; position: absolute; top: 6px; left: 50%;
+  transform: translateX(-50%); font-size: 11px;
+  color: rgba(255,255,255,0.45); pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COMPONENT PREVIEWS
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── TOGGLE ────────────────────────────────────────────────── */
+.mode-toggle-wrap {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 32px;
+}
+.mode-toggle {
+  display: flex; background: var(--gray-950);
+  border: 1px solid var(--gray-900); border-radius: 12px;
+  padding: 4px; gap: 4px;
+}
+.mode-btn {
+  padding: 8px 20px; border-radius: 9px; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; font-family: 'Inter', sans-serif;
+  transition: all 0.25s var(--ease-smooth);
+}
+.mode-btn.active { background: var(--gray-800); color: var(--gray-100); }
+.mode-btn:not(.active) { background: transparent; color: var(--gray-600); }
+
+/* ── PREVIEW FRAME ─────────────────────────────────────────── */
+.preview-frame {
+  border-radius: 20px; padding: 40px;
+  border: 1px solid;
+  transition: background 0.4s var(--ease-smooth),
+              border-color 0.4s ease, color 0.3s ease;
+}
+.preview-frame.light-mode {
+  background: var(--bg); border-color: var(--border);
+}
+.preview-frame.dark-mode {
+  background: var(--bg); border-color: var(--border);
+}
+
+/* two-col inside preview */
+.preview-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+@media(max-width:900px){ .preview-cols{ grid-template-columns:1fr; } }
+
+.preview-block { margin-bottom: 36px; }
+.preview-block:last-child { margin-bottom: 0; }
+.block-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 1px solid; transition: color 0.3s, border-color 0.3s;
+}
+.light-mode .block-title { color: var(--gray-400); border-color: var(--gray-100); }
+.dark-mode  .block-title { color: var(--gray-600); border-color: var(--gray-900); }
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────── */
+.t-h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 6px; transition: color 0.3s; }
+.t-h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; transition: color 0.3s; }
+.t-h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; transition: color 0.3s; }
+.t-body { font-size: 14px; font-weight: 400; line-height: 1.65; margin-bottom: 6px; transition: color 0.3s; }
+.t-small { font-size: 12px; font-weight: 400; margin-bottom: 6px; transition: color 0.3s; }
+.t-caption { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; transition: color 0.3s; }
+.t-thai { font-family: 'Noto Sans Thai', sans-serif; font-size: 15px; transition: color 0.3s; }
+
+.light-mode .t-h1     { color: var(--gray-900); }
+.light-mode .t-h2     { color: var(--gray-800); }
+.light-mode .t-h3     { color: var(--gray-700); }
+.light-mode .t-body   { color: var(--gray-700); }
+.light-mode .t-small  { color: var(--gray-500); }
+.light-mode .t-caption{ color: var(--gray-400); }
+.light-mode .t-thai   { color: var(--gray-600); }
+.dark-mode .t-h1      { color: var(--gray-25); }
+.dark-mode .t-h2      { color: var(--gray-100); }
+.dark-mode .t-h3      { color: var(--gray-200); }
+.dark-mode .t-body    { color: var(--gray-300); }
+.dark-mode .t-small   { color: var(--gray-500); }
+.dark-mode .t-caption { color: var(--gray-600); }
+.dark-mode .t-thai    { color: var(--gray-400); }
+
+.t-accent-primary   { color: var(--primary-500); }
+.t-accent-action    { color: var(--action-500); }
+
+/* ─── BUTTONS ────────────────────────────────────────────── */
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.btn {
+  padding: 10px 22px; border-radius: 10px; font-size: 13px;
+  font-weight: 600; border: none; cursor: pointer;
+  font-family: 'Inter', sans-serif; letter-spacing: 0.2px;
+  transition: all 0.25s var(--ease);
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.btn:active { transform: scale(0.96); }
+
+/* Filled */
+.btn-primary   { background: var(--primary-500);   color: #fff; box-shadow: 0 6px 20px rgba(227,31,51,0.3); }
+.btn-action    { background: var(--action-500);     color: #0d1a03; box-shadow: 0 6px 20px rgba(152,201,60,0.25); }
+.btn-secondary { background: var(--secondary-600);  color: #fff; box-shadow: 0 6px 20px rgba(141,26,49,0.3); }
+.btn-orange    { background: var(--btn-p-500);      color: #fff; box-shadow: 0 6px 20px rgba(255,109,0,0.3); }
+.btn-blue      { background: var(--btn-s-500);      color: #fff; box-shadow: 0 6px 20px rgba(28,163,230,0.25); }
+.btn-quiz      { background: var(--quiz-p-500);     color: #fff; box-shadow: 0 6px 20px rgba(154,0,80,0.3); }
+.btn-quiz-s    { background: var(--quiz-s-500);     color: #fff; box-shadow: 0 6px 20px rgba(59,34,122,0.3); }
+.btn-warning   { background: var(--sys-error);      color: #fff; box-shadow: 0 6px 20px rgba(239,68,68,0.25); }
+.btn-success   { background: var(--sys-success);    color: #0d1a03; box-shadow: 0 6px 20px rgba(34,197,94,0.25); }
+
+/* Ghost */
+.btn-ghost-p { background: transparent; color: var(--primary-500); border: 1.5px solid var(--primary-500); }
+.btn-ghost-s { background: transparent; color: var(--action-600); border: 1.5px solid var(--action-500); }
+.btn-ghost-o { background: transparent; color: var(--btn-p-500); border: 1.5px solid var(--btn-p-500); }
+.btn-ghost-b { background: transparent; color: var(--btn-s-500); border: 1.5px solid var(--btn-s-500); }
+
+/* Ghost dark/light adaptation */
+.light-mode .btn-ghost-gray {
+  background: transparent; color: var(--gray-700);
+  border: 1.5px solid var(--gray-300);
+}
+.dark-mode .btn-ghost-gray {
+  background: transparent; color: var(--gray-300);
+  border: 1.5px solid var(--gray-700);
+}
+.btn-ghost-gray { transition: all 0.25s; }
+
+/* Small variant */
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+.btn-pill { border-radius: 999px; }
+
+/* ─── BADGES ─────────────────────────────────────────────── */
+.badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+  border: 1px solid transparent;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* Filled badges */
+.badge-primary   { background: rgba(227,31,51,0.12);  color: var(--primary-500);   border-color: rgba(227,31,51,0.25); }
+.badge-action    { background: rgba(152,201,60,0.12);  color: var(--action-600);    border-color: rgba(152,201,60,0.25); }
+.badge-secondary { background: rgba(141,26,49,0.12);   color: var(--secondary-400); border-color: rgba(141,26,49,0.25); }
+.badge-orange    { background: rgba(255,109,0,0.12);   color: var(--btn-p-500);     border-color: rgba(255,109,0,0.25); }
+.badge-blue      { background: rgba(28,163,230,0.12);  color: var(--btn-s-500);     border-color: rgba(28,163,230,0.25); }
+.badge-quiz      { background: rgba(154,0,80,0.12);    color: var(--quiz-p-400);    border-color: rgba(154,0,80,0.25); }
+.badge-purple    { background: rgba(59,34,122,0.15);   color: #9d84f5;              border-color: rgba(59,34,122,0.35); }
+.badge-warning   { background: rgba(239,68,68,0.1);    color: #ef4444;              border-color: rgba(239,68,68,0.25); }
+.badge-success   { background: rgba(34,197,94,0.1);    color: #16a34a;              border-color: rgba(34,197,94,0.25); }
+
+/* Adaptive gray badge */
+.light-mode .badge-gray { background: var(--gray-100); color: var(--gray-600); border-color: var(--gray-200); }
+.dark-mode  .badge-gray { background: var(--gray-900); color: var(--gray-400); border-color: var(--gray-800); }
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:600px){ .cards-grid{ grid-template-columns:1fr; } }
+
+.card {
+  border-radius: 14px; padding: 20px;
+  border: 1px solid; transition: all 0.3s var(--ease-smooth);
+  cursor: default;
+}
+.card:hover { transform: translateY(-3px); }
+
+/* Light mode cards */
+.light-mode .card-default {
+  background: var(--surface); border-color: var(--gray-100);
+  box-shadow: 0 1px 4px rgba(40,34,24,0.07);
+}
+.light-mode .card-default:hover {
+  box-shadow: 0 8px 24px rgba(40,34,24,0.12);
+}
+.light-mode .card-elevated {
+  background: var(--surface); border-color: var(--gray-200);
+  box-shadow: 0 4px 16px rgba(40,34,24,0.1), 0 1px 4px rgba(40,34,24,0.06);
+}
+.light-mode .card-elevated:hover {
+  box-shadow: 0 12px 32px rgba(40,34,24,0.15);
+}
+.light-mode .card-brand {
+  background: var(--primary-25); border-color: var(--primary-100);
+}
+.light-mode .card-success {
+  background: #f0fdf4; border-color: #bbf7d0;
+}
+
+/* Dark mode cards */
+.dark-mode .card-default {
+  background: var(--surface); border-color: var(--gray-900);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.dark-mode .card-default:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); border-color: var(--gray-700);
+}
+.dark-mode .card-elevated {
+  background: var(--surface-2); border-color: var(--gray-800);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.dark-mode .card-elevated:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+}
+.dark-mode .card-brand {
+  background: rgba(227,31,51,0.07); border-color: rgba(227,31,51,0.2);
+}
+.dark-mode .card-success {
+  background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.2);
+}
+
+/* Glass card */
+.light-mode .card-glass {
+  background: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.7);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(40,34,24,0.08);
+}
+.dark-mode .card-glass {
+  background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.card-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 12px;
+}
+.card-title {
+  font-size: 15px; font-weight: 700; margin-bottom: 4px;
+  transition: color 0.3s;
+}
+.card-body  { font-size: 13px; transition: color 0.3s; }
+.card-meta  { font-size: 11px; margin-top: 10px; font-weight: 500; transition: color 0.3s; }
+
+.light-mode .card-title { color: var(--gray-900); }
+.light-mode .card-body  { color: var(--gray-600); }
+.light-mode .card-meta  { color: var(--gray-400); }
+.dark-mode .card-title  { color: var(--gray-50); }
+.dark-mode .card-body   { color: var(--gray-400); }
+.dark-mode .card-meta   { color: var(--gray-600); }
+
+/* ─── INPUTS ─────────────────────────────────────────────── */
+.input-row { display: flex; flex-direction: column; gap: 10px; }
+.input-wrap { display: flex; flex-direction: column; gap: 4px; }
+.input-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; transition: color 0.3s; }
+.light-mode .input-label { color: var(--gray-700); }
+.dark-mode  .input-label { color: var(--gray-400); }
+
+.input-field {
+  width: 100%; padding: 10px 14px; border-radius: 10px;
+  font-size: 13px; font-family: 'Inter', sans-serif;
+  border: 1.5px solid; outline: none;
+  transition: all 0.2s var(--ease-smooth);
+}
+.light-mode .input-field {
+  background: var(--surface); border-color: var(--gray-200);
+  color: var(--gray-900);
+}
+.light-mode .input-field::placeholder { color: var(--gray-400); }
+.light-mode .input-field:focus { border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(227,31,51,0.12); }
+.dark-mode .input-field {
+  background: var(--gray-900); border-color: var(--gray-800);
+  color: var(--gray-100);
+}
+.dark-mode .input-field::placeholder { color: var(--gray-600); }
+.dark-mode .input-field:focus { border-color: var(--primary-400); box-shadow: 0 0 0 3px rgba(227,31,51,0.15); }
+
+.input-field.input-success { border-color: var(--sys-success) !important; }
+.input-field.input-error   { border-color: var(--sys-error) !important; }
+.light-mode .input-field.input-success:focus { box-shadow: 0 0 0 3px rgba(34,197,94,0.12); }
+.light-mode .input-field.input-error:focus   { box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
+
+.input-hint { font-size: 11px; transition: color 0.3s; }
+.hint-success { color: #16a34a; }
+.hint-error   { color: var(--sys-error); }
+.light-mode .hint-default { color: var(--gray-400); }
+.dark-mode  .hint-default { color: var(--gray-600); }
+
+/* ─── DIVIDERS ───────────────────────────────────────────── */
+.divider-block { display: flex; flex-direction: column; gap: 12px; }
+.divider { height: 1px; transition: background 0.3s; }
+.divider-label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; transition: color 0.3s;
+}
+.divider-label::before, .divider-label::after {
+  content: ''; flex: 1; height: 1px; transition: background 0.3s;
+}
+.light-mode .divider { background: var(--gray-100); }
+.light-mode .divider-label { color: var(--gray-400); }
+.light-mode .divider-label::before,
+.light-mode .divider-label::after { background: var(--gray-100); }
+.dark-mode  .divider { background: var(--gray-900); }
+.dark-mode  .divider-label { color: var(--gray-600); }
+.dark-mode  .divider-label::before,
+.dark-mode  .divider-label::after { background: var(--gray-800); }
+
+.divider-brand { background: linear-gradient(to right, transparent, var(--primary-500), transparent) !important; }
+.divider-grad  { background: linear-gradient(to right, var(--primary-500), var(--btn-p-500), var(--action-500)) !important; height: 2px; border-radius: 1px; }
+
+/* ══════════════════════════════════════════════════════════════
+   THEME-AWARE STAT CARD
+   ══════════════════════════════════════════════════════════════ */
+.stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.stat-card {
+  border-radius: 12px; padding: 16px; border: 1px solid;
+  transition: all 0.3s;
+}
+.light-mode .stat-card { background: var(--surface); border-color: var(--gray-100); }
+.dark-mode  .stat-card { background: var(--surface); border-color: var(--gray-900); }
+.stat-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; transition: color 0.3s; }
+.stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.stat-sub   { font-size: 11px; margin-top: 4px; transition: color 0.3s; }
+.light-mode .stat-label { color: var(--gray-500); }
+.light-mode .stat-sub   { color: var(--gray-400); }
+.dark-mode  .stat-label { color: var(--gray-600); }
+.dark-mode  .stat-sub   { color: var(--gray-600); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="ds-header">
+    <p class="eyebrow">Thai Akha Kitchen · Cherry Design System v4</p>
+    <h1>Design Tokens & Components</h1>
+    <p>Color scales · Light & Dark · Typography · Buttons · Cards · Inputs</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 1 — COLOR SCALES
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">
+      01 — Color Scales · 13 steps · 25 → 500★ → dark
+      <span class="tag" style="background:rgba(136,125,108,0.15);color:#887D6C;border:1px solid rgba(136,125,108,0.3)">9 PALETTES</span>
+    </div>
+
+    <div class="palette-grid">
+
+      <!-- SYSTEM GRAY — WARM NEUTRAL -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#868C8C"></span>
+          <span style="color:#868C8C">System Gray — Warm Neutral</span>
+          <span class="palette-anchor">500★ #868C8C · 900 #222827 · 950 #121311 · dark #080808</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#F6FCFC"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#F6FCFC</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#E6ECEC"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#E6ECEC</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#D6DCDC"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#D6DCDC</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#C2C8C8"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#C2C8C8</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#AEB4B4"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#AEB4B4</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#9AA0A0"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#9AA0A0</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#868C8C"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#868C8C</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#727878"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#727878</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#5E6464"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#5E6464</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#4A504F"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#4A504F</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#222827"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#222827</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#121311"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#121311</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#080808"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#080808</span></div></div>
+        </div>
+      </div>
+
+      <!-- PRIMARY — CHERRY RED -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#E31F33"></span>
+          <span style="color:#E31F33">Primary — Cherry Red</span>
+          <span class="palette-anchor">500★ #E31F33</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#fef1f2"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#fef1f2</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#fddfe2"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#fddfe2</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#fbc0c5"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#fbc0c5</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#f8a1a9"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#f8a1a9</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#f2828d"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#f2828d</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#e3515f"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#e3515f</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#E31F33"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#E31F33</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#c11c2e"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#c11c2e</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#9e1725"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#9e1725</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#7c121d"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#7c121d</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#590d15"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#590d15</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#37080d"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#37080d</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#150305"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#150305</span></div></div>
+        </div>
+      </div>
+
+      <!-- ACTION — LIME GREEN (was Secondary) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#98C93C"></span>
+          <span style="color:#98C93C">Action — Lime Green</span>
+          <span class="palette-anchor">500★ #98C93C · was "secondary" in v2, renamed to action</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#f5fce8"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#f5fce8</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#eaf7d0"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#eaf7d0</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#d4ee90"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#d4ee90</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#c0e468"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#c0e468</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#aedd4e"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#aedd4e</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#a2d244"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#a2d244</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#98C93C"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#98C93C</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#7dab2e"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#7dab2e</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#628d22"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#628d22</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#476f18"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#476f18</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#30500f"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#30500f</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#1e3308"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#1e3308</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#0e1a03"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#0e1a03</span></div></div>
+        </div>
+      </div>
+
+      <!-- SECONDARY — DARK CHERRY (new) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#8D1A31"></span>
+          <span style="color:#CC4D67">Secondary — Dark Cherry</span>
+          <span class="palette-anchor">600★ #8D1A31 · new in v4</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#FFF0F3"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#FFF0F3</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#FDE8EC"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#FDE8EC</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#F9D6DC"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#F9D6DC</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#F0A8B5"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#F0A8B5</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#E37A8E"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#E37A8E</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#CC4D67"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#CC4D67</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#AD2645"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#AD2645</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#8D1A31"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#8D1A31</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#6E1026"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#6E1026</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#50091C"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#50091C</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#320412"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#320412</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#1A0109"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#1A0109</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#0D0007"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#0D0007</span></div></div>
+        </div>
+      </div>
+
+      <!-- ALLERGY — ORANGE/RED (new) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#FF6D00"></span>
+          <span style="color:#f97316">Allergy — Orange/Red</span>
+          <span class="palette-anchor">500★ #FF6D00 · new in v4 · allergen tagging</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#fff7ed"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#fff7ed</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffedd5"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#ffedd5</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#fed7aa"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#fed7aa</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#fdba74"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#fdba74</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#fb923c"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#fb923c</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#f97316"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#f97316</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#FF6D00"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#FF6D00</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ea580c"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#ea580c</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#c2410c"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#c2410c</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#9a3412"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#9a3412</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#7c2d12"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#7c2d12</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#4a1e0b"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#4a1e0b</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#2b1106"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#2b1106</span></div></div>
+        </div>
+      </div>
+
+      <!-- BUTTON PRIMARY (Orange) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#FF6D00"></span>
+          <span style="color:#FF6D00">Button Primary — Orange</span>
+          <span class="palette-anchor">500★ #FF6D00</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#fff6ee"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#fff6ee</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffead4"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#ffead4</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffd5a8"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#ffd5a8</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffba6e"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#ffba6e</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffa040"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#ffa040</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ff8618"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#ff8618</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#FF6D00"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#FF6D00</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#d95a00"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#d95a00</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#b34800"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#b34800</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#8c3800"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#8c3800</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#662a00"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#662a00</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#401900"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#401900</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#200d00"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#200d00</span></div></div>
+        </div>
+      </div>
+
+      <!-- BUTTON SECONDARY (Blue Light) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#1ca3e6"></span>
+          <span style="color:#1ca3e6">Button Secondary — Blue Light</span>
+          <span class="palette-anchor">500★ #1ca3e6</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#f5fbff"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#f5fbff</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#f0f9ff"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#f0f9ff</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#e0f2fe"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#e0f2fe</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#b9e6fe"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#b9e6fe</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#7cd4fd"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#7cd4fd</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#36bffa"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#36bffa</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#1ca3e6"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#1ca3e6</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#0086c9"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#0086c9</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#026aa2"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#026aa2</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#065986"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#065986</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#0b4a6f"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#0b4a6f</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#062c41"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#062c41</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#021520"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#021520</span></div></div>
+        </div>
+      </div>
+
+      <!-- QUIZ PRIMARY (Magenta) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#9A0050"></span>
+          <span style="color:#c8207a">Quiz Primary — Deep Magenta</span>
+          <span class="palette-anchor">500★ #9A0050</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#fff0f7"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#fff0f7</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffe0ee"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#ffe0ee</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ffb8d9"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#ffb8d9</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#ff80bc"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#ff80bc</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#f0449c"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#f0449c</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#c8207a"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#c8207a</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#9A0050"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#9A0050</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#820044"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#820044</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#680038"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#680038</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#50002c"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#50002c</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#380020"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#380020</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#280018"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#280018</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#1a0010"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#1a0010</span></div></div>
+        </div>
+      </div>
+
+      <!-- QUIZ SECONDARY (Purple) -->
+      <div class="palette-row">
+        <div class="palette-title">
+          <span class="dot" style="background:#3B227A"></span>
+          <span style="color:#9d84f5">Quiz Secondary — Deep Purple</span>
+          <span class="palette-anchor">500★ #3B227A</span>
+        </div>
+        <div class="scale-strip">
+          <div class="scale-cell"><div class="swatch" style="background:#f4f0ff"></div><div class="meta"><span class="step-n">25</span><span class="hex-v">#f4f0ff</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#eae0ff"></div><div class="meta"><span class="step-n">50</span><span class="hex-v">#eae0ff</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#d4bfff"></div><div class="meta"><span class="step-n">100</span><span class="hex-v">#d4bfff</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#b898ff"></div><div class="meta"><span class="step-n">200</span><span class="hex-v">#b898ff</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#9470e8"></div><div class="meta"><span class="step-n">300</span><span class="hex-v">#9470e8</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#6844b0"></div><div class="meta"><span class="step-n">400</span><span class="hex-v">#6844b0</span></div></div>
+          <div class="scale-cell is-anchor"><div class="swatch" style="background:#3B227A"></div><div class="meta"><span class="step-n">500</span><span class="hex-v">#3B227A</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#311a66"></div><div class="meta"><span class="step-n">600</span><span class="hex-v">#311a66</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#261454"></div><div class="meta"><span class="step-n">700</span><span class="hex-v">#261454</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#1c0e40"></div><div class="meta"><span class="step-n">800</span><span class="hex-v">#1c0e40</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#14082e"></div><div class="meta"><span class="step-n">900</span><span class="hex-v">#14082e</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#0c0420"></div><div class="meta"><span class="step-n">950</span><span class="hex-v">#0c0420</span></div></div>
+          <div class="scale-cell"><div class="swatch" style="background:#060212"></div><div class="meta"><span class="step-n">dark</span><span class="hex-v">#060212</span></div></div>
+        </div>
+      </div>
+
+      <!-- SYSTEM UI COLORS -->
+      <div class="palette-row" style="padding-bottom:20px">
+        <div class="palette-title">
+          <span class="dot" style="background:linear-gradient(90deg,#ef4444 20%,#f59e0b 40%,#eab308 60%,#22c55e 80%,#3b82f6 100%)"></span>
+          <span style="color:var(--gray-700)">System UI Colors — solo 500, light &amp; dark identici</span>
+          <span class="palette-anchor">Tailwind standard · distinti dai colori brand</span>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:100px">
+            <div style="width:100px;height:64px;border-radius:10px;background:#ef4444;box-shadow:0 4px 16px rgba(239,68,68,0.35)"></div>
+            <span style="font-size:11px;font-weight:700;color:#ef4444;letter-spacing:1px">ERROR</span>
+            <span style="font-size:11px;color:var(--gray-600);font-family:monospace">#ef4444</span>
+            <span style="font-size:10px;color:var(--gray-500)">red-500</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:100px">
+            <div style="width:100px;height:64px;border-radius:10px;background:#f59e0b;box-shadow:0 4px 16px rgba(245,158,11,0.35)"></div>
+            <span style="font-size:11px;font-weight:700;color:#d97706;letter-spacing:1px">WARNING</span>
+            <span style="font-size:11px;color:var(--gray-600);font-family:monospace">#f59e0b</span>
+            <span style="font-size:10px;color:var(--gray-500)">amber-500</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:100px">
+            <div style="width:100px;height:64px;border-radius:10px;background:#eab308;box-shadow:0 4px 16px rgba(234,179,8,0.35)"></div>
+            <span style="font-size:11px;font-weight:700;color:#ca8a04;letter-spacing:1px">NOTICE</span>
+            <span style="font-size:11px;color:var(--gray-600);font-family:monospace">#eab308</span>
+            <span style="font-size:10px;color:var(--gray-500)">yellow-500</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:100px">
+            <div style="width:100px;height:64px;border-radius:10px;background:#22c55e;box-shadow:0 4px 16px rgba(34,197,94,0.35)"></div>
+            <span style="font-size:11px;font-weight:700;color:#16a34a;letter-spacing:1px">SUCCESS</span>
+            <span style="font-size:11px;color:var(--gray-600);font-family:monospace">#22c55e</span>
+            <span style="font-size:10px;color:var(--gray-500)">green-500</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:100px">
+            <div style="width:100px;height:64px;border-radius:10px;background:#3b82f6;box-shadow:0 4px 16px rgba(59,130,246,0.35)"></div>
+            <span style="font-size:11px;font-weight:700;color:#2563eb;letter-spacing:1px">INFO</span>
+            <span style="font-size:11px;color:var(--gray-600);font-family:monospace">#3b82f6</span>
+            <span style="font-size:10px;color:var(--gray-500)">blue-500</span>
+          </div>
+
+          <div style="margin-left:24px;padding-left:24px;border-left:2px solid var(--gray-200);display:flex;flex-direction:column;justify-content:center;gap:8px;font-size:11px;color:var(--gray-500);max-width:240px">
+            <div>⚠️ <strong style="color:var(--gray-700)">orange-500 (#f97316)</strong> non usato — troppo simile a Button Primary <code style="background:var(--gray-100);padding:1px 4px;border-radius:3px">#FF6D00</code></div>
+            <div>ℹ️ <strong style="color:var(--gray-700)">blue-500 (#3b82f6)</strong> è distinto da Button Secondary <code style="background:var(--gray-100);padding:1px 4px;border-radius:3px">#1ca3e6</code> (sky)</div>
+            <div>🎨 Tutti i token sistema sono identici in light e dark mode</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /palette-grid -->
+  </div><!-- /section 1 -->
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 2 — COMPONENT PREVIEW LIGHT & DARK
+       ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">
+      02 — Component Preview
+      <span class="tag" style="background:rgba(227,31,51,0.12);color:#E31F33;border:1px solid rgba(227,31,51,0.2)">LIGHT</span>
+      <span class="tag" style="background:rgba(136,125,108,0.12);color:#887D6C;border:1px solid rgba(136,125,108,0.2)">DARK</span>
+    </div>
+
+    <!-- MODE TOGGLE -->
+    <div class="mode-toggle-wrap">
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setMode('light')" id="btn-light">☀️ Light</button>
+        <button class="mode-btn" onclick="setMode('dark')" id="btn-dark">🌑 Dark</button>
+      </div>
+      <span style="font-size:11px;color:var(--gray-700);letter-spacing:1px">Click to switch mode</span>
+    </div>
+
+    <!-- PREVIEW FRAME -->
+    <div class="preview-frame light-mode" id="preview">
+
+      <div class="preview-cols">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+          <!-- TYPOGRAPHY -->
+          <div class="preview-block">
+            <div class="block-title">Typography</div>
+            <p class="t-h1">Thai Akha Kitchen</p>
+            <p class="t-h2">Cooking Class Experience</p>
+            <p class="t-h3">Morning Session · Chiang Mai</p>
+            <p class="t-body">Discover the rich culinary traditions of the Akha hill tribe. Our cooking classes take you to the heart of Northern Thai culture — from market to table.</p>
+            <p class="t-small">Available Mon–Sat · 08:00–13:00 · 2,500 THB per person</p>
+            <p class="t-caption" style="margin-top:8px">Booking Required · Min 2 Guests</p>
+            <p class="t-thai" style="margin-top:10px">ยินดีต้อนรับสู่ครัวอาข่า · เชียงใหม่</p>
+            <p style="margin-top:10px;font-size:13px">
+              <span class="t-accent-primary" style="font-weight:700">Primary accent</span>
+              &nbsp;·&nbsp;
+              <span class="t-accent-action" style="font-weight:700;color:var(--action-600)">Action accent</span>
+            </p>
+          </div>
+
+          <!-- DIVIDERS -->
+          <div class="preview-block">
+            <div class="block-title">Dividers</div>
+            <div class="divider-block">
+              <div class="divider"></div>
+              <div class="divider divider-brand"></div>
+              <div class="divider divider-grad"></div>
+              <div class="divider-label">or continue with</div>
+            </div>
+          </div>
+
+          <!-- INPUTS -->
+          <div class="preview-block">
+            <div class="block-title">Inputs</div>
+            <div class="input-row">
+              <div class="input-wrap">
+                <label class="input-label">Full Name</label>
+                <input class="input-field" type="text" placeholder="Enter your name…">
+                <span class="input-hint hint-default">As it appears on your passport</span>
+              </div>
+              <div class="input-wrap">
+                <label class="input-label">Email</label>
+                <input class="input-field input-success" type="email" value="svevo@thaiakha.com">
+                <span class="input-hint hint-success">✓ Email confirmed</span>
+              </div>
+              <div class="input-wrap">
+                <label class="input-label">Promo Code</label>
+                <input class="input-field input-error" type="text" value="INVALID99">
+                <span class="input-hint hint-error">Code not recognized or expired</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /left -->
+
+        <!-- RIGHT COLUMN -->
+        <div>
+
+          <!-- BUTTONS -->
+          <div class="preview-block">
+            <div class="block-title">Buttons — Filled</div>
+            <div class="btn-row">
+              <button class="btn btn-primary">Primary</button>
+              <button class="btn btn-action">Action</button>
+              <button class="btn btn-secondary">Secondary</button>
+              <button class="btn btn-orange">Orange CTA</button>
+              <button class="btn btn-blue">Blue</button>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-quiz">Quiz</button>
+              <button class="btn btn-quiz-s">Quiz Alt</button>
+              <button class="btn btn-warning">Warning</button>
+              <button class="btn btn-success">Success</button>
+            </div>
+            <div class="block-title" style="margin-top:20px">Buttons — Ghost</div>
+            <div class="btn-row">
+              <button class="btn btn-ghost-p">Primary</button>
+              <button class="btn btn-ghost-s">Action</button>
+              <button class="btn btn-ghost-o">Orange</button>
+              <button class="btn btn-ghost-b">Blue</button>
+              <button class="btn btn-ghost-gray">Neutral</button>
+            </div>
+            <div class="block-title" style="margin-top:20px">Buttons — Variants</div>
+            <div class="btn-row">
+              <button class="btn btn-sm btn-primary">Small</button>
+              <button class="btn btn-pill btn-orange">Pill CTA</button>
+              <button class="btn btn-pill btn-blue btn-sm">Pill Sm</button>
+              <button class="btn btn-ghost-gray btn-sm">Ghost Sm</button>
+            </div>
+          </div>
+
+          <!-- BADGES -->
+          <div class="preview-block">
+            <div class="block-title">Badges</div>
+            <div class="badge-row">
+              <span class="badge badge-primary"><span class="badge-dot" style="background:#E31F33"></span>Admin</span>
+              <span class="badge badge-action"><span class="badge-dot" style="background:#98C93C"></span>Manager</span>
+              <span class="badge badge-secondary"><span class="badge-dot" style="background:#8D1A31"></span>Secondary</span>
+              <span class="badge badge-blue"><span class="badge-dot" style="background:#1ca3e6"></span>Agency</span>
+              <span class="badge badge-orange"><span class="badge-dot" style="background:#FF6D00"></span>Driver</span>
+              <span class="badge badge-quiz">Quiz</span>
+              <span class="badge badge-purple">Logistics</span>
+            </div>
+            <div class="badge-row" style="margin-top:8px">
+              <span class="badge badge-warning">⚠ Warning</span>
+              <span class="badge badge-success">✓ Confirmed</span>
+              <span class="badge badge-gray">Neutral</span>
+              <span class="badge badge-primary">Pending</span>
+              <span class="badge badge-action">Completed</span>
+            </div>
+          </div>
+
+          <!-- CARDS -->
+          <div class="preview-block">
+            <div class="block-title">Cards</div>
+            <div class="cards-grid">
+              <div class="card card-default">
+                <div class="card-icon" style="background:rgba(227,31,51,0.1)">🍜</div>
+                <div class="card-title">Morning Class</div>
+                <div class="card-body">Market tour + 4 dishes + recipe book</div>
+                <div class="card-meta" style="color:var(--primary-500)">2,500 THB / person →</div>
+              </div>
+              <div class="card card-elevated">
+                <div class="card-icon" style="background:rgba(152,201,60,0.12)">🌿</div>
+                <div class="card-title">Evening Class</div>
+                <div class="card-body">Traditional recipes · sunset setting</div>
+                <div class="card-meta" style="color:var(--action-600)">1,800 THB / person →</div>
+              </div>
+              <div class="card card-brand">
+                <div class="card-title" style="color:var(--primary-700)">🔴 Fully Booked</div>
+                <div class="card-body">Next availability: March 15</div>
+              </div>
+              <div class="card card-glass">
+                <div class="card-title">Glass Card</div>
+                <div class="card-body">Glassmorphism surface with backdrop blur</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STAT CARDS -->
+          <div class="preview-block">
+            <div class="block-title">Stat Cards</div>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-label">Today</div>
+                <div class="stat-value" style="color:var(--primary-500)">24</div>
+                <div class="stat-sub">bookings confirmed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Revenue</div>
+                <div class="stat-value" style="color:var(--action-600)">60k</div>
+                <div class="stat-sub">THB this week</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Rating</div>
+                <div class="stat-value" style="color:var(--btn-p-500)">4.9</div>
+                <div class="stat-sub">avg · 312 reviews</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /right -->
+      </div><!-- /preview-cols -->
+    </div><!-- /preview-frame -->
+  </div><!-- /section 2 -->
+
+  <!-- FOOTER -->
+  <div style="text-align:center;padding-top:32px;border-top:1px solid #1a1e1d;margin-top:8px">
+    <p style="font-size:10px;color:#282218;letter-spacing:3px;text-transform:uppercase">
+      Thai Akha Kitchen · Design Tokens v4 · 9 Scales · 13 Steps · Light & Dark Components
+    </p>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+function setMode(mode) {
+  const preview = document.getElementById('preview');
+  const btnLight = document.getElementById('btn-light');
+  const btnDark  = document.getElementById('btn-dark');
+  if (mode === 'light') {
+    preview.className = 'preview-frame light-mode';
+    btnLight.classList.add('active');
+    btnDark.classList.remove('active');
+  } else {
+    preview.className = 'preview-frame dark-mode';
+    btnDark.classList.add('active');
+    btnLight.classList.remove('active');
+  }
+}
+</script>
+</body>
+</html>

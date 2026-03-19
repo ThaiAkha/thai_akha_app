@@ -242,7 +242,7 @@ const MarketRunner: React.FC = () => {
                                     className={cn(
                                         "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase whitespace-nowrap transition-all border",
                                         activeTab === tab.value
-                                            ? "bg-brand-600 text-white border-brand-600 shadow-brand-glow"
+                                            ? "bg-primary-600 text-white border-primary-600 shadow-primary-glow"
                                             : "bg-gray-50 dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700 hover:border-gray-300"
                                     )}
                                 >
@@ -255,7 +255,7 @@ const MarketRunner: React.FC = () => {
                             <div className="text-[9px] font-black uppercase text-gray-400 tracking-widest text-left">
                                 Live<br />Total
                             </div>
-                            <div className="text-2xl font-mono font-black text-brand-600 dark:text-brand-400 leading-none">
+                            <div className="text-2xl font-mono font-black text-primary-600 dark:text-primary-400 leading-none">
                                 {liveTotal.toLocaleString()} <span className="text-[10px] font-sans text-gray-400 font-normal">THB</span>
                             </div>
                         </div>
@@ -269,7 +269,7 @@ const MarketRunner: React.FC = () => {
                         <div className="px-4 pt-4 animate-in slide-in-from-top-4 duration-500">
                             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex items-center justify-between shadow-sm">
                                 <div className="flex items-center gap-3">
-                                    <div className="size-10 rounded-xl bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-500/20">
+                                    <div className="size-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-500/20">
                                         {typeof activeContact === 'undefined' ? <Store className="w-5 h-5" /> : getShopIcon(activeTab)}
                                     </div>
                                     <div>
@@ -331,7 +331,7 @@ const MarketRunner: React.FC = () => {
                                             {item.name}
                                         </h4>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className="font-mono text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 px-1.5 py-0.5 rounded">QTY: {item.quantity}</span>
+                                            <span className="font-mono text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-1.5 py-0.5 rounded">QTY: {item.quantity}</span>
                                             <span className="text-[9px] font-medium text-gray-400 uppercase border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded">{item.unit}</span>
                                         </div>
                                     </div>

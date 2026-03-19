@@ -33,15 +33,15 @@ const DashboardNavCard: React.FC<DashboardNavCardProps> = ({
         >
             <Card className={cn(
                 "relative flex flex-col transition-all duration-300",
-                "hover:shadow-xl hover:shadow-brand-500/5",
+                "hover:shadow-xl hover:shadow-primary-500/5",
                 "hover:-translate-y-1 overflow-hidden",
                 className
             )}>
             {/* Decorative Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             {/* Icon Header (compact like BasicCard) */}
-            <div className="w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-500 flex items-center justify-center mb-6 transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-500/10 text-primary-500 flex items-center justify-center mb-6 transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:bg-primary-500 group-hover:text-white shrink-0">
                 <IconComponent className="w-5 h-5" />
             </div>
 
@@ -59,7 +59,7 @@ const DashboardNavCard: React.FC<DashboardNavCardProps> = ({
 
                 {/* Link Action */}
                 {linkLabel && (
-                    <div className="mt-auto pt-5 inline-flex items-center text-md font-bold uppercase tracking-wider text-brand-500 group-hover:text-brand-600 transition-colors">
+                    <div className="mt-auto pt-5 inline-flex items-center text-md font-bold uppercase tracking-wider text-primary-500 group-hover:text-primary-600 transition-colors">
                         {linkLabel}
                         <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </div>

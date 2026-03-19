@@ -58,18 +58,18 @@ const AdminDatabase: React.FC = () => {
                         isRefreshing={data.loading}
                         onExportClick={() => ui.setIsExportOpen(!ui.isExportOpen)}
                         exportDropdown={
-                            <Dropdown isOpen={ui.isExportOpen} onClose={() => ui.setIsExportOpen(false)} className="w-56 mt-2 left-0 shadow-2xl border-brand-100 dark:border-brand-500/20">
+                            <Dropdown isOpen={ui.isExportOpen} onClose={() => ui.setIsExportOpen(false)} className="w-56 mt-2 left-0 shadow-2xl border-primary-100 dark:border-primary-500/20">
                                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('actions.exportFormats')}</p>
                                 </div>
-                                <DropdownItem onClick={ui.exportToCSV} className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors">
+                                <DropdownItem onClick={ui.exportToCSV} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
                                     <FileSpreadsheet className="w-4 h-4 text-green-600" />
                                     <div className="text-left">
                                         <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('actions.exportCsv')}</p>
                                         <p className="text-[10px] text-gray-400">{t('actions.exportCsvDesc')}</p>
                                     </div>
                                 </DropdownItem>
-                                <DropdownItem onClick={ui.exportToJSON} className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors">
+                                <DropdownItem onClick={ui.exportToJSON} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
                                     <FileJson className="w-4 h-4 text-blue-600" />
                                     <div className="text-left">
                                         <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('actions.exportJson')}</p>
@@ -77,8 +77,8 @@ const AdminDatabase: React.FC = () => {
                                     </div>
                                 </DropdownItem>
                                 <div className="h-px bg-gray-100 dark:bg-gray-800 my-1" />
-                                <DropdownItem onClick={ui.copyToClipboard} className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors">
-                                    <Copy className="w-4 h-4 text-brand-600" />
+                                <DropdownItem onClick={ui.copyToClipboard} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
+                                    <Copy className="w-4 h-4 text-primary-600" />
                                     <div className="text-left">
                                         <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('actions.copyClipboard')}</p>
                                         <p className="text-[10px] text-gray-400">{t('actions.copyClipboardDesc')}</p>

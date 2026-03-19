@@ -80,7 +80,7 @@ const AgencyTerms: React.FC = () => {
 
                         {/* PAYMENT */}
                         <div className="flex gap-6">
-                            <div className="size-12 shrink-0 rounded-2xl bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-500">
+                            <div className="size-12 shrink-0 rounded-2xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-500">
                                 <Gavel className="w-6 h-6" />
                             </div>
                             <div className="space-y-3">
@@ -96,9 +96,9 @@ const AgencyTerms: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="p-6 bg-brand-500/5 border border-brand-500/20 rounded-2xl flex items-center gap-4">
-                        <AlertCircle className="w-6 h-6 text-brand-500 shrink-0" />
-                        <p className="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wide">
+                    <div className="p-6 bg-primary-500/5 border border-primary-500/20 rounded-2xl flex items-center gap-4">
+                        <AlertCircle className="w-6 h-6 text-primary-500 shrink-0" />
+                        <p className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wide">
                             {t('agencyTerms.customContract')}
                         </p>
                     </div>

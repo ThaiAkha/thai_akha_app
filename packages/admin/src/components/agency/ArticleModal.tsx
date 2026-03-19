@@ -120,7 +120,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                             <div className="max-w-2xl text-center animate-fade-in">
                                 <div className="relative">
                                     {/* Large opening quote mark */}
-                                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-8xl font-serif text-brand-500/20 dark:text-brand-400/20">
+                                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-8xl font-serif text-primary-500/20 dark:text-primary-400/20">
                                         "
                                     </div>
                                     
@@ -130,7 +130,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                     </p>
                                     
                                     {/* Decorative line */}
-                                    <div className="w-24 h-0.5 bg-gradient-to-r from-brand-500/50 to-brand-600/50 mx-auto mt-6" />
+                                    <div className="w-24 h-0.5 bg-gradient-to-r from-primary-500/50 to-primary-600/50 mx-auto mt-6" />
                                     
                                     {/* Optional author or category */}
                                     {(article.author || article.category) && (
@@ -165,7 +165,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                 {/* Date and close button at same height */}
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                                        <Calendar className="w-4 h-4 text-brand-500" />
+                                        <Calendar className="w-4 h-4 text-primary-500" />
                                         <span className="text-xs font-bold uppercase tracking-widest">{formatDate(article.created_at)}</span>
                                     </div>
                                     

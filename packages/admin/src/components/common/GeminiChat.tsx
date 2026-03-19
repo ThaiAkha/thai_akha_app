@@ -117,7 +117,7 @@ const GeminiChat: React.FC = () => {
 
                     {/* Error Display */}
                     {(chatError || liveError) && (
-                        <div className="px-4 py-2 bg-error-100 dark:bg-error-900/20 text-error-600 dark:text-error-400 text-xs border-t border-error-200 dark:border-error-800">
+                        <div className="px-4 py-2 bg-sys-error/15 dark:bg-sys-error/20 text-sys-error dark:text-sys-error text-xs border-t border-sys-error/25 dark:border-sys-error">
                             {chatError || liveError}
                         </div>
                     )}
@@ -128,7 +128,7 @@ const GeminiChat: React.FC = () => {
                             <button
                                 onClick={toggleLive}
                                 className={`p-2 rounded-full transition-colors ${isLiveActive
-                                    ? 'bg-brand-500 text-white animate-pulse'
+                                    ? 'bg-primary-500 text-white animate-pulse'
                                     : isLiveConnecting
                                         ? 'bg-yellow-500 text-white'
                                         : 'bg-gray-100 dark:bg-meta-4 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-opacity-80'

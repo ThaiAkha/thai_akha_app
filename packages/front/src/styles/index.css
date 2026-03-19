@@ -1,35 +1,65 @@
 /**
  * Thai Akha Kitchen — Front App Global Styles
  *
- * Style system — import order matters:
- * 1. base-palette  (raw colors — shared)
- * 2. tokens        (semantic vars, RGB tokens, glass — front-specific)
- * 3. base-theme    (Tailwind @theme: breakpoints, shadows, animations — shared)
- * 4. theme         (Tailwind @theme: fonts — front-specific)
- * 5. utilities     (glass-card, menu-item, scrollbar — shared components)
- * 6. tailwindcss
+ * Import order matters for correct CSS cascade:
+ * 1. tokens        — Semantic CSS vars in :root (--bg, --surface, glass) [front]
+ * 2. base-theme    — ALL @theme tokens: colors, breakpoints, shadows, animations [front-local]
+ * 3. theme         — @theme: fonts + front-specific colors (secondary, quiz) [front]
+ * 4. utilities     — @utility classes + button flash CSS [front-local]
+ * 5. tailwindcss   — Tailwind v4 core (MUST come after all @theme definitions)
  */
 
 /* ========================================================================
    STYLE SYSTEM IMPORTS
    ======================================================================== */
-@import '../../../shared/src/styles/base-palette.css';
 @import './tokens.css';
-@import '../../../shared/src/styles/base-theme.css';
+@import './base-theme.css';
 @import './theme.css';
-@import '../../../shared/src/styles/utilities.css';
+@import './utilities.css';
 
 /* ========================================================================
-   TAILWIND V4 CORE
+   TAILWIND V4 CORE — after all @theme definitions
    ======================================================================== */
-
 @import "tailwindcss";
 
 /* ========================================================================
    DARK MODE CUSTOM VARIANT
    ======================================================================== */
-
 @custom-variant dark (&:is(.dark *));
+
+/* ========================================================================
+   SEMANTIC TEXT UTILITY CLASSES — Tailwind v4 @utility directive
+   @utility è il metodo nativo v4 per custom utilities (non @layer utilities).
+   Legge i CSS vars a runtime → dark mode safe (html.dark in tokens.css vince).
+   DEVE stare dopo @import "tailwindcss".
+   ======================================================================== */
+@utility text-title   { color: var(--color-title); }
+@utility text-desc    { color: var(--color-desc); }
+@utility text-sub     { color: var(--color-sub); }
+@utility text-muted   { color: var(--color-muted); }
+@utility text-inverse { color: var(--color-inverse); }
+
+/* ========================================================================
+   FLAT TOKEN ANCHORS — repeated directly in entry file for dev mode
+   Tailwind v4 Vite plugin in dev mode doesn't reliably resolve @theme
+   from imported files. These mirror base-theme.css + theme.css values.
+   ======================================================================== */
+@theme {
+  /* ── BRAND COLORS ─────────────────────────────────────────────────────── */
+  --color-primary:   #E31F33;   /* = primary-500   */
+  --color-action:    #98C93C;   /* = action-500    */
+  --color-quiz-p:    #9A0050;   /* = quiz-p-500    */
+  --color-quiz-s:    #3B227A;   /* = quiz-s-500    */
+  --color-btn-p:     #FF6D00;   /* = btn-p-500     */
+  --color-btn-s:     #1CA3E6;   /* = btn-s-500     */
+  --color-secondary: #8D1A31;   /* = secondary-600 */
+  --color-allergy:   #FF6D00;   /* = allergy-500   */
+  --color-quiz:      #9A0050;   /* front quiz alias */
+
+  /* ── SEMANTIC TOKENS ──────────────────────────────────────────────────── */
+  --color-surface: var(--surface);
+  --color-border:  var(--border);
+}
 
 /* ========================================================================
    FRONT-SPECIFIC BASE STYLES
@@ -62,6 +92,11 @@
     font-weight: 900;
   }
 
+  ::selection {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
   /* Material Design Icons support */
   .material-symbols-rounded,
   .material-symbols-outlined {
@@ -76,6 +111,11 @@
     white-space: nowrap;
     direction: ltr;
     font-feature-settings: 'liga';
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  .icon-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 }
 
@@ -126,6 +166,116 @@
 /* ========================================================================
    FRONT-SPECIFIC COMPONENTS
    ======================================================================== */
+
+/* ========================================================================
+   BRAND COLOR ALPHA UTILITIES — rgb(var(--ch) / alpha)
+   ─────────────────────────────────────────────────────────────────────────
+   WHY: Tailwind v4 uses color-mix(in oklch, #hex X%, transparent).
+        transparent in oklch = oklch(0% 0 none / 0) = black.
+        Mixing lime green 20% with black 80% = very dark, nearly invisible.
+        Even bg-action/80 = 80% lime + 20% black = darker than expected.
+
+   FIX: Use rgb(var(--action-ch) / alpha) where --action-ch = "152 201 60".
+        rgb(152 201 60 / 0.2) = correct: full-brightness lime at 20% opacity.
+        rgb() with CSS variable channels is supported Chrome 57+, Firefox 52+.
+
+   MUST be after @import "tailwindcss" to win the same-layer cascade.
+   ======================================================================== */
+
+@layer utilities {
+
+  /* ── bg-action ─────────────────────────────────────────────────────── */
+  .bg-action\/5   { background-color: rgb(var(--action-ch) / 0.05); }
+  .bg-action\/10  { background-color: rgb(var(--action-ch) / 0.10); }
+  .bg-action\/20  { background-color: rgb(var(--action-ch) / 0.20); }
+  .bg-action\/25  { background-color: rgb(var(--action-ch) / 0.25); }
+  .bg-action\/30  { background-color: rgb(var(--action-ch) / 0.30); }
+  .bg-action\/40  { background-color: rgb(var(--action-ch) / 0.40); }
+  .bg-action\/50  { background-color: rgb(var(--action-ch) / 0.50); }
+  .bg-action\/60  { background-color: rgb(var(--action-ch) / 0.60); }
+  .bg-action\/80  { background-color: rgb(var(--action-ch) / 0.80); }
+  .bg-action\/90  { background-color: rgb(var(--action-ch) / 0.90); }
+
+  /* ── bg-primary ────────────────────────────────────────────────────── */
+  .bg-primary\/5  { background-color: rgb(var(--primary-ch) / 0.05); }
+  .bg-primary\/10 { background-color: rgb(var(--primary-ch) / 0.10); }
+  .bg-primary\/20 { background-color: rgb(var(--primary-ch) / 0.20); }
+  .bg-primary\/25 { background-color: rgb(var(--primary-ch) / 0.25); }
+  .bg-primary\/30 { background-color: rgb(var(--primary-ch) / 0.30); }
+  .bg-primary\/40 { background-color: rgb(var(--primary-ch) / 0.40); }
+  .bg-primary\/50 { background-color: rgb(var(--primary-ch) / 0.50); }
+  .bg-primary\/80 { background-color: rgb(var(--primary-ch) / 0.80); }
+
+  /* ── bg-desc (semantic, adapts light/dark) ──────────────────────────── */
+  .bg-desc\/10 { background-color: rgb(var(--desc-ch) / 0.10); }
+  .bg-desc\/20 { background-color: rgb(var(--desc-ch) / 0.20); }
+  .bg-desc\/30 { background-color: rgb(var(--desc-ch) / 0.30); }
+
+  /* ── text-action ───────────────────────────────────────────────────── */
+  .text-action\/50 { color: rgb(var(--action-ch) / 0.50); }
+  .text-action\/70 { color: rgb(var(--action-ch) / 0.70); }
+  .text-action\/80 { color: rgb(var(--action-ch) / 0.80); }
+
+  /* ── text-primary ──────────────────────────────────────────────────── */
+  .text-primary\/80 { color: rgb(var(--primary-ch) / 0.80); }
+
+  /* ── text-desc (very common — 15 values for granular opacity) ────────── */
+  .text-desc\/15 { color: rgb(var(--desc-ch) / 0.15); }
+  .text-desc\/20 { color: rgb(var(--desc-ch) / 0.20); }
+  .text-desc\/25 { color: rgb(var(--desc-ch) / 0.25); }
+  .text-desc\/30 { color: rgb(var(--desc-ch) / 0.30); }
+  .text-desc\/35 { color: rgb(var(--desc-ch) / 0.35); }
+  .text-desc\/40 { color: rgb(var(--desc-ch) / 0.40); }
+  .text-desc\/45 { color: rgb(var(--desc-ch) / 0.45); }
+  .text-desc\/50 { color: rgb(var(--desc-ch) / 0.50); }
+  .text-desc\/55 { color: rgb(var(--desc-ch) / 0.55); }
+  .text-desc\/60 { color: rgb(var(--desc-ch) / 0.60); }
+  .text-desc\/70 { color: rgb(var(--desc-ch) / 0.70); }
+  .text-desc\/80 { color: rgb(var(--desc-ch) / 0.80); }
+  .text-desc\/90 { color: rgb(var(--desc-ch) / 0.90); }
+
+  /* ── border-action ─────────────────────────────────────────────────── */
+  .border-action\/20 { border-color: rgb(var(--action-ch)  / 0.20); }
+  .border-action\/30 { border-color: rgb(var(--action-ch)  / 0.30); }
+  .border-action\/50 { border-color: rgb(var(--action-ch)  / 0.50); }
+
+  /* ── border-primary ────────────────────────────────────────────────── */
+  .border-primary\/20 { border-color: rgb(var(--primary-ch) / 0.20); }
+  .border-primary\/30 { border-color: rgb(var(--primary-ch) / 0.30); }
+  .border-primary\/50 { border-color: rgb(var(--primary-ch) / 0.50); }
+
+  /* ── bg-allergy ─────────────────────────────────────────────────────── */
+  .bg-allergy\/5    { background-color: rgb(var(--allergy-ch) / 0.05); }
+  .bg-allergy\/10   { background-color: rgb(var(--allergy-ch) / 0.10); }
+  .bg-allergy\/20   { background-color: rgb(var(--allergy-ch) / 0.20); }
+  .bg-allergy\/30   { background-color: rgb(var(--allergy-ch) / 0.30); }
+  .bg-allergy\/40   { background-color: rgb(var(--allergy-ch) / 0.40); }
+  .bg-allergy\/50   { background-color: rgb(var(--allergy-ch) / 0.50); }
+  .bg-allergy\/60   { background-color: rgb(var(--allergy-ch) / 0.60); }
+  .bg-allergy\/70   { background-color: rgb(var(--allergy-ch) / 0.70); }
+  .bg-allergy\/80   { background-color: rgb(var(--allergy-ch) / 0.80); }
+  .bg-allergy\/90   { background-color: rgb(var(--allergy-ch) / 0.90); }
+
+  /* ── text-allergy ───────────────────────────────────────────────────── */
+  .text-allergy\/5    { color: rgb(var(--allergy-ch) / 0.05); }
+  .text-allergy\/10   { color: rgb(var(--allergy-ch) / 0.10); }
+  .text-allergy\/20   { color: rgb(var(--allergy-ch) / 0.20); }
+  .text-allergy\/30   { color: rgb(var(--allergy-ch) / 0.30); }
+  .text-allergy\/40   { color: rgb(var(--allergy-ch) / 0.40); }
+  .text-allergy\/50   { color: rgb(var(--allergy-ch) / 0.50); }
+  .text-allergy\/60   { color: rgb(var(--allergy-ch) / 0.60); }
+  .text-allergy\/70   { color: rgb(var(--allergy-ch) / 0.70); }
+  .text-allergy\/80   { color: rgb(var(--allergy-ch) / 0.80); }
+  .text-allergy\/90   { color: rgb(var(--allergy-ch) / 0.90); }
+
+  /* ── border-allergy ─────────────────────────────────────────────────── */
+  .border-allergy\/5    { border-color: rgb(var(--allergy-ch) / 0.05); }
+  .border-allergy\/10   { border-color: rgb(var(--allergy-ch) / 0.10); }
+  .border-allergy\/20   { border-color: rgb(var(--allergy-ch) / 0.20); }
+  .border-allergy\/30   { border-color: rgb(var(--allergy-ch) / 0.30); }
+  .border-allergy\/40   { border-color: rgb(var(--allergy-ch) / 0.40); }
+  .border-allergy\/50   { border-color: rgb(var(--allergy-ch) / 0.50); }
+}
 
 @layer components {
 

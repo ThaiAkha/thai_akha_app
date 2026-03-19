@@ -2,27 +2,32 @@
 
 /* ========================================================================
    STYLE SYSTEM — Import order matters
-   1. Base palette  (raw colors — shared)
-   2. App tokens    (semantic vars — admin-specific)
-   3. Base theme    (Tailwind @theme: breakpoints, shadows, animations — shared)
-   4. App theme     (Tailwind @theme: fonts — admin-specific)
-   5. Utilities     (glass, menu-item, scrollbar — shared components)
+   1. base-theme   (ALL @theme tokens: colors, breakpoints, shadows — admin-local)
+   2. App tokens   (semantic CSS vars in :root — admin-specific)
+   3. App theme    (@theme: fonts — admin-specific)
+   4. Utilities    (glass, menu-item, button flash — admin-local)
    ======================================================================== */
-@import "../../shared/src/styles/base-palette.css";
+@import "./styles/base-theme.css";
 @import "./styles/tokens.css";
-@import "../../shared/src/styles/base-theme.css";
 @import "./styles/theme.css";
-@import "../../shared/src/styles/utilities.css";
+@import "./styles/utilities.css";
 
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
-/* ========================================================================
-   APP-SPECIFIC OVERRIDES (if needed - currently empty)
-   ======================================================================== */
-/* NOTE: All @theme definitions are now imported from theme.css above.
-   This space is reserved for admin-specific overrides if needed in future. */
+/**
+ * TAILWIND V4 — FLAT TOKEN ANCHORS
+ * Defined directly in entry file for reliable dev-mode resolution.
+ */
+@theme {
+  --color-primary: #E31F33;
+  --color-action:  #98C93C;
+  --color-quiz-p:  #9A0050;
+  --color-quiz-s:  #3B227A;
+  --color-btn-p:   #FF6D00;
+  --color-btn-s:   #1CA3E6;
+}
 
 
 @layer base {
@@ -48,6 +53,44 @@
   }
 }
 
+/* ========================================================================
+   BRAND COLOR ALPHA UTILITIES — rgb(var(--ch) / alpha)
+   Bypasses color-mix(in oklch, ..., transparent) darkening issue.
+   See front/src/styles/index.css for full explanation.
+   ======================================================================== */
+
+@layer utilities {
+
+  /* ── bg-action ─────────────────────────────────────────────────────── */
+  .bg-action\/5   { background-color: rgb(var(--action-ch) / 0.05); }
+  .bg-action\/10  { background-color: rgb(var(--action-ch) / 0.10); }
+  .bg-action\/20  { background-color: rgb(var(--action-ch) / 0.20); }
+  .bg-action\/25  { background-color: rgb(var(--action-ch) / 0.25); }
+  .bg-action\/30  { background-color: rgb(var(--action-ch) / 0.30); }
+  .bg-action\/40  { background-color: rgb(var(--action-ch) / 0.40); }
+  .bg-action\/50  { background-color: rgb(var(--action-ch) / 0.50); }
+  .bg-action\/80  { background-color: rgb(var(--action-ch) / 0.80); }
+
+  /* ── bg-primary ────────────────────────────────────────────────────── */
+  .bg-primary\/5  { background-color: rgb(var(--primary-ch) / 0.05); }
+  .bg-primary\/10 { background-color: rgb(var(--primary-ch) / 0.10); }
+  .bg-primary\/20 { background-color: rgb(var(--primary-ch) / 0.20); }
+  .bg-primary\/25 { background-color: rgb(var(--primary-ch) / 0.25); }
+  .bg-primary\/30 { background-color: rgb(var(--primary-ch) / 0.30); }
+  .bg-primary\/50 { background-color: rgb(var(--primary-ch) / 0.50); }
+  .bg-primary\/80 { background-color: rgb(var(--primary-ch) / 0.80); }
+
+  /* ── border-action ─────────────────────────────────────────────────── */
+  .border-action\/20 { border-color: rgb(var(--action-ch)  / 0.20); }
+  .border-action\/30 { border-color: rgb(var(--action-ch)  / 0.30); }
+  .border-action\/50 { border-color: rgb(var(--action-ch)  / 0.50); }
+
+  /* ── border-primary ────────────────────────────────────────────────── */
+  .border-primary\/20 { border-color: rgb(var(--primary-ch) / 0.20); }
+  .border-primary\/30 { border-color: rgb(var(--primary-ch) / 0.30); }
+  .border-primary\/50 { border-color: rgb(var(--primary-ch) / 0.50); }
+}
+
 @layer utilities {
 
   /* For Remove Date Icon */
@@ -65,7 +108,7 @@
 }
 
 .tableCheckbox:checked~span {
-  @apply border-brand-500 bg-brand-500;
+  @apply border-primary-500 bg-primary-500;
 }
 
 /* ========================================================================
@@ -195,14 +238,14 @@
   @apply !fill-gray-300;
 
   &:hover {
-    @apply !fill-brand-500;
+    @apply !fill-primary-500;
   }
 
   @variant dark {
     @apply !fill-gray-700;
 
     &:hover {
-      @apply !fill-brand-500;
+      @apply !fill-primary-500;
     }
   }
 }
@@ -216,7 +259,7 @@
 }
 
 .jvectormap-tip {
-  @apply !bg-brand-500 !border-none !px-2 !py-1;
+  @apply !bg-primary-500 !border-none !px-2 !py-1;
 }
 
 .jvectormap-zoomin,
@@ -284,7 +327,7 @@
 
 .flatpickr-months .flatpickr-prev-month:hover svg,
 .flatpickr-months .flatpickr-next-month:hover svg {
-  @apply stroke-brand-500;
+  @apply stroke-primary-500;
 }
 
 .flatpickr-calendar.arrowTop:before,
@@ -452,10 +495,10 @@ span.flatpickr-weekday,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
   background: #9E2337;
-  @apply !border-brand-500 !bg-brand-500;
+  @apply !border-primary-500 !bg-primary-500;
 
   &:hover {
-    @apply !border-brand-500 !bg-brand-500;
+    @apply !border-primary-500 !bg-primary-500;
   }
 }
 
@@ -572,10 +615,10 @@ span.flatpickr-weekday,
 }
 
 .fc-addEventButton-button {
-  @apply !rounded-lg !border-0 !bg-brand-500 !px-4 !py-2.5 !text-sm !font-medium;
+  @apply !rounded-lg !border-0 !bg-primary-500 !px-4 !py-2.5 !text-sm !font-medium;
 
   &:hover {
-    @apply !bg-brand-600;
+    @apply !bg-primary-600;
   }
 
   &:focus {
@@ -705,35 +748,35 @@ span.flatpickr-weekday,
 }
 
 .event-fc-color.fc-bg-success {
-  @apply border-success-50 bg-success-50;
+  @apply border-sys-success/10 bg-sys-success/10;
 }
 
 .event-fc-color.fc-bg-danger {
-  @apply border-error-50 bg-error-50;
+  @apply border-sys-error/10 bg-sys-error/10;
 }
 
 .event-fc-color.fc-bg-primary {
-  @apply border-brand-50 bg-brand-50;
+  @apply border-primary-50 bg-primary-50;
 }
 
 .event-fc-color.fc-bg-warning {
-  @apply border-orange-50 bg-orange-50;
+  @apply border-btn-p-50 bg-btn-p-50;
 }
 
 .event-fc-color.fc-bg-success .fc-daygrid-event-dot {
-  @apply bg-success-500;
+  @apply bg-sys-success;
 }
 
 .event-fc-color.fc-bg-danger .fc-daygrid-event-dot {
-  @apply bg-error-500;
+  @apply bg-sys-error;
 }
 
 .event-fc-color.fc-bg-primary .fc-daygrid-event-dot {
-  @apply bg-brand-500;
+  @apply bg-primary-500;
 }
 
 .event-fc-color.fc-bg-warning .fc-daygrid-event-dot {
-  @apply bg-orange-500;
+  @apply bg-btn-p-500;
 }
 
 .fc-direction-ltr .fc-timegrid-slot-label-frame {
@@ -822,15 +865,15 @@ span.flatpickr-weekday,
 }
 
 .form-check-input:checked~span {
-  @apply border-[6px] border-brand-500 bg-brand-500;
+  @apply border-[6px] border-primary-500 bg-primary-500;
 
   @variant dark {
-    @apply border-brand-500;
+    @apply border-primary-500;
   }
 }
 
 .taskCheckbox:checked~.box span {
-  @apply opacity-100 bg-brand-500;
+  @apply opacity-100 bg-primary-500;
 }
 
 .taskCheckbox:checked~p {
@@ -838,10 +881,10 @@ span.flatpickr-weekday,
 }
 
 .taskCheckbox:checked~.box {
-  @apply border-brand-500 bg-brand-500;
+  @apply border-primary-500 bg-primary-500;
 
   @variant dark {
-    @apply border-brand-500;
+    @apply border-primary-500;
   }
 }
 

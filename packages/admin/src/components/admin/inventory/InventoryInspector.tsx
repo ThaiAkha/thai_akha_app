@@ -64,7 +64,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 onChange={(e) => handleChange('item_name', e.target.value)}
                                 disabled={!isEditing && !isNew}
                                 className={cn(
-                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-brand-500/20 transition-all",
+                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                                 )}
                             />
@@ -78,7 +78,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 onChange={(e) => handleChange('sku', e.target.value)}
                                 disabled={!isEditing && !isNew}
                                 className={cn(
-                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-brand-500/20 transition-all font-mono uppercase",
+                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all font-mono uppercase",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                                 )}
                             />
@@ -106,7 +106,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 onChange={(e) => handleChange('stock_quantity', parseInt(e.target.value) || 0)}
                                 disabled={!isEditing && !isNew}
                                 className={cn(
-                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-brand-500/20 transition-all",
+                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                                 )}
                             />
@@ -120,7 +120,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 onChange={(e) => handleChange('price_thb', parseFloat(e.target.value) || 0)}
                                 disabled={!isEditing && !isNew}
                                 className={cn(
-                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-brand-500/20 transition-all",
+                                    "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                                 )}
                             />
@@ -135,7 +135,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 onChange={(val) => handleChange('description_internal', val)}
                                 disabled={!isEditing && !isNew}
                                 className={cn(
-                                    "w-full text-sm font-medium bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-brand-500/20 transition-all",
+                                    "w-full text-sm font-medium bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                                 )}
                             />

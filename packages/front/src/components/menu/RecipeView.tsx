@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Badge, Icon, Button, Divider, Modal } from '../ui/index';
-import GalleryModal, { GalleryItem } from '../ui/GalleryModal';
+import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
 
@@ -80,7 +80,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const CAT_COLORS: Record<string, string> = {
   curry: 'bg-red-500/80 text-white border-red-400/50',
-  soup: 'bg-orange-500/80 text-white border-orange-400/50',
+  soup: 'bg-btn-p-500/80 text-white border-btn-p-400/50',
   stirfry: 'bg-yellow-500/80 text-black border-yellow-400/50',
   akha_specialty: 'bg-primary/80 text-white border-primary/50',
   appetizer: 'bg-green-600/80 text-white border-green-400/50',

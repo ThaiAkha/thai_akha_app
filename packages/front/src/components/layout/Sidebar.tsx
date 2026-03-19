@@ -21,25 +21,29 @@ interface NavItemProps {
   onClick: () => void;
   isOpen: boolean;
   badge?: string;
+  isVisible?: boolean;
+  index?: number;
 }
 
-function NavItem({ icon, label, isActive, onClick, isOpen, badge }: NavItemProps) {
+function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = true, index = 0 }: NavItemProps) {
   const IconComponent = getIcon(icon);
   return (
     <button
       onClick={onClick}
       title={label}
       className={cn(
-        'relative flex items-center w-full h-12 transition-colors duration-200 rounded-xl pl-0 pr-1',
+        'relative flex items-center w-full h-12 transition-all duration-500 rounded-xl pl-0 pr-1',
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
         isActive
-          ? 'bg-lime-500/20 dark:bg-lime-500/20'
-          : 'hover:bg-lime-500/10 dark:hover:bg-lime-500/10'
+          ? 'bg-action-500/20 dark:bg-action-500/20'
+          : 'hover:bg-action-500/10 dark:hover:bg-action-500/10'
       )}
+      style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] relative z-10`}>
         <IconComponent className={cn(
           'w-6 h-6 transition-transform duration-300 group-active:scale-95',
-          isActive ? 'text-lime-700 dark:text-lime-400' : 'text-gray-500 dark:text-gray-400'
+          isActive ? 'text-action-700 dark:text-action-400' : 'text-gray-500 dark:text-gray-400'
         )} />
       </div>
       <div className={cn(
@@ -49,14 +53,14 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge }: NavItemProps
       )}>
         <span className={cn(
           'font-display font-bold tracking-wide',
-          isActive ? 'text-lime-700 dark:text-lime-400' : 'text-gray-700 dark:text-gray-300'
+          isActive ? 'text-action-700 dark:text-action-400' : 'text-gray-700 dark:text-gray-300'
         )}>
           {label}
         </span>
         {badge && (
           <span className={cn(
             'px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ml-3',
-            isActive ? 'bg-lime-700 text-white shadow-sm' : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+            isActive ? 'bg-action-700 text-white shadow-sm' : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300'
           )}>
             {badge}
           </span>
@@ -71,15 +75,21 @@ interface ActionButtonProps {
   label: string;
   onClick: () => void;
   isOpen: boolean;
+  isVisible?: boolean;
+  index?: number;
 }
 
-function ActionButton({ icon, label, onClick, isOpen }: ActionButtonProps) {
+function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 0 }: ActionButtonProps) {
   const IconComponent = getIcon(icon);
   return (
     <button
       onClick={onClick}
       title={label}
-      className="relative flex items-center w-full h-14 transition-colors duration-200 group"
+      className={cn(
+        "relative flex items-center w-full h-14 transition-all duration-500 group",
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
+      )}
+      style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
       <div className={`absolute inset-1 rounded-xl transition-colors duration-200 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
@@ -97,7 +107,7 @@ function ActionButton({ icon, label, onClick, isOpen }: ActionButtonProps) {
 }
 
 function Divider({ className = 'my-1' }: { className?: string }) {
-  return <div className={`h-px bg-gray-100 dark:bg-gray-900 ${className}`} role="separator" />;
+  return <div className={`h-px bg-gray-200 dark:bg-gray-900 ${className}`} role="separator" />;
 }
 
 interface AvatarProps {
@@ -114,7 +124,7 @@ function Avatar({ src, name = 'User', size = 'md', className = '' }: AvatarProps
   return (
     <div className={cn(
       AVATAR_SIZE[size], 'rounded-full flex items-center justify-center',
-      'bg-gradient-to-br from-brand-500 to-brand-600 dark:from-brand-600 dark:to-brand-700',
+      'bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700',
       'text-white font-bold overflow-hidden flex-shrink-0', className
     )}>
       {src ? <img src={src} alt={name} className="w-full h-full object-cover" /> : <span>{initials}</span>}
@@ -126,15 +136,21 @@ interface ThemeSwitcherProps {
   isDarkMode: boolean;
   onToggle?: () => void;
   isOpen: boolean;
+  isVisible?: boolean;
+  index?: number;
 }
 
-function ThemeSwitcher({ isDarkMode, onToggle, isOpen }: ThemeSwitcherProps) {
+function ThemeSwitcher({ isDarkMode, onToggle, isOpen, isVisible = true, index = 0 }: ThemeSwitcherProps) {
   const ThemeIcon = isDarkMode ? Sun : Moon;
   return (
     <button
       onClick={onToggle}
       title={isDarkMode ? 'Light' : 'Dark'}
-      className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+      className={cn(
+        "relative flex items-center w-full h-14 rounded-xl transition-all duration-500 group",
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
+      )}
+      style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
       <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
@@ -150,7 +166,7 @@ function ThemeSwitcher({ isDarkMode, onToggle, isOpen }: ThemeSwitcherProps) {
         </span>
         <div className={cn(
           'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ml-auto mr-8',
-          isDarkMode ? 'bg-lime-600' : 'bg-gray-300 dark:bg-gray-600'
+          isDarkMode ? 'bg-action-600' : 'bg-gray-300 dark:bg-gray-600'
         )}>
           <span className={cn(
             'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
@@ -196,16 +212,33 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentPage, onNavigate, isOpen, onToggle, isDarkMode, userProfile, onToggleTheme, onLogout
 }) => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [visibleIndices, setVisibleIndices] = useState<number[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const loadMenu = async () => {
       try {
         const items = await contentService.getMenuItems();
         setMenuItems(items || []);
+        setIsLoaded(true);
       } catch (error) { console.error("Menu error", error); }
     };
     loadMenu();
   }, [userProfile?.role]);
+
+  // Handle Cascading Reveal
+  useEffect(() => {
+    if (isLoaded && menuItems.length > 0) {
+      // Clear previous reveal if necessary, then start fresh
+      setVisibleIndices([]);
+      const timers = menuItems.map((_, i) => 
+        setTimeout(() => {
+          setVisibleIndices(prev => [...prev, i]);
+        }, 100 + i * 40)
+      );
+      return () => timers.forEach(clearTimeout);
+    }
+  }, [isLoaded, menuItems]);
 
   const studentHubItem = useMemo(() =>
     menuItems.find(item =>
@@ -232,9 +265,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       id="sidebar-nav"
       style={{ transitionDuration: SIDEBAR_TRANSITION }}
       className={cn(
-        'relative h-full shrink-0 z-50 flex flex-col border-r border-gray-100 dark:border-gray-900',
+        'relative h-full shrink-0 z-50 flex flex-col border-r border-gray-200 dark:border-gray-900',
         'transition-all ease-[cubic-bezier(0.32,0.72,0,1)]',
-        'bg-white/20 dark:bg-black/20 backdrop-blur-sm',
+        'bg-white/90 dark:bg-black/30 backdrop-blur-md',
         isOpen ? 'w-80' : CLOSED_WIDTH
       )}
     >
@@ -268,7 +301,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
             <span className="ml-2 font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white">
-              Thai <span className="text-brand-500">Akha</span>
+              Thai <span className="text-primary-500">Akha</span>
             </span>
           </div>
         </div>
@@ -304,18 +337,23 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* MENU */}
         <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-2">
-          {visibleItems.map(item => (
-            <li key={item.page_slug}>
-              <NavItem
-                icon={item.header_icon || 'circle'}
-                label={item.menu_label}
-                isActive={currentPage === item.page_slug}
-                onClick={() => onNavigate(item.page_slug)}
-                isOpen={isOpen}
-                badge={item.header_badge}
-              />
-            </li>
-          ))}
+          {visibleItems.map((item, index) => {
+            const isVisible = visibleIndices.includes(index);
+            return (
+              <li key={item.page_slug}>
+                <NavItem
+                  icon={item.header_icon || 'circle'}
+                  label={item.menu_label}
+                  isActive={currentPage === item.page_slug}
+                  onClick={() => onNavigate(item.page_slug)}
+                  isOpen={isOpen}
+                  badge={item.header_badge}
+                  isVisible={isVisible}
+                  index={index}
+                />
+              </li>
+            );
+          })}
         </ul>
 
         {/* FOOTER */}
@@ -337,16 +375,31 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           <Divider className="my-1 mb-4" />
 
-          <ActionButton icon="Globe" label="Languages" onClick={() => {}} isOpen={isOpen} />
+          <ActionButton 
+            icon="Globe" 
+            label="Languages" 
+            onClick={() => {}} 
+            isOpen={isOpen} 
+            isVisible={isLoaded}
+            index={visibleItems.length + 1}
+          />
 
           <ActionButton
             icon={userProfile ? 'LogOut' : 'LogIn'}
             label={userProfile ? 'Sign Out' : 'Log In'}
             onClick={userProfile ? onLogout! : () => onNavigate('auth')}
             isOpen={isOpen}
+            isVisible={isLoaded}
+            index={visibleItems.length + 2}
           />
 
-          <ThemeSwitcher isDarkMode={isDarkMode} onToggle={onToggleTheme} isOpen={isOpen} />
+          <ThemeSwitcher 
+            isDarkMode={isDarkMode} 
+            onToggle={onToggleTheme} 
+            isOpen={isOpen} 
+            isVisible={isLoaded}
+            index={visibleItems.length + 3}
+          />
 
         </div>
       </div>

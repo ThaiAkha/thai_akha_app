@@ -62,8 +62,8 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                         className={cn(
                             "p-3 rounded-xl border transition-all cursor-pointer bg-white dark:bg-gray-800 shadow-sm group",
                             isSelected
-                                ? "border-brand-500 ring-1 ring-brand-500"
-                                : "border-gray-100 dark:border-gray-700 hover:border-brand-300"
+                                ? "border-primary-500 ring-1 ring-primary-500"
+                                : "border-gray-100 dark:border-gray-700 hover:border-primary-300"
                         )}
                     >
                         {/* Row 1: Avatar + Name + Badges */}
@@ -110,7 +110,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                     "h-8 w-8 flex items-center justify-center rounded-lg text-xs font-bold transition-colors shrink-0",
                                     isFirst
                                         ? "bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed"
-                                        : "bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+                                        : "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
                                 )}
                             >
                                 <ChevronUp className="w-4 h-4" />
@@ -126,7 +126,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                     "h-8 w-8 flex items-center justify-center rounded-lg text-xs font-bold transition-colors shrink-0",
                                     isLast
                                         ? "bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed"
-                                        : "bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+                                        : "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
                                 )}
                             >
                                 <ChevronDown className="w-4 h-4" />
@@ -141,7 +141,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                             onMoveItem(item.id, 'to-driver', e.target.value);
                                         }
                                     }}
-                                    className="flex-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+                                    className="flex-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
                                 >
                                     <option value="">Assign</option>
                                     {drivers.map(d => (

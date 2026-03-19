@@ -98,6 +98,46 @@ export const COUNTRIES: CountryData[] = [
 ];
 
 /**
+ * Convert ISO 3166-1 alpha-2 country code to flag emoji.
+ * e.g. 'TH' → '🇹🇭', 'US' → '🇺🇸'
+ */
+export function getCountryFlag(code: string): string {
+  return [...code.toUpperCase()]
+    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
+    .join('');
+}
+
+/**
+ * Curated list of phone prefixes for booking forms.
+ * Ordered by relevance (Thailand first, then major tourism markets).
+ * Format is compatible with <select> options.
+ */
+const BOOKING_PHONE_COUNTRY_CODES = [
+  'TH', 'US', 'GB', 'AU', 'SG', 'DE', 'FR', 'IT', 'NL', 'ES',
+  'CH', 'SE', 'NO', 'DK', 'FI', 'JP', 'KR', 'CN', 'HK', 'TW',
+  'IN', 'AE', 'RU', 'CA', 'NZ', 'AT', 'BE', 'PT', 'PL', 'VN',
+  'MY', 'ID', 'PH', 'MM', 'KH', 'LA',
+];
+
+export interface PhonePrefix {
+  dialCode: string; // e.g. '+66'
+  label: string;    // e.g. '🇹🇭 TH (+66)'
+  countryCode: string; // e.g. 'TH'
+  name: string;     // e.g. 'Thailand'
+}
+
+export const BOOKING_PHONE_PREFIXES: PhonePrefix[] = BOOKING_PHONE_COUNTRY_CODES
+  .map(code => COUNTRIES.find(c => c.code === code))
+  .filter((c): c is CountryData => Boolean(c))
+  .map(c => ({
+    dialCode: c.dialCode,
+    label: `${getCountryFlag(c.code)} ${c.name} (${c.dialCode})`,
+    countryCode: c.code,
+    name: c.name,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+/**
  * Get country by code
  */
 export function getCountryByCode(code: string): CountryData | undefined {

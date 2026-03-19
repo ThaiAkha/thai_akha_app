@@ -64,7 +64,7 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
                     </button>
                     <button
                         onClick={() => setShowCode(!showCode)}
-                        className={cn("p-2 rounded-lg shadow-sm border transition-all hover:scale-105", showCode ? "bg-brand-50 text-brand-600 border-brand-200" : "bg-white text-gray-500 border-gray-200")}
+                        className={cn("p-2 rounded-lg shadow-sm border transition-all hover:scale-105", showCode ? "bg-primary-50 text-primary-600 border-primary-200" : "bg-white text-gray-500 border-gray-200")}
                         title="Toggle Code"
                     >
                         <Code className="w-4 h-4" />

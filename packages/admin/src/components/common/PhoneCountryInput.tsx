@@ -43,7 +43,7 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
       )}
 
       <div className="relative group/phone">
-        <div className="absolute left-0 top-0 flex items-center justify-center text-gray-400 transition-colors duration-300 group-hover/phone:text-brand-500 z-10 h-12 w-12 pointer-events-none">
+        <div className="absolute left-0 top-0 flex items-center justify-center text-gray-400 transition-colors duration-300 group-hover/phone:text-primary-500 z-10 h-12 w-12 pointer-events-none">
           {country && country.code ? (
             <ReactCountryFlag
               countryCode={country.code}

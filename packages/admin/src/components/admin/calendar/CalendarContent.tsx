@@ -70,7 +70,7 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
         { label: 'Available', color: 'bg-green-500' },
         { label: 'Booked', color: 'bg-red-500' },
         { label: 'Closed', color: 'bg-orange-400' },
-        { label: 'Selected', color: 'bg-brand-500', borderColor: 'border-brand-400' },
+        { label: 'Selected', color: 'bg-primary-500', borderColor: 'border-primary-400' },
     ];
 
     const bulkSessionSelector = isBulkMode ? (
@@ -82,7 +82,7 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
                     className={cn(
                         'px-3 py-1.5 text-xs font-black uppercase tracking-widest rounded-lg transition-all',
                         bulkSessionType === type
-                            ? 'bg-white dark:bg-gray-700 text-brand-600 shadow-sm'
+                            ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
                             : 'text-gray-900 dark:text-gray-100'
                     )}
                 >

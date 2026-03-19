@@ -1,0 +1,280 @@
+/**
+ * Admin App — Utility Classes
+ *
+ * Custom @utility definitions for:
+ * - Glass effects
+ * - Button animations & flash effect
+ * - Menu item navigation (sidebar)
+ * - Scrollbar styling
+ */
+
+/* ============================================================================
+   GLASS EFFECTS
+   ============================================================================ */
+
+@utility brand-glass {
+  @apply bg-white/3 dark:bg-black/3 backdrop-blur-[8px] border border-white/10 dark:border-white/5;
+}
+
+@utility glass-card {
+  @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl;
+}
+
+/* ============================================================================
+   BUTTON & ANIMATION EFFECTS
+   ============================================================================ */
+
+@utility brand-btn-animation {
+  @apply transition-all duration-300 ease-[var(--transition-bezier)] active:scale-95 hover:-translate-y-0.5;
+}
+
+@utility brand-shadow {
+  @apply shadow-[var(--shadow-brand)] hover:shadow-[var(--shadow-brand-hover)];
+}
+
+/* ============================================================================
+   MENU ITEM UTILITIES (Sidebar navigation)
+   ============================================================================ */
+
+@utility menu-item {
+  @apply relative flex items-center w-full font-medium rounded-xl text-theme-sm transition-all;
+  transition-duration: 300ms;
+  transition-timing-function: var(--transition-bezier);
+}
+
+@utility menu-item-active {
+  @apply text-primary-500;
+
+  @variant dark {
+    @apply text-primary-400;
+  }
+}
+
+@utility menu-item-inactive {
+  @apply text-gray-700;
+
+  @variant dark {
+    @apply text-gray-300;
+  }
+}
+
+@utility menu-item-icon {
+  @apply text-gray-500;
+
+  &:hover {
+    @apply text-gray-700;
+  }
+
+  @variant dark {
+    @apply text-gray-400;
+
+    &:hover {
+      @apply text-gray-300;
+    }
+  }
+}
+
+@utility menu-item-icon-active {
+  @apply text-primary-500;
+
+  @variant dark {
+    @apply text-primary-400;
+  }
+}
+
+@utility menu-item-icon-size {
+  & svg {
+    @apply !size-6;
+  }
+}
+
+@utility menu-item-icon-inactive {
+  @apply text-gray-500;
+
+  &:hover {
+    @apply text-gray-700;
+  }
+
+  @variant dark {
+    @apply text-gray-400;
+
+    &:hover {
+      @apply text-gray-300;
+    }
+  }
+}
+
+@utility menu-item-arrow {
+  @apply relative;
+}
+
+@utility menu-item-arrow-active {
+  @apply rotate-180 text-primary-500;
+
+  @variant dark {
+    @apply text-primary-400;
+  }
+}
+
+@utility menu-item-arrow-inactive {
+  @apply text-gray-500;
+
+  &:hover {
+    @apply text-gray-700;
+  }
+
+  @variant dark {
+    @apply text-gray-400;
+
+    &:hover {
+      @apply text-gray-300;
+    }
+  }
+}
+
+/* ============================================================================
+   MENU DROPDOWN UTILITIES
+   ============================================================================ */
+
+@utility menu-dropdown-item {
+  @apply relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-theme-sm font-medium;
+}
+
+@utility menu-dropdown-item-active {
+  @apply bg-primary-50 text-primary-500;
+
+  @variant dark {
+    @apply bg-primary-500/[0.12] text-primary-400;
+  }
+}
+
+@utility menu-dropdown-item-inactive {
+  @apply text-gray-700;
+
+  &:hover {
+    @apply bg-gray-100;
+  }
+
+  @variant dark {
+    @apply text-gray-300;
+
+    &:hover {
+      @apply bg-white/5;
+    }
+  }
+}
+
+@utility menu-dropdown-badge {
+  @apply block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase text-primary-500;
+
+  @variant dark {
+    @apply text-primary-400;
+  }
+}
+
+@utility menu-dropdown-badge-active {
+  @apply bg-primary-100;
+
+  @variant dark {
+    @apply bg-primary-500/20;
+  }
+}
+
+@utility menu-dropdown-badge-inactive {
+  @apply bg-primary-50;
+
+  &:hover {
+    @apply bg-primary-100;
+  }
+
+  @variant dark {
+    @apply bg-primary-500/15;
+
+    &:hover {
+      @apply bg-primary-500/20;
+    }
+  }
+}
+
+/* ============================================================================
+   BUTTON RADIAL FLASH EFFECT
+   ============================================================================ */
+
+@keyframes btn-flash-expand {
+  from { width: 0; height: 0; opacity: 1; }
+  to   { width: 600px; height: 600px; opacity: 0; }
+}
+
+/* Hover glow — follows mouse via --flash-x / --flash-y CSS vars set in JS */
+.btn-flash-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--flash-x, 50%) var(--flash-y, 50%),
+    rgba(255, 255, 255, 0.38) 0%,
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+button:hover .btn-flash-glow {
+  opacity: 1;
+}
+
+/* Click ripple — top/left set via inline style from React */
+.btn-flash-ripple {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, 1)   0%,
+    rgba(255, 255, 255, 0.6) 30%,
+    transparent              60%
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: btn-flash-expand 0.5s ease-out forwards;
+}
+
+/* ============================================================================
+   SCROLLBAR UTILITIES
+   ============================================================================ */
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+
+  &::-webkit-scrollbar-track {
+    @apply rounded-full;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full;
+  }
+
+  @variant dark {
+    &::-webkit-scrollbar-thumb {
+      background-color: #344054;
+    }
+  }
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #344054;
+}

@@ -94,7 +94,7 @@ const AgencyNews: React.FC = () => {
                         <div
                             key={article.id}
                             onClick={() => setSelectedArticle(article)}
-                            className="group relative bg-white dark:bg-white/[0.03] rounded-[32px] border border-gray-100 dark:border-gray-800 p-2 overflow-hidden cursor-pointer transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-brand-500/10"
+                            className="group relative bg-white dark:bg-white/[0.03] rounded-[32px] border border-gray-100 dark:border-gray-800 p-2 overflow-hidden cursor-pointer transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary-500/10"
                         >
                             {/* Card Image Wrapper */}
                             <div className="relative aspect-video rounded-[26px] overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -124,7 +124,7 @@ const AgencyNews: React.FC = () => {
 
                             {/* Card Body */}
                             <div className="p-5 space-y-3">
-                                <h3 className="line-clamp-2 text-xl font-black uppercase tracking-tighter text-gray-900 dark:text-gray-100 group-hover:text-brand-600 transition-colors">
+                                <h3 className="line-clamp-2 text-xl font-black uppercase tracking-tighter text-gray-900 dark:text-gray-100 group-hover:text-primary-600 transition-colors">
                                     {article.title}
                                 </h3>
 
@@ -146,7 +146,7 @@ const AgencyNews: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="size-8 rounded-full bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-500 transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
+                                    <div className="size-8 rounded-full bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-500 transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
                                         <ChevronRight className="w-4 h-4" />
                                     </div>
                                 </div>

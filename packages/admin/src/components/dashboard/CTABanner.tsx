@@ -38,14 +38,14 @@ const CTABanner: React.FC<CTABannerProps> = ({
 }) => {
 
   const variantStyles = {
-    dark: 'bg-gray-900 dark:bg-brand-600 text-white',
-    brand: 'bg-brand-500 text-white',
+    dark: 'bg-gray-900 dark:bg-primary-600 text-white',
+    brand: 'bg-primary-500 text-white',
     light: 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white'
   };
 
   const patternColors = {
     dark: 'text-gray-800',
-    brand: 'text-brand-600',
+    brand: 'text-primary-600',
     light: 'text-gray-100'
   };
 
@@ -55,7 +55,7 @@ const CTABanner: React.FC<CTABannerProps> = ({
       className={cn(
         "rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between",
         "shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden relative",
-        "transition-all hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1",
+        "transition-all hover:shadow-xl hover:shadow-primary-500/5 hover:-translate-y-1",
         "block no-underline",
         variantStyles[variant],
         className
@@ -100,7 +100,7 @@ const CTABanner: React.FC<CTABannerProps> = ({
             "hover:scale-105 active:scale-95",
             variant === 'dark' || variant === 'brand'
               ? 'bg-white text-gray-900 hover:bg-gray-100'
-              : 'bg-brand-500 text-white hover:bg-brand-600'
+              : 'bg-primary-500 text-white hover:bg-primary-600'
           )}
         >
           {ctaLabel}

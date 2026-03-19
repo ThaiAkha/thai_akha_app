@@ -9,7 +9,7 @@
  *
  * @example
  * // Raw mode (bare SVG)
- * <Icon name="Package" size={24} className="text-brand-500" />
+ * <Icon name="Package" size={24} className="text-primary-500" />
  *
  * // Styled mode (with background + effects)
  * <Icon name="Home" variant="compact" />
@@ -31,15 +31,15 @@ import { cn } from '@thaiakha/shared/lib/utils';
 
 const VARIANTS: Record<string, { container: string; icon: string }> = {
   compact: {
-    container: 'w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-500 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white',
+    container: 'w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-500/10 text-primary-500 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary-500 group-hover:text-white',
     icon: 'w-5 h-5'
   },
   regular: {
-    container: 'w-12 h-12 rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-500 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white',
+    container: 'w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-500 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary-500 group-hover:text-white',
     icon: 'w-6 h-6'
   },
   large: {
-    container: 'w-16 h-16 rounded-3xl bg-brand-50 dark:bg-brand-500/10 text-brand-500 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white',
+    container: 'w-16 h-16 rounded-3xl bg-primary-50 dark:bg-primary-500/10 text-primary-500 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary-500 group-hover:text-white',
     icon: 'w-8 h-8'
   }
 };

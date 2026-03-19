@@ -129,7 +129,7 @@ const AgencyBooking: React.FC = () => {
                     <div className="lg:col-span-7 space-y-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-8">
                             <div>
-                                <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-4">{t('agencyBooking.stepGuest')}</h6>
+                                <h6 className="text-[10px] uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepGuest')}</h6>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <InputField
                                         label={t('agencyBooking.fieldFullName')}
@@ -149,7 +149,7 @@ const AgencyBooking: React.FC = () => {
                             <hr className="border-gray-100 dark:border-gray-800" />
 
                             <div>
-                                <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-4">{t('agencyBooking.stepClass')}</h6>
+                                <h6 className="text-[10px] uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepClass')}</h6>
                                 <AdminClassPicker
                                     date={date}
                                     session={session}
@@ -160,7 +160,7 @@ const AgencyBooking: React.FC = () => {
                         </div>
 
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-6">
-                            <h6 className="text-[10px] uppercase font-black text-brand-600 tracking-widest mb-2">{t('agencyBooking.stepPickup')}</h6>
+                            <h6 className="text-[10px] uppercase font-black text-primary-600 tracking-widest mb-2">{t('agencyBooking.stepPickup')}</h6>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <InputField
@@ -181,7 +181,7 @@ const AgencyBooking: React.FC = () => {
                                     <select
                                         value={zone}
                                         onChange={e => setZone(e.target.value)}
-                                        className="w-full h-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 text-sm font-bold outline-none focus:border-brand-500 transition-all"
+                                        className="w-full h-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 text-sm font-bold outline-none focus:border-primary-500 transition-all"
                                     >
                                         {ZONES.map(z => <option key={z} value={z}>{z.toUpperCase()}</option>)}
                                     </select>
@@ -208,13 +208,13 @@ const AgencyBooking: React.FC = () => {
                                     <div className="flex items-center gap-6">
                                         <button onClick={() => setPax(Math.max(1, pax - 1))} className="size-10 rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold">-</button>
                                         <span className="text-3xl font-black text-gray-900 dark:text-white w-8 text-center">{pax}</span>
-                                        <button onClick={() => setPax(pax + 1)} className="size-10 rounded-xl bg-brand-600 text-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center font-bold">+</button>
+                                        <button onClick={() => setPax(pax + 1)} className="size-10 rounded-xl bg-primary-600 text-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center font-bold">+</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-brand-50 dark:bg-brand-500/5 p-6 rounded-3xl border border-brand-100 dark:border-brand-500/20 space-y-2">
-                                <div className="flex justify-between items-center text-xs font-bold text-brand-600">
+                            <div className="bg-primary-50 dark:bg-primary-500/5 p-6 rounded-3xl border border-primary-100 dark:border-primary-500/20 space-y-2">
+                                <div className="flex justify-between items-center text-xs font-bold text-primary-600">
                                     <span>{t('agencyBooking.summaryNetRate')}</span>
                                     <span>{user?.agency_commission_rate}% {t('agencyBooking.summaryDiscount')}</span>
                                 </div>
@@ -222,7 +222,7 @@ const AgencyBooking: React.FC = () => {
                                     <span className="text-xs text-gray-400 line-through mb-1">{(PRICES[session] * pax).toLocaleString()} THB</span>
                                     <div className="text-right">
                                         <span className="block text-[10px] uppercase font-black text-gray-400 mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
-                                        <h3 className="text-4xl font-black text-brand-600 dark:text-brand-400 italic">
+                                        <h3 className="text-4xl font-black text-primary-600 dark:text-primary-400 italic">
                                             {amount.toLocaleString()} <span className="text-sm font-normal text-gray-400 not-italic uppercase">THB</span>
                                         </h3>
                                     </div>
@@ -230,7 +230,7 @@ const AgencyBooking: React.FC = () => {
                             </div>
 
                             <div className="flex gap-3 text-[10px] text-gray-400 font-bold uppercase tracking-widest px-2">
-                                <Info className="size-4 text-brand-500 shrink-0" />
+                                <Info className="size-4 text-primary-500 shrink-0" />
                                 <span>{t('agencyBooking.invoiceNote')}</span>
                             </div>
 

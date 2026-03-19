@@ -51,7 +51,7 @@ export default function UserDropdown() {
           </span>
 
           {/* Avatar (Right in Desktop, Main in Mobile) */}
-          <span className="shrink-0 overflow-hidden rounded-full h-10 w-10 border-2 border-brand-500/10 group-hover:border-brand-500/30 transition-all relative flex items-center justify-center bg-gray-50 dark:bg-gray-800 shadow-sm">
+          <span className="shrink-0 overflow-hidden rounded-full h-10 w-10 border-2 border-primary-500/10 group-hover:border-primary-500/30 transition-all relative flex items-center justify-center bg-gray-50 dark:bg-gray-800 shadow-sm">
             <img
               src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random`}
               alt="User"
@@ -82,11 +82,11 @@ export default function UserDropdown() {
             onItemClick={closeDropdown}
             tag="a"
             to="/profile"
-            className="flex items-center gap-3 px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-theme-sm hover:bg-brand-50 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-all"
+            className="flex items-center gap-3 px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-theme-sm hover:bg-primary-50 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all"
             baseClassName="" // Clear defaults
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
-              <User size={18} className="text-gray-400 group-hover:text-brand-500 transition-colors" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-primary-100 dark:group-hover:bg-primary-500/20 transition-colors">
+              <User size={18} className="text-gray-400 group-hover:text-primary-500 transition-colors" />
             </div>
             <span className="flex-1">{t('user.editProfile')}</span>
           </DropdownItem>
@@ -94,22 +94,22 @@ export default function UserDropdown() {
           {/* Theme Switcher */}
           <div onClick={(e) => e.stopPropagation()}>
             <div
-              className="flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-sm hover:bg-brand-50 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-all cursor-pointer"
+              className="flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-sm hover:bg-primary-50 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all cursor-pointer"
               onClick={toggleTheme}
             >
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-primary-100 dark:group-hover:bg-primary-500/20 transition-colors">
                   {theme === 'dark' ? (
-                    <Sun className="w-4.5 h-4.5 text-gray-400 group-hover:text-brand-400 transition-colors" />
+                    <Sun className="w-4.5 h-4.5 text-gray-400 group-hover:text-primary-400 transition-colors" />
                   ) : (
-                    <Moon className="w-4.5 h-4.5 text-gray-400 group-hover:text-brand-500 transition-colors" />
+                    <Moon className="w-4.5 h-4.5 text-gray-400 group-hover:text-primary-500 transition-colors" />
                   )}
                 </div>
                 <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
               </div>
               <div className={cn(
                 'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
-                theme === 'dark' ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700'
+                theme === 'dark' ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-700'
               )}>
                 <span className={cn(
                   'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
@@ -123,13 +123,13 @@ export default function UserDropdown() {
           <div onClick={(e) => e.stopPropagation()}>
             <div
               className={cn(
-                "flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-sm hover:bg-brand-50 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-all cursor-pointer",
+                "flex items-center justify-between px-3 py-2.5 font-bold text-gray-600 rounded-xl group text-sm hover:bg-primary-50 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all cursor-pointer",
                 switching && "opacity-50 pointer-events-none"
               )}
               onClick={toggleLanguage}
             >
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/20 transition-colors">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-primary-100 dark:group-hover:bg-primary-500/20 transition-colors">
                   <span className="text-base leading-none">
                     {lang === 'en' ? '🇬🇧' : '🇹🇭'}
                   </span>
@@ -138,7 +138,7 @@ export default function UserDropdown() {
               </div>
               <div className={cn(
                 'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
-                lang === 'th' ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700'
+                lang === 'th' ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-700'
               )}>
                 <span className={cn(
                   'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',

@@ -126,7 +126,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             tabIndex={disabled ? -1 : 0}
           >
             <div
-              className={`mb-2 flex min-h-11  rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300 ${
+              className={`mb-2 flex min-h-11  rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-primary-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-primary-300 ${
                 disabled
                   ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-800"
                   : "cursor-pointer"

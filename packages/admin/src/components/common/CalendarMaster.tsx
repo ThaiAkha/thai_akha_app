@@ -69,7 +69,7 @@ const DEFAULT_LEGEND: LegendItem[] = [
   { label: 'Available', color: 'bg-green-500' },
   { label: 'Booked', color: 'bg-red-500' },
   { label: 'Closed', color: 'bg-orange-400' },
-  { label: 'Selected', color: 'bg-brand-500', borderColor: 'border-brand-400' },
+  { label: 'Selected', color: 'bg-primary-500', borderColor: 'border-primary-400' },
 ];
 
 const CalendarMaster: React.FC<CalendarMasterProps> = ({
@@ -159,9 +159,9 @@ const CalendarMaster: React.FC<CalendarMasterProps> = ({
                   ? 'bg-gray-50 dark:bg-gray-900 opacity-35 grayscale cursor-not-allowed'
                   : isFullDay
                     ? 'bg-red-50/60 dark:bg-red-900/20 cursor-not-allowed hover:bg-red-100/60 dark:hover:bg-red-900/30'
-                    : 'bg-white dark:bg-gray-950 hover:bg-brand-50/50 dark:hover:bg-brand-500/5 cursor-pointer',
+                    : 'bg-white dark:bg-gray-950 hover:bg-primary-50/50 dark:hover:bg-primary-500/5 cursor-pointer',
                 isSelected &&
-                'ring-2 ring-inset ring-brand-500 z-10 bg-brand-50/40 dark:bg-brand-500/15',
+                'ring-2 ring-inset ring-primary-500 z-10 bg-primary-50/40 dark:bg-primary-500/15',
                 isSelectedBulk &&
                 isBulkMode &&
                 'ring-2 ring-inset ring-green-500 z-10 bg-green-50/40 dark:bg-green-500/15'
@@ -173,7 +173,7 @@ const CalendarMaster: React.FC<CalendarMasterProps> = ({
                   isPast
                     ? 'text-gray-300 dark:text-gray-700'
                     : 'text-gray-900 dark:text-gray-100',
-                  isSelected && 'text-brand-600 dark:text-brand-400 scale-110'
+                  isSelected && 'text-primary-600 dark:text-primary-400 scale-110'
                 )}
               >
                 {date.getDate()}
@@ -202,7 +202,7 @@ const CalendarMaster: React.FC<CalendarMasterProps> = ({
 
               {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-950/50 backdrop-blur-[1px] z-20">
-                  <AkhaPixelPattern variant="diamond" size={12} speed={80} className="text-brand-500 opacity-50" />
+                  <AkhaPixelPattern variant="diamond" size={12} speed={80} className="text-primary-500 opacity-50" />
                 </div>
               )}
             </button>

@@ -348,7 +348,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                             href={selectedHotel.map_link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-brand-500 hover:underline truncate block"
+                            className="text-sm text-primary-500 hover:underline truncate block"
                         >
                             {selectedHotel.map_link}
                         </a>
@@ -362,7 +362,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                             href={selectedHotel.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-brand-500 hover:underline truncate block"
+                            className="text-sm text-primary-500 hover:underline truncate block"
                         >
                             {selectedHotel.website}
                         </a>

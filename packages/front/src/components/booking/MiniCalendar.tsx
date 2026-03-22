@@ -55,7 +55,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className 
               ? "bg-action text-white shadow-action-glow" 
               : isToday
                 ? "bg-action/10 text-action border border-action/20"
-                : "text-title hover:bg-black/5 dark:hover:bg-white/5"
+                : "text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5"
           )}
         >
           {d}
@@ -69,7 +69,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className 
   return (
     <div className={cn("p-4 bg-surface dark:bg-surface-elevated rounded-[2rem] border border-border shadow-xl", className)}>
       <div className="flex items-center justify-between mb-4 px-2">
-        <Typography variant="h6" className="text-[10px] font-black uppercase tracking-widest text-muted">
+        <Typography variant="h6" className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500">
           {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </Typography>
         <div className="flex gap-1">
@@ -84,7 +84,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className 
 
       <div className="grid grid-cols-7 gap-1 text-center mb-2">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-          <div key={i} className="text-[8px] font-black text-muted uppercase">{day}</div>
+          <div key={i} className="text-[8px] font-black text-gray-500 dark:text-gray-500 uppercase">{day}</div>
         ))}
       </div>
 

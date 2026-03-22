@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Chat, GenerateContentResponse } from '@google/genai';
 import { SYSTEM_PROMPT } from '../prompts/cherrySystem.ts';
-import { ChatMessage } from '../types.ts';
+import { ChatMessage } from '@thaiakha/shared';
 
 export const useGeminiChat = (initialMessage?: string) => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -14,7 +14,7 @@ export const useGeminiChat = (initialMessage?: string) => {
     useEffect(() => {
         if (chatInitialized.current) return;
 
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
         
         const initialSystemMessage: ChatMessage = {
             id: 'system-init',
@@ -24,7 +24,7 @@ export const useGeminiChat = (initialMessage?: string) => {
         };
 
         chatRef.current = ai.chats.create({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-2.0-flash',
             config: { 
                 systemInstruction: SYSTEM_PROMPT,
                 temperature: 0.5 

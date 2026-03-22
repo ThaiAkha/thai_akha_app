@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../ui/index';
+import { Button, MediaImage } from '../ui/index';
 import Modal from './Modal';
 import ModalMediaHeader from './ModalMediaHeader';
 
@@ -7,6 +7,7 @@ interface PhotoModalProps {
   isOpen: boolean;
   onClose: () => void;
   image: string;
+  assetId?: string;
   title?: string;
   description?: string;
   quote?: string;
@@ -17,6 +18,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   isOpen,
   onClose,
   image,
+  assetId,
   title,
   description,
   quote,
@@ -57,10 +59,12 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
           className="relative w-full aspect-video rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] border border-white/10 bg-black ring-1 ring-white/10 animate-in zoom-in-95 duration-500 cursor-default"
           onClick={(e) => e.stopPropagation()}
         >
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-full object-contain"
+          <MediaImage
+            assetId={assetId}
+            url={image}
+            fallbackAlt={title}
+            showCaption={true}
+            imgClassName="w-full h-full object-contain"
           />
 
           {/* QUOTE OVERLAY — inside the photo, bottom */}

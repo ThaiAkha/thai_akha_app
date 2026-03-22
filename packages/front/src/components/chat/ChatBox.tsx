@@ -4,7 +4,7 @@ import { GoogleGenAI } from "@google/genai";
 import { getCherrySystemPrompt } from '../../prompts/cherrySystem';
 import { useGeminiLive } from '../../hooks/useGeminiLive';
 import { UserProfile } from '../../services/auth.service';
-import { ChatMessage } from '../../types';
+import { ChatMessage } from '@thaiakha/shared';
 import { Button, Icon, Typography } from '../ui/index'; 
 import { cn } from '@thaiakha/shared/lib/utils';
 

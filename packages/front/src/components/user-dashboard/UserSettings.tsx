@@ -3,7 +3,8 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
-import { Button, Icon, Slider, Badge, Input, Avatar } from '../ui';
+import { Button, Icon, Slider, Badge, Avatar } from '../ui';
+import { Input } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface UserSettingsProps {
@@ -130,11 +131,11 @@ const UserSettings: React.FC<UserSettingsProps> = ({
 
           {/* Identity info */}
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Digital Passport</p>
-            <p className="font-display font-black text-2xl text-title uppercase leading-tight truncate">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500 mb-1">Digital Passport</p>
+            <p className="font-display font-black text-2xl text-gray-900 dark:text-gray-100 uppercase leading-tight truncate">
               {userProfile?.full_name || 'Your Name'}
             </p>
-            <p className="text-muted text-xs mt-0.5 truncate">{userProfile?.email}</p>
+            <p className="text-gray-500 dark:text-gray-500 text-xs mt-0.5 truncate">{userProfile?.email}</p>
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               <span className={cn(
                 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border',
@@ -142,11 +143,11 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                   ? 'bg-primary/10 text-primary border-primary/20'
                   : 'bg-action/10 text-action-700 dark:text-action border-action/20'
               )}>
-                <Icon name={isStaff ? 'badge' : 'restaurant_menu'} size="sm" />
+                <Icon name={isStaff ? 'account_box' : 'restaurant_menu'} size="sm" />
                 {roleLabel}
               </span>
               {userProfile?.id && (
-                <span className="font-mono text-[9px] text-muted opacity-50">
+                <span className="font-mono text-[9px] text-gray-500 dark:text-gray-500 opacity-50">
                   ID: {userProfile.id.slice(0, 8).toUpperCase()}
                 </span>
               )}
@@ -159,7 +160,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
               label="Display Name"
               value={fullName}
               onChange={e => setFullName(e.target.value)}
-              leftIcon="badge"
+              leftIcon="account_box"
               className="font-bold"
             />
           </div>
@@ -172,7 +173,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
           label="Full Name"
           value={fullName}
           onChange={e => setFullName(e.target.value)}
-          leftIcon="badge"
+          leftIcon="account_box"
           className="font-bold"
         />
       </div>
@@ -189,7 +190,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                 <div className="size-8 rounded-xl bg-action/10 flex items-center justify-center text-action">
                   <Icon name="health_and_safety" size="sm" />
                 </div>
-                <span className="font-display font-black text-lg text-title uppercase tracking-tight">Safety & Allergies</span>
+                <span className="font-display font-black text-lg text-gray-900 dark:text-gray-100 uppercase tracking-tight">Safety & Allergies</span>
               </div>
               {allergies.length > 0 && (
                 <Badge variant="solid" className="bg-action text-white">{allergies.length} Active</Badge>
@@ -207,7 +208,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                       'px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all border flex items-center gap-2',
                       isActive
                         ? 'bg-action/10 border-action text-action scale-105'
-                        : 'bg-surface border-border text-sub hover:bg-black/5 dark:hover:bg-white/5'
+                        : 'bg-surface border-border text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'
                     )}
                   >
                     <Icon name={isActive ? 'check_circle' : 'add_circle'} size="sm" className={isActive ? '' : 'opacity-30'} />
@@ -224,7 +225,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                     <Icon name="info" className="text-action mt-0.5 shrink-0" size="sm" />
                     <div>
                       <p className="text-[10px] font-black uppercase text-action tracking-widest mb-1">{a} Protocol</p>
-                      <p className="text-xs text-desc font-medium leading-relaxed">"{getAllergyInfo(a)}"</p>
+                      <p className="text-xs text-gray-700 dark:text-gray-300 font-medium leading-relaxed">"{getAllergyInfo(a)}"</p>
                     </div>
                   </div>
                 ))}
@@ -242,10 +243,10 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                 <div className="size-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                   <Icon name="local_fire_department" size="sm" />
                 </div>
-                <span className="font-display font-black text-lg text-title uppercase tracking-tight">Spice Tolerance</span>
+                <span className="font-display font-black text-lg text-gray-900 dark:text-gray-100 uppercase tracking-tight">Spice Tolerance</span>
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-black uppercase text-muted tracking-widest">Selected</p>
+                <p className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-500 tracking-widest">Selected</p>
                 <p
                   className="text-xl font-black"
                   style={{ color: currentSpiceLevel?.color_code ?? 'var(--color-primary)' }}
@@ -256,7 +257,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
             </div>
             <div className="px-2">
               <Slider value={spiceId} onChange={setSpiceId} min={1} max={5} step={1} className="mb-4" />
-              <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted">
+              <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500">
                 <span>Mild</span><span>Medium</span><span>Spicy</span><span>Local</span><span>Warrior</span>
               </div>
             </div>
@@ -271,7 +272,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
               <div className="size-8 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary-dark dark:text-secondary">
                 <Icon name="restaurant_menu" size="sm" />
               </div>
-              <span className="font-display font-black text-lg text-title uppercase tracking-tight">Dietary Style</span>
+              <span className="font-display font-black text-lg text-gray-900 dark:text-gray-100 uppercase tracking-tight">Dietary Style</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
@@ -285,15 +286,15 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                       'p-4 rounded-2xl border text-left flex items-center gap-3 transition-all duration-300 relative overflow-hidden',
                       isActive
                         ? 'bg-secondary/10 border-secondary shadow-sm ring-1 ring-secondary/40'
-                        : 'bg-surface border-border text-sub hover:bg-black/5 dark:hover:bg-white/5'
+                        : 'bg-surface border-border text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'
                     )}
                   >
                     <span className="text-2xl">{opt.icon}</span>
                     <div className="min-w-0">
-                      <p className={cn('text-xs font-black uppercase tracking-wide truncate', isActive ? 'text-title' : 'text-desc')}>
+                      <p className={cn('text-xs font-black uppercase tracking-wide truncate', isActive ? 'text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300')}>
                         {opt.name}
                       </p>
-                      <p className="text-[10px] text-muted mt-0.5 font-mono">
+                      <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5 font-mono">
                         {opt.type === 'religious' ? 'Strict Compliance' : 'Lifestyle'}
                       </p>
                     </div>
@@ -312,7 +313,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                 <Icon name="tips_and_updates" className="text-secondary shrink-0 mt-0.5" />
                 <div>
                   <p className="text-secondary text-[10px] font-black uppercase tracking-widest mb-1">Our Kitchen Promise</p>
-                  <p className="text-sm text-desc font-medium leading-relaxed">{selectedDietInfo.description}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium leading-relaxed">{selectedDietInfo.description}</p>
                 </div>
               </div>
             )}
@@ -322,7 +323,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
 
         {/* Save footer */}
         <div className="p-5 md:p-6 bg-black/[0.03] dark:bg-white/[0.03] border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="text-xs text-muted">
+          <div className="text-xs text-gray-500 dark:text-gray-500">
             {successMsg ? (
               <span className="text-action font-bold flex items-center gap-2 animate-in fade-in">
                 <Icon name="check_circle" size="sm" />
@@ -350,9 +351,9 @@ const UserSettings: React.FC<UserSettingsProps> = ({
         <div className="bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-border rounded-3xl p-6 md:p-8">
           <div className="flex items-center gap-3 mb-2">
             <Icon name="workspace_premium" className="text-quiz-p" />
-            <p className="font-display font-black text-lg text-title uppercase tracking-tight">Your Certificate</p>
+            <p className="font-display font-black text-lg text-gray-900 dark:text-gray-100 uppercase tracking-tight">Your Certificate</p>
           </div>
-          <p className="text-muted text-sm mb-5 leading-relaxed">
+          <p className="text-gray-500 dark:text-gray-500 text-sm mb-5 leading-relaxed">
             Once your class is complete and your menu is set, download your personalised Thai Akha certificate of participation.
           </p>
           <Button

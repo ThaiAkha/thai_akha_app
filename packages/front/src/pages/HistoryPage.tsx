@@ -1,225 +1,282 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import HeaderMenu from '../components/layout/HeaderMenu';
-import { Typography, Card, Badge, Icon, Divider } from '../components/ui/index';
-import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
-import { AKHA_CULTURE_DB, Section } from '../data/akhaCulture';
+import { StickyTabNav, HeaderMenu, SmartHeaderSection } from '../components/layout';
+import { Typography, Icon, AkhaPixelLine } from '../components/ui/index';
+import { contentService } from '@thaiakha/shared/services';
+import { CultureSection } from '@thaiakha/shared/types';
 import { cn } from '@thaiakha/shared/lib/utils';
+import CultureDetailPage from './CultureDetailPage';
+import {
+  ChapterCard,
+  CinematicHeroCard,
+  HeroCard,
+  FilmStripCard,
+} from '../components/blog/index';
 
-const HistoryPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate }) => {
+// ─── Card variant selector ────────────────────────────────────────────────────
+
+type GridVariant = 'chapter' | 'hero' | 'horizontal';
+
+function resolveVariant(index: number): GridVariant {
+  if (index % 7 === 6) return 'horizontal';
+  if (index % 4 === 3) return 'hero';
+  return 'chapter';
+}
+
+function variantColSpan(variant: GridVariant): string {
+  if (variant === 'horizontal') return 'col-span-1 sm:col-span-2 lg:col-span-3';
+  return '';
+}
+
+// ─── Category config ──────────────────────────────────────────────────────────
+
+const CATEGORY_ICONS: Record<string, string> = {
+  all: 'Grid',
+  Culture: 'landmark',
+  History: 'menu_book',
+  People: 'groups',
+  Traditions: 'party-popper',
+};
+
+// ─── Skeleton card ─────────────────────────────────────────────────────────────
+
+const SkeletonCard: React.FC = () => (
+  <div className="rounded-[2rem] border border-border bg-surface overflow-hidden animate-pulse">
+    <div className="aspect-video w-full bg-gray-200 dark:bg-white/5" />
+    <div className="p-5 md:p-6 space-y-3">
+      <div className="h-4 bg-gray-200 dark:bg-white/5 rounded-full w-3/4" />
+      <div className="h-3 bg-gray-200 dark:bg-white/5 rounded-full w-full" />
+      <div className="h-3 bg-gray-200 dark:bg-white/5 rounded-full w-2/3" />
+    </div>
+  </div>
+);
+
+// ─── URL helpers ──────────────────────────────────────────────────────────────
+
+const getSlugFromUrl = (): string | null => {
+  const parts = window.location.pathname.split('/');
+  return parts[1] === 'history' && parts[2] ? parts[2] : null;
+};
+
+// ─── HistoryPage ──────────────────────────────────────────────────────────────
+
+interface HistoryPageProps {
+  onNavigate: (page: string, topic?: string, sectionId?: string) => void;
+  targetSection?: string | null;
+}
+
+const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) => {
+  const [sections, setSections] = useState<CultureSection[]>([]);
   const [loading, setLoading] = useState(true);
-  const data = AKHA_CULTURE_DB.akha_culture_master_database;
+  const [error, setError] = useState(false);
+  const [activeSlug, setActiveSlug] = useState<string | null>(
+    () => getSlugFromUrl() ?? targetSection ?? null,
+  );
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
+  // Sync URL → state on browser back/forward
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
+    const handlePop = () => setActiveSlug(getSlugFromUrl());
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
   }, []);
 
-  // --- RENDERERS SPECIFICI PER TIPO DI DATI ---
+  // Sync prop → URL + state when App.tsx drives navigation
+  useEffect(() => {
+    if (targetSection && targetSection !== activeSlug) {
+      window.history.pushState({}, '', `/history/${targetSection}`);
+      setActiveSlug(targetSection);
+    } else if (!targetSection && activeSlug) {
+      window.history.pushState({}, '', '/history');
+      setActiveSlug(null);
+    }
+  }, [targetSection]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 1. STATISTICHE (Popolazione/Origini)
-  const renderStats = (stats: any) => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-      {Object.entries(stats).map(([key, val]) => (
-        <div key={key} className="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
-          <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-1">
-            {key.replace(/_/g, ' ')}
-          </div>
-          <div className="text-lg font-bold text-primary font-display leading-tight">
-            {String(val)}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  // 2. SIMBOLISMO (Abbigliamento)
-  const renderSymbolism = (symbols: any) => (
-    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-      {Object.entries(symbols).map(([key, val]) => (
-        <div key={key} className="flex items-center gap-4 bg-black/20 p-4 rounded-2xl border border-white/5">
-          <div className="size-10 rounded-full bg-white/10 flex items-center justify-center text-white">
-            <Icon name={key === 'silver' ? 'diamond' : key === 'coins' ? 'monetization_on' : 'palette'} size="sm"/>
-          </div>
-          <div>
-            <span className="text-xs font-black uppercase text-white tracking-widest block">{key}</span>
-            <span className="text-sm text-white/70 italic">"{String(val)}"</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  // 3. RICETTE (Lista Piatti)
-  const renderRecipes = (recipes: any[]) => (
-    <div className="mt-8 space-y-4">
-      <Typography variant="h5" className="text-white flex items-center gap-2">
-        <Icon name="restaurant_menu" className="text-action"/> Signature Variations
-      </Typography>
-      <div className="grid grid-cols-1 gap-4">
-        {recipes.map((r, i) => (
-          <div key={i} className="bg-white/5 border-l-4 border-action p-5 rounded-r-2xl">
-            <div className="flex justify-between items-start">
-                <h4 className="font-display font-bold text-white text-lg">{r.name}</h4>
-                <Badge variant="mineral" className="text-[9px]">Var. {i+1}</Badge>
-            </div>
-            <p className="text-sm text-white/60 mt-1">{r.description}</p>
-            <div className="mt-3 text-xs font-bold text-action flex items-center gap-2">
-                <Icon name="tips_and_updates" size="xs"/> Chef's Secret: <span className="text-white/80 italic font-normal">"{r.chef_secret}"</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  // 4. TECH SPECS (Caffè)
-  const renderTechSpecs = (specs: any) => (
-    <div className="mt-6 bg-surface-elevated border border-white/10 p-6 rounded-3xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-10 bg-primary/10 blur-3xl rounded-full pointer-events-none"/>
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Object.entries(specs).map(([key, val]) => (
-                <div key={key}>
-                    <span className="text-[9px] font-black uppercase text-white/30 tracking-widest block mb-1">{key}</span>
-                    <span className="text-base font-bold text-white">{String(val)}</span>
-                </div>
-            ))}
-        </div>
-    </div>
-  );
-
-  // 5. SACRED FIGURES (Lista Ruoli)
-  const renderSacredFigures = (figures: string[]) => (
-      <div className="flex flex-wrap gap-2 mt-4">
-          {figures.map((fig, i) => (
-              <Badge key={i} variant="outline" className="border-white/20 text-white/80 bg-white/5 py-2 px-4">
-                  {fig}
-              </Badge>
-          ))}
-      </div>
-  );
-
-  // --- RENDER SEZIONE GENERICA ---
-  const renderSection = (section: Section, index: number) => {
-    const isEven = index % 2 === 0;
-    
-    return (
-      <div key={section.id} className="scroll-mt-32 relative group" id={section.id}>
-        {/* Timeline Connector */}
-        <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-white/5 -translate-x-1/2 group-last:bottom-auto group-last:h-full" />
-        <div className="hidden lg:flex absolute left-1/2 top-10 -translate-x-1/2 size-4 rounded-full bg-surface-overlay border-2 border-white/20 z-10 items-center justify-center">
-            <div className={cn("size-1.5 rounded-full", section.featured ? "bg-action animate-pulse" : "bg-white/40")} />
-        </div>
-
-        <div className={cn("flex flex-col lg:flex-row gap-12 items-start", isEven ? "lg:flex-row-reverse" : "")}>
-            
-            {/* 1. TEXT CONTENT */}
-            <div className="flex-1 w-full">
-                <div className={cn("flex flex-col gap-4", isEven ? "lg:text-right lg:items-end" : "")}>
-                    <Badge variant="mineral" className="w-fit text-primary border-primary/20 bg-primary/10">
-                        {section.tag.replace(/_/g, ' ')}
-                    </Badge>
-                    
-                    <div>
-                        <Typography variant="h3" className="text-white uppercase font-black leading-none mb-2">
-                            {section.title}
-                        </Typography>
-                        <Typography variant="h5" className="text-white/50 font-display italic">
-                            {section.subtitle}
-                        </Typography>
-                    </div>
-
-                    {/* RED HIGHLIGHT (Taboo) */}
-                    {section.ui_highlight && (
-                        <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl flex items-center gap-3 text-red-400 text-sm font-bold animate-pulse">
-                            <Icon name="block" /> {section.ui_highlight}
-                        </div>
-                    )}
-
-                    <Typography variant="paragraphM" className="text-desc/80 leading-relaxed font-light">
-                        {section.content}
-                    </Typography>
-
-                    {/* DYNAMIC CONTENT BLOCKS */}
-                    {section.key_stats && renderStats(section.key_stats)}
-                    {section.sacred_figures && renderSacredFigures(section.sacred_figures)}
-                    {section.tech_specs && renderTechSpecs(section.tech_specs)}
-                    {section.quote && (
-                        <blockquote className="border-l-2 border-white/20 pl-4 py-2 text-white/60 italic font-display text-lg">
-                            "{section.quote}"
-                        </blockquote>
-                    )}
-                </div>
-            </div>
-
-            {/* 2. RICH MEDIA CARD */}
-            <div className="flex-1 w-full">
-                <Card variant="glass" padding="none" className="overflow-hidden border-white/10 bg-surface relative group/card">
-                    {/* Visualizzazione Condizionale basata sui dati */}
-                    <div className="p-8">
-                        {section.recipes ? (
-                            renderRecipes(section.recipes)
-                        ) : section.symbolism ? (
-                            renderSymbolism(section.symbolism)
-                        ) : (
-                            // Default Image Placeholder se non ci sono dati speciali
-                            <div className="aspect-video bg-white/5 rounded-2xl flex items-center justify-center border border-white/5">
-                                <div className="text-center opacity-30">
-                                    <Icon name="image" size="xl" className="mb-2"/>
-                                    <p className="text-xs uppercase tracking-widest">Visual Content</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* UI Quote Overlay */}
-                        {section.ui_quote && (
-                            <div className="mt-8 pt-6 border-t border-white/5 text-center">
-                                <Icon name="format_quote" className="text-action mb-2 opacity-50"/>
-                                <p className="font-display font-black text-xl italic text-white leading-tight">
-                                    "{section.ui_quote}"
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </Card>
-            </div>
-
-        </div>
-      </div>
-    );
+  const handleOpenSection = (slug: string) => {
+    const section = sections.find(s => s.slug === slug);
+    if (section?.category) setActiveCategory(section.category);
+    window.history.pushState({}, '', `/history/${slug}`);
+    setActiveSlug(slug);
   };
+
+  const handleBack = () => {
+    window.history.pushState({}, '', '/history');
+    setActiveSlug(null);
+    onNavigate('history');
+  };
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    // If in detail view, go back to index
+    if (activeSlug) {
+      window.history.pushState({}, '', '/history');
+      setActiveSlug(null);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const data = await contentService.getCultureSections();
+        if (mounted) setSections(data);
+      } catch (e) {
+        console.error('HistoryPage: failed to load culture sections', e);
+        if (mounted) setError(true);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  // Derive sorted unique categories from loaded sections
+  const categories = useMemo(() => {
+    const cats = Array.from(
+      new Set(sections.map(s => s.category).filter(Boolean) as string[]),
+    ).sort();
+    return cats;
+  }, [sections]);
+
+  const tabItems = useMemo(() => [
+    { value: 'all', label: 'All', icon: CATEGORY_ICONS['all'] },
+    ...categories.map(cat => ({
+      value: cat,
+      label: cat,
+      icon: CATEGORY_ICONS[cat] ?? 'label',
+    })),
+  ], [categories]);
+
+  // If a section slug is active, render the detail page
+  if (activeSlug) {
+    return (
+      <CultureDetailPage
+        slug={activeSlug}
+        onBack={handleBack}
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
+        tabItems={tabItems}
+      />
+    );
+  }
+
+  // Filter sections by active category
+  const filteredSections = activeCategory === 'all'
+    ? sections
+    : sections.filter(s => s.category === activeCategory);
+
+  const featuredSection = filteredSections.find(s => s.featured) ?? null;
+  const gridSections = filteredSections.filter(s => !s.featured);
 
   return (
     <PageLayout
       slug="history"
-      loading={loading}
-      hideDefaultHeader={true}
       showPatterns={true}
+      hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="history" />}
     >
-      <div className="w-full max-w-6xl mx-auto px-6 pb-32 space-y-24">
-        
+      <div id="history-content" className="w-full flex flex-col">
 
-        {/* SECTIONS RENDER LOOP */}
-        <div className="space-y-32">
-            {data.sections.map((section, index) => renderSection(section, index))}
-        </div>
+        {/* ── Sticky Category Tabs ────────────────────────────────────── */}
+        <StickyTabNav
+          items={tabItems}
+          value={activeCategory}
+          onChange={handleCategoryChange}
+        />
 
-        {/* FOOTER SUMMARY */}
-        <div className="border-t border-white/10 pt-16 text-center space-y-6">
-            <Typography variant="h4" className="text-white italic">Core Themes</Typography>
-            <div className="flex flex-wrap justify-center gap-3">
-                {data.summary.key_themes.map((theme, i) => (
-                    <span key={i} className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-white/60">
-                        {theme}
-                    </span>
-                ))}
+        <div className="w-full max-w-6xl mx-auto px-4 md:px-6 pb-32">
+
+          {/* ── Loading state ──────────────────────────────────────────── */}
+          {loading && (
+            <div className="space-y-10">
+              <div className="rounded-[2.5rem] border border-border bg-surface overflow-hidden animate-pulse">
+                <div className="aspect-[16/7] w-full bg-gray-200 dark:bg-white/5" />
+                <div className="p-8 space-y-4">
+                  <div className="h-5 bg-gray-200 dark:bg-white/5 rounded-full w-1/2" />
+                  <div className="h-4 bg-gray-200 dark:bg-white/5 rounded-full w-3/4" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+              </div>
             </div>
-            <Typography variant="caption" className="block text-white/30 mt-8">
-                Data Version: {data.metadata.version} • Author: {data.metadata.author}
-            </Typography>
-        </div>
+          )}
 
+          {/* ── Error state ────────────────────────────────────────────── */}
+          {!loading && error && (
+            <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
+              <Icon name="wifi_off" size="xl" className="text-primary/40" />
+              <Typography variant="h5" color="sub">Could not load culture sections</Typography>
+              <Typography variant="body" color="muted">Please check your connection and try again.</Typography>
+            </div>
+          )}
+
+          {/* ── Empty state ────────────────────────────────────────────── */}
+          {!loading && !error && filteredSections.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
+              <Icon name="auto_stories" size="xl" className="text-action/40" />
+              <Typography variant="h5" color="sub">No sections in this category</Typography>
+              <Typography variant="body" color="muted">Try a different tab or check back soon.</Typography>
+            </div>
+          )}
+
+          {/* ── Content ────────────────────────────────────────────────── */}
+          {!loading && !error && filteredSections.length > 0 && (
+            <>
+              {/* 1. Featured hero — prima foto in evidenza */}
+              {featuredSection && (
+                <div className="mb-12">
+                  <CinematicHeroCard
+                    section={featuredSection}
+                    index={0}
+                    onOpen={handleOpenSection}
+                  />
+                </div>
+              )}
+
+              {/* 2. Title */}
+              <div className={cn(featuredSection ? 'mt-12 mb-8' : 'mb-8')}>
+                <SmartHeaderSection
+                  sectionId="history-01"
+                  variant="section"
+                  align="center"
+                  fallbackTitle="Akha Heritage & Culture"
+                  fallbackSubtitle="Discover the journey and living culture of the Akha people"
+                />
+              </div>
+
+              {/* 3. Divider */}
+              <AkhaPixelLine />
+
+              {/* 4. Chapter grid */}
+              {gridSections.length > 0 && (
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {gridSections.map((section, index) => {
+                    const variant = resolveVariant(index);
+                    const colSpan = variantColSpan(variant);
+                    return (
+                      <div key={section.id} className={cn(colSpan)}>
+                        {variant === 'horizontal' && (
+                          <FilmStripCard section={section} index={index} onOpen={handleOpenSection} />
+                        )}
+                        {variant === 'hero' && (
+                          <HeroCard section={section} index={index} onOpen={handleOpenSection} />
+                        )}
+                        {variant === 'chapter' && (
+                          <ChapterCard section={section} index={index} onOpen={handleOpenSection} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+
+        </div>
       </div>
     </PageLayout>
   );

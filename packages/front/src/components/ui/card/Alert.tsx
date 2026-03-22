@@ -1,12 +1,15 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { Typography, Icon } from './index';
+import { Typography, Icon } from '../index';
 
 export interface AlertProps {
   variant?: 'info' | 'success' | 'warning' | 'error';
   title?: string;
+  subtitle?: string; // shown below title (e.g. allergen tags "Gluten / Shellfish")
   message: string;
-  list?: string[]; // 👈 NUOVO: Attiva la modalità "Lista Sostituti"
+  body?: string; // additional text below message (e.g. experience field)
+  icon?: string;
+  list?: string[];
   className?: string;
   onClose?: () => void;
 }
@@ -14,7 +17,10 @@ export interface AlertProps {
 const Alert: React.FC<AlertProps> = ({
   variant = 'info',
   title,
+  subtitle,
   message,
+  body,
+  icon,
   list,
   className = '',
   onClose,
@@ -34,9 +40,9 @@ const Alert: React.FC<AlertProps> = ({
     },
     // 🟠 WARNING (Usato per Intolleranze/Lifestyle - Arancione)
     warning: {
-      container: "bg-special/10 border-special/30 text-special shadow-glow-special",
+      container: "bg-action/10 border-action/30 text-action shadow-glow-action",
       icon: "tips_and_updates",
-      bullet: "bg-special"
+      bullet: "bg-action"
     },
     // 🔴 ERROR (Usato per Allergie Critiche - Rosso)
     error: {
@@ -59,24 +65,38 @@ const Alert: React.FC<AlertProps> = ({
     >
       {/* Background Shine Effect (Solo per Warning/Error) */}
       {(variant === 'warning' || variant === 'error') && (
-         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-50" />
       )}
 
       {/* HEADER: Icona + Testi */}
       <div className="flex items-start gap-4 relative z-10">
         <div className="p-2 rounded-xl bg-white/5 border border-white/5 shrink-0 backdrop-blur-md">
-           <Icon name={currentStyle.icon} size="md" className="animate-pulse-slow" />
+          {icon ? (
+            isNaN(parseInt(icon)) ? <Icon name={icon} size="md" className="animate-pulse-slow" /> : <span className="text-xl font-bold">{icon}</span>
+          ) : (
+            <Icon name={currentStyle.icon} size="md" className="animate-pulse-slow" />
+          )}
         </div>
 
-        <div className="flex-1 min-w-0 pt-1">
+        <div className="flex-1 min-w-0">
           {title && (
-            <Typography variant="h5" className="font-black uppercase tracking-tight leading-none mb-1 text-current">
+            <Typography variant="h5" className="mb-1">
               {title}
             </Typography>
           )}
-          <Typography variant="body" className="text-sm font-medium opacity-90 leading-relaxed">
+          {subtitle && (
+            <Typography variant="accent" className="mb-2 block opacity-80 tracking-widest">
+              {subtitle}
+            </Typography>
+          )}
+          <Typography variant="paragraphS">
             {message}
           </Typography>
+          {body && (
+            <Typography variant="paragraphS" className="mt-3 opacity-75 whitespace-pre-wrap">
+              {body}
+            </Typography>
+          )}
         </div>
 
         {onClose && (
@@ -92,22 +112,22 @@ const Alert: React.FC<AlertProps> = ({
       {/* LISTA SOSTITUTI (Renderizzata solo se presente) */}
       {list && list.length > 0 && (
         <div className={cn(
-            "relative z-10 pt-4 mt-1 border-t border-dashed", 
-            variant === 'error' ? "border-allergy/30" : "border-white/10"
+          "relative z-10 pt-4 mt-1 border-t border-dashed",
+          variant === 'error' ? "border-white/30" : "border-white/10"
         )}>
-           <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60 mb-3 block">
-             Safe Substitutions
-           </span>
-           
-           <ul className="space-y-2">
-             {list.map((item, i) => (
-               <li key={i} className="flex items-center gap-3 text-sm font-bold opacity-90">
-                  {/* Pallino Tabulazione */}
-                  <div className={cn("size-2 rounded-full shadow-sm ring-2 ring-opacity-30 ring-white", currentStyle.bullet)} />
-                  {item}
-               </li>
-             ))}
-           </ul>
+          <Typography variant="accent" className="mb-3 block">
+            Arrangements
+          </Typography>
+
+          <ul className="space-y-2">
+            {list.map((item, i) => (
+              <li key={i} className="flex items-center gap-3 opacity-90">
+                {/* Pallino Tabulazione */}
+                <div className={cn("size-2 rounded-full shadow-sm ring-2 ring-opacity-30 ring-white", currentStyle.bullet)} />
+                <Typography variant="paragraphM">{item}</Typography>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

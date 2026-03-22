@@ -15,7 +15,7 @@ const ROLE_CONFIG: Record<string, { label: string; className: string; icon: Reac
   logistics: { label: 'Logistics',   className: 'bg-btn-s/10 text-btn-s border-btn-s/20',                              icon: <Truck className="w-3 h-3" /> },
   driver:    { label: 'Driver',      className: 'bg-btn-s/10 text-btn-s border-btn-s/20',                              icon: <Truck className="w-3 h-3" /> },
   alumni:    { label: 'Alumni Chef', className: 'bg-secondary/10 text-secondary border-secondary/20',                  icon: <GraduationCap className="w-3 h-3" /> },
-  guest:     { label: 'Guest Chef',  className: 'bg-gray-100 dark:bg-white/10 text-sub border-border dark:border-white/10', icon: <User className="w-3 h-3" /> },
+  guest:     { label: 'Guest Chef',  className: 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 border-border dark:border-white/10', icon: <User className="w-3 h-3" /> },
 };
 
 const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile }) => {
@@ -59,10 +59,10 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile }) => {
 
         {/* Name + email + badge */}
         <div className="min-w-0 flex-1 lg:mt-3 w-full">
-          <p className="font-bold text-title text-base leading-tight truncate">
+          <p className="font-bold text-gray-900 dark:text-gray-100 text-base leading-tight truncate">
             {userProfile.full_name}
           </p>
-          <p className="text-muted text-xs mt-0.5 truncate">
+          <p className="text-gray-500 dark:text-gray-500 text-xs mt-0.5 truncate">
             {userProfile.email}
           </p>
           {/* Role badge */}
@@ -80,8 +80,8 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile }) => {
       {/* Dietary profile */}
       {dietLabel && (
         <div className="mt-4 pt-4 border-t border-border">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted mb-1">Dietary</p>
-          <p className="text-sub text-xs font-semibold capitalize">{dietLabel}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500 mb-1">Dietary</p>
+          <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold capitalize">{dietLabel}</p>
         </div>
       )}
     </div>

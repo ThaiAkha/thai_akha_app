@@ -212,7 +212,7 @@ const MenuPage: React.FC<{
             {['curry', 'soup', 'stirfry'].map(cat => (
               <section key={cat} className="space-y-8 scroll-mt-48 px-4 md:px-8 max-w-[85rem] mx-auto" id={cat}>
                 <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
-                  <Typography variant="h2" className="italic uppercase text-title">{cat} <span className="text-primary">Selection</span></Typography>
+                  <Typography variant="h2" className="italic uppercase text-gray-900 dark:text-gray-100">{cat} <span className="text-primary">Selection</span></Typography>
                   <Badge variant="mineral" className="bg-white/5">{getRecipes(cat).length} Options</Badge>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">

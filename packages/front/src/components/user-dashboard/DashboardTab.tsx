@@ -33,9 +33,9 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   if (!activeBooking) {
     return (
       <div className="flex flex-col items-center justify-center py-20 bg-surface border border-border border-dashed rounded-3xl text-center">
-        <Icon name="event_busy" size="2xl" className="text-muted mb-4" />
-        <p className="font-bold text-title text-lg mb-2">No Active Booking</p>
-        <p className="text-muted text-sm mb-6">Book a cooking class to manage your reservation here.</p>
+        <Icon name="event_busy" size="2xl" className="text-gray-500 dark:text-gray-500 mb-4" />
+        <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">No Active Booking</p>
+        <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">Book a cooking class to manage your reservation here.</p>
         <Button variant="brand" size="lg" onClick={() => onNavigate('booking')}>
           <Icon name="calendar_add_on" />
           Book a Class
@@ -60,8 +60,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   const renderTimeline = () => {
     if (isPast) return (
       <div className="mt-6 p-6 bg-surface rounded-2xl border border-border text-center">
-        <Icon name="verified" className="text-muted mb-2" size="lg" />
-        <p className="font-bold text-muted">Journey Completed</p>
+        <Icon name="verified" className="text-gray-500 dark:text-gray-500 mb-2" size="lg" />
+        <p className="font-bold text-gray-500 dark:text-gray-500">Journey Completed</p>
       </div>
     );
 
@@ -79,8 +79,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               : "bg-surface border-border"
           )} />
           <div className="flex items-center gap-3">
-            <Icon name="local_shipping" size="sm" className={transportStatus !== 'waiting' ? "text-action" : "text-muted"} />
-            <span className="font-bold text-sm text-sub">Driver Started Route</span>
+            <Icon name="local_shipping" size="sm" className={transportStatus !== 'waiting' ? "text-action" : "text-gray-500 dark:text-gray-500"} />
+            <span className="font-bold text-sm text-gray-600 dark:text-gray-400">Driver Started Route</span>
           </div>
         </div>
 
@@ -88,7 +88,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
         {showFullRoute && routeStops.map((stop) => {
           const isMe = stop.internal_id === activeBooking.internal_id;
 
-          let rowClass = "border-border bg-surface text-muted";
+          let rowClass = "border-border bg-surface text-gray-500 dark:text-gray-500";
           let iconName = "radio_button_unchecked";
           let stopLabel = "Waiting";
 
@@ -130,7 +130,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <span className="font-mono text-xl font-black text-title">
+                        <span className="font-mono text-xl font-black text-gray-900 dark:text-gray-100">
                           {stop.pickup_time?.slice(0, 5)}
                         </span>
                         {transportStatus !== 'waiting' && (
@@ -141,13 +141,13 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                         "font-bold text-base leading-tight mb-1",
                         stop.transport_status === 'driver_arrived' ? "text-yellow-600 dark:text-yellow-400" :
                         stop.transport_status === 'driver_en_route' ? "text-blue-600 dark:text-blue-400" :
-                        "text-title"
+                        "text-gray-900 dark:text-gray-100"
                       )}>
                         {stop.transport_status === 'driver_arrived' ? "Driver is Waiting for YOU!" :
                          stop.transport_status === 'driver_en_route' ? "Driver is on the way!" :
                          stop.transport_status === 'on_board' ? "You are On Board" : "Your Pickup"}
                       </p>
-                      <p className="text-xs text-muted">{stop.hotel_name || "Location not set"}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500">{stop.hotel_name || "Location not set"}</p>
                     </div>
                     {hasHotel && !isWalkIn && transportStatus === 'waiting' && (
                       <Button variant="mineral" size="sm" onClick={() => { localStorage.setItem('current_booking_id', activeBooking.internal_id); onNavigate('location'); }}>
@@ -192,10 +192,10 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               hasHotel ? "bg-surface border-border" : "bg-sys-notice border-sys-notice animate-pulse"
             )} />
             <div className="p-5 rounded-2xl border bg-surface border-border">
-              <p className="font-bold text-title mb-1">
+              <p className="font-bold text-gray-900 dark:text-gray-100 mb-1">
                 {isWalkIn ? "Meeting at School" : "Your Pickup"}
               </p>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-gray-500 dark:text-gray-500">
                 {activeBooking.hotel_name || (isWalkIn ? "Thai Akha Kitchen" : "Location not set")}
               </p>
               {isWalkIn && (
@@ -219,10 +219,10 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
             (transportStatus === 'dropped_off' || isPast) ? "bg-action border-action" : "bg-surface border-border"
           )} />
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs font-bold text-muted bg-surface border border-border px-2 py-1 rounded">
+            <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-500 bg-surface border border-border px-2 py-1 rounded">
               Finish
             </span>
-            <span className="text-sm font-bold text-sub">Thai Akha Kitchen</span>
+            <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Thai Akha Kitchen</span>
           </div>
         </div>
       </div>
@@ -253,15 +253,15 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               >
                 <div className={cn(
                   "size-7 rounded-lg flex items-center justify-center shrink-0 font-black text-sm",
-                  isSelected ? "bg-primary text-white" : "bg-black/5 dark:bg-white/5 text-title"
+                  isSelected ? "bg-primary text-white" : "bg-black/5 dark:bg-white/5 text-gray-900 dark:text-gray-100"
                 )}>
                   {d.getDate()}
                 </div>
                 <div className="text-left">
-                  <p className={cn("text-xs font-bold whitespace-nowrap", isSelected ? "text-title" : "text-sub")}>
+                  <p className={cn("text-xs font-bold whitespace-nowrap", isSelected ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400")}>
                     {b.session_id.includes('morning') ? 'Morning Class' : 'Evening Feast'}
                   </p>
-                  <p className="text-[10px] text-muted font-mono whitespace-nowrap">
+                  <p className="text-[10px] text-gray-500 dark:text-gray-500 font-mono whitespace-nowrap">
                     {d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
                   </p>
                 </div>
@@ -285,38 +285,30 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                 variant="solid"
                 className={cn(
                   "text-white",
-                  isPast        ? "bg-black/20 dark:bg-white/15 !text-muted" :
+                  isPast        ? "bg-black/20 dark:bg-white/15 !text-gray-500 dark:text-gray-500" :
                   hasHotel      ? "bg-action border-action" :
                                   "bg-sys-notice border-sys-notice"
                 )}
               >
                 {isPast ? 'COMPLETED' : (hasHotel ? 'CONFIRMED' : 'ACTION REQUIRED')}
               </Badge>
-              <span className="font-mono text-[10px] text-muted tracking-widest">#{bookingRef}</span>
+              <span className="font-mono text-[10px] text-gray-500 dark:text-gray-500 tracking-widest">#{bookingRef}</span>
             </div>
-            <p className="font-display font-bold text-2xl text-title italic leading-none">
+            <p className="font-display font-bold text-2xl text-gray-900 dark:text-gray-100 italic leading-none">
               {isMorning ? "Morning Market Tour" : "Evening Sunset Feast"}
             </p>
             {hotelPending && (
-              <div className="flex items-center gap-1.5 mt-2 text-sys-notice text-xs font-semibold">
+              <div className="flex items-center gap-1.5 mt-2 text-amber-800 dark:text-yellow-400 text-xs font-semibold">
                 <Icon name="warning" size="sm" />
                 Pickup location not set — please add your hotel
               </div>
             )}
           </div>
-
-          {/* Pax count pill */}
-          <div className="flex items-center gap-3 bg-black/5 dark:bg-black/30 px-4 py-2 rounded-full border border-border shrink-0">
-            <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-              {activeBooking.pax_count}
-            </div>
-            <span className="text-[9px] font-black uppercase text-muted tracking-widest">Guests</span>
-          </div>
         </div>
 
         {/* Timeline body */}
         <div className="p-6 md:p-8">
-          <p className="text-muted text-[10px] font-black uppercase tracking-widest">
+          <p className="text-gray-500 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest">
             {isPast ? "Journey Log" : "Live Logistics"}
           </p>
           {renderTimeline()}
@@ -337,14 +329,14 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
             <div className={cn(
               "size-9 rounded-full flex items-center justify-center transition-all group-hover:scale-110",
               menuStatus
-                ? "bg-black/5 dark:bg-white/10 text-title"
+                ? "bg-black/5 dark:bg-white/10 text-gray-900 dark:text-gray-100"
                 : "bg-primary text-white shadow-sm animate-pulse"
             )}>
               <Icon name="restaurant_menu" size="sm" />
             </div>
             <span className={cn(
               "text-[10px] font-black uppercase tracking-wider",
-              menuStatus ? "text-sub" : "text-primary"
+              menuStatus ? "text-gray-600 dark:text-gray-400" : "text-primary"
             )}>
               {menuStatus ? "My Menu" : "Select Menu"}
             </span>
@@ -359,22 +351,22 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               <div className={cn(
                 "size-9 rounded-full flex items-center justify-center transition-all group-hover:scale-110",
                 hasHotel
-                  ? "bg-black/5 dark:bg-white/10 text-title"
+                  ? "bg-black/5 dark:bg-white/10 text-gray-900 dark:text-gray-100"
                   : "bg-sys-notice text-white shadow-sm animate-pulse"
               )}>
                 <Icon name="local_taxi" size="sm" />
               </div>
               <span className={cn(
                 "text-[10px] font-black uppercase tracking-wider",
-                hasHotel ? "text-sub" : "text-sys-notice"
+                hasHotel ? "text-gray-600 dark:text-gray-400" : "text-sys-notice"
               )}>
                 {hasHotel ? "Pickup" : "Add Pickup"}
               </span>
             </button>
           ) : (
             <div className="p-4 h-20 flex flex-col items-center justify-center gap-1.5 opacity-30 border-r border-border">
-              <Icon name="local_taxi" size="sm" className="text-muted" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-muted">Transport</span>
+              <Icon name="local_taxi" size="sm" className="text-gray-500 dark:text-gray-500" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-500">Transport</span>
             </div>
           )}
 
@@ -383,10 +375,10 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
             onClick={() => onShowCertificate?.()}
             className="group p-4 h-20 flex flex-col items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all border-r border-border"
           >
-            <div className="size-9 rounded-full border border-border text-title flex items-center justify-center transition-all group-hover:border-quiz-p group-hover:text-quiz-p group-hover:scale-110">
+            <div className="size-9 rounded-full border border-border text-gray-900 dark:text-gray-100 flex items-center justify-center transition-all group-hover:border-quiz-p group-hover:text-quiz-p group-hover:scale-110">
               <Icon name="workspace_premium" size="sm" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-sub group-hover:text-quiz-p">
+            <span className="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-400 group-hover:text-quiz-p">
               Certificate
             </span>
           </button>
@@ -397,10 +389,10 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               onClick={() => onNavigate('booking')}
               className="group p-4 h-20 flex flex-col items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
             >
-              <div className="size-9 rounded-full border border-border text-title flex items-center justify-center transition-all group-hover:border-title group-hover:scale-110">
+              <div className="size-9 rounded-full border border-border text-gray-900 dark:text-gray-100 flex items-center justify-center transition-all group-hover:border-title group-hover:scale-110">
                 <Icon name="edit_calendar" size="sm" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-sub">Modify</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-400">Modify</span>
             </button>
           ) : (
             <div className="p-4 h-20 flex flex-col items-center justify-center gap-1.5 opacity-30">

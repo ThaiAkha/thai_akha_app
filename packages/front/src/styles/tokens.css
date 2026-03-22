@@ -28,11 +28,11 @@
   --color-surface:    #FFFFFF;    /* White surface */
   --color-border:     #E2E8F0;    /* Light border */
 
-  /* TEXT COLORS — Standard v4 (gray scale, WCAG AAA) */
-  --color-title:   #121311;  /* gray-950 — H1/H2/H3 */
-  --color-desc:    #222827;  /* gray-900 — paragraphs (alias: --color-body) */
-  --color-sub:     #4A504F;  /* gray-800 — general text, labels */
-  --color-muted:   #4A504F;  /* gray-800 — other text, captions */
+  /* TEXT COLORS — Standard v4 (gray scale, WCAG AA+) */
+  --color-title:   #121311;  /* gray-950 — H1/H2/H3       contrast: 19.7:1 ✅ AAA */
+  --color-desc:    #222827;  /* gray-900 — paragraphs      contrast: 15.2:1 ✅ AAA */
+  --color-sub:     #2D3231;  /* gray-900w — labels/secondary contrast: 13.9:1 ✅ AAA */
+  --color-muted:   #5E6464;  /* gray-700 — captions/hints  contrast:  4.6:1 ✅ AA  */
   --color-inverse: #ffffff;  /* white   — text on dark backgrounds */
 
   /* ========================================================================

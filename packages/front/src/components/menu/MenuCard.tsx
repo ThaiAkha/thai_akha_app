@@ -85,7 +85,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
           />
         ) : (
           <div className="w-full h-full bg-surface flex items-center justify-center">
-            <Icon name="restaurant" size="xl" className="opacity-20 text-desc" />
+            <Icon name="restaurant" size="xl" className="opacity-20 text-gray-700 dark:text-gray-300" />
           </div>
         )}
 
@@ -117,20 +117,20 @@ const MenuCard: React.FC<MenuCardProps> = ({
         {/* 💻 DESKTOP TITLE (Nascosto su Mobile) */}
         <div className="hidden md:block mb-3">
           <div className="flex items-center justify-between mb-2 opacity-60 text-[10px] font-black uppercase tracking-widest">
-            <span className={cn("text-desc", isSelected && "text-action")}>
+            <span className={cn("text-gray-700 dark:text-gray-300", isSelected && "text-action")}>
               {dish.category?.replace('_', ' ') || 'Classic'}
             </span>
           </div>
           <h3 className={cn(
             "font-display font-black uppercase text-2xl leading-[0.9] tracking-tight transition-colors duration-300",
-            isSelected ? "text-action" : "text-title group-hover:text-action"
+            isSelected ? "text-action" : "text-gray-900 dark:text-gray-100 group-hover:text-action"
           )}>
             {dish.name}
           </h3>
         </div>
 
         {/* DESCRIZIONE (Compact su mobile) */}
-        <p className="text-xs md:text-base font-medium text-desc/80 leading-relaxed line-clamp-2 md:line-clamp-3 mb-4 md:mb-6">
+        <p className="text-xs md:text-base font-medium text-gray-700/80 dark:text-gray-300/80 leading-relaxed line-clamp-2 md:line-clamp-3 mb-4 md:mb-6">
           {dish.description}
         </p>
 

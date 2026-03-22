@@ -49,7 +49,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                     // 2. md:min-w-[300px] per garantire spazio sufficiente per il font grosso
                     "w-full md:w-auto md:min-w-[200] pl-16 pr-6 py-4 rounded-2xl cursor-pointer text-center appearance-none outline-none transition-all duration-300",
                     "bg-white/80 dark:bg-black/40 border-2 border-transparent",
-                    "text-lg font-mono font-black uppercase tracking-widest text-title",
+                    "text-lg font-mono font-black uppercase tracking-widest text-gray-900 dark:text-gray-100",
                     "hover:bg-white hover:border-action/50 hover:shadow-md",
                     "focus:border-action focus:bg-white focus:ring-4 focus:ring-action/20"
                 )}
@@ -71,7 +71,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                             "flex-1 md:flex-none flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 select-none",
                             isActive 
                                 ? "bg-action text-white shadow-action-glow scale-[1.02] font-black" 
-                                : "text-sub hover:text-title hover:bg-white/10 font-bold"
+                                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 hover:bg-white/10 font-bold"
                         )}
                     >
                         <Icon name={s.icon} size="md" className={isActive ? "text-white" : ""} />

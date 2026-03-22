@@ -225,6 +225,12 @@ button:hover .btn-flash-glow {
   opacity: 1;
 }
 
+/* MegaMenu: pulsing glow ring — only box-shadow animates, content stays fully visible */
+@keyframes megamenu-glow {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(152, 201, 60, 0.35); }
+  50%       { box-shadow: 0 0 28px 6px rgba(152, 201, 60, 0.75); }
+}
+
 /* Click ripple — top/left set via inline style from React */
 .btn-flash-ripple {
   position: absolute;

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { Typography, Badge, Icon, Button, Divider, Modal } from '../ui/index';
+import { Typography, Badge, Icon, Button, Divider, Modal, MediaImage } from '../ui/index';
 import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
@@ -246,7 +246,14 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
                               {groupedRecipes[catKey].map((item) => (
                                  <button key={item.id} onClick={() => { onSelectDish(item); setIsMenuOpen(false); }} className={cn("relative group w-full h-20 rounded-2xl overflow-hidden border transition-all duration-300 flex items-center text-left", item.id === recipe.id ? "bg-secondary/20 border-secondary/50 text-secondary shadow-lg" : "bg-surface-elevated border-white/5 text-white/60 hover:bg-white/5")}>
-                                    <div className="w-1/4 h-full border-r border-white/5 overflow-hidden"><img src={item.image} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all"/></div>
+                                    <div className="w-1/4 h-full border-r border-white/5 overflow-hidden">
+                                       <MediaImage
+                                         url={item.image}
+                                         fallbackAlt={item.name}
+                                         showCaption={false}
+                                         imgClassName="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all"
+                                       />
+                                    </div>
                                     <div className="flex-1 px-4 py-2 min-w-0"><span className="font-display font-black uppercase text-sm truncate block">{item.name}</span><span className="text-[9px] opacity-40 uppercase truncate block">{item.thai_name || 'Authentic'}</span></div>
                                  </button>
                               ))}
@@ -265,7 +272,12 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         {/* MEDIA SIDE (Left) */}
         <div className="md:col-span-5 flex flex-col gap-4">
            <div onClick={() => openGalleryAt(0)} className="relative w-full aspect-square rounded-[2.5rem] overflow-hidden border-2 border-white/10 shadow-2xl group cursor-pointer bg-black">
-              <img src={recipe.image} className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110 opacity-90" />
+              <MediaImage
+                url={recipe.image}
+                fallbackAlt={recipe.name}
+                showCaption={true}
+                imgClassName="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110 opacity-90"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               {/* Mobile Labels */}
               <div className="absolute top-4 left-4 md:hidden z-20"><Badge variant="mineral" className={CAT_COLORS[recipe.category]}>{recipe.category.toUpperCase()}</Badge></div>
@@ -276,12 +288,17 @@ const RecipeView: React.FC<RecipeViewProps> = ({
            <div className="grid grid-cols-3 gap-3">
               {galleryItems.slice(1, 4).map((item, idx) => (
                  <div key={idx} onClick={() => openGalleryAt(idx + 1)} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 cursor-pointer hover:border-primary/50 transition-all">
-                    <img src={item.image_url} className="w-full h-full object-cover opacity-70 hover:opacity-100 transition-opacity" />
+                    <MediaImage
+                      url={item.image_url}
+                      fallbackAlt={item.title}
+                      showCaption={false}
+                      imgClassName="w-full h-full object-cover opacity-70 hover:opacity-100 transition-opacity"
+                    />
                  </div>
               ))}
            </div>
            <div className="grid grid-cols-2 gap-3 mt-2">
-              <button onClick={() => toggleAudio('story')} className={cn("flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all bg-surface", activeAudio === 'story' ? "bg-primary/20 border-primary text-primary animate-pulse" : "border-white/10 text-desc")}>
+              <button onClick={() => toggleAudio('story')} className={cn("flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all bg-surface", activeAudio === 'story' ? "bg-primary/20 border-primary text-primary animate-pulse" : "border-white/10 text-gray-700 dark:text-gray-300")}>
                  <Icon name="graphic_eq" size="md" /><span className="text-[9px] font-black uppercase tracking-widest">Story</span>
               </button>
               <button onClick={handleAskCherry} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-action/10 border border-action/20 text-action hover:bg-action hover:text-white transition-all shadow-sm">
@@ -294,7 +311,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         <div className="md:col-span-7 space-y-10 lg:pt-2">
            <div className="space-y-4 hidden md:block">
               <div className="flex gap-3"><Badge variant="mineral">{recipe.category.toUpperCase()}</Badge></div>
-              <h1 className="text-4xl md:text-5xl font-display font-black uppercase text-title leading-[0.9]">{recipe.name}</h1>
+              <h1 className="text-4xl md:text-5xl font-display font-black uppercase text-gray-900 dark:text-gray-100 leading-[0.9]">{recipe.name}</h1>
               {recipe.thai_name && <Typography variant="h4" className="text-primary italic opacity-90">{recipe.thai_name}</Typography>}
            </div>
 
@@ -305,8 +322,8 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                     <div key={idx} className="relative overflow-hidden rounded-3xl bg-allergy/10 border border-allergy/30 p-6 flex items-start gap-6 shadow-glow-allergy">
                        <div className="size-14 rounded-2xl bg-allergy/20 flex items-center justify-center shrink-0 border border-allergy/30 animate-pulse text-allergy"><Icon name="health_and_safety" size="lg" /></div>
                        <div className="space-y-1">
-                          <Typography variant="h5" className="text-title uppercase font-black">Contains {conflict.allergen}</Typography>
-                          <Typography variant="body" className="text-desc text-xs leading-relaxed opacity-90">{conflict.warning}</Typography>
+                          <Typography variant="h5" className="text-gray-900 dark:text-gray-100 uppercase font-black">Contains {conflict.allergen}</Typography>
+                          <Typography variant="body" className="text-gray-700 dark:text-gray-300 text-xs leading-relaxed opacity-90">{conflict.warning}</Typography>
                        </div>
                     </div>
                  ))}
@@ -314,7 +331,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
            )}
 
            <Divider variant="mineral" />
-           <Typography variant="paragraphL" className="text-desc font-light leading-relaxed whitespace-pre-wrap text-lg">{recipe.description}</Typography>
+           <Typography variant="paragraphL" className="text-gray-700 dark:text-gray-300 font-light leading-relaxed whitespace-pre-wrap text-lg">{recipe.description}</Typography>
 
            {/* 🌿 PUBLIC INGREDIENTS GRID */}
            <div>
@@ -328,7 +345,12 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                     return (
                        <button key={idx} onClick={() => details && setActiveIngredient(details)} className="relative flex items-stretch h-20 rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-secondary/50 transition-all duration-300 group">
                           <div className="w-[25%] relative overflow-hidden border-r border-white/5">
-                             <img src={details?.image_url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                             <MediaImage
+                                url={details?.image_url}
+                                fallbackAlt={ingName}
+                                showCaption={false}
+                                imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                             />
                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                           </div>
                           <div className="flex-1 px-4 flex flex-col justify-center">
@@ -365,7 +387,12 @@ const RecipeView: React.FC<RecipeViewProps> = ({
          {activeIngredient && (
            <div className="flex flex-col relative">
               <div className="h-64 w-full relative">
-                 <img src={activeIngredient.image_url} className="w-full h-full object-cover" />
+                 <MediaImage
+                   url={activeIngredient.image_url}
+                   fallbackAlt={activeIngredient.name_en}
+                   showCaption={false}
+                   imgClassName="w-full h-full object-cover"
+                 />
                  <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] to-transparent" />
                  <div className="absolute bottom-6 left-6 right-6">
                     <Typography variant="h3" className="text-white uppercase italic leading-none mb-1 text-3xl">{activeIngredient.name_en}</Typography>

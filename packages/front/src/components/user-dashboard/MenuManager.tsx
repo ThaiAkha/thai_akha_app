@@ -197,10 +197,10 @@ const MenuManager: React.FC<MenuManagerProps> = ({
       <section className="space-y-12">
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-l-4 border-primary pl-6">
             <div className="space-y-4 max-w-2xl">
-                <Typography variant="h2" className="uppercase text-title leading-none tracking-tighter">
+                <Typography variant="h2" className="uppercase text-gray-900 dark:text-gray-100 leading-none tracking-tighter">
                     Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-action">Menu</span>
                 </Typography>
-                <Typography variant="paragraphL" className="text-desc">
+                <Typography variant="paragraphL" className="text-gray-700 dark:text-gray-300">
                     These are the 3 signature dishes you will master at your personal station.
                 </Typography>
             </div>
@@ -220,7 +220,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
                                     "flex items-center gap-2 px-4 py-2 rounded-full border transition-all whitespace-nowrap",
                                     isActive 
                                         ? "bg-title text-surface border-title shadow-lg font-bold" 
-                                        : "bg-surface border-border text-desc hover:bg-black/5 dark:hover:bg-white/10",
+                                        : "bg-surface border-border text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10",
                                     bookings.length === 1 && "cursor-default opacity-100"
                                 )}
                             >
@@ -249,7 +249,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
                 if (!dish) return (
                 <div key={type} onClick={handleEditMenu} className="group relative h-[320px] rounded-[2.5rem] bg-surface/50 border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all">
                     <div className="size-16 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Icon name="add" className="opacity-50 text-desc" />
+                        <Icon name="add" className="opacity-50 text-gray-700 dark:text-gray-300" />
                     </div>
                     <Typography variant="caption" className="uppercase tracking-widest opacity-50">Select {type}</Typography>
                 </div>
@@ -300,7 +300,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
         
         {/* Intestazione */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <Typography variant="h2" className="text-title uppercase tracking-tighter">
+            <Typography variant="h2" className="text-gray-900 dark:text-gray-100 uppercase tracking-tighter">
                 Included <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-action">Experience</span>
             </Typography>
             
@@ -309,7 +309,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
                 <AkhaPixelPattern variant="logo" size={4} speed={40}/>
             </div>
             
-            <Typography variant="paragraphL" className="text-desc">
+            <Typography variant="paragraphL" className="text-gray-700 dark:text-gray-300">
                 In addition to your selected dishes, we prepare these traditional recipes together.
             </Typography>
         </div>
@@ -323,7 +323,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
 
         {/* Descrizione Categoria */}
         <div className="text-center max-w-2xl mt-4 mb-4 mx-auto min-h-[4rem] animate-in fade-in slide-in-from-bottom-2 duration-500 key={activeCategory}">
-            <Typography variant="paragraphL" className="italic text-desc/80 leading-relaxed">
+            <Typography variant="paragraphL" className="italic text-gray-700/80 dark:text-gray-300/80 leading-relaxed">
                 "{CATEGORY_INFO[activeCategory]}"
             </Typography>
         </div>
@@ -331,7 +331,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
         {/* GRID MISTA (Ricette DB + Schede Culturali Custom Style) */}
         <div>
             {loading ? (
-                <div className="text-center py-12 text-desc/40">Loading heritage...</div>
+                <div className="text-center py-12 text-gray-700/40 dark:text-gray-300/40">Loading heritage...</div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-in slide-in-from-bottom-4 duration-700">
                     
@@ -368,11 +368,11 @@ const MenuManager: React.FC<MenuManagerProps> = ({
                                                     </span>
                                                 </div>
                                                 
-                                                <h3 className="font-display font-black text-3xl text-title uppercase italic leading-none mb-3">
+                                                <h3 className="font-display font-black text-3xl text-gray-900 dark:text-gray-100 uppercase italic leading-none mb-3">
                                                     {item.name}
                                                 </h3>
                                                 
-                                                <p className="font-sans text-sm text-desc leading-relaxed line-clamp-4">
+                                                <p className="font-sans text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4">
                                                     {item.description}
                                                 </p>
                                             </div>

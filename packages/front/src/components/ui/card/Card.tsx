@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { Typography } from '../index';
 
 export interface CardProps {
   children: React.ReactNode;
@@ -88,15 +88,15 @@ export const CardHeader: React.FC<{ children: React.ReactNode; className?: strin
 );
 
 export const CardTitle: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <h3 className={cn('text-3xl font-display font-black italic uppercase tracking-tighter text-title mb-3 drop-shadow-sm', className)}>{children}</h3>
+  <Typography variant="h3" className={cn('mb-3 drop-shadow-sm', className)}>{children}</Typography>
 );
 
 export const CardDescription: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <p className={cn('text-base opacity-60 font-medium text-slate-600 dark:text-slate-400 leading-relaxed', className)}>{children}</p>
+  <Typography variant="paragraphS" className={cn('opacity-60', className)}>{children}</Typography>
 );
 
 export const CardContent: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <div className={cn('text-desc', className)}>{children}</div>
+  <Typography as="div" variant="body" className={className}>{children}</Typography>
 );
 
 export const CardFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (

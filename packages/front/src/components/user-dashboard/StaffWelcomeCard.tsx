@@ -22,7 +22,7 @@ const StaffWelcomeCard: React.FC<StaffWelcomeCardProps> = ({ userProfile, onChan
           Welcome back,{' '}
           <span className="text-primary italic">{firstName}</span>
         </Typography>
-        <p className="text-sub text-sm mt-3 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-3 leading-relaxed">
           Explore the Akha culture quiz and manage your personal profile below.
         </p>
       </div>
@@ -33,7 +33,7 @@ const StaffWelcomeCard: React.FC<StaffWelcomeCardProps> = ({ userProfile, onChan
           <Star className="w-5 h-5 text-primary" />
           <Typography variant="h5" color="title">Akha Culture Quiz</Typography>
         </div>
-        <p className="text-sub text-sm mb-5 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 leading-relaxed">
           Deepen your knowledge of Thai Akha traditions with our progressive quiz modules.
         </p>
         <Button variant="brand" size="md" onClick={() => onChangeTab('quiz')}>
@@ -48,7 +48,7 @@ const StaffWelcomeCard: React.FC<StaffWelcomeCardProps> = ({ userProfile, onChan
           <Sparkles className="w-5 h-5 text-action" />
           <Typography variant="h6" color="title">Did You Know?</Typography>
         </div>
-        <p className="text-muted text-sm leading-relaxed">
+        <p className="text-gray-500 dark:text-gray-500 text-sm leading-relaxed">
           The Akha people are known for their distinctive headdresses, each handcrafted and unique to the wearer's village and status.
         </p>
       </div>

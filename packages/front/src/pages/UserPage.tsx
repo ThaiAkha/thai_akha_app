@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { PageLayout } from '../components/layout/PageLayout';
-import HeaderMenu from '../components/layout/HeaderMenu';
+import { PageLayout, HeaderMenu, StickyTabNav } from '../components/layout';
 import { Tabs } from '../components/ui';
 import { UserProfile } from '../services/auth.service';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
@@ -18,7 +17,8 @@ import ContextualStatsView from '../components/user-dashboard/ContextualStatsVie
 import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
 
 /* ── CONSTANTS ── */
-const STAFF_ROLES = new Set(['admin', 'manager', 'agency', 'kitchen', 'logistics', 'driver']);
+// Synced with DB profiles.role constraint — agency uses Admin App, logistics doesn't exist in schema
+const STAFF_ROLES = new Set(['admin', 'manager', 'kitchen', 'driver']);
 
 const HEADER_SLUGS: Record<string, string> = {
   overview:     'user-dashboard',
@@ -69,7 +69,7 @@ const UserPage: React.FC<UserPageProps> = ({
     { value: 'reservation', label: 'My Reservation',  icon: 'event_available' },
     { value: 'menu',        label: 'My Menu',         icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
     { value: 'quiz',        label: 'Akha Quiz',       icon: 'psychology' },
-    { value: 'passport',    label: 'Passport',        icon: 'badge', activeColor: 'secondary' as const },
+    { value: 'passport',    label: 'Passport',        icon: 'account_box', activeColor: 'secondary' as const },
   ];
 
   const TABS = isStaff
@@ -219,11 +219,13 @@ const UserPage: React.FC<UserPageProps> = ({
       <div className="w-full">
 
         {/* ── STICKY TABS ── */}
-        <div className="sticky top-20 z-40 w-full flex justify-center mb-8 md:mb-10">
-          <div className="pointer-events-auto drop-shadow-2xl">
-            <Tabs items={TABS} value={activeTab} onChange={setActiveTab} variant="pills" />
-          </div>
-        </div>
+        <StickyTabNav
+          items={TABS}
+          value={activeTab}
+          onChange={setActiveTab}
+          topOffset="top-20"
+          bottomMargin="mb-8 md:mb-10"
+        />
 
         {/* ── GRID LAYOUT ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
@@ -265,8 +267,8 @@ const UserPage: React.FC<UserPageProps> = ({
                       <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
                         <span className="material-symbols-rounded text-primary text-3xl">event_busy</span>
                       </div>
-                      <p className="font-bold text-title text-lg mb-2">No Active Booking</p>
-                      <p className="text-sub text-sm mb-6 max-w-xs">
+                      <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">No Active Booking</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">
                         Book a cooking class to manage your reservation here.
                       </p>
                       <button

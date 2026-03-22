@@ -1,6 +1,6 @@
 
 import React, { useRef, useEffect } from 'react';
-import { ChatMessage as MessageType } from '../../types.ts';
+import { ChatMessage as MessageType } from '@thaiakha/shared';
 import Message from './Message.tsx';
 import LoadingIndicator from './LoadingIndicator.tsx';
 

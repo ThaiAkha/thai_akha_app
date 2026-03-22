@@ -52,7 +52,7 @@ const Divider: React.FC<DividerProps> = ({
   };
 
   // 2. LOGICA LABEL (Tipografia Accent)
-  const labelStyles = "font-accent text-[10px] font-black uppercase tracking-[0.2em] text-desc opacity-60 whitespace-nowrap px-4";
+  const labelStyles = "font-accent text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300 opacity-60 whitespace-nowrap px-4";
 
   // Se c'è una LABEL, il layout è Flexbox
   if (label) {

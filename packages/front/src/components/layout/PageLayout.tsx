@@ -22,7 +22,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   loading: externalLoading = false,
   customMetadata,
   customHeader,
-  hideDefaultHeader = false,
+  hideDefaultHeader = true,
   isFullScreen = false,
   showPatterns = false
 }) => {
@@ -79,7 +79,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         {isLoading ? (
           <div className="flex-grow flex flex-col items-center justify-center min-h-[80vh] animate-in fade-in duration-700">
              <AkhaLoader variant="bloom" size={10} className="opacity-90" />
-             <p className="mt-8 text-sm font-black uppercase tracking-[0.3em] text-desc/40 animate-pulse">
+             <p className="mt-8 text-sm font-black uppercase tracking-[0.3em] text-gray-700/40 dark:text-gray-300/40 animate-pulse">
                Pick Ingredients...
              </p>
           </div>

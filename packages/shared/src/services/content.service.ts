@@ -1,5 +1,5 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { HeaderMetadata } from '../types';
+import { HeaderMetadata, CultureSection, CultureSectionDetail, CultureGalleryItem } from '../types';
 
 // Cache Version Key: Aggiornala per invalidare la cache locale se cambi la struttura dati
 const GLOBAL_CACHE_KEY = 'akha_cache_content_v10';
@@ -250,7 +250,7 @@ export const contentService = {
 
     /** 🥗 DIETARY PROFILES: Halal, Kosher, Vegan, etc. */
     async getDietaryProfiles() {
-        return fetchWithCache('dietary_profiles_v1', async () => {
+        return fetchWithCache('dietary_profiles_v2', async () => {
             // Fetch profili uniti alle loro regole di sostituzione
             const { data, error } = await supabase
                 .from('dietary_profiles')
@@ -275,6 +275,7 @@ export const contentService = {
                 icon: p.icon,
                 type: p.type || 'lifestyle',
                 image_url: p.image_url,
+                display_order: p.display_order || 0,
 
                 // Testi descrittivi
                 description: p.introduction,
@@ -353,26 +354,42 @@ export const contentService = {
 
     /** 🖼️ GALLERY ITEMS: Fetch items for a specific gallery by gallery_id */
     async getGalleryItems(galleryId: string): Promise<any[]> {
-        const data = await fetchWithCache(`gallery_${galleryId}_v1`, async () => {
-            const { data, error } = await supabase
+        const data = await fetchWithCache(`gallery_${galleryId}_v2`, async () => {
+            // 1. Fetch gallery items (real columns: id, asset_id, quote, display_order)
+            const { data: items, error } = await supabase
                 .from('gallery_items')
-                .select('image_url, title, description, quote, icons, photo_id')
+                .select('id, asset_id, quote, display_order')
                 .eq('gallery_id', galleryId)
                 .order('display_order', { ascending: true });
 
-            if (error) {
+            if (error || !items?.length) {
                 console.error(`Gallery fetch error [${galleryId}]:`, error);
                 return [];
             }
 
-            return (data || []).map((item: any) => ({
-                ...item,
-                icons: Array.isArray(item.icons)
-                    ? item.icons
-                    : typeof item.icons === 'string'
-                        ? JSON.parse(item.icons)
-                        : [],
-            }));
+            // 2. Fetch matching media_assets to get image_url, title, caption
+            const assetIds = items.map((i: any) => i.asset_id).filter(Boolean);
+            const { data: assets } = await supabase
+                .from('media_assets')
+                .select('asset_id, image_url, title, caption')
+                .in('asset_id', assetIds);
+
+            const assetMap = Object.fromEntries(
+                (assets || []).map((a: any) => [a.asset_id, a])
+            );
+
+            // 3. Merge: normalize to the GalleryItem shape expected by the UI
+            return items.map((item: any) => {
+                const media = assetMap[item.asset_id] || {};
+                return {
+                    photo_id: item.id,
+                    image_url: media.image_url || '',
+                    title: media.title || '',
+                    description: media.caption || '',
+                    quote: item.quote || '',
+                    icons: [],
+                };
+            });
         });
         return data || [];
     },
@@ -387,6 +404,74 @@ export const contentService = {
                 .order('created_at', { ascending: false });
 
             return error ? [] : (data || []);
+        });
+        return data || [];
+    },
+
+    /** 🛡️ ALLERGY KNOWLEDGE: Warning texts and instructions */
+    async getAllergyKnowledge(): Promise<any[]> {
+        const data = await fetchWithCache('allergy_knowledge_v1', async () => {
+            const { data, error } = await supabase
+                .from('allergy_knowledge')
+                .select('*');
+
+            return error ? [] : (data || []);
+        });
+        return data || [];
+    },
+
+    /** 🏛️ CULTURE SECTION DETAIL: Full record for a single culture section */
+    async getCultureSectionBySlug(slug: string): Promise<CultureSectionDetail | null> {
+        return fetchWithCache<CultureSectionDetail>(`culture_section_${slug}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('culture_sections')
+                .select('*')
+                .eq('slug', slug)
+                .single();
+
+            if (error) {
+                console.error(`Culture section fetch error [${slug}]:`, error);
+                return null;
+            }
+
+            return data as CultureSectionDetail;
+        });
+    },
+
+    /** 🖼️ CULTURE GALLERY: Gallery items joined with media_assets for a culture section */
+    async getCultureGallery(galleryId: string): Promise<CultureGalleryItem[]> {
+        const data = await fetchWithCache<CultureGalleryItem[]>(`culture_gallery_${galleryId}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('gallery_items')
+                .select('*, media_assets(*)')
+                .eq('gallery_id', galleryId)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                console.error(`Culture gallery fetch error [${galleryId}]:`, error);
+                return [];
+            }
+
+            return (data || []) as CultureGalleryItem[];
+        });
+        return data || [];
+    },
+
+    /** 🏛️ CULTURE SECTIONS INDEX: Cards for the History/Culture index page */
+    async getCultureSections(): Promise<CultureSection[]> {
+        const data = await fetchWithCache<CultureSection[]>('culture_sections_index_v2', async () => {
+            const { data, error } = await supabase
+                .from('culture_sections')
+                .select('id, slug, title, subtitle, primary_image, display_order, featured, category')
+                .eq('is_published', true)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                console.error('Culture sections fetch error:', error);
+                return [];
+            }
+
+            return (data || []) as CultureSection[];
         });
         return data || [];
     },

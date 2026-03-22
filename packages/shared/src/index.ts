@@ -8,7 +8,7 @@ export { supabase } from './lib/supabase';
 export { getBaseThemeExtension, baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction, baseBreakpoints, baseAnimation, baseKeyframes } from './styles/tailwind.config.base';
 
 // Components
-export * from './components';
+// export * from './components';
 
 // Data
 export * from './data';

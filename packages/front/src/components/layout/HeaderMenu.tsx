@@ -66,18 +66,18 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
       </div>
 
       {/* 2. TITOLO CENTRATO */}
-      <h1 className="flex flex-wrap justify-center gap-x-3 leading-[0.9] tracking-tighter mb-2">
+      <h1 className="flex flex-wrap justify-center gap-x-3 mb-2">
         <Typography
           variant="titleMain"
+          color="title"
           as="span"
-          className="text-3xl md:text-4xl lg:text-5xl"
         >
           {data.titleMain}
         </Typography>
         <Typography
           variant="titleHighlight"
           as="span"
-          className="text-3xl md:text-4xl lg:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-action pb-1"
+          className="pb-1"
         >
           {data.titleHighlight}
         </Typography>
@@ -90,7 +90,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
       {/* 3. DESCRIZIONE */}
       <Typography
         variant="paragraphL"
-        className="max-w-2xl leading-relaxed text-sm md:text-lg lg:text-xl font-medium whitespace-pre-wrap"
+        color="sub"
+        className="max-w-2xl whitespace-pre-wrap"
       >
         {data.description}
       </Typography>

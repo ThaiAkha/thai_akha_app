@@ -1,4 +1,5 @@
 import React from 'react';
+import { Typography } from '../ui';
 
 interface StepHeaderProps {
   number: string;
@@ -20,20 +21,20 @@ export const StepHeader: React.FC<StepHeaderProps> = ({
   return (
     <div className="flex flex-col items-center justify-center mb-10 px-4 text-center animate-in fade-in slide-in-from-bottom-4">
       <div className="flex items-baseline justify-center gap-2 md:gap-3 mb-3">
-        <span className="text-lg md:text-xl font-mono font-bold leading-none text-sub/50">{number}.</span>
-        <span className="text-lg md:text-xl font-mono font-bold leading-none uppercase tracking-[0.2em] text-sub/50">{stepName}</span>
+        <Typography variant="monoLabel" className="text-lg md:text-xl leading-none">{number}.</Typography>
+        <Typography variant="monoLabel" className="text-lg md:text-xl leading-none">{stepName}</Typography>
       </div>
-      <h2 className="text-2xl md:text-4xl font-display font-black tracking-tight text-title mb-3 uppercase">
+      <Typography variant="h3" className="mb-3 font-black">
         {title}
-      </h2>
+      </Typography>
       {subtitle && (
-        <p className="text-sm md:text-base text-desc max-w-xl mx-auto font-medium">
+        <Typography variant="paragraphS" className="max-w-xl mx-auto">
           {subtitle.split(/(Morning|Evening)/g).map((part, i) => {
             if (part === 'Morning') return <span key={i} className={`font-bold ${color1}`}>{part}</span>;
             if (part === 'Evening') return <span key={i} className={`font-bold ${color2}`}>{part}</span>;
             return <span key={i}>{part}</span>;
           })}
-        </p>
+        </Typography>
       )}
     </div>
   );

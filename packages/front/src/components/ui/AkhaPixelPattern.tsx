@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { AKHA_PATTERNS, PatternName } from '@thaiakha/shared/data';
+import { motion } from 'framer-motion';
 
 const COLOR_MAP: Record<number, string> = {
   0: 'bg-transparent',
@@ -19,8 +20,8 @@ interface AkhaPixelPatternProps {
   className?: string;
   loop?: boolean;
   loopDelay?: number;
-  // ✅ NUOVA PROP: Aggiunta per risolvere l'errore rosso
   expandFromCenter?: boolean; 
+  animateInView?: boolean; // New prop for scroll-triggered animation
 }
 
 const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
@@ -32,27 +33,25 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
   className,
   loop = false,
   loopDelay = 1000,
-  expandFromCenter = false // Default false
+  expandFromCenter = false,
+  animateInView = false
 }) => {
   const patternConfig = variant ? AKHA_PATTERNS[variant] : null;
   const activeData = patternConfig?.data || customData || AKHA_PATTERNS.diamond.data;
   const activeCols = patternConfig?.columns || customCols || 7;
 
-  // Stato per animazione sequenziale standard
+  // Stato per animazione sequenziale standard (deprecated if animateInView is used)
   const [visibleCount, setVisibleCount] = useState(0);
-  
-  // Stato per animazione Center-Out (trigger di montaggio)
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // 🧠 LOGICA 1: SE CENTER-OUT
-    // Attiva subito il montaggio per far partire i CSS delay calcolati sotto
+    if (animateInView) return; // Skip legacy timer logic if using framer-motion
+
     if (expandFromCenter) {
       const t = setTimeout(() => setIsMounted(true), 100);
       return () => clearTimeout(t);
     }
 
-    // 🧠 LOGICA 2: STANDARD SEQUENZIALE
     let timeoutId: ReturnType<typeof setTimeout>;
     const interval = setInterval(() => {
       setVisibleCount((prev) => {
@@ -71,40 +70,61 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
       clearInterval(interval);
       clearTimeout(timeoutId);
     };
-  }, [variant, customData, speed, loop, loopDelay, visibleCount === 0, expandFromCenter]);
+  }, [variant, customData, speed, loop, loopDelay, visibleCount === 0, expandFromCenter, animateInView]);
 
-  // Calcolo del centro per la logica simmetrica
   const centerIndex = Math.floor(activeData.length / 2);
 
   return (
-    <div
+    <motion.div
+      initial={animateInView ? "hidden" : undefined}
+      whileInView={animateInView ? "visible" : undefined}
+      viewport={{ once: true, margin: "-20px" }}
       className={cn("grid gap-1 mx-auto w-fit", className)}
       style={{ gridTemplateColumns: `repeat(${activeCols}, ${size}px)` }}
     >
       {activeData.map((code, index) => {
-        // --- CALCOLO STILE DINAMICO ---
+        const dist = Math.abs(index - centerIndex);
+        
+        // Framer Motion Variants
+        const variants: any = {
+          hidden: { 
+            scale: 0, 
+            opacity: 0 
+          },
+          visible: { 
+            scale: 1, 
+            opacity: 1,
+            transition: {
+              delay: (expandFromCenter ? dist : index) * (speed / 1000),
+              duration: 0.4,
+              ease: "backOut"
+            }
+          }
+        };
+
+        if (animateInView) {
+          return (
+            <motion.div
+              key={index}
+              variants={variants}
+              style={{ width: size, height: size }}
+              className={cn("rounded-[1px]", COLOR_MAP[code] || COLOR_MAP[0])}
+            />
+          );
+        }
+
+        // Legacy Fallback (keeping it to not break other pages using the component)
         let style = {};
-
         if (expandFromCenter) {
-          // A. Onda dal Centro (Simmetrica)
-          // Calcola distanza dal centro (es. indice 5 è distante 2 dal centro 3)
-          // Usa la coordinata X (colonna) per l'onda orizzontale se preferisci, 
-          // ma qui usiamo l'indice lineare per semplicità su pattern lunghi.
-          
-          // Per una linea lunga, il centro è la metà dell'array.
-          const dist = Math.abs(index - centerIndex); 
-          const delay = dist * (speed * 1.5); // Ritardo basato sulla distanza
-
+          const delay = dist * (speed * 1.5);
           style = {
             width: size,
             height: size,
             opacity: isMounted ? 1 : 0,
             transform: isMounted ? 'scale(1)' : 'scale(0)',
-            // Usa transition-delay per creare l'effetto onda senza JS pesante
             transition: `all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}ms`
           };
         } else {
-          // B. Sequenziale (Sinistra -> Destra)
           style = {
             width: size,
             height: size,
@@ -118,11 +138,11 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
           <div
             key={index}
             style={style}
-            className={cn("rounded-[1px]", COLOR_MAP[code] || COLOR_MAP)}
+            className={cn("rounded-[1px]", COLOR_MAP[code] || COLOR_MAP[0])}
           />
         );
       })}
-    </div>
+    </motion.div>
   );
 };
 

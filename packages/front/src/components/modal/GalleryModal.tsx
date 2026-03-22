@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Icon } from '../ui/index';
+import { Button, Icon, MediaImage } from '../ui/index';
 import Modal from './Modal';
 import ModalMediaHeader from './ModalMediaHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface GalleryItem {
   image_url: string;
+  asset_id?: string;
   title?: string;
   description?: string;
   quote?: string;
@@ -89,11 +90,13 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
     >
       {/* ATMOSPHERIC BACKGROUND — dynamically follows current image */}
       <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <img
-          key={`bg-${index}`}
-          src={currentItem.image_url}
-          alt="Atmosphere"
-          className="w-full h-full object-cover opacity-30 blur-3xl scale-125 animate-in fade-in duration-1000"
+        <MediaImage
+          key={index}
+          assetId={currentItem.asset_id}
+          url={currentItem.image_url}
+          fallbackAlt="Atmosphere"
+          showCaption={false}
+          imgClassName="w-full h-full object-cover opacity-30 blur-3xl scale-125 animate-in fade-in duration-1000"
         />
         <div className="absolute inset-0 bg-black/80" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/90" />
@@ -133,11 +136,13 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
           </button>
 
           {/* Image */}
-          <img
+          <MediaImage
             key={index}
-            src={currentItem.image_url}
-            alt={currentItem.title}
-            className={cn(
+            assetId={currentItem.asset_id}
+            url={currentItem.image_url}
+            fallbackAlt={currentItem.title}
+            showCaption={true}
+            imgClassName={cn(
               "w-full h-full object-contain animate-in duration-500 fill-mode-both",
               direction > 0 ? "slide-in-from-right-8" : direction < 0 ? "slide-in-from-left-8" : "fade-in"
             )}

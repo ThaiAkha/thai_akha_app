@@ -59,7 +59,7 @@ const Avatar: React.FC<AvatarProps> = ({
 
     // C. Icona Default (Mineral Style)
     return (
-      <div className="w-full h-full flex items-center justify-center bg-white/5 text-desc/40">
+      <div className="w-full h-full flex items-center justify-center bg-white/5 text-gray-700/40 dark:text-gray-300/40">
         <span className="material-symbols-outlined text-[1.5em]">person</span>
       </div>
     );
@@ -78,7 +78,7 @@ const Avatar: React.FC<AvatarProps> = ({
       {renderContent()}
       
       {/* Fallback container (nascosto di default, appare via JS se img error) */}
-      <div className="hidden fallback-active:flex absolute inset-0 items-center justify-center bg-white/5 text-desc/40">
+      <div className="hidden fallback-active:flex absolute inset-0 items-center justify-center bg-white/5 text-gray-700/40 dark:text-gray-300/40">
          <span className="material-symbols-outlined text-[1.5em]">person_off</span>
       </div>
     </div>

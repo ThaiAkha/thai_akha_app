@@ -61,7 +61,7 @@ export const BookingSelection: React.FC<BookingSelectionProps> = ({
         <div className="flex items-center gap-3 bg-surface border border-border p-2 rounded-2xl shadow-sm mb-8 transition-colors max-w-xl mx-auto">
           <div className="relative flex-1">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-action pointer-events-none"><Icon name="event" size="lg" /></div>
-            <button onClick={() => setShowCalendarModal(true)} className="w-full bg-transparent text-title font-bold text-lg py-4 pl-12 pr-4 text-left hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors cursor-pointer">
+            <button onClick={() => setShowCalendarModal(true)} className="w-full bg-transparent text-gray-900 dark:text-gray-100 font-bold text-lg py-4 pl-12 pr-4 text-left hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors cursor-pointer">
               {selectedDate ? formattedDateStr : "Choose a Date..."}
             </button>
           </div>
@@ -90,18 +90,18 @@ export const BookingSelection: React.FC<BookingSelectionProps> = ({
                   "flex-1 min-w-[70px] md:min-w-[100px] h-[120px] md:h-[140px] flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300 relative overflow-hidden",
                   isSelected
                     ? "bg-action/10 backdrop-blur-md border-action text-action shadow-[0_0_30px_-5px_rgba(152,201,60,0.4)] scale-105 z-10 font-bold cursor-pointer"
-                    : "bg-surface border-border text-desc hover:border-action/30 hover:bg-surface/80 cursor-pointer",
+                    : "bg-surface border-border text-gray-700 dark:text-gray-300 hover:border-action/30 hover:bg-surface/80 cursor-pointer",
                   isPast && "opacity-20 grayscale pointer-events-none border-dashed",
                   (i === 0 || i === 4) && "hidden md:flex"
                 )}
               >
                 <span className={cn(
                   "text-[10px] font-black uppercase tracking-widest leading-none mb-1",
-                  isToday ? "text-red-500" : isSelected ? "text-action" : "text-muted"
+                  isToday ? "text-red-500" : isSelected ? "text-action" : "text-gray-500 dark:text-gray-500"
                 )}>
                   {isToday ? "TODAY" : DAYS[d.getDay()]}
                 </span>
-                <span className={cn("text-3xl font-mono font-black leading-none my-0.5", isSelected ? "text-action" : "text-title")}>
+                <span className={cn("text-3xl font-mono font-black leading-none my-0.5", isSelected ? "text-action" : "text-gray-900 dark:text-gray-100")}>
                   {d.getDate()}
                 </span>
                 <span className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1 mb-2">
@@ -127,7 +127,7 @@ export const BookingSelection: React.FC<BookingSelectionProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="mt-auto mb-1 text-[8px] font-black uppercase tracking-widest text-muted opacity-60">Past</div>
+                  <div className="mt-auto mb-1 text-[8px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500 opacity-60">Past</div>
                 )}
 
               </button>
@@ -169,18 +169,18 @@ export const BookingSelection: React.FC<BookingSelectionProps> = ({
               >
                 <div className="flex items-start justify-between mb-8">
                   <div>
-                    <Typography variant="h3" className="text-title text-xl font-black italic uppercase leading-none mb-2 tracking-tighter text-left">
+                    <Typography variant="h3" className="text-gray-900 dark:text-gray-100 text-xl font-black italic uppercase leading-none mb-2 tracking-tighter text-left">
                       <span className={sessionType === 'morning_class' ? 'text-orange-500' : 'text-action'}>
                         {sessionType === 'morning_class' ? 'Morning' : 'Evening'}
                       </span>
                       <br />
-                      <span className="text-title opacity-30">Cooking Class</span>
+                      <span className="text-gray-900 dark:text-gray-100 opacity-30">Cooking Class</span>
                     </Typography>
                   </div>
                 </div>
                 <div className="flex items-end justify-between mt-auto">
                   <div className="flex flex-col">
-                    <span className="text-2xl font-mono font-black text-title leading-none">
+                    <span className="text-2xl font-mono font-black text-gray-900 dark:text-gray-100 leading-none">
                       {info.basePrice.toLocaleString()} <span className="text-sm font-sans font-bold opacity-40">Baht / person</span>
                     </span>
                   </div>
@@ -190,7 +190,7 @@ export const BookingSelection: React.FC<BookingSelectionProps> = ({
                   ) : (
                     <div className="bg-background/50 border border-border/50 rounded-xl px-4 py-2 flex flex-col items-center justify-center min-w-[70px]">
                       <span className="text-xl font-mono font-black text-action leading-none">{stats.remaining}</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-muted mt-1">Seats</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500 mt-1">Seats</span>
                     </div>
                   )}
                 </div>

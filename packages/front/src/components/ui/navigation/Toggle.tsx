@@ -57,7 +57,7 @@ const Toggle: React.FC<ToggleProps> = ({
 
       {/* LABEL OPZIONALE (Typography Semantica) */}
       {label && (
-        <span className="font-accent text-sm font-bold tracking-wider text-desc select-none cursor-pointer" onClick={handleToggle}>
+        <span className="font-accent text-sm font-bold tracking-wider text-gray-700 dark:text-gray-300 select-none cursor-pointer" onClick={handleToggle}>
           {label}
         </span>
       )}

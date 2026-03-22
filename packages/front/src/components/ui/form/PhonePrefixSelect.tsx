@@ -5,13 +5,14 @@ import { cn } from '@thaiakha/shared/lib/utils';
 const EMPTY_OPTION = { dialCode: '', name: 'No prefix / Other', countryCode: '', label: '' };
 type PrefixOption = typeof EMPTY_OPTION;
 
-interface PhonePrefixSelectProps {
+export interface PhonePrefixSelectProps {
   value: string;
   onChange: (dialCode: string) => void;
   className?: string;
+  error?: boolean;
 }
 
-export const PhonePrefixSelect: React.FC<PhonePrefixSelectProps> = ({ value, onChange, className }) => {
+export const PhonePrefixSelect: React.FC<PhonePrefixSelectProps> = ({ value, onChange, className, error = false }) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -83,45 +84,47 @@ export const PhonePrefixSelect: React.FC<PhonePrefixSelectProps> = ({ value, onC
         type="button"
         onClick={handleOpen}
         className={cn(
-          // same base as Input mineral variant — min-h matches Input md (py-3 + text-base line-height + border = 50px)
+          // base matches Input md
           'flex items-center gap-2 w-full min-h-[50px] transition-all duration-300 ease-cinematic',
-          'px-4 py-3 rounded-xl border text-base',
-          'bg-white/5 border-white/10 text-title',
-          'focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-action/50',
-          isOpen
-            ? 'bg-white/10 border-action/50 ring-2 ring-action/50 ring-offset-0'
-            : 'hover:bg-white/8 hover:border-white/20',
-          className
+          'px-4 py-3 rounded-xl text-base',
+          'focus:outline-none focus:ring-2 focus:ring-offset-0',
+          error ? 'border-red-500/30 dark:border-red-500/40 focus:border-red-500 focus:ring-red-500/50 bg-red-500/5 dark:bg-red-500/10' 
+                : 'border-black/10 dark:border-white/10 focus:border-action/50 focus:ring-action/50 bg-black/5 dark:bg-white/5',
+          !error && 'hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/30 dark:hover:border-white/30 text-gray-900 dark:text-gray-100 border',
+          isOpen && !error
+            ? 'bg-black/10 dark:bg-white/10 border-action/50 ring-2 ring-action/50 ring-offset-0'
+            : '',
+          error && 'border text-gray-900 dark:text-gray-100',
         )}
       >
         <span className="text-base leading-none shrink-0">
           {selected ? getCountryFlag(selected.countryCode) : '🌐'}
         </span>
         <span className="flex-1 text-xs font-bold text-left truncate">
-          {selected ? `${selected.countryCode} ${selected.dialCode}` : <span className="text-desc/40">Prefix</span>}
+          {selected ? `${selected.countryCode} ${selected.dialCode}` : <span className="text-gray-700/40 dark:text-gray-300/40">Prefix</span>}
         </span>
-        <span className="material-symbols-outlined text-[14px] text-desc/40 shrink-0">
+        <span className="material-symbols-outlined text-[14px] text-gray-700/40 dark:text-gray-300/40 shrink-0">
           {isOpen ? 'expand_less' : 'expand_more'}
         </span>
       </button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-72 bg-surface border border-border rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-72 bg-white dark:bg-gray-800 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden">
           {/* Search */}
-          <div className="p-2 border-b border-border/50">
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2">
-              <span className="material-symbols-outlined text-[16px] text-desc/50">search</span>
+          <div className="p-2 border-b border-black/5 dark:border-white/5">
+            <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl px-3 py-2">
+              <span className="material-symbols-outlined text-[16px] text-gray-700/50 dark:text-gray-300/50">search</span>
               <input
                 ref={searchRef}
                 type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Italy, US, +66..."
-                className="flex-1 bg-transparent text-xs font-medium text-title placeholder:text-desc/40 outline-none"
+                className="flex-1 bg-transparent text-xs font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-700/40 dark:text-gray-300/40 outline-none"
               />
               {query && (
-                <button type="button" onClick={() => setQuery('')} className="text-desc/40 hover:text-desc cursor-pointer">
+                <button type="button" onClick={() => setQuery('')} className="text-gray-700/40 dark:text-gray-300/40 hover:text-gray-700 dark:text-gray-300 cursor-pointer">
                   <span className="material-symbols-outlined text-[14px]">close</span>
                 </button>
               )}
@@ -131,7 +134,7 @@ export const PhonePrefixSelect: React.FC<PhonePrefixSelectProps> = ({ value, onC
           {/* Options */}
           <div className="overflow-y-auto max-h-52 py-1">
             {filtered.length === 0 ? (
-              <p className="px-4 py-3 text-xs text-desc/50 text-center">No results for "{query}"</p>
+              <p className="px-4 py-3 text-xs text-gray-700/50 dark:text-gray-300/50 text-center">No results for "{query}"</p>
             ) : (
               filtered.map(opt => (
                 <button
@@ -142,7 +145,7 @@ export const PhonePrefixSelect: React.FC<PhonePrefixSelectProps> = ({ value, onC
                     'w-full text-left px-4 py-2 flex items-center gap-3 transition-colors cursor-pointer',
                     value === opt.dialCode
                       ? 'bg-action/10 text-action'
-                      : 'hover:bg-white/5 text-title'
+                      : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'
                   )}
                 >
                   <span className="text-base shrink-0 w-6 text-center">
@@ -154,7 +157,7 @@ export const PhonePrefixSelect: React.FC<PhonePrefixSelectProps> = ({ value, onC
                   {opt.dialCode && (
                     <span className={cn(
                       'text-xs font-mono shrink-0',
-                      value === opt.dialCode ? 'text-action font-bold' : 'text-desc/50'
+                      value === opt.dialCode ? 'text-action font-bold' : 'text-gray-700/50 dark:text-gray-300/50'
                     )}>
                       {opt.dialCode}
                     </span>

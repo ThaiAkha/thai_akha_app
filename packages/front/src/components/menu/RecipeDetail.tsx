@@ -122,7 +122,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
   const isSelected = Object.values(selections).some((s: any) => s?.id === dish.id);
 
   return (
-    <div className="fixed inset-0 z-[1] flex flex-col bg-surface-overlay text-desc animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[1] flex flex-col bg-surface-overlay text-gray-700 dark:text-gray-300 animate-in fade-in duration-500">
       
       {/* BACKGROUND CINEMATIC */}
       <div className="absolute inset-0 z-0">
@@ -177,7 +177,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
                        <Typography variant="h5" className="text-white uppercase font-black">
                           Contains {conflict.allergen}
                        </Typography>
-                       <Typography variant="body" className="text-desc text-sm leading-relaxed">
+                       <Typography variant="body" className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                           {conflict.warning}
                        </Typography>
                     </div>

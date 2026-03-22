@@ -52,7 +52,7 @@ export function Table<T extends Record<string, any>>({
   // B. EMPTY STATE
   if (!data || data.length === 0) {
     return (
-      <div className={cn("flex flex-col items-center justify-center p-12 text-desc border border-dashed border-border rounded-2xl bg-black/5 dark:bg-white/5", className)}>
+      <div className={cn("flex flex-col items-center justify-center p-12 text-gray-700 dark:text-gray-300 border border-dashed border-border rounded-2xl bg-black/5 dark:bg-white/5", className)}>
         <Icon name="table_rows" size="xl" className="opacity-20 mb-4" />
         <Typography variant="caption" className="opacity-50">{emptyMessage}</Typography>
       </div>
@@ -71,7 +71,7 @@ export function Table<T extends Record<string, any>>({
               <th 
                 key={col.key} 
                 className={cn(
-                  "px-6 py-4 text-xs font-black uppercase tracking-widest text-desc select-none",
+                  "px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 select-none",
                   col.align === 'center' && "text-center",
                   col.align === 'right' && "text-right",
                   col.width && `w-[${col.width}]`
@@ -100,7 +100,7 @@ export function Table<T extends Record<string, any>>({
                   <td 
                     key={`${String(row[keyField])}-${col.key}`}
                     className={cn(
-                      "px-6 py-4 text-sm text-title font-medium",
+                      "px-6 py-4 text-sm text-gray-900 dark:text-gray-100 font-medium",
                       col.align === 'center' && "text-center",
                       col.align === 'right' && "text-right"
                     )}

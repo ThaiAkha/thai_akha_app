@@ -61,16 +61,16 @@ const OverviewView: React.FC<OverviewViewProps> = ({
           <span className="text-primary italic">{firstName}</span>
         </Typography>
         {activeBooking ? (
-          <p className="text-muted text-sm mt-3">
+          <p className="text-gray-500 dark:text-gray-500 text-sm mt-3">
             Your class is on{' '}
-            <span className="text-desc font-bold">
+            <span className="text-gray-700 dark:text-gray-300 font-bold">
               {new Date(activeBooking.booking_date).toLocaleDateString('en-GB', {
                 weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
               })}
             </span>
           </p>
         ) : (
-          <p className="text-muted text-sm mt-3">
+          <p className="text-gray-500 dark:text-gray-500 text-sm mt-3">
             Ready to start your culinary journey?
           </p>
         )}
@@ -93,17 +93,17 @@ const OverviewView: React.FC<OverviewViewProps> = ({
                 : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10'
             )}>
               <div className="flex items-center gap-4 min-w-0">
-                <div className={cn('shrink-0 transition-colors', menuDone ? 'text-action' : 'text-muted')}>
+                <div className={cn('shrink-0 transition-colors', menuDone ? 'text-action' : 'text-gray-500 dark:text-gray-500')}>
                   {menuDone
                     ? <CheckCircle className="w-5 h-5" />
                     : <Circle className="w-5 h-5" />
                   }
                 </div>
                 <div className="min-w-0">
-                  <p className={cn('font-bold text-sm', menuDone ? 'text-desc' : 'text-sub')}>
+                  <p className={cn('font-bold text-sm', menuDone ? 'text-gray-700 dark:text-gray-300' : 'text-gray-600 dark:text-gray-400')}>
                     Choose your Menu
                   </p>
-                  <p className="text-xs text-muted mt-0.5">
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">
                     {menuDone ? 'Dishes selected — bon appétit!' : 'Select your dishes before the class'}
                   </p>
                 </div>
@@ -124,17 +124,17 @@ const OverviewView: React.FC<OverviewViewProps> = ({
                 : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10'
             )}>
               <div className="flex items-center gap-4 min-w-0">
-                <div className={cn('shrink-0 transition-colors', companionsDone ? 'text-action' : 'text-muted')}>
+                <div className={cn('shrink-0 transition-colors', companionsDone ? 'text-action' : 'text-gray-500 dark:text-gray-500')}>
                   {companionsDone
                     ? <CheckCircle className="w-5 h-5" />
                     : <Users className="w-5 h-5" />
                   }
                 </div>
                 <div className="min-w-0">
-                  <p className={cn('font-bold text-sm', companionsDone ? 'text-desc' : 'text-sub')}>
+                  <p className={cn('font-bold text-sm', companionsDone ? 'text-gray-700 dark:text-gray-300' : 'text-gray-600 dark:text-gray-400')}>
                     Invite Companions
                   </p>
-                  <p className="text-xs text-muted mt-0.5">
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">
                     {companionSlots === 0
                       ? 'Solo booking — no companions needed'
                       : `${companionCount} of ${companionSlots} companion${companionSlots > 1 ? 's' : ''} registered`
@@ -144,7 +144,7 @@ const OverviewView: React.FC<OverviewViewProps> = ({
               </div>
               {companionsDone
                 ? <Icon name="verified" className="text-action/60 shrink-0" />
-                : <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-muted border border-border px-3 py-1.5 rounded-full">
+                : <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500 border border-border px-3 py-1.5 rounded-full">
                     Pending
                   </span>
               }
@@ -159,7 +159,7 @@ const OverviewView: React.FC<OverviewViewProps> = ({
             <Rocket className="w-7 h-7 text-primary" />
           </div>
           <Typography variant="h4" color="title" className="mb-2">Start Your Journey</Typography>
-          <p className="text-sub text-sm mb-6 max-w-xs leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs leading-relaxed">
             Book a cooking class and unlock your personal dashboard, menu, and digital passport.
           </p>
           <Button variant="brand" size="lg" onClick={() => onNavigate('booking')}>

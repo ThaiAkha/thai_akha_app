@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Icon } from '../index';
+import { Icon, Typography, Badge, MediaImage } from '../index';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 // 1. DEFINIZIONE DELLE INTERFACCE (Fondamentale!)
@@ -53,12 +53,12 @@ const InfoCard: React.FC<InfoCardProps> = ({
         {/* Overlay scuro di base */}
         <div className="absolute inset-0 z-10 bg-black/10 dark:bg-black/20" />
 
-        {!imgError ? (
-          <img
-            src={card.image}
-            alt={card.title}
-            onError={() => setImgError(true)}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        {card.image ? (
+          <MediaImage
+            url={card.image}
+            fallbackAlt={card.title}
+            showCaption={false} // Disable captions as InfoCard handles its own text
+            imgClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
           <div className="w-full h-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
@@ -73,23 +73,23 @@ const InfoCard: React.FC<InfoCardProps> = ({
           <Icon name={card.icon} size="sm" className="text-action mb-1.5 shrink-0" />
         )}
         <Typography
-          variant="h3"
-          className="text-base md:text-xl font-bold truncate text-title group-hover:text-action transition-colors"
+          variant="h6"
+          className="truncate group-hover:text-action transition-colors"
         >
           {card.title}
         </Typography>
 
         <Typography
           variant="body"
-          className="text-xs md:text-sm text-desc opacity-70 line-clamp-2 mt-1"
+          className="opacity-70 line-clamp-2 mt-1"
         >
           {card.desc}
         </Typography>
 
         {/* Footer Minimal per versione orizzontale */}
-        <div className="mt-2 flex items-center text-[9px] font-black tracking-widest text-action opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+        <Typography as="div" variant="microLabel" color="action" className="mt-2 flex items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
           EXPLORE <span className="material-symbols-outlined text-xs ml-1">arrow_forward</span>
-        </div>
+        </Typography>
       </div>
     </div>
   );

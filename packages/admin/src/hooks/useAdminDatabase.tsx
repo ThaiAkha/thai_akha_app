@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import {
-    Newspaper, AlertTriangle, Users, Calendar, Package, Settings, CreditCard
+    Newspaper, AlertTriangle, Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music, Layout
 } from 'lucide-react';
 
 // --- CONFIG ---
 export const SYSTEM_TABLES = [
     { id: 'akha_news', label: 'Akha News', icon: <Newspaper className="w-5 h-5" /> },
     { id: 'allergy_knowledge', label: 'Allergy Knowledge', icon: <AlertTriangle className="w-5 h-5" /> },
+    { id: 'audio_assets', label: 'Audio Assets', icon: <Music className="w-5 h-5" /> },
     { id: 'booking_participants', label: 'Booking Participants', icon: <Users className="w-5 h-5" /> },
     { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
     { id: 'class_calendar_overrides', label: 'Calendar Overrides', icon: <Calendar className="w-5 h-5" /> },
@@ -21,12 +22,17 @@ export const SYSTEM_TABLES = [
     { id: 'ethnic_groups', label: 'Ethnic Groups', icon: <Users className="w-5 h-5" /> },
     { id: 'gallery_items', label: 'Gallery Items', icon: <Package className="w-5 h-5" /> },
     { id: 'home_cards', label: 'Home Cards', icon: <Package className="w-5 h-5" /> },
+    { id: 'home_cards_front', label: 'Home Cards (Front)', icon: <Package className="w-5 h-5" /> },
+    { id: 'home_cards_translations', label: 'Home Cards Translations', icon: <Package className="w-5 h-5" /> },
     { id: 'hotel_locations', label: 'Hotel Locations', icon: <Package className="w-5 h-5" /> },
+    { id: 'hotel_pickup_rules', label: 'Hotel Pickup Rules', icon: <MapPin className="w-5 h-5" /> },
     { id: 'ingredient_categories', label: 'Ingredient Categories', icon: <Package className="w-5 h-5" /> },
     { id: 'ingredients_library', label: 'Ingredients Library', icon: <Package className="w-5 h-5" /> },
     { id: 'market_runs', label: 'Market Runs', icon: <Package className="w-5 h-5" /> },
+    { id: 'media_assets', label: 'Media Assets', icon: <Image className="w-5 h-5" /> },
     { id: 'meeting_points', label: 'Meeting Points', icon: <Package className="w-5 h-5" /> },
     { id: 'menu_selections', label: 'Menu Selections', icon: <Package className="w-5 h-5" /> },
+    { id: 'page_sections', label: 'Page Sections', icon: <Layout className="w-5 h-5" /> },
     { id: 'pickup_zones', label: 'Pickup Zones', icon: <Package className="w-5 h-5" /> },
     { id: 'profiles', label: 'Profiles', icon: <Users className="w-5 h-5" /> },
     { id: 'quiz_levels', label: 'Quiz Levels', icon: <Package className="w-5 h-5" /> },
@@ -51,6 +57,13 @@ export const SYSTEM_TABLES = [
 ];
 
 export const READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid'];
+
+export const PRIMARY_KEY_MAP: Record<string, string> = {
+    allergy_knowledge: 'allergy_key',
+    bookings: 'internal_id',
+    page_sections: 'section_id',
+    shop_contacts: 'shop_name',
+};
 
 export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
     bookings: [
@@ -98,6 +111,14 @@ export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
         'account_category', 'purchase_account', 'product_type', 'stock_quantity',
         'reorder_point', 'is_active', 'category_id', 'is_visible_online', 'tax_code',
         'created_at', 'updated_at', 'catalog_image_url', 'sub_category'
+    ],
+    audio_assets: [
+        'id', 'asset_id', 'title', 'audio_url', 'transcript', 'duration_seconds', 
+        'file_name', 'folder_path', 'mime_type', 'size_kb', 'uploaded_by', 'created_at'
+    ],
+    page_sections: [
+        'id', 'page_slug', 'section_id', 'title', 'subtitle', 'content_body',
+        'image_url', 'display_order', 'is_active', 'created_at'
     ]
 };
 
@@ -112,6 +133,8 @@ export const GRID_PRIMARY_FIELDS: Record<string, { title: string; subtitle?: str
     site_metadata_admin: { title: 'page_slug', subtitle: 'header_title_main', badge: 'access_level' },
     site_metadata_admin_translations: { title: 'page_id', subtitle: 'language', badge: 'title' },
     akha_news: { title: 'title', subtitle: 'created_at', badge: 'category' },
+    audio_assets: { title: 'title', subtitle: 'asset_id', badge: 'mime_type' },
+    page_sections: { title: 'title', subtitle: 'page_slug', badge: 'section_id' },
 };
 
 export const useAdminDatabase = () => {
@@ -169,23 +192,54 @@ export const useAdminDatabase = () => {
                 const { error: insertError } = await supabase.from(selectedTable).insert(payload);
                 error = insertError;
             } else {
-                const idKey = selectedRow.id ? 'id' : 'internal_id';
+                const idField = PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
+                const idValue = selectedRow[idField];
+                
+                if (!idValue) {
+                    throw new Error(`Primary key ${idField} not found in row data.`);
+                }
+
                 const { error: updateError } = await supabase
                     .from(selectedTable)
                     .update(payload)
-                    .eq(idKey, selectedRow[idKey]);
+                    .eq(idField, idValue);
                 error = updateError;
             }
 
             if (error) throw error;
-            alert('Data saved successfully kha!');
+            alert('Data saved successfully kha! 🙏');
             setIsEditing(false);
             fetchTableData(selectedTable);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Save error:', err);
-            alert('Save failed. Check console for details.');
+            alert(`Save failed: ${err.message || 'Unknown error'}. Check console for details.`);
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedRow) return;
+        try {
+            const idField = PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
+            const idValue = selectedRow[idField];
+
+            if (!idValue) {
+                throw new Error(`Primary key ${idField} not found in row data.`);
+            }
+
+            const { error } = await supabase
+                .from(selectedTable)
+                .delete()
+                .eq(idField, idValue);
+                
+            if (error) throw error;
+            alert('Deleted successfully. 🙏');
+            setShowDeleteConfirm(false);
+            fetchTableData(selectedTable);
+        } catch (err: any) {
+            console.error('Delete error:', err);
+            alert(`Delete failed: ${err.message || 'Unknown error'}`);
         }
     };
 
@@ -329,6 +383,7 @@ export const useAdminDatabase = () => {
             showDeleteConfirm,
             setShowDeleteConfirm,
             handleSave,
+            handleDelete,
             closeInspector: () => setSelectedRow(null)
         }
     };

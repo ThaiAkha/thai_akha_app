@@ -46,7 +46,7 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
               <p className="font-accent text-primary/80 text-[10px] font-black uppercase tracking-[0.3em]">Active Quiz</p>
             </div>
             
-            <Typography variant="h2" className="text-3xl lg:text-5xl leading-none tracking-tighter italic text-title">
+            <Typography variant="h2" className="text-3xl lg:text-5xl leading-none tracking-tighter italic text-gray-900 dark:text-gray-100">
               {title}
             </Typography>
           </div>
@@ -59,7 +59,7 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Level {currentLevel}</span>
               <div className="h-px w-8 bg-primary/30"></div>
             </div>
-            <span className="text-[10px] font-black text-desc/40 uppercase tracking-[0.2em]">{totalLevels} Steps</span>
+            <span className="text-[10px] font-black text-gray-700/40 dark:text-gray-300/40 uppercase tracking-[0.2em]">{totalLevels} Steps</span>
           </div>
 
           <div className="w-full">
@@ -86,9 +86,9 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
           </div>
           
           <div className="flex flex-col text-left">
-            <span className="font-accent text-desc/50 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Total Score</span>
+            <span className="font-accent text-gray-700/50 dark:text-gray-300/50 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Total Score</span>
             <div className="flex items-baseline gap-2">
-              <Typography variant="h3" className="leading-none tracking-tighter text-title">
+              <Typography variant="h3" className="leading-none tracking-tighter text-gray-900 dark:text-gray-100">
                 {score.toLocaleString()}
               </Typography>
               <span className="font-accent text-[11px] font-black text-quiz">XP</span>

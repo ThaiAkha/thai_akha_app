@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChatMessage } from '../../types.ts';
+import { ChatMessage } from '@thaiakha/shared';
 
 interface MessageProps {
     message: ChatMessage;

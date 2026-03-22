@@ -158,15 +158,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     // CONTAINER: Trasparente per adattarsi al Modal, ma con testo base corretto
-    <div className="w-full h-full flex flex-col font-sans select-none text-title">
+    <div className="w-full h-full flex flex-col font-sans select-none text-gray-900 dark:text-gray-100">
 
       {/* HEADER */}
       <div className="flex items-center justify-between pb-4 border-b border-border shrink-0">
         <div>
-          <h3 className="text-3xl md:text-4xl font-display font-black text-title uppercase leading-none mb-2">
+          <h3 className="text-3xl md:text-4xl font-display font-black text-gray-900 dark:text-gray-100 uppercase leading-none mb-2">
             {MONTHS[viewDate.getMonth()]} <span className="text-action">{viewDate.getFullYear()}</span>
           </h3>
-          <span className="block text-sm font-accent font-black uppercase tracking-[0.3em] text-desc">
+          <span className="block text-sm font-accent font-black uppercase tracking-[0.3em] text-gray-700 dark:text-gray-300">
             Choose Your Cooking Day - <span className="text-orange-500">Morning</span> and <span className="text-action">Evening</span> availability
           </span>
 
@@ -216,7 +216,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       <div className="grid grid-cols-7 border-b border-border bg-surface/90 shrink-0">
         {DAYS_HEADER.map(d => (
           <div key={d} className="py-4 text-center">
-            <span className="font-accent font-black text-sub uppercase tracking-widest text-md">{d}</span>
+            <span className="font-accent font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest text-md">{d}</span>
           </div>
         ))}
       </div>
@@ -284,8 +284,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     isToday
                       ? "bg-action border-action text-black shadow-lg shadow-action/20"
                       : (isPast || !isCurrentMonth)
-                        ? "bg-transparent border-transparent text-muted"
-                        : "bg-background dark:bg-black/30 border-border text-title group-hover:border-primary/50 shadow-sm"
+                        ? "bg-transparent border-transparent text-gray-500 dark:text-gray-500"
+                        : "bg-background dark:bg-black/30 border-border text-gray-900 dark:text-gray-100 group-hover:border-primary/50 shadow-sm"
                   )}>
                     {date.getDate()}
                   </div>

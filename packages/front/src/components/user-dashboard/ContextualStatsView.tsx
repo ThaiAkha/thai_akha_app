@@ -29,7 +29,7 @@ const StatShell: React.FC<{ children: React.ReactNode; className?: string }> = (
 const StatLabel: React.FC<{ children: React.ReactNode; warning?: boolean }> = ({ children, warning }) => (
   <p className={cn(
     'text-[10px] font-black uppercase tracking-widest mb-4',
-    warning ? 'text-sys-notice' : 'text-muted'
+    warning ? 'text-amber-800 dark:text-yellow-400' : 'text-gray-500 dark:text-gray-500'
   )}>
     {children}
   </p>
@@ -60,16 +60,16 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
         <StatLabel>Journey Progress</StatLabel>
         <div className="flex items-center gap-3 mb-2">
           <CheckCircle className={cn('w-5 h-5 shrink-0', menuDone ? 'text-action' : 'text-border')} />
-          <span className={cn('text-sm font-medium', menuDone ? 'text-desc' : 'text-muted')}>
+          <span className={cn('text-sm font-medium', menuDone ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 dark:text-gray-500')}>
             Menu selected
           </span>
         </div>
         <div className="mt-4 pt-4 border-t border-border">
-          <p className="text-2xl font-black text-title">
+          <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
             {menuDone ? 1 : 0}
-            <span className="text-base font-medium text-muted"> / 1</span>
+            <span className="text-base font-medium text-gray-500 dark:text-gray-500"> / 1</span>
           </p>
-          <p className="text-xs text-muted mt-0.5">tasks complete</p>
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">tasks complete</p>
         </div>
       </StatShell>
     );
@@ -95,8 +95,8 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
               countdown.isToday ? 'text-primary' : hotelPending ? 'text-sys-notice' : 'text-action'
             )} />
             <div>
-              <p className="text-2xl font-black text-title">{countdown.label}</p>
-              <p className="text-xs text-muted mt-1">
+              <p className="text-2xl font-black text-gray-900 dark:text-gray-100">{countdown.label}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 {new Date(activeBooking.booking_date).toLocaleDateString('en-GB', {
                   day: 'numeric', month: 'short', year: 'numeric'
                 })}
@@ -104,11 +104,11 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-muted">No booking yet</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500">No booking yet</p>
         )}
 
         {hotelPending && (
-          <div className="flex items-center gap-2 mt-3 text-sys-notice text-xs font-semibold">
+          <div className="flex items-center gap-2 mt-3 text-amber-800 dark:text-yellow-400 text-xs font-semibold">
             <AlertTriangle className="w-4 h-4 shrink-0" />
             Hotel pickup not set
           </div>
@@ -125,11 +125,11 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
         <div className="flex items-start gap-3">
           <BookOpen className="w-5 h-5 text-action shrink-0 mt-0.5" />
           <div>
-            <p className="text-2xl font-black text-title">
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
               {dishCount}
-              <span className="text-base font-medium text-muted"> / 3</span>
+              <span className="text-base font-medium text-gray-500 dark:text-gray-500"> / 3</span>
             </p>
-            <p className="text-xs text-muted mt-1">dishes selected</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">dishes selected</p>
           </div>
         </div>
         {dishCount === 3 && (
@@ -150,8 +150,8 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
         <div className="flex items-start gap-3">
           <Star className="w-5 h-5 text-primary shrink-0 mt-0.5" />
           <div>
-            <p className="text-2xl font-black text-title">1</p>
-            <p className="text-xs text-muted mt-1">current level</p>
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">1</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">current level</p>
           </div>
         </div>
       </StatShell>
@@ -166,7 +166,7 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
         <StatLabel>Certificate</StatLabel>
         <div className="flex items-start gap-3">
           <Award className={cn('w-5 h-5 shrink-0 mt-0.5', hasCert ? 'text-action' : 'text-border')} />
-          <p className={cn('text-sm font-medium leading-snug', hasCert ? 'text-desc' : 'text-muted')}>
+          <p className={cn('text-sm font-medium leading-snug', hasCert ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 dark:text-gray-500')}>
             {hasCert ? 'Ready to download' : 'Complete your menu first'}
           </p>
         </div>

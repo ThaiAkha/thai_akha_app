@@ -19,13 +19,13 @@ const BUTTON_VARIANTS = {
   action: "bg-action/80 text-white shadow-action-glow border-t border-white/40 hover:brightness-110 hover:shadow-lg",
 
   // MINERAL: Glass Effect (Dark Mode Optimized)
-  mineral: "bg-white/10 backdrop-blur-2xl border-t border-white/20 text-desc hover:bg-white/10 hover:border-white/30 hover:text-title shadow-xl shadow-black/20",
+  mineral: "bg-white/10 backdrop-blur-2xl border-t border-white/20 text-gray-700 dark:text-gray-300 hover:brightness-110 hover:bg-white/10 hover:border-white/30 hover:text-gray-900 dark:text-gray-100 shadow-action-glow",
 
   // OUTLINE: Bordo sottile
-  outline: "bg-transparent border-2 border-current text-current hover:bg-white/5 hover:text-title",
+  outline: "bg-transparent border-2 border-current text-current hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
 
   // GHOST: Solo testo
-  ghost: "bg-transparent text-desc hover:bg-white/5 hover:text-title",
+  ghost: "bg-transparent text-gray-700 dark:text-gray-300 hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
 
   // SECONDARY: Grigio neutro
   secondary: "bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-white/20",
@@ -34,7 +34,7 @@ const BUTTON_VARIANTS = {
   pill: "bg-white/5 rounded-full border border-white/5 px-6 hover:border-white/20",
 
   // NAV: Base (La logica attiva è gestita nel componente)
-  nav: "transition-all duration-500 rounded-xl justify-start px-4 hover:bg-white/5 hover:text-title",
+  nav: "transition-all duration-500 rounded-xl justify-start px-4 hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
 };
 
 const BUTTON_SIZES = {
@@ -122,8 +122,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const getNavClasses = () => {
       if (variant !== 'nav') return "";
       if (isActive) return "bg-action/20 text-action shadow-action-glow font-bold hover:bg-action/20";
-      if (isPast) return "bg-white/5 text-desc opacity-60 hover:bg-white/10";
-      return "bg-transparent text-desc";
+      if (isPast) return "bg-white/5 text-gray-700 dark:text-gray-300 opacity-60 hover:bg-white/10";
+      return "bg-transparent text-gray-700 dark:text-gray-300";
     };
 
     return (

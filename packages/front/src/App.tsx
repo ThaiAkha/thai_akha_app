@@ -123,6 +123,9 @@ const App: React.FC = () => {
 
     const path = targetPage === 'home' ? '/' : `/${targetPage}`;
     window.history.pushState({}, '', path);
+    // Notify sub-page listeners (e.g. HistoryPage) that a root navigation occurred.
+    // pushState does NOT fire popstate, so we dispatch it manually.
+    window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
     setPage(targetPage);
     
     if (sectionId) setTargetSection(sectionId);
@@ -157,7 +160,7 @@ const App: React.FC = () => {
       case 'quiz': return <QuizPage onNavigate={handleNavigate} />;
       case 'classes': return <InfoClasses onNavigate={handleNavigate} />;
       case 'recipes': return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} />;
-      case 'history': return <HistoryPage onNavigate={handleNavigate} />;
+      case 'history': return <HistoryPage onNavigate={handleNavigate} targetSection={targetSection} />;
       case 'location': return <LocationPage onNavigate={handleNavigate} />;
       case 'style': return <StyleCards />;
       case 'colors': return <ColorsPage />;
@@ -188,7 +191,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[calc(var(--vh,1vh)*100)] bg-background text-desc transition-colors duration-700 flex overflow-hidden">
+    <div className="relative w-full h-[calc(var(--vh,1vh)*100)] bg-background text-gray-700 dark:text-gray-300 transition-colors duration-700 flex overflow-hidden">
       <SEOHead />
 
       {/* --- SIDEBAR --- */}

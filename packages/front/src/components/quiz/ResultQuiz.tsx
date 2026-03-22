@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuizLevel, QuizModule } from '../../types/index'; // ✅ Tipi Nuovi
+import { QuizLevel, QuizModule } from '@thaiakha/shared'; // ✅ Tipi Nuovi
 import ButtonQuiz from './ButtonQuiz';
 import { Icon } from '../ui';
 

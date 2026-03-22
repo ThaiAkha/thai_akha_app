@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
 import { 
-  Typography, Button, Input, Icon, Divider, Alert, Badge 
+  Typography, Button, Icon, Divider, Alert, Badge 
 } from '../ui/index';
+import { Input } from '../ui/form';
 import { authService } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -12,11 +13,9 @@ interface AuthFormProps {
 }
 
 type AuthTab = 'login' | 'signup';
-type UserRole = 'guest' | 'agency';
 
 const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
   const [activeTab, setActiveTab] = useState<AuthTab>('login');
-  const [role, setRole] = useState<UserRole>('guest');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -26,10 +25,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  // Agency Specific
-  const [companyName, setCompanyName] = useState('');
-  const [taxId, setTaxId] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,13 +57,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
           }
         }
       } else {
-        if (role === 'agency') {
-          await authService.signUpAgency(email, password, companyName, taxId, "");
-        } else {
-          await authService.signUp(email, password, fullName);
-        }
+        await authService.signUp(email, password, fullName);
         onSuccess();
-        // New signups always go to user page (guests and customers)
+        // New signups always go to user page
         onNavigate('user');
       }
     } catch (err: any) {
@@ -105,62 +96,19 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
           <Typography variant="h4" className="text-white italic">
             {isForgotPassword ? "Reset Password" : (activeTab === 'login' ? "Welcome Back" : "Join the Kitchen")}
           </Typography>
-          
-          {activeTab === 'signup' && !isForgotPassword && (
-            <div className="inline-flex bg-white/5 p-1 rounded-xl border border-white/5">
-              {(['guest', 'agency'] as UserRole[]).map(r => (
-                <button
-                  key={r}
-                  onClick={() => setRole(r)}
-                  className={cn(
-                    "px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                    role === r 
-                      ? "bg-primary text-white shadow-lg" 
-                      : "text-white/40 hover:text-white"
-                  )}
-                >
-                  {r === 'guest' ? 'Individual' : 'B2B Partner'}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {activeTab === 'signup' && !isForgotPassword && (
             <div className="space-y-5 animate-in fade-in slide-in-from-top-2">
-              {role === 'guest' ? (
-                <Input 
-                  label="Full Name" 
-                  placeholder="e.g. Somchai Akha" 
-                  leftIcon="person" 
-                  variant="mineral"
-                  value={fullName}
-                  onChange={e => setFullName(e.target.value)}
-                  required
-                />
-              ) : (
-                <>
-                  <Input 
-                    label="Company Name" 
-                    placeholder="Travel Co. Ltd." 
-                    leftIcon="business"
-                    variant="mineral"
-                    value={companyName}
-                    onChange={e => setCompanyName(e.target.value)}
-                    required
-                  />
-                  <Input 
-                    label="Tax ID" 
-                    placeholder="Tax Identification Number" 
-                    leftIcon="badge"
-                    variant="mineral"
-                    value={taxId}
-                    onChange={e => setTaxId(e.target.value)}
-                    required
-                  />
-                </>
-              )}
+              <Input 
+                label="Full Name" 
+                placeholder="e.g. Somchai Akha" 
+                leftIcon="person" 
+                value={fullName}
+                onChange={e => setFullName(e.target.value)}
+                required
+              />
             </div>
           )}
 
@@ -169,7 +117,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
             type="email" 
             placeholder="chef@example.com" 
             leftIcon="mail" 
-            variant="mineral"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
@@ -182,7 +129,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
                 type="password" 
                 placeholder="••••••••" 
                 leftIcon="lock" 
-                variant="mineral"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required

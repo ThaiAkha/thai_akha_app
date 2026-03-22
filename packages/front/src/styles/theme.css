@@ -33,6 +33,7 @@
   --font-sans:    Nunito, Sarabun, sans-serif;
   --font-display: Raleway, Sarabun, sans-serif;
   --font-accent:  'Roboto Condensed', Sarabun, sans-serif;
+  --font-mono:    'Roboto', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* ============================================================================
      FRONT-SPECIFIC FLAT TOKENS

@@ -18,7 +18,7 @@ interface BookingSummaryPillsProps {
 const PILL_ACTIVE = 'bg-action/10 border-action shadow-[0_0_20px_-5px_rgba(152,201,60,0.3)]';
 const PILL_INACTIVE = 'bg-surface border-dashed border-border/60 opacity-60';
 const ICON_ACTIVE = 'bg-action text-background';
-const ICON_INACTIVE = 'bg-black/10 dark:bg-white/10 text-desc';
+const ICON_INACTIVE = 'bg-black/10 dark:bg-white/10 text-gray-700 dark:text-gray-300';
 
 interface PillProps {
   label: string;
@@ -42,10 +42,10 @@ const Pill: React.FC<PillProps> = ({ label, value, icon, active, onClick, sessio
         <Icon name={icon} size="sm" />
       </div>
       <div className="flex flex-col items-start">
-        <span className="text-[10px] font-black uppercase tracking-widest text-desc/50 leading-none mb-0.5">
+        <span className="text-[10px] font-black uppercase tracking-widest text-gray-700/50 dark:text-gray-300/50 leading-none mb-0.5">
           {label}
         </span>
-        <span className={cn('text-base font-bold leading-none', active ? (sessionColor || 'text-title') : 'text-desc')}>
+        <span className={cn('text-base font-bold leading-none', active ? (sessionColor || 'text-gray-900 dark:text-gray-100') : 'text-gray-700 dark:text-gray-300')}>
           {value}
         </span>
       </div>
@@ -86,7 +86,7 @@ export const BookingSummaryPills: React.FC<BookingSummaryPillsProps> = ({
         onClick={onDateClick}
       />
 
-      <Icon name="chevron_right" size="xs" className="text-desc/20 hidden lg:block shrink-0" />
+      <Icon name="chevron_right" size="xs" className="text-gray-700/20 dark:text-gray-300/20 hidden lg:block shrink-0" />
 
       <Pill
         label="Class"
@@ -97,7 +97,7 @@ export const BookingSummaryPills: React.FC<BookingSummaryPillsProps> = ({
         sessionColor={session ? sessionColor : undefined}
       />
 
-      <Icon name="chevron_right" size="xs" className="text-desc/20 hidden lg:block shrink-0" />
+      <Icon name="chevron_right" size="xs" className="text-gray-700/20 dark:text-gray-300/20 hidden lg:block shrink-0" />
 
       <Pill
         label="Group"

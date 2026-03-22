@@ -47,38 +47,17 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ o
         {/* --- HERO SECTION --- */}
         <section className="relative min-h-[70vh] flex flex-col items-center justify-center text-center px-4 pt-12 md:pt-20">
           <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <div className="flex justify-center mb-4">
-              <Badge variant="brand" icon="star" pulse>Award Winning School</Badge>
+            <div className="flex justify-center mb-8">
+              <Badge variant="solid" icon="star" pulse>Award Winning School</Badge>
             </div>
 
-            <Typography variant="display1" className="text-gray-900 dark:text-white drop-shadow-2xl">
-              Master the Art of <span className="text-primary italic">Akha</span> Cooking
+            <Typography variant="display2" className="drop-shadow-2xl">
+              Master the Art of <Typography variant="display2" color="primary" as="span">Akha</Typography> Cooking
             </Typography>
 
-            <Typography variant="paragraphL" className="text-gray-600 dark:text-white/80 max-w-2xl mx-auto">
+            <Typography variant="paragraphL" className="max-w-2xl mx-auto dark:opacity-80">
               A unique culinary journey from the misty mountains of the North to your personal cooking station in Chiang Mai.
             </Typography>
-
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-8">
-              <Button
-                variant="brand"
-                size="lg"
-                icon="calendar_month"
-                onClick={() => onNavigate('classes')}
-                className="shadow-brand-glow hover:scale-105 transition-transform"
-              >
-                Cooking Class
-              </Button>
-              <Button
-                variant="brand"
-                size="lg"
-                icon="calendar_month"
-                onClick={() => onNavigate('recipes')}
-                className="shadow-brand-glow hover:scale-105 transition-transform"
-              >
-                Explore Recipes
-              </Button>
-            </div>
           </div>
 
           <div className="mt-16 opacity-30">
@@ -88,53 +67,53 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ o
 
         {/* --- MEET CHERRY SECTION --- */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-1 space-y-8">
+          <div className="order-2 lg:order-1 space-y-12">
             <div className="inline-flex items-center">
               <Badge variant="brand" icon="star" pulse>AI Expert Assistant</Badge>
             </div>
 
-            <Typography variant="h2" className="text-gray-900 dark:text-white italic">
-              Meet <span className="text-primary">Cherry</span>, Your Digital Host
+            <Typography variant="h2" color="title" className="italic">
+              Meet Cherry, Your Digital Host
             </Typography>
 
-            <Typography variant="paragraphM" className="text-desc leading-relaxed">
+            <Typography variant="paragraphM" className="leading-relaxed">
               Available 24/7 via text or <strong>live voice</strong>, Cherry is our official cultural ambassador. She can help you choose recipes, manage dietary restrictions, or tell you the ancestral stories behind every dish.
             </Typography>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card variant="interactive" padding="sm" rounded="xl" className="bg-gray-50 border-gray-200 dark:bg-white/5 dark:border-white/10">
-                <Icon name="mic" className="text-primary mb-2" />
-                <Typography variant="h5" className="text-gray-900 dark:text-white">Voice Live</Typography>
-                <Typography variant="paragraphS" className="text-gray-500 dark:text-white/80">Real-time low-latency voice interaction.</Typography>
+              <Card variant="interactive" padding="sm" rounded="xl">
+                <Icon name="mic" className="text-primary mb-4" />
+                <Typography variant="h5">Voice Live</Typography>
+                <Typography variant="paragraphS">Real-time low-latency voice interaction.</Typography>
               </Card>
-              <Card variant="interactive" padding="sm" rounded="xl" className="bg-gray-50 border-gray-200 dark:bg-white/5 dark:border-white/10">
-                <Icon name="menu_book" className="text-action mb-2" />
-                <Typography variant="h5" className="text-gray-900 dark:text-white">Recipe Expert</Typography>
-                <Typography variant="paragraphS" className="text-gray-500 dark:text-white/80">Deep knowledge of our 11 signature dishes.</Typography>
+              <Card variant="interactive" padding="sm" rounded="xl">
+                <Icon name="menu_book" className="text-action mb-4" />
+                <Typography variant="h5">Recipe Expert</Typography>
+                <Typography variant="paragraphS">Deep knowledge of our 11 signature dishes.</Typography>
               </Card>
             </div>
           </div>
 
-          <div className="order-1 lg:order-2 relative aspect-square rounded-[4rem] overflow-hidden border-2 border-gray-200 dark:border-white/10 shadow-2xl group">
+          <div className="order-1 lg:order-2 relative aspect-square rounded-4xl overflow-hidden border-2 border-gray-200 dark:border-white/10 shadow-2xl group">
             <img
               src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/Akha01.jpg"
               className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
               alt="Cherry Assistant"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            {/* Overlay on dark image — keep text-white */}
-            <div className="absolute bottom-8 left-8 right-8 text-white">
+            {/* Overlay on dark image */}
+            <div className="absolute bottom-8 left-8 right-8">
               <div className="flex items-center gap-4">
                 <button
                   onClick={handlePlayWelcome}
                   title={isPlaying ? 'Stop' : 'Play welcome message'}
-                  className={`size-12 rounded-full bg-primary flex items-center justify-center transition-transform hover:scale-110 ${isPlaying ? 'animate-pulse' : ''}`}
+                  className={`size-12 rounded-full bg-primary flex items-center justify-center text-white transition-transform hover:scale-110 ${isPlaying ? 'animate-pulse' : ''}`}
                 >
                   <Icon name={isPlaying ? 'Volume2' : 'Play'} size="sm" />
                 </button>
                 <div>
-                  <Typography variant="h5" className="font-black italic">CHERRY V5.0</Typography>
-                  <Typography variant="caption" className="opacity-60">
+                  <Typography variant="h5" color="inverse" className="font-black italic">CHERRY V5.0</Typography>
+                  <Typography variant="caption" color="inverse" className="opacity-60">
                     {isPlaying ? 'Playing welcome...' : 'Tap to hear Cherry'}
                   </Typography>
                 </div>
@@ -151,17 +130,17 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ o
         <section className="space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-primary pl-6">
             <div className="space-y-2">
-              <Typography variant="h2" className="text-gray-900 dark:text-white uppercase tracking-tighter">
-                Explore the <span className="text-primary">Kitchen</span>
+              <Typography variant="h2">
+                Explore the Kitchen
               </Typography>
-              <Typography variant="paragraphM" className="text-desc">Discover our classes, recipes, and heritage.</Typography>
+              <Typography variant="paragraphM">Discover our classes, recipes, and heritage.</Typography>
             </div>
           </div>
 
           {/* Row 1 — 3 colonne verticali: Classes, Recipes, Booking */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {loading
-              ? [1, 2, 3].map(i => <div key={i} className="h-48 rounded-3xl bg-gray-100 dark:bg-white/5 animate-pulse border border-gray-200 dark:border-white/10" />)
+              ? [1, 2, 3].map(i => <div key={i} />)
               : row1Cards.map(card => (
                 <InfoCard
                   key={card.id}
@@ -176,7 +155,7 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ o
           {/* Row 2 — 2 colonne orizzontali: card rimanenti */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {loading
-              ? [1, 2, 3, 4].map(i => <div key={i} className="h-32 rounded-3xl bg-gray-100 dark:bg-white/5 animate-pulse border border-gray-200 dark:border-white/10" />)
+              ? [1, 2, 3, 4].map(i => <div key={i} />)
               : row2Cards.map(card => (
                 <InfoCard
                   key={card.id}
@@ -199,16 +178,16 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ o
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-8">
             <Icon name="format_quote" size="xl" className="text-primary opacity-50" />
-            <Typography variant="h3" className="text-gray-900 dark:text-white italic font-light leading-relaxed">
+            <Typography variant="h3">
               "An unforgettable experience that goes far beyond just cooking. It's a deep immersion into a beautiful, resilient culture."
             </Typography>
             <div className="space-y-1">
-              <Typography variant="h6" className="text-primary">Sarah Jenkins</Typography>
-              <Typography variant="caption" className="text-gray-400 dark:text-white/40">Professional Food Traveler</Typography>
+              <Typography variant="h6">Sarah Jenkins</Typography>
+              <Typography variant="caption" className="dark:opacity-40">Professional Food Traveler</Typography>
             </div>
 
             <div className="pt-8">
-              <Button variant="brand" size="xl" onClick={() => onNavigate('booking')}>Start Your Journey</Button>
+              <Button variant="action" size="lg" onClick={() => onNavigate('booking')}>Start Your Journey</Button>
             </div>
           </div>
         </section>

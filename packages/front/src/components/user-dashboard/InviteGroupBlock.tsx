@@ -32,17 +32,17 @@ const InviteGroupBlock: React.FC<InviteGroupBlockProps> = ({ bookingInternalId }
       isDisabled && 'opacity-50 pointer-events-none'
     )}>
       <div className="flex items-center gap-3 mb-2">
-        <Share2 className="w-5 h-5 text-sub" />
+        <Share2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         <Typography variant="h5" color="title">Traveling with Friends?</Typography>
       </div>
 
-      <p className="text-sm text-muted mb-6 leading-relaxed">
+      <p className="text-sm text-gray-500 dark:text-gray-500 mb-6 leading-relaxed">
         Share this link with your group so they can create an account and select their own dietary preferences and dishes.
       </p>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         {/* Link display */}
-        <div className="flex-1 bg-black/5 dark:bg-black/30 border border-border rounded-2xl px-4 py-3 font-mono text-xs text-muted truncate min-w-0">
+        <div className="flex-1 bg-black/5 dark:bg-black/30 border border-border rounded-2xl px-4 py-3 font-mono text-xs text-gray-500 dark:text-gray-500 truncate min-w-0">
           {inviteLink || 'No active booking — link unavailable'}
         </div>
 

@@ -97,7 +97,7 @@ export const useGeminiLive = () => {
         setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
         try {
-            const apiKey = process.env.API_KEY;
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
             if (!apiKey) {
                 throw new Error("API Key is missing from environment.");
             }

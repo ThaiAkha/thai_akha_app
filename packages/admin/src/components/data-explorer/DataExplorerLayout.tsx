@@ -32,9 +32,9 @@ const DataExplorerLayout: React.FC<DataExplorerLayoutProps> = ({
                 {/* --- CENTER + RIGHT COLUMNS: Conditional Layout Based on View Mode --- */}
                 {viewMode === 'table' && inspectorOpen ? (
                     <>
-                        {/* CENTER COLUMN: Content (7 colonne quando inspector è aperto) */}
+                        {/* CENTER COLUMN: Content (6 colonne quando inspector è aperto) */}
                         <div
-                            className="lg:col-span-7 flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-hidden"
+                            className="lg:col-span-6 flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-hidden"
                             onClick={() => onInspectorClose?.()}
                         >
                             {/* Toolbar */}
@@ -48,9 +48,9 @@ const DataExplorerLayout: React.FC<DataExplorerLayoutProps> = ({
                             </div>
                         </div>
 
-                        {/* RIGHT COLUMN: Inspector (3 colonne) */}
+                        {/* RIGHT COLUMN: Inspector (4 colonne) */}
                         <div
-                            className="lg:col-span-3 flex flex-col bg-white dark:bg-gray-900 overflow-hidden"
+                            className="lg:col-span-4 flex flex-col bg-white dark:bg-gray-900 overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {inspector}
@@ -70,18 +70,17 @@ const DataExplorerLayout: React.FC<DataExplorerLayoutProps> = ({
                         {/* Content Area */}
                         <div className={cn(
                             "flex-1 overflow-auto no-scrollbar relative transition-all duration-300",
-                            // In grid mode, inspector occupa 3 colonne su 12 totali = 25% del totale
-                            // Ma il center column è 10/12 = 83.333% del totale
-                            // Quindi l'inspector deve occupare (3/12) / (10/12) = 3/10 = 30% del center
-                            viewMode === 'grid' && inspectorOpen && "lg:mr-[30%]"
+                            // In grid mode, inspector occupa 4 colonne su 12 totali
+                            // Il center column è 10/12, quindi inspector = 4/10 = 40% del center
+                            viewMode === 'grid' && inspectorOpen && "lg:mr-[40%]"
                         )}>
                             {children}
                         </div>
 
-                        {/* Inspector Overlay - only in grid mode (3 colonne) */}
+                        {/* Inspector Overlay - only in grid mode (4 colonne) */}
                         {viewMode === 'grid' && inspectorOpen && (
                             <div
-                                className="absolute inset-y-0 right-0 lg:w-[30%] w-full bg-white dark:bg-gray-900 shadow-2xl z-20 transform transition-transform duration-300 ease-in-out border-l border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden"
+                                className="absolute inset-y-0 right-0 lg:w-[40%] w-full bg-white dark:bg-gray-900 shadow-2xl z-20 transform transition-transform duration-300 ease-in-out border-l border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {inspector}

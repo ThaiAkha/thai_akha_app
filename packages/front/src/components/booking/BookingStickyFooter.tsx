@@ -45,12 +45,12 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
         {pax > 0 && (
           <div className="flex items-center justify-between w-full border-t border-border/50 pt-4 md:pt-6 px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="flex flex-col text-left">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Total Amount Due</span>
-              <span className="text-2xl md:text-4xl font-mono font-black text-title leading-none">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500 mb-1">Total Amount Due</span>
+              <span className="text-2xl md:text-4xl font-mono font-black text-gray-900 dark:text-gray-100 leading-none">
                 {finalPrice.toLocaleString()} <span className="text-sm md:text-base font-sans font-bold uppercase opacity-40">THB</span>
               </span>
               {visitors > 0 && (
-                <span className="text-[10px] text-muted mt-1">
+                <span className="text-[10px] text-gray-500 dark:text-gray-500 mt-1">
                   + {visitors} visitor{visitors > 1 ? 's' : ''} (no extra charge)
                 </span>
               )}

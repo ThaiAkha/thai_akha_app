@@ -85,16 +85,48 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
     } else {
       setIsLoading(true);
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: text,
-          config: { systemInstruction: dynamicPrompt }
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!apiKey) {
+          console.error("DEBUG: VITE_GEMINI_API_KEY is null or undefined in import.meta.env");
+          setMessages(prev => [...prev, { 
+            id: `err-key-${Date.now()}`, 
+            role: 'model', 
+            text: "ERROR: Missing API Key! I cannot talk without my Key kha. check .env.local" 
+          }]);
+          setIsLoading(false);
+          return;
+        }
+
+        const ai = new GoogleGenAI({ apiKey });
+        
+        // Use gemini-3-flash-preview which is the latest available in this environment
+        const chat = ai.chats.create({
+          model: 'gemini-3-flash-preview',
+          config: { 
+            systemInstruction: dynamicPrompt,
+            temperature: 0.5 
+          },
         });
-        const parsed = parseCherryResponse(response.text || "");
-        setMessages(prev => [...prev, { id: `model-${Date.now()}`, role: 'model', text: parsed.text, suggestions: parsed.suggestions }]);
+
+        // Use the text from user directly.
+        // We use sendMessage to get the full response since this SDK is optimized for it.
+        const result = await chat.sendMessage({ message: text });
+        const responseText = result.text;
+        
+        const parsed = parseCherryResponse(responseText || "");
+        setMessages(prev => [...prev, { 
+          id: `model-${Date.now()}`, 
+          role: 'model', 
+          text: parsed.text, 
+          suggestions: parsed.suggestions 
+        }]);
       } catch (err) {
-        setMessages(prev => [...prev, { id: `err-${Date.now()}`, role: 'model', text: "The kitchen is very busy kha! Please ask again." }]);
+        console.error("Gemini Chat Error (ChatBox):", err);
+        setMessages(prev => [...prev, { 
+          id: `err-${Date.now()}`, 
+          role: 'model', 
+          text: "The kitchen is very busy kha! Please ask again." 
+        }]);
       } finally { setIsLoading(false); }
     }
   };
@@ -129,10 +161,12 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
                <div className={cn("size-12 rounded-2xl flex items-center justify-center border transition-all duration-700", isVoiceActive ? "bg-white text-action animate-pulse" : "bg-white/10 border-white/20")}>
                  <span className="material-symbols-outlined text-2xl">{isVoiceActive ? 'graphic_eq' : 'face'}</span>
                </div>
-               <div>
-                 <h4 className="font-display font-black uppercase text-sm tracking-widest italic">Cherry</h4>
-                 <p className="text-[9px] font-accent font-black opacity-60 uppercase tracking-widest">{isConnecting ? 'Connecting...' : isVoiceActive ? 'Live Voice' : 'AI Assistant'}</p>
-               </div>
+                <div>
+                  <h4 className="font-display font-black uppercase text-sm tracking-widest italic">Cherry</h4>
+                  <p className="text-[9px] font-accent font-black opacity-60 uppercase tracking-widest">
+                    {voiceError ? <span className="text-white/80 normal-case">{voiceError}</span> : (isConnecting ? 'Connecting...' : isVoiceActive ? 'Live Voice' : 'AI Assistant')}
+                  </p>
+                </div>
             </div>
             <button onClick={handleToggleVoice} disabled={isConnecting} className={cn("p-3 rounded-xl transition-all duration-500", isVoiceActive ? "bg-white text-action scale-110 shadow-lg" : "bg-white/10 text-white hover:bg-white/20")}>
                 <span className="material-symbols-outlined text-lg">{isVoiceActive ? 'mic_off' : 'record_voice_over'}</span>

@@ -113,7 +113,7 @@ export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
         'created_at', 'updated_at', 'catalog_image_url', 'sub_category'
     ],
     audio_assets: [
-        'id', 'asset_id', 'title', 'audio_url', 'transcript', 'duration_seconds', 
+        'id', 'asset_id', 'title', 'audio_url', 'transcript', 'duration_seconds',
         'file_name', 'folder_path', 'mime_type', 'size_kb', 'uploaded_by', 'created_at'
     ],
     page_sections: [
@@ -194,7 +194,7 @@ export const useAdminDatabase = () => {
             } else {
                 const idField = PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
                 const idValue = selectedRow[idField];
-                
+
                 if (!idValue) {
                     throw new Error(`Primary key ${idField} not found in row data.`);
                 }
@@ -232,7 +232,7 @@ export const useAdminDatabase = () => {
                 .from(selectedTable)
                 .delete()
                 .eq(idField, idValue);
-                
+
             if (error) throw error;
             alert('Deleted successfully. 🙏');
             setShowDeleteConfirm(false);

@@ -35,6 +35,7 @@ interface BlogCardProps {
 
 const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
+  const categoryLabel = section.category ?? 'Culture';
 
   return (
     <article
@@ -79,7 +80,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
         {/* Audio button pinned bottom-left */}
         <div className="absolute bottom-4 left-4 z-10">
           <AudioPlayButton
-            assetId={`culture-audio-${section.slug}`}
+            assetId={section.audio_asset_id ?? undefined}
             className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           />
         </div>
@@ -94,7 +95,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
             className="w-fit text-primary border-primary/30 bg-primary/5 text-[10px] tracking-widest gap-1.5"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>{icon}</span>
-            Culture &amp; History
+            {categoryLabel}
           </Badge>
 
           <div className="h-px w-8 bg-primary/50" />

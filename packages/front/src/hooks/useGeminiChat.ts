@@ -14,32 +14,40 @@ export const useGeminiChat = (initialMessage?: string) => {
     useEffect(() => {
         if (chatInitialized.current) return;
 
-        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-        
-        const initialSystemMessage: ChatMessage = {
-            id: 'system-init',
-            role: 'system',
-            text: 'System Initialized.',
-            suggestions: ["Info Classes", "Menu & Diet", "Pickup Info", "Play Quiz"]
-        };
+        console.log("Initializing Gemini with Key:", import.meta.env.VITE_GEMINI_API_KEY ? "Present (Starts with " + import.meta.env.VITE_GEMINI_API_KEY.substring(0, 4) + ")" : "MISSING");
 
-        chatRef.current = ai.chats.create({
-            model: 'gemini-2.0-flash',
-            config: { 
-                systemInstruction: SYSTEM_PROMPT,
-                temperature: 0.5 
-            },
-        });
+        try {
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+            
+            const initialSystemMessage: ChatMessage = {
+                id: 'system-init',
+                role: 'system',
+                text: 'System Initialized.',
+                suggestions: ["Info Classes", "Menu & Diet", "Pickup Info", "Play Quiz"]
+            };
 
-        const greetingMessage: ChatMessage = {
-            id: 'greeting-0',
-            role: 'model',
-            text: "Sawasdee kha! I'm Cherry from Thai Akha Kitchen. How can I help you? kha",
-            suggestions: ["Info Classes", "Menu & Diet", "Pickup Info", "Play Quiz"]
-        };
+            chatRef.current = ai.chats.create({
+                model: 'gemini-3-flash-preview',
+                config: { 
+                    systemInstruction: SYSTEM_PROMPT,
+                    temperature: 0.5 
+                },
+            });
+            console.log("Gemini Chat Instance Created Successfully");
+            
+            const greetingMessage: ChatMessage = {
+                id: 'greeting-0',
+                role: 'model',
+                text: "Sawasdee kha! I'm Cherry from Thai Akha Kitchen. How can I help you? kha",
+                suggestions: ["Info Classes", "Menu & Diet", "Pickup Info", "Play Quiz"]
+            };
 
-        setMessages([initialSystemMessage, greetingMessage]);
-        chatInitialized.current = true;
+            setMessages([initialSystemMessage, greetingMessage]);
+            chatInitialized.current = true;
+        } catch (initErr) {
+            console.error("Gemini Initialization Failed:", initErr);
+            setError("Chat initialization failed. Please check your API key.");
+        }
     }, []);
 
     useEffect(() => {
@@ -93,7 +101,8 @@ export const useGeminiChat = (initialMessage?: string) => {
             ));
 
         } catch (err: any) {
-            console.error("Gemini Chat Error:", err);
+            console.error("Gemini Chat Error - FULL DETAILS:", JSON.parse(JSON.stringify(err)));
+            console.error("URL/Status info if available:", err.status, err.message);
             setError("I am sorry, I had a little trouble responding. Please try again. kha");
             setMessages(prev => prev.filter(msg => msg.id !== modelMsgId));
         } finally {

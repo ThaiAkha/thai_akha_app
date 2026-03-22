@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { StickyTabNav, HeaderMenu, SmartHeaderSection } from '../components/layout';
+import { StickyTabNav, HeaderMenu, HeaderSection } from '../components/layout';
 import { Typography, Icon, AkhaPixelLine } from '../components/ui/index';
 import { contentService } from '@thaiakha/shared/services';
 import { CultureSection } from '@thaiakha/shared/types';
@@ -92,6 +92,21 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
     }
   }, [targetSection]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Scroll to content top when category tab changes (same pattern as InfoClasses)
+  useEffect(() => {
+    const scrollContainer = document.getElementById('main-scroll-container');
+    const contentContainer = document.getElementById('history-content');
+    if (scrollContainer && contentContainer) {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const contentRect = contentContainer.getBoundingClientRect();
+      const stickyOffset = window.innerWidth < 768 ? 10 : 20;
+      const targetScrollTop = scrollContainer.scrollTop + (contentRect.top - containerRect.top) - stickyOffset;
+      scrollContainer.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+    } else if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activeCategory]);
+
   const handleOpenSection = (slug: string) => {
     const section = sections.find(s => s.slug === slug);
     if (section?.category) setActiveCategory(section.category);
@@ -156,6 +171,8 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
       <CultureDetailPage
         slug={activeSlug}
         onBack={handleBack}
+        onOpen={handleOpenSection}
+        sections={sections}
         activeCategory={activeCategory}
         onCategoryChange={handleCategoryChange}
         tabItems={tabItems}
@@ -187,7 +204,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
           onChange={handleCategoryChange}
         />
 
-        <div className="w-full max-w-6xl mx-auto px-4 md:px-6 pb-32">
+        <div className="w-full max-w-6xl mx-auto px-4 md:px-6 pt-6 md:pt-8 pb-32">
 
           {/* ── Loading state ──────────────────────────────────────────── */}
           {loading && (
@@ -237,14 +254,13 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
                 </div>
               )}
 
-              {/* 2. Title */}
-              <div className={cn(featuredSection ? 'mt-12 mb-8' : 'mb-8')}>
-                <SmartHeaderSection
-                  sectionId="history-01"
+              {/* 2. Title — from featured section data */}
+              <div className={cn(featuredSection ? 'mt-10 mb-8' : 'mb-8')}>
+                <HeaderSection
+                  title={featuredSection?.title ?? 'Akha Heritage & Culture'}
+                  subtitle={featuredSection?.subtitle ?? 'Discover the journey and living culture of the Akha people'}
                   variant="section"
                   align="center"
-                  fallbackTitle="Akha Heritage & Culture"
-                  fallbackSubtitle="Discover the journey and living culture of the Akha people"
                 />
               </div>
 

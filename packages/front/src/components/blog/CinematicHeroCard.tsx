@@ -33,9 +33,10 @@ interface BlogCardProps {
 
 // ─── CinematicHeroCard — Full-width 21:9 hero with overlay ─────────────────────
 
-const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
+const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
-  const chapterNum = String(index + 1).padStart(2, '0');
+  const chapterNum = String(section.display_order + 1).padStart(2, '0');
+  const categoryLabel = section.category ?? 'Culture & History';
 
   return (
     <article
@@ -82,7 +83,7 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) 
           className="text-white border-white/20 bg-black/30 backdrop-blur-sm text-[10px] tracking-widest gap-1.5"
         >
           <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>{icon}</span>
-          Culture &amp; History
+          {categoryLabel}
         </Badge>
 
         <span className="font-mono font-black text-5xl text-white/10 select-none leading-none">
@@ -90,28 +91,23 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) 
         </span>
       </div>
 
-      {/* ── Bottom: title + subtitle + actions ──────────────────────────── */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10 flex flex-col gap-2">
-        <Typography
-          variant="display2"
-          color="title"
-          className="text-white leading-tight line-clamp-2 drop-shadow-lg"
-        >
-          {section.title}
-        </Typography>
-
-        <Typography
-          variant="body"
-          color="sub"
-          className="text-white/65 line-clamp-1 drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-        >
-          {section.subtitle}
-        </Typography>
+      {/* ── Bottom: quote + actions ──────────────────────────────────────── */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10 flex flex-col gap-3">
+        {(section.quote || section.subtitle) && (
+          <blockquote className="border-l-2 border-white/40 pl-4 max-w-xl">
+            <Typography
+              variant="paragraphM"
+              className="text-white/85 italic leading-relaxed line-clamp-2 drop-shadow-md"
+            >
+              "{section.quote || section.subtitle}"
+            </Typography>
+          </blockquote>
+        )}
 
         {/* Actions row */}
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between mt-1">
           <AudioPlayButton
-            assetId={`culture-audio-${section.slug}`}
+            assetId={section.audio_asset_id ?? undefined}
             className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 border-white/25 bg-black/30 text-white hover:bg-black/50"
           />
 

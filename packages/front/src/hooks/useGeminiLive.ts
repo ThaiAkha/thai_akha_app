@@ -112,7 +112,7 @@ export const useGeminiLive = () => {
             streamRef.current = stream;
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+                model: 'gemini-2.0-flash-exp',
                 callbacks: {
                     onopen: () => {
                         setState(prev => ({ ...prev, status: 'active' }));
@@ -182,7 +182,7 @@ export const useGeminiLive = () => {
                 },
                 config: {
                     responseModalities: [Modality.AUDIO],
-                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
+                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
                     systemInstruction: overrideInstruction || SYSTEM_PROMPT,
                     outputAudioTranscription: {},
                     inputAudioTranscription: {},

@@ -36,6 +36,7 @@ interface BlogCardProps {
 const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
   const chapterNum = String(index + 1).padStart(2, '0');
+  const categoryLabel = section.category ?? 'Culture';
 
   return (
     <article
@@ -81,7 +82,7 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
           className="text-white border-white/20 bg-black/30 backdrop-blur-sm text-[9px] tracking-widest gap-1"
         >
           <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>{icon}</span>
-          Culture
+          {categoryLabel}
         </Badge>
 
         <span className="font-mono font-black text-3xl text-white/10 select-none leading-none">
@@ -110,7 +111,7 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
         {/* Actions row */}
         <div className="flex items-center justify-between mt-1">
           <AudioPlayButton
-            assetId={`culture-audio-${section.slug}`}
+            assetId={section.audio_asset_id ?? undefined}
             className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 border-white/25 bg-black/30 text-white hover:bg-black/50 h-7 text-[10px]"
           />
 

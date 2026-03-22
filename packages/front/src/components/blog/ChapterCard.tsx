@@ -33,9 +33,10 @@ interface BlogCardProps {
 
 // ─── ChapterCard — Editorial style ─────────────────────────────────────────────
 
-const ChapterCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
+const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
   const chapterNum = String(section.display_order + 1).padStart(2, '0');
+  const categoryLabel = section.category ?? 'Culture';
 
   return (
     <article
@@ -95,7 +96,7 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
             {icon}
           </span>
           <Typography variant="microLabel" color="muted" className="tracking-widest">
-            Culture &amp; History
+            {categoryLabel}
           </Typography>
         </div>
 
@@ -120,7 +121,7 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
         {/* Bottom row: audio + explore CTA */}
         <div className="mt-auto pt-3 flex items-center justify-between">
           <AudioPlayButton
-            assetId={`culture-audio-${section.slug}`}
+            assetId={section.audio_asset_id ?? undefined}
             className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           />
           <Typography

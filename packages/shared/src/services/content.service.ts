@@ -459,10 +459,10 @@ export const contentService = {
 
     /** 🏛️ CULTURE SECTIONS INDEX: Cards for the History/Culture index page */
     async getCultureSections(): Promise<CultureSection[]> {
-        const data = await fetchWithCache<CultureSection[]>('culture_sections_index_v2', async () => {
+        const data = await fetchWithCache<CultureSection[]>('culture_sections_index_v4', async () => {
             const { data, error } = await supabase
                 .from('culture_sections')
-                .select('id, slug, title, subtitle, primary_image, display_order, featured, category')
+                .select('id, slug, title, subtitle, quote, primary_image, display_order, featured, category, audio_asset_id')
                 .eq('is_published', true)
                 .order('display_order', { ascending: true });
 

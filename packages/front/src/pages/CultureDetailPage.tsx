@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import { StickyTabNav } from '../components/layout';
 import {
   Typography,
   Badge,
   Button,
+  Card,
   Icon,
   AkhaPixelLine,
   GalleryModal,
   MediaImage,
+  AudioPlayer,
 } from '../components/ui/index';
 import { contentService } from '@thaiakha/shared/services';
-import { CultureSectionDetail, CultureGalleryItem } from '@thaiakha/shared/types';
+import { CultureSectionDetail, CultureGalleryItem, CultureSection } from '@thaiakha/shared/types';
 import { GalleryItem } from '../components/modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { useAudioAsset } from '../hooks/useAudioAsset';
 
 // ─── Section icon map (slug → Material Symbol) ───────────────────────────────
 
@@ -108,10 +111,11 @@ const ContentRenderer: React.FC<{ content: string }> = ({ content }) => {
 const SkeletonDetail: React.FC = () => (
   <div className="animate-pulse space-y-10">
     <div className="w-full aspect-[21/9] rounded-[2rem] bg-border/40" />
-    <div className="max-w-2xl mx-auto space-y-3">
-      <div className="h-5 bg-border/40 rounded-full w-4/5 mx-auto" />
-      <div className="h-5 bg-border/40 rounded-full w-3/5 mx-auto" />
+    <div className="flex gap-3">
+      <div className="h-9 w-28 bg-border/40 rounded-full" />
+      <div className="h-9 w-24 bg-border/40 rounded-full" />
     </div>
+    <div className="h-20 bg-border/20 rounded-2xl w-full" />
     <div className="max-w-3xl mx-auto space-y-4">
       {[100, 90, 95, 80, 85].map((w, i) => (
         <div key={i} className="h-4 bg-border/40 rounded-full" style={{ width: `${w}%` }} />
@@ -216,6 +220,68 @@ const AssetImageCard: React.FC<{ assetId: string; index: number; onClick: () => 
   </article>
 );
 
+// ─── SiblingCard — Prev/Next chapter navigation card ─────────────────────────
+
+interface SiblingCardProps {
+  section: CultureSection;
+  direction: 'prev' | 'next';
+  onClick: () => void;
+}
+
+const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, onClick }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      'group w-full text-left rounded-2xl border border-border bg-surface',
+      'p-4 flex gap-4 items-center',
+      'hover:border-primary/40 hover:bg-surface/80',
+      'hover:shadow-[0_8px_24px_-4px_rgba(227,31,51,0.15)]',
+      'transition-all duration-300',
+      direction === 'next' && 'sm:flex-row-reverse sm:text-right',
+    )}
+  >
+    {/* Thumbnail */}
+    <div className="w-16 h-14 md:w-20 md:h-16 rounded-xl overflow-hidden shrink-0 bg-border/20">
+      {section.primary_image ? (
+        <MediaImage
+          assetId={section.primary_image}
+          showCaption={false}
+          fallbackAlt={section.title}
+          className="w-full h-full"
+          imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <Icon name="auto_stories" size="sm" className="text-border" />
+        </div>
+      )}
+    </div>
+
+    {/* Labels */}
+    <div className="flex flex-col gap-1 min-w-0">
+      <Typography variant="microLabel" color="muted" className="flex items-center gap-1">
+        {direction === 'prev' ? (
+          <><span className="material-symbols-outlined text-xs">arrow_back</span> Precedente</>
+        ) : (
+          <>Successivo <span className="material-symbols-outlined text-xs">arrow_forward</span></>
+        )}
+      </Typography>
+      <Typography
+        variant="caption"
+        color="title"
+        className="line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-300"
+      >
+        {section.title}
+      </Typography>
+      {section.category && (
+        <Typography variant="microLabel" color="muted" className="opacity-60">
+          {section.category}
+        </Typography>
+      )}
+    </div>
+  </button>
+);
+
 // ─── CultureDetailPage ────────────────────────────────────────────────────────
 
 interface TabItem {
@@ -227,6 +293,8 @@ interface TabItem {
 interface CultureDetailPageProps {
   slug: string;
   onBack: () => void;
+  onOpen?: (slug: string) => void;
+  sections?: CultureSection[];
   activeCategory?: string;
   onCategoryChange?: (cat: string) => void;
   tabItems?: TabItem[];
@@ -235,6 +303,8 @@ interface CultureDetailPageProps {
 const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
   slug,
   onBack,
+  onOpen,
+  sections = [],
   activeCategory = 'all',
   onCategoryChange,
   tabItems = [],
@@ -245,6 +315,11 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
   const [error,        setError]        = useState(false);
   const [galleryOpen,  setGalleryOpen]  = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
+  const [copied,       setCopied]       = useState(false);
+
+  // Check if audio exists — uses audio_asset_id from DB, no fallback needed
+  const audioId = section?.audio_asset_id ?? undefined;
+  const { asset: audioAsset } = useAudioAsset({ assetId: audioId });
 
   useEffect(() => {
     let mounted = true;
@@ -256,7 +331,6 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
         if (!mounted) return;
         if (!detail) { setError(true); return; }
         setSection(detail);
-        // gallery_items join (if a matching gallery exists)
         const items = await contentService.getCultureGallery(slug);
         if (mounted) setGalleryItems(items);
       } catch (e) {
@@ -270,10 +344,53 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
     return () => { mounted = false; };
   }, [slug]);
 
+  // ── Prev / Next siblings (same category, sorted by display_order) ──────────
+  const siblings = useMemo(() => {
+    if (!sections.length || !section) return { prev: null as CultureSection | null, next: null as CultureSection | null };
+    const cat = section.category;
+    const filtered = sections
+      .filter(s => s.category === cat)
+      .sort((a, b) => a.display_order - b.display_order);
+    const idx = filtered.findIndex(s => s.slug === slug);
+    return {
+      prev: idx > 0 ? filtered[idx - 1] : null,
+      next: idx < filtered.length - 1 ? filtered[idx + 1] : null,
+    };
+  }, [sections, section, slug]);
+
+  // ── Share handlers ─────────────────────────────────────────────────────────
+  const handleShare = async () => {
+    if (!section) return;
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: section.title,
+          text: section.quote || section.subtitle || '',
+          url,
+        });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSiblingOpen = (siblingSlug: string) => {
+    if (onOpen) onOpen(siblingSlug);
+    else onBack();
+  };
+
   const sectionIcon = SECTION_ICONS[slug] ?? 'auto_stories';
   const chapterNum  = section ? String(section.display_order + 1).padStart(2, '0') : '—';
 
-  // Gallery items from gallery_items table
   const galleryModalItems: GalleryItem[] = galleryItems.map(item => ({
     image_url:   item.media_assets?.image_url ?? '',
     asset_id:    item.asset_id,
@@ -284,10 +401,8 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
     photo_id:    undefined,
   }));
 
-  // gallery_images = asset_id strings stored directly on the section row
   const assetGallery = section?.gallery_images?.filter(Boolean) ?? [];
-
-  const hasGallery = galleryItems.length > 0 || assetGallery.length > 0;
+  const hasGallery   = galleryItems.length > 0 || assetGallery.length > 0;
 
   const handleTabChange = (cat: string) => {
     if (onCategoryChange) onCategoryChange(cat);
@@ -298,6 +413,7 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
     <PageLayout slug="history" hideDefaultHeader={true} showPatterns={true}>
       <div id="history-detail-content" className="w-full flex flex-col">
 
+        {/* ── Sticky category tabs ──────────────────────────────────────── */}
         {tabItems.length > 0 && (
           <StickyTabNav
             items={tabItems}
@@ -306,155 +422,218 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
           />
         )}
 
-      <div className="w-full max-w-4xl mx-auto px-4 md:px-6 pb-32">
+        <div className="w-full max-w-4xl mx-auto px-4 md:px-6 pt-2 pb-32">
 
-        {/* ── Back ──────────────────────────────────────────────────────── */}
-        <div className="pt-2 pb-8">
-          <Button variant="ghost" size="sm" icon="arrow_back" iconPosition="left" onClick={onBack}
-            className="text-sub hover:text-title">
-            All Chapters
-          </Button>
-        </div>
-
-        {loading && <SkeletonDetail />}
-
-        {!loading && error && (
-          <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
-            <Icon name="wifi_off" size="xl" className="text-primary/40" />
-            <Typography variant="h5" color="sub">Could not load this chapter</Typography>
-            <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">Go back</Button>
+          {/* ── Back button ───────────────────────────────────────────────── */}
+          <div className="pt-6 md:pt-8 pb-6">
+            <Button variant="ghost" size="sm" icon="arrow_back" iconPosition="left" onClick={onBack}
+              className="text-sub hover:text-title">
+              All Chapters
+            </Button>
           </div>
-        )}
 
-        {!loading && !error && section && (
-          <article className="space-y-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {/* ── Loading ───────────────────────────────────────────────────── */}
+          {loading && <SkeletonDetail />}
 
-            {/* ── Hero ──────────────────────────────────────────────────── */}
-            <div className="relative w-full aspect-[21/9] overflow-hidden rounded-[2.5rem]">
-              {/* gradient overlay — always present for text readability */}
-              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+          {/* ── Error ─────────────────────────────────────────────────────── */}
+          {!loading && error && (
+            <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
+              <Icon name="wifi_off" size="xl" className="text-primary/40" />
+              <Typography variant="h5" color="sub">Could not load this chapter</Typography>
+              <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">Go back</Button>
+            </div>
+          )}
 
-              {section.primary_image ? (
-                <MediaImage
-                  assetId={section.primary_image}
-                  showCaption={false}
-                  fallbackAlt={section.title}
-                  className="absolute inset-0"
-                  imgClassName="w-full h-full object-cover"
-                />
-              ) : (
-                /* No-image placeholder: dark surface + giant faded icon */
-                <div className="absolute inset-0 bg-surface flex items-center justify-center">
-                  <Icon
-                    name={sectionIcon}
-                    size="xl"
-                    className="opacity-[0.06] scale-[6] text-title pointer-events-none select-none"
+          {/* ── Content ───────────────────────────────────────────────────── */}
+          {!loading && !error && section && (
+            <article className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+              {/* 1. HERO ──────────────────────────────────────────────────── */}
+              <div className="relative w-full aspect-[21/9] overflow-hidden rounded-[2.5rem]">
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+
+                {section.primary_image ? (
+                  <MediaImage
+                    assetId={section.primary_image}
+                    showCaption={false}
+                    fallbackAlt={section.title}
+                    className="absolute inset-0"
+                    imgClassName="w-full h-full object-cover"
                   />
+                ) : (
+                  <div className="absolute inset-0 bg-surface flex items-center justify-center">
+                    <Icon
+                      name={sectionIcon}
+                      size="xl"
+                      className="opacity-[0.06] scale-[6] text-title pointer-events-none select-none"
+                    />
+                  </div>
+                )}
+
+                {/* Overlay content */}
+                <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 md:p-10 lg:p-14 gap-3">
+                  {/* Top row: chapter + icon + featured badge */}
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="font-mono text-white/40 text-sm tracking-[0.2em]">CH. {chapterNum}</span>
+                    <Icon name={sectionIcon} size="sm" className="text-action/70" />
+                    {section.category && (
+                      <Badge variant="mineral" className="text-white/70 border-white/20 bg-black/40 backdrop-blur-sm text-[10px] tracking-widest">
+                        {section.category}
+                      </Badge>
+                    )}
+                    {section.featured && (
+                      <Badge variant="mineral" className="text-primary border-primary/30 bg-black/50 backdrop-blur-sm text-[10px] tracking-widest">
+                        Featured
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <Typography variant="display2" className="text-white leading-tight max-w-2xl drop-shadow-xl">
+                    {section.title}
+                  </Typography>
+
+                  {/* Subtitle */}
+                  {section.subtitle && (
+                    <Typography variant="paragraphM" className="text-white/65 max-w-xl">
+                      {section.subtitle}
+                    </Typography>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. META ROW — share + copy link ─────────────────────────── */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Button
+                  variant="mineral"
+                  size="sm"
+                  icon="share"
+                  onClick={handleShare}
+                >
+                  Condividi
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={copied ? 'check_circle' : 'link'}
+                  onClick={handleCopyLink}
+                  className={copied ? 'text-action' : ''}
+                >
+                  {copied ? 'Copiato!' : 'Copia link'}
+                </Button>
+              </div>
+
+              {/* 3. AUDIO PLAYER — only if audio_asset_id is set and asset found ── */}
+              {audioAsset && audioId && (
+                <Card variant="glass" padding="md" className="w-full">
+                  <AudioPlayer assetId={audioId} className="w-full" />
+                </Card>
+              )}
+
+              {/* 4. QUOTE ────────────────────────────────────────────────── */}
+              {section.quote && (
+                <div className="max-w-2xl mx-auto">
+                  <blockquote className="border-l-4 border-primary pl-6 py-2">
+                    <Typography variant="quote" color="primary" className="italic leading-relaxed">
+                      "{section.quote}"
+                    </Typography>
+                  </blockquote>
                 </div>
               )}
 
-              {/* Overlaid text */}
-              <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 md:p-10 lg:p-14 gap-3">
-                {/* Chapter number + icon */}
-                <div className="flex items-center gap-3 mb-1">
-                  <span className="font-mono text-white/40 text-sm tracking-[0.2em]">CH. {chapterNum}</span>
-                  <Icon name={sectionIcon} size="sm" className="text-action/70" />
-                  {section.featured && (
-                    <Badge variant="mineral" className="text-primary border-primary/30 bg-black/50 backdrop-blur-sm text-[10px] tracking-widest">
-                      Featured
-                    </Badge>
-                  )}
+              {/* 5. DIVIDER ──────────────────────────────────────────────── */}
+              <AkhaPixelLine opacity={0.3} />
+
+              {/* 6. BODY ─────────────────────────────────────────────────── */}
+              {section.content && (
+                <div className="max-w-3xl mx-auto">
+                  <ContentRenderer content={section.content} />
                 </div>
+              )}
 
-                <Typography variant="display2" className="text-white leading-tight max-w-2xl drop-shadow-xl">
-                  {section.title}
-                </Typography>
-
-                {section.subtitle && (
-                  <Typography variant="paragraphM" className="text-white/65 max-w-xl">
-                    {section.subtitle}
-                  </Typography>
-                )}
-              </div>
-            </div>
-
-            {/* ── Quote ─────────────────────────────────────────────────── */}
-            {section.quote && (
-              <div className="max-w-2xl mx-auto">
-                <blockquote className="border-l-4 border-primary pl-6 py-2">
-                  <Typography variant="quote" color="primary" className="italic leading-relaxed">
-                    "{section.quote}"
-                  </Typography>
-                </blockquote>
-              </div>
-            )}
-
-            {section.quote && section.content && <AkhaPixelLine opacity={0.3} />}
-
-            {/* ── Body ──────────────────────────────────────────────────── */}
-            {section.content && (
-              <div className="max-w-3xl mx-auto">
-                <ContentRenderer content={section.content} />
-              </div>
-            )}
-
-            {/* ── Gallery (gallery_items join) ───────────────────────────── */}
-            {hasGallery && (
-              <>
-                <AkhaPixelLine opacity={0.25} />
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 h-px bg-border" />
-                    <div className="flex items-center gap-2">
-                      <Icon name="photo_library" size="sm" className="text-action/60" />
-                      <Typography variant="monoLabel" color="muted">
-                        Gallery · {galleryItems.length + assetGallery.length} photos
-                      </Typography>
+              {/* 7. GALLERY ──────────────────────────────────────────────── */}
+              {hasGallery && (
+                <>
+                  <AkhaPixelLine opacity={0.25} />
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 h-px bg-border" />
+                      <div className="flex items-center gap-2">
+                        <Icon name="photo_library" size="sm" className="text-action/60" />
+                        <Typography variant="monoLabel" color="muted">
+                          Gallery · {galleryItems.length + assetGallery.length} photos
+                        </Typography>
+                      </div>
+                      <div className="flex-1 h-px bg-border" />
                     </div>
-                    <div className="flex-1 h-px bg-border" />
+
+                    {galleryItems.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {galleryItems.map((item, i) => (
+                          <GalleryCard key={item.id} item={item} index={i}
+                            onClick={() => { setGalleryStart(i); setGalleryOpen(true); }} />
+                        ))}
+                      </div>
+                    )}
+
+                    {assetGallery.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {assetGallery.map((assetId, i) => (
+                          <AssetImageCard key={assetId} assetId={assetId} index={i}
+                            onClick={() => { setGalleryStart(i); setGalleryOpen(true); }} />
+                        ))}
+                      </div>
+                    )}
+
+                    {galleryItems.length > 1 && (
+                      <div className="flex justify-center pt-2">
+                        <Button variant="mineral" size="md" icon="collections" iconPosition="left"
+                          onClick={() => { setGalleryStart(0); setGalleryOpen(true); }}>
+                          Open Full Gallery
+                        </Button>
+                      </div>
+                    )}
                   </div>
+                </>
+              )}
 
-                  {/* gallery_items (relational) */}
-                  {galleryItems.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                      {galleryItems.map((item, i) => (
-                        <GalleryCard key={item.id} item={item} index={i} onClick={() => { setGalleryStart(i); setGalleryOpen(true); }} />
-                      ))}
-                    </div>
-                  )}
+              {/* 8. PREV / NEXT NAVIGATION ───────────────────────────────── */}
+              <AkhaPixelLine opacity={0.15} />
 
-                  {/* gallery_images (asset_ids on the section row) */}
-                  {assetGallery.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                      {assetGallery.map((assetId, i) => (
-                        <AssetImageCard key={assetId} assetId={assetId} index={i} onClick={() => { setGalleryStart(i); setGalleryOpen(true); }} />
-                      ))}
-                    </div>
-                  )}
-
-                  {galleryItems.length > 1 && (
-                    <div className="flex justify-center pt-2">
-                      <Button variant="mineral" size="md" icon="collections" iconPosition="left" onClick={() => { setGalleryStart(0); setGalleryOpen(true); }}>
-                        Open Full Gallery
-                      </Button>
-                    </div>
-                  )}
+              {(siblings.prev || siblings.next) && (
+                <div className="space-y-3">
+                  <Typography variant="microLabel" color="muted" className="text-center tracking-widest">
+                    ALTRI CAPITOLI
+                  </Typography>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {siblings.prev && (
+                      <SiblingCard
+                        section={siblings.prev}
+                        direction="prev"
+                        onClick={() => handleSiblingOpen(siblings.prev!.slug)}
+                      />
+                    )}
+                    {siblings.next && (
+                      <SiblingCard
+                        section={siblings.next}
+                        direction="next"
+                        onClick={() => handleSiblingOpen(siblings.next!.slug)}
+                      />
+                    )}
+                  </div>
                 </div>
-              </>
-            )}
+              )}
 
-            <AkhaPixelLine opacity={0.15} />
+              {/* 9. BACK BUTTON ──────────────────────────────────────────── */}
+              <div className="flex justify-center pt-4 pb-4">
+                <Button variant="outline" size="md" icon="arrow_back" iconPosition="left" onClick={onBack}>
+                  Back to All Chapters
+                </Button>
+              </div>
 
-            {/* ── Navigation footer ────────────────────────────────────── */}
-            <div className="flex justify-center pb-4">
-              <Button variant="outline" size="md" icon="arrow_back" iconPosition="left" onClick={onBack}>
-                Back to All Chapters
-              </Button>
-            </div>
-
-          </article>
-        )}
-      </div>{/* end max-w inner wrapper */}
+            </article>
+          )}
+        </div>{/* end max-w inner wrapper */}
 
       </div>{/* end flex col */}
 

@@ -67,10 +67,12 @@ export interface CultureSection {
   slug: string;
   title: string;
   subtitle: string;
+  quote?: string | null;
   primary_image: string | null;
   display_order: number;
   featured: boolean | null;
   category?: string | null;
+  audio_asset_id?: string | null;
 }
 
 /**
@@ -93,6 +95,7 @@ export interface CultureSectionDetail {
   seo_title?: string | null;
   seo_description?: string | null;
   category?: string | null;
+  audio_asset_id?: string | null;
   /** Legacy field — kept for backwards-compat with older cache entries. */
   tag?: string;
   /** Legacy field — kept for backwards-compat with older cache entries. */

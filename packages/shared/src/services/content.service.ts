@@ -460,10 +460,10 @@ export const contentService = {
 
     /** 🧩 CLASS SECTIONS: Modular content blocks assigned to a class (accordion/timeline/alert_box) */
     async getClassSections(classId: string): Promise<any[]> {
-        const data = await fetchWithCache(`class_sections_${classId}_v1`, async () => {
+        const data = await fetchWithCache(`class_sections_${classId}_v2`, async () => {
             const { data, error } = await supabase
                 .from('class_sections')
-                .select('id, section_key, title, subtitle, description, tag_badge, ui_style, display_order')
+                .select('id, section_key, title, subtitle, description, tag_badge, ui_style, display_order, assigned_classes')
                 .contains('assigned_classes', [classId])
                 .eq('is_active', true)
                 .order('display_order', { ascending: true });

@@ -134,7 +134,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                           {stop.pickup_time?.slice(0, 5)}
                         </span>
                         {transportStatus !== 'waiting' && (
-                          <Badge variant="mineral" className="text-[9px] h-5 px-2 bg-black/5 dark:bg-white/10">LIVE</Badge>
+                          <Badge variant="mineral-accent">LIVE</Badge>
                         )}
                       </div>
                       <p className={cn(

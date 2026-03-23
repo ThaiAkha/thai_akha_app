@@ -16,6 +16,12 @@ interface AudioPlayerProps {
   description?: string;
   /** Extra className applied to the pill wrapper */
   className?: string;
+  /** Hide transcript button */
+  hideTranscript?: boolean;
+  /** Display variant: full (default) or compact (circular icon only) */
+  variant?: 'full' | 'compact';
+  /** Show rewind button */
+  showRewind?: boolean;
 }
 
 /**
@@ -31,6 +37,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   title: titleOverride,
   description: descriptionOverride,
   className,
+  hideTranscript = false,
+  variant = 'full',
+  showRewind = true,
 }) => {
   const { asset, loading, error } = useAudioAsset({ assetId, categoryId, url });
   const [isPlaying, setIsPlaying] = useState(false);
@@ -100,12 +109,41 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   if (loading) {
-    return (
+    return variant === 'compact' ? (
+      <div className={cn("animate-pulse size-12 rounded-full bg-surface border border-border", className)} />
+    ) : (
       <div className={cn("animate-pulse bg-surface border border-border rounded-full h-16 w-full", className)} />
     );
   }
 
   if (error || !audioSrc) return null;
+
+  // ── COMPACT VARIANT: Circular play button only ──────────────────────────────────
+  if (variant === 'compact') {
+    return (
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          togglePlay();
+        }}
+        className={cn(
+          "relative size-12 rounded-full flex items-center justify-center",
+          "border-2 border-secondary bg-secondary/10 text-secondary",
+          "hover:bg-secondary/20 transition-all duration-300",
+          "active:scale-95",
+          className
+        )}
+        aria-label={isPlaying ? "Pause audio" : "Play audio"}
+      >
+        <audio ref={audioRef} src={audioSrc} preload="metadata" />
+        <Icon
+          name={isPlaying ? "pause" : "play_arrow"}
+          size="md"
+          className={cn(isPlaying ? "" : "ml-0.5")}
+        />
+      </button>
+    );
+  }
 
   return (
     <div className={cn("flex flex-col gap-4 w-full", className)}>
@@ -113,13 +151,23 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         className="group relative flex items-center bg-secondary/10 border-2 border-secondary/20 hover:border-secondary/40 rounded-full overflow-hidden shadow-sm transition-all w-full cursor-pointer select-none"
         onClick={(e) => {
           if (!audioRef.current) return;
+
+          // First click: always start from beginning
+          if (!isPlaying) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(console.error);
+            setIsPlaying(true);
+            return;
+          }
+
+          // Already playing: allow seeking to clicked position
           const rect = e.currentTarget.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
           const newPercentage = Math.max(0, Math.min(1, clickX / rect.width));
-          audioRef.current.currentTime = newPercentage * audioRef.current.duration;
-          if (!isPlaying) {
-            audioRef.current.play().catch(console.error);
-            setIsPlaying(true);
+          const duration = audioRef.current.duration;
+
+          if (duration && isFinite(duration)) {
+            audioRef.current.currentTime = newPercentage * duration;
           }
         }}
       >
@@ -151,6 +199,23 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               className={cn(isPlaying ? "" : "ml-1")}
             />
           </button>
+
+          {/* REWIND BUTTON (appears when playing) */}
+          {isPlaying && showRewind && (
+            <button
+              className="relative z-20 size-10 rounded-full border border-secondary flex items-center justify-center text-secondary shrink-0 hover:bg-secondary/20 transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (audioRef.current) {
+                  audioRef.current.currentTime = 0;
+                }
+              }}
+              aria-label="Restart from beginning"
+              title="Restart"
+            >
+              <Icon name="rewind" size="sm" />
+            </button>
+          )}
 
           {/* TEXT CONTENT & EQUALIZER */}
           <div className="flex-1 min-w-0 pointer-events-none flex flex-col justify-center gap-0.5">
@@ -194,6 +259,13 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               />
             </div>
 
+            {/* REWIND BUTTON (appears when playing) */}
+            {isPlaying && showRewind && (
+              <div className="size-10 rounded-full border border-white flex items-center justify-center text-white shrink-0">
+                <Icon name="rewind" size="sm" />
+              </div>
+            )}
+
             {/* TEXT CONTENT & EQUALIZER (White) */}
             <div className="flex-1 min-w-0 pointer-events-none flex flex-col justify-center gap-0.5">
               <div className="flex items-center justify-between gap-3">
@@ -221,7 +293,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       </div>
 
       {/* TRANSCRIPT ACCORDION */}
-      {asset?.transcript && (
+      {asset?.transcript && !hideTranscript && (
         <div className="px-4">
           <button
             onClick={() => setShowTranscript(!showTranscript)}

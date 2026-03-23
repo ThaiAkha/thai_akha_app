@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { StickyTabNav, HeaderMenu, HeaderSection } from '../components/layout';
+import { StickyTabNav, HeaderMenu } from '../components/layout';
+import { SmartHeaderSection } from '../components/layout/SmartHeaderSection';
 import { Typography, Icon, AkhaPixelLine } from '../components/ui/index';
 import { contentService } from '@thaiakha/shared/services';
 import { CultureSection } from '@thaiakha/shared/types';
@@ -28,17 +29,8 @@ function variantColSpan(variant: GridVariant): string {
   return '';
 }
 
-// ─── Category config ──────────────────────────────────────────────────────────
 
-const CATEGORY_ICONS: Record<string, string> = {
-  all: 'Grid',
-  Culture: 'landmark',
-  History: 'menu_book',
-  People: 'groups',
-  Traditions: 'party-popper',
-};
-
-// ─── Skeleton card ─────────────────────────────────────────────────────────────
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 const SkeletonCard: React.FC = () => (
   <div className="rounded-[2rem] border border-border bg-surface overflow-hidden animate-pulse">
@@ -48,6 +40,32 @@ const SkeletonCard: React.FC = () => (
       <div className="h-3 bg-gray-200 dark:bg-white/5 rounded-full w-full" />
       <div className="h-3 bg-gray-200 dark:bg-white/5 rounded-full w-2/3" />
     </div>
+  </div>
+);
+
+// ─── CardGrid — shared between flat and grouped views ─────────────────────────
+
+const CardGrid: React.FC<{
+  sections: CultureSection[];
+  onOpen: (slug: string) => void;
+}> = ({ sections, onOpen }) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {sections.map((section, index) => {
+      const variant = resolveVariant(index);
+      return (
+        <div key={section.id} className={cn(variantColSpan(variant))}>
+          {variant === 'horizontal' && (
+            <FilmStripCard section={section} index={index} onOpen={onOpen} />
+          )}
+          {variant === 'hero' && (
+            <HeroCard section={section} index={index} onOpen={onOpen} />
+          )}
+          {variant === 'chapter' && (
+            <ChapterCard section={section} index={index} onOpen={onOpen} />
+          )}
+        </div>
+      );
+    })}
   </div>
 );
 
@@ -92,7 +110,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
     }
   }, [targetSection]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Scroll to content top when category tab changes (same pattern as InfoClasses)
+  // Scroll to content top when category tab changes
   useEffect(() => {
     const scrollContainer = document.getElementById('main-scroll-container');
     const contentContainer = document.getElementById('history-content');
@@ -100,7 +118,8 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
       const containerRect = scrollContainer.getBoundingClientRect();
       const contentRect = contentContainer.getBoundingClientRect();
       const stickyOffset = window.innerWidth < 768 ? 10 : 20;
-      const targetScrollTop = scrollContainer.scrollTop + (contentRect.top - containerRect.top) - stickyOffset;
+      const targetScrollTop =
+        scrollContainer.scrollTop + (contentRect.top - containerRect.top) - stickyOffset;
       scrollContainer.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
     } else if (scrollContainer) {
       scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -122,7 +141,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
 
   const handleCategoryChange = (cat: string) => {
     setActiveCategory(cat);
-    // If in detail view, go back to index
     if (activeSlug) {
       window.history.pushState({}, '', '/history');
       setActiveSlug(null);
@@ -148,24 +166,51 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
     return () => { mounted = false; };
   }, []);
 
-  // Derive sorted unique categories from loaded sections
-  const categories = useMemo(() => {
-    const cats = Array.from(
-      new Set(sections.map(s => s.category).filter(Boolean) as string[]),
-    ).sort();
-    return cats;
+  // Tab items: 'All' + unique categories from DB sections
+  const tabItems = useMemo(() => {
+    const cats = [...new Set(sections.map(s => s.category).filter(Boolean))] as string[];
+    return [
+      { value: 'all', label: 'All', icon: 'grid_view' },
+      ...cats.map(cat => ({ value: cat, label: cat, icon: 'label' })),
+    ];
   }, [sections]);
 
-  const tabItems = useMemo(() => [
-    { value: 'all', label: 'All', icon: CATEGORY_ICONS['all'] },
-    ...categories.map(cat => ({
-      value: cat,
-      label: cat,
-      icon: CATEGORY_ICONS[cat] ?? 'label',
-    })),
-  ], [categories]);
+  // Featured: single globally-featured post (only displayed in 'all' view)
+  const featuredSection = useMemo(
+    () => {
+      if (activeCategory === 'all') {
+        return sections.find(s => s.featured) ?? null;
+      }
+      return sections.find(s => s.featured && s.category === activeCategory) ?? null;
+    },
+    [sections, activeCategory],
+  );
 
-  // If a section slug is active, render the detail page
+  // Feed: all non-featured sections, filtered by active category if not 'all'
+  const feedSections = useMemo(() => {
+    const withoutFeatured = sections.filter(s => s.id !== featuredSection?.id);
+    if (activeCategory === 'all') return withoutFeatured;
+    return withoutFeatured.filter(s => s.category === activeCategory);
+  }, [sections, featuredSection, activeCategory]);
+
+  // Grouped feed: { 'Origins': [...], 'Akha Zang': [...], ... } — order from DB display_order
+  const { grouped, categoryOrder } = useMemo(() => {
+    const grouped = feedSections.reduce<Record<string, CultureSection[]>>((acc, s) => {
+      const key = s.category ?? 'Other';
+      (acc[key] ??= []).push(s);
+      return acc;
+    }, {});
+    // Preserve the order categories first appear by display_order in feedSections
+    const seen = new Set<string>();
+    const categoryOrder: string[] = [];
+    for (const s of feedSections) {
+      const key = s.category ?? 'Other';
+      if (!seen.has(key)) { seen.add(key); categoryOrder.push(key); }
+    }
+    return { grouped, categoryOrder };
+  }, [feedSections]);
+
+  // Detail page
   if (activeSlug) {
     return (
       <CultureDetailPage
@@ -176,17 +221,15 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
         activeCategory={activeCategory}
         onCategoryChange={handleCategoryChange}
         tabItems={tabItems}
+        returnTo={activeCategory !== 'all' ? activeCategory : 'history'}
       />
     );
   }
 
-  // Filter sections by active category
-  const filteredSections = activeCategory === 'all'
-    ? sections
-    : sections.filter(s => s.category === activeCategory);
-
-  const featuredSection = filteredSections.find(s => s.featured) ?? null;
-  const gridSections = filteredSections.filter(s => !s.featured);
+  const hasContent =
+    activeCategory === 'all'
+      ? !!featuredSection || feedSections.length > 0
+      : feedSections.length > 0;
 
   return (
     <PageLayout
@@ -195,7 +238,14 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="history" />}
     >
-      <div id="history-content" className="w-full flex flex-col">
+      <div
+        id="history-content"
+        className="w-full flex flex-col"
+        style={{
+          '--glass-accent-border': 'rgba(0, 0, 0, 0.5)',
+          '--glass-accent-glow':   'rgba(0, 0, 0, 0.12)',
+        } as React.CSSProperties}
+      >
 
         {/* ── Sticky Category Tabs ────────────────────────────────────── */}
         <StickyTabNav
@@ -206,7 +256,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
 
         <div className="w-full max-w-6xl mx-auto px-4 md:px-6 pt-6 md:pt-8 pb-32">
 
-          {/* ── Loading state ──────────────────────────────────────────── */}
+          {/* ── Loading ─────────────────────────────────────────────────── */}
           {loading && (
             <div className="space-y-10">
               <div className="rounded-[2.5rem] border border-border bg-surface overflow-hidden animate-pulse">
@@ -222,7 +272,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
             </div>
           )}
 
-          {/* ── Error state ────────────────────────────────────────────── */}
+          {/* ── Error ───────────────────────────────────────────────────── */}
           {!loading && error && (
             <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
               <Icon name="wifi_off" size="xl" className="text-primary/40" />
@@ -231,8 +281,8 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
             </div>
           )}
 
-          {/* ── Empty state ────────────────────────────────────────────── */}
-          {!loading && !error && filteredSections.length === 0 && (
+          {/* ── Empty ───────────────────────────────────────────────────── */}
+          {!loading && !error && !hasContent && (
             <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
               <Icon name="auto_stories" size="xl" className="text-action/40" />
               <Typography variant="h5" color="sub">No sections in this category</Typography>
@@ -240,10 +290,10 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
             </div>
           )}
 
-          {/* ── Content ────────────────────────────────────────────────── */}
-          {!loading && !error && filteredSections.length > 0 && (
+          {/* ── Content ─────────────────────────────────────────────────── */}
+          {!loading && !error && hasContent && (
             <>
-              {/* 1. Featured hero — prima foto in evidenza */}
+              {/* ── A. Super Featured Post — global hero (visible in all views) */}
               {featuredSection && (
                 <div className="mb-12">
                   <CinematicHeroCard
@@ -254,40 +304,40 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
                 </div>
               )}
 
-              {/* 2. Title — from featured section data */}
-              <div className={cn(featuredSection ? 'mt-10 mb-8' : 'mb-8')}>
-                <HeaderSection
-                  title={featuredSection?.title ?? 'Akha Heritage & Culture'}
-                  subtitle={featuredSection?.subtitle ?? 'Discover the journey and living culture of the Akha people'}
-                  variant="section"
-                  align="center"
-                />
-              </div>
+              {/* ── B. Category-specific view — flat grid ──────────────── */}
+              {activeCategory !== 'all' && feedSections.length > 0 && (
+                <CardGrid sections={feedSections} onOpen={handleOpenSection} />
+              )}
 
-              {/* 3. Divider */}
-              <AkhaPixelLine />
-
-              {/* 4. Chapter grid */}
-              {gridSections.length > 0 && (
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {gridSections.map((section, index) => {
-                    const variant = resolveVariant(index);
-                    const colSpan = variantColSpan(variant);
+              {/* ── C. 'All' view — feed raggruppato per categoria ─────── */}
+              {activeCategory === 'all' && categoryOrder.length > 0 && (
+                <>
+                  {categoryOrder.map((cat, catIdx) => {
+                    const catSections = grouped[cat] ?? [];
+                    const isLast = catIdx === categoryOrder.length - 1;
                     return (
-                      <div key={section.id} className={cn(colSpan)}>
-                        {variant === 'horizontal' && (
-                          <FilmStripCard section={section} index={index} onOpen={handleOpenSection} />
-                        )}
-                        {variant === 'hero' && (
-                          <HeroCard section={section} index={index} onOpen={handleOpenSection} />
-                        )}
-                        {variant === 'chapter' && (
-                          <ChapterCard section={section} index={index} onOpen={handleOpenSection} />
-                        )}
-                      </div>
+                      <React.Fragment key={cat}>
+
+                        {/* Category header — content from page_sections DB */}
+                        <div className="mt-14 mb-8">
+                          <SmartHeaderSection
+                            sectionId={`history_cat_${cat.toLowerCase().replace(/[\s-]+/g, '_')}`}
+                            variant="section"
+                            align="center"
+                            fallbackTitle={cat}
+                          />
+                        </div>
+
+                        {/* Card grid for this category */}
+                        <CardGrid sections={catSections} onOpen={handleOpenSection} />
+
+                        {/* Visual separator between categories (not after last) */}
+                        {!isLast && <AkhaPixelLine className="mt-14 opacity-25" />}
+
+                      </React.Fragment>
                     );
                   })}
-                </div>
+                </>
               )}
             </>
           )}

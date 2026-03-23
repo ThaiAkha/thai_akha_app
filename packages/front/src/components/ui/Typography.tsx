@@ -61,8 +61,8 @@ const VARIANT_STYLES: Record<TypographyVariant, { element: React.ElementType; cl
   },
 
   // --- UI & ACCENTS ---
-  accent: { element: 'span', className: "font-accent font-black uppercase tracking-[0.25em] text-sm md:text-base text-gray-800 dark:text-gray-300" },
-  badge: { element: 'span', className: "font-sans font-bold uppercase tracking-[0.25em] text-sm text-gray-800 dark:text-gray-100" },
+  accent: { element: 'span', className: "font-accent font-black uppercase tracking-[0.25em] text-sm md:text-base" },
+  badge: { element: 'span', className: "font-sans font-bold uppercase tracking-[0.25em] text-sm" },
   quote: { element: 'blockquote', className: "font-display font-light italic leading-relaxed text-xl md:text-2xl border-l-4 border-primary pl-6 py-2 text-gray-800 dark:text-gray-300" },
   caption: { element: 'span', className: "font-sans text-xs md:text-sm italic text-gray-700 dark:text-gray-500" },
 

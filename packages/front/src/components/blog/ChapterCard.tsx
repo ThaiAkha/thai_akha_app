@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
-import { Typography, MediaImage } from '../ui/index';
-import AudioPlayButton from './AudioPlayButton';
+import { Typography, MediaImage, Button, Badge } from '../ui/index';
+import './BlogCardGlass.css';
 
 // ─── Section icon map ───────────────────────────────────────────────────────────
 
@@ -34,14 +34,44 @@ interface BlogCardProps {
 // ─── ChapterCard — Editorial style ─────────────────────────────────────────────
 
 const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
   const chapterNum = String(section.display_order + 1).padStart(2, '0');
   const categoryLabel = section.category ?? 'Culture';
 
+  // Mouse tracking for gradient border
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty('--mouse-x', `${x}%`);
+      card.style.setProperty('--mouse-y', `${y}%`);
+    };
+
+    const handleMouseLeave = () => {
+      card.style.setProperty('--mouse-x', '50%');
+      card.style.setProperty('--mouse-y', '50%');
+    };
+
+    card.addEventListener('mousemove', handleMouseMove);
+    card.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      card.removeEventListener('mousemove', handleMouseMove);
+      card.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
   return (
     <article
+      ref={cardRef}
       onClick={() => onOpen(section.slug)}
       className={cn(
+        'blog-card-glass',
         'group relative flex flex-col overflow-hidden cursor-pointer',
         'rounded-[2rem] border border-border bg-surface',
         'transition-all duration-500 ease-out',
@@ -49,12 +79,19 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
         'hover:border-primary/40',
         'hover:shadow-[0_24px_64px_-12px_rgba(227,31,51,0.25)]',
       )}
+      style={{
+        '--mouse-x': '50%',
+        '--mouse-y': '50%',
+      } as React.CSSProperties}
     >
-      {/* ── Image zone ──────────────────────────────────────────────────── */}
-      <div className="relative w-full aspect-video overflow-hidden shrink-0">
-        {/* Cherry glow flash on hover */}
-        <div className="absolute inset-0 z-20 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      {/* ── Gradient border (whole card, follows mouse) ─────────────────── */}
+      <div className="blog-card-glass__border rounded-[2rem]" />
 
+      {/* ── Glass glow (whole card, follows mouse) ───────────────────────── */}
+      <div className="blog-card-glass__glow rounded-[2rem]" />
+
+      {/* ── Image zone ──────────────────────────────────────────────────── */}
+      <div className="relative w-full aspect-video overflow-hidden shrink-0 z-10">
         {section.primary_image ? (
           <MediaImage
             assetId={section.primary_image}
@@ -73,34 +110,13 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
             </span>
           </div>
         )}
-
-        {/* Large ghost chapter number centered in image */}
-        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-          <span className="font-mono font-black text-6xl text-white/15 select-none">
-            {chapterNum}
-          </span>
-        </div>
       </div>
 
       {/* ── Thin accent line ────────────────────────────────────────────── */}
-      <div className="h-px w-full bg-border group-hover:bg-primary/30 transition-colors duration-500" />
+      <div className="h-px w-full bg-border group-hover:bg-primary/30 transition-colors duration-500 z-10" />
 
       {/* ── Text content ────────────────────────────────────────────────── */}
-      <div className="flex flex-col flex-1 p-5 md:p-6 gap-3">
-        {/* Category row */}
-        <div className="flex items-center gap-1.5">
-          <span
-            className="material-symbols-outlined text-action/70 transition-opacity duration-300 group-hover:opacity-100"
-            style={{ fontSize: '14px' }}
-          >
-            {icon}
-          </span>
-          <Typography variant="microLabel" color="muted" className="tracking-widest">
-            {categoryLabel}
-          </Typography>
-        </div>
-
-        {/* Title */}
+      <div className="blog-card-glass__content flex flex-col flex-1 p-5 md:p-6 gap-3">
         <Typography
           variant="h6"
           color="title"
@@ -109,7 +125,6 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
           {section.title}
         </Typography>
 
-        {/* Subtitle */}
         <Typography
           variant="body"
           color="sub"
@@ -118,26 +133,23 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
           {section.subtitle}
         </Typography>
 
-        {/* Bottom row: audio + explore CTA */}
-        <div className="mt-auto pt-3 flex items-center justify-between">
-          <AudioPlayButton
-            assetId={section.audio_asset_id ?? undefined}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          />
-          <Typography
-            as="div"
-            variant="microLabel"
-            color="action"
+        <div className="mt-auto pt-3 flex justify-end">
+          <Button
+            variant="brand"
+            size="sm"
+            icon="arrow_forward"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpen(section.slug);
+            }}
             className={cn(
-              'flex items-center gap-1',
               'opacity-0 group-hover:opacity-100',
               'translate-y-2 group-hover:translate-y-0',
               'transition-all duration-300',
             )}
           >
             EXPLORE
-            <span className="material-symbols-outlined text-xs">arrow_forward</span>
-          </Typography>
+          </Button>
         </div>
       </div>
     </article>

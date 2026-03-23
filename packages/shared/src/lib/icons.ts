@@ -299,6 +299,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   person_add: LucideIcons.UserPlus,
   place: LucideIcons.MapPin,
   play_arrow: LucideIcons.Play,
+  rewind: LucideIcons.SkipBack,
   psychology: LucideIcons.Brain,
   quiz: LucideIcons.HelpCircle,
   remove: LucideIcons.Minus,

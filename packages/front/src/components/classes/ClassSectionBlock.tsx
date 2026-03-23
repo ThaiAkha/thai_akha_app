@@ -13,6 +13,7 @@ export interface ClassSection {
   tag_badge?: string | null;
   ui_style: 'accordion' | 'timeline' | 'alert_box' | string;
   display_order: number;
+  assigned_classes?: string[];
 }
 
 // ─── ACCORDION ───────────────────────────────────────────────────────────────

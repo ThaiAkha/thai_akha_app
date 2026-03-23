@@ -1,6 +1,6 @@
 // data/pixelPatterns.ts
 
-export type PatternName = | 'logo' | 'diamond' | 'flower' | 'line_simple' | 'line' | 'mountain' | 'zig_zag';
+export type PatternName = | 'logo' | 'diamond' | 'flower' | 'arrow' | 'line_simple' | 'line' | 'line_vertical' | 'mountain' | 'zig_zag';
 
 export interface PatternDef {
   data: number[];
@@ -15,8 +15,8 @@ export interface PatternDef {
 // 4 = Nero (Detail)
 
 export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
-  
- // 1. LOGO (9 Colonne)
+
+  // 1. LOGO (9 Colonne)
   logo: {
     columns: 9,
     data: [
@@ -28,7 +28,7 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
       1, 2, 3, 0, 0, 0, 3, 2, 1
     ]
   },
-  
+
   // 1. IL ROMBO CLASSICO (7 Colonne)
   diamond: {
     columns: 7,
@@ -82,26 +82,45 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
   flower: {
     columns: 9,
     data: [
-                0, 0, 1, 0, 2, 0, 1, 0, 0, 
-                0, 0, 0, 3, 3, 3, 0, 0, 0, 
-                1, 3, 2, 3, 4, 3, 2, 3, 1,
-                0, 0, 0, 3, 3, 3, 0, 0, 0, 
-                0, 0, 1, 0, 2, 0, 1, 0, 0, 
+      0, 0, 1, 0, 2, 0, 1, 0, 0,
+      0, 0, 0, 3, 3, 3, 0, 0, 0,
+      1, 3, 2, 3, 4, 3, 2, 3, 1,
+      0, 0, 0, 3, 3, 3, 0, 0, 0,
+      0, 0, 1, 0, 2, 0, 1, 0, 0,
+    ]
+  },
+
+  // 2. FIORE DI MONTAGNA (5 Colonne)
+  arrow: {
+    columns: 9,
+    data: [
+      1, 3, 2, 3, 4, 3, 2, 3, 1,
+      0, 0, 0, 3, 3, 3, 0, 0, 0,
+      0, 0, 1, 0, 2, 0, 1, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]
   },
 
   // 3. SEPARATORE LINEARE (Per Header)
   line_simple: {
     columns: 12,
-    data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, ]
+    data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,]
   },
 
-    // 3. SEPARATORE LINEARE (Per Header)
+  // 3. SEPARATORE LINEARE (Per Header)
   line: {
     columns: 44,
     data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
-           2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2,
-           1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
+      2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2,
+      1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
+    ]
+  },
+
+  // 3. SEPARATORE LINEARE (Per Header)
+  line_vertical: {
+    columns: 1,
+    data: [1, 2, 3, 2, 1, 2,
     ]
   },
 
@@ -116,16 +135,16 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
       1, 2, 3, 4, 4, 4, 3, 2, 1
     ]
   },
-  
+
   // 5. ZIG ZAG (Tessuto Bordo)
   zig_zag: {
     columns: 6,
     data: [
-       1, 0, 0, 0, 0, 0,
-       0, 1, 0, 0, 0, 0,
-       0, 0, 1, 0, 0, 1,
-       0, 0, 0, 1, 1, 0,
-       0, 0, 0, 0, 0, 0
+      1, 0, 0, 0, 0, 0,
+      0, 1, 0, 0, 0, 0,
+      0, 0, 1, 0, 0, 1,
+      0, 0, 0, 1, 1, 0,
+      0, 0, 0, 0, 0, 0
     ]
   }
 };

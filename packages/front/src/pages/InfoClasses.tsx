@@ -11,8 +11,7 @@ import { CookingClassDB } from '@thaiakha/shared';
 
 import { HeroContent } from '../components/classes/HeroContent';
 import ClassDetails from '../components/classes/ClassDetails';
-import ClassCatalog, { CatalogClass } from '../components/classes/ClassCatalog';
-import { ClassSection } from '../components/classes/ClassSectionBlock';
+import ClassSectionBlock, { ClassSection } from '../components/classes/ClassSectionBlock';
 import { Photo } from '../components/modal/Photo';
 import { Gallery } from '../components/modal/Gallery';
 import { Video } from '../components/modal/Video';
@@ -47,6 +46,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [classSessions, setClassSessions] = useState<Record<string, any>>({});
   const [classSectionsMap, setClassSectionsMap] = useState<Record<string, ClassSection[]>>({});
+  const [sharedSections, setSharedSections] = useState<ClassSection[]>([]);
 
   // Sync tab with browser back/forward
   useEffect(() => {
@@ -103,11 +103,22 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
         classData.forEach((item: CookingClassDB) => {
           map[item.id.replace('_class', '')] = item;
         });
+        // Split sections: shared = assigned to both classes; class-specific = only one
+        const sharedIds = new Set(
+          morningSections
+            .filter((s: ClassSection) => s.assigned_classes?.includes('evening_class'))
+            .map((s: ClassSection) => s.id)
+        );
+        const shared = morningSections.filter((s: ClassSection) => sharedIds.has(s.id));
+        const morningOnly = morningSections.filter((s: ClassSection) => !sharedIds.has(s.id));
+        const eveningOnly = eveningSections.filter((s: ClassSection) => !sharedIds.has(s.id));
+
         setClasses(map);
         setGalleryData(gallery);
         setPageMetadata(metadata);
         setClassSessions({ morning: morningSession, evening: eveningSession });
-        setClassSectionsMap({ morning: morningSections, evening: eveningSections });
+        setClassSectionsMap({ morning: morningOnly, evening: eveningOnly });
+        setSharedSections(shared);
       } finally {
         setLoading(false);
       }
@@ -160,25 +171,6 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             onAskCherry={handleAskCherry}
           />
 
-          {/* Class Catalog — shown only on overview tab */}
-          {activeTab === 'overview' && Object.keys(classes).length > 0 && (
-            <ClassCatalog
-              classes={Object.values(classes).map((cls): CatalogClass => ({
-                id: cls.id,
-                title: cls.title,
-                badge: cls.badge || null,
-                price: cls.price,
-                currency: 'THB',
-                duration_text: cls.duration_text || null,
-                tagline: cls.description || null,
-                image_url: cls.image_url || null,
-                tags: cls.tags ?? [],
-              }))}
-              onSelectClass={handleTabChange}
-              onBook={() => onNavigate('booking')}
-            />
-          )}
-
           {/* Class Details — shown only on morning/evening tabs */}
           {activeTab !== 'overview' && currentClass && (
             <ClassDetails
@@ -189,6 +181,20 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
               meetingPoints={classSessions[activeTab]?.meeting_points ?? []}
               classSections={classSectionsMap[activeTab] ?? []}
             />
+          )}
+
+          {/* Shared sections — always visible on all tabs */}
+          {sharedSections.length > 0 && (
+            <div className="space-y-3">
+              {sharedSections.map((section, idx) => (
+                <ClassSectionBlock
+                  key={section.id}
+                  section={section}
+                  color="primary"
+                  isLast={idx === sharedSections.length - 1}
+                />
+              ))}
+            </div>
           )}
 
           {/* Book CTA — always visible in all tabs */}

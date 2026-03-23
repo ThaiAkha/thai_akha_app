@@ -9,7 +9,8 @@ import Typography from '../Typography';
  */
 
 export interface BadgeProps {
-  variant?: 'solid' | 'outline' | 'mineral' | 'brand' | 'allergy' | 'diet';
+  variant?: 'solid' | 'outline' | 'mineral' | 'mineral-accent' | 'brand' | 'allergy' | 'diet';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   color?: 'primary' | 'secondary' | 'action';
   children: React.ReactNode;
   className?: string;
@@ -21,6 +22,7 @@ export interface BadgeProps {
 
 const Badge: React.FC<BadgeProps> = ({
   variant = 'solid',
+  size = 'md',
   color = 'action',
   children,
   className,
@@ -29,6 +31,13 @@ const Badge: React.FC<BadgeProps> = ({
   active = false,
   onClick,
 }) => {
+
+  const sizeStyles = {
+    xs: "px-3 pt-3 pb-2.5 text-[8px] gap-2",
+    sm: "px-3 pt-3 pb-2.5 text-[9px] gap-2",
+    md: "px-4 pt-3 pb-2.5 text-[10px] gap-3",
+    lg: "px-6 pt-3 pb-3.5 text-[11px] gap-3",
+  };
 
   const colorStyles = {
     primary: {
@@ -52,42 +61,50 @@ const Badge: React.FC<BadgeProps> = ({
 
   const variants = {
     // Versione Solid: Gradiente, ombra morbida e bordo di luce superiore
-    solid: cn(
+    'solid': cn(
       selectedColor.bg,
       selectedColor.text,
       "shadow-brand-glow",
-      "border-t border-white/40 px-6 pt-3 pb-3.5 rounded-full relative overflow-hidden group",
+      "border-t border-white/40 rounded-full relative overflow-hidden group",
     ),
     // Versione Brand (Cherry): Look premium con ombre pesanti per risaltare sulla Home
-    brand: cn(
+    'brand': cn(
       "bg-gradient-to-br from-primary-700/90 via-primary-500/90 to-primary-700/90 text-white",
       "shadow-brand-glow",
-      "border-t border-white/40 px-6 pt-3 pb-3.5 rounded-full relative overflow-hidden group",
+      "border-t border-white/40 rounded-full relative overflow-hidden group",
     ),
 
     // Versione Outline: Più sottile e trasparente per non appesantire il design
-    outline: 'bg-transparent border border-current/30 text-current px-4 py-1 rounded-full hover:bg-current/5',
+    'outline': 'bg-transparent border border-current/30 text-current rounded-full hover:bg-current/5',
 
     // Versione Mineral (Vetro): Riflessi dinamici e forte sfocatura sfondo per sezioni Hero
-    mineral: cn(
+    'mineral': cn(
       "bg-white/10 backdrop-blur-xl border border-white/20 shadow-glass",
-      "text-white px-6 pt-3 pb-3.5 rounded-full transition-all duration-700",
+      "text-white rounded-full transition-all duration-700",
       "hover:border-white/40 hover:bg-white/20 glass-shine relative overflow-hidden group"
     ),
 
+    // Versione Mineral Accent (Vetro): Per badge informativi con font accent (ALL CAPS spaced)
+    'mineral-accent': cn(
+      "bg-white/30 backdrop-blur-xl border border-action/40 shadow-glass",
+      "text-white dark:text-white rounded-full transition-all duration-700",
+      "hover:border-action/60 hover:bg-action/30 glass-shine relative overflow-hidden group",
+      "font-black uppercase tracking-wider"
+    ),
+
     // Versione Allergy: Feedback visivo di sicurezza migliorato con effetto Glow quando attivo
-    allergy: cn(
-      "px-3 py-3 rounded-xl border transition-all duration-500",
-      "items-center gap-3 active:brightness-[2] active:scale-95",
+    'allergy': cn(
+      "rounded-xl border transition-all duration-500",
+      "items-center active:brightness-[2] active:scale-95",
       active
         ? "bg-allergy/10 dark:bg-allergy/30 border-allergy text-allergy dark:text-white shadow-glow-allergy glass-shine backdrop-blur-md"
         : "bg-allergy/10 dark:bg-allergy/15 border-allergy/40 text-allergy/90 dark:text-white/80 hover:text-allergy hover:dark:text-white hover:border-allergy hover:dark:bg-allergy/30"
     ),
 
     // Versione Diet: Identica ad Allergy ma con token action (verde)
-    diet: cn(
-      "px-3 py-3 rounded-xl border transition-all duration-500",
-      "items-center gap-4 active:brightness-[2] active:scale-95",
+    'diet': cn(
+      "rounded-xl border transition-all duration-500",
+      "items-center active:brightness-[2] active:scale-95",
       active
         ? "bg-action/10 dark:bg-action/30 border-action text-action dark:text-white shadow-[0_0_15px_-3px_rgba(152,201,60,0.5)] glass-shine backdrop-blur-md"
         : "bg-action/10 dark:bg-action/15 border-action/40 text-action/90 dark:text-white/80 hover:text-action hover:dark:text-white hover:border-action hover:dark:bg-action/20"
@@ -102,6 +119,7 @@ const Badge: React.FC<BadgeProps> = ({
       className={cn(
         baseStyles,
         variants[variant],
+        sizeStyles[size],
         onClick && "cursor-pointer active:scale-95 hover:-translate-y-0.5",
         className
       )}
@@ -110,7 +128,7 @@ const Badge: React.FC<BadgeProps> = ({
       {icon && !pulse && (
         <Icon
           name={icon}
-          size="xs"
+          size="sm"
           className="transition-transform duration-500 group-hover:scale-110"
         />
       )}
@@ -123,7 +141,11 @@ const Badge: React.FC<BadgeProps> = ({
         </span>
       )}
 
-      <Typography variant="badge" color="inherit" className="leading-none pt-0.5 whitespace-nowrap">
+      <Typography
+        variant={variant === 'mineral-accent' ? 'accent' : 'badge'}
+        color="inherit"
+        className={variant === 'mineral-accent' ? "leading-none whitespace-nowrap" : "leading-none pt-0.5 whitespace-nowrap"}
+      >
         {children}
       </Typography>
     </Component>

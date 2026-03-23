@@ -1,0 +1,66 @@
+/* Blog Card Glass Effects — Premium glassmorphism with dynamic gradient borders */
+/* NOTE: --mouse-x and --mouse-y are intentionally NOT set here.
+   They are set as inline style on the parent article element and updated via JS.
+   Setting them here would override the inherited values from the parent. */
+
+.blog-card-glass {
+  --radius: 24px;
+  --border-width: 2px;
+  /* Accent color stops — override at parent level for per-page theming */
+  --glass-accent-border: rgba(152, 201, 60, 0.6);
+  --glass-accent-glow:   rgba(152, 201, 60, 0.15);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Gradient border (follows mouse) */
+.blog-card-glass__border {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: var(--border-width);
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(227, 31, 51, 0.8) 0%,
+    var(--glass-accent-border) 19%,
+    rgba(227, 31, 51, 0.3) 48%,
+    transparent 77%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.blog-card-glass:hover .blog-card-glass__border {
+  opacity: 1;
+}
+
+/* Inner glow (follows mouse) */
+.blog-card-glass__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(227, 31, 51, 0.2) 0%,
+    var(--glass-accent-glow) 39%,
+    transparent 68%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.blog-card-glass:hover .blog-card-glass__glow {
+  opacity: 1;
+}
+
+/* Content wrapper — Always on top */
+.blog-card-glass__content {
+  position: relative;
+  z-index: 1;
+}

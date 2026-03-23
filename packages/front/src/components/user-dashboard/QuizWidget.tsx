@@ -109,7 +109,7 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
 
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <Badge variant="mineral" className="bg-quiz/20 text-quiz border-quiz/30 text-[10px] h-5 px-2">
+                        <Badge variant="mineral-accent">
                             {rankTitle}
                         </Badge>
                         <span className="text-[10px] font-mono text-white/40">ID: {userProfile?.id.slice(0,4).toUpperCase() || 'GUEST'}</span>
@@ -160,8 +160,8 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
                 <div className="relative z-10 p-8 h-full flex flex-col justify-between">
                     <div>
                         <div className="flex justify-between items-start mb-4">
-                            <Badge variant="mineral" className="bg-red-500/20 text-red-400 border-red-500/30 animate-pulse">
-                                <Icon name="timer" size="xs" className="mr-1"/> DAILY CHALLENGE
+                            <Badge variant="mineral-accent" pulse>
+                                DAILY CHALLENGE
                             </Badge>
                             <div className="bg-quiz text-black font-black text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(254,202,42,0.4)]">
                                 +500 XP

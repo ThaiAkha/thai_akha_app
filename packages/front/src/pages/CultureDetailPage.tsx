@@ -298,6 +298,7 @@ interface CultureDetailPageProps {
   activeCategory?: string;
   onCategoryChange?: (cat: string) => void;
   tabItems?: TabItem[];
+  returnTo?: 'history' | 'all' | string; // breadcrumb: where to return to
 }
 
 const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
@@ -426,9 +427,8 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
 
           {/* ── Back button ───────────────────────────────────────────────── */}
           <div className="pt-6 md:pt-8 pb-6">
-            <Button variant="ghost" size="sm" icon="arrow_back" iconPosition="left" onClick={onBack}
-              className="text-sub hover:text-title">
-              All Chapters
+            <Button variant="brand" size="sm" icon="arrow_back" iconPosition="left" onClick={onBack}>
+              Back to All Chapters
             </Button>
           </div>
 
@@ -472,21 +472,14 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
 
                 {/* Overlay content */}
                 <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 md:p-10 lg:p-14 gap-3">
-                  {/* Top row: chapter + icon + featured badge */}
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="font-mono text-white/40 text-sm tracking-[0.2em]">CH. {chapterNum}</span>
-                    <Icon name={sectionIcon} size="sm" className="text-action/70" />
-                    {section.category && (
+                  {/* Top row: category badge only */}
+                  {section.category && (
+                    <div className="flex items-center gap-2">
                       <Badge variant="mineral" className="text-white/70 border-white/20 bg-black/40 backdrop-blur-sm text-[10px] tracking-widest">
                         {section.category}
                       </Badge>
-                    )}
-                    {section.featured && (
-                      <Badge variant="mineral" className="text-primary border-primary/30 bg-black/50 backdrop-blur-sm text-[10px] tracking-widest">
-                        Featured
-                      </Badge>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Title */}
                   <Typography variant="display2" className="text-white leading-tight max-w-2xl drop-shadow-xl">
@@ -502,22 +495,23 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
                 </div>
               </div>
 
-              {/* 2. META ROW — share + copy link ─────────────────────────── */}
-              <div className="flex items-center gap-3 flex-wrap">
+              {/* 2. META ROW — share + copy link (centered, btn-s color) ─────────────────────────── */}
+              <div className="flex justify-center items-center gap-4 mt-6">
                 <Button
-                  variant="mineral"
+                  variant="brand"
                   size="sm"
                   icon="share"
                   onClick={handleShare}
+                  className="text-white bg-btn-s hover:bg-btn-s/90"
                 >
                   Condividi
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="brand"
                   size="sm"
                   icon={copied ? 'check_circle' : 'link'}
                   onClick={handleCopyLink}
-                  className={copied ? 'text-action' : ''}
+                  className={`text-white ${copied ? 'bg-action hover:bg-action/90' : 'bg-btn-s hover:bg-btn-s/90'}`}
                 >
                   {copied ? 'Copiato!' : 'Copia link'}
                 </Button>
@@ -525,9 +519,9 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
 
               {/* 3. AUDIO PLAYER — only if audio_asset_id is set and asset found ── */}
               {audioAsset && audioId && (
-                <Card variant="glass" padding="md" className="w-full">
-                  <AudioPlayer assetId={audioId} className="w-full" />
-                </Card>
+                <div className="mt-6">
+                  <AudioPlayer assetId={audioId} />
+                </div>
               )}
 
               {/* 4. QUOTE ────────────────────────────────────────────────── */}
@@ -625,8 +619,8 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
               )}
 
               {/* 9. BACK BUTTON ──────────────────────────────────────────── */}
-              <div className="flex justify-center pt-4 pb-4">
-                <Button variant="outline" size="md" icon="arrow_back" iconPosition="left" onClick={onBack}>
+              <div className="flex justify-center pt-8 pb-4">
+                <Button variant="brand" size="md" icon="arrow_back" iconPosition="left" onClick={onBack}>
                   Back to All Chapters
                 </Button>
               </div>

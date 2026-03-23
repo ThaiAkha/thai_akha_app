@@ -43,7 +43,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
       {/* 1. HEADER */}
       <div className="p-8 pb-4 relative z-10">
         <div className="flex justify-between items-start mb-4">
-          <Badge variant="mineral" className="bg-quiz/10 text-quiz border-quiz/20">
+          <Badge variant="mineral-accent">
             Collection
           </Badge>
           <div className="size-12 rounded-2xl bg-quiz text-black flex items-center justify-center shadow-lg shadow-quiz/20">

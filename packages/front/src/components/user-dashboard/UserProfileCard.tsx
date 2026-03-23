@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Crown, Truck, ChefHat, BookOpen, Shield, GraduationCap } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import GlassCard from '../ui/GlassCard';
 import type { UserProfile } from '@thaiakha/shared/types';
 
 interface UserProfileCardProps {
@@ -36,7 +37,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile }) => {
     : null;
 
   return (
-    <div className="bg-surface border border-border rounded-3xl p-5 md:p-6 shadow-sm">
+    <GlassCard variant="primary" innerClassName="p-5 md:p-6">
       {/* Avatar + Info Row — horizontal on mobile, vertical on desktop */}
       <div className="flex flex-row lg:flex-col items-center lg:items-start gap-4">
 
@@ -84,7 +85,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile }) => {
           <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold capitalize">{dietLabel}</p>
         </div>
       )}
-    </div>
+    </GlassCard>
   );
 };
 

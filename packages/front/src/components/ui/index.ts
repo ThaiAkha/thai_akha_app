@@ -4,6 +4,7 @@ export * from './Typography';
 export { default as Badge } from './navigation/Badge';
 export { default as Chip } from './navigation/Chip';
 export { default as Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card/Card';
+export { default as GlassCard } from './GlassCard';
 export { default as InfoCard } from './card/InfoCard';
 export { default as StatCard } from './card/StatCard';
 export { default as Divider } from './Divider';

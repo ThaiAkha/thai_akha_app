@@ -1,0 +1,147 @@
+/* Glass Card — Dynamic gradient border + glow effect */
+
+.glass-card {
+  --radius: 24px;
+  --border-width: 2px;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Gradient border (follows mouse) */
+.glass-card__border {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: var(--border-width);
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(152, 201, 60, 0.6) 0%,
+    rgba(227, 31, 51, 0.4) 30%,
+    rgba(141, 26, 49, 0.2) 60%,
+    transparent 80%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glass-card:hover .glass-card__border {
+  opacity: 1;
+}
+
+/* Inner glow (follows mouse) */
+.glass-card__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(152, 201, 60, 0.12) 0%,
+    rgba(227, 31, 51, 0.08) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glass-card:hover .glass-card__glow {
+  opacity: 1;
+}
+
+/* Content wrapper */
+.glass-card__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Variant: Primary (Lime + Cherry balanced) */
+.glass-card--primary {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card--primary:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-card--primary:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Variant: Action (Lime green focus) */
+.glass-card--action {
+  background: rgba(152, 201, 60, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(152, 201, 60, 0.15);
+}
+
+.glass-card--action .glass-card__border {
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(152, 201, 60, 0.8) 0%,
+    rgba(227, 31, 51, 0.4) 30%,
+    rgba(141, 26, 49, 0.2) 60%,
+    transparent 80%
+  );
+}
+
+.glass-card--action:hover {
+  box-shadow: 0 12px 24px rgba(152, 201, 60, 0.1);
+}
+
+/* Variant: Secondary (Dark Cherry focus) */
+.glass-card--secondary {
+  background: rgba(141, 26, 49, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(141, 26, 49, 0.15);
+}
+
+.glass-card--secondary .glass-card__border {
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(141, 26, 49, 0.8) 0%,
+    rgba(227, 31, 51, 0.4) 30%,
+    rgba(152, 201, 60, 0.2) 60%,
+    transparent 80%
+  );
+}
+
+.glass-card--secondary:hover {
+  box-shadow: 0 12px 24px rgba(141, 26, 49, 0.15);
+}
+
+/* Variant: Subtle (light touch, background focus) */
+.glass-card--subtle {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card--subtle .glass-card__border {
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(152, 201, 60, 0.4) 0%,
+    rgba(227, 31, 51, 0.2) 30%,
+    transparent 70%
+  );
+}
+
+.glass-card--subtle:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* No lift effect — card stays in place, focus on border glow */

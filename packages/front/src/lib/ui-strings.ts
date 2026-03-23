@@ -97,22 +97,8 @@ const strings = {
   },
 
   // ── AUTH — login / signup forms ─────────────────────────────────────────────
+  // Note: hero copy (badge, title, subtitle, features) comes from site_metadata DB row slug='auth'
   auth: {
-    // Hero copy (AuthPage)
-    badge: 'Welcome to System 4.8',
-    headingPart1: 'Your',
-    headingHighlight: 'Culinary Journey',
-    headingPart2: 'Begins',
-    tagline: 'Step into the heritage of the Akha tribe. From the high misty mountains to our bustling kitchen in Chiang Mai.',
-    // Feature bullets
-    featureCherryTitle: 'Meet Cherry',
-    featureCherryDesc: 'Your AI Cultural Guide ready 24/7.',
-    featureMenuTitle: 'Master the Menu',
-    featureMenuDesc: 'Tailor ingredients (Vegan, Halal, Meaty).',
-    featureWisdomTitle: 'Akha Wisdom',
-    featureWisdomDesc: 'Test knowledge & become a guardian.',
-    featureRewardsTitle: 'Earn Rewards',
-    featureRewardsDesc: 'Unlock certificates & secret recipes.',
     // Forms
     emailLabel: 'Email',
     passwordLabel: 'Password',

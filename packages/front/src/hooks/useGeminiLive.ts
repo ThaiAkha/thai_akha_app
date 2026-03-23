@@ -98,6 +98,12 @@ export const useGeminiLive = () => {
 
         try {
             const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            console.log("DEBUG: Voice Mode API Key Check:", {
+                exists: !!apiKey,
+                length: apiKey?.length,
+                prefix: apiKey?.substring(0, 5),
+                suffix: apiKey?.substring(apiKey.length - 5)
+            });
             if (!apiKey) {
                 throw new Error("API Key is missing from environment.");
             }
@@ -112,7 +118,7 @@ export const useGeminiLive = () => {
             streamRef.current = stream;
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.0-flash-exp',
+                model: 'gemini-2.0-flash',
                 callbacks: {
                     onopen: () => {
                         setState(prev => ({ ...prev, status: 'active' }));
@@ -137,7 +143,9 @@ export const useGeminiLive = () => {
                         
                         source.connect(processor);
                         processor.connect(inputAudioCtxRef.current!.destination);
-                        if (initialPrompt) sendTextMessage(initialPrompt);
+                        if (initialPrompt) {
+                            setTimeout(() => sendTextMessage(initialPrompt), 500);
+                        }
                     },
                     onmessage: async (message: LiveServerMessage) => {
                         if (message.serverContent?.inputTranscription) {

@@ -35,6 +35,13 @@ export interface ChatMessage {
   timestamp?: Date;
 }
 
+export interface PageFeature {
+  icon: string;
+  color: string;
+  title: string;
+  body: string;
+}
+
 /**
  * Page header metadata - used in front app
  */
@@ -50,4 +57,5 @@ export interface HeaderMetadata {
   canonicalUrl?: string | null;
   ogType?: string | null;
   twitterCard?: string | null;
+  features?: PageFeature[] | null;
 }

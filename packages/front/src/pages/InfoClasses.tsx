@@ -1,16 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { contentService } from '@thaiakha/shared/services';
-import { PageLayout, HeaderSection, SmartHeaderSection, HeaderMenu, StickyTabNav } from '../components/layout';
+import { PageLayout, SmartHeaderSection, HeaderMenu, StickyTabNav } from '../components/layout';
 import {
-  Button, Card, Typography, Badge, Icon, InfoCard, StatCard,
+  Button, InfoCard, StatCard,
   VideoModal, PhotoModal, AkhaPixelLine
 } from '../components/ui/index';
 import GalleryModal, { GalleryItem } from '../components/modal/GalleryModal';
 import { CookingClassDB } from '@thaiakha/shared';
-import { cn } from '@thaiakha/shared/lib/utils';
 
 import { HeroContent } from '../components/classes/HeroContent';
+import ClassDetails from '../components/classes/ClassDetails';
+import ClassCatalog, { CatalogClass } from '../components/classes/ClassCatalog';
+import { ClassSection } from '../components/classes/ClassSectionBlock';
 import { Photo } from '../components/modal/Photo';
 import { Gallery } from '../components/modal/Gallery';
 import { Video } from '../components/modal/Video';
@@ -43,6 +45,8 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
   const [galleryData, setGalleryData] = useState<GalleryItem[]>([]);
   const [pageMetadata, setPageMetadata] = useState<{ imageUrl: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [classSessions, setClassSessions] = useState<Record<string, any>>({});
+  const [classSectionsMap, setClassSectionsMap] = useState<Record<string, ClassSection[]>>({});
 
   // Sync tab with browser back/forward
   useEffect(() => {
@@ -85,10 +89,14 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
     const loadContent = async () => {
       setLoading(true);
       try {
-        const [classData, gallery, metadata] = await Promise.all([
+        const [classData, gallery, metadata, morningSession, eveningSession, morningSections, eveningSections] = await Promise.all([
           contentService.getCookingClasses(),
           contentService.getGalleryItems('kitchen_stream'),
-          contentService.getPageMetadata('classes')
+          contentService.getPageMetadata('classes'),
+          contentService.getClassSession('morning_class'),
+          contentService.getClassSession('evening_class'),
+          contentService.getClassSections('morning_class'),
+          contentService.getClassSections('evening_class'),
         ]);
 
         const map: Record<string, CookingClassDB> = {};
@@ -98,6 +106,8 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
         setClasses(map);
         setGalleryData(gallery);
         setPageMetadata(metadata);
+        setClassSessions({ morning: morningSession, evening: eveningSession });
+        setClassSectionsMap({ morning: morningSections, evening: eveningSections });
       } finally {
         setLoading(false);
       }
@@ -149,6 +159,37 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             overviewImage={pageMetadata?.imageUrl || g(2).image_url}
             onAskCherry={handleAskCherry}
           />
+
+          {/* Class Catalog — shown only on overview tab */}
+          {activeTab === 'overview' && Object.keys(classes).length > 0 && (
+            <ClassCatalog
+              classes={Object.values(classes).map((cls): CatalogClass => ({
+                id: cls.id,
+                title: cls.title,
+                badge: cls.badge || null,
+                price: cls.price,
+                currency: 'THB',
+                duration_text: cls.duration_text || null,
+                tagline: cls.description || null,
+                image_url: cls.image_url || null,
+                tags: cls.tags ?? [],
+              }))}
+              onSelectClass={handleTabChange}
+              onBook={() => onNavigate('booking')}
+            />
+          )}
+
+          {/* Class Details — shown only on morning/evening tabs */}
+          {activeTab !== 'overview' && currentClass && (
+            <ClassDetails
+              color={activeTab === 'morning' ? 'primary' : 'secondary'}
+              tags={currentClass.tags ?? []}
+              inclusions={currentClass.inclusions ?? []}
+              schedule={(currentClass.schedule_items ?? []) as any[]}
+              meetingPoints={classSessions[activeTab]?.meeting_points ?? []}
+              classSections={classSectionsMap[activeTab] ?? []}
+            />
+          )}
 
           {/* Book CTA — always visible in all tabs */}
           <div className="flex justify-center pt-4">

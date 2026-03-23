@@ -1,0 +1,116 @@
+{
+  "project": {
+    "name": "Thai Akha Kitchen 2026",
+    "domain": "thaiakhakitchen.com",
+    "environment": "production"
+  },
+  "supabase": {
+    "projectRef": "YOUR_PROJECT_REF_HERE",
+    "projectUrl": "https://YOUR_PROJECT_REF.supabase.co",
+    "functionEndpoint": "https://YOUR_PROJECT_REF.functions.supabase.co/og-meta-tags",
+    "publicAnon": "YOUR_SUPABASE_ANON_KEY",
+    "region": "us-east-1"
+  },
+  "cloudflare": {
+    "accountId": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+    "workerName": "og-meta-tags",
+    "workerUrl": "https://og-meta-tags.YOUR_ACCOUNT.workers.dev",
+    "domain": "thaiakhakitchen.com",
+    "routePattern": "*"
+  },
+  "og_pages": {
+    "home": {
+      "slug": "home",
+      "route": "/",
+      "title": "Thai Akha Kitchen — Discover Culture & Flavor",
+      "description": "Explore the authentic flavors, stories, and traditions of Akha culture through classes, recipes, and cultural journeys.",
+      "type": "website"
+    },
+    "recipes": {
+      "slug": "recipes",
+      "route": "/recipes",
+      "title": "Traditional Akha Recipes — Authentic Flavors",
+      "description": "Discover traditional and modern Akha recipes. Learn cooking techniques and cultural stories behind each dish.",
+      "type": "website"
+    },
+    "classes": {
+      "slug": "classes",
+      "route": "/classes",
+      "title": "Akha Cooking & Culture Classes",
+      "description": "Experience authentic Akha cooking classes and cultural workshops. Learn from experienced instructors.",
+      "type": "website"
+    },
+    "history": {
+      "slug": "history",
+      "route": "/history",
+      "title": "Akha Culture & History — Stories & Traditions",
+      "description": "Explore the rich heritage, traditions, and history of the Akha people.",
+      "type": "website"
+    },
+    "booking": {
+      "slug": "booking",
+      "route": "/booking",
+      "title": "Book Your Akha Experience",
+      "description": "Reserve your spot for authentic Akha cooking classes and cultural experiences.",
+      "type": "website"
+    }
+  },
+  "culture_sections": {
+    "automaticFields": {
+      "seoTitleSource": "title",
+      "seoDescriptionSource": "subtitle",
+      "primaryImageSource": "primary_image",
+      "audioAssetPattern": "culture-audio-{slug}"
+    }
+  },
+  "social_bots": [
+    "facebookexternalhit",
+    "whatsapp",
+    "twitterbot",
+    "linkedinbot",
+    "slurp",
+    "bingbot",
+    "googlebot",
+    "applebot",
+    "telegrambot",
+    "ig_nativemobile"
+  ],
+  "caching": {
+    "ttl_seconds": 3600,
+    "cache_control": "public, max-age=3600"
+  },
+  "fallback_images": {
+    "default": "https://thaiakhakitchen.com/og-default.jpg",
+    "culture": "https://thaiakhakitchen.com/og-culture.jpg"
+  },
+  "testing": {
+    "facebook_debugger": "https://developers.facebook.com/tools/debug/",
+    "twitter_card_validator": "https://cards-dev.twitter.com/validator",
+    "linkedin_post_inspector": "https://www.linkedin.com/post-inspector/"
+  },
+  "deployment_timeline": {
+    "phase_1_supabase": "30 minutes",
+    "phase_2_database": "15 minutes",
+    "phase_3_cloudflare": "30 minutes",
+    "phase_4_testing": "60 minutes",
+    "total": "2-3 hours"
+  },
+  "monitoring": {
+    "supabase_logs": "supabase functions logs og-meta-tags --follow",
+    "cloudflare_logs": "Cloudflare Dashboard → Workers → Logs",
+    "health_check_interval": "weekly",
+    "manual_check_interval": "monthly"
+  },
+  "status": {
+    "created_date": "2026-03-23",
+    "last_updated": "2026-03-23",
+    "deployment_status": "ready_for_implementation",
+    "critical_steps": [
+      "Update Supabase project ref in this config",
+      "Deploy Edge Function",
+      "Run database migration",
+      "Deploy Cloudflare Worker",
+      "Test with social platforms"
+    ]
+  }
+}

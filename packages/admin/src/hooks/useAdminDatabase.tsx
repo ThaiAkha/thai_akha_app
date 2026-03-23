@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import {
-    Newspaper, AlertTriangle, Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music, Layout
+    AlertTriangle, Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music
 } from 'lucide-react';
 
 // --- CONFIG ---
+// Note: akha_news, culture_sections, ethnic_groups, page_sections → moved to AdminNews
 export const SYSTEM_TABLES = [
-    { id: 'akha_news', label: 'Akha News', icon: <Newspaper className="w-5 h-5" /> },
     { id: 'allergy_knowledge', label: 'Allergy Knowledge', icon: <AlertTriangle className="w-5 h-5" /> },
     { id: 'audio_assets', label: 'Audio Assets', icon: <Music className="w-5 h-5" /> },
     { id: 'booking_participants', label: 'Booking Participants', icon: <Users className="w-5 h-5" /> },
@@ -14,12 +14,10 @@ export const SYSTEM_TABLES = [
     { id: 'class_calendar_overrides', label: 'Calendar Overrides', icon: <Calendar className="w-5 h-5" /> },
     { id: 'class_sessions', label: 'Class Sessions', icon: <Calendar className="w-5 h-5" /> },
     { id: 'cooking_classes', label: 'Cooking Classes', icon: <Package className="w-5 h-5" /> },
-    { id: 'culture_sections', label: 'Culture Sections', icon: <Package className="w-5 h-5" /> },
     { id: 'dietary_profiles', label: 'Dietary Profiles', icon: <Users className="w-5 h-5" /> },
     { id: 'dietary_substitutions', label: 'Dietary Substitutions', icon: <Package className="w-5 h-5" /> },
     { id: 'driver_payments', label: 'Driver Payments', icon: <CreditCard className="w-5 h-5" /> },
     { id: 'driver_payout_tiers', label: 'Driver Payout Tiers', icon: <CreditCard className="w-5 h-5" /> },
-    { id: 'ethnic_groups', label: 'Ethnic Groups', icon: <Users className="w-5 h-5" /> },
     { id: 'gallery_items', label: 'Gallery Items', icon: <Package className="w-5 h-5" /> },
     { id: 'home_cards', label: 'Home Cards', icon: <Package className="w-5 h-5" /> },
     { id: 'home_cards_front', label: 'Home Cards (Front)', icon: <Package className="w-5 h-5" /> },
@@ -32,7 +30,6 @@ export const SYSTEM_TABLES = [
     { id: 'media_assets', label: 'Media Assets', icon: <Image className="w-5 h-5" /> },
     { id: 'meeting_points', label: 'Meeting Points', icon: <Package className="w-5 h-5" /> },
     { id: 'menu_selections', label: 'Menu Selections', icon: <Package className="w-5 h-5" /> },
-    { id: 'page_sections', label: 'Page Sections', icon: <Layout className="w-5 h-5" /> },
     { id: 'pickup_zones', label: 'Pickup Zones', icon: <Package className="w-5 h-5" /> },
     { id: 'profiles', label: 'Profiles', icon: <Users className="w-5 h-5" /> },
     { id: 'quiz_levels', label: 'Quiz Levels', icon: <Package className="w-5 h-5" /> },

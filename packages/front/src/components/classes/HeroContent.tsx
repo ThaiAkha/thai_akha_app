@@ -120,7 +120,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
               />
               <StatCard
                 size="sm"
-                icon="alarm"
+                icon="schedule"
                 iconPosition="left"
                 value={startTime}
                 title="Start Time"
@@ -130,7 +130,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
               <div className="hidden sm:block flex-1" />
               <StatCard
                 size="sm"
-                icon="payments"
+                icon="credit_card"
                 iconPosition="left"
                 value={currentClass.price.toLocaleString()}
                 title="Price / Person"

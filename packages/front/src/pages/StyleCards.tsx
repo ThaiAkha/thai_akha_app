@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import {
   Alert, Avatar, Badge, Button, Card, CardContent, Chip, ClassPicker,
-  Divider, Icon, InfoCard, Pagination, ProgressBar, Slider,
+  Divider, Icon, InfoCard, Pagination, ProgressBar, Slider, GlassCard,
   StatCard, Table, Tabs, Toggle, Tooltip, Typography,
 } from '../components/ui/index';
 import { Input, Textarea } from '../components/ui/form';
@@ -22,6 +22,7 @@ import { Modal, Photo, Video, Gallery } from '../components/modal/index';
 import AudioPlayer from '../components/modal/AudioPlayer';
 import { QuizCard, LevelQuiz } from '../components/quiz/index';
 import { UserProfileCard, UserSettings, QuizWidget } from '../components/user-dashboard/index';
+import ClassHeroCard from '../components/classes/ClassHeroCard';
 
 // --- MOCK DATA ---
 const MOCK_USER: any = {
@@ -387,6 +388,45 @@ const StyleCards: React.FC = () => {
                       </CardContent>
                     </Card>
                   ))}
+                </div>
+              </section>
+
+              <section className="space-y-8">
+                <SectionHead title="Glass Card" subtitle="Premium glassmorphism with dynamic gradient borders." />
+                <div className="space-y-8">
+                  {/* Variants grid */}
+                  <div>
+                    <Typography variant="h5" className="mb-4 text-action">Variants</Typography>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <GlassCard variant="primary" innerClassName="p-6">
+                        <Typography variant="h6" className="mb-2">Primary Variant</Typography>
+                        <Typography variant="body" color="sub">Lime + Cherry gradient. Best for standard cards and profiles.</Typography>
+                      </GlassCard>
+                      <GlassCard variant="action" innerClassName="p-6">
+                        <Typography variant="h6" className="mb-2">Action Variant</Typography>
+                        <Typography variant="body" color="sub">Lime green focus. Perfect for CTAs and success states.</Typography>
+                      </GlassCard>
+                      <GlassCard variant="secondary" innerClassName="p-6">
+                        <Typography variant="h6" className="mb-2">Secondary Variant</Typography>
+                        <Typography variant="body" color="sub">Dark Cherry focus. Ideal for premium and featured content.</Typography>
+                      </GlassCard>
+                      <GlassCard variant="subtle" innerClassName="p-6">
+                        <Typography variant="h6" className="mb-2">Subtle Variant</Typography>
+                        <Typography variant="body" color="sub">Soft glow effect. Great for nested and background content.</Typography>
+                      </GlassCard>
+                    </div>
+                  </div>
+
+                  {/* Hero card showcase */}
+                  <div>
+                    <Typography variant="h5" className="mb-4 text-action">Hero Card</Typography>
+                    <ClassHeroCard
+                      badge="Experience"
+                      title="Market Tour & Cooking Class"
+                      description="Step into the Akha world. Learn authentic cooking from village masters, explore local markets, and taste the culture at its finest."
+                      icon={<Icon name="restaurant" size="lg" />}
+                    />
+                  </div>
                 </div>
               </section>
 

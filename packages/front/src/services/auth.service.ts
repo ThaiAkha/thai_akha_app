@@ -9,13 +9,20 @@ export const authService = {
      * 📝 SIGN UP (GUEST/USER STANDARD)
      * Registrazione classica per i turisti.
      */
-    async signUp(email: string, password: string, fullName: string) {
+    async signUp(
+        email: string,
+        password: string,
+        fullName: string,
+        age?: number | null,
+        gender?: string | null,
+        nationality?: string | null,
+    ) {
         // 1. Crea Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                data: { full_name: fullName } // Metadati passati al Trigger SQL (se presente)
+                data: { full_name: fullName }
             }
         });
 
@@ -27,10 +34,13 @@ export const authService = {
                 .from('profiles')
                 .upsert({
                     id: authData.user.id,
-                    email: email,
+                    email,
                     full_name: fullName,
-                    role: 'user', // Ruolo di default
+                    role: 'user',
                     dietary_profile: 'diet_regular',
+                    ...(age != null && { age }),
+                    ...(gender && { gender }),
+                    ...(nationality && { nationality }),
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });
 

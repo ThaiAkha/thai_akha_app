@@ -51,7 +51,7 @@ export const contentService = {
     /** 📄 METADATA PAGINE: Titoli, descrizioni e immagini header */
     async getPageMetadata(slug: string, table = 'site_metadata', lang = 'en'): Promise<HeaderMetadata & { imageUrl: string } | null> {
         const normalizedLang = normalizeLang(lang);
-        return fetchWithCache(`meta_${table}_${slug}_${normalizedLang}_v5`, async () => {
+        return fetchWithCache(`meta_${table}_${slug}_${normalizedLang}_v6`, async () => {
             // Se la tabella è site_metadata_admin, cerchiamo le traduzioni
             if (table === 'site_metadata_admin') {
                 const { data, error } = await supabase
@@ -113,7 +113,7 @@ export const contentService = {
             // Fallback per site_metadata (front app) - manteniamo compatibilità
             const { data, error } = await supabase
                 .from(table)
-                .select('header_badge, header_icon, header_title_main, header_title_highlight, page_description, hero_image_url')
+                .select('header_badge, header_icon, header_title_main, header_title_highlight, page_description, hero_image_url, features')
                 .eq('page_slug', slug)
                 .maybeSingle();
 
@@ -125,7 +125,8 @@ export const contentService = {
                 titleMain: data.header_title_main,
                 titleHighlight: data.header_title_highlight,
                 description: data.page_description,
-                imageUrl: data.hero_image_url
+                imageUrl: data.hero_image_url,
+                features: (data as any).features ?? null,
             };
         });
     },
@@ -453,6 +454,60 @@ export const contentService = {
             }
 
             return (data || []) as CultureGalleryItem[];
+        });
+        return data || [];
+    },
+
+    /** 🧩 CLASS SECTIONS: Modular content blocks assigned to a class (accordion/timeline/alert_box) */
+    async getClassSections(classId: string): Promise<any[]> {
+        const data = await fetchWithCache(`class_sections_${classId}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('class_sections')
+                .select('id, section_key, title, subtitle, description, tag_badge, ui_style, display_order')
+                .contains('assigned_classes', [classId])
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                console.error(`Class sections fetch error [${classId}]:`, error);
+                return [];
+            }
+            return data || [];
+        });
+        return data || [];
+    },
+
+    /** 🏫 CLASS SESSION: Logistics & meeting points for a specific class */
+    async getClassSession(id: string): Promise<any | null> {
+        return fetchWithCache(`class_session_${id}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('class_sessions')
+                .select('*')
+                .eq('id', id)
+                .maybeSingle();
+
+            if (error) {
+                console.error(`Class session fetch error [${id}]:`, error);
+                return null;
+            }
+            return data;
+        });
+    },
+
+    /** 📄 PAGE SECTIONS: All sections for a given page slug */
+    async getPageSectionsBySlug(slug: string): Promise<any[]> {
+        const data = await fetchWithCache(`page_sections_${slug}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('page_sections')
+                .select('section_id, tag_badge, title, highlight, subtitle, description')
+                .eq('page_slug', slug)
+                .order('section_id', { ascending: true });
+
+            if (error) {
+                console.error(`Page sections fetch error [${slug}]:`, error);
+                return [];
+            }
+            return data || [];
         });
         return data || [];
     },

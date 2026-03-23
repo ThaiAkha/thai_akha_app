@@ -30,6 +30,7 @@ const AgencyTerms = lazy(() => import("./pages/agency/AgencyTerms"));
 const AgencyAssets = lazy(() => import("./pages/agency/AgencyAssets"));
 const AdminReport = lazy(() => import("./pages/admin/AdminReport"));
 const AdminDatabase = lazy(() => import("./pages/admin/AdminDatabase"));
+const AdminNews = lazy(() => import("./pages/admin/AdminNews"));
 const AdminStorage = lazy(() => import("./pages/admin/AdminStorage"));
 const AdminHotels = lazy(() => import("./pages/admin/AdminHotels"));
 const AdminHome = lazy(() => import("./pages/admin/AdminHome"));
@@ -63,6 +64,7 @@ function App() {
               <Route path="/admin-reports" element={<ProtectedRoute allowedRoles={['admin']}><AdminReport /></ProtectedRoute>} />
               <Route path="/admin-hotels" element={<ProtectedRoute allowedRoles={['admin']}><AdminHotels /></ProtectedRoute>} />
               <Route path="/admin-database" element={<ProtectedRoute allowedRoles={['admin']}><AdminDatabase /></ProtectedRoute>} />
+              <Route path="/admin-news" element={<ProtectedRoute allowedRoles={['admin']}><AdminNews /></ProtectedRoute>} />
               <Route path="/admin-storage" element={<ProtectedRoute allowedRoles={['admin']}><AdminStorage /></ProtectedRoute>} />
               <Route path="/admin/showcase" element={<ProtectedRoute allowedRoles={['admin']}><ComponentShowcase /></ProtectedRoute>} />
 

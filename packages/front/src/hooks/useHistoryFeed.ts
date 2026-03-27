@@ -39,33 +39,35 @@ export function useHistoryFeed(targetSection?: string | null) {
 
   // Sync state with URL (browser navigation)
   useEffect(() => {
-    const handlePop = () => setActiveSlug(getSlugFromUrl());
+    const handlePop = () => {
+      const slug = getSlugFromUrl();
+      if (slug !== activeSlug) {
+        setActiveSlug(slug);
+      }
+    };
     window.addEventListener('popstate', handlePop);
     return () => window.removeEventListener('popstate', handlePop);
-  }, [getSlugFromUrl]);
+  }, [getSlugFromUrl, activeSlug]);
 
   // Sync prop changes from outside
   useEffect(() => {
-    const currentSlug = getSlugFromUrl();
-    if (targetSection && targetSection !== activeSlug) {
-      if (currentSlug !== targetSection) {
-        window.history.pushState({}, '', `/history/${targetSection}`);
-      }
+    if (targetSection !== undefined && targetSection !== activeSlug) {
       setActiveSlug(targetSection);
-    } else if (!targetSection && activeSlug) {
-      if (currentSlug !== null) {
-        window.history.pushState({}, '', '/history');
-      }
-      setActiveSlug(null);
     }
-  }, [targetSection, activeSlug, getSlugFromUrl]);
+  }, [targetSection, activeSlug]);
 
   const handleOpenSection = useCallback((slug: string, onOpen?: (page: string, topic?: string, id?: string) => void) => {
     const section = sections.find(s => s.slug === slug);
     if (section?.category) setActiveCategory(section.category);
-    window.history.pushState({}, '', `/history/${slug}`);
-    setActiveSlug(slug);
-    if (onOpen) onOpen('history', undefined, slug);
+    
+    // If onOpen (handleNavigate) is provided, let it manage URL and global state
+    if (onOpen) {
+      onOpen('history', undefined, slug);
+      // We don't set activeSlug here, the useEffect will catch the prop change
+    } else {
+      window.history.pushState({}, '', `/history/${slug}`);
+      setActiveSlug(slug);
+    }
   }, [sections]);
 
   const handleBack = useCallback((onNavigate?: (page: string) => void) => {

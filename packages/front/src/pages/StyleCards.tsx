@@ -70,19 +70,19 @@ const MOCK_QUIZ = {
 
 // --- HELPERS ---
 const ChatShowcase = () => {
-    const [msg, setMsg] = React.useState('');
-    return (
-        <div className="p-6 bg-surface/30 rounded-3xl border border-border">
-            <ChatInput 
-                input={msg} 
-                setInput={setMsg} 
-                handleSend={() => { console.log('Sent:', msg); setMsg(''); }} 
-                isListening={false} 
-                handleMicClick={() => {}} 
-                isLoading={false} 
-            />
-        </div>
-    );
+  const [msg, setMsg] = React.useState('');
+  return (
+    <div className="p-6 bg-surface/30 rounded-3xl border border-border">
+      <ChatInput
+        input={msg}
+        setInput={setMsg}
+        handleSend={() => { console.log('Sent:', msg); setMsg(''); }}
+        isListening={false}
+        handleMicClick={() => { }}
+        isLoading={false}
+      />
+    </div>
+  );
 };
 
 // --- TABLE DEMO DATA ---
@@ -434,6 +434,24 @@ const StyleCards: React.FC = () => {
                 <SectionHead title="Form Inputs" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
+                    <Typography variant="h5" className="mb-3 text-action">Standard</Typography>
+                    <Input placeholder="Default variant..." label="Default Input" />
+                    <Input leftIcon="search" placeholder="Search..." label="Search" />
+                    <Input error helperText="Invalid input" label="Error State" />
+                  </div>
+                  <div className="space-y-4">
+                    <Typography variant="h5" className="mb-3 text-action">Full Width</Typography>
+                    <Input placeholder="Default variant..." label="Default Input" fullWidth />
+                    <Input leftIcon="search" placeholder="Search..." label="Search" fullWidth />
+                    <Input error helperText="Invalid input" label="Error State" fullWidth />
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-8">
+                <SectionHead title="Form Inputs + Toggle" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
                     <Input placeholder="Default variant..." label="Default Input" />
                     <Input leftIcon="search" placeholder="Search..." label="Search" />
                     <Input error helperText="Invalid input" label="Error State" />
@@ -504,218 +522,218 @@ const StyleCards: React.FC = () => {
             </div>
           )}
 
-          {/* ========== BOOKING SECTION ========== */}
-          {activeTab === 'booking' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Booking" subtitle="Class selection and reservation flows." />
-              <section className="space-y-8">
-                <SectionHead title="ClassPicker" />
-                <ClassPicker
-                  date={pickerDate}
-                  onDateChange={setPickerDate}
-                  session={pickerSession}
-                  onSessionChange={setPickerSession}
+        {/* ========== BOOKING SECTION ========== */}
+        {activeTab === 'booking' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Booking" subtitle="Class selection and reservation flows." />
+            <section className="space-y-8">
+              <SectionHead title="ClassPicker" />
+              <ClassPicker
+                date={pickerDate}
+                onDateChange={setPickerDate}
+                session={pickerSession}
+                onSessionChange={setPickerSession}
+              />
+              <Typography variant="monoLabel">
+                Selected: <strong>{pickerDate}</strong> — Session: <strong>{pickerSession}</strong>
+              </Typography>
+            </section>
+          </div>
+        )}
+
+        {/* ========== CLASSES SECTION ========== */}
+        {activeTab === 'classes' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Classes" subtitle="Class information and display cards." />
+            <section className="space-y-8">
+              <SectionHead title="InfoCard (Real Data)" />
+              {!loading && cards.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {cards.slice(0, 3).map(card => (
+                    <InfoCard
+                      key={`class-${card.id}`}
+                      card={{ id: card.id, title: card.title, desc: card.description, link: card.target_path || '#', image: card.image_url, icon: card.icon_name }}
+                      layout="vertical"
+                      onNavigate={() => { }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="p-12 text-center opacity-50 italic border border-dashed rounded-3xl">Loading or no data...</div>
+              )}
+            </section>
+          </div>
+        )}
+
+        {/* ========== AUTH SECTION ========== */}
+        {activeTab === 'auth' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Authentication" subtitle="Login, Register and Recovery components." />
+            <div className="max-w-md mx-auto">
+              <Card variant="glass" className="p-8">
+                <AuthForm onSuccess={() => { }} onNavigate={() => { }} />
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* ========== CHAT SECTION ========== */}
+        {activeTab === 'chat' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Chat" subtitle="Direct messaging and group conversations." />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+              <div className="h-[600px] border border-border rounded-3xl overflow-hidden shadow-2xl bg-surface/50 backdrop-blur-md">
+                <ChatBox userProfile={MOCK_USER} isDarkMode={true} />
+              </div>
+              <div className="space-y-8">
+                <SectionHead title="Chat Input" subtitle="Rich message composer with voice support." />
+                <ChatShowcase />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========== LAYOUT SECTION ========== */}
+        {activeTab === 'layout' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Layout & Navigation" subtitle="Global structure and navigational elements." />
+            <div className="space-y-16">
+              <div>
+                <SectionHead title="Sidebar (Desktop Preview)" />
+                <div className="h-[500px] border border-dashed border-border/50 rounded-3xl overflow-hidden relative bg-slate-900/10">
+                  <div className="absolute inset-0 flex">
+                    <Sidebar
+                      currentPage="style"
+                      onNavigate={() => { }}
+                      isOpen={true}
+                      onToggle={() => { }}
+                      isDarkMode={true}
+                      onToggleTheme={() => { }}
+                      userProfile={MOCK_USER}
+                      onLogout={() => { }}
+                    />
+                    <div className="flex-1 p-8 opacity-20 italic">Main Content Area Mockup</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <SectionHead title="MegaMenu" subtitle="The primary navigation bridge." />
+                <div className="relative h-[400px] bg-background rounded-3xl border border-border overflow-hidden">
+                  <MegaMenu title="Main Menu" onNavigate={() => { }} onClose={() => { }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========== MENU SECTION ========== */}
+        {activeTab === 'menu' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Menu & Certification" subtitle="Showcasing meals and achievements." />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div>
+                <SectionHead title="Menu Card" />
+                <MenuCard
+                  dish={MOCK_RECIPE}
+                  isSelected={false}
+                  onClick={() => { }}
+                  dietLabel="REGULAR"
                 />
-                <Typography variant="monoLabel">
-                  Selected: <strong>{pickerDate}</strong> — Session: <strong>{pickerSession}</strong>
-                </Typography>
-              </section>
-            </div>
-          )}
-
-          {/* ========== CLASSES SECTION ========== */}
-          {activeTab === 'classes' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Classes" subtitle="Class information and display cards." />
-              <section className="space-y-8">
-                <SectionHead title="InfoCard (Real Data)" />
-                {!loading && cards.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {cards.slice(0, 3).map(card => (
-                      <InfoCard
-                        key={`class-${card.id}`}
-                        card={{ id: card.id, title: card.title, desc: card.description, link: card.target_path || '#', image: card.image_url, icon: card.icon_name }}
-                        layout="vertical"
-                        onNavigate={() => { }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-12 text-center opacity-50 italic border border-dashed rounded-3xl">Loading or no data...</div>
-                )}
-              </section>
-            </div>
-          )}
-
-          {/* ========== AUTH SECTION ========== */}
-          {activeTab === 'auth' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Authentication" subtitle="Login, Register and Recovery components." />
-              <div className="max-w-md mx-auto">
-                <Card variant="glass" className="p-8">
-                  <AuthForm onSuccess={() => {}} onNavigate={() => {}} />
-                </Card>
               </div>
-            </div>
-          )}
-
-          {/* ========== CHAT SECTION ========== */}
-          {activeTab === 'chat' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Chat" subtitle="Direct messaging and group conversations." />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                <div className="h-[600px] border border-border rounded-3xl overflow-hidden shadow-2xl bg-surface/50 backdrop-blur-md">
-                   <ChatBox userProfile={MOCK_USER} isDarkMode={true} />
-                </div>
-                <div className="space-y-8">
-                   <SectionHead title="Chat Input" subtitle="Rich message composer with voice support." />
-                   <ChatShowcase />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ========== LAYOUT SECTION ========== */}
-          {activeTab === 'layout' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Layout & Navigation" subtitle="Global structure and navigational elements." />
-              <div className="space-y-16">
-                <div>
-                  <SectionHead title="Sidebar (Desktop Preview)" />
-                  <div className="h-[500px] border border-dashed border-border/50 rounded-3xl overflow-hidden relative bg-slate-900/10">
-                    <div className="absolute inset-0 flex">
-                      <Sidebar 
-                        currentPage="style" 
-                        onNavigate={() => {}} 
-                        isOpen={true} 
-                        onToggle={() => {}} 
-                        isDarkMode={true} 
-                        onToggleTheme={() => {}} 
-                        userProfile={MOCK_USER} 
-                        onLogout={() => {}} 
-                      />
-                      <div className="flex-1 p-8 opacity-20 italic">Main Content Area Mockup</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <SectionHead title="MegaMenu" subtitle="The primary navigation bridge." />
-                  <div className="relative h-[400px] bg-background rounded-3xl border border-border overflow-hidden">
-                    <MegaMenu title="Main Menu" onNavigate={() => {}} onClose={() => {}} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ========== MENU SECTION ========== */}
-          {activeTab === 'menu' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Menu & Certification" subtitle="Showcasing meals and achievements." />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div>
-                  <SectionHead title="Menu Card" />
-                  <MenuCard 
-                    dish={MOCK_RECIPE} 
-                    isSelected={false} 
-                    onClick={() => {}} 
-                    dietLabel="REGULAR"
-                  />
-                </div>
-                <div>
-                  <SectionHead title="Certificate" />
-                  <Certificate 
-                    name="John Doe" 
-                    date="March 2026" 
-                    classType="Private Session" 
-                    dishes={[{ 
-                      name: 'Phak Chi Salad', 
-                      image: MOCK_RECIPE.image 
-                    }]} 
-                    onClose={() => {}} 
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ========== MODAL SECTION ========== */}
-          {activeTab === 'modal' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Modals & Media" subtitle="Overlay windows and media players." />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="p-6 space-y-4">
-                   <SectionHead title="Audio Player" />
-                   <AudioPlayer title="The Legend of Akha" url="#" />
-                </Card>
-                <div className="space-y-4">
-                   <SectionHead title="Gallery & Photos" />
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="aspect-square bg-surface rounded-xl border border-border flex items-center justify-center opacity-40">Photo Slot</div>
-                      <div className="aspect-square bg-surface rounded-xl border border-border flex items-center justify-center opacity-40">Video Slot</div>
-                   </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ========== QUIZ SECTION ========== */}
-          {activeTab === 'quiz' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Quiz System" subtitle="Educational challenges and rewards." />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <QuizCard awardedBonuses={[1, 2]} rewards={[{ id: 1, label: 'Sprout', icon: 'star' }]} onCardClick={() => {}} />
-                <Card className="p-8 bg-surface/50 overflow-hidden">
-                   <LevelQuiz 
-                     level={{ 
-                       id: '1', 
-                       title: 'Beginner', 
-                       modules: [{ id: 'm1', title: 'Basics', icon: 'star', questions: [1,2,3] }] 
-                     } as any} 
-                     completedModules={['m1']} 
-                     perfectModules={[]} 
-                     bestScores={{}} 
-                     onStartModule={() => {}} 
-                     onBack={() => {}} 
-                   />
-                </Card>
-              </div>
-            </div>
-          )}
-
-          {/* ========== RECIPES SECTION ========== */}
-          {activeTab === 'recipes' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="Recipes" subtitle="Detailed cooking instructions and views." />
-              <div className="max-w-4xl mx-auto">
-                <RecipeView 
-                  recipe={MOCK_RECIPE as any} 
-                  onBack={() => {}} 
-                  allRecipes={[MOCK_RECIPE as any]}
-                  activeDiet="Regular"
-                  onSelectDish={() => {}}
+              <div>
+                <SectionHead title="Certificate" />
+                <Certificate
+                  name="John Doe"
+                  date="March 2026"
+                  classType="Private Session"
+                  dishes={[{
+                    name: 'Phak Chi Salad',
+                    image: MOCK_RECIPE.image
+                  }]}
+                  onClose={() => { }}
                 />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* ========== USER DASHBOARD SECTION ========== */}
-          {activeTab === 'user-dashboard' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
-              <SectionHead title="User Dashboard" subtitle="Personalized controls and overview." />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                <UserProfileCard userProfile={MOCK_USER} />
-                <div className="space-y-8">
-                  <UserSettings userProfile={MOCK_USER} spicinessLevels={[]} onUpdate={() => {}} onBack={() => {}} />
-                  <QuizWidget onNavigate={() => {}} userProfile={MOCK_USER} />
+        {/* ========== MODAL SECTION ========== */}
+        {activeTab === 'modal' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Modals & Media" subtitle="Overlay windows and media players." />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="p-6 space-y-4">
+                <SectionHead title="Audio Player" />
+                <AudioPlayer title="The Legend of Akha" url="#" />
+              </Card>
+              <div className="space-y-4">
+                <SectionHead title="Gallery & Photos" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="aspect-square bg-surface rounded-xl border border-border flex items-center justify-center opacity-40">Photo Slot</div>
+                  <div className="aspect-square bg-surface rounded-xl border border-border flex items-center justify-center opacity-40">Video Slot</div>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* ========== QUIZ SECTION ========== */}
+        {activeTab === 'quiz' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Quiz System" subtitle="Educational challenges and rewards." />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <QuizCard awardedBonuses={[1, 2]} rewards={[{ id: 1, label: 'Sprout', icon: 'star' }]} onCardClick={() => { }} />
+              <Card className="p-8 bg-surface/50 overflow-hidden">
+                <LevelQuiz
+                  level={{
+                    id: '1',
+                    title: 'Beginner',
+                    modules: [{ id: 'm1', title: 'Basics', icon: 'star', questions: [1, 2, 3] }]
+                  } as any}
+                  completedModules={['m1']}
+                  perfectModules={[]}
+                  bestScores={{}}
+                  onStartModule={() => { }}
+                  onBack={() => { }}
+                />
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* ========== RECIPES SECTION ========== */}
+        {activeTab === 'recipes' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="Recipes" subtitle="Detailed cooking instructions and views." />
+            <div className="max-w-4xl mx-auto">
+              <RecipeView
+                recipe={MOCK_RECIPE as any}
+                onBack={() => { }}
+                allRecipes={[MOCK_RECIPE as any]}
+                activeDiet="Regular"
+                onSelectDish={() => { }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ========== USER DASHBOARD SECTION ========== */}
+        {activeTab === 'user-dashboard' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-20">
+            <SectionHead title="User Dashboard" subtitle="Personalized controls and overview." />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+              <UserProfileCard userProfile={MOCK_USER} />
+              <div className="space-y-8">
+                <UserSettings userProfile={MOCK_USER} spicinessLevels={[]} onUpdate={() => { }} onBack={() => { }} />
+                <QuizWidget onNavigate={() => { }} userProfile={MOCK_USER} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </PageLayout>
+    </div>
+    </PageLayout >
   );
 };
 

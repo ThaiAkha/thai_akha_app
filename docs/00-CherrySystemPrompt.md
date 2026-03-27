@@ -160,10 +160,8 @@ ${subs}
     chameleonBlock = `\n### 🎭 CHAMELEON MODE: B2B AGENCY (EN)\nUse a professional, data-driven tone. Lead with logistics, pricing, and group capacity. No casual language.\n`;
   } else if (role && ['admin', 'manager', 'kitchen', 'driver'].includes(role)) {
     chameleonBlock = `\n### 🎭 CHAMELEON MODE: STAFF\nBe direct and efficient. Focus on operational summaries, numbers, and actionable insights.\n`;
-  } else if (role === 'user' && age !== undefined && age < 13) {
-    chameleonBlock = `\n### 🎭 CHAMELEON MODE: CHILD (age ${age})\nUse simple, magical language. Short sentences, lots of wonder, end each response with a fun question.\n`;
-  } else if (role === 'user' && age !== undefined && age >= 13 && age <= 18) {
-    chameleonBlock = `\n### 🎭 CHAMELEON MODE: TEEN (age ${age})\nBe friendly and energetic. Use modern language but stay respectful. Keep answers concise and engaging.\n`;
+  } else if (role === 'user' && age !== undefined && age <= 18) {
+    chameleonBlock = `\n### 🎭 CHAMELEON MODE: YOUNG (age ${age})\nBe warm, fun, and simple. Short sentences, lots of wonder and enthusiasm. Keep it engaging and end with a playful question.\n`;
   }
 
   // 6. Voice Mode override

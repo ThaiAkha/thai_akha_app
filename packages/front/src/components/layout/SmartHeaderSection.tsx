@@ -93,7 +93,7 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
 
   if (loading) {
     return (
-      <div className={cn("w-full flex gap-4 animate-pulse opacity-70", alignmentClasses, className)}>
+      <div className={cn("w-full flex gap-2 animate-pulse opacity-70", alignmentClasses, className)}>
         {variant === 'kitchen' && (
           <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full mb-2"></div>
         )}
@@ -103,11 +103,11 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
         )}></div>
         
         {variant !== 'kitchen' && (
-          <div className="h-6 w-1/2 max-w-sm bg-gray-200 dark:bg-gray-700 rounded-md mt-2"></div>
+          <div className="h-6 w-1/2 max-w-sm bg-gray-200 dark:bg-gray-700 rounded-md mt-1"></div>
         )}
         
         {variant === 'section' && (
-          <div className="space-y-2 mt-4 w-full flex flex-col" style={{ alignItems: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start' }}>
+          <div className="space-y-2 mt-2 w-full flex flex-col" style={{ alignItems: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start' }}>
             <div className="h-4 w-2/3 max-w-2xl bg-gray-100 dark:bg-gray-800 rounded"></div>
             <div className="h-4 w-1/2 max-w-xl bg-gray-100 dark:bg-gray-800 rounded"></div>
           </div>

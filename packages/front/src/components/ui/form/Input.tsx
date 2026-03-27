@@ -133,7 +133,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {/* Icona sinistra */}
           {leftIcon && (
             <div className={cn(
-              'absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300',
+              'absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300 flex items-center leading-none',
               error ? 'text-red-500/70 group-focus-within:text-red-500' :
                 success ? 'text-action/70 group-focus-within:text-action' :
                   'text-gray-700/50 dark:text-gray-300/50 group-focus-within:text-action'
@@ -168,7 +168,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {/* Icona destra */}
           {rightIcon && (
             <div className={cn(
-              'absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300',
+              'absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300 flex items-center leading-none',
               error ? 'text-red-500/70' :
                 success ? 'text-action/70' :
                   'text-gray-700/50 dark:text-gray-300/50'

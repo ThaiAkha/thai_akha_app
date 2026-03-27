@@ -78,18 +78,18 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
   };
 
   return (
-    <div className={cn("w-full flex flex-col gap-4", alignmentClasses, className)}>
+    <div className={cn("w-full max-w-[85%] md:max-w-none mx-auto flex flex-col gap-2", alignmentClasses, className)}>
 
       {/* 1. HERO VARIANT (Big Display Title + Pixel Pattern) */}
       {variant === 'hero' && (
         <div className={cn("space-y-4 mb-4", alignmentClasses)}>
           <Typography
             variant="titleMain"
-            className=""
+            className="text-4xl md:text-4xl"
           >
             {title}
           </Typography>
-          <div className="opacity-60 mt-4">
+          <div className="opacity-60 mt-2">
             <AkhaPixelPattern
               variant="line_simple"
               size={8}
@@ -110,14 +110,14 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
       {/* 2. SECTION VARIANT (Standard H2 with Gradient Support) */}
       {variant === 'section' && (
         <div className={cn("flex flex-col", alignmentClasses)}>
-          {!hideTitle && renderTitle("titleMain")}
+          {!hideTitle && renderTitle("titleMain", "text-4xl md:text-4xl")}
           {(!hideSubtitle && subtitle) && (
-            <Typography variant="h5" color="sub" className="mt-2">
+            <Typography variant="h5" color="sub" className="mt-1">
               {subtitle}
             </Typography>
           )}
           {!hideDivider && (
-            <div className="opacity-60 my-6">
+            <div className="opacity-60 my-3">
               <AkhaPixelPattern
                 variant="line_simple"
                 size={6}

@@ -283,11 +283,17 @@
    --animate-mic-listening: mic-listening 1.5s ease-in-out infinite;
    --animate-shine: shine 4s infinite linear;
    --animate-shine-oblique: shine-oblique 4s infinite linear;
+   --animate-float: float 6s ease-in-out infinite;
 }
 
 /* ============================================================================
    KEYFRAMES
    ============================================================================ */
+
+@keyframes float {
+   0%, 100% { transform: translateY(0); }
+   50% { transform: translateY(-15px); }
+}
 
 @keyframes fade-slide-down {
    0% {

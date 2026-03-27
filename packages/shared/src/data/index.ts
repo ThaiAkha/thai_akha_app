@@ -1,3 +1,4 @@
+export * from './authFeatured';
 export * from './classData';
 export * from './pixelPatterns';
 export * from './dietaryKnowledge';

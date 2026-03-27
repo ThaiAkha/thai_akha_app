@@ -64,3 +64,23 @@
   position: relative;
   z-index: 1;
 }
+
+/* Wide glow modifier — 50% larger spread radius (used on auth page cards) */
+.blog-card-glass--wide-glow .blog-card-glass__glow {
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(227, 31, 51, 0.2) 0%,
+    var(--glass-accent-glow) 58%,
+    transparent 100%
+  );
+}
+
+.blog-card-glass--wide-glow .blog-card-glass__border {
+  background: radial-gradient(
+    circle at var(--mouse-x) var(--mouse-y),
+    rgba(227, 31, 51, 0.8) 0%,
+    var(--glass-accent-border) 28%,
+    rgba(227, 31, 51, 0.3) 72%,
+    transparent 100%
+  );
+}

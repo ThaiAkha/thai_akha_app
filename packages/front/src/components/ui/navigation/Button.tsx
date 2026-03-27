@@ -16,7 +16,7 @@ const BUTTON_VARIANTS = {
   brand: "bg-primary text-white shadow-brand-glow border-t border-white/40 hover:brightness-110 hover:shadow-lg",
 
   // ACTION: Success/Confirm (Green) [Source 114]
-  action: "bg-action/80 text-white shadow-action-glow border-t border-white/40 hover:brightness-110 hover:shadow-lg",
+  action: "bg-action/80 text-white border-t border-white/40 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5",
 
   // MINERAL: Glass Effect (Dark Mode Optimized)
   mineral: "bg-white/10 backdrop-blur-2xl border-t border-white/20 text-gray-700 dark:text-gray-300 hover:brightness-110 hover:bg-white/10 hover:border-white/30 hover:text-gray-900 dark:text-gray-100 shadow-action-glow",

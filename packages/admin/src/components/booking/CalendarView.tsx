@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ChevronLeft, ChevronRight, Ban } from 'lucide-react';
-import { getSessionCapacity } from '../../config/sessionDefaults';
-import { getDateKey } from '../../utils/dateKeyUtils';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
+import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 import SessionStatusBadge from '../admin/calendar/SessionStatusBadge';
 
 interface CalendarViewProps {
@@ -57,7 +57,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             try {
                 const { data: sessionsData } = await supabase.from('class_sessions').select('id, max_capacity');
                 const baseCaps: Record<string, number> = {};
-                sessionsData?.forEach((s: any) => baseCaps[s.id] = getSessionCapacity(s.max_capacity));
+                sessionsData?.forEach((s: any) => baseCaps[s.id] = getSessionCapacity(s.max_capacity) ?? 0);
 
                 const { data: bookings } = await supabase
                     .from('bookings')
@@ -83,7 +83,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
                         if (override?.is_closed) return { status: 'CLOSED', seats: 0 };
 
-                        const max = getSessionCapacity(override?.custom_capacity ?? baseCaps[sessionId]);
+                        const max = getSessionCapacity(override?.custom_capacity ?? baseCaps[sessionId]) ?? 0;
 
                         const occupied = bookings
                             ?.filter(b => b.booking_date === dateStr && b.session_id === sessionId)

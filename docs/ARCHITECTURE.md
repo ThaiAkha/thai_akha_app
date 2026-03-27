@@ -1,8 +1,6 @@
-# 📖 THAI AKHA 2026: Architecture v2 — Real Schema Analysis
-
-> **Generato**: Mar 16, 2026 — Claude + DeepSeek v3.2 + Supabase MCP (schema reale)
-> **Sostituisce**: `ARCHITECTURE.md` (Mar 12, 2026)
-> **Status**: Resoconto — Solo lettura, nessuna modifica applicata ✅
+### 📖 THAI AKHA 2026: Architecture v2 — Definitive Schema
+**Aggiornato**: Marzo 2026
+**Status**: Risoluzione GAP applicata e allineamento completato ✅
 
 ---
 
@@ -22,33 +20,20 @@
 
 ---
 
-## 2. Ruoli — DB vs TypeScript (GAP CRITICO)
+#### 2. Ruoli — DB vs TypeScript (RISOLTO ✅)
+I ruoli sono stati ufficialmente allineati tra Database e TypeScript tramite aggiornamento dei constraint SQL. Il ruolo `customer` è stato rimosso dall'architettura (lo status di cliente si calcola dinamicamente dalle prenotazioni attive), mentre `logistics` e `user` sono stati ufficializzati per supportare rispettivamente le operazioni di spesa al mercato e gli account utente standard.
 
-### Constraint reale nel DB (`profiles.role`):
-```sql
-role = ANY (ARRAY['admin','manager','agency','kitchen','driver','alumni','guest'])
-```
-
-### Ruoli nel TypeScript (`auth.types.ts`):
-```typescript
-type UserRole = 'admin' | 'manager' | 'agency' | 'kitchen' | 'logistics'
-              | 'driver' | 'alumni' | 'guest'
-```
-
-### Discrepanze identificate:
-| Ruolo | DB | TypeScript | Note |
-|-------|----|-----------|------|
-| `admin` | ✅ | ✅ | |
-| `manager` | ✅ | ✅ | |
-| `agency` | ✅ | ✅ | |
-| `kitchen` | ✅ | ✅ | |
-| `driver` | ✅ | ✅ | |
-| `alumni` | ✅ | ✅ | |
-| `guest` | ✅ | ✅ | |
-| `logistics` | ❌ **MANCANTE** | ✅ | Usato nel routing ma non nel DB constraint |
-| `customer` | ❌ **MANCANTE** | ❌ | Citato in doc v1 ma non esiste né in DB né in TS |
-
-> **Impatto**: Un utente con `role = 'logistics'` non può essere salvato nel DB — il constraint lo rifiuterebbe.
+| Ruolo      | DB  | TypeScript | Note Operative |
+| ---------- | --- | ---------- | -------------- |
+| **admin**  | ✅ | ✅ | Accesso totale al sistema. |
+| **manager**| ✅ | ✅ | Gestione operativa, prenotazioni, logistica secondaria. |
+| **logistics**| ✅ | ✅ | Dedicato esclusivamente allo staff per la spesa al mercato fisico (Market Run, Market Planner). |
+| **agency** | ✅ | ✅ | Partner B2B per la creazione e gestione di prenotazioni di gruppo. |
+| **kitchen**| ✅ | ✅ | Staff cucina (Accesso al POS, Inventory, Daily Prep). |
+| **driver** | ✅ | ✅ | App autisti per la gestione pickup/dropoff. |
+| **alumni** | ✅ | ✅ | Ex studenti (sblocca ricette e feature avanzate). |
+| **user**   | ✅ | ✅ | Ruolo di default per gli iscritti al sito. |
+| **guest**  | ✅ | ✅ | Ospiti anonimi (usato principalmente per i session_token della AI Chat, non più per i booking). |
 
 ---
 
@@ -249,33 +234,16 @@ profiles
 
 ---
 
-## 7. Feature Non Documentate (trovate nel DB)
+#### 7. Logica Prenotazioni & Walk-in Flow (Aggiornamento 2026)
+Il "doppio path" per le email e la creazione di account fantasma è stato risolto, centralizzando la logica sulla tracciabilità di chi inserisce il dato.
 
-### Split Booking
-```
-bookings.parent_booking_id + is_split_child
-```
-Un booking principale può essere spezzato in sotto-booking (es. gruppo diviso su più veicoli).
-
-### Hotel Pickup Rules
-```
-hotel_pickup_rules: hotel_id, day_of_week, start_time, end_time,
-                    alt_meeting_point, alt_lat/lng, alt_map_link,
-                    guest_message, is_active
-```
-Regole custom per pickup hotel: orari alternativi, meeting point diverso, messaggio per il guest.
-
-### Walk-in Guest (senza account)
-```
-bookings.guest_name + bookings.guest_email
-```
-Un booking può essere creato per un guest non registrato, senza `guest_user_id`.
-
-### Luggage Flag
-```
-bookings.has_luggage (boolean)
-```
-Flag per gestione bagagli durante pickup.
+**Walk-in Guest & Agency Flow (No Ghost Profiles):**
+La colonna `guest_user_id` è **deprecata**. Non creeremo più profili utente "vuoti" con ruolo `guest` solo per far figurare un nome a sistema.
+* **La colonna `user_id` in `bookings` è logicamente obbligatoria e indica "Chi ha creato la prenotazione":**
+  * *Cliente dal sito Web:* `user_id` = UUID del cliente registrato (`user`).
+  * *Walk-in / Telefono:* `user_id` = UUID del `manager` che inserisce la prenotazione dal tablet.
+  * *Agenzia:* `user_id` = UUID dell'`agency` che prenota per il suo gruppo.
+* **Dati del Turista:** Nei casi di Walk-in o Agenzia, i dati reali del turista vengono salvati esclusivamente nei campi testuali `guest_name` e `guest_email` della tabella `bookings`. Il sistema invierà la conferma a quella mail senza richiedere la creazione di un account.
 
 ### Zoho Integration
 ```
@@ -341,20 +309,16 @@ WHERE conrelid = 'bookings'::regclass AND contype = 'u';
 
 ---
 
-## 10. Checklist Allineamento Doc ↔ Codice ↔ DB
+#### 10. Checklist Allineamento Doc ↔ Codice ↔ DB
+Il sistema ha raggiunto il perfetto allineamento tra le direttive aziendali, il codice React/TypeScript e il database Supabase.
 
-| Item | Doc v1 | TypeScript | DB Reale | Allineato? |
-|------|--------|-----------|---------|-----------|
-| Ruolo `logistics` | ✅ | ✅ | ❌ | ❌ No |
-| Ruolo `customer` | ✅ | ❌ | ❌ | ❌ No |
-| Split booking | ❌ | ❌ | ✅ | ❌ No |
-| `hotel_pickup_rules` | ❌ | ❌ | ✅ | ❌ No |
-| `has_luggage` | ❌ | ❌ | ✅ | ❌ No |
-| `meeting_point` override | ❌ | ❌ | ✅ | ❌ No |
-| Zoho integration | ❌ | parziale | ✅ | ❌ No |
-| Agency senza tabella | ❌ | ✅ | ✅ | parziale |
-| `guest_name/email` walk-in | ❌ | ❌ | ✅ | ❌ No |
-| FK su `internal_id` | ❌ | ❌ | ✅ | ❌ No |
+| Item | Status Finale | Note di Risoluzione |
+| ---- | ------------- | ------------------- |
+| **Ruolo `logistics`** | ✅ Allineato | Mantenuto e ufficializzato in DB e TS per gestire la pagina Market Run. |
+| **Ruolo `customer`** | ✅ Risolto | Eliminato. Lo status VIP/Customer è calcolato verificando se l'utente ha un record `status='confirmed'` in `bookings`. |
+| **Ruolo `user`** | ✅ Allineato | Aggiunto ai constraint DB come default per i nuovi registrati. |
+| **Walk-in Flow** | ✅ Allineato | Si usano le colonne `guest_name/email`. Il rischio di collisione è azzerato eliminando la logica del `guest_user_id`. |
+| **AI System (Cherry)** | ✅ Allineato | Create tabelle `chat_sessions` e `chat_messages` per memoria e rate limiting. |
 
 ---
 

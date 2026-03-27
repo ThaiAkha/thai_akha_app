@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { getDateKey } from '../../utils/dateKeyUtils';
+import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 import CalendarMaster, { CalendarDay, LegendItem } from '../common/CalendarMaster';
 import { useCalendarAvailability } from '../../hooks/useCalendarAvailability';
 

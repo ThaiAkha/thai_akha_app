@@ -7,6 +7,7 @@
     "bootstrap": "pnpm install && npx pnpm build --filter shared",
     "dev:front": "pnpm --filter front dev",
     "dev:admin": "pnpm --filter admin dev",
+    "dev": "pnpm run dev:front & pnpm run dev:admin",
     "build:front": "pnpm --filter front build",
     "build:admin": "pnpm --filter admin build",
     "build": "pnpm --filter front build && pnpm --filter admin build"

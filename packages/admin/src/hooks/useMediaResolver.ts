@@ -34,7 +34,7 @@ export const useMediaResolver = (value: any) => {
                 if (typeof value === 'string') {
                     // Check cache first
                     if (mediaCache.has(value)) {
-                        const cached = mediaCache.get(value);
+                        const cached = mediaCache.get(value) ?? null;
                         if (isMounted.current) {
                             setUrls(cached);
                             setLoading(false);

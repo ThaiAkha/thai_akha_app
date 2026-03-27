@@ -71,11 +71,13 @@ export const Certificate: React.FC<CertificateProps> = ({
         <div className="absolute bottom-6 right-6 size-16 border-b-4 border-r-4 border-[#C0C0C0] z-20"></div>
 
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-             <img src="https://www.thaiakhakitchen.com/wp-content/uploads/2018/11/tak-logo-new.png" className="w-[500px] grayscale" alt="" />
+             {/* TODO: Add watermark logo to Supabase Storage */}
+             {/* <img src="https://supabase.co/.../tak-logo-new.png" className="w-[500px] grayscale" alt="" /> */}
         </div>
 
         <div className="relative z-30 flex-1 flex flex-col items-center pt-24 px-16">
-            <img src="https://www.thaiakhakitchen.com/wp-content/uploads/2018/11/tak-logo-new.png" alt="Logo" className="h-24 mb-6" />
+            {/* TODO: Add certificate logo to Supabase Storage */}
+            {/* <img src="https://supabase.co/.../tak-logo-new.png" alt="Logo" className="h-24 mb-6" /> */}
             
             <div className="text-center mb-10">
                 <h1 className="text-6xl font-display font-black uppercase tracking-[0.15em] text-[#1a1a1a] leading-none mb-2">

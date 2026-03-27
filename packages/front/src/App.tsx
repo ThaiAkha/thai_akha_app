@@ -30,7 +30,7 @@ import { useViewportHeight } from './hooks/useViewportHeight';
 type Page = string;
 
 const ADMIN_ROLES = new Set(['agency', 'admin', 'manager']);
-const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'http://localhost:3004';
+const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'https://admin.thaiakha.com';
 
 const App: React.FC = () => {
   // Hook per gestire l'altezza reale su mobile (100vh fix)
@@ -45,25 +45,34 @@ const App: React.FC = () => {
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Deriviamo 'page' dall'URL o dallo stato iniziale
-  const getPageFromPath = () => {
-    const path = window.location.pathname.split('/')[1];
-    return path || 'home';
-  };
+// Deriviamo 'page' e 'slug' dall'URL o dallo stato iniziale
+const getUrlState = () => {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    return {
+        page: parts[0] || 'home',
+        slug: (parts[0] === 'history' || parts[0] === 'menu' || parts[0] === 'user') ? parts[1] || null : null
+    };
+};
 
-  const [page, setPage] = useState<Page>(getPageFromPath());
+const [urlState, setUrlState] = useState(getUrlState());
+const page = urlState.page;
+const targetSection = urlState.slug;
 
-  // Ascoltiamo i tasti Avanti/Indietro del browser
-  useEffect(() => {
+const setPageAndSlug = (newPage: string, newSlug: string | null = null) => {
+    setUrlState({ page: newPage, slug: newSlug });
+};
+
+// Ascoltiamo i tasti Avanti/Indietro del browser
+useEffect(() => {
     const handlePopState = () => {
-      setPage(getPageFromPath());
+        setUrlState(getUrlState());
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+}, []);
 
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [targetSection, setTargetSection] = useState<string | null>(null);
+// targetSection è ora derivato da urlState.slug
+const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Gestione Tema
@@ -121,15 +130,12 @@ const App: React.FC = () => {
       return;
     }
 
-    const path = targetPage === 'home' ? '/' : `/${targetPage}`;
+    const path = targetPage === 'home' ? '/' : (sectionId ? `/${targetPage}/${sectionId}` : `/${targetPage}`);
     window.history.pushState({}, '', path);
     // Notify sub-page listeners (e.g. HistoryPage) that a root navigation occurred.
     // pushState does NOT fire popstate, so we dispatch it manually.
     window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
-    setPage(targetPage);
-    
-    if (sectionId) setTargetSection(sectionId);
-    else setTargetSection(null);
+    setPageAndSlug(targetPage, sectionId || null);
 
     if (topic) {
       window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));
@@ -191,7 +197,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[calc(var(--vh,1vh)*100)] bg-background text-gray-700 dark:text-gray-300 transition-colors duration-700 flex overflow-hidden">
+    <div className="relative w-full lg:h-[calc(var(--vh,1vh)*100)] bg-background text-gray-700 dark:text-gray-300 transition-colors duration-700 flex lg:overflow-hidden">
       <SEOHead />
 
       {/* --- SIDEBAR --- */}
@@ -221,7 +227,7 @@ const App: React.FC = () => {
       {/* Main Content Area */}
       <main
         ref={mainScrollRef}
-        className="flex-grow h-full overflow-y-auto overflow-x-hidden no-scrollbar relative z-10"
+        className="flex-grow lg:h-full lg:overflow-y-auto overflow-x-hidden no-scrollbar relative z-10"
         id="main-scroll-container"
       >
         {renderPage()}

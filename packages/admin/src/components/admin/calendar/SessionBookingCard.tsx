@@ -3,7 +3,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { User, Users } from 'lucide-react';
 import Card from '../../ui/Card';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
-import { getSessionCapacity } from '../../../config/sessionDefaults';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 
 interface BookingMember {
     guest_name: string;
@@ -30,8 +30,8 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
     showStatus = true
 }) => {
     const isClosed = status === 'CLOSED';
-    const validCapacity = getSessionCapacity(capacity);
-    const validSeats = getSessionCapacity(seats);
+    const validCapacity = getSessionCapacity(capacity) ?? 0;
+    const validSeats = getSessionCapacity(seats) ?? 0;
     const bookedPax = Math.max(0, validCapacity - validSeats);
 
     return (

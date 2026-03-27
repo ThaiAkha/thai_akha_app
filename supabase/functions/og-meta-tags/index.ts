@@ -13,7 +13,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const SITE_URL = "https://thaiakhakitchen.com";
+const SITE_URL = "https://thaiakha.com";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -174,7 +174,7 @@ async function fetchSiteMetadata(
   try {
     const { data, error } = await supabase
       .from("site_metadata")
-      .select("og_title, og_description, og_image, og_type")
+      .select("og_title, og_description, og_image")
       .eq("page_slug", pageSlug)
       .single();
 
@@ -188,7 +188,7 @@ async function fetchSiteMetadata(
       description: data.og_description || "",
       image: data.og_image || `${SITE_URL}/og-default.jpg`,
       url: `${SITE_URL}/${pageSlug === "home" ? "" : pageSlug}`,
-      type: data.og_type || "website",
+      type: "website",
     };
   } catch (error) {
     console.error(

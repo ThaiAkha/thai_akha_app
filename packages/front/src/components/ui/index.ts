@@ -38,3 +38,4 @@ export { default as Pagination } from './navigation/Pagination';
 export { default as Table } from './Table';
 export { default as AkhaPixelPattern } from './AkhaPixelPattern';
 export { default as AkhaPixelLine } from './AkhaPixelLine';
+export { default as AkhaQuote } from './AkhaQuote';

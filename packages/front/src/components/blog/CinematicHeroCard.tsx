@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
-import { Typography, Badge, MediaImage, AkhaPixelPattern, Button, AudioPlayer, AkhaPixelLine } from '../ui/index';
+import { Typography, Badge, MediaImage, AkhaPixelPattern, Button, AudioPlayer, AkhaPixelLine, AkhaQuote } from '../ui/index';
 import { HeaderSection } from '../layout';
 
 // ─── Section icon map ───────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
         className={cn(
           'group relative w-full overflow-hidden cursor-pointer',
           'rounded-[2rem] border-2 border-action/20 hover:border-action/80',
-          'aspect-[21/9] min-h-[280px]',
+          'aspect-[16/9] min-h-[280px]',
           'transition-all duration-500 ease-out',
           'bg-white/5 backdrop-blur-lg shadow-lg shadow-action/5 hover:shadow-action/15',
         )}
@@ -115,7 +115,7 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
             showCaption={false}
             fallbackAlt={section.title}
             className="absolute inset-0"
-            imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 object-bottom"
           />
         ) : (
           <div className="absolute inset-0 bg-border/20 flex items-center justify-center">
@@ -143,16 +143,10 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
 
         {/* ── Bottom: quote ──────────────────────────────────────────────────────────────── */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10 flex flex-col gap-3">
-          {(section.quote || section.subtitle) && (
-            <blockquote className="flex items-start gap-4 max-w-3xl">
-              <AkhaPixelPattern variant="line_vertical" size={10} className="shrink-0 h-12" />
-              <Typography
-                variant="h3"
-                className="text-white/85 italic line-clamp-2 drop-shadow-md"
-              >
-                "{section.quote || section.subtitle}"
-              </Typography>
-            </blockquote>
+          {(section.seo_title || section.quote || section.subtitle) && (
+            <AkhaQuote variant="main" className="max-w-3xl">
+              {section.seo_title || section.quote || section.subtitle}
+            </AkhaQuote>
           )}
         </div>
       </article>

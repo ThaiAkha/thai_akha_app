@@ -212,7 +212,7 @@
   border-radius: inherit;
   background: radial-gradient(
     circle at var(--flash-x, 50%) var(--flash-y, 50%),
-    rgba(255, 255, 255, 0.38) 0%,
+    var(--btn-flash-glow-color, rgba(255, 255, 255, 0.38)) 0%,
     transparent 55%
   );
   opacity: 0;
@@ -239,8 +239,8 @@ button:hover .btn-flash-glow {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle,
-    rgba(255, 255, 255, 1)   0%,
-    rgba(255, 255, 255, 0.6) 30%,
+    var(--btn-flash-ripple-color, rgba(255, 255, 255, 1))   0%,
+    var(--btn-flash-ripple-soft, rgba(255, 255, 255, 0.6)) 30%,
     transparent              60%
   );
   pointer-events: none;

@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { PageMetadata, SitePage } from '../types/content.types';
 
-const SITE_URL = 'https://thaiakhakitchen.com';
+const SITE_URL = 'https://www.thaiakha.com';
 
 export const seoService = {
   /**

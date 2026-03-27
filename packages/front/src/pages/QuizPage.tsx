@@ -3,7 +3,6 @@ import { PageLayout } from '../components/layout/PageLayout';
 import { HeaderQuiz, LevelQuiz, PlayQuiz, ResultQuiz, QuizCard } from '../components/quiz/index';
 import { Typography, Button, Icon, Badge, Card } from '../components/ui/index';
 import { contentService } from '@thaiakha/shared/services';
-import { BONUS_CARDS } from '../lib/bonusQuiz';
 import { QuizLevel } from '@thaiakha/shared';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -14,6 +13,7 @@ const STORAGE_KEY = 'thai_akha_quiz_progress_v2';
 const QuizPage: React.FC<{ onNavigate?: (p: string, t?: string) => void }> = () => {
   // --- STATE: DATI ---
   const [quizLevels, setQuizLevels] = useState<QuizLevel[]>([]);
+  const [quizRewards, setQuizRewards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // --- STATE: GAMEPLAY ---
@@ -41,7 +41,11 @@ const QuizPage: React.FC<{ onNavigate?: (p: string, t?: string) => void }> = () 
     const init = async () => {
       setLoading(true);
 
-      const dbData = await contentService.getQuizData();
+      const [dbData, rewards] = await Promise.all([
+        contentService.getQuizData(),
+        contentService.getQuizRewards(),
+      ]);
+      setQuizRewards(rewards);
       if (dbData) {
         const adaptedLevels: QuizLevel[] = dbData.map((l: any) => ({
           id: l.id,
@@ -129,8 +133,8 @@ const QuizPage: React.FC<{ onNavigate?: (p: string, t?: string) => void }> = () 
   }, [quizLevels]);
 
   const rewardsList = useMemo(
-    () => BONUS_CARDS.map(b => ({ id: b.levelId, label: b.prizeTitle, icon: b.icon })),
-    [],
+    () => quizRewards.map(r => ({ id: r.id, label: r.label, icon: r.icon_name })),
+    [quizRewards],
   );
 
   // --- HANDLERS ---

@@ -1,7 +1,7 @@
 import { Calendar } from 'lucide-react';
 import SessionBookingCard from '../../../components/admin/calendar/SessionBookingCard';
 import { DayData, BookingMember } from '../../../hooks/useAdminCalendar';
-import { getSessionCapacity } from '../../../config/sessionDefaults';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 
 interface CalendarSidebarProps {
     selectedDate: string | null;
@@ -24,16 +24,16 @@ const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
                         <SessionBookingCard
                             title="Morning Class"
                             status={selectedDate ? (availability[selectedDate!]?.morning_class?.status ?? 'OPEN') : 'OPEN'}
-                            seats={selectedDate ? getSessionCapacity(availability[selectedDate!]?.morning_class?.seats) : getSessionCapacity(undefined)}
-                            capacity={selectedDate ? getSessionCapacity(availability[selectedDate!]?.morning_class?.capacity) : getSessionCapacity(undefined)}
+                            seats={selectedDate ? (getSessionCapacity(availability[selectedDate!]?.morning_class?.seats) ?? 0) : 0}
+                            capacity={selectedDate ? (getSessionCapacity(availability[selectedDate!]?.morning_class?.capacity) ?? 0) : 0}
                             bookings={dayBookings.morning_class}
                             showStatus={false}
                         />
                         <SessionBookingCard
                             title="Evening Class"
                             status={selectedDate ? (availability[selectedDate!]?.evening_class?.status ?? 'OPEN') : 'OPEN'}
-                            seats={selectedDate ? (availability[selectedDate!]?.evening_class?.seats ?? 12) : 12}
-                            capacity={selectedDate ? (availability[selectedDate!]?.evening_class?.capacity ?? 12) : 12}
+                            seats={selectedDate ? (availability[selectedDate!]?.evening_class?.seats ?? 0) : 0}
+                            capacity={selectedDate ? (availability[selectedDate!]?.evening_class?.capacity ?? 0) : 0}
                             bookings={dayBookings.evening_class}
                             showStatus={false}
                         />

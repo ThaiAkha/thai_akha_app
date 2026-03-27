@@ -205,6 +205,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   Share2: LucideIcons.Share2,
   MoreVertical: LucideIcons.MoreVertical,
   MoreHorizontal: LucideIcons.MoreHorizontal,
+  CircleEllipsis: LucideIcons.CircleEllipsis,
   Grid: LucideIcons.Grid3x3,
   List: LucideIcons.List,
   Layers: LucideIcons.Layers,

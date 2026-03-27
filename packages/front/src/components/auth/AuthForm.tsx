@@ -52,7 +52,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
 
     try {
       if (isForgotPassword) {
-        await authService.resetPassword(email);
+        await authService.resetPassword(email, window.location.origin + '/reset-password');
         setSuccessMsg("Reset link sent! Check your email kha.");
         setLoading(false);
         return;
@@ -74,7 +74,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate }) => {
           const profile = await authService.getCurrentUserProfile();
           onSuccess();
           if (profile?.role && ['admin', 'manager', 'driver', 'kitchen', 'logistics', 'agency'].includes(profile.role)) {
-            const adminUrl = import.meta.env.VITE_ADMIN_APP_URL || 'http://localhost:3001';
+            const adminUrl = import.meta.env.VITE_ADMIN_URL || 'https://admin.thaiakha.com';
             window.location.href = `${adminUrl}?token=${user.id}&app=front`;
           } else {
             onNavigate('user');

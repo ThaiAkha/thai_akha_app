@@ -1,5 +1,7 @@
 import { SidebarProvider, useSidebar } from "../context/SidebarContext";
 import { PageHeaderProvider } from "../context/PageHeaderContext";
+import { CherryProvider } from "../providers/CherryProvider";
+import { AdminChatBox } from "../components/chat/AdminChatBox";
 import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
@@ -22,6 +24,7 @@ const LayoutContent: React.FC = () => {
           <Outlet />
         </div>
       </div>
+      <AdminChatBox />
     </div>
   );
 };
@@ -30,7 +33,9 @@ const AppLayout: React.FC = () => {
   return (
     <SidebarProvider>
       <PageHeaderProvider>
-        <LayoutContent />
+        <CherryProvider>
+          <LayoutContent />
+        </CherryProvider>
       </PageHeaderProvider>
     </SidebarProvider>
   );

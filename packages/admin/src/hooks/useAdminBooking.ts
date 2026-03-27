@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { getAvatarUrl } from '../utils/avatarUtils';
-import { SESSION_DEFAULTS, getSessionCapacity, getSessionPrice, getInitialAvailability } from '../config/sessionDefaults';
+import { getSmartAvatarUrlSafe } from '@thaiakha/shared/lib/avatarSystem';
+import { getSessionCapacity, getSessionPrice } from '@thaiakha/shared/lib/sessionUtils';
 
 export type UserMode = 'new' | 'existing' | 'agency' | 'internal';
 export type PaymentStatus = 'paid' | 'unpaid';
@@ -26,14 +26,17 @@ export const useAdminBooking = () => {
     const [userMode, setUserMode] = useState<UserMode>('new');
     const [pax, setPax] = useState<number>(1);
     const [loading, setLoading] = useState(false);
-    const [sessionPrices, setSessionPrices] = useState<Record<string, number>>({
-        morning_class: SESSION_DEFAULTS.DEFAULT_PRICE,
-        evening_class: SESSION_DEFAULTS.DEFAULT_PRICE
+    const [sessionPrices, setSessionPrices] = useState<Record<string, number | null>>({
+        morning_class: null,
+        evening_class: null
     });
     const [availability, setAvailability] = useState<{
         morning: { status: string; booked: number; total: number; bookings: any[] };
         evening: { status: string; booked: number; total: number; bookings: any[] };
-    }>(getInitialAvailability());
+    }>({
+        morning: { status: 'OPEN', booked: 0, total: 0, bookings: [] },
+        evening: { status: 'OPEN', booked: 0, total: 0, bookings: [] },
+    });
 
     const [newUser, setNewUser] = useState<NewUser>({
         fullName: '',
@@ -57,7 +60,7 @@ export const useAdminBooking = () => {
     const [pickupZone, setPickupZone] = useState<any | null>(null);
     const [pickupTime, setPickupTime] = useState('');
     const [notes, setNotes] = useState('');
-    const [amount, setAmount] = useState<number>(1200);
+    const [amount, setAmount] = useState<number | null>(null);
     const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('unpaid');
     const [hasLuggage, setHasLuggage] = useState(false);
 
@@ -71,10 +74,10 @@ export const useAdminBooking = () => {
     const fetchAvailability = useCallback(async () => {
         try {
             const { data: sData } = await supabase.from('class_sessions').select('id, max_capacity, price_thb');
-            const caps: any = {};
-            const prices: Record<string, number> = {};
+            const caps: Record<string, number> = {};
+            const prices: Record<string, number | null> = {};
             sData?.forEach((s: any) => {
-                caps[s.id] = getSessionCapacity(s.max_capacity);
+                caps[s.id] = getSessionCapacity(s.max_capacity) ?? 0;
                 prices[s.id] = getSessionPrice(s.price_thb);
             });
             setSessionPrices(prev => ({ ...prev, ...prices }));
@@ -94,12 +97,12 @@ export const useAdminBooking = () => {
                 const override = oData?.find((o: any) => o.session_id === sid);
                 const sessionBookings = bData?.filter((b: any) => b.session_id === sid) || [];
                 const booked = sessionBookings.reduce((sum: number, b: any) => sum + (b.pax_count || 0), 0) || 0;
-                const total = getSessionCapacity(override?.custom_capacity ?? caps[sid]);
+                const total = getSessionCapacity(override?.custom_capacity ?? caps[sid]) ?? 0;
                 const closed = override?.is_closed;
 
                 let status = 'OPEN';
                 if (closed) status = 'CLOSED';
-                else if (booked >= total) status = 'FULL';
+                else if (total === 0 || booked >= total) status = 'FULL';
 
                 return { booked, total, status, bookings: sessionBookings };
             };
@@ -227,6 +230,7 @@ export const useAdminBooking = () => {
 
     const handleCreate = async () => {
         if (!date || !session) return alert("Missing Date/Session");
+        if (!amount || amount <= 0) return alert("⚠️ Price missing — check session configuration in the database before booking.");
         if (userMode === 'new' && (!newUser.fullName || !newUser.password)) return alert("Full Name and Password Required");
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         console.log("[useAdminBooking] handleCreate - session:", currentSession?.user?.id || 'NO SESSION');
@@ -263,7 +267,7 @@ export const useAdminBooking = () => {
                 const uData = await response.json();
                 userId = uData.userId;
                 if (userId) {
-                    const avatarUrl = getAvatarUrl(newUser.age, newUser.gender);
+                    const avatarUrl = getSmartAvatarUrlSafe(newUser.gender, newUser.age);
                     await supabase.from('profiles').update({
                         dietary_profile: 'diet_regular',
                         phone_number: newUser.phone,

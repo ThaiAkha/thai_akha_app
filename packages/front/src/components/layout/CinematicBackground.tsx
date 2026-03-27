@@ -4,11 +4,13 @@ import { cn } from '@thaiakha/shared/lib/utils';
 interface CinematicBackgroundProps {
   isLoaded: boolean;
   imageUrl: string;
+  showPatterns?: boolean;
 }
 
 const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
   isLoaded,
-  imageUrl
+  imageUrl,
+  showPatterns = false
 }) => {
   const [imgReady, setImgReady] = useState(false);
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { getSessionCapacity } from '../config/sessionDefaults';
-import { getDateKey } from '../utils/dateKeyUtils';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
+import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 import { useCalendarAvailability, SessionStatus, DayData } from './useCalendarAvailability';
 
 // --- INTERFACES ---
@@ -147,7 +147,7 @@ export const useAdminCalendar = () => {
                 if (!edit.isClosed) {
                     if (isBulkMode) {
                         const currentCap = availability[d]?.[s as keyof DayData] as SessionStatus;
-                        finalCapacity = getSessionCapacity(currentCap?.capacity) + edit.seats;
+                        finalCapacity = (getSessionCapacity(currentCap?.capacity) ?? 0) + edit.seats;
                     } else {
                         finalCapacity = edit.seats + edit.occupied;
                     }
@@ -176,7 +176,7 @@ export const useAdminCalendar = () => {
                         updatedAvailability[d][sessionKey].reason = edit.reason;
                     } else {
                         const finalCap = isBulkMode
-                            ? getSessionCapacity(updatedAvailability[d][sessionKey].capacity) + edit.seats
+                            ? (getSessionCapacity(updatedAvailability[d][sessionKey].capacity) ?? 0) + edit.seats
                             : edit.seats + edit.occupied;
                         const remaining = Math.max(0, finalCap - (edit.occupied));
                         updatedAvailability[d][sessionKey].status = remaining > 0 ? 'OPEN' : 'FULL';

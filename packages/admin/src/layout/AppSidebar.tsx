@@ -11,7 +11,7 @@ import Tooltip from "../components/ui/Tooltip";
 import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-const FRONT_APP_URL = import.meta.env.VITE_FRONT_APP_URL || 'http://localhost:3000';
+const FRONT_APP_URL = import.meta.env.VITE_FRONT_APP_URL || 'https://www.thaiakha.com';
 const SIDEBAR_TRANSITION = '800ms';
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Button, Icon, Badge, Card } from '../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 // Assicurati che l'import includa sia la costante che il TIPO
-import { BONUS_CARDS, BonusCard } from '../../lib/bonusQuiz'; 
+import { contentService } from '@thaiakha/shared/services';
 import { UserProfile } from '../../services/auth.service';
 
 interface QuizWidgetProps {
@@ -20,9 +20,8 @@ const LEADERBOARD = [
 const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
-  
-  // ✅ FIX CRITICO: Inizializza con  (il primo oggetto), non con l'intero array!
-const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);  
+  const [rewards, setRewards] = useState<any[]>([]);
+  const [nextReward, setNextReward] = useState<any | null>(null);
   const [completedCount, setCompletedCount] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
   
@@ -31,34 +30,34 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
 
   // --- SYNC DATI REALI ---
   useEffect(() => {
-    const saved = localStorage.getItem('thai_akha_quiz_progress_v2');
-    
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        const currentScore = data.score || 0;
-        setXp(currentScore);
-        setCompletedCount((data.completedModules || []).length);
-        
-        // Salviamo i bonus ottenuti
-        const bonuses = data.awardedBonuses || [];
-        setAwardedBonuses(bonuses);
-        
-        // Calcolo Livello (100 XP = 1 Livello)
-        const currentLevel = Math.floor(currentScore / 100) + 1;
-        setLevel(currentLevel);
+    const init = async () => {
+      const dbRewards = await contentService.getQuizRewards();
+      setRewards(dbRewards);
 
-        // Calcolo Prossimo Premio
-        // Trova il primo premio NON ancora ottenuto
-        const next = BONUS_CARDS.find(b => !bonuses.includes(b.levelId));
-        
-        // Se c'è un prossimo premio, usalo. Altrimenti usa l'ultimo (hai finito).
-        setNextReward(next || BONUS_CARDS[BONUS_CARDS.length - 1]);
+      const saved = localStorage.getItem('thai_akha_quiz_progress_v2');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          const currentScore = data.score || 0;
+          setXp(currentScore);
+          setCompletedCount((data.completedModules || []).length);
 
-        setAccuracy(98); // Mock per ora
+          const bonuses = data.awardedBonuses || [];
+          setAwardedBonuses(bonuses);
 
-      } catch (e) { console.error("Quiz data parse error", e); }
-    }
+          const currentLevel = Math.floor(currentScore / 100) + 1;
+          setLevel(currentLevel);
+
+          const next = dbRewards.find((r: any) => !bonuses.includes(r.id));
+          setNextReward(next || dbRewards[dbRewards.length - 1] || null);
+
+          setAccuracy(98);
+        } catch (e) { console.error("Quiz data parse error", e); }
+      } else if (dbRewards.length > 0) {
+        setNextReward(dbRewards[0]);
+      }
+    };
+    init();
   }, []);
 
   // Calcolo Percentuale per il prossimo livello (visivo)
@@ -130,13 +129,11 @@ const [nextReward, setNextReward] = useState(BONUS_CARDS[0]);
                 onClick={() => onNavigate('quiz')}
             >
                 <div className="size-14 rounded-xl bg-gradient-to-br from-quiz to-btn-p-500 flex items-center justify-center text-black shadow-lg group-hover/reward:scale-105 transition-transform">
-                    {/* ✅ ORA FUNZIONA: nextReward è un oggetto singolo */}
-                    <Icon name={nextReward.icon} size="md"/>
+                    <Icon name={nextReward?.icon_name ?? 'redeem'} size="md"/>
                 </div>
                 <div>
                     <div className="text-[9px] font-black uppercase text-quiz tracking-widest mb-0.5">Next Unlock</div>
-                    {/* ✅ ORA FUNZIONA: nextReward è un oggetto singolo */}
-                    <div className="font-bold text-white text-sm">{nextReward.prizeTitle}</div>
+                    <div className="font-bold text-white text-sm">{nextReward?.label ?? '...'}</div>
                 </div>
                 <Icon name="arrow_forward" className="text-white/20 group-hover/reward:text-white group-hover/reward:translate-x-1 transition-all ml-2"/>
             </div>

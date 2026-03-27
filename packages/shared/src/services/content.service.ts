@@ -517,7 +517,7 @@ export const contentService = {
         const data = await fetchWithCache<CultureSection[]>('culture_sections_index_v4', async () => {
             const { data, error } = await supabase
                 .from('culture_sections')
-                .select('id, slug, title, subtitle, quote, primary_image, display_order, featured, category, audio_asset_id')
+                .select('id, slug, title, subtitle, quote, primary_image, display_order, featured, category, audio_asset_id, seo_title')
                 .eq('is_published', true)
                 .order('display_order', { ascending: true });
 

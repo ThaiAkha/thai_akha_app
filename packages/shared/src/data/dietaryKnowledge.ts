@@ -7,7 +7,7 @@
 
 export const DIETARY_KNOWLEDGE_BASE = {
   title: "Dietary Style at Thai Akha Kitchen",
-  url: "https://www.thaiakhakitchen.com/dietary-style",
+  url: "https://www.thaiakha.com/dietary-style",
 
   safetyPillars: {
     noRedMeat: "🚫 STRICT: No Pork, Beef, Buffalo, or Horse meat is allowed in our kitchen.",

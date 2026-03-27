@@ -1,7 +1,9 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { SYSTEM_PROMPT } from '../prompts/cherrySystem.ts';
+import { orchestrator } from '@thaiakha/shared/prompts';
+import { getVoiceConfig } from '@thaiakha/shared/config/voice.config';
+import { saveMessage } from '@thaiakha/shared/services';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -12,7 +14,11 @@ interface SessionState {
     outputTranscript: string;
 }
 
-export const useGeminiLive = () => {
+export const useGeminiLive = (
+  userProfile?: any,
+  appContext: 'front' | 'admin' = 'front',
+  sessionId?: string | null
+) => {
     const [state, setState] = useState<SessionState>({
         status: 'idle',
         error: null,
@@ -26,6 +32,9 @@ export const useGeminiLive = () => {
     const nextStartTimeRef = useRef<number>(0);
     const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     const sessionPromiseRef = useRef<Promise<any> | null>(null);
+    const sessionRef = useRef<any | null>(null); // resolved session for sync access
+    const processorRef = useRef<AudioWorkletNode | null>(null);
+    const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
     const encode = (bytes: Uint8Array): string => {
         let binary = '';
@@ -52,13 +61,27 @@ export const useGeminiLive = () => {
     };
 
     const stopSession = useCallback(() => {
+        // Disconnect mic pipeline first to stop sending audio
+        if (processorRef.current) {
+            try { processorRef.current.disconnect(); } catch(e) {}
+            processorRef.current = null;
+        }
+        if (micSourceRef.current) {
+            try { micSourceRef.current.disconnect(); } catch(e) {}
+            micSourceRef.current = null;
+        }
+
+        if (sessionRef.current) {
+            try { sessionRef.current.close(); } catch(e) {}
+            sessionRef.current = null;
+        }
         if (sessionPromiseRef.current) {
             sessionPromiseRef.current.then(session => {
                 try { session.close(); } catch(e) {}
             });
             sessionPromiseRef.current = null;
         }
-        
+
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(t => t.stop());
             streamRef.current = null;
@@ -117,32 +140,53 @@ export const useGeminiLive = () => {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = stream;
 
+            const voiceConfig = getVoiceConfig(userProfile, appContext);
+            const activeAgent = orchestrator.getAgent(appContext, userProfile?.role);
+            const resolvedSystemInstruction = overrideInstruction || orchestrator.buildPrompt(
+              activeAgent,
+              userProfile || {},
+              userProfile?.dietary_profile || 'diet_regular',
+              userProfile?.allergies || [],
+              true,
+              'front'
+            );
+
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.0-flash',
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 callbacks: {
-                    onopen: () => {
+                    onopen: async () => {
                         setState(prev => ({ ...prev, status: 'active' }));
-                        const source = inputAudioCtxRef.current!.createMediaStreamSource(stream);
-                        const processor = inputAudioCtxRef.current!.createScriptProcessor(4096, 1, 1);
-                        
-                        processor.onaudioprocess = (e) => {
-                            const inputData = e.inputBuffer.getChannelData(0);
-                            const l = inputData.length;
-                            const int16 = new Int16Array(l);
-                            for (let i = 0; i < l; i++) { int16[i] = inputData[i] * 32768; }
-                            
-                            sessionPromise.then((session) => {
-                                session.sendRealtimeInput({ 
+
+                        // Resume AudioContexts — required by Chrome autoplay policy
+                        inputAudioCtxRef.current?.resume();
+                        audioCtxRef.current?.resume();
+
+                        const inputCtx = inputAudioCtxRef.current!;
+                        await inputCtx.audioWorklet.addModule('/audio-processor.js');
+                        const source = inputCtx.createMediaStreamSource(stream);
+                        const workletNode = new AudioWorkletNode(inputCtx, 'audio-processor');
+
+                        micSourceRef.current = source;
+                        processorRef.current = workletNode;
+
+                        workletNode.port.onmessage = (event) => {
+                            if (!sessionRef.current) return;
+                            const float32Data = event.data as Float32Array;
+                            const int16 = new Int16Array(float32Data.length);
+                            for (let i = 0; i < float32Data.length; i++) { int16[i] = float32Data[i] * 32768; }
+                            try {
+                                sessionRef.current.sendRealtimeInput({
                                     media: {
                                         data: encode(new Uint8Array(int16.buffer)),
                                         mimeType: 'audio/pcm;rate=16000',
                                     }
                                 });
-                            });
+                            } catch(e) { /* session may be closing */ }
                         };
-                        
-                        source.connect(processor);
-                        processor.connect(inputAudioCtxRef.current!.destination);
+
+                        source.connect(workletNode);
+                        workletNode.connect(inputCtx.destination);
+
                         if (initialPrompt) {
                             setTimeout(() => sendTextMessage(initialPrompt), 500);
                         }
@@ -155,7 +199,20 @@ export const useGeminiLive = () => {
                             setState(prev => ({ ...prev, outputTranscript: prev.outputTranscript + message.serverContent!.outputTranscription!.text }));
                         }
                         if (message.serverContent?.turnComplete) {
-                            setState(prev => ({ ...prev, inputTranscript: '', outputTranscript: '' }));
+                            // Salva trascrizioni in Supabase se abbiamo una sessionId
+                            if (sessionId) {
+                                setState(prev => {
+                                    if (prev.outputTranscript) {
+                                        saveMessage(sessionId, 'assistant', prev.outputTranscript, 'voice');
+                                    }
+                                    if (prev.inputTranscript) {
+                                        saveMessage(sessionId, 'user', prev.inputTranscript, 'voice');
+                                    }
+                                    return { ...prev, inputTranscript: '', outputTranscript: '' };
+                                });
+                            } else {
+                                setState(prev => ({ ...prev, inputTranscript: '', outputTranscript: '' }));
+                            }
                         }
 
                         const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
@@ -190,14 +247,20 @@ export const useGeminiLive = () => {
                 },
                 config: {
                     responseModalities: [Modality.AUDIO],
-                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
-                    systemInstruction: overrideInstruction || SYSTEM_PROMPT,
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: voiceConfig.voiceName }
+                        }
+                    },
+                    systemInstruction: resolvedSystemInstruction,
                     outputAudioTranscription: {},
                     inputAudioTranscription: {},
                 }
             });
 
             sessionPromiseRef.current = sessionPromise;
+            // Store resolved session for sync access in onaudioprocess (no .then() per chunk)
+            sessionPromise.then(session => { sessionRef.current = session; }).catch(() => {});
 
         } catch (err: any) {
             console.error("Failed to start session:", err);

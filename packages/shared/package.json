@@ -11,9 +11,16 @@
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/geoUtils": "./src/lib/geoUtils.ts",
     "./lib/icons": "./src/lib/icons.ts",
+    "./lib/sessionUtils": "./src/lib/sessionUtils.ts",
+    "./lib/dateKeyUtils": "./src/lib/dateKeyUtils.ts",
+    "./lib/ui-strings": "./src/lib/ui-strings.ts",
+    "./lib/avatarSystem": "./src/lib/avatarSystem.ts",
     "./data": "./src/data/index.ts",
     "./types": "./src/types/index.ts",
-    "./services": "./src/services/index.ts"
+    "./services": "./src/services/index.ts",
+    "./prompts": "./src/prompts/index.ts",
+    "./prompts/cherrySystem": "./src/prompts/cherrySystem.ts",
+    "./config/voice.config": "./src/config/voice.config.ts"
   },
   "scripts": {
     "build": "tsc",

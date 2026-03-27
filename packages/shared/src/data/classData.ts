@@ -64,7 +64,8 @@ export const classData: Record<string, CookingClass> = {
     duration: "6h duration",
     tagline: "Taste the unique Thai and Akha flavors during the day",
     maxParticipants: "Max 12 people (16 if private)",
-    image: 'https://www.thaiakhakitchen.com/wp-content/uploads/2026/01/Akha01.jpg',
+    // TODO: Replace with Supabase Storage URL
+    image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/assets/classes/Akha01.jpg',
     description: "Discover the culture and cuisine of the Akha tribe. Includes a local market trip to taste and collect ingredients.",
     whyChoose: [
       "Local Market tour to see the real lifestyle",
@@ -92,7 +93,8 @@ export const classData: Record<string, CookingClass> = {
     duration: "5h duration",
     tagline: "The perfect home-cooked Thai dinner experience",
     maxParticipants: "Max 12 people (16 if private)",
-    image: 'https://www.thaiakhakitchen.com/wp-content/uploads/2026/01/Akha01.jpg',
+    // TODO: Replace with Supabase Storage URL
+    image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/assets/classes/Akha01.jpg',
     description: "Perfect for travelers with limited time who want to enjoy a delicious self-cooked Thai dinner.",
     whyChoose: [
       "Fits around a busy day schedule",

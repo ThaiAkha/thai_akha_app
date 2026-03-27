@@ -42,7 +42,7 @@ interface BookingInspectorProps {
     notes?: string;
 
     // Payment & Amount
-    amount: number;
+    amount: number | null;
     paymentStatus: PaymentStatus;
     onPaymentStatusChange: (s: PaymentStatus) => void;
 
@@ -194,8 +194,10 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
                         <SectionTitle>{t('inspector.totalAmount')}</SectionTitle>
                         <div className="text-3xl font-black flex items-center gap-1 h-10">
-                            <span className="text-primary-600">{amount.toLocaleString()}</span>
-                            <span className="text-gray-400 text-sm">THB</span>
+                            {amount !== null
+                                ? <><span className="text-primary-600">{amount.toLocaleString()}</span><span className="text-gray-400 text-sm">THB</span></>
+                                : <span className="text-red-500 text-lg">⚠️ Price missing</span>
+                            }
                         </div>
                     </div>
 

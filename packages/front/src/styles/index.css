@@ -67,6 +67,7 @@
 
 @layer base {
   html {
+    min-height: 100%;
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
@@ -75,7 +76,7 @@
     background-color: var(--color-background);
     color: var(--color-desc);
     font-family: var(--font-sans);
-    overscroll-behavior-y: none;
+    min-height: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.5s ease, color 0.3s ease;

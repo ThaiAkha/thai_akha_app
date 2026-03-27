@@ -1,11 +1,7 @@
 // Lib
 export * from './lib/utils';
 export * from './lib/geoUtils';
-export * from './lib/colors.constants';
 export { supabase } from './lib/supabase';
-
-// Styles & Configuration
-export { getBaseThemeExtension, baseColors, baseFontFamily, baseBoxShadow, baseTransitionTimingFunction, baseBreakpoints, baseAnimation, baseKeyframes } from './styles/tailwind.config.base';
 
 // Components
 // export * from './components';
@@ -18,6 +14,12 @@ export * from './types';
 
 // Services
 export * from './services';
+
+// Prompts
+export * from './prompts';
+
+// Config
+export * from './config/voice.config';
 
 // Assets
 export {

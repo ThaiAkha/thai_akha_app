@@ -11,7 +11,6 @@ export interface ChatMessage {
   role: 'user' | 'model' | 'system';
   text: string;
   parts?: { text: string }[];
-  suggestions?: string[];
   isStreaming?: boolean;
   timestamp?: Date;
 }
@@ -73,6 +72,7 @@ export interface CultureSection {
   featured: boolean | null;
   category?: string | null;
   audio_asset_id?: string | null;
+  seo_title?: string | null;
 }
 
 /**

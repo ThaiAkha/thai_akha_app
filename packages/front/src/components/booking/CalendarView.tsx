@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 import { Icon, Button, Tooltip } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { TOOLTIPS } from '../../data/tooltips';
+import { TOOLTIPS } from '@thaiakha/shared/data';
+import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 
 interface CalendarViewProps {
   currentDate: Date | null;
@@ -24,13 +26,6 @@ interface DayData {
 const DAYS_HEADER = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-// ✅ HELPER SICURO PER LE DATE (YYYY-MM-DD)
-const getDateKey = (date: Date): string => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   currentDate,
@@ -66,7 +61,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         // A. Base Capacity
         const { data: sessionsData } = await supabase.from('class_sessions').select('id, max_capacity');
         const baseCaps: Record<string, number> = {};
-        sessionsData?.forEach((s: any) => baseCaps[s.id] = s.max_capacity ?? 12);
+        sessionsData?.forEach((s: any) => baseCaps[s.id] = getSessionCapacity(s.max_capacity) ?? 0);
 
         // B. Bookings
         const { data: bookings } = await supabase
@@ -95,7 +90,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
             if (override?.is_closed) return { status: 'CLOSED', seats: 0 };
 
-            const max = override?.custom_capacity ?? baseCaps[sessionId] ?? 12;
+            const max = getSessionCapacity(override?.custom_capacity ?? baseCaps[sessionId]) ?? 0;
             const occupied = bookings
               ?.filter(b => b.booking_date === dateStr && b.session_id === sessionId)
               .reduce((sum, b) => sum + (b.pax_count || 0), 0) || 0;

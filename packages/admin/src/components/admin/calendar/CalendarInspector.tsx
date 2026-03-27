@@ -5,7 +5,7 @@ import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
 import Card from '../../ui/Card';
 import { DayData, EditSessionState, BulkSessionType } from '../../../hooks/useAdminCalendar';
-import { getSessionCapacity } from '../../../config/sessionDefaults';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 
 interface CalendarInspectorProps {
     isBulkMode: boolean;
@@ -64,7 +64,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                             {['morning_class', 'evening_class'].map(s => {
                                 const sess = dayData?.[s as 'morning_class' | 'evening_class'];
                                 if (!sess) return null;
-                                const safeCapacity = getSessionCapacity(sess.capacity);
+                                const safeCapacity = getSessionCapacity(sess.capacity) ?? 0;
                                 const safeSeats = typeof sess.seats === 'number' && !isNaN(sess.seats) ? sess.seats : 0;
                                 return (
                                     <div key={s} className="p-4 border border-gray-100 dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-800/50">

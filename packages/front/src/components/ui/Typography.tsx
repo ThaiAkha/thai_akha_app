@@ -69,7 +69,7 @@ const VARIANT_STYLES: Record<TypographyVariant, { element: React.ElementType; cl
   // --- UI DATA ---
   monoLabel: { element: 'span', className: "font-mono font-bold uppercase tracking-[0.2em] text-xs text-gray-700 dark:text-gray-500" },
   statNumber: { element: 'span', className: "font-mono font-black text-2xl md:text-4xl text-gray-900 dark:text-gray-100" },
-  microLabel: { element: 'span', className: "font-sans text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-800 dark:text-gray-600" },
+  microLabel: { element: 'span', className: "font-sans text-[9px] md:text-sm font-black uppercase tracking-widest text-gray-800 dark:text-gray-600" },
   fieldLabel: { element: 'label', className: "font-sans text-xs font-semibold uppercase tracking-wider text-gray-800 dark:text-gray-300" },
 };
 

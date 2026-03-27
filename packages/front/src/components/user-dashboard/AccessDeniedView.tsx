@@ -2,7 +2,7 @@ import React from 'react';
 import { Lock, ExternalLink } from 'lucide-react';
 import { Button, Typography } from '../ui';
 
-const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'http://localhost:3004';
+const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'https://admin.thaiakha.com';
 
 const AccessDeniedView: React.FC = () => (
   <div className="flex flex-col items-center justify-center py-20 text-center px-6 bg-surface border border-border rounded-3xl">

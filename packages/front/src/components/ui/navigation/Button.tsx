@@ -35,6 +35,9 @@ const BUTTON_VARIANTS = {
 
   // NAV: Base (La logica attiva è gestita nel componente)
   nav: "transition-all duration-500 rounded-xl justify-start px-4 hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
+
+  // SOCIAL: Blue Glass (English "Share")
+  social: "bg-btn-s/10 border-2 border-btn-s/20 text-btn-s hover:bg-btn-s/20 hover:border-btn-s/40 shadow-glow-blue",
 };
 
 const BUTTON_SIZES = {
@@ -140,6 +143,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         onMouseMove={handleMouseMove}
         onClick={handleClick}
+        style={{
+          ...props.style as React.CSSProperties,
+          ...(variant === 'social' ? {
+            '--btn-flash-glow-color': 'rgba(28, 163, 230, 0.4)',
+            '--btn-flash-ripple-color': 'var(--color-btn-s-300)',
+            '--btn-flash-ripple-soft': 'rgba(28, 163, 230, 0.6)',
+          } : {})
+        } as React.CSSProperties}
         {...props}
       >
         {/* Hover glow (follows mouse via CSS vars) */}
@@ -174,7 +185,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 </span>
               )}
 
-              {iconPosition !== 'only' && children}
+              {iconPosition !== 'only' && (variant === 'social' && !children ? 'Share' : children)}
 
               {icon && iconPosition === 'right' && (
                 <span

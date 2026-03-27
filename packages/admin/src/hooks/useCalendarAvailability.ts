@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { getSessionCapacity } from '../config/sessionDefaults';
-import { getDateKey } from '../utils/dateKeyUtils';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
+import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 
 export interface SessionStatus {
     status: 'OPEN' | 'FULL' | 'CLOSED';
@@ -51,7 +51,7 @@ export const useCalendarAvailability = (viewDate: Date) => {
             if (!sessionsCache.current) {
                 const { data: sessionsData } = await supabase.from('class_sessions').select('id, max_capacity');
                 sessionsCache.current = {};
-                sessionsData?.forEach((s: any) => sessionsCache.current![s.id] = getSessionCapacity(s.max_capacity));
+                sessionsData?.forEach((s: any) => sessionsCache.current![s.id] = getSessionCapacity(s.max_capacity) ?? 0);
             }
 
             // Parallel queries for faster loading
@@ -91,7 +91,7 @@ export const useCalendarAvailability = (viewDate: Date) => {
                     const override = overridesMap.get(mapKey);
                     const occupied = bookingsMap.get(mapKey) || 0;
 
-                    const capacityValue = getSessionCapacity(override?.custom_capacity ?? sessionsCache.current?.[sessionId]);
+                    const capacityValue = getSessionCapacity(override?.custom_capacity ?? sessionsCache.current?.[sessionId]) ?? 0;
 
                     if (override?.is_closed) {
                         return {

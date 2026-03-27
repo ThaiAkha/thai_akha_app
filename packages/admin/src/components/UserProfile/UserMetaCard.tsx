@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Camera, BadgeCheck, Mail, Loader2, Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileFooter, ProfileRow } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
-import { getSmartAvatarUrl, isSmartAvatar } from "../../lib/avatarSystem";
+import { getSmartAvatarUrl, isSmartAvatar } from "@thaiakha/shared/lib/avatarSystem";
 import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
 import { useTranslation } from "react-i18next";
 

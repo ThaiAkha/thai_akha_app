@@ -75,10 +75,23 @@
     "confirm": "ยืนยัน",
     "deleteRecord": "ลบข้อมูล",
     "editAvailability": "แก้ไขความพร้อม",
-    "viewMore": "ดูเพิ่มเติม"
+    "viewMore": "ดูเพิ่มเติม",
+    "editRecord": "แก้ไขข้อมูลนี้",
+    "saveModifications": "บันทึกการเปลี่ยนแปลง",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "editFileMetadata": "แก้ไขข้อมูลไฟล์",
+    "editHotel": "แก้ไขโรงแรมนี้",
+    "editMeetingPoint": "แก้ไขจุดนัดหมายนี้",
+    "assign": "มอบหมาย"
+  },
+  "fallback": {
+    "guest": "แขก",
+    "empty": "ว่าง"
   },
   "notifications": {
     "title": "การแจ้งเตือน",
-    "viewAll": "ดูการแจ้งเตือนทั้งหมด"
+    "viewAll": "ดูการแจ้งเตือนทั้งหมด",
+    "empty": "ยังไม่มีการแจ้งเตือน",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด"
   }
 }

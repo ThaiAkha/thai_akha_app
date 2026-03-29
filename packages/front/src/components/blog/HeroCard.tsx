@@ -1,27 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
-import { Typography, Badge, MediaImage, Button } from '../ui/index';
+import { Typography, Badge, MediaImage, Button, Icon } from '../ui/index';
 import './BlogCardGlass.css';
-
-// ─── Section icon map ───────────────────────────────────────────────────────────
-
-const SECTION_ICONS: Record<string, string> = {
-  'hill-tribes-overview': 'landscape',
-  'historical-roots':     'history_edu',
-  'akha-zang':            'menu_book',
-  'traditional-dress':    'diamond',
-  'swing-festival':       'celebration',
-  'featured-recipes':     'restaurant_menu',
-  'thai-akha-fusion':     'merge',
-  'foragers-pantry':      'forest',
-  'spirit-gate':          'temple_buddhist',
-  'music-folklore':       'music_note',
-  'coffee-culture':       'coffee',
-  'communal-dining':      'groups',
-  'religion-beliefs':     'self_improvement',
-  'spice-philosophy':     'local_fire_department',
-};
+import { SECTION_ICONS } from './sectionIcons';
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 
@@ -33,11 +15,9 @@ interface BlogCardProps {
 
 // ─── HeroCard — Compact photo-hero for 3-column grid ──────────────────────────
 
-const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
+const HeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
-  const chapterNum = String(index + 1).padStart(2, '0');
-  const categoryLabel = section.category ?? 'Culture';
 
   // Mouse tracking for gradient border
   useEffect(() => {
@@ -78,7 +58,7 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
         'transition-all duration-500 ease-out',
         'hover:-translate-y-1',
         'hover:border-primary/40',
-        'hover:shadow-[0_24px_64px_-12px_rgba(227,31,51,0.25)]',
+        'hover:shadow-[0_24px_64px_-12px_rgb(var(--color-primary)/0.25)]',
       )}
       style={{
         '--mouse-x': '50%',
@@ -102,9 +82,7 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
         />
       ) : (
         <div className="absolute inset-0 z-0 bg-border/20 flex items-center justify-center">
-          <span className="material-symbols-outlined text-border/30" style={{ fontSize: '3rem' }}>
-            {icon}
-          </span>
+          <Icon name={icon} size="xl" color="muted" className="opacity-30" />
         </div>
       )}
 
@@ -116,15 +94,15 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, index, onOpen }) => {
         <div className="flex flex-col flex-1 gap-1.5">
           <Typography
             variant="h5"
-            color="title"
-            className="text-white leading-tight line-clamp-2 drop-shadow-lg"
+            color="inverse"
+            className="leading-tight line-clamp-2 drop-shadow-lg"
           >
             {section.title}
           </Typography>
           <Typography
             variant="caption"
-            color="sub"
-            className="text-white/60 line-clamp-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            color="inverse"
+            className="opacity-0 group-hover:opacity-60 line-clamp-1 transition-opacity duration-300"
           >
             {section.subtitle}
           </Typography>

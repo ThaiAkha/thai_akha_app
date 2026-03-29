@@ -128,7 +128,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         className={cn(
           "fixed top-6 left-6 z-[1] size-12 rounded-2xl flex items-center justify-center transition-all duration-500 ease-cinematic",
           "shadow-2xl backdrop-blur-xl border",
-          "bg-surface/90 border-white/10 text-gray-900 dark:text-gray-100",
+          "bg-surface/90 border-white/10 text-title",
           isOpen ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100"
         )}
       >
@@ -150,24 +150,24 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         className={cn(
           "fixed inset-y-0 left-0 z-[3] w-[min(320px,85vw)] flex flex-col",
           "transition-transform duration-500 ease-cinematic border-r",
-          "bg-white dark:bg-gray-dark backdrop-blur-sm border-gray-100 dark:border-gray-900 shadow-[20px_0_60px_rgba(0,0,0,0.5)]",
+          "bg-surface border-border shadow-[20px_0_60px_rgba(0,0,0,0.5)]",
           (stage === 'opening' || stage === 'open') ? "translate-x-0" : "-translate-x-full"
         )}
       >
 
         {/* HEADER */}
-        <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-gray-100 dark:border-gray-900">
+        <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-border">
           <button
             onClick={handleToggle}
-            className="size-12 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 hover:border-primary-500 dark:hover:border-primary-400 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
+            className="size-12 rounded-2xl bg-surface border border-border flex items-center justify-center text-sub hover:bg-border hover:border-primary-500 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
           >
             <Icon name="X" className="text-2xl" />
           </button>
           <div className="text-right ml-2 mt-1">
-            <Typography variant="h3" className="text-base font-black italic uppercase tracking-tighter text-gray-700 dark:text-gray-300 leading-none">
-              Thai <span className="text-primary-500 dark:text-primary-400">Akha</span>
+            <Typography variant="h3" className="text-base font-black italic uppercase tracking-tighter text-sub leading-none">
+              Thai <span className="text-primary-500">Akha</span>
             </Typography>
-            <Typography variant="caption" className="text-gray-500 dark:text-gray-400 font-bold tracking-[0.3em] text-xs mt-1 block">
+            <Typography variant="caption" className="text-muted font-bold tracking-[0.3em] text-xs mt-1 block">
               COOKING SCHOOL
             </Typography>
           </div>
@@ -178,7 +178,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
           {filteredNavItems.length === 0 ? (
             // Loading Skeleton
             <div className="space-y-4 px-2 opacity-50">
-              {[4, 5, 6, 7].map(i => <div key={i} className="h-14 rounded-2xl bg-gray-100 dark:bg-white/5 animate-pulse" />)}
+              {[4, 5, 6, 7].map(i => <div key={i} className="h-14 rounded-2xl bg-border animate-pulse" />)}
             </div>
           ) : (
             filteredNavItems.map((item, index) => {
@@ -194,16 +194,16 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                     isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
                     // Active State
                     isActive
-                      ? "bg-primary-50 dark:bg-primary-500/[0.12] text-primary-500 dark:text-primary-400 shadow-[inset_4px_0_0_0_var(--color-primary-500)]"
-                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300"
+                      ? "bg-primary-50 text-primary-500 shadow-[inset_4px_0_0_0_var(--color-primary-500)]"
+                      : "text-muted hover:bg-surface hover:text-sub"
                   )}
                   style={{ transitionDelay: stage === 'opening' ? '0ms' : '0ms' }}
                 >
                   <Icon
                     name={item.header_icon || 'Circle'}
-                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-primary-500 dark:text-primary-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300")}
+                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-primary-500" : "text-muted group-hover:text-sub")}
                   />
-                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-primary-500 dark:text-primary-400" : "text-current")}>
+                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-primary-500" : "text-current")}>
                     {item.menu_label}
                   </Typography>
                   {/* Freccia Hover */}
@@ -218,7 +218,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         </div>
 
         {/* FOOTER */}
-        <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-white/5 space-y-4">
+        <div className="p-6 border-t border-border bg-surface/50 space-y-4">
 
           {/* Theme Toggle */}
           <div className="flex h-16 items-center justify-between px-5 rounded-2xl border border-white/5 bg-white/5">
@@ -235,7 +235,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
               onClick={onToggleTheme}
               className={cn(
                 'relative inline-flex h-6 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                isDarkMode ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-700'
+                isDarkMode ? 'bg-primary-500' : 'bg-gray-400'
               )}
             >
               <span className={cn(
@@ -251,7 +251,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
             className={cn(
               "w-full flex items-center justify-center gap-2 py-3 rounded-2xl transition-colors text-xs font-black uppercase tracking-widest",
               userProfile
-                ? "text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+                ? "text-muted hover:text-sys-error"
                 : "bg-primary-500 text-white shadow-lg hover:brightness-110"
             )}
           >

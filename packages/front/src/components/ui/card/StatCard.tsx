@@ -134,13 +134,13 @@ const StatCard: React.FC<StatCardProps> = ({
       {valuePosition === 'top' ? (
          <>
            <div className="flex items-baseline gap-1 mb-0.5">
-             {prefix && <Typography as="span" variant="monoLabel" className="opacity-50">{prefix}</Typography>}
+             {prefix && <Typography as="span" variant="caption" className="opacity-50">{prefix}</Typography>}
              {value && (
                <Typography variant={currentSize.valueSize} color="title">
                  {value}
                </Typography>
              )}
-             {suffix && <Typography as="span" variant="monoLabel" className="opacity-80">{suffix}</Typography>}
+             {suffix && <Typography as="span" variant="caption" className="opacity-80">{suffix}</Typography>}
            </div>
            <div className={cn("relative", loading && "min-h-[1.5rem] w-3/4 animate-pulse bg-gray-200 dark:bg-gray-800 rounded mb-1")}>
               <Typography variant={currentSize.titleSize} className={cn('opacity-70', currentColor.text)}>
@@ -156,13 +156,13 @@ const StatCard: React.FC<StatCardProps> = ({
               </Typography>
            </div>
            <div className="flex items-baseline gap-1">
-             {prefix && <Typography as="span" variant="monoLabel" className="opacity-80">{prefix}</Typography>}
+             {prefix && <Typography as="span" variant="caption" className="opacity-80">{prefix}</Typography>}
              {value && (
                <Typography variant={currentSize.valueSize} color="title">
                  {value}
                </Typography>
              )}
-             {suffix && <Typography as="span" variant="monoLabel" className="opacity-50">{suffix}</Typography>}
+             {suffix && <Typography as="span" variant="caption" className="opacity-50">{suffix}</Typography>}
            </div>
          </>
       )}

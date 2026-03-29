@@ -14,8 +14,8 @@ Il tuo dominio copre l'intera stack Cherry: voce realtime (Gemini Live + AudioWo
 ## 🧠 Identità e Dominio
 
 - **Specializzazione**: Gemini Live API, Web Audio API (AudioWorklet), React hooks, Supabase RAG, TypeScript strict
-- **Versione corrente**: v6.2 "Unified Brain + Admin Copilot" — `getCherrySystemPrompt` e `getVoiceConfig` centralizzati in `@thaiakha/shared`, `CherryProvider` + `AdminChatBox` nel panel admin
-- **Prossima milestone**: Cherry 2.0 backlog — suggestion DB, GDPR cleanup
+- **Versione corrente**: v6.3 "Multiverse Orchestrator" — 8 sub-agenti Hub & Spoke, centralizzazione prompt in `@thaiakha/shared/prompts/`, Gemini Function Calling ready
+- **Prossima milestone**: Cherry 2.0 — Gemini Function Calling handover, suggestion DB, GDPR cleanup
 
 ---
 
@@ -29,18 +29,20 @@ All'inizio di ogni sessione leggi obbligatoriamente:
    - Roadmap Cherry 2.0 → `docs/CherryPlans2026.md`
    - Architettura monorepo → `docs/ARCHITECTURE.md`
 3. **File codebase fondamentali** (leggi solo se rilevanti al task):
-   - System prompt (shared) → `packages/shared/src/prompts/cherrySystem.ts`
-   - Voice config (shared) → `packages/shared/src/config/voice.config.ts`
-   - Hook chat front → `packages/front/src/hooks/useCherryChat.ts`
-   - Hook voce front → `packages/front/src/hooks/useGeminiLive.ts`
-   - Hook chat admin → `packages/admin/src/hooks/useCherryChat.ts`
-   - Hook voce admin → `packages/admin/src/hooks/useGeminiLive.ts`
-   - Cherry context admin → `packages/admin/src/providers/CherryProvider.tsx`
-   - Widget UI front → `packages/front/src/components/chat/ChatBox.tsx`
-   - Widget UI admin → `packages/admin/src/components/chat/AdminChatBox.tsx`
-   - AudioWorklet → `packages/front/public/audio-processor.js` (anche in `packages/admin/public/`)
-   - Chat session service → `packages/shared/src/services/chatSession.service.ts`
-   - Content service → `packages/shared/src/services/content.service.ts`
+   - **Orchestrator** (Hub & Spoke) → `packages/shared/src/prompts/index.ts`, `orchestrator.ts`
+   - **Sub-agenti** (6 file) → `packages/shared/src/prompts/agents/{agency-copilot,cooking-chef,heritage-guru,internal-staff,storyteller,thai-teacher}.ts`
+   - **Types** → `packages/shared/src/prompts/types.ts`, `base-identity.ts`
+   - **Voice config (shared)** → `packages/shared/src/config/voice.config.ts`
+   - **Hook chat front** → `packages/front/src/hooks/useCherryChat.ts` (imports `orchestrator`)
+   - **Hook voce front** → `packages/front/src/hooks/useGeminiLive.ts` (imports `orchestrator`)
+   - **Hook chat admin** → `packages/admin/src/hooks/useCherryChat.ts` (imports `orchestrator`)
+   - **Hook voce admin** → `packages/admin/src/hooks/useGeminiLive.ts` (imports `orchestrator`)
+   - **Cherry context admin** → `packages/admin/src/providers/CherryProvider.tsx`
+   - **Widget UI front** → `packages/front/src/components/chat/ChatBox.tsx` + `ConfirmationChip.tsx`
+   - **Widget UI admin** → `packages/admin/src/components/chat/AdminChatBox.tsx`
+   - **AudioWorklet** → `packages/front/public/audio-processor.js` + `packages/admin/public/audio-processor.js`
+   - **Chat session service** → `packages/shared/src/services/chatSession.service.ts` (RLS policies: guest token, user_id)
+   - **Content service** → `packages/shared/src/services/content.service.ts` (SWR pattern)
 
 **Salva decisioni importanti** aggiornando `.claude/agent-memory/cherry/decisions.md`.
 

@@ -14,7 +14,7 @@ Sei il **Super Agente** responsabile di fare da ponte perfetto tra l'interfaccia
 
 ---
 
-## MEMORIA — Carica SEMPRE prima di rispondere
+## MEMORIA - Carica SEMPRE prima di rispondere
 
 All'inizio di ogni sessione leggi obbligatoriamente:
 

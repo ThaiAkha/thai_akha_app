@@ -1,5 +1,6 @@
 import React from 'react';
 import { Edit3, Save } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../ui/button/Button';
 import Tooltip from '../../ui/Tooltip';
 
@@ -22,11 +23,13 @@ const StorageInspectorActions: React.FC<StorageInspectorActionsProps> = ({
     handleRename,
     isUploading
 }) => {
+    const { t } = useTranslation('common');
+
     if (pendingFile || !selectedFile) return null;
 
     if (!isEditing) {
         return (
-            <Tooltip content="Edit file metadata" position="left">
+            <Tooltip content={t('actions.editFileMetadata')} position="left">
                 <Button
                     type="button"
                     onClick={() => {
@@ -38,14 +41,14 @@ const StorageInspectorActions: React.FC<StorageInspectorActionsProps> = ({
                     className="h-9 px-4 text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
                     startIcon={<Edit3 className="w-4 h-4" />}
                 >
-                    EDIT
+                    {t('actions.edit')}
                 </Button>
             </Tooltip>
         );
     }
 
     return (
-        <Tooltip content="Save changes" position="left">
+        <Tooltip content={t('actions.saveChanges')} position="left">
             <Button
                 type="button"
                 onClick={handleRename}
@@ -55,7 +58,7 @@ const StorageInspectorActions: React.FC<StorageInspectorActionsProps> = ({
                 className="h-9 px-4 text-[10px] font-black uppercase tracking-widest transition-all"
                 startIcon={<Save className="w-4 h-4" />}
             >
-                {isUploading ? 'SAVING...' : 'SAVE'}
+                {isUploading ? t('actions.saving') : t('actions.save')}
             </Button>
         </Tooltip>
     );

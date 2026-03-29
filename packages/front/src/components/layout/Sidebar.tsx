@@ -35,15 +35,15 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = tr
         'relative flex items-center w-full h-12 transition-all duration-500 rounded-xl pl-0 pr-1',
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
         isActive
-          ? 'bg-action-500/20 dark:bg-action-500/20'
-          : 'hover:bg-action-500/10 dark:hover:bg-action-500/10'
+          ? 'bg-action-500/20'
+          : 'hover:bg-action-500/10'
       )}
       style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] relative z-10`}>
         <IconComponent className={cn(
           'w-6 h-6 transition-transform duration-300 group-active:scale-95',
-          isActive ? 'text-action-700 dark:text-action-400' : 'text-gray-500 dark:text-gray-400'
+          isActive ? 'text-action-700' : 'text-muted'
         )} />
       </div>
       <div className={cn(
@@ -53,14 +53,14 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = tr
       )}>
         <span className={cn(
           'font-display font-bold tracking-wide',
-          isActive ? 'text-action-700 dark:text-action-400' : 'text-gray-700 dark:text-gray-300'
+          isActive ? 'text-action-700' : 'text-sub'
         )}>
           {label}
         </span>
         {badge && (
           <span className={cn(
             'px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ml-3',
-            isActive ? 'bg-action-700 text-white shadow-sm' : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+            isActive ? 'bg-action-700 text-white shadow-sm' : 'bg-border text-muted'
           )}>
             {badge}
           </span>
@@ -91,23 +91,23 @@ function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 
       )}
       style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
-      <div className={`absolute inset-1 rounded-xl transition-colors duration-200 group-hover:bg-gray-100 dark:group-hover:bg-white/5`} />
+      <div className={`absolute inset-1 rounded-xl transition-colors duration-200 group-hover:bg-surface`} />
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
-        <IconComponent className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />
+        <IconComponent className="w-6 h-6 text-muted group-hover:text-sub" />
       </div>
       <div className={cn(
         'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10',
         'transition-all duration-300 origin-left',
         isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
       )}>
-        <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">{label}</span>
+        <span className="font-display font-bold tracking-wide text-sub">{label}</span>
       </div>
     </button>
   );
 }
 
 function Divider({ className = 'my-1' }: { className?: string }) {
-  return <div className={`h-px bg-gray-200 dark:bg-gray-900 ${className}`} role="separator" />;
+  return <div className={`h-px bg-border ${className}`} role="separator" />;
 }
 
 interface AvatarProps {
@@ -124,7 +124,7 @@ function Avatar({ src, name = 'User', size = 'md', className = '' }: AvatarProps
   return (
     <div className={cn(
       AVATAR_SIZE[size], 'rounded-full flex items-center justify-center',
-      'bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700',
+      'bg-gradient-to-br from-primary-500 to-primary-600',
       'text-white font-bold overflow-hidden flex-shrink-0', className
     )}>
       {src ? <img src={src} alt={name} className="w-full h-full object-cover" /> : <span>{initials}</span>}
@@ -152,21 +152,21 @@ function ThemeSwitcher({ isDarkMode, onToggle, isOpen, isVisible = true, index =
       )}
       style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
-      <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-white/5" />
+      <div className="absolute inset-1 rounded-xl transition-colors duration-300 group-hover:bg-surface" />
       <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
-        <ThemeIcon className="w-6 h-6 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />
+        <ThemeIcon className="w-6 h-6 text-muted group-hover:text-sub" />
       </div>
       <div className={cn(
         'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10',
         `transition-all duration-300 ${EASE_CUBIC} origin-left`,
         isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
       )}>
-        <span className="font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
+        <span className="font-display font-bold tracking-wide text-sub">
           {isDarkMode ? 'Light' : 'Dark'}
         </span>
         <div className={cn(
           'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ml-auto mr-8',
-          isDarkMode ? 'bg-action-600' : 'bg-gray-300 dark:bg-gray-600'
+          isDarkMode ? 'bg-action-600' : 'bg-gray-400'
         )}>
           <span className={cn(
             'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
@@ -229,9 +229,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Handle Cascading Reveal
   useEffect(() => {
     if (isLoaded && menuItems.length > 0) {
-      // Clear previous reveal if necessary, then start fresh
       setVisibleIndices([]);
-      const timers = menuItems.map((_, i) => 
+      const timers = menuItems.map((_, i) =>
         setTimeout(() => {
           setVisibleIndices(prev => [...prev, i]);
         }, 100 + i * 40)
@@ -265,9 +264,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       id="sidebar-nav"
       style={{ transitionDuration: SIDEBAR_TRANSITION }}
       className={cn(
-        'relative h-full shrink-0 z-50 flex flex-col border-r border-gray-200 dark:border-gray-900',
+        'relative h-full shrink-0 z-50 flex flex-col border-r border-border',
         'transition-all ease-[cubic-bezier(0.32,0.72,0,1)]',
-        'bg-white/90 dark:bg-black/30 backdrop-blur-md',
+        'bg-surface/90 backdrop-blur-md',
         isOpen ? 'w-80' : CLOSED_WIDTH
       )}
     >
@@ -282,14 +281,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="absolute inset-1 rounded-xl transition-colors duration-300" />
             <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
-              <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-gray-500 dark:text-gray-400" />
+              <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-muted" />
             </div>
             <div className={cn(
               'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10',
               `transition-all duration-300 ${EASE_CUBIC} origin-left`,
               isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
             )}>
-              <span className="font-display font-bold tracking-wide text-gray-500 opacity-30">Close Menu</span>
+              <span className="font-display font-bold tracking-wide text-muted opacity-30">Close Menu</span>
             </div>
           </button>
         </div>
@@ -300,7 +299,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <img src={isDarkMode ? LogoIconDark : LogoIconLight} alt="Logo" className="size-10 object-contain" />
           </div>
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-            <span className="ml-2 font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white">
+            <span className="ml-2 font-display font-black text-2xl tracking-tighter text-title">
               Thai <span className="text-primary-500">Akha</span>
             </span>
           </div>
@@ -325,7 +324,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10 transition-all duration-300',
                   isOpen ? 'opacity-100' : 'opacity-0'
                 )}>
-                  <span className="ml-2 font-display font-bold tracking-wide text-gray-700 dark:text-gray-300">
+                  <span className="ml-2 font-display font-bold tracking-wide text-sub">
                     {userProfile.full_name || 'Profile'}
                   </span>
                 </div>
@@ -375,11 +374,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           <Divider className="my-1 mb-4" />
 
-          <ActionButton 
-            icon="Globe" 
-            label="Languages" 
-            onClick={() => {}} 
-            isOpen={isOpen} 
+          <ActionButton
+            icon="Globe"
+            label="Languages"
+            onClick={() => {}}
+            isOpen={isOpen}
             isVisible={isLoaded}
             index={visibleItems.length + 1}
           />
@@ -393,10 +392,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             index={visibleItems.length + 2}
           />
 
-          <ThemeSwitcher 
-            isDarkMode={isDarkMode} 
-            onToggle={onToggleTheme} 
-            isOpen={isOpen} 
+          <ThemeSwitcher
+            isDarkMode={isDarkMode}
+            onToggle={onToggleTheme}
+            isOpen={isOpen}
             isVisible={isLoaded}
             index={visibleItems.length + 3}
           />

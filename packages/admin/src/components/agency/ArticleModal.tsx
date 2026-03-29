@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/modal';
 import Badge from '../ui/badge/Badge';
 import { Calendar, X, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 interface Article {
     id: string;
@@ -34,12 +36,13 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
     hasPrev = false,
     hasNext = false
 }) => {
+    const { t, i18n } = useTranslation(['pages', 'common']);
     const [isPhotoMode, setIsPhotoMode] = useState(false);
 
     if (!article) return null;
 
     const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('it-IT', {
+        return formatDateByLanguage(dateStr, i18n.language, {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
@@ -171,7 +174,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                     
                                     <button
                                         onClick={onClose}
-                                        aria-label="Close article"
+                                        aria-label={t('common:buttons.close')}
                                         className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                     >
                                         <X className="w-4 h-4 text-gray-700 dark:text-gray-300" />
@@ -194,10 +197,22 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                 </>
                             )}
                             
+                            {/* Author / Read time metadata */}
+                            {(article.author || article.reading_time) && (
+                                <div className="flex items-center gap-4 mb-4 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                                    {article.author && (
+                                        <span>{t('pages:articleModal.author')}: {article.author}</span>
+                                    )}
+                                    {article.reading_time && (
+                                        <span>{t('pages:articleModal.readTime')}: {article.reading_time}</span>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Content */}
                             <div className="prose prose-lg dark:prose-invert max-w-none">
                                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                                    {article.content}
+                                    {article.content || t('pages:articleModal.noContent')}
                                 </p>
                             </div>
                         </div>
@@ -210,19 +225,19 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                         <button
                                             onClick={onPrev}
                                             className="group flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
-                                            aria-label="Previous article"
+                                            aria-label={t('pages:articleModal.prev')}
                                         >
                                             <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300 group-hover:-translate-x-0.5 transition-transform" />
-                                            <span className="text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">Prev</span>
+                                            <span className="text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">{t('pages:articleModal.prev')}</span>
                                         </button>
                                     )}
                                     {hasNext && (
                                         <button
                                             onClick={onNext}
                                             className="group flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
-                                            aria-label="Next article"
+                                            aria-label={t('pages:articleModal.next')}
                                         >
-                                            <span className="text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">Next</span>
+                                            <span className="text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">{t('pages:articleModal.next')}</span>
                                             <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300 group-hover:translate-x-0.5 transition-transform" />
                                         </button>
                                     )}

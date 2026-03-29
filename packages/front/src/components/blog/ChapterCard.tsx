@@ -1,27 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
-import { Typography, MediaImage, Button, Badge } from '../ui/index';
+import { Typography, MediaImage, Button, Badge, Icon } from '../ui/index';
 import './BlogCardGlass.css';
-
-// ─── Section icon map ───────────────────────────────────────────────────────────
-
-const SECTION_ICONS: Record<string, string> = {
-  'hill-tribes-overview': 'landscape',
-  'historical-roots':     'history_edu',
-  'akha-zang':            'menu_book',
-  'traditional-dress':    'diamond',
-  'swing-festival':       'celebration',
-  'featured-recipes':     'restaurant_menu',
-  'thai-akha-fusion':     'merge',
-  'foragers-pantry':      'forest',
-  'spirit-gate':          'temple_buddhist',
-  'music-folklore':       'music_note',
-  'coffee-culture':       'coffee',
-  'communal-dining':      'groups',
-  'religion-beliefs':     'self_improvement',
-  'spice-philosophy':     'local_fire_department',
-};
+import { SECTION_ICONS } from './sectionIcons';
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 
@@ -36,8 +18,6 @@ interface BlogCardProps {
 const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
-  const chapterNum = String(section.display_order + 1).padStart(2, '0');
-  const categoryLabel = section.category ?? 'Culture';
 
   // Mouse tracking for gradient border
   useEffect(() => {
@@ -77,7 +57,7 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
         'transition-all duration-500 ease-out',
         'hover:-translate-y-2',
         'hover:border-primary/40',
-        'hover:shadow-[0_24px_64px_-12px_rgba(227,31,51,0.25)]',
+        'hover:shadow-[0_24px_64px_-12px_rgb(var(--color-primary)/0.25)]',
       )}
       style={{
         '--mouse-x': '50%',
@@ -102,12 +82,7 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
           />
         ) : (
           <div className="w-full h-full bg-border/20 flex items-center justify-center">
-            <span
-              className="material-symbols-outlined text-border/40 transition-transform duration-500 group-hover:scale-110"
-              style={{ fontSize: '2.5rem' }}
-            >
-              {icon}
-            </span>
+            <Icon name={icon} size="xl" color="muted" className="opacity-40 transition-transform duration-500 group-hover:scale-110" />
           </div>
         )}
       </div>

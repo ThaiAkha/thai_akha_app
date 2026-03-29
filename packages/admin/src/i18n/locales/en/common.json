@@ -75,10 +75,23 @@
     "confirm": "CONFIRM",
     "deleteRecord": "DELETE RECORD",
     "editAvailability": "EDIT AVAILABILITY",
-    "viewMore": "View More"
+    "viewMore": "View More",
+    "editRecord": "Edit this record",
+    "saveModifications": "Save modifications",
+    "saveChanges": "Save changes",
+    "editFileMetadata": "Edit file metadata",
+    "editHotel": "Edit this hotel",
+    "editMeetingPoint": "Edit this meeting point",
+    "assign": "Assign"
+  },
+  "fallback": {
+    "guest": "Guest",
+    "empty": "Empty"
   },
   "notifications": {
     "title": "Notification",
-    "viewAll": "View All Notifications"
+    "viewAll": "View All Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all as read"
   }
 }

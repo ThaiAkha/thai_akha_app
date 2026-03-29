@@ -32,10 +32,9 @@ interface PageSectionData {
 
 /**
  * SmartHeaderSection
- * 
- * Fetches header content dynamically from the `page_sections` table in Supabase.
+ * Fetches header content dynamically from the page_sections table in Supabase.
  * Renders an elegant skeleton loader while fetching.
- * Seamlessly passes fetched data to the core `HeaderSection` layout component.
+ * Seamlessly passes fetched data to the core HeaderSection layout component. 
  */
 export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
   sectionId,
@@ -67,16 +66,10 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
           .eq('section_id', sectionId)
           .single();
 
-        if (error) {
-          console.error(`Error fetching section ${sectionId}:`, error);
-          return;
-        }
-
-        if (sectionData) {
-          setData(sectionData as PageSectionData);
-        }
+        if (error) throw error;
+        if (sectionData) setData(sectionData);
       } catch (err) {
-        console.error(`Unexpected error fetching section ${sectionId}:`, err);
+        console.error(`SmartHeaderSection fetch error [${sectionId}]:`, err);
       } finally {
         setLoading(false);
       }
@@ -91,32 +84,36 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
     right: 'items-end text-right flex-col',
   }[align];
 
+  // SKELETON LOADER - Progettato per occupare lo stesso spazio dell'HeaderSection
   if (loading) {
     return (
-      <div className={cn("w-full flex gap-2 animate-pulse opacity-70", alignmentClasses, className)}>
-        {variant === 'kitchen' && (
-          <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full mb-2"></div>
+      <div className={cn("w-full mx-auto flex gap-3 animate-pulse opacity-70 py-4", alignmentClasses, className)}>
+        {!hideSubtitle && (
+          <div className="h-6 w-24 bg-surface-2 rounded-full mb-1"></div>
         )}
-        <div className={cn(
-          "h-12 md:h-14 bg-gray-300 dark:bg-gray-600 rounded-lg w-3/4 max-w-lg", 
-          variant === 'hero' ? "h-14 md:h-16" : ""
-        )}></div>
-        
-        {variant !== 'kitchen' && (
-          <div className="h-6 w-1/2 max-w-sm bg-gray-200 dark:bg-gray-700 rounded-md mt-1"></div>
+
+        {!hideTitle && (
+          <div className={cn(
+            "bg-surface-2 rounded-lg w-3/4 max-w-lg mb-2",
+            variant === 'hero' ? "h-12 md:h-16" : "h-10 md:h-12"
+          )}></div>
         )}
-        
-        {variant === 'section' && (
-          <div className="space-y-2 mt-2 w-full flex flex-col" style={{ alignItems: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start' }}>
-            <div className="h-4 w-2/3 max-w-2xl bg-gray-100 dark:bg-gray-800 rounded"></div>
-            <div className="h-4 w-1/2 max-w-xl bg-gray-100 dark:bg-gray-800 rounded"></div>
+
+        {!hideDivider && (
+          <div className="mt-1 mb-2 md:mt-3 md:mb-5 h-1 w-16 bg-surface-2 rounded-full"></div>
+        )}
+
+        {!hideDescription && (
+          <div className="space-y-2 w-full max-w-2xl flex flex-col items-center">
+            <div className="h-4 bg-surface-2 rounded w-full"></div>
+            <div className="h-4 bg-surface-2 rounded w-5/6"></div>
           </div>
         )}
       </div>
     );
   }
 
-  // Fallback to plain title if no data found in DB.
+  // FALLBACK - Nel caso in cui il record in DB non esista
   if (!data) {
     return (
       <HeaderSection
@@ -138,6 +135,7 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
     );
   }
 
+  // RENDER REALE - Passa i dati testuali dal DB al componente visivo
   return (
     <HeaderSection
       title={data.title}

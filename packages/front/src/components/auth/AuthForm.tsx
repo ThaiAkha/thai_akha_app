@@ -12,6 +12,7 @@ interface AuthFormProps {
 }
 
 type AuthPanel = 'login' | 'signup';
+type SignupStep = 0 | 1;
 
 const RECAPTCHA_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
@@ -34,12 +35,12 @@ const LOGO_SRC = '/avatarCherry/00 - Logo 2026.png';
 /* ────────────────────────────────────────────
    Header fisso: Logo + Titolo + Descrizione
 ──────────────────────────────────────────── */
-const PanelHeader: React.FC<{ title: string; description: string; logoSize?: string }> = ({ title, description, logoSize = 'w-24' }) => (
-  <div className="shrink-0 flex flex-col items-center text-center px-6 pt-8 pb-5">
+const PanelHeader: React.FC<{ title: React.ReactNode; description: string; logoSize?: string }> = ({ title, description, logoSize = 'w-24' }) => (
+  <div className="shrink-0 flex flex-col items-center text-center px-6 pt-6 pb-3">
     <img
       src={LOGO_SRC}
       alt="Thai Akha Kitchen"
-      className={`${logoSize} h-auto object-contain mb-4`}
+      className={`${logoSize} h-auto object-contain mb-3`}
       style={{ filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.3))' }}
     />
     <Typography variant="h4" className="italic">{title}</Typography>
@@ -69,7 +70,7 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
   formId, cta, loading, error, successMsg, showSocial, socialLabel = 'Or login with:', navText, navCta, onNavClick,
   isForgotPassword = false, onBackToLogin,
 }) => (
-  <div className="shrink-0 px-6 md:px-10 pb-8 pt-4 flex flex-col gap-5">
+  <div className="shrink-0 px-6 md:px-8 pb-6 pt-3 flex flex-col gap-3">
     {error && <Alert variant="error" message={error} className="py-2 text-xs" />}
     {successMsg && <Alert variant="success" message={successMsg} className="py-2 text-xs" />}
 
@@ -86,25 +87,25 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
     )}
 
     {showSocial && (
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-3">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center">
-            <Typography variant="monoLabel" className="bg-surface/95 dark:bg-surface-overlay/80 px-3">
+            <Typography variant="caption" className="bg-surface/95 dark:bg-surface-overlay/80 px-3">
               {socialLabel}
             </Typography>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {/* Google */}
           <button
             type="button"
             onClick={() => console.log('Google')}
-            className="flex items-center justify-center gap-2 w-full px-2 py-2 rounded-xl border text-md font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-white text-black border-[#e5e5e5]"
+            className="flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-white text-black border-[#e5e5e5]"
           >
-            <svg aria-label="Google logo" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <svg aria-label="Google logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
               <g>
                 <path d="m0 0H512V512H0" fill="#fff" />
                 <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341" />
@@ -120,9 +121,9 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
           <button
             type="button"
             onClick={() => console.log('Facebook')}
-            className="flex items-center justify-center gap-2 w-full px-2 py-2 rounded-xl border text-md font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-[#1A77F2] text-white border-[#005fd8]"
+            className="flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-[#1A77F2] text-white border-[#005fd8]"
           >
-            <svg aria-label="Facebook logo" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <svg aria-label="Facebook logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
               <path fill="white" d="M8 12h5V8c0-6 4-7 11-6v5c-4 0-5 0-5 3v2h5l-1 6h-4v12h-6V18H8z" />
             </svg>
             Facebook
@@ -132,9 +133,9 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
           <button
             type="button"
             onClick={() => console.log('Apple')}
-            className="flex items-center justify-center gap-2 w-full px-2 py-2 rounded-xl border text-md font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-black text-white border-black"
+            className="flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-black text-white border-black"
           >
-            <svg aria-label="Apple logo" width="16" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1195 1195">
+            <svg aria-label="Apple logo" width="14" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1195 1195">
               <path fill="white" d="M1006.933 812.8c-32 153.6-115.2 211.2-147.2 249.6-32 25.6-121.6 25.6-153.6 6.4-38.4-25.6-134.4-25.6-166.4 0-44.8 32-115.2 19.2-128 12.8-256-179.2-352-716.8 12.8-774.4 64-12.8 134.4 32 134.4 32 51.2 25.6 70.4 12.8 115.2-6.4 96-44.8 243.2-44.8 313.6 76.8-147.2 96-153.6 294.4 19.2 403.2zM802.133 64c12.8 70.4-64 224-204.8 230.4-12.8-38.4 32-217.6 204.8-230.4z" />
             </svg>
             Apple
@@ -143,7 +144,7 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
       </div>
     )}
 
-    <p className="text-center mt-2">
+    <p className="text-center mt-1">
       <Typography variant="caption" color="muted" as="span">{navText}{' '}</Typography>
       <button type="button" onClick={onNavClick}
         className="font-black text-primary hover:opacity-80 transition-opacity underline underline-offset-2 text-sm">
@@ -158,6 +159,7 @@ const PanelFooter: React.FC<PanelFooterProps> = ({
 ──────────────────────────────────────────── */
 const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate, onBack }) => {
   const [panel, setPanel] = useState<AuthPanel>('login');
+  const [signupStep, setSignupStep] = useState<SignupStep>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -176,6 +178,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate, onBack }) =>
     setError(null);
     setSuccessMsg(null);
     setIsForgotPassword(false);
+    setSignupStep(0);
+  };
+
+  const handleSignupContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!email || !password) {
+      setError('Please fill in email and password.');
+      return;
+    }
+    setSignupStep(1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -244,7 +257,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate, onBack }) =>
         {/* ══════════════════════════════════════════
             FRONT — Login
             [Logo+titolo+desc] shrink-0
-            [Campi form]       flex-1 overflow-y-auto
+            [Campi form]       flex-1
             [CTA+OR+social+nav] shrink-0
         ══════════════════════════════════════════ */}
         <div className={FACE_CLASS} style={{ backfaceVisibility: 'hidden' }}>
@@ -254,22 +267,22 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate, onBack }) =>
           {onBack && (
             <Button
               onClick={onBack}
-              variant="action"
-              size="sm"
+              variant="primary"
+              size="xs"
               icon="arrow_back"
               iconPosition="left"
-              className="absolute top-10 left-10 z-10 px-6 rounded-xl"
+              className="absolute top-8 left-8 z-10 px-4 rounded-xl"
             >
               Back
             </Button>
           )}
 
           {/* Header fisso */}
-          <PanelHeader title="Welcome Back" description="Sign in to your account" logoSize="w-32" />
+          <PanelHeader title="Welcome Back" description="Sign in to your account" logoSize="w-28" />
 
-          {/* Campi scrollabili */}
-          <div className="flex-1 min-h-0 overflow-y-auto mt-12 px-6 md:px-10">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5 h-full" id="login-form">
+          {/* Campi form */}
+          <div className="flex-1 min-h-0 px-6 md:px-10 mt-8">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full" id="login-form">
               <Input
                 label="Email Address" type="email" placeholder="chef@example.com" leftIcon="mail"
                 value={email} onChange={e => setEmail(e.target.value)} required
@@ -310,9 +323,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate, onBack }) =>
 
         {/* ══════════════════════════════════════════
             BACK — Signup (rotateY 180°)
-            [Logo+titolo+desc] shrink-0
-            [Campi form]       flex-1 overflow-y-auto
-            [CTA+OR+social+nav] shrink-0
+            2-step flow:
+              Step 0: email + password + reCAPTCHA → "Continue →"
+              Step 1: fullName + age + gender → "← Back" + "Create Account"
         ══════════════════════════════════════════ */}
         <div
           className={FACE_CLASS}
@@ -324,76 +337,203 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, onNavigate, onBack }) =>
           {onBack && (
             <Button
               onClick={onBack}
-              variant="action"
-              size="sm"
+              variant="primary"
+              size="xs"
               icon="arrow_back"
               iconPosition="left"
-              className="absolute top-10 left-10 z-10 px-6 rounded-xl"
+              className="absolute top-8 left-8 z-10 px-4 rounded-xl"
             >
               Back
             </Button>
           )}
 
           {/* Header fisso */}
-          <PanelHeader title="Join the Kitchen" description="Create your free account" logoSize="w-20" />
+          <PanelHeader
+            title={
+              <>
+                Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Kitchen</span>
+              </>
+            }
+            description="Create your free account"
+            logoSize="w-16"
+          />
 
-          {/* Campi scrollabili */}
-          <div className="flex-1 min-h-0 overflow-y-auto px-6 md:px-10">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5 pb-2" id="signup-form">
-              <Input label="Full Name" placeholder="e.g. Somchai Akha" leftIcon="person"
-                value={fullName} onChange={e => setFullName(e.target.value)} required />
+          {/* Step indicator */}
+          <div className="shrink-0 flex justify-center gap-2 px-6 pb-2">
+            <div className={`h-1 rounded-full transition-all duration-300 ${signupStep === 0 ? 'w-8 bg-primary' : 'w-4 bg-primary/30'}`} />
+            <div className={`h-1 rounded-full transition-all duration-300 ${signupStep === 1 ? 'w-8 bg-primary' : 'w-4 bg-primary/30'}`} />
+          </div>
+
+          {/* Step 0 — Credentials */}
+          <div
+            className="flex flex-col h-full overflow-hidden transition-all duration-300"
+            style={{
+              opacity: signupStep === 0 ? 1 : 0,
+              transform: signupStep === 0 ? 'translateX(0)' : 'translateX(-20px)',
+              pointerEvents: signupStep === 0 ? 'auto' : 'none',
+              position: signupStep === 0 ? 'relative' : 'absolute',
+              inset: signupStep === 0 ? 'auto' : 0,
+              zIndex: signupStep === 0 ? 1 : 0,
+            }}
+          >
+            <div className="flex-1 min-h-0 px-6 md:px-8">
+              <form onSubmit={handleSignupContinue} className="flex flex-col gap-4" id="signup-step0-form">
+                <Input label="Email Address" type="email" placeholder="chef@example.com" leftIcon="mail"
+                  value={email} onChange={e => setEmail(e.target.value)} required />
+
+                <Input label="Password" type="password" placeholder="••••••••" leftIcon="lock"
+                  value={password} onChange={e => setPassword(e.target.value)} required />
+
+                {RECAPTCHA_KEY && (
+                  <div className="flex justify-center">
+                    <ReCAPTCHA ref={recaptchaRef} sitekey={RECAPTCHA_KEY} theme="dark" />
+                  </div>
+                )}
+              </form>
+            </div>
+
+            <div className="shrink-0 px-6 md:px-8 pb-6 pt-3 flex flex-col gap-3">
+              {error && <Alert variant="error" message={error} className="py-2 text-xs" />}
+
+              <Button fullWidth size="xl" variant="brand" type="submit" form="signup-step0-form"
+                className="rounded-2xl shadow-brand-glow" icon="arrow_forward" iconPosition="right">
+                Continue
+              </Button>
+
+              <p className="text-center mt-1">
+                <Typography variant="caption" color="muted" as="span">Already a member?{' '}</Typography>
+                <button type="button" onClick={() => switchPanel('login')}
+                  className="font-black text-primary hover:opacity-80 transition-opacity underline underline-offset-2 text-sm">
+                  Sign in
+                </button>
+              </p>
+            </div>
+          </div>
+
+          {/* Step 1 — Profile */}
+          <div
+            className="flex flex-col h-full overflow-hidden transition-all duration-300"
+            style={{
+              opacity: signupStep === 1 ? 1 : 0,
+              transform: signupStep === 1 ? 'translateX(0)' : 'translateX(20px)',
+              pointerEvents: signupStep === 1 ? 'auto' : 'none',
+              position: signupStep === 1 ? 'relative' : 'absolute',
+              inset: signupStep === 1 ? 'auto' : 0,
+              zIndex: signupStep === 1 ? 1 : 0,
+            }}
+          >
+            <div className="flex-1 min-h-0 px-6 md:px-8">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4" id="signup-form">
+                <Input label="Full Name" placeholder="e.g. Somchai Akha" leftIcon="person"
+                  value={fullName} onChange={e => setFullName(e.target.value)} required />
+
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <Input label="Age" type="number" placeholder="25" leftIcon="cake"
+                      value={age} onChange={e => setAge(e.target.value)} min={1} max={120} />
+                  </div>
+                  <div className="flex-1 flex flex-col gap-2">
+                    <Typography variant="fieldLabel" as="label">Gender</Typography>
+                    <div className="relative group">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none material-symbols-outlined text-[1.2em] text-foreground/30 group-focus-within:text-action transition-colors duration-300 flex items-center leading-none">
+                        wc
+                      </span>
+                      <select value={gender} onChange={e => setGender(e.target.value)} className={selectClass}>
+                        <option value="" disabled>Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none material-symbols-outlined text-[1.1em] text-foreground/30">
+                        expand_more
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="shrink-0 px-6 md:px-8 pb-6 pt-3 flex flex-col gap-3">
+              {error && <Alert variant="error" message={error} className="py-2 text-xs" />}
+              {successMsg && <Alert variant="success" message={successMsg} className="py-2 text-xs" />}
 
               <div className="flex gap-3">
-                <div className="flex-1">
-                  <Input label="Age" type="number" placeholder="25" leftIcon="cake"
-                    value={age} onChange={e => setAge(e.target.value)} min={1} max={120} required />
-                </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <Typography variant="fieldLabel" as="label">Gender</Typography>
-                  <div className="relative group">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none material-symbols-outlined text-[1.2em] text-foreground/30 group-focus-within:text-action transition-colors duration-300 flex items-center leading-none">
-                      wc
-                    </span>
-                    <select value={gender} onChange={e => setGender(e.target.value)} required className={selectClass}>
-                      <option value="" disabled>Select...</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none material-symbols-outlined text-[1.1em] text-foreground/30">
-                      expand_more
-                    </span>
+                <Button
+                  variant="action"
+                  size="lg"
+                  type="button"
+                  onClick={() => { setSignupStep(0); setError(null); }}
+                  icon="arrow_back"
+                  className="rounded-2xl px-5 shrink-0"
+                >
+                  Back
+                </Button>
+                <Button
+                  fullWidth
+                  size="lg"
+                  variant="brand"
+                  type="submit"
+                  form="signup-form"
+                  isLoading={loading}
+                  className="rounded-2xl shadow-brand-glow"
+                  icon="arrow_forward"
+                >
+                  Create Account
+                </Button>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border" />
                   </div>
+                  <div className="relative flex justify-center">
+                    <Typography variant="caption" className="bg-surface/95 dark:bg-surface-overlay/80 px-3">
+                      Or signup with:
+                    </Typography>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button type="button" onClick={() => console.log('Google')}
+                    className="flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-white text-black border-[#e5e5e5]">
+                    <svg aria-label="Google logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                      <g>
+                        <path d="m0 0H512V512H0" fill="#fff" />
+                        <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341" />
+                        <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57" />
+                        <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73" />
+                        <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55" />
+                      </g>
+                    </svg>
+                    Google
+                  </button>
+                  <button type="button" onClick={() => console.log('Facebook')}
+                    className="flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-[#1A77F2] text-white border-[#005fd8]">
+                    <svg aria-label="Facebook logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                      <path fill="white" d="M8 12h5V8c0-6 4-7 11-6v5c-4 0-5 0-5 3v2h5l-1 6h-4v12h-6V18H8z" />
+                    </svg>
+                    Facebook
+                  </button>
+                  <button type="button" onClick={() => console.log('Apple')}
+                    className="flex items-center justify-center gap-1.5 w-full px-2 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:opacity-80 active:scale-[0.98] bg-black text-white border-black">
+                    <svg aria-label="Apple logo" width="14" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1195 1195">
+                      <path fill="white" d="M1006.933 812.8c-32 153.6-115.2 211.2-147.2 249.6-32 25.6-121.6 25.6-153.6 6.4-38.4-25.6-134.4-25.6-166.4 0-44.8 32-115.2 19.2-128 12.8-256-179.2-352-716.8 12.8-774.4 64-12.8 134.4 32 134.4 32 51.2 25.6 70.4 12.8 115.2-6.4 96-44.8 243.2-44.8 313.6 76.8-147.2 96-153.6 294.4 19.2 403.2zM802.133 64c12.8 70.4-64 224-204.8 230.4-12.8-38.4 32-217.6 204.8-230.4z" />
+                    </svg>
+                    Apple
+                  </button>
                 </div>
               </div>
 
-              <Input label="Email Address" type="email" placeholder="chef@example.com" leftIcon="mail"
-                value={email} onChange={e => setEmail(e.target.value)} required />
-
-              <Input label="Password" type="password" placeholder="••••••••" leftIcon="lock"
-                value={password} onChange={e => setPassword(e.target.value)} required />
-
-              {RECAPTCHA_KEY && (
-                <div className="flex justify-center">
-                  <ReCAPTCHA ref={recaptchaRef} sitekey={RECAPTCHA_KEY} theme="dark" />
-                </div>
-              )}
-            </form>
+              <p className="text-center mt-1">
+                <Typography variant="caption" color="muted" as="span">Already a member?{' '}</Typography>
+                <button type="button" onClick={() => switchPanel('login')}
+                  className="font-black text-primary hover:opacity-80 transition-opacity underline underline-offset-2 text-sm">
+                  Sign in
+                </button>
+              </p>
+            </div>
           </div>
 
-          {/* Footer fisso */}
-          <PanelFooter
-            formId="signup-form"
-            cta="Create Account"
-            loading={loading}
-            error={error}
-            successMsg={successMsg}
-            showSocial={true}
-            socialLabel="Or signup with:"
-            navText="Already a member?"
-            navCta="Sign in"
-            onNavClick={() => switchPanel('login')}
-          />
         </div>
 
       </div>

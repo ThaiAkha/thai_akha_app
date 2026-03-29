@@ -37,22 +37,17 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ FIX: Rimosso il loader/skeleton.
-  // Se i dati non ci sono ancora (raro con la cache), rendiamo null per non occupare spazio
-  // o un div trasparente con l'altezza esatta per evitare layout shift.
+  // Se i dati non ci sono ancora, un div trasparente con l'altezza esatta per evitare layout shift.
   if (!data) return <div className="min-h-[200px] w-full opacity-0" />;
 
   return (
     <header className={cn(
       "app-header-layout flex flex-col items-center text-center w-full justify-start",
-
-      // 1. Spaziatura Verticale (Il tuo codice, perfetto)
-      "pt-10 md:pt-12 lg:pt-14 pb-12",
-
-      // 2. Transizioni Colore (Per Light/Dark mode)
+      // Spaziatura Verticale
+      "pt-8 md:pt-12 lg:pt-6 pb-8",
+      // Transizioni Colore (Per Light/Dark mode)
       "transition-all duration-700",
-
-      // 3. ✨ Altezza Minima (Evita scatti se il titolo è breve)
+      // Altezza Minima (Evita scatti se il titolo è breve)
       "min-h-[200px]"
     )}>
 
@@ -66,7 +61,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
       </div>
 
       {/* 2. TITOLO CENTRATO */}
-      <h1 className="flex flex-wrap justify-center gap-x-3 mb-2">
+      {/* Aggiustato il margine base (mb-0) per mobile e ripristinato (md:mb-2) su desktop */}
+      <h1 className="flex flex-wrap justify-center gap-x-3 mb-0 md:mb-2">
         <Typography
           variant="titleMain"
           color="title"
@@ -83,15 +79,26 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
         </Typography>
       </h1>
 
-      <div className="mt-3 mb-5 mx-auto opacity-90 hover:opacity-100 transition-opacity">
-        <AkhaPixelPattern variant="line_simple" size={5} speed={40} />
+      {/* COMPATTATO SU MOBILE: mt-1 e mb-2 su mobile, mt-3 e mb-5 da tablet in su */}
+      <div className="mt-1 mb-2 md:mt-3 md:mb-5 mx-auto opacity-90 hover:opacity-100 transition-opacity">
+
+        {/* Mostrato SOLO su Mobile (fino a 768px): size 5 */}
+        <div className="block md:hidden">
+          <AkhaPixelPattern variant="line_simple" size={5} speed={40} />
+        </div>
+
+        {/* Mostrato SOLO su Desktop (da 768px in su): size 8 */}
+        <div className="hidden md:block">
+          <AkhaPixelPattern variant="line_simple" size={8} speed={40} />
+        </div>
+
       </div>
 
       {/* 3. DESCRIZIONE */}
       <Typography
-        variant="paragraphL"
+        variant="paragraphM"
         color="sub"
-        className="max-w-2xl whitespace-pre-wrap"
+        className="max-w-2xl whitespace-pre-line"
       >
         {data.description}
       </Typography>

@@ -37,12 +37,12 @@ I ruoli sono stati ufficialmente allineati tra Database e TypeScript tramite agg
 
 ---
 
-## 3. Tabelle DB — Schema Reale (42 tabelle)
+## 3. Tabelle DB — Schema Reale (51 tabelle)
 
 ### Dominio Booking
 | Tabella | Colonne | RLS | Note |
 |---------|---------|-----|------|
-| `bookings` | **49** | ✅ | Tabella principale |
+| `bookings` | **50** | ✅ | Tabella principale (incl. `visitor_count`) |
 | `booking_participants` | 5 | ✅ | is_leader, joined_at |
 | `menu_selections` | 10 | ✅ | curry/soup/stirfry → recipes |
 | `class_sessions` | 12 | ✅ | Sessioni disponibili |
@@ -83,8 +83,15 @@ I ruoli sono stati ufficialmente allineati tra Database e TypeScript tramite agg
 | `recipe_categories` | 13 | |
 | `recipe_composition` | 8 | recipe → ingredients |
 | `recipe_selections` | 4 | Selezioni per categoria |
-| `site_metadata` | 25 | SEO + OG + JSON-LD |
-| `site_metadata_admin` | 25 | |
+| `site_metadata` | 24 | SEO + OG + JSON-LD (rimossa colonna `features`) |
+| `site_metadata_admin` | 24 | incl. `og_type`, `twitter_card`, `cache_ttl`, `redirect_to` |
+| `site_metadata_admin_translations` | 14 | Traduzioni EN/TH per pagine admin |
+| `home_cards_translations` | 8 | Traduzioni EN/TH per home_cards |
+| `home_cards_front` | 12 | Card homepage B2C (separata da admin) |
+| `page_sections` | 9 | Sezioni CMS pagine generiche |
+| `media_assets` | 15 | Libreria immagini centralizzata |
+| `audio_assets` | 14 | Asset audio (storie, narrazione) |
+| `class_sections` | 11 | Sezioni contenuto pagine classe |
 | `akha_news` | 15 | Blog |
 | `culture_sections` | 21 | |
 | `ethnic_groups` | 7 | |
@@ -97,6 +104,12 @@ I ruoli sono stati ufficialmente allineati tra Database e TypeScript tramite agg
 | `market_runs` | 11 | + zoho_expense_id |
 | `ingredients_library` | 17 | |
 | `ingredient_categories` | 4 | |
+
+### Dominio Chat (Cherry AI)
+| Tabella | Colonne | Note |
+|---------|---------|------|
+| `chat_sessions` | 10 | user_id nullable (guest via session_token) |
+| `chat_messages` | 6 | sender_role: user/assistant/system |
 
 ### Dominio Quiz
 | Tabella | Note |
@@ -150,7 +163,7 @@ profiles
 
 ---
 
-## 5. Tabella `bookings` — 49 Colonne Complete
+## 5. Tabella `bookings` — 50 Colonne Complete
 
 ### Campi Core
 ```
@@ -175,7 +188,8 @@ special_requests, customer_note
 pickup_zone, pickup_time, pickup_lat, pickup_lng,
 pickup_driver_uid, pickup_sequence,
 meeting_point,                     ← override meeting point
-has_luggage                        ← non documentato
+has_luggage,
+visitor_count                      ← visitatori non partecipanti
 ```
 
 ### Logistica Dropoff
@@ -322,7 +336,7 @@ Il sistema ha raggiunto il perfetto allineamento tra le direttive aziendali, il 
 
 ---
 
-**Generato**: Mar 16, 2026
+**Aggiornato**: Mar 29, 2026
 **Fonte dati**: Supabase MCP → DB live `mtqullobcsypkqgdkaob`
 **Analisi**: Claude Sonnet 4.6 + DeepSeek v3.2:cloud
 **Azione**: Nessuna modifica applicata — solo lettura e documentazione ✅

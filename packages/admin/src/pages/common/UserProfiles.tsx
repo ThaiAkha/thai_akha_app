@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import UserMetaCard from "../../components/UserProfile/UserMetaCard";
 import UserAddressCard from "../../components/UserProfile/UserAddressCard";
 import UserSecurityCard from "../../components/UserProfile/UserSecurityCard";
@@ -5,11 +6,12 @@ import PageMeta from "../../components/common/PageMeta";
 import PageContainer from "../../components/layout/PageContainer";
 
 export default function UserProfiles() {
+  const { t } = useTranslation('pages');
   return (
     <>
       <PageMeta
-        title="Profile Dashboard | Cherry Admin"
-        description="Manage your personal details, agency identity, and security settings."
+        title={t('userProfiles.metaTitle')}
+        description={t('userProfiles.metaDesc')}
       />
       <PageContainer className="min-h-screen pb-20">
         <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8">

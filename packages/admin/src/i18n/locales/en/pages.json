@@ -13,12 +13,20 @@
     "metaTitle": "Profile Dashboard | Cherry Admin",
     "metaDesc": "Manage your personal details, agency identity, and security settings."
   },
+  "agencyDashboard": {
+    "metaTitle": "Agency Dashboard | Thai Akha Kitchen",
+    "metaDesc": "Overview of sales, revenue, and guest demographics."
+  },
+  "userProfiles": {
+    "metaTitle": "Profile Dashboard | Cherry Admin",
+    "metaDesc": "Manage your personal details, agency identity, and security settings."
+  },
   "agencyNews": {
     "metaTitle": "Agency News | Thai Akha Kitchen",
     "metaDesc": "Stay updated with the latest news and announcements from Thai Akha Kitchen.",
-    "badgeFallback": "Agency",
+    "badgeFallback": "News",
     "titleFallback": "Agency News",
-    "noNews": "No news found"
+    "noNews": "No news available"
   },
   "agencyRates": {
     "metaTitle": "Contract Rates 2026 | Thai Akha Kitchen Partner Portal",
@@ -76,6 +84,55 @@
     "needHelpTitle": "Need More Help?",
     "needHelpDesc": "Looking for something specific or custom branding materials? Our marketing team is ready to assist.",
     "requestAssets": "Request Custom Assets"
+  },
+  "adminReport": {
+    "loading": "Loading Report...",
+    "globalPerformance": "Global Performance",
+    "season": "2026 Season",
+    "analyticsComingSoon": "Interactive Analytics Coming Soon",
+    "metricDetail": "Metric Detail",
+    "globalAnalysis": "Global Analysis",
+    "description": "Description",
+    "monthlySummary": "Monthly Summary",
+    "exportFull": "Export Full Report",
+    "metrics": {
+      "revenue": "Total Revenue",
+      "commissions": "Total Commissions",
+      "bookings": "Total Bookings",
+      "pax": "Total Pax",
+      "revenueDetail": "Total gross revenue from all bookings (excluding cancelled).",
+      "commissionsDetail": "Total commissions payable to agencies.",
+      "bookingsDetail": "Total number of active bookings.",
+      "paxDetail": "Total number of guests serviced."
+    }
+  },
+  "agencyReport": {
+    "loading": "Loading Report...",
+    "performanceTrend": "Performance Trend",
+    "season": "2026 Season",
+    "analyticsComingSoon": "Interactive Analytics Coming Soon",
+    "metricDetail": "Metric Detail",
+    "dataAnalysis": "Data Analysis",
+    "description": "Description",
+    "monthlyInvoices": "Monthly Invoices",
+    "downloadStatement": "Download Statement",
+    "metrics": {
+      "revenue": "Net Revenue",
+      "commission": "Commission Earned",
+      "bookings": "Total Bookings",
+      "pax": "Total Pax",
+      "revenueDetail": "Total revenue from all your confirmed bookings after partner discounts.",
+      "commissionDetail": "Total commission amount accumulated. Invoiced monthly.",
+      "bookingsDetail": "Total number of client reservations made through your portal.",
+      "paxDetail": "Total number of passengers/clients serviced."
+    }
+  },
+  "articleModal": {
+    "author": "Author",
+    "readTime": "Read time",
+    "noContent": "No content available",
+    "prev": "Prev",
+    "next": "Next"
   },
   "driver": {
     "status": {

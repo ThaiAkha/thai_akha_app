@@ -9,7 +9,7 @@ import {
 } from '../components/blog/index';
 import { BlogGridSkeleton } from '../components/skeleton';
 import { useHistoryFeed } from '../hooks/useHistoryFeed';
-import CultureDetailPage from './CultureDetailPage';
+import HistoryPageSingle from './HistoryPageSingle';
 
 interface HistoryPageProps {
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
@@ -51,7 +51,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
   // Detail page view
   if (activeSlug) {
     return (
-      <CultureDetailPage
+      <HistoryPageSingle
         slug={activeSlug}
         onBack={() => handleBack(onNavigate)}
         onOpen={(slug) => handleOpenSection(slug, onNavigate)}

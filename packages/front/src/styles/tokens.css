@@ -158,7 +158,7 @@ html.dark {
 html:lang(th) {
   line-height: 1.6;
   letter-spacing: 0.01em;
-  font-family: 'Noto Sans Thai', 'Sarabun', sans-serif;
+  font-family: 'Noto Sans Thai', 'Noto Sans', sans-serif;
 }
 
 html:lang(th) body,

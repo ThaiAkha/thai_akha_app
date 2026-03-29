@@ -1,4 +1,6 @@
 import { Lock, Edit2, Minus, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { formatDateByLanguage } from '../../../lib/dateFormatter';
 import SectionHeader from '../../ui/SectionHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
@@ -34,6 +36,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
     onSave,
     onCancel
 }) => {
+    const { i18n } = useTranslation();
     const noData = isBulkMode ? (selectedDates.size === 0) : (!selectedDate || !availability[selectedDate!]);
 
     if (noData) {
@@ -52,7 +55,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
             <div className="flex flex-col h-full overflow-hidden p-6 gap-6">
                 <div className="shrink-0">
                     <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight">
-                        {isBulkMode ? `${selectedDates.size} Days` : new Date(selectedDate!).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {isBulkMode ? `${selectedDates.size} Days` : formatDateByLanguage(selectedDate!, i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}
                     </h3>
                     <p className="text-sm text-primary-600 dark:text-primary-400 mt-1 uppercase font-black tracking-widest">
                         {isBulkMode ? `Bulk Update: ${bulkSessionType === 'all' ? 'All Day' : (bulkSessionType === 'morning_class' ? 'Morning Only' : 'Evening Only')}` : (isEditing ? 'Editing Day' : 'Quick Preview')}

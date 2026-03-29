@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreVertical } from "lucide-react";
 import CountryMap from "./CountryMap";
 
 export default function DemographicCard() {
+  const { t } = useTranslation('dashboard');
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -19,10 +21,10 @@ export default function DemographicCard() {
       <div className="flex justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Customers Demographic
+            {t('ecommerce.demographics')}
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Number of customer based on country
+            {t('ecommerce.demographicsSubtitle')}
           </p>
         </div>
         <div className="relative inline-block">
@@ -38,13 +40,13 @@ export default function DemographicCard() {
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
-              View More
+              {t('ecommerce.viewMore')}
             </DropdownItem>
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
-              Delete
+              {t('ecommerce.delete')}
             </DropdownItem>
           </Dropdown>
         </div>

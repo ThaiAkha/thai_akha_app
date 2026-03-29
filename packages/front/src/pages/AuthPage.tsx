@@ -54,9 +54,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
     });
   }, []);
 
-  const STORYTELLER_IMAGE = '/avatarCherry/600-Avatar-Storyteller.webp';
-
-  const renderFeatureRow = (feature: any) => {
+  const renderFeatureRow = (feature: any, index: number) => {
     // Map data colors to GlassCard variants
     const variantMap: Record<string, 'primary' | 'action' | 'secondary' | 'subtle'> = {
       primary: 'primary',
@@ -65,17 +63,21 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
       secondary: 'secondary'
     };
 
+    // Hide third card on mobile
+    const isThird = index === 2;
+
     return (
       <GlassCard
         key={feature.title}
         variant={variantMap[feature.color] || 'primary'}
+        className={isThird ? 'hidden md:block' : ''}
       >
-        <div className="relative p-6 flex items-start gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 shadow-lg">
+        <div className="relative p-3 md:p-4 flex items-start gap-3">
+          <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 shadow-lg">
             <Icon name={feature.iconName || feature.icon} size="sm" />
           </div>
           <div className="flex-1">
-            <Typography variant="h6" className="mb-1">
+            <Typography variant="h6" className="mb-0.5">
               {feature.title}
             </Typography>
             <Typography variant="paragraphS">
@@ -83,7 +85,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
             </Typography>
           </div>
           {/* Subtle accent line inside the glass */}
-          <div className="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <div className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </div>
       </GlassCard>
     );
@@ -91,7 +93,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
 
   return (
     <div
-      className="relative min-h-screen w-full overflow-hidden font-sans selection:bg-primary/30"
+      className="relative h-screen w-full overflow-hidden font-sans selection:bg-primary/30"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -99,11 +101,11 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
       <CinematicBackground isLoaded={!!imageUrl} imageUrl={imageUrl} />
 
       {/* Outer clip — hides off-screen steps */}
-      <div className="relative z-10 min-h-screen overflow-hidden">
+      <div className="relative z-10 h-screen overflow-hidden">
 
         {/* Slider track — 300% wide for 3 steps */}
         <div
-          className="flex min-h-screen transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
+          className="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
           style={{
             width: '300%',
             transform: `translateX(-${(step - 1) * (100 / 3)}%)`
@@ -111,111 +113,123 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
         >
 
           {/* ── STEP 1 — Chef Cherry (The Mentor) ── */}
-          <div className="w-1/3 min-h-screen flex items-center justify-center px-4 py-12">
+          <div className="w-1/3 h-full flex items-center justify-center px-4 py-8 overflow-y-auto">
             <div
-              className="w-full max-w-xl flex flex-col items-center gap-4 transition-opacity duration-400"
+              className="w-full max-w-xl flex flex-col md:flex-row md:items-center gap-2 md:gap-8 transition-opacity duration-400"
               style={{ opacity: step === 1 ? 1 : 0 }}
             >
-              <img
-                src={CHEF_HERO_IMAGE}
-                alt="Chef Cherry"
-                className="w-[200px] sm:w-[240px] h-auto object-contain animate-float"
-                style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
-              />
-
-              <div className="flex flex-col items-center text-center mb-8">
-                <SmartHeaderSection
-                  sectionId="auth_step1"
-                  variant="section"
-                  align="center"
-                  fallbackTitle={`${CHEF_TITLE_MAIN} ${CHEF_TITLE_HIGHLIGHT}`}
-                  fallbackHighlight={CHEF_TITLE_HIGHLIGHT}
-                  fallbackDescription={CHEF_DESCRIPTION}
+              {/* Image — left on md+ */}
+              <div className="flex justify-center md:justify-start md:shrink-0">
+                <img
+                  src={CHEF_HERO_IMAGE}
+                  alt="Chef Cherry"
+                  className="w-32 sm:w-40 h-auto object-contain animate-float"
+                  style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
                 />
               </div>
 
-              {/* Feature Cards for Step 1 */}
-              <div className="flex flex-col gap-6 mb-6 w-full">
-                {CHEF_CARDS.map(renderFeatureRow)}
-              </div>
+              {/* Text + cards — right on md+ */}
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                  <SmartHeaderSection
+                    sectionId="auth_step1"
+                    variant="section"
+                    align="center"
+                    fallbackTitle={`${CHEF_TITLE_MAIN} ${CHEF_TITLE_HIGHLIGHT}`}
+                    fallbackHighlight={CHEF_TITLE_HIGHLIGHT}
+                    fallbackDescription={CHEF_DESCRIPTION}
+                  />
+                </div>
 
-              <Button
-                variant="brand"
-                size="md"
-                onClick={() => setStep(2)}
-                icon="arrow_forward"
-                iconPosition="right"
-                className="rounded-2xl px-6 self-end"
-              >
-                Next Experience
-              </Button>
-            </div>
-          </div>
-
-          {/* ── STEP 2 — The Storyteller (Highland Wisdom) ── */}
-          <div className="w-1/3 min-h-screen flex items-center justify-center px-4 py-12">
-            <div
-              className="w-full max-w-xl flex flex-col items-center gap-4 transition-opacity duration-400"
-              style={{ opacity: step === 2 ? 1 : 0 }}
-            >
-              <img
-                src={STORY_HERO_IMAGE}
-                alt="Akha Storyteller"
-                className="w-[200px] sm:w-[240px] h-auto object-contain animate-float"
-                style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
-              />
-
-              <div className="flex flex-col items-center text-center mb-8">
-                <SmartHeaderSection
-                  sectionId="auth_step2"
-                  variant="section"
-                  align="center"
-                  fallbackTitle={`${STORY_TITLE_MAIN} ${STORY_TITLE_HIGHLIGHT}`}
-                  fallbackHighlight={STORY_TITLE_HIGHLIGHT}
-                  fallbackDescription={STORY_DESCRIPTION}
-                  gradientFrom="primary"
-                  gradientTo="secondary"
-                />
-              </div>
-
-              {/* Feature Cards for Step 2 */}
-              <div className="flex flex-col gap-6 mb-6 w-full">
-                {STORY_CARDS.map(renderFeatureRow)}
-              </div>
-
-              <div className="flex items-center justify-between w-full">
-                <Button
-                  variant="action"
-                  size="md"
-                  onClick={() => setStep(1)}
-                  icon="arrow_back"
-                  className="rounded-2xl px-6"
-                >
-                  Back
-                </Button>
+                {/* Feature Cards for Step 1 */}
+                <div className="flex flex-col gap-2 w-full">
+                  {CHEF_CARDS.map((card, i) => renderFeatureRow(card, i))}
+                </div>
 
                 <Button
                   variant="brand"
                   size="md"
-                  onClick={() => setStep(3)}
+                  onClick={() => setStep(2)}
                   icon="arrow_forward"
                   iconPosition="right"
-                  className="rounded-2xl px-6"
+                  className="rounded-2xl px-6 self-end mt-1"
                 >
-                  Login/SignUp
+                  Next Experience
                 </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* ── STEP 2 — The Storyteller (Highland Wisdom) ── */}
+          <div className="w-1/3 h-full flex items-center justify-center px-4 py-8 overflow-y-auto">
+            <div
+              className="w-full max-w-xl flex flex-col md:flex-row md:items-center gap-2 md:gap-8 transition-opacity duration-400"
+              style={{ opacity: step === 2 ? 1 : 0 }}
+            >
+              {/* Image — left on md+ */}
+              <div className="flex justify-center md:justify-start md:shrink-0">
+                <img
+                  src={STORY_HERO_IMAGE}
+                  alt="Akha Storyteller"
+                  className="w-32 sm:w-40 h-auto object-contain animate-float"
+                  style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
+                />
+              </div>
+
+              {/* Text + cards — right on md+ */}
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                  <SmartHeaderSection
+                    sectionId="auth_step2"
+                    variant="section"
+                    align="center"
+                    fallbackTitle={`${STORY_TITLE_MAIN} ${STORY_TITLE_HIGHLIGHT}`}
+                    fallbackHighlight={STORY_TITLE_HIGHLIGHT}
+                    fallbackDescription={STORY_DESCRIPTION}
+                    gradientFrom="primary"
+                    gradientTo="secondary"
+                  />
+                </div>
+
+                {/* Feature Cards for Step 2 */}
+                <div className="flex flex-col gap-2 w-full">
+                  {STORY_CARDS.map((card, i) => renderFeatureRow(card, i))}
+                </div>
+
+                <div className="flex items-center justify-between w-full mt-1">
+                  <Button
+                    variant="action"
+                    size="md"
+                    onClick={() => setStep(1)}
+                    icon="arrow_back"
+                    className="rounded-2xl px-6"
+                  >
+                    Back
+                  </Button>
+
+                  <Button
+                    variant="brand"
+                    size="md"
+                    onClick={() => setStep(3)}
+                    icon="arrow_forward"
+                    iconPosition="right"
+                    className="rounded-2xl px-6"
+                  >
+                    Login/SignUp
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
 
           {/* ── STEP 3 — Auth Form ── */}
-          <div className="w-1/3 min-h-screen flex items-center justify-center px-4 py-12">
+          <div className="w-1/3 h-full flex items-center justify-center px-4 py-8">
             <div
-              className="w-full max-w-xl flex flex-col gap-4 transition-opacity duration-400"
+              className="w-full max-w-xl flex flex-col gap-4 transition-opacity duration-400 h-full"
               style={{ opacity: step === 3 ? 1 : 0 }}
             >
               {/* AuthForm gestisce internamente il flip 3D, i propri Card e il pulsante Back */}
-              <div className="h-[80vh]">
+              <div className="h-full">
                 <AuthForm onSuccess={onAuthSuccess} onNavigate={onNavigate} onBack={() => setStep(2)} />
               </div>
             </div>

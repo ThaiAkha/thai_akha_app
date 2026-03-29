@@ -192,7 +192,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
                   </div>
                   <div className="text-center leading-tight">
                     <Typography variant="badge" color="inherit" className="block">{item.label}</Typography>
-                    {item.badge && <Typography variant="monoLabel" className="mt-1 block opacity-60">{item.badge}</Typography>}
+                    {item.badge && <Typography variant="badge" className="mt-1 block opacity-60">{item.badge}</Typography>}
                   </div>
                 </button>
               ))}

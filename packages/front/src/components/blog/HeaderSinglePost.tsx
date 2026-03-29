@@ -14,9 +14,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 interface HeaderSinglePostProps {
     title: string;
     subtitle?: string | null;
-    category?: string | null;
     primaryImage?: string | null;
-    sectionIcon: string;
     audioAssetId?: string | null;
     hasAudio?: boolean;
     quote?: string | null;
@@ -26,9 +24,7 @@ interface HeaderSinglePostProps {
 const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
     title,
     subtitle,
-    category,
     primaryImage,
-    sectionIcon,
     audioAssetId,
     hasAudio,
     quote,

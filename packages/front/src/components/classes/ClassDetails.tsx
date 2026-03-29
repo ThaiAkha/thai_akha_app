@@ -81,7 +81,7 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
                   <div className={cn('absolute -left-[18px] top-1.5 w-2.5 h-2.5 rounded-full ring-2 ring-surface', accentDot)} />
                   <div className="space-y-0.5">
                     <div className="flex flex-wrap items-baseline gap-2">
-                      <Typography variant="monoLabel" className={cn('text-xs font-bold', accent)}>
+                      <Typography variant="accent" className={cn('text-xs font-bold', accent)}>
                         {item.time}
                       </Typography>
                       <Typography variant="h6" className="text-white/90">{item.label}</Typography>
@@ -132,7 +132,7 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
                   <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
                     {mp.type === 'walk_in' ? 'Walk-in' : 'Market Meeting'}
                   </Badge>
-                  <Typography variant="monoLabel" className={cn('text-xs font-bold', accent)}>
+                  <Typography variant="accent" className={cn('text-xs font-bold', accent)}>
                     {mp.time}
                   </Typography>
                 </div>

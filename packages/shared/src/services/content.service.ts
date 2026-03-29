@@ -113,7 +113,7 @@ export const contentService = {
             // Fallback per site_metadata (front app) - manteniamo compatibilità
             const { data, error } = await supabase
                 .from(table)
-                .select('header_badge, header_icon, header_title_main, header_title_highlight, page_description, hero_image_url, features')
+                .select('header_badge, header_icon, header_title_main, header_title_highlight, page_description, hero_image_url')
                 .eq('page_slug', slug)
                 .maybeSingle();
 
@@ -126,7 +126,7 @@ export const contentService = {
                 titleHighlight: data.header_title_highlight,
                 description: data.page_description,
                 imageUrl: data.hero_image_url,
-                features: (data as any).features ?? null,
+                features: null,
             };
         });
     },

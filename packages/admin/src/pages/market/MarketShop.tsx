@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import { supabase } from '@thaiakha/shared/lib/supabase';
@@ -76,8 +77,10 @@ type TabType = 'dashboard' | 'logistics' | 'teacher';
 type ViewMode = 'list' | 'planner';
 
 // --- HELPERS ---
-const formatLongDate = (date: Date) => {
-  return date.toLocaleDateString('it-IT', {
+const formatLongDate = (date: Date, language: string) => {
+  const localeMap: Record<string, string> = { 'en': 'en-US', 'th': 'th-TH', 'it': 'it-IT' };
+  const locale = localeMap[language] || 'en-US';
+  return date.toLocaleDateString(locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long'
@@ -85,6 +88,7 @@ const formatLongDate = (date: Date) => {
 };
 
 const MarketShop: React.FC = () => {
+  const { i18n } = useTranslation();
   const { user } = useAuth();
   // --- CORE STATE ---
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -505,7 +509,7 @@ const MarketShop: React.FC = () => {
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
         <div className="text-center px-4">
           <span className="text-2xl font-black italic uppercase text-gray-900 dark:text-white tracking-widest leading-none block">
-            {formatLongDate(selectedDate)}
+            {formatLongDate(selectedDate, i18n.language)}
           </span>
         </div>
 

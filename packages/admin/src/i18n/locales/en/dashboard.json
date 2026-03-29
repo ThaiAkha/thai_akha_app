@@ -23,5 +23,43 @@
     "colPax": "Pax",
     "colStatus": "Status",
     "guest": "Guest"
+  },
+  "explorer": {
+    "search": "Search records...",
+    "filter": "Filter",
+    "noResults": "No results found",
+    "loading": "Loading...",
+    "noSelection": "Select a record to inspect",
+    "rows": "rows",
+    "columns": "columns",
+    "addNew": "Add New",
+    "refresh": "Refresh",
+    "tableView": "Switch to table view",
+    "gridView": "Switch to grid view",
+    "refreshing": "Refreshing...",
+    "refreshData": "Refresh data",
+    "exportOptions": "Export options",
+    "filterByText": "Filter items by text",
+    "createNew": "Create new item",
+    "uploadFiles": "Upload files",
+    "emptyTable": "Empty table",
+    "emptyTableHint": "Add your first record to get started",
+    "closeCancel": "Close and Cancel",
+    "close": "Close",
+    "details": "Details"
+  },
+  "ecommerce": {
+    "demographics": "Customers Demographic",
+    "demographicsSubtitle": "Number of customers based on country",
+    "monthlySales": "Monthly Sales",
+    "salesSeriesName": "Sales",
+    "target": "Target",
+    "revenue": "Revenue",
+    "today": "Today",
+    "monthlyTarget": "Monthly Target",
+    "monthlyTargetSubtitle": "Target you've set for each month",
+    "monthlyTargetMessage": "You earn $3287 today, it's higher than last month. Keep up your good work!",
+    "viewMore": "View More",
+    "delete": "Delete"
   }
 }

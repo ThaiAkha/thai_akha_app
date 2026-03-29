@@ -21,8 +21,8 @@ export const StepHeader: React.FC<StepHeaderProps> = ({
   return (
     <div className="flex flex-col items-center justify-center mb-10 px-4 text-center animate-in fade-in slide-in-from-bottom-4">
       <div className="flex items-baseline justify-center gap-2 md:gap-3 mb-3">
-        <Typography variant="monoLabel" className="text-lg md:text-xl leading-none">{number}.</Typography>
-        <Typography variant="monoLabel" className="text-lg md:text-xl leading-none">{stepName}</Typography>
+        <Typography variant="accent" className="text-lg md:text-xl leading-none">{number}.</Typography>
+        <Typography variant="accent" className="text-lg md:text-xl leading-none">{stepName}</Typography>
       </div>
       <Typography variant="h3" className="mb-3 font-black">
         {title}

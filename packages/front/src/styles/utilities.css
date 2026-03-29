@@ -51,26 +51,14 @@
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700;
-
-  @variant dark {
-    @apply text-gray-300;
-  }
+  @apply text-sub;
 }
 
 @utility menu-item-icon {
-  @apply text-gray-500;
+  @apply text-muted;
 
   &:hover {
-    @apply text-gray-700;
-  }
-
-  @variant dark {
-    @apply text-gray-400;
-
-    &:hover {
-      @apply text-gray-300;
-    }
+    @apply text-sub;
   }
 }
 
@@ -89,18 +77,10 @@
 }
 
 @utility menu-item-icon-inactive {
-  @apply text-gray-500;
+  @apply text-muted;
 
   &:hover {
-    @apply text-gray-700;
-  }
-
-  @variant dark {
-    @apply text-gray-400;
-
-    &:hover {
-      @apply text-gray-300;
-    }
+    @apply text-sub;
   }
 }
 
@@ -117,18 +97,10 @@
 }
 
 @utility menu-item-arrow-inactive {
-  @apply text-gray-500;
+  @apply text-muted;
 
   &:hover {
-    @apply text-gray-700;
-  }
-
-  @variant dark {
-    @apply text-gray-400;
-
-    &:hover {
-      @apply text-gray-300;
-    }
+    @apply text-sub;
   }
 }
 
@@ -149,18 +121,10 @@
 }
 
 @utility menu-dropdown-item-inactive {
-  @apply text-gray-700;
+  @apply text-sub;
 
   &:hover {
-    @apply bg-gray-100;
-  }
-
-  @variant dark {
-    @apply text-gray-300;
-
-    &:hover {
-      @apply bg-white/5;
-    }
+    @apply bg-surface;
   }
 }
 
@@ -271,16 +235,14 @@ button:hover .btn-flash-glow {
   }
 
   &::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 rounded-full;
-  }
-
-  @variant dark {
-    &::-webkit-scrollbar-thumb {
-      background-color: #344054;
-    }
+    @apply bg-border rounded-full;
   }
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #344054;
+/* ============================================================================
+   FONT UTILITIES
+   ============================================================================ */
+
+.font-numeric {
+  font-family: var(--font-numeric);
 }

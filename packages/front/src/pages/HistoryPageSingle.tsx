@@ -16,25 +16,6 @@ import { HeaderSinglePost, ContentRenderer, SiblingCard } from '../components/bl
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useCultureDetail } from '../hooks/useCultureDetail';
 
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-const SECTION_ICONS: Record<string, string> = {
-  'hill-tribes-overview': 'landscape',
-  'historical-roots': 'history_edu',
-  'akha-zang': 'menu_book',
-  'traditional-dress': 'diamond',
-  'swing-festival': 'celebration',
-  'featured-recipes': 'restaurant_menu',
-  'thai-akha-fusion': 'merge',
-  'foragers-pantry': 'forest',
-  'spirit-gate': 'temple_buddhist',
-  'music-folklore': 'music_note',
-  'coffee-culture': 'coffee',
-  'communal-dining': 'groups',
-  'religion-beliefs': 'self_improvement',
-  'spice-philosophy': 'local_fire_department',
-};
-
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface TabItem {
@@ -43,7 +24,7 @@ interface TabItem {
   icon?: string;
 }
 
-interface CultureDetailPageProps {
+interface HistoryPageSingleProps {
   slug: string;
   onBack: () => void;
   onOpen?: (slug: string) => void;
@@ -54,9 +35,9 @@ interface CultureDetailPageProps {
   returnTo?: 'history' | 'all' | string;
 }
 
-// ─── CultureDetailPage ───────────────────────────────────────────────────────
+// ─── HistoryPageSingle ───────────────────────────────────────────────────────
 
-const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
+const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
   slug,
   onBack,
   onOpen,
@@ -100,8 +81,6 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
     if (onOpen) onOpen(newSlug);
   }, [onOpen]);
 
-  const sectionIcon = SECTION_ICONS[slug] || 'auto_stories';
-
   // Gallery processing: Map CultureGalleryItem -> GalleryItem (standardized for modals)
   const galleryModalItems: GalleryItem[] = galleryItems?.map(item => ({
     image_url: item.media_assets?.image_url || '',
@@ -144,9 +123,7 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
               <HeaderSinglePost
                 title={section.title}
                 subtitle={section.subtitle ?? undefined}
-                category={section.category ?? undefined}
                 primaryImage={section.primary_image ?? undefined}
-                sectionIcon={sectionIcon}
                 audioAssetId={audioId}
                 hasAudio={!!audioAsset}
                 quote={section.quote ?? undefined}
@@ -167,7 +144,7 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
                       <div className="flex-1 h-px bg-border" />
                       <div className="flex items-center gap-2 text-action/60">
                         <Icon name="photo_library" size="sm" />
-                        <Typography variant="monoLabel" color="muted">
+                        <Typography variant="caption" color="muted">
                           Gallery · {galleryModalItems.length} photos
                         </Typography>
                       </div>
@@ -257,4 +234,4 @@ const CultureDetailPage: React.FC<CultureDetailPageProps> = ({
   );
 };
 
-export default CultureDetailPage;
+export default HistoryPageSingle;

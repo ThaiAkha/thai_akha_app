@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
@@ -11,12 +12,13 @@ import PageContainer from "../../components/layout/PageContainer";
 // ✅ AppHeader handles metadata loading automatically
 
 export default function AgencyDashboard() {
+    const { t } = useTranslation('pages');
 
     return (
         <>
             <PageMeta
-                title="Agency Dashboard | Thai Akha Kitchen"
-                description="Overview of sales, revenue, and guest demographics."
+                title={t('agencyDashboard.metaTitle')}
+                description={t('agencyDashboard.metaDesc')}
             />
             <PageContainer variant="wide">
 

@@ -73,7 +73,10 @@
   },
   "session": {
     "morning": "Morning",
-    "evening": "Evening"
+    "evening": "Evening",
+    "booked": "Booked:",
+    "seatsLeft": "Seats Left:",
+    "empty": "Empty Session"
   },
   "picker": {
     "cardTitle": "Date & Session",

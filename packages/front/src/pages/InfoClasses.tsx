@@ -271,6 +271,8 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             sectionId="class-03"
             variant="section"
             align="center"
+            gradientFrom="quiz-p"
+            gradientTo="quiz-s"
             hideTitle={false}
             hideSubtitle={false}
             hideDivider={false}

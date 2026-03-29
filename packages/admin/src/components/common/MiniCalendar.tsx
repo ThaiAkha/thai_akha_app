@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getLocaleCode } from '../../lib/dateFormatter';
 
 interface MiniCalendarProps {
     value: Date;
@@ -10,6 +12,7 @@ interface MiniCalendarProps {
 }
 
 const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className, isDateDisabled }) => {
+    const { i18n } = useTranslation();
     const [viewDate, setViewDate] = useState(new Date(value));
 
     const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -78,7 +81,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
         <div className={cn("p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm", className)}>
             <div className="flex items-center justify-between mb-4 px-1">
                 <h6 className="text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                    {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                    {viewDate.toLocaleString(getLocaleCode(i18n.language), { month: 'long', year: 'numeric' })}
                 </h6>
                 <div className="flex gap-1">
                     <button onClick={handlePrevMonth} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors text-gray-500">

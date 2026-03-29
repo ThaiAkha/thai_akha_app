@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Table as TableIcon } from 'lucide-react';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
 
@@ -14,6 +15,8 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
     emptyIcon,
     children,
 }) => {
+    const { t } = useTranslation('dashboard');
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-full gap-6">
@@ -25,7 +28,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                     loopDelay={500}
                 />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 animate-pulse">
-                    Accedi ai dati...
+                    {t('explorer.loading')}
                 </span>
             </div>
         );
@@ -41,10 +44,10 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                         {emptyIcon || <TableIcon size={40} />}
                     </div>
                     <h3 className="text-lg font-black text-gray-800 dark:text-gray-100 uppercase tracking-tight mb-2">
-                        Tabella vuota
+                        {t('explorer.emptyTable')}
                     </h3>
                     <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
-                        Inserire primo contenuto per iniziare
+                        {t('explorer.emptyTableHint')}
                     </p>
                     <div className="mt-8 size-1.5 rounded-full bg-primary-500 animate-pulse" />
                 </div>

@@ -257,24 +257,8 @@ function generateOGHTML(ogData: OGData): string {
   <meta name="twitter:description" content="${description}">
   <meta name="twitter:image" content="${image}">
   <meta name="twitter:site" content="@thaiakhakitchen">
-
-  <!-- Redirect to actual React app after meta-tags are served -->
-  <script>
-    (function() {
-      // Give crawlers 1 second to parse meta-tags, then redirect human users
-      setTimeout(function() {
-        window.location.href = window.location.pathname + window.location.search;
-      }, 1000);
-    })();
-  </script>
-
-  <!-- Fallback for immediate redirect if JS executes faster -->
-  <noscript>
-    <meta http-equiv="refresh" content="0;url=${url}">
-  </noscript>
 </head>
 <body>
-  <p>Loading Thai Akha Kitchen...</p>
 </body>
 </html>`;
 }

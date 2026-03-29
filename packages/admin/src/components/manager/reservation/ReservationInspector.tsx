@@ -3,6 +3,8 @@ import InputField from '../../form/input/InputField';
 import TextArea from '../../form/input/TextArea';
 import SelectField from '../../form/input/SelectField';
 import { Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { formatDateByLanguage } from '../../../lib/dateFormatter';
 
 interface ReservationInspectorProps {
     selectedBooking: any | null;
@@ -13,18 +15,18 @@ interface ReservationInspectorProps {
 
 
 
-const formatBookingDate = (dateStr: string): string => {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })
-        .replace(/(\d+)\s+(\w+)\s+(\d+)/, '$1 $2, $3');
-};
-
 const ReservationInspector: React.FC<ReservationInspectorProps> = ({
     selectedBooking,
     isEditing,
     editData,
     onEditChange,
 }) => {
+    const { i18n } = useTranslation();
+
+    const formatBookingDate = (dateStr: string): string => {
+        return formatDateByLanguage(dateStr + 'T00:00:00', i18n.language, { day: '2-digit', month: 'long', year: 'numeric' });
+    };
+
     if (!selectedBooking) {
         return (
             <div className="h-full flex flex-col items-center justify-center p-8 text-center">

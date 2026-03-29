@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import Button from '../ui/button/Button';
 import Tooltip from '../ui/Tooltip';
@@ -15,23 +16,25 @@ interface DataExplorerInspectorProps {
 }
 
 const DataExplorerInspector: React.FC<DataExplorerInspectorProps> = ({
-    title = 'Details',
+    title,
     headerActions,
     onClose,
     children,
     className = '',
     isEditing = false,
 }) => {
+    const { t } = useTranslation('dashboard');
+
     return (
         <div className={`flex-1 flex flex-col overflow-hidden ${className}`}>
             {/* Header */}
             <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50 shrink-0 shadow-sm">
                 <div className="flex items-center gap-3">
-                    <SectionHeader title={title} variant="title" className="text-gray-700 dark:text-gray-300" />
+                    <SectionHeader title={title ?? t('explorer.details')} variant="title" className="text-gray-700 dark:text-gray-300" />
                 </div>
                 <div className="flex items-center gap-2">
                     {headerActions}
-                    <Tooltip content={isEditing ? "Close and Cancel" : "Close"} position="left">
+                    <Tooltip content={isEditing ? t('explorer.closeCancel') : t('explorer.close')} position="left">
                         <Button
                             type="button"
                             onClick={onClose}

@@ -8,6 +8,7 @@ import Badge from '../../components/ui/badge/Badge';
 import { Clock, Calendar, ChevronRight, Newspaper } from 'lucide-react';
 import ArticleModal from '../../components/agency/ArticleModal';
 import PageMeta from '../../components/common/PageMeta';
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 interface Article {
     id: string;
@@ -21,7 +22,7 @@ interface Article {
 }
 
 const AgencyNews: React.FC = () => {
-    const { t } = useTranslation('pages');
+    const { t, i18n } = useTranslation('pages');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('agency-news');
     const [news, setNews] = useState<Article[]>([]);
@@ -47,7 +48,7 @@ const AgencyNews: React.FC = () => {
     }, []);
 
     const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('it-IT', {
+        return formatDateByLanguage(dateStr, i18n.language, {
             day: 'numeric',
             month: 'short',
             year: 'numeric'

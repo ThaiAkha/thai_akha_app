@@ -305,7 +305,7 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
             <div className="pt-6 border-t border-border mt-6">
               <div className="flex justify-between items-end mb-4">
                 <Typography variant="h6" className="opacity-60">Total Due</Typography>
-                <Typography variant="h3" className="font-black">{finalPrice.toLocaleString()} <Typography variant="monoLabel" as="span" color="primary" className="text-sm">THB</Typography></Typography>
+                <Typography variant="h3" className="font-black">{finalPrice.toLocaleString()} <Typography variant="numericRegular" as="span" color="primary" className="text-sm">THB</Typography></Typography>
               </div>
 
               {!(authMode === 'login' && !userProfile) && (

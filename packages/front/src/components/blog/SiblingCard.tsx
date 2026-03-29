@@ -16,16 +16,17 @@ export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, on
   <button
     onClick={onClick}
     className={cn(
-      'group w-full text-left rounded-2xl border border-border bg-surface',
+      'group w-full text-left rounded-3xl border border-border bg-surface',
       'p-4 flex gap-4 items-center',
-      'hover:border-primary/40 hover:bg-surface/80',
-      'hover:shadow-[0_8px_24px_-4px_rgba(227,31,51,0.15)]',
+      'cursor-pointer', // <-- Cursore a manina
+      'hover:border-action/40 hover:bg-surface/80',
+      'hover:shadow-action-glow',
       'transition-all duration-300',
       direction === 'next' && 'sm:flex-row-reverse sm:text-right',
     )}
   >
-    {/* Thumbnail */}
-    <div className="w-20 h-16 md:w-28 md:h-24 rounded-xl overflow-hidden shrink-0 bg-border/20">
+    {/* Thumbnail in 16:9 (aspect-video) */}
+    <div className="w-20 md:w-28 h-20 md:h-28 rounded-xl overflow-hidden shrink-0 bg-border/20">
       {section.primary_image ? (
         <MediaImage
           assetId={section.primary_image}
@@ -36,36 +37,38 @@ export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, on
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
-          <Icon name="auto_stories" size="sm" className="text-border" />
+          <Icon name="auto_stories" size="sm" className="text-muted" />
         </div>
       )}
     </div>
 
     {/* Labels */}
     <div className="flex flex-col gap-1 min-w-0 flex-1">
-      <Typography variant="microLabel" color="muted" className="flex items-center gap-1 justify-start md:justify-start">
-        {direction === 'prev' ? (
-          <>
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            <span>PREVIOUS</span>
-          </>
-        ) : (
-          <div className="flex items-center gap-1 sm:ml-auto">
-            <span>NEXT</span>
-            <span className="material-symbols-outlined text-sm">arrow_forward</span>
-          </div>
-        )}
-      </Typography>
       <Typography
-        variant="caption"
+        variant="microLabel"
+        color="muted"
+        className={cn("flex items-center gap-1", direction === 'next' && "sm:ml-auto")}
+      >
+        {direction === 'prev' && <Icon name="arrow_back" size="sm" />}
+        <span>{direction === 'prev' ? 'PREVIOUS' : 'NEXT'}</span>
+        {direction === 'next' && <Icon name="arrow_forward" size="sm" />}
+      </Typography>
+
+      <Typography
+        variant="h6"
         color="title"
-        className="line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-300"
+        className="line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-300 truncate"
       >
         {section.title}
       </Typography>
-      {section.category && (
-        <Typography variant="microLabel" color="muted" className="opacity-60">
-          {section.category}
+
+      {section.subtitle && (
+        <Typography
+          variant="paragraphS"
+          color="sub"
+          className="line-clamp-2"
+        >
+          {section.subtitle}
         </Typography>
       )}
     </div>

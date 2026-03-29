@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 import CalendarMaster, { CalendarDay, LegendItem } from '../common/CalendarMaster';
 import { useCalendarAvailability } from '../../hooks/useCalendarAvailability';
@@ -14,6 +15,7 @@ export const BookingCalendarView: React.FC<BookingCalendarViewProps> = ({
   onSelectDate,
   onClose,
 }) => {
+  const { t } = useTranslation('booking');
   const [viewDate, setViewDate] = useState(new Date(currentDate));
   const { availability, loading } = useCalendarAvailability(viewDate);
 
@@ -83,16 +85,16 @@ export const BookingCalendarView: React.FC<BookingCalendarViewProps> = ({
   };
 
   const legend: LegendItem[] = [
-    { label: 'Available', color: 'bg-green-500' },
-    { label: 'Fully Booked', color: 'bg-red-500' },
-    { label: 'Closed', color: 'bg-orange-400' },
-    { label: 'Selected', color: 'bg-primary-500', borderColor: 'border-primary-400' },
+    { label: t('picker.available'), color: 'bg-green-500' },
+    { label: t('picker.fullyBooked'), color: 'bg-red-500' },
+    { label: t('picker.closed'), color: 'bg-orange-400' },
+    { label: t('picker.selected'), color: 'bg-primary-500', borderColor: 'border-primary-400' },
   ];
 
   return (
     <CalendarMaster
       viewDate={viewDate}
-      subtitle="Select a date for booking"
+      subtitle={t('picker.selectDatePrompt')}
       onPrev={handlePrev}
       onNext={handleNext}
       canNavigatePrev={!isCurrentMonth}

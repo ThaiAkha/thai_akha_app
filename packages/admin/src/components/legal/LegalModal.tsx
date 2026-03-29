@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal } from '../ui/modal';
 import type { LegalDocument } from '@thaiakha/shared/types';
+import { useTranslation } from 'react-i18next';
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 interface LegalModalProps {
   document: LegalDocument | null;
@@ -9,15 +11,17 @@ interface LegalModalProps {
 }
 
 const LegalModal: React.FC<LegalModalProps> = ({ document, isOpen, onClose }) => {
-  if (!document) return null;
+  const { i18n } = useTranslation();
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return formatDateByLanguage(dateStr, i18n.language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
   };
+
+  if (!document) return null;
 
   const renderContent = (content: string | string[] | undefined) => {
     if (!content) return null;

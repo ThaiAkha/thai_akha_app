@@ -48,7 +48,7 @@ const AccordionBlock: React.FC<ClassSection> = ({ title, subtitle, description, 
       {open && (
         <div className="px-5 pb-5 border-t border-white/8 animate-in fade-in slide-in-from-top-1 duration-200">
           {subtitle && (
-            <Typography variant="monoLabel" className="text-xs text-white/50 mt-3 mb-1 block">{subtitle}</Typography>
+            <Typography variant="accent" className="text-xs text-white/50 mt-3 mb-1 block">{subtitle}</Typography>
           )}
           {description && (
             <Typography variant="paragraphS" className="text-white/65 leading-relaxed mt-3">
@@ -80,7 +80,7 @@ const TimelineBlock: React.FC<ClassSection & { isLast?: boolean; accentClass?: s
         <Typography variant="h6" className="text-white/90">{title}</Typography>
       </div>
       {subtitle && (
-        <Typography variant="monoLabel" className={cn('text-xs', accentClass)}>{subtitle}</Typography>
+        <Typography variant="accent" className={cn('text-xs', accentClass)}>{subtitle}</Typography>
       )}
       {description && (
         <Typography variant="paragraphS" className="text-white/60 leading-relaxed">

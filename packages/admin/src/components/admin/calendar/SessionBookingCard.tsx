@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { User, Users } from 'lucide-react';
 import Card from '../../ui/Card';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
@@ -29,6 +30,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
     className,
     showStatus = true
 }) => {
+    const { t } = useTranslation('booking');
     const isClosed = status === 'CLOSED';
     const validCapacity = getSessionCapacity(capacity) ?? 0;
     const validSeats = getSessionCapacity(seats) ?? 0;
@@ -64,7 +66,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                     {/* Booked a sinistra */}
                     <div className="flex items-center gap-2">
                         <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-400">
-                            Booked:
+                            {t('session.booked')}
                         </span>
                         <span className="text-base sm:text-lg font-bold text-red-500 dark:text-red-500">
                             {bookedPax}
@@ -74,7 +76,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                     {/* Seats Left a destra */}
                     <div className="flex items-center gap-2">
                         <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-400">
-                            Seats Left:
+                            {t('session.seatsLeft')}
                         </span>
                         <span className="text-base sm:text-lg font-bold text-green-600 dark:text-green-400">
                             {validSeats}
@@ -105,7 +107,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                 ) : (
                     <div className="h-full py-6 flex flex-col items-center justify-center opacity-30">
                         <Users className="w-10 h-10 mb-1.5 text-gray-500" />
-                        <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Empty Session</p>
+                        <p className="text-sm font-bold uppercase tracking-widest text-gray-500">{t('session.empty')}</p>
                     </div>
                 )}
             </div>

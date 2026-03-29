@@ -73,7 +73,10 @@
   },
   "session": {
     "morning": "เช้า",
-    "evening": "เย็น"
+    "evening": "เย็น",
+    "booked": "จองแล้ว:",
+    "seatsLeft": "ที่นั่งเหลือ:",
+    "empty": "รอบว่าง"
   },
   "picker": {
     "cardTitle": "วันที่และรอบ",

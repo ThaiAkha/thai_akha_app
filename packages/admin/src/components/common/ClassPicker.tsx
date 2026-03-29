@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight, Sun, Moon, Layers, Calendar } from 'lucide-r
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import MiniCalendar from './MiniCalendar';
+import { useTranslation } from 'react-i18next';
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 export type SessionType = 'morning_class' | 'evening_class' | 'all';
 
@@ -37,6 +39,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
     showSessionSelector = true,
     labels = {}
 }) => {
+    const { i18n } = useTranslation();
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
     const currentDate = useMemo(() => {
@@ -63,8 +66,8 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
     }, [currentDate, today]);
 
     const formatDate = useCallback((d: Date) =>
-        d.toLocaleDateString('en-GB', DATE_FORMAT_OPTIONS),
-        []);
+        formatDateByLanguage(d, i18n.language, DATE_FORMAT_OPTIONS),
+        [i18n.language]);
 
     const changeDate = useCallback((days: number) => {
         const newDate = new Date(currentDate);

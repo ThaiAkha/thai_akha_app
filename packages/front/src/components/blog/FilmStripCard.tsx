@@ -1,27 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
-import { Typography, MediaImage, Button } from '../ui/index';
+import { Typography, MediaImage, Button, Icon } from '../ui/index';
 import './BlogCardGlass.css';
-
-// ─── Section icon map ───────────────────────────────────────────────────────────
-
-const SECTION_ICONS: Record<string, string> = {
-  'hill-tribes-overview': 'landscape',
-  'historical-roots':     'history_edu',
-  'akha-zang':            'menu_book',
-  'traditional-dress':    'diamond',
-  'swing-festival':       'celebration',
-  'featured-recipes':     'restaurant_menu',
-  'thai-akha-fusion':     'merge',
-  'foragers-pantry':      'forest',
-  'spirit-gate':          'temple_buddhist',
-  'music-folklore':       'music_note',
-  'coffee-culture':       'coffee',
-  'communal-dining':      'groups',
-  'religion-beliefs':     'self_improvement',
-  'spice-philosophy':     'local_fire_department',
-};
+import { SECTION_ICONS } from './sectionIcons';
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 
@@ -76,7 +58,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
         'transition-all duration-500 ease-out',
         'hover:-translate-y-1',
         'hover:border-primary/40',
-        'hover:shadow-[0_24px_64px_-12px_rgba(227,31,51,0.25)]',
+        'hover:shadow-[0_24px_64px_-12px_rgb(var(--color-primary)/0.25)]',
       )}
       style={{
         '--mouse-x': '50%',
@@ -101,9 +83,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
           />
         ) : (
           <div className="w-full h-full bg-border/20 flex items-center justify-center">
-            <span className="material-symbols-outlined text-border/40" style={{ fontSize: '3rem' }}>
-              {icon}
-            </span>
+            <Icon name={icon} size="xl" color="muted" className="opacity-40" />
           </div>
         )}
         <div className="hidden md:block absolute inset-y-0 right-0 w-12 bg-gradient-to-r from-transparent to-surface pointer-events-none" />

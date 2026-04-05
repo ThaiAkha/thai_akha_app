@@ -4,7 +4,7 @@ import { useCherryChat } from '../../hooks/useCherryChat';
 import { useGeminiLive } from '../../hooks/useGeminiLive';
 import { UserProfile } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { ALL_AGENTS, isAgentAllowed } from '@thaiakha/shared/prompts';
+import { Typography } from '../ui/Typography';
 
 interface ChatBoxProps {
   isDarkMode: boolean;
@@ -12,8 +12,7 @@ interface ChatBoxProps {
   userProfile?: UserProfile | null;
 }
 
-// Agents allowed in front context, in display order
-const FRONT_AGENTS = ALL_AGENTS.filter(a => isAgentAllowed(a, 'front'));
+// Agent state is now completely handled within useCherryChat
 
 export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userProfile }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,11 +25,6 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
     isLoading,
     error: chatError,
     sessionId,
-    currentAgentId,
-    switchAgent,
-    pendingConfirmation,
-    confirmSwitch,
-    cancelSwitch,
   } = useCherryChat(userProfile);
 
   const {
@@ -42,13 +36,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
     inputTranscript,
     outputTranscript,
     error: voiceError,
-  } = useGeminiLive(userProfile, 'front', sessionId);
-
-  useEffect(() => {
-    if (isOpen) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, inputTranscript, outputTranscript, isOpen]);
-
-
+  } = useGeminiLive(userProfile, sessionId);
 
   const processUserMessage = async (text: string) => {
     if (!text.trim() || isLoading || isConnecting) return;
@@ -60,6 +48,29 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
     }
   };
 
+  useEffect(() => {
+    if (isOpen) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, inputTranscript, outputTranscript, isOpen]);
+
+  // --- EVENT LISTENER PER TRIGGER ESTERNI (Es: Ask Cherry in RecipeSingle) ---
+  useEffect(() => {
+    const handleTriggerTopic = (e: any) => {
+      const topic = e.detail?.topic;
+      if (!topic) return;
+
+      // 1. Apri la chat
+      setIsOpen(true);
+      
+      // 2. Invia il messaggio (piccolo delay per assicurarsi che lo stato sia pronto)
+      setTimeout(() => {
+        processUserMessage(topic);
+      }, 300);
+    };
+
+    window.addEventListener('trigger-chat-topic', handleTriggerTopic);
+    return () => window.removeEventListener('trigger-chat-topic', handleTriggerTopic);
+  }, [isLoading, isConnecting, isVoiceActive]); // Re-bind se lo stato degli agenti cambia
+
   const handleToggleVoice = () => {
     if (isVoiceActive) {
       stopSession();
@@ -68,37 +79,27 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
     }
   };
 
-  const handleAgentClick = (agentId: string) => {
-    // Guest lock: only cooking_chef is free for guests
-    if (!userProfile && agentId !== 'cooking_chef') {
-      return;
-    }
-    switchAgent(agentId);
-  };
+  const headerColor = 'bg-primary';
 
-  const activeAgent = FRONT_AGENTS.find(a => a.id === currentAgentId);
-  const headerColor = activeAgent?.color ?? 'bg-primary';
-
-  // Show agent selector after the first (greeting) message
-  const showAgentSelector = messages.length >= 1;
+  // Show agent selector space if needed (removed agent selector logic)
 
   return (
-    <div className="fixed right-6 bottom-6 z-[100] flex flex-col items-end gap-6 pointer-events-none font-sans">
+    <div className="fixed right-6 bottom-6 z-[100] flex flex-col items-end [gap:var(--space-fluid-m)] pointer-events-none font-sans">
       {isOpen && (
         <div
           className={cn(
-            'pointer-events-auto w-[360px] md:w-[420px] h-[min(650px,80vh)] flex flex-col overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-3xl transition-all duration-700 ease-cinematic animate-in fade-in slide-in-from-bottom-12',
+            'pointer-events-auto w-full max-w-[clamp(360px,95vw,420px)] sm:w-[420px] h-[clamp(500px,80vh,800px)] flex flex-col overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-3xl transition-all duration-700 ease-cinematic animate-in fade-in slide-in-from-bottom-12',
             isDarkMode ? 'bg-surface-overlay/95' : 'bg-white/95'
           )}
         >
           {/* Header */}
           <div
             className={cn(
-              'h-20 flex items-center justify-between px-6 shrink-0 relative overflow-hidden transition-colors duration-500',
+              'h-20 flex items-center justify-between [padding:var(--space-fluid-s)] shrink-0 relative overflow-hidden transition-colors duration-500',
               isVoiceActive ? 'bg-action' : headerColor
             )}
           >
-            <div className="flex items-center gap-4 relative z-10 text-white">
+            <div className="flex items-center [gap:var(--space-fluid-xs)] relative z-10 text-white">
               <div
                 className={cn(
                   'size-12 rounded-2xl flex items-center justify-center border transition-all duration-700',
@@ -111,15 +112,15 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
                   <span className="material-symbols-outlined text-2xl">graphic_eq</span>
                 ) : (
                   <span className="text-2xl leading-none">
-                    {activeAgent?.emoji ?? '🍒'}
+                    🍒
                   </span>
                 )}
               </div>
               <div>
-                <h4 className="font-display font-black uppercase text-sm tracking-widest italic">
-                  {activeAgent?.name ?? 'Cherry'}
-                </h4>
-                <p className="text-[9px] font-accent font-black opacity-60 uppercase tracking-widest">
+                <Typography variant="accent" color="inverse" className="italic text-sm">
+                  Cherry
+                </Typography>
+                <Typography variant="microLabel" as="p" className="opacity-60 text-inverse">
                   {voiceError || chatError ? (
                     <span className="text-white/80 normal-case">
                       {voiceError || chatError}
@@ -131,7 +132,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
                   ) : (
                     'AI Assistant'
                   )}
-                </p>
+                </Typography>
               </div>
             </div>
             <button
@@ -150,32 +151,10 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
             </button>
           </div>
 
-          {/* Agent Selector */}
-          {showAgentSelector && !isVoiceActive && (
-            <div className="px-4 pt-3 pb-1 flex flex-wrap gap-2 shrink-0">
-              {FRONT_AGENTS.filter(agent => userProfile || agent.id === 'cooking_chef').map(agent => {
-                const isActive = agent.id === currentAgentId;
-                return (
-                  <button
-                    key={agent.id}
-                    onClick={() => handleAgentClick(agent.id)}
-                    title={agent.name}
-                    className={cn(
-                      'px-3 py-1.5 rounded-full text-xs font-bold text-white transition-all duration-300 flex items-center gap-1',
-                      agent.color,
-                      isActive && 'ring-2 ring-white scale-110 shadow-lg'
-                    )}
-                  >
-                    <span>{agent.emoji}</span>
-                    <span>{agent.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto [padding:var(--space-fluid-s)] flex flex-col [gap:var(--space-fluid-m)] custom-scrollbar">
             {messages.map((m, i) => (
               <div
                 key={m.id || i}
@@ -186,57 +165,39 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
               >
                 <div
                   className={cn(
-                    'max-w-[85%] p-4 rounded-[1.5rem] text-[14px] leading-relaxed shadow-sm transition-all',
+                    'max-w-[85%] [padding:var(--space-fluid-xs)] rounded-[1.5rem] shadow-sm transition-all',
                     m.role === 'user'
                       ? 'bg-primary text-white rounded-tr-none'
-                      : (isDarkMode
-                          ? 'bg-white/5 border border-white/5 text-white/90'
-                          : 'bg-white border border-black/5 text-gray-800') +
-                        ' rounded-tl-none'
+                      : 'bg-surface-2 border border-border text-title rounded-tl-none'
                   )}
                 >
-                  {m.text}
+                  <Typography variant="body" color={m.role === 'user' ? 'inverse' : 'title'}>
+                    {m.text}
+                  </Typography>
                 </div>
               </div>
             ))}
 
-            {/* Pending Confirmation Chip */}
-            {pendingConfirmation && (
-              <div className="flex flex-col items-start animate-in fade-in slide-in-from-bottom-2">
-                <div className="flex flex-wrap items-center gap-2 p-3 rounded-2xl bg-white/10 border border-white/10 text-sm">
-                  <span className={isDarkMode ? 'text-white/80' : 'text-gray-700'}>
-                    Vuoi parlare con <strong>{pendingConfirmation.agentName}</strong>?
-                  </span>
-                  <button
-                    onClick={confirmSwitch}
-                    className="px-3 py-1 rounded-full bg-primary text-white text-xs font-semibold hover:opacity-90 transition-opacity"
-                  >
-                    Si, connetti
-                  </button>
-                  <button
-                    onClick={cancelSwitch}
-                    className="px-3 py-1 rounded-full border border-white/20 text-white/60 text-xs hover:bg-white/5 transition-colors"
-                  >
-                    No, resta qui
-                  </button>
-                </div>
-              </div>
-            )}
+
 
             {/* Live Transcription Overlay */}
             {isVoiceActive && (
               <div className="mt-auto space-y-4 animate-in fade-in duration-500">
                 {inputTranscript && (
                   <div className="flex justify-end opacity-60">
-                    <div className="bg-white/10 p-3 rounded-2xl text-xs text-white italic border border-white/10">
-                      "{inputTranscript}..."
+                    <div className="bg-surface-2 p-3 rounded-2xl border border-border">
+                      <Typography variant="caption" color="muted">
+                        "{inputTranscript}..."
+                      </Typography>
                     </div>
                   </div>
                 )}
                 {outputTranscript && (
                   <div className="flex justify-start">
-                    <div className="bg-action/20 p-4 rounded-2xl text-sm text-white font-medium border border-action/30 shadow-lg">
-                      Cherry: {outputTranscript}
+                    <div className="bg-action/20 p-4 rounded-2xl border border-action/30 shadow-glow-lime">
+                      <Typography variant="body" className="font-medium text-white">
+                        Cherry: {outputTranscript}
+                      </Typography>
                     </div>
                   </div>
                 )}
@@ -254,7 +215,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
           </div>
 
           {/* Input Area */}
-          <div className="p-6 border-t border-white/5 bg-black/5">
+          <div className="[padding:var(--space-fluid-s)] border-t border-border bg-surface-2">
             <div className="relative group">
               <input
                 type="text"
@@ -266,8 +227,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
                 }
                 disabled={isLoading || isConnecting || isVoiceActive}
                 className={cn(
-                  'w-full bg-white/5 border border-white/10 rounded-2xl focus:border-primary/50 text-sm py-4 pl-6 pr-14 transition-all',
-                  isDarkMode ? 'text-white placeholder:text-white/20' : 'text-gray-900'
+                  'w-full bg-surface border border-border rounded-2xl focus:border-primary/50 py-4 pl-6 pr-14 transition-all text-title placeholder:text-muted',
+                  '[font-size:var(--text-fluid-body)]'
                 )}
               />
               <button
@@ -289,7 +250,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
           'pointer-events-auto size-16 md:size-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 ease-cinematic shadow-2xl relative',
           isOpen
             ? 'bg-surface text-primary rotate-90 scale-90'
-            : cn(activeAgent?.color ?? 'bg-primary', 'text-white hover:scale-110 active:scale-95')
+            : cn('bg-primary', 'text-white hover:scale-110 active:scale-95')
         )}
       >
         <span className="material-symbols-outlined text-3xl md:text-4xl">

@@ -12,8 +12,8 @@ const MicButton: React.FC<MicButtonProps> = ({ isListening, onClick }) => {
             onClick={onClick}
             className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-300 ${
                 isListening
-                    ? 'bg-red-500/80 text-white animate-mic-listening'
-                    : 'bg-white/20 text-white/80 hover:bg-white/30'
+                    ? 'bg-sys-error/80 text-white animate-mic-listening shadow-glow-cherry'
+                    : 'bg-surface-3 text-muted hover:bg-surface/50'
             }`}
             aria-label={isListening ? 'Stop listening' : 'Start listening'}
         >

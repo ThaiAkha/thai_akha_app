@@ -49,6 +49,9 @@ export interface UserProfile {
   nationality?: string;
   is_active?: boolean;
 
+  // Gamification
+  quiz_points?: number;
+
   // Timestamps
   created_at?: string;
   updated_at?: string;

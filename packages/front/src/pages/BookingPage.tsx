@@ -9,8 +9,7 @@ import { CalendarView } from '../components/booking/CalendarView';
 import { BookingSelection } from '../components/booking/BookingSelection';
 import { BookingCheckout } from '../components/booking/BookingCheckout';
 import { BookingStickyFooter } from '../components/booking/BookingStickyFooter';
-
-const MONTHS_SHORT = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface SessionInfo {
   id: string;
@@ -89,7 +88,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
           config[c.id] = {
             id: c.id,
             label: c.title,
-            shortLabel: isMorning ? "Morning Session" : "Evening Session",
+            shortLabel: isMorning ? t.booking.morningSession : t.booking.eveningSession,
             basePrice: c.price,
             icon: isMorning ? "wb_sunny" : "dark_mode",
             color: isMorning ? "text-primary" : "text-secondary",
@@ -164,7 +163,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
         dateStrings.forEach(dateStr => {
           const calculateStatus = (sessionId: string): SessionStatus => {
             const override = overrides?.find((o: any) => o.date === dateStr && o.session_id === sessionId);
-            if (override?.is_closed) return { status: 'CLOSED', remaining: 0, reason: override.closure_reason || 'Closed', totalVisitors: 0 };
+            if (override?.is_closed) return { status: 'CLOSED', remaining: 0, reason: override.closure_reason || t.booking.closed, totalVisitors: 0 };
 
             const max = override?.custom_capacity ?? baseCaps[sessionId] ?? 0;
             const sessionBookings = bookings?.filter((b: any) => b.booking_date === dateStr && b.session_id === sessionId) || [];
@@ -172,7 +171,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
             const totalVisitors = sessionBookings.reduce((sum: number, b: any) => sum + (b.visitor_count || 0), 0);
 
             const remaining = Math.max(0, max - occupied);
-            return { status: remaining > 0 ? 'OPEN' : 'FULL', remaining, reason: remaining === 0 ? 'Fully Booked' : undefined, totalVisitors };
+            return { status: remaining > 0 ? 'OPEN' : 'FULL', remaining, reason: remaining === 0 ? t.booking.fullyBooked : undefined, totalVisitors };
           };
 
           newStatsMap[dateStr] = {
@@ -246,7 +245,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
   const handleSessionSelect = (s: 'morning_class' | 'evening_class') => {
     const stats = currentStats[s];
     if (stats.status !== 'OPEN') {
-      alert(`Sorry, this class is ${stats.status === 'FULL' ? 'full' : 'closed'}.`);
+      alert(t.booking.classUnavailable({ status: stats.status === 'FULL' ? t.booking.classFull : t.booking.closed.toLowerCase() }));
       return;
     }
     setSession(s);
@@ -261,7 +260,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
     const stats = currentStats[session];
 
     if (stats.status !== 'OPEN' || stats.remaining < pax) {
-      alert(`Sorry, availability changed. Only ${stats.remaining} seats left.`);
+      alert(t.booking.availabilityChanged({ count: stats.remaining }));
       return;
     }
 
@@ -334,7 +333,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
         status: 'confirmed',
         phone_prefix: formData.phonePrefix,
         phone_number: formData.phoneNumber,
-        hotel_name: 'To be selected',
+        hotel_name: t.booking.toBeSelected,
         pickup_zone: 'walk-in',
         pickup_driver_uid: assignedDriverId
       };
@@ -346,7 +345,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
       onNavigate('user');
 
     } catch (err: any) {
-      alert("Booking Error: " + (err.message || "Unknown error"));
+      alert(t.booking.bookingError + (err.message || "Unknown error"));
     } finally {
       setLoadingConfig(false);
     }
@@ -360,7 +359,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
 
   const shortDateStr = useMemo(() => {
     if (!selectedDate) return "";
-    return `${selectedDate.getDate()} ${MONTHS_SHORT[selectedDate.getMonth()]}`;
+    return `${selectedDate.getDate()} ${t.common.monthsShort[selectedDate.getMonth()]}`;
   }, [selectedDate]);
 
   return (

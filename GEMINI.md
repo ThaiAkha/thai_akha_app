@@ -1,18 +1,18 @@
 # 🥥 GEMINI.md — Manuale Operativo Gemini Code Assist
 
-Questo file è la guida di riferimento per Gemini Code Assist nel progetto **Thai Akha Kitchen 2026**. 
+Questo file è la guida di riferimento per Gemini Code Assist nel progetto **Thai Akha Kitchen 1.0**. 
 Deve essere consultato all'inizio di ogni task per garantire coerenza architettonica e stilistica.
 
 ---
 
 ## 🎯 Missione
-Fornire suggerimenti di codice di alta qualità, type-safe e perfettamente allineati al Design System v2, agendo come un Senior Software Engineer che conosce profondamente il monorepo.
+Fornire suggerimenti di codice di alta qualità, type-safe e perfettamente allineati al Design System v1.0, agendo come un Senior Software Engineer che conosce profondamente il monorepo.
 
 ---
 
 ## 🛠 Regole d'Oro (No-Bypass)
 
-### 1. Tipografia (v4)
+### 1. Tipografia (v1.0)
 - **MAI** usare tag HTML crudi (`<h1>`, `<p>`, `<span>`) per il testo nel package `front`.
 - **USA SEMPRE** il componente `<Typography variant="...">`.
 - Varianti numeriche obbligatorie per i dati: `numericPrice`, `numericStat`, `numericRegular`.
@@ -30,18 +30,30 @@ Fornire suggerimenti di codice di alta qualità, type-safe e perfettamente allin
 - I token runtime sono in `packages/front/src/styles/tokens.css` (Source of Truth per light/dark).
 - I token Tailwind (`@theme`) sono in `packages/front/src/styles/theme.css`. Non duplicare logica in `tailwind.config.js`.
 
+### 5. Fluid Space Palette
+- **MAI** coppie breakpoint come `gap-2 md:gap-6` per spaziature standard.
+- **USA** `[gap:var(--space-fluid-m)]`, `[padding:var(--space-fluid-s)]`, `[margin-bottom:var(--space-fluid-xs)]`.
+- Token disponibili in `tokens.css :root`: `--space-fluid-2xs/xs/s/m/l/xl/2xl/3xl/section`.
+
+### 6. Skeleton Loading States
+- **MAI** skeleton inline nei componenti.
+- **USA** sempre componenti da `components/skeleton/`.
+- Testo/titoli: `SkeletonText`, `SkeletonTitle`, `SkeletonDivider` (colore `bg-surface-2`).
+- Card/immagini: `SkeletonBase` (colore `bg-gray-200 dark:bg-white/5`).
+- Header completi: `SkeletonHeader` composition.
+
 ---
 
 ## 🔄 Workflow Operativi
 
 ### 🛡 Sicurezza & Qualità (Guardian)
 Prima di scrivere query Supabase:
-1. Verifica le **RLS** in `docs/DB-2026-Full.md`.
+1. Verifica le **RLS** nel backup DDL Supabase (`supabase/backups/full_backup_*.md`).
 2. Assicurati che l'input sia sanitizzato e tipizzato in `packages/shared/src/types`.
 3. Se la logica è complessa, proponi un test Vitest.
 
 ### 🗄 Database & Data Flow
-- Consulta sempre `docs/DB-2026-Full.md` prima di ipotizzare campi o tabelle.
+- Consulta sempre il backup DDL Supabase (`supabase/backups/full_backup_*.md`) prima di ipotizzare campi o tabelle.
 - Usa i tipi generati da Supabase ed esportali da `@thaiakha/shared`.
 
 ### 🪄 UI Generation (Stitch)
@@ -55,15 +67,17 @@ Prima di scrivere query Supabase:
 | Se cerchi... | Vai a... |
 |---|---|
 | Regole Monorepo | `CLAUDE.md` |
-| Schema Database | `docs/DB-2026-Full.md` |
-| Design System / Colori | `docs/91-UI-Theme.md` |
-| Varianti Testo | `docs/typography-v4.md` |
+| Schema Database | `supabase/backups/full_backup_*.md` (DDL autorevole) |
+| Design System / Colori | `packages/front/src/styles/theme.css` |
+| Varianti Testo | `packages/front/src/components/ui/Typography.tsx` |
 | Componenti UI Front | `packages/front/src/components/ui/` |
-| Logica Condivisa | `packages/shared/src/` |
+| Fluid Spacing Tokens | `packages/front/src/styles/tokens.css` (sezione `--space-fluid-*`) |
+| Skeleton Components | `packages/front/src/components/skeleton/` |
+| Cherry AI Prompts | `packages/front/src/prompts/` (front), `packages/admin/src/prompts/` (admin) |
 
 ---
 
 ## 📝 Note per Gemini
 Ogni volta che modifichi un componente UI, controlla se ci sono colori hardcoded (es. `#1a1a1a`) e sostituiscili con le variabili CSS appropriate definite in `tokens.css`.
 
-*Ultimo aggiornamento: 29 Mar 2026*
+*Ultimo aggiornamento: 04 Apr 2026 (v1.0 Launch)*

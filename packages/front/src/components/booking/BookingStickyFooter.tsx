@@ -58,7 +58,7 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
 
             <Button
               variant="action"
-              size="xl"
+              size="lg"
               onClick={handleConfirmSelection}
               disabled={!selectedDate || !session || pax === 0}
               icon="arrow_forward"

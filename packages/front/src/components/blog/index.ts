@@ -6,3 +6,4 @@ export { default as HeroCard } from './HeroCard';
 export { default as SiblingCard } from './SiblingCard';
 export { default as BlogGrid } from './BlogGrid';
 export { default as ContentRenderer } from './ContentRenderer';
+export { default as AkhaHistoryLine } from './AkhaHistoryLine';

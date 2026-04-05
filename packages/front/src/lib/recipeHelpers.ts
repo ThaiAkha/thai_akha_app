@@ -11,6 +11,7 @@ export const mapToRecipeData = (r: any): RecipeData => {
 
   return {
     id: r.id,
+    slug: r.slug,
     name: r.name,
     thai_name: r.thai_name || '',
     description: r.description || '',

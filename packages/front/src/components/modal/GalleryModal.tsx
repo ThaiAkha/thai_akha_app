@@ -3,6 +3,13 @@ import { Button, Icon, MediaImage } from '../ui/index';
 import Modal from './Modal';
 import ModalMediaHeader from './ModalMediaHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Typography } from '../ui/index';
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
 
 export interface GalleryItem {
   image_url: string;
@@ -63,17 +70,9 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
     setIndex(i);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+  // Framer Motion physically handles drag offset and velocity now, 
+  // so we can drop the old touch custom events
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStartX.current) return;
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (diff > 50) next();
-    if (diff < -50) prev();
-    touchStartX.current = null;
-  };
 
   if (!isOpen || items.length === 0) return null;
 
@@ -85,107 +84,131 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
       onClose={onClose}
       variant="cinema"
       size="full"
-      hideCloseButton={false}
+      hideCloseButton={true}
       className="bg-transparent shadow-none border-none p-0 w-full h-full flex flex-col items-center justify-center"
     >
-      {/* ATMOSPHERIC BACKGROUND — dynamically follows current image */}
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <MediaImage
-          key={index}
-          assetId={currentItem.asset_id}
-          url={currentItem.image_url}
-          fallbackAlt="Atmosphere"
-          showCaption={false}
-          imgClassName="w-full h-full object-cover opacity-30 blur-3xl scale-125 animate-in fade-in duration-1000"
-        />
-        <div className="absolute inset-0 bg-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/90" />
+      {/* ATMOSPHERIC BACKGROUND — true crossfade + cinematic overlay */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-black">
+        <AnimatePresence mode="sync">
+          <motion.img
+            key={index}
+            src={currentItem.image_url}
+            alt="Atmosphere"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
+        {/* Layer 1: Multiplying darkner */}
+        <div className="absolute inset-0 bg-black/90 mix-blend-multiply" />
+        {/* Layer 2: Subtle secondary tint overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-black/20 to-black/0" />
       </div>
 
-      {/* CLICK-OUTSIDE WRAPPER — clicking the dark area around the image closes */}
-      <div
-        className="w-full max-w-5xl mx-auto flex flex-col items-center relative z-50 px-4 py-10 overflow-y-auto no-scrollbar cursor-pointer"
-        onClick={onClose}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* TITLE + DESCRIPTION + COUNTER outside the image */}
-        <ModalMediaHeader
-          counter={`${index + 1} / ${items.length}`}
-          title={currentItem.title}
-          description={currentItem.description}
-        />
+      {/* CLICK-TO-CLOSE — tutto schermo */}
+      <div className="fixed inset-0 z-40 cursor-pointer" onClick={onClose} />
 
-        {/* IMAGE BOX */}
+      <div className="relative z-50 w-[95vw] xl:w-[60vw] shrink-0 mx-auto flex flex-col items-center pointer-events-none [padding-block:var(--space-fluid-l)]">
+
+        {/* TITLE + DESCRIPTION outside the image (COUNTER REMOVED) */}
+        <div className="pointer-events-none w-full">
+          <ModalMediaHeader
+            title={currentItem.title}
+            description={currentItem.description}
+          />
+        </div>
+
         <div
-          className="relative w-full aspect-[16/9] md:aspect-[16/9] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] border border-white/10 bg-black/40 ring-1 ring-white/10 animate-in zoom-in-95 duration-500 group cursor-default"
+          className="pointer-events-auto relative w-full aspect-video rounded-[3rem] overflow-hidden border border-white/10 bg-black animate-in zoom-in-105 fade-in duration-700 shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Navigation arrows (desktop, appear on hover) */}
+          {/* Navigation arrows (desktop) */}
           <button
             onClick={(e) => { e.stopPropagation(); prev(); }}
-            className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-50 size-14 rounded-full border border-white/10 bg-black/20 backdrop-blur-md hover:bg-primary text-white items-center justify-center transition-all hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100"
+            className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 size-10 md:size-16 rounded-full border border-white/10 bg-black/40 backdrop-blur-md hover:bg-primary text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl"
           >
             <Icon name="chevron_left" size="xl" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); next(); }}
-            className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-50 size-14 rounded-full border border-white/10 bg-black/20 backdrop-blur-md hover:bg-primary text-white items-center justify-center transition-all hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100"
+            className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-50 size-10 md:size-16 rounded-full border border-white/10 bg-black/40 backdrop-blur-md hover:bg-primary text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl"
           >
             <Icon name="chevron_right" size="xl" />
           </button>
 
-          {/* Image */}
-          <MediaImage
-            key={index}
-            assetId={currentItem.asset_id}
-            url={currentItem.image_url}
-            fallbackAlt={currentItem.title}
-            showCaption={true}
-            imgClassName={cn(
-              "w-full h-full object-contain animate-in duration-500 fill-mode-both",
-              direction > 0 ? "slide-in-from-right-8" : direction < 0 ? "slide-in-from-left-8" : "fade-in"
-            )}
-          />
+          <AnimatePresence initial={false} mode="sync">
+            <motion.div
+              key={index}
+              variants={{
+                enter: { opacity: 0, scale: 1.55 },
+                center: { zIndex: 1, opacity: 1, scale: 1 },
+                exit: { zIndex: 0, opacity: 0, scale: 1 }
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+                if (swipe < -swipeConfidenceThreshold) next();
+                else if (swipe > swipeConfidenceThreshold) prev();
+              }}
+              className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
+            >
+              {/* Image */}
+              <MediaImage
+                assetId={currentItem.asset_id}
+                url={currentItem.image_url}
+                fallbackAlt={currentItem.title}
+                showCaption={true}
+                imgClassName="w-full h-full object-contain pointer-events-none"
+              />
+            </motion.div>
+          </AnimatePresence>
 
-          {/* QUOTE OVERLAY — inside the image, bottom-left */}
+          {/* QUOTE OVERLAY */}
           {currentItem.quote && (
-            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
-              <p className="font-display font-black italic text-white text-2xl md:text-3xl leading-tight drop-shadow-2xl max-w-xl">
+            <div className="absolute bottom-0 left-0 right-0 [padding:var(--space-fluid-l)] [padding-top:var(--space-fluid-2xl)] bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
+              <Typography
+                variant="h3"
+                className="font-black italic text-white leading-tight drop-shadow-2xl max-w-2xl [padding-bottom:var(--space-fluid-xl)]"
+              >
                 "{currentItem.quote}"
-              </p>
+              </Typography>
             </div>
           )}
+
+          {/* INTERNAL PAGINATION DOTS */}
+          <div
+            className="absolute bottom-6 left-0 right-0 z-50 pointer-events-auto flex gap-2 items-center justify-center drop-shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {items.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={cn(
+                  "h-2 rounded-full transition-all duration-300 shadow-sm",
+                  i === index ? "bg-primary w-8" : "bg-white/50 hover:bg-white w-2"
+                )}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* PAGINATION DOTS */}
-        <div
-          className="flex gap-2 items-center justify-center mt-6"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {items.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                i === index ? "bg-primary w-8" : "bg-white/30 hover:bg-white/60 w-2"
-              )}
-            />
-          ))}
-        </div>
-
-        {/* CLOSE BUTTON */}
-        <div
-          className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200"
-          onClick={(e) => e.stopPropagation()}
-        >
+        {/* CLOSE BUTTON — same style as PhotoModal */}
+        <div className="pointer-events-auto [margin-top:var(--space-fluid-l)]">
           <Button
-            variant="mineral"
-            size="xl"
+            variant="outline"
+            size="sm"
             icon="close"
             onClick={onClose}
-            className="rounded-full text-action border-action/20 hover:bg-action/10 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(0,0,0,0.6)]"
+            className="text-action border-action/20"
           >
             Close Gallery
           </Button>

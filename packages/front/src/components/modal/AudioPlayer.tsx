@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { useAudioAsset } from '../../hooks/useAudioAsset';
 import { Typography, Icon } from '../ui';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface AudioPlayerProps {
   /** UUID of the asset in audio_assets */
@@ -46,11 +47,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [progress, setProgress] = useState(0);
   const [showTranscript, setShowTranscript] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [eqBars, setEqBars] = useState([20, 40, 30, 60]);
+  const [eqBars, setEqBars] = useState([20, 40, 30, 60, 45, 25, 55, 35]);
 
   const audioSrc = url ?? asset?.audio_url;
-  const displayTitle = titleOverride ?? asset?.title ?? 'Akha Kitchen Wisdom';
-  const displayCaption = descriptionOverride ?? asset?.caption ?? 'Traditional voice story from the mountains.';
+  const displayTitle = titleOverride ?? asset?.title ?? t.components.audioPlayer.fallbackTitle;
+  const displayCaption = descriptionOverride ?? asset?.caption ?? t.components.audioPlayer.fallbackDesc;
 
   // Format duration into MM:SS
   const formatTime = (seconds?: number) => {
@@ -84,15 +85,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     let interval: ReturnType<typeof setInterval>;
     if (isPlaying) {
       interval = setInterval(() => {
-        setEqBars([
-          Math.random() * 80 + 20,
-          Math.random() * 80 + 20,
-          Math.random() * 80 + 20,
-          Math.random() * 80 + 20,
-        ]);
+        setEqBars(Array.from({ length: 8 }, () => Math.random() * 80 + 20));
       }, 200);
     } else {
-      setEqBars([20, 60, 30, 80]); // reset states
+      setEqBars([20, 60, 30, 80, 40, 20, 50, 30]); // reset states
     }
     return () => clearInterval(interval);
   }, [isPlaying]);
@@ -133,7 +129,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           "active:scale-95",
           className
         )}
-        aria-label={isPlaying ? "Pause audio" : "Play audio"}
+        aria-label={isPlaying ? t.components.audioPlayer.pauseAudio : t.components.audioPlayer.playAudio}
       >
         <audio ref={audioRef} src={audioSrc} preload="metadata" />
         <Icon
@@ -183,7 +179,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         </div>
 
         {/* BASE LAYER (Unfilled - Transparent Secondary) */}
-        <div className="flex items-center gap-4 w-full p-2 pr-6 relative z-0">
+        <div className="flex items-center gap-4 w-full p-2 relative z-0">
           {/* PLAY BUTTON (Outline/Transparent) */}
           <button
             className="relative z-20 size-12 rounded-full border-2 border-secondary flex items-center justify-center text-secondary shrink-0 hover:bg-secondary/20 transition-colors pointer-events-auto"
@@ -191,7 +187,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               e.stopPropagation();
               togglePlay();
             }}
-            aria-label={isPlaying ? "Pause mystery story" : "Play mystery story"}
+            aria-label={isPlaying ? t.components.audioPlayer.pauseStory : t.components.audioPlayer.playStory}
           >
             <Icon
               name={isPlaying ? "pause" : "play_arrow"}
@@ -203,15 +199,15 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           {/* REWIND BUTTON (appears when playing) */}
           {isPlaying && showRewind && (
             <button
-              className="relative z-20 size-10 rounded-full border border-secondary flex items-center justify-center text-secondary shrink-0 hover:bg-secondary/20 transition-all"
+              className="relative z-20 size-10 rounded-full border border-secondary flex items-center justify-center text-secondary-200 shrink-0 hover:bg-secondary-100 transition-all"
               onClick={(e) => {
                 e.stopPropagation();
                 if (audioRef.current) {
                   audioRef.current.currentTime = 0;
                 }
               }}
-              aria-label="Restart from beginning"
-              title="Restart"
+              aria-label={t.components.audioPlayer.restartAria}
+              title={t.components.audioPlayer.restartTitle}
             >
               <Icon name="rewind" size="sm" />
             </button>
@@ -219,25 +215,51 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
           {/* TEXT CONTENT & EQUALIZER */}
           <div className="flex-1 min-w-0 pointer-events-none flex flex-col justify-center gap-0.5">
-            <div className="flex items-center justify-between gap-3">
-              <Typography variant="h6" className="truncate text-secondary">
-                {displayTitle}
-              </Typography>
-              <div className="flex items-center gap-2 shrink-0">
-                <Typography variant="microLabel" className="text-secondary/70">
-                  {formatTime(asset?.duration_seconds)}
-                </Typography>
-                {/* EQUALIZER */}
-                <div className="flex items-end gap-[2px] h-4 opacity-80 w-4">
-                  {eqBars.map((h, i) => (
-                    <div key={i} className="w-[2px] bg-secondary rounded-t-[1px] transition-all duration-200" style={{ height: `${h}%` }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <Typography variant="microLabel" className="truncate opacity-70 italic text-secondary/80">
+            <Typography variant="h6" className="truncate text-secondary-400">
+              {displayTitle}
+            </Typography>
+            <Typography variant="microLabel" className="truncate opacity-70 italic text-secondary-400">
               {displayCaption}
             </Typography>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            {/* DIVIDER */}
+            <div className="h-8 w-px bg-secondary/30 shrink-0" />
+
+            {/* TIME + EQ RECTANGLE */}
+            <div
+              className="flex flex-col items-center justify-center rounded-full bg-secondary shrink-0 size-12"
+              style={{ gap: '3px' }}
+            >
+              <Typography variant="numericRegular" className="text-[10px] leading-none text-white font-medium">
+                {formatTime(asset?.duration_seconds)}
+              </Typography>
+              <div className="flex items-end justify-center gap-[2px] h-3">
+                {eqBars.map((h, i) => (
+                  <div key={i} className="w-[1.5px] bg-white rounded-t-[1px] transition-all duration-200" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+            </div>
+
+            {/* TRANSCRIPT BUTTON (Base layer) */}
+            {!hideTranscript && asset?.transcript && (
+              <button
+                className={cn(
+                  "relative z-20 size-12 rounded-full border-2 flex items-center justify-center pointer-events-auto shrink-0 transition-colors",
+                  showTranscript
+                    ? "border-secondary bg-secondary text-white hover:bg-secondary/90"
+                    : "border-secondary text-secondary hover:bg-secondary/20"
+                )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowTranscript(!showTranscript);
+                }}
+                title={showTranscript ? t.components.audioPlayer.hideTranscript : t.components.audioPlayer.readTranscript}
+              >
+                <Icon name="FileText" size="lg" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -249,7 +271,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             WebkitClipPath: `inset(0 ${100 - progress}% 0 0)`
           }}
         >
-          <div className="flex items-center gap-4 w-full p-2 pr-6 h-full">
+          <div className="flex items-center gap-4 w-full p-2 h-full">
             {/* PLAY BUTTON (White Outline) */}
             <div className="size-12 rounded-full border-2 border-white flex items-center justify-center text-white shrink-0">
               <Icon
@@ -268,25 +290,46 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
             {/* TEXT CONTENT & EQUALIZER (White) */}
             <div className="flex-1 min-w-0 pointer-events-none flex flex-col justify-center gap-0.5">
-              <div className="flex items-center justify-between gap-3">
-                <Typography variant="h6" className="truncate text-white">
-                  {displayTitle}
-                </Typography>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Typography variant="microLabel" className="text-white/80">
-                    {formatTime(asset?.duration_seconds)}
-                  </Typography>
-                  {/* EQUALIZER (White) */}
-                  <div className="flex items-end gap-[2px] h-4 opacity-90 w-4">
-                    {eqBars.map((h, i) => (
-                      <div key={i} className="w-[2px] bg-white rounded-t-[1px] transition-all duration-200" style={{ height: `${h}%` }} />
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <Typography variant="h6" className="truncate text-white">
+                {displayTitle}
+              </Typography>
               <Typography variant="microLabel" className="truncate opacity-90 italic text-white/80">
                 {displayCaption}
               </Typography>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              {/* DIVIDER */}
+              <div className="h-8 w-px bg-white/30 shrink-0" />
+
+              {/* TIME + EQ RECTANGLE (inverted) */}
+              <div
+                className="flex flex-col items-center justify-center rounded-full bg-white shrink-0 size-12"
+                style={{ gap: '3px' }}
+              >
+                <Typography variant="numericRegular" className="text-[10px] leading-none font-medium" style={{ color: 'var(--color-secondary)' }}>
+                  {formatTime(asset?.duration_seconds)}
+                </Typography>
+                <div className="flex items-end justify-center gap-[2px] h-3">
+                  {eqBars.map((h, i) => (
+                    <div key={i} className="w-[1.5px] rounded-t-[1px] transition-all duration-200" style={{ height: `${h}%`, backgroundColor: 'var(--color-secondary)' }} />
+                  ))}
+                </div>
+              </div>
+
+              {/* TRANSCRIPT BUTTON (Progress layer) */}
+              {!hideTranscript && asset?.transcript && (
+                <div
+                  className={cn(
+                    "size-12 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
+                    showTranscript
+                      ? "border-white bg-white text-secondary"
+                      : "border-white text-white"
+                  )}
+                >
+                  <Icon name="FileText" size="lg" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -295,22 +338,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       {/* TRANSCRIPT ACCORDION */}
       {asset?.transcript && !hideTranscript && (
         <div className="px-4">
-          <button
-            onClick={() => setShowTranscript(!showTranscript)}
-            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-secondary hover:opacity-80 transition-opacity"
-          >
-            <Icon name={showTranscript ? "keyboard_arrow_up" : "keyboard_arrow_down"} size="sm" />
-            {showTranscript ? "Hide Transcript" : "Read Transcript"}
-          </button>
-
           <div className={cn(
-            "mt-3 overflow-hidden transition-all duration-300",
-            showTranscript ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            "grid transition-all duration-300 overflow-hidden",
+            showTranscript ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
           )}>
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-border">
-              <Typography variant="paragraphS" className="text-desc leading-relaxed italic">
-                {asset.transcript}
-              </Typography>
+            <div className="overflow-hidden">
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-border mt-3">
+                <Typography variant="paragraphS" className="text-desc leading-relaxed italic">
+                  {asset.transcript}
+                </Typography>
+              </div>
             </div>
           </div>
         </div>

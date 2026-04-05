@@ -1,7 +1,7 @@
 // packages/admin/src/hooks/useCherryChat.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { orchestrator } from '@thaiakha/shared/prompts';
+import { buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
 import {
   getOrCreateSession,
   loadRecentMessages,
@@ -11,6 +11,8 @@ import {
   type ChatSession,
   type DbChatMessage,
 } from '@thaiakha/shared/services';
+import { contentService } from '@thaiakha/shared/services';
+import { supabase } from '@thaiakha/shared';
 import type { ChatMessage } from '@thaiakha/shared';
 import type { UserProfile } from '../services/auth.service';
 
@@ -25,17 +27,20 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   const chatRef = useRef<any>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
+  const cookingClassesRef = useRef<any[]>([]);
+  const bookingSnapshotRef = useRef<BookingDaySummary[]>([]);
+  const guestAlertsRef = useRef<GuestAlert[]>([]);
 
   const buildSystemPrompt = useCallback(
     (history: DbChatMessage[], summary: string | null): string => {
-      const activeAgent = orchestrator.getAgent('admin', userProfile?.role);
-      const base = orchestrator.buildPrompt(
-        activeAgent,
+      const base = buildAdminPrompt(
         userProfile || {},
-        userProfile?.dietary_profile || 'diet_regular',
-        userProfile?.allergies || [],
         false,
-        'admin'
+        {
+          cookingClasses: cookingClassesRef.current,
+          bookingSnapshot: bookingSnapshotRef.current,
+          guestAlerts: guestAlertsRef.current,
+        }
       );
 
       let historyBlock = '';
@@ -73,9 +78,64 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     initialized.current = true;
 
     const init = async () => {
-      const session = await getOrCreateSession(userProfile?.id);
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
+      const [classes, session, bookingsResult] = await Promise.all([
+        contentService.getCookingClasses(),
+        getOrCreateSession(userProfile?.id),
+        supabase
+          .from('bookings')
+          .select('internal_id, booking_date, session_id, pax_count, visitor_count, status')
+          .gte('booking_date', today)
+          .lte('booking_date', nextWeek)
+          .neq('status', 'cancelled')
+          .order('booking_date'),
+      ]);
+
+      cookingClassesRef.current = classes;
       sessionRef.current = session;
       setSessionId(session.id);
+
+      // Build booking snapshot
+      const bookings = bookingsResult.data ?? [];
+      bookingSnapshotRef.current = bookings.map(b => ({
+        date: b.booking_date,
+        session: b.session_id ?? 'unknown',
+        pax: b.pax_count ?? 0,
+        visitors: b.visitor_count ?? 0,
+        status: b.status ?? 'unknown',
+      }));
+
+      // Fetch dietary alerts from menu_selections for confirmed bookings
+      const bookingIds = bookings
+        .filter(b => b.status === 'confirmed')
+        .map(b => b.internal_id)
+        .filter(Boolean) as string[];
+
+      if (bookingIds.length > 0) {
+        const { data: selections } = await supabase
+          .from('menu_selections')
+          .select('booking_id, dietary_profile, allergies')
+          .in('booking_id', bookingIds);
+
+        if (selections?.length) {
+          // Map booking_id → booking date/session for context
+          const bookingMap = new Map(bookings.map(b => [b.internal_id, b]));
+          guestAlertsRef.current = selections
+            .filter(s => s.dietary_profile !== 'diet_regular' || (Array.isArray(s.allergies) && s.allergies.length > 0))
+            .map(s => {
+              const booking = bookingMap.get(s.booking_id);
+              return {
+                name: bookingMap.get(s.booking_id)?.guest_name ?? 'Guest',
+                date: booking?.booking_date ?? '',
+                session: booking?.session_id ?? '',
+                dietary: s.dietary_profile ?? 'regular',
+                allergies: Array.isArray(s.allergies) ? s.allergies : [],
+              };
+            });
+        }
+      }
 
       const history = await loadRecentMessages(session.id, HISTORY_WINDOW * 2);
       const initialMessages: ChatMessage[] = history.map(
@@ -86,15 +146,26 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         })
       );
 
+      let historyForGemini = history;
       if (initialMessages.length === 0) {
         const greeting = userProfile?.full_name
           ? `Sawasdee kha ${userProfile.full_name.split(' ')[0]}! Admin panel active. How can I assist you today? kha`
           : "Sawasdee kha! I'm Cherry, your kitchen AI. How can I help the team today? kha";
         initialMessages.push({ id: 'greeting', role: 'model', text: greeting });
+
+        const greetingDbMsg: DbChatMessage = {
+          id: 'greeting',
+          sender_role: 'assistant',
+          content: greeting,
+          type: 'text',
+          created_at: new Date().toISOString(),
+          session_id: session.id,
+        };
+        historyForGemini = [...history, greetingDbMsg];
       }
 
       setMessages(initialMessages);
-      initGeminiChat(history, session.summary);
+      initGeminiChat(historyForGemini, session.summary);
     };
 
     init();

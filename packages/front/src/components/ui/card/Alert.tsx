@@ -70,7 +70,7 @@ const Alert: React.FC<AlertProps> = ({
 
       {/* HEADER: Icona + Testi */}
       <div className="flex items-start gap-4 relative z-10">
-        <div className="p-2 rounded-xl bg-white/5 border border-white/5 shrink-0 backdrop-blur-md">
+        <div className="size-12 rounded-md bg-white/5 border border-white/10 shrink-0 backdrop-blur-md flex items-center justify-center aspect-square shadow-inner">
           {icon ? (
             isNaN(parseInt(icon)) ? <Icon name={icon} size="md" className="animate-pulse-slow" /> : <span className="text-xl font-bold">{icon}</span>
           ) : (

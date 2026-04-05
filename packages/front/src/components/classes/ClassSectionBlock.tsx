@@ -96,7 +96,7 @@ const TimelineBlock: React.FC<ClassSection & { isLast?: boolean; accentClass?: s
 const AlertBoxBlock: React.FC<ClassSection> = ({ title, subtitle, description, tag_badge }) => {
   const icon = tag_badge === 'Location' ? 'location_on'
     : tag_badge === 'Booking' ? 'credit_card'
-    : 'info';
+      : 'info';
 
   return (
     <Alert

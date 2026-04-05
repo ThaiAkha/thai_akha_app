@@ -21,6 +21,7 @@ export interface HeaderSectionProps {
   hideSubtitle?: boolean;
   hideDivider?: boolean;
   hideDescription?: boolean;
+  hideTag?: boolean;
 }
 
 // 🛡️ MAPPE STATICHE PER TAILWIND V4
@@ -61,12 +62,13 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
   hideSubtitle,
   hideDivider,
   hideDescription,
+  hideTag,
 }) => {
-  // Mappatura allineamento
+  // Mappatura allineamento responsiva: Forza centro su mobile, rispetta prop su md+
   const alignmentClasses = {
-    left: 'text-left items-start',
+    left: 'text-center items-center md:text-left md:items-start',
     center: 'text-center items-center',
-    right: 'text-right items-end',
+    right: 'text-center items-center md:text-right md:items-end',
   }[align];
 
   // Mappatura semantica delle varianti tipografiche
@@ -97,7 +99,7 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
         variant={titleVariant}
         as={AsTag}
         color="title"
-        className={cn("flex flex-wrap gap-x-2 md:gap-x-3", align === 'center' ? 'justify-center' : 'justify-start')}
+        className={cn("[column-gap:var(--space-fluid-xs)] flex flex-wrap", align === 'center' ? 'justify-center' : 'justify-center md:justify-start')}
       >
         <span>{title}</span>
         <Typography
@@ -118,8 +120,8 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
     <div className={cn("w-full mx-auto flex flex-col", alignmentClasses, className)}>
 
       {/* 1. TAG BADGE - Dimensione "sm" e testo con gradiente dell'highlight */}
-      {tag && (
-        <div className="mb-4">
+      {tag && !hideTag && (
+        <div className="[margin-bottom:var(--space-fluid-s)]">
           <Badge variant="mineral" color={gradientTo} size="sm">
             <Typography
               variant="badge"
@@ -138,7 +140,7 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
 
       {/* 2. TITLE + HIGHLIGHT */}
       {!hideTitle && (
-        <div className={cn(subtitle ? "mb-1" : "mb-0 md:mb-2")}>
+        <div className="[margin-bottom:var(--space-fluid-3xs)]">
           {renderTitle()}
         </div>
       )}
@@ -148,7 +150,7 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
         <Typography
           variant="paragraphM"
           color="sub"
-          className="mb-2 font-medium"
+          className="[margin-bottom:var(--space-fluid-2xs)] font-medium"
         >
           {subtitle}
         </Typography>
@@ -157,8 +159,8 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
       {/* 4. DIVIDER RESPONSIVE */}
       {!hideDivider && (
         <div className={cn(
-          "mt-1 mb-2 md:mt-3 md:mb-5 opacity-90 hover:opacity-100 transition-opacity",
-          align === 'center' ? 'mx-auto' : ''
+          "[margin-top:var(--space-fluid-2xs)] [margin-bottom:var(--space-fluid-s)] opacity-90 hover:opacity-100 transition-opacity mx-auto md:mx-0",
+          align === 'center' ? 'md:mx-auto' : (align === 'right' ? 'md:ml-auto md:mr-0' : 'md:mr-auto md:ml-0')
         )}>
           <div className="block md:hidden">
             <AkhaPixelPattern variant="line_simple" size={5} speed={40} />

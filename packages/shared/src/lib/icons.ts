@@ -243,6 +243,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   // MATERIAL SYMBOLS snake_case ALIASES
   // (used in .tsx files as <Icon name="snake_case_name">)
   // ============================================================
+  account_box: LucideIcons.SquareUserRound,
   add: LucideIcons.Plus,
   add_circle: LucideIcons.PlusCircle,
   add_location_alt: LucideIcons.MapPin,
@@ -252,6 +253,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   block: LucideIcons.Ban,
   bolt: LucideIcons.Zap,
   business_center: LucideIcons.Briefcase,
+  checklist: LucideIcons.ListChecks,
   coins: LucideIcons.Coins,
   diamond: LucideIcons.Diamond,
   calendar_month: LucideIcons.CalendarDays,
@@ -270,6 +272,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   edit_calendar: LucideIcons.CalendarPlus,
   emoji_events: LucideIcons.Trophy,
   event: LucideIcons.Calendar,
+  event_available: LucideIcons.CalendarCheck,
   event_busy: LucideIcons.CalendarX,
   expand_more: LucideIcons.ChevronDown,
   face: LucideIcons.User,
@@ -317,6 +320,9 @@ export const iconRegistry: Record<string, LucideIcon> = {
   temple_buddhist: LucideIcons.Landmark,
   timer: LucideIcons.Timer,
   tips_and_updates: LucideIcons.Lightbulb,
+  chili_off: LucideIcons.ZapOff,
+  flare: LucideIcons.Flame,
+  whatshot: LucideIcons.Flame,
   tune: LucideIcons.SlidersHorizontal,
   verified: LucideIcons.BadgeCheck,
   verified_user: LucideIcons.ShieldCheck,

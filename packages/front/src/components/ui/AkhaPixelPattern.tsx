@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 
 const COLOR_MAP: Record<number, string> = {
   0: 'bg-transparent',
-  1: 'bg-[#E31F33] shadow-[0_0_2px_#E31F33]', // Rosso
-  2: 'bg-[#C0C0C0] shadow-[0_0_2px_white]',    // Argento
-  3: 'bg-[#98C93C] shadow-[0_0_2px_#98C93C]',  // Verde
-  4: 'bg-[#1A1A1A] shadow-[0_0_2px_#000]',      // Nero
+  1: 'bg-primary shadow-[0_0_2px_var(--color-primary)]', // Rosso Brand
+  2: 'bg-white/80 shadow-[0_0_2px_white]',               // Argento / Luce
+  3: 'bg-action shadow-[0_0_2px_var(--color-action)]',   // Verde Action
+  4: 'bg-title shadow-[0_0_2px_black]',                  // Dettaglio scuro
 };
 
 interface AkhaPixelPatternProps {
@@ -20,8 +20,9 @@ interface AkhaPixelPatternProps {
   className?: string;
   loop?: boolean;
   loopDelay?: number;
-  expandFromCenter?: boolean; 
-  animateInView?: boolean; // New prop for scroll-triggered animation
+  expandFromCenter?: boolean;
+  animateInView?: boolean;
+  colorMap?: Record<number, string>;
 }
 
 const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
@@ -34,8 +35,10 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
   loop = false,
   loopDelay = 1000,
   expandFromCenter = false,
-  animateInView = false
+  animateInView = false,
+  colorMap,
 }) => {
+  const activeColorMap = colorMap ?? COLOR_MAP;
   const patternConfig = variant ? AKHA_PATTERNS[variant] : null;
   const activeData = patternConfig?.data || customData || AKHA_PATTERNS.diamond.data;
   const activeCols = patternConfig?.columns || customCols || 7;
@@ -84,15 +87,15 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
     >
       {activeData.map((code, index) => {
         const dist = Math.abs(index - centerIndex);
-        
+
         // Framer Motion Variants
         const variants: any = {
-          hidden: { 
-            scale: 0, 
-            opacity: 0 
+          hidden: {
+            scale: 0,
+            opacity: 0
           },
-          visible: { 
-            scale: 1, 
+          visible: {
+            scale: 1,
             opacity: 1,
             transition: {
               delay: (expandFromCenter ? dist : index) * (speed / 1000),
@@ -108,7 +111,7 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
               key={index}
               variants={variants}
               style={{ width: size, height: size }}
-              className={cn("rounded-[1px]", COLOR_MAP[code] || COLOR_MAP[0])}
+              className={cn("rounded-[1px]", activeColorMap[code] || activeColorMap[0])}
             />
           );
         }
@@ -138,7 +141,7 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
           <div
             key={index}
             style={style}
-            className={cn("rounded-[1px]", COLOR_MAP[code] || COLOR_MAP[0])}
+            className={cn("rounded-[1px]", activeColorMap[code] || activeColorMap[0])}
           />
         );
       })}

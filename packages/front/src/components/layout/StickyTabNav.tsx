@@ -28,13 +28,13 @@ const StickyTabNav: React.FC<StickyTabNavProps> = ({
   value,
   onChange,
   topOffset = 'top-[12px] md:top-[28px]',
-  bottomMargin = 'mb-3 md:mb-12',
+  bottomMargin = '',
 }) => {
   return (
     <div
-      className={`sticky ${topOffset} z-[100] w-full flex justify-center ${bottomMargin} px-2 pointer-events-none`}
+      className={`sticky ${topOffset} z-[100] w-full flex justify-center [margin-bottom:var(--space-fluid-l)] px-2 pointer-events-none${bottomMargin ? ` ${bottomMargin}` : ''}`}
     >
-      <div className="pointer-events-auto bg-white/45 dark:bg-gray-950/90 backdrop-blur-xl p-1 md:p-2 rounded-full shadow-lg max-w-full overflow-x-auto no-scrollbar md:scale-110 md:origin-top transition-transform">
+      <div className="pointer-events-auto bg-white/45 dark:bg-gray-950/90 backdrop-blur-xl [padding:var(--space-fluid-2xs)] rounded-full shadow-lg max-w-full overflow-x-auto no-scrollbar md:scale-110 md:origin-top transition-transform">
         <Tabs
           items={items}
           value={value}

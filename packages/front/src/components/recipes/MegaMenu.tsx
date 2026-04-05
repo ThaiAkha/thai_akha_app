@@ -127,7 +127,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
       case 'diet':
         return (
           <div className="flex flex-col h-full bg-surface">
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8">
+            <div className="flex-1 overflow-y-auto custom-scrollbar [padding:var(--space-fluid-m)] flex flex-col [gap:var(--space-fluid-m)]">
               {customContent}
             </div>
           </div>
@@ -135,26 +135,26 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
 
       case 'search':
         return (
-          <div className="flex flex-col h-full p-8 bg-surface">
-            <div className="relative mb-6 shrink-0">
+          <div className="flex flex-col h-full [padding:var(--space-fluid-m)] bg-surface">
+            <div className="relative [margin-bottom:var(--space-fluid-s)] shrink-0">
               <Input
                 value={searchQuery}
                 onChange={(e) => onSearchChange?.(e.target.value)}
                 placeholder={searchPlaceholder || "Type to search..."}
-                className="pl-12 bg-background border-border h-14 text-lg font-bold text-gray-900 dark:text-gray-100 placeholder:text-gray-700/40 dark:text-gray-300/40"
+                className="pl-12 bg-background border-border h-14 text-lg font-bold text-title placeholder:text-muted/40"
               />
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700/40 dark:text-gray-300/40">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted/40">
                 <Icon name="search" size="md" />
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2">
+            <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col [gap:var(--space-fluid-2xs)] pr-2">
               {items?.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 text-left transition-all border border-transparent hover:border-border group shrink-0"
+                  className="w-full flex items-center [gap:var(--space-fluid-s)] [padding:var(--space-fluid-s)] rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 text-left transition-all border border-transparent hover:border-border group shrink-0"
                 >
-                  <div className="size-12 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-inner text-gray-700 dark:text-gray-300 dark:text-white">
+                  <div className="size-12 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-inner text-title">
                     {item.image ? <img src={item.image} className="w-full h-full object-cover rounded-xl" /> : <Icon name={item.icon || 'circle'} />}
                   </div>
                   <div>
@@ -171,17 +171,17 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
       case 'grid':
       default:
         return (
-          <div className="p-8 overflow-y-auto custom-scrollbar bg-surface">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="[padding:var(--space-fluid-m)] overflow-y-auto custom-scrollbar bg-surface">
+            <div className="grid grid-cols-2 md:grid-cols-3 [gap:var(--space-fluid-s)]">
               {items?.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "flex flex-col items-center justify-center p-6 gap-4 rounded-[2rem] border transition-all duration-300 group min-h-[140px]",
+                    "flex flex-col items-center justify-center [padding:var(--space-fluid-m)] [gap:var(--space-fluid-s)] rounded-[2rem] border transition-all duration-300 group min-h-[140px]",
                     item.isActive
-                      ? "bg-surface text-gray-900 dark:text-gray-100 border-action shadow-xl scale-[1.02]"
-                      : "bg-black/5 dark:bg-white/5 border-transparent hover:border-border text-gray-700 dark:text-gray-300 dark:text-white/60 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white"
+                      ? "bg-surface text-title border-action shadow-xl scale-[1.02]"
+                      : "bg-black/5 dark:bg-white/5 border-transparent hover:border-border text-sub hover:text-title"
                   )}
                 >
                   <div className={cn(
@@ -209,11 +209,11 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
         {/* SUPER PILL TRIGGER - NO BORDER (as per InfoClasses wrapper) */}
         <div
           className={cn(
-            "w-full flex items-center justify-between p-2 md:p-2.5 mb-4 rounded-full transition-all duration-500 backdrop-blur-xl md:scale-110 origin-top shrink-0 overflow-hidden relative group",
+            "w-full flex items-center justify-between p-2 md:p-2.5 [margin-bottom:var(--space-fluid-s)] rounded-full transition-all duration-500 backdrop-blur-xl md:scale-110 origin-top shrink-0 relative group",
             isOpen
               ? "bg-surface dark:bg-surface border border-border/50 shadow-2xl"
               : highlight
-                ? "bg-action/5 shadow-[0_0_20px_2px_rgba(152,201,60,0.5)] border border-action/40"
+                ? "bg-action/5 border border-action/30"
                 : "bg-white/5 dark:bg-gray-950/90 border-transparent shadow-lg"
           )}
           onClick={handleToggle}
@@ -222,7 +222,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
           {(!isOpen && highlight) && (
             <div
               className="absolute inset-0 rounded-full pointer-events-none"
-              style={{ animation: 'megamenu-glow 2s ease-in-out infinite' }}
+              style={{ animation: 'megamenu-glow 2.5s ease-in-out infinite' }}
             />
           )}
 
@@ -239,8 +239,8 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
               className={cn(
                 "group w-1/2 h-full flex items-center justify-center gap-2.5 md:gap-3 px-2 md:px-4 rounded-full transition-all border overflow-hidden select-none",
                 isOpen
-                  ? "bg-primary/5 text-gray-800 dark:text-gray-200 border-primary/30 hover:bg-primary/10"
-                  : "bg-white/30 dark:bg-white/5 text-gray-800 dark:text-gray-200 border-action/30 hover:bg-action/5 hover:border-action/60 hover:text-primary"
+                  ? "bg-primary/5 text-title border-primary/30 hover:bg-primary/10"
+                  : "bg-white/30 dark:bg-white/5 text-title border-action/30 hover:bg-action/5 hover:border-action/60 hover:text-primary"
               )}
             >
               <span className="hidden md:flex items-center justify-center shrink-0 text-primary transition-transform duration-300 md:group-hover:scale-110">

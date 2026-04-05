@@ -1,9 +1,9 @@
 // packages/admin/src/hooks/useGeminiLive.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { orchestrator } from '@thaiakha/shared/prompts';
-import { getVoiceConfig } from '@thaiakha/shared/config/voice.config';
-import { saveMessage } from '@thaiakha/shared/services';
+import { cherryAdmin, buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
+import { saveMessage, contentService } from '@thaiakha/shared/services';
+import { supabase } from '@thaiakha/shared';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -16,7 +16,6 @@ interface SessionState {
 
 export const useGeminiLive = (
   userProfile?: any,
-  appContext: 'front' | 'admin' = 'admin',
   sessionId?: string | null
 ) => {
   const [state, setState] = useState<SessionState>({
@@ -129,15 +128,62 @@ export const useGeminiLive = (
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
-      const voiceConfig = getVoiceConfig(userProfile, appContext);
-      const activeAgent = orchestrator.getAgent(appContext, userProfile?.role);
-      const resolvedSystemInstruction = overrideInstruction || orchestrator.buildPrompt(
-        activeAgent,
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
+      const [classes, bookingsResult] = await Promise.all([
+        contentService.getCookingClasses(),
+        supabase
+          .from('bookings')
+          .select('internal_id, booking_date, session_id, pax_count, visitor_count, status')
+          .gte('booking_date', today)
+          .lte('booking_date', nextWeek)
+          .neq('status', 'cancelled')
+          .order('booking_date'),
+      ]);
+
+      const bookings = bookingsResult.data ?? [];
+      const bookingSnapshot: BookingDaySummary[] = bookings.map(b => ({
+        date: b.booking_date,
+        session: b.session_id ?? 'unknown',
+        pax: b.pax_count ?? 0,
+        visitors: b.visitor_count ?? 0,
+        status: b.status ?? 'unknown',
+      }));
+
+      let guestAlerts: GuestAlert[] = [];
+      const confirmedIds = bookings
+        .filter(b => b.status === 'confirmed')
+        .map(b => b.internal_id)
+        .filter(Boolean) as string[];
+
+      if (confirmedIds.length > 0) {
+        const { data: selections } = await supabase
+          .from('menu_selections')
+          .select('booking_id, dietary_profile, allergies')
+          .in('booking_id', confirmedIds);
+
+        if (selections?.length) {
+          const bookingMap = new Map(bookings.map(b => [b.internal_id, b]));
+          guestAlerts = selections
+            .filter(s => s.dietary_profile !== 'diet_regular' || (Array.isArray(s.allergies) && s.allergies.length > 0))
+            .map(s => {
+              const booking = bookingMap.get(s.booking_id);
+              return {
+                name: bookingMap.get(s.booking_id)?.guest_name ?? 'Guest',
+                date: booking?.booking_date ?? '',
+                session: booking?.session_id ?? '',
+                dietary: s.dietary_profile ?? 'regular',
+                allergies: Array.isArray(s.allergies) ? s.allergies : [],
+              };
+            });
+        }
+      }
+
+      const resolvedSystemInstruction = overrideInstruction || buildAdminPrompt(
         userProfile || {},
-        userProfile?.dietary_profile || 'diet_regular',
-        userProfile?.allergies || [],
         true,
-        'admin'
+        { cookingClasses: classes, bookingSnapshot, guestAlerts }
       );
 
       const sessionPromise = ai.live.connect({
@@ -230,7 +276,7 @@ export const useGeminiLive = (
           responseModalities: [Modality.AUDIO],
           speechConfig: {
             voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: voiceConfig.voiceName },
+              prebuiltVoiceConfig: { voiceName: cherryAdmin.voiceName },
             },
           },
           systemInstruction: resolvedSystemInstruction,

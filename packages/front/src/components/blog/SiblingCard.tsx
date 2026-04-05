@@ -17,7 +17,7 @@ export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, on
     onClick={onClick}
     className={cn(
       'group w-full text-left rounded-3xl border border-border bg-surface',
-      'p-4 flex gap-4 items-center',
+      '[padding:var(--space-fluid-s)] flex [gap:var(--space-fluid-s)] items-center',
       'cursor-pointer', // <-- Cursore a manina
       'hover:border-action/40 hover:bg-surface/80',
       'hover:shadow-action-glow',
@@ -43,11 +43,11 @@ export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, on
     </div>
 
     {/* Labels */}
-    <div className="flex flex-col gap-1 min-w-0 flex-1">
+    <div className="flex flex-col [gap:var(--space-fluid-3xs)] min-w-0 flex-1">
       <Typography
         variant="microLabel"
         color="muted"
-        className={cn("flex items-center gap-1", direction === 'next' && "sm:ml-auto")}
+        className={cn("flex items-center gap-2 [margin-bottom:var(--space-fluid-2xs)]", direction === 'next' && "sm:ml-auto")}
       >
         {direction === 'prev' && <Icon name="arrow_back" size="sm" />}
         <span>{direction === 'prev' ? 'PREVIOUS' : 'NEXT'}</span>
@@ -57,7 +57,7 @@ export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, on
       <Typography
         variant="h6"
         color="title"
-        className="line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-300 truncate"
+        className="line-clamp-1 leading-snug group-hover:text-action transition-colors duration-300 truncate"
       >
         {section.title}
       </Typography>

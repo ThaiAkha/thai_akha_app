@@ -34,7 +34,7 @@ function NavItem({ icon, label, isActive, onClick, isOpen }: NavItemProps) {
       title={label}
       className={`
         relative flex items-center w-full h-12
-        transition-colors duration-200 rounded-xl pl-0 pr-1
+        transition-colors duration-200 rounded-xl pl-0 pr-1 cursor-pointer
         ${isActive ? 'bg-primary-500/20 dark:bg-primary-500/20' : 'hover:bg-primary-500/10 dark:hover:bg-primary-500/10'}
       `}
     >
@@ -199,7 +199,7 @@ const AppSidebar: React.FC = () => {
               </div>
               <ExternalLink size={16} className="text-white shrink-0 mt-1" />
             </div>
-            <button className="w-full py-2 px-3 mt-2 bg-white hover:bg-gray-50 text-primary-600 font-bold text-sm rounded-lg transition-colors duration-200">
+            <button className="w-full py-2 px-3 mt-2 bg-white hover:bg-gray-50 text-primary-600 font-bold text-sm rounded-lg transition-colors duration-200 cursor-pointer">
               {t('sidebar.goLive')}
             </button>
           </a>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSwipeable } from 'react-swipeable';
 import { Typography, Icon, Button } from '../components/ui/index';
 import { CinematicBackground, SmartHeaderSection } from '../components/layout/index';
 import AuthForm from '../components/auth/AuthForm';
@@ -9,6 +10,7 @@ import {
 } from '@thaiakha/shared/data';
 import '../components/blog/BlogCardGlass.css';
 import GlassCard from '../components/ui/GlassCard';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface AuthPageProps {
   onNavigate: (page: string) => void;
@@ -19,34 +21,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
   const [imageUrl, setImageUrl] = useState<string>('');
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  // Swipe handling
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-
-  const minSwipeDistance = 50;
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && step < 3) {
-      setStep((prev) => (prev + 1) as 1 | 2 | 3);
-    }
-    if (isRightSwipe && step > 1) {
-      setStep((prev) => (prev - 1) as 1 | 2 | 3);
-    }
-  };
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => setStep(prev => (prev < 3 ? (prev + 1) as 1 | 2 | 3 : prev)),
+    onSwipedRight: () => setStep(prev => (prev > 1 ? (prev - 1) as 1 | 2 | 3 : prev)),
+    preventScrollOnSwipe: true,
+    trackMouse: false,
+  });
 
   useEffect(() => {
     contentService.getPageMetadata('auth').then(m => {
@@ -72,7 +52,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
         variant={variantMap[feature.color] || 'primary'}
         className={isThird ? 'hidden md:block' : ''}
       >
-        <div className="relative p-3 md:p-4 flex items-start gap-3">
+        <div className="relative flex items-start [padding:var(--space-fluid-s)] [gap:var(--space-fluid-s)]">
           <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 shadow-lg">
             <Icon name={feature.iconName || feature.icon} size="sm" />
           </div>
@@ -80,7 +60,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
             <Typography variant="h6" className="mb-0.5">
               {feature.title}
             </Typography>
-            <Typography variant="paragraphS">
+            <Typography variant="caption">
               {feature.description || feature.body}
             </Typography>
           </div>
@@ -93,10 +73,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
 
   return (
     <div
+      {...swipeHandlers}
       className="relative h-screen w-full overflow-hidden font-sans selection:bg-primary/30"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       <CinematicBackground isLoaded={!!imageUrl} imageUrl={imageUrl} />
 
@@ -113,77 +91,77 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
         >
 
           {/* ── STEP 1 — Chef Cherry (The Mentor) ── */}
-          <div className="w-1/3 h-full flex items-center justify-center px-4 py-8 overflow-y-auto">
+          <div className="w-1/3 h-full flex items-center justify-center px-4">
             <div
-              className="w-full max-w-xl flex flex-col md:flex-row md:items-center gap-2 md:gap-8 transition-opacity duration-400"
+              className="w-full max-w-sm h-[80vh] overflow-y-auto flex flex-col items-center justify-center [gap:var(--space-fluid-s)] transition-opacity duration-400"
               style={{ opacity: step === 1 ? 1 : 0 }}
             >
-              {/* Image — left on md+ */}
-              <div className="flex justify-center md:justify-start md:shrink-0">
+              {/* Image */}
+              <div className="flex justify-center">
                 <img
                   src={CHEF_HERO_IMAGE}
                   alt="Chef Cherry"
-                  className="w-32 sm:w-40 h-auto object-contain animate-float"
-                  style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
+                  className="h-auto object-contain animate-float"
+                  style={{ width: 'var(--auth-hero-img)', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
                 />
               </div>
 
-              {/* Text + cards — right on md+ */}
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              {/* Text + cards */}
+              <div className="flex flex-col [gap:var(--space-fluid-s)] w-full">
+                <div className="flex flex-col items-center text-center">
                   <SmartHeaderSection
                     sectionId="auth_step1"
                     variant="section"
                     align="center"
-                    fallbackTitle={`${CHEF_TITLE_MAIN} ${CHEF_TITLE_HIGHLIGHT}`}
+                    fallbackTitle={`${CHEF_TITLE_MAIN}`}
                     fallbackHighlight={CHEF_TITLE_HIGHLIGHT}
                     fallbackDescription={CHEF_DESCRIPTION}
                   />
                 </div>
 
                 {/* Feature Cards for Step 1 */}
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col [gap:var(--space-fluid-xs)] w-full">
                   {CHEF_CARDS.map((card, i) => renderFeatureRow(card, i))}
                 </div>
 
                 <Button
                   variant="brand"
-                  size="md"
+                  size="sm"
                   onClick={() => setStep(2)}
                   icon="arrow_forward"
                   iconPosition="right"
-                  className="rounded-2xl px-6 self-end mt-1"
+                  className="rounded-2xl w-full"
                 >
-                  Next Experience
+                  {t.auth.nextExperience}
                 </Button>
               </div>
             </div>
           </div>
 
           {/* ── STEP 2 — The Storyteller (Highland Wisdom) ── */}
-          <div className="w-1/3 h-full flex items-center justify-center px-4 py-8 overflow-y-auto">
+          <div className="w-1/3 h-full flex items-center justify-center px-4">
             <div
-              className="w-full max-w-xl flex flex-col md:flex-row md:items-center gap-2 md:gap-8 transition-opacity duration-400"
+              className="w-full max-w-sm h-[80vh] overflow-y-auto flex flex-col items-center justify-center [gap:var(--space-fluid-s)] transition-opacity duration-400"
               style={{ opacity: step === 2 ? 1 : 0 }}
             >
-              {/* Image — left on md+ */}
-              <div className="flex justify-center md:justify-start md:shrink-0">
+              {/* Image */}
+              <div className="flex justify-center">
                 <img
                   src={STORY_HERO_IMAGE}
                   alt="Akha Storyteller"
-                  className="w-32 sm:w-40 h-auto object-contain animate-float"
-                  style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
+                  className="h-auto object-contain animate-float"
+                  style={{ width: 'var(--auth-hero-img)', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
                 />
               </div>
 
-              {/* Text + cards — right on md+ */}
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              {/* Text + cards */}
+              <div className="flex flex-col [gap:var(--space-fluid-s)] w-full">
+                <div className="flex flex-col items-center text-center">
                   <SmartHeaderSection
                     sectionId="auth_step2"
                     variant="section"
                     align="center"
-                    fallbackTitle={`${STORY_TITLE_MAIN} ${STORY_TITLE_HIGHLIGHT}`}
+                    fallbackTitle={`${STORY_TITLE_MAIN}`}
                     fallbackHighlight={STORY_TITLE_HIGHLIGHT}
                     fallbackDescription={STORY_DESCRIPTION}
                     gradientFrom="primary"
@@ -192,30 +170,30 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 </div>
 
                 {/* Feature Cards for Step 2 */}
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col [gap:var(--space-fluid-xs)] w-full">
                   {STORY_CARDS.map((card, i) => renderFeatureRow(card, i))}
                 </div>
 
-                <div className="flex items-center justify-between w-full mt-1">
+                <div className="flex items-center justify-between w-full">
                   <Button
                     variant="action"
-                    size="md"
+                    size="sm"
                     onClick={() => setStep(1)}
                     icon="arrow_back"
                     className="rounded-2xl px-6"
                   >
-                    Back
+                    {t.common.back}
                   </Button>
 
                   <Button
                     variant="brand"
-                    size="md"
+                    size="sm"
                     onClick={() => setStep(3)}
                     icon="arrow_forward"
                     iconPosition="right"
                     className="rounded-2xl px-6"
                   >
-                    Login/SignUp
+                    {t.auth.loginSignup}
                   </Button>
                 </div>
               </div>
@@ -223,9 +201,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
           </div>
 
           {/* ── STEP 3 — Auth Form ── */}
-          <div className="w-1/3 h-full flex items-center justify-center px-4 py-8">
+          <div className="w-1/3 h-full flex items-center justify-center px-4">
             <div
-              className="w-full max-w-xl flex flex-col gap-4 transition-opacity duration-400 h-full"
+              className="w-full max-w-sm h-[60vh] flex flex-col [gap:var(--space-fluid-s)] transition-opacity duration-400"
               style={{ opacity: step === 3 ? 1 : 0 }}
             >
               {/* AuthForm gestisce internamente il flip 3D, i propri Card e il pulsante Back */}
@@ -244,11 +222,11 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
           <button
             key={dotIndex}
             onClick={() => setStep(dotIndex as 1 | 2 | 3)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${step === dotIndex
+            className={`size-2 rounded-full transition-all duration-300 ${step === dotIndex
               ? 'w-6 bg-primary'
               : 'bg-action hover:bg-action'
               }`}
-            aria-label={`Go to step ${dotIndex}`}
+            aria-label={t.auth.goToStep({ n: dotIndex })}
           />
         ))}
       </div>

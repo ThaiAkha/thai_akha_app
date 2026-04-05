@@ -87,28 +87,25 @@ const ChapterCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
         )}
       </div>
 
-      {/* ── Thin accent line ────────────────────────────────────────────── */}
-      <div className="h-px w-full bg-border group-hover:bg-primary/30 transition-colors duration-500 z-10" />
-
       {/* ── Text content ────────────────────────────────────────────────── */}
-      <div className="blog-card-glass__content flex flex-col flex-1 p-5 md:p-6 gap-3">
+      <div className="blog-card-glass__content flex flex-col flex-1 [padding:var(--space-fluid-m)] [gap:var(--space-fluid-xs)]">
         <Typography
           variant="h6"
           color="title"
-          className="leading-snug group-hover:text-primary transition-colors duration-300 line-clamp-2"
+          className="group-hover:text-action transition-colors duration-300 line-clamp-2"
         >
           {section.title}
         </Typography>
 
         <Typography
-          variant="body"
+          variant="paragraphS"
           color="sub"
-          className="line-clamp-2 opacity-70 leading-relaxed"
+          className="line-clamp-2"
         >
           {section.subtitle}
         </Typography>
 
-        <div className="mt-auto pt-3 flex justify-end">
+        <div className="mt-auto [padding-top:var(--space-fluid-xs)] flex justify-end">
           <Button
             variant="brand"
             size="sm"

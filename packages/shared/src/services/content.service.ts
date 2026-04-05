@@ -1,8 +1,8 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { HeaderMetadata, CultureSection, CultureSectionDetail, CultureGalleryItem } from '../types';
+import { HeaderMetadata, CultureSection, CultureSectionDetail, CultureGalleryItem, QuizCategoryDB, QuizRewardDB, ContentCategoryDB, SpicinessLevel, CookingClassDB } from '../types';
 
 // Cache Version Key: Aggiornala per invalidare la cache locale se cambi la struttura dati
-const GLOBAL_CACHE_KEY = 'akha_cache_content_v10';
+const GLOBAL_CACHE_KEY = 'akha_cache_content_v11';
 
 /**
  * 🧠 INTELLIGENT CACHE MANAGER
@@ -134,7 +134,7 @@ export const contentService = {
     /** 🎴 MENU SIDEBAR: Dinamico con livelli di accesso */
     async getMenuItems(table = 'site_metadata', lang = 'en') {
         const normalizedLang = normalizeLang(lang);
-        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v14`, async () => {
+        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v16`, async () => {
             if (table === 'site_metadata_admin') {
                 const { data, error } = await supabase
                     .from(table)
@@ -174,7 +174,7 @@ export const contentService = {
             // Fallback per site_metadata (front app)
             const { data, error } = await supabase
                 .from(table)
-                .select('page_slug, menu_label, header_icon, menu_order, access_level, page_description')
+                .select('id, page_slug, menu_label, header_icon, menu_order, access_level, page_description, parent_id')
                 .eq('show_in_menu', true)
                 .order('menu_order', { ascending: true });
 
@@ -223,13 +223,28 @@ export const contentService = {
         return data || [];
     },
 
-    /** 🎁 QUIZ REWARDS: Premi disponibili */
-    async getQuizRewards(): Promise<any[]> {
-        const data = await fetchWithCache('quiz_rewards', async () => {
+    /** 🎁 QUIZ REWARDS: Premi disponibili ordinati per soglia XP */
+    async getQuizRewards(): Promise<QuizRewardDB[]> {
+        const data = await fetchWithCache('quiz_rewards_v2', async () => {
             const { data, error } = await supabase
                 .from('quiz_rewards')
                 .select('*')
-                .order('id', { ascending: true });
+                .eq('is_active', true)
+                .order('required_points', { ascending: true });
+
+            return error ? [] : (data || []);
+        });
+        return data || [];
+    },
+
+    /** 🎮 QUIZ CATEGORIES: Macro-categorie hub gamification */
+    async getQuizCategories(): Promise<QuizCategoryDB[]> {
+        const data = await fetchWithCache('quiz_categories', async () => {
+            const { data, error } = await supabase
+                .from('quiz_categories')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
 
             return error ? [] : (data || []);
         });
@@ -237,8 +252,8 @@ export const contentService = {
     },
 
     /** 🍲 COOKING CLASSES: Prezzi e info corsi */
-    async getCookingClasses(): Promise<any[]> {
-        const data = await fetchWithCache('cooking_classes', async () => {
+    async getCookingClasses(): Promise<CookingClassDB[]> {
+        const data = await fetchWithCache<CookingClassDB[]>('cooking_classes', async () => {
             const { data, error } = await supabase
                 .from('cooking_classes')
                 .select('*')
@@ -291,65 +306,68 @@ export const contentService = {
         }) || [];
     },
 
-    /** 🧩 QUIZ ENGINE: Deep Fetch (Levels -> Modules -> Questions) */
-    async getQuizData() {
-        return fetchWithCache('quiz_full_structure_v1', async () => {
-            const { data, error } = await supabase
+    /** 🧩 QUIZ ENGINE: Deep Fetch (Levels -> Modules -> Questions) — split query per compatibilità PostgREST */
+    async getQuizData(categoryId?: string) {
+        const cacheKey = categoryId ? `quiz_data_cat_v2_${categoryId}` : 'quiz_full_structure_v3';
+        return fetchWithCache(cacheKey, async () => {
+            // Step 1: fetch levels (filtered by category if provided)
+            let levelsQuery = supabase
                 .from('quiz_levels')
-                .select(`
-          id,
-          title,
-          subtitle,
-          image_url,
-          display_order,
-          is_active,
-          reward_id,
-          quiz_modules (
-            id,
-            title,
-            icon,
-            theme,
-            display_order,
-            quiz_questions (
-              id,
-              text,
-              options,
-              correct_index,
-              explanation,
-              display_order
-            )
-          )
-        `)
+                .select('id, title, subtitle, image_url, display_order, is_active, category_id')
                 .eq('is_active', true)
                 .order('display_order', { ascending: true });
+            if (categoryId) levelsQuery = levelsQuery.eq('category_id', categoryId);
 
-            if (error) {
-                console.error("Quiz Sync Error:", error);
-                return [];
-            }
+            const levelsRes = await levelsQuery;
+            if (levelsRes.error) { console.error('Quiz levels error:', levelsRes.error); return []; }
+            const levels = levelsRes.data || [];
+            if (levels.length === 0) return [];
 
-            // Post-Processing: Ordina moduli e domande (Supabase nested order fix)
-            // e parsifica il campo JSON 'options'
-            const sortedLevels = data.map((level: any) => ({
+            // Step 2: fetch modules only for those level IDs
+            const levelIds = levels.map((l: any) => l.id);
+            const modulesRes = await supabase
+                .from('quiz_modules')
+                .select('id, level_id, title, icon, theme, display_order')
+                .in('level_id', levelIds)
+                .order('display_order', { ascending: true });
+            if (modulesRes.error) { console.error('Quiz modules error:', modulesRes.error); return []; }
+            const modules = modulesRes.data || [];
+
+            // Step 3: fetch questions only for those module IDs
+            const moduleIds = modules.map((m: any) => m.id);
+            if (moduleIds.length === 0) return levels.map((l: any) => ({ ...l, modules: [] }));
+
+            const questionsRes = await supabase
+                .from('quiz_questions')
+                .select('id, module_id, text, options, correct_index, explanation, display_order')
+                .in('module_id', moduleIds)
+                .order('display_order', { ascending: true });
+            if (questionsRes.error) { console.error('Quiz questions error:', questionsRes.error); return []; }
+            const questions = questionsRes.data || [];
+
+            // Join in JS
+            return levels.map((level: any) => ({
                 ...level,
-                modules: (level.quiz_modules || [])
+                modules: modules
+                    .filter((m: any) => m.level_id === level.id)
                     .sort((a: any, b: any) => a.display_order - b.display_order)
                     .map((module: any) => ({
                         ...module,
-                        questions: (module.quiz_questions || [])
+                        questions: questions
+                            .filter((q: any) => q.module_id === module.id)
                             .sort((qa: any, qb: any) => qa.display_order - qb.display_order)
-                            .map((q: any) => ({
-                                id: q.id,
-                                text: q.text,
-                                // Gestione robusta per options (può arrivare come stringa o oggetto JSON)
-                                options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
-                                correctAnswer: (typeof q.options === 'string' ? JSON.parse(q.options) : q.options)[q.correct_index],
-                                explanation: q.explanation
-                            }))
-                    }))
+                            .map((q: any) => {
+                                const opts = typeof q.options === 'string' ? JSON.parse(q.options) : (q.options ?? []);
+                                return {
+                                    id: q.id,
+                                    text: q.text,
+                                    options: opts,
+                                    correctAnswer: opts[q.correct_index],
+                                    explanation: q.explanation,
+                                };
+                            }),
+                    })),
             }));
-
-            return sortedLevels;
         });
     },
 
@@ -419,6 +437,15 @@ export const contentService = {
             return error ? [] : (data || []);
         });
         return data || [];
+    },
+
+    /** 🛡️ ALLERGY MAP: Key-Value record for fast lookup */
+    async getAllergyMap(): Promise<Record<string, string>> {
+        const list = await this.getAllergyKnowledge();
+        if (!list) return {};
+        return Object.fromEntries(
+            list.map((item: any) => [item.allergy_key.toLowerCase(), item.warning_text])
+        );
     },
 
     /** 🏛️ CULTURE SECTION DETAIL: Full record for a single culture section */
@@ -512,12 +539,79 @@ export const contentService = {
         return data || [];
     },
 
+    /** 🗂️ CONTENT CATEGORIES: Unified taxonomy fetch by domain */
+    async getContentCategories(domain: string): Promise<ContentCategoryDB[]> {
+        const data = await fetchWithCache<ContentCategoryDB[]>(`content_categories_${domain}_v2`, async () => {
+            const { data, error } = await supabase
+                .from('content_categories')
+                .select('*')
+                .eq('domain', domain)
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
+            if (error) {
+                console.error('[ContentService] getContentCategories error:', error);
+                return [];
+            }
+            return (data || []) as ContentCategoryDB[];
+        });
+        return data || [];
+    },
+
+    /** 🍜 RECIPES: Titles for Cherry menu guardrail */
+    async getRecipes(): Promise<Array<{ title: string }>> {
+        const data = await fetchWithCache<Array<{ title: string }>>('recipes_titles_v2', async () => {
+            const { data, error } = await supabase
+                .from('recipes')
+                .select('name')
+                .order('name', { ascending: true });
+            if (error) {
+                console.error('Recipes fetch error:', error);
+                return [];
+            }
+            return (data || []).map((r: any) => ({ title: r.name }));
+        });
+        return data || [];
+    },
+
+    /** 🍜 RECIPES: All complete recipes with ingredients */
+    async getAllRecipesFull(): Promise<any[]> {
+        const data = await fetchWithCache<any[]>('recipes_full_v1', async () => {
+            const { data, error } = await supabase
+                .from('recipes')
+                .select('*, recipe_key_ingredients(ingredient)')
+                .order('name', { ascending: true });
+            if (error) {
+                console.error('Recipes fetch error:', error);
+                return [];
+            }
+            return data || [];
+        });
+        return data || [];
+    },
+
+    /** 🍜 RECIPE BY SLUG: Fetch single recipe with category */
+    async getRecipeBySlug(slug: string): Promise<any | null> {
+        const data = await fetchWithCache<any | null>(`recipe_${slug}_v1`, async () => {
+            const { data, error } = await supabase
+                .from('recipes')
+                .select('*, recipe_categories(*), recipe_key_ingredients(ingredient)')
+                .eq('slug', slug)
+                .single();
+            if (error) {
+                console.error(`Recipe fetch error [${slug}]:`, error);
+                return null;
+            }
+            return data;
+        });
+        return data;
+    },
+
     /** 🏛️ CULTURE SECTIONS INDEX: Cards for the History/Culture index page */
     async getCultureSections(): Promise<CultureSection[]> {
-        const data = await fetchWithCache<CultureSection[]>('culture_sections_index_v4', async () => {
+        const data = await fetchWithCache<CultureSection[]>('culture_sections_index_v5', async () => {
             const { data, error } = await supabase
                 .from('culture_sections')
-                .select('id, slug, title, subtitle, quote, primary_image, display_order, featured, category, audio_asset_id, seo_title')
+                .select('id, slug, title, subtitle, quote, primary_image, display_order, featured, category, category_id, audio_asset_id, seo_title')
                 .eq('is_published', true)
                 .order('display_order', { ascending: true });
 
@@ -529,6 +623,19 @@ export const contentService = {
             return (data || []) as CultureSection[];
         });
         return data || [];
+    },
+    
+    /** 🔥 SPICINESS LEVELS: All spiciness options for MegaMenu and User profiles */
+    async getSpicinessLevels(): Promise<SpicinessLevel[]> {
+        const data = await fetchWithCache('spiciness_levels_v1', async () => {
+            const { data, error } = await supabase
+                .from('spiciness_levels')
+                .select('*')
+                .order('id', { ascending: true });
+                
+            return error ? [] : (data || []);
+        });
+        return (data || []) as SpicinessLevel[];
     },
 
 };

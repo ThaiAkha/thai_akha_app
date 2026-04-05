@@ -15,11 +15,11 @@ const MineralSelect = ({ label, value, onChange, children, className }: {
   className?: string;
 }) => (
   <div className={cn('space-y-2 w-full', className)}>
-    {label && <Typography variant="fieldLabel" as="label" className="ml-1 font-accent font-black tracking-widest opacity-70">{label}</Typography>}
+    {label && <Typography variant="fieldLabel" className="ml-1 opacity-70">{label}</Typography>}
     <select
       value={value}
       onChange={onChange}
-      className="w-full px-4 py-3 rounded-xl border transition-all duration-300 ease-cinematic bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-action/50 focus:bg-black/10 dark:focus:bg-white/10 focus:border-action/50 cursor-pointer"
+      className="w-full px-4 py-3 rounded-xl border transition-all duration-300 ease-cinematic bg-surface-2 border-border text-title focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-action/50 focus:bg-surface focus:border-action/50 cursor-pointer"
     >
       {children}
     </select>
@@ -36,15 +36,15 @@ const LegalContent = ({ doc }: { doc: any }) => (
         {typeof s.content === 'string'
           ? <Typography variant="body" className="opacity-80">{s.content}</Typography>
           : Array.isArray(s.content)
-            ? <ul className="list-disc list-inside space-y-1 text-gray-700/80 dark:text-gray-300/80">{s.content.map((c: string, j: number) => <li key={j}>{c}</li>)}</ul>
+            ? <ul className="list-disc list-inside space-y-1 text-desc/80">{s.content.map((c: string, j: number) => <li key={j}>{c}</li>)}</ul>
             : null}
         {s.subsections?.map((sub: any, k: number) => (
           <div key={k} className="ml-4 mt-3">
-            <Typography variant="paragraphS" className="font-bold mb-1 text-gray-900 dark:text-gray-100">{sub.title}</Typography>
+            <Typography variant="paragraphS" className="font-bold mb-1 text-title">{sub.title}</Typography>
             {typeof sub.content === 'string'
               ? <Typography variant="body" className="opacity-80">{sub.content}</Typography>
               : Array.isArray(sub.content)
-                ? <ul className="list-disc list-inside space-y-1 text-gray-700/80 dark:text-gray-300/80">{sub.content.map((c: string, j: number) => <li key={j}>{c}</li>)}</ul>
+                ? <ul className="list-disc list-inside space-y-1 text-desc/80">{sub.content.map((c: string, j: number) => <li key={j}>{c}</li>)}</ul>
                 : null}
           </div>
         ))}
@@ -118,22 +118,22 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
         />
         <button
           onClick={() => setViewStep('selection')}
-          className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border border-border/50 bg-black/5 dark:bg-white/5 hover:border-action/50 hover:bg-action/5 hover:text-action text-gray-700/60 dark:text-gray-300/60 text-xs font-black uppercase tracking-wider transition-all cursor-pointer"
+          className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border border-border/50 bg-surface-2 hover:border-action/50 hover:bg-action/5 hover:text-action text-desc/60 text-xs font-black uppercase tracking-wider transition-all cursor-pointer"
         >
           <Icon name="edit" size="sm" />
-          <span className="hidden sm:inline">Modify</span>
+          <Typography variant="microLabel" as="span" className="hidden sm:inline">Modify</Typography>
         </button>
       </div>
 
       {/* AUTH TOGGLE */}
       {viewStep === 'auth' && !userProfile && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <button onClick={() => { setAuthMode('login'); setViewStep('form'); }} className="bg-surface hover:bg-black/5 dark:hover:bg-white/5 border border-dashed border-border p-6 rounded-[2rem] text-left group transition-all cursor-pointer">
-            <div className="flex items-center gap-3 mb-2"><Icon name="person" className="text-primary group-hover:scale-110 transition-transform" /><Typography variant="paragraphS" as="span" color="title" className="font-bold">Existing User</Typography></div>
+          <button onClick={() => { setAuthMode('login'); setViewStep('form'); }} className="bg-surface hover:bg-surface-2 border border-dashed border-border p-6 rounded-[2rem] text-left group transition-all cursor-pointer">
+            <div className="flex items-center gap-3 mb-2"><Icon name="person" className="text-primary group-hover:scale-110 transition-transform" /><Typography variant="paragraphS" as="span" className="font-bold text-title">Existing User</Typography></div>
             <Typography variant="caption" className="not-italic opacity-60 pl-9">Login with your account.</Typography>
           </button>
-          <button onClick={() => { setAuthMode('guest'); setViewStep('form'); }} className="bg-surface hover:bg-black/5 dark:hover:bg-white/5 border border-border p-6 rounded-[2rem] text-left group transition-all cursor-pointer">
-            <div className="flex items-center gap-3 mb-2"><Icon name="person_add" className="text-gray-900 dark:text-gray-100 group-hover:scale-110 transition-transform" /><Typography variant="paragraphS" as="span" color="title" className="font-bold">New User</Typography></div>
+          <button onClick={() => { setAuthMode('guest'); setViewStep('form'); }} className="bg-surface hover:bg-surface-2 border border-border p-6 rounded-[2rem] text-left group transition-all cursor-pointer">
+            <div className="flex items-center gap-3 mb-2"><Icon name="person_add" className="text-title group-hover:scale-110 transition-transform" /><Typography variant="paragraphS" as="span" className="font-bold text-title">New User</Typography></div>
             <Typography variant="caption" className="not-italic opacity-60 pl-9">Create an account & book.</Typography>
           </button>
         </div>
@@ -144,7 +144,7 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
         <Card variant="glass" className="p-8 border-border bg-surface/50">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-              <Typography variant="h4" className="text-gray-900 dark:text-gray-100 italic uppercase">
+              <Typography variant="h4" className="italic">
                 {authMode === 'login' ? 'Member Login' : 'Your Details'}
               </Typography>
               {!userProfile && (
@@ -179,7 +179,7 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
                 {/* Row 2: Phone prefix + number + WhatsApp */}
                 <div className="grid grid-cols-12 gap-4 items-start">
                   <div className="col-span-3 space-y-2">
-                    <Typography variant="fieldLabel" as="label" className="ml-1 font-accent font-black tracking-widest opacity-70">Prefix</Typography>
+                    <Typography variant="fieldLabel" className="ml-1 opacity-70">Prefix</Typography>
                     <PhonePrefixSelect
                       value={formData.phonePrefix}
                       onChange={val => setFormData({ ...formData, phonePrefix: val })}
@@ -196,25 +196,25 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
                     />
                   </div>
                   <div className="col-span-4 space-y-2">
-                    <Typography variant="fieldLabel" as="label" className="ml-1 font-accent font-black tracking-widest opacity-70">WhatsApp</Typography>
+                    <Typography variant="fieldLabel" as="label" className="ml-1 opacity-70">WhatsApp</Typography>
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setFormData({ ...formData, hasWhatsapp: true })}
                         className={cn(
                           "flex-1 min-h-[50px] py-3 px-3 rounded-xl border text-xs font-black uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer",
                           formData.hasWhatsapp === true
-                            ? "border-action/60 bg-action/10 text-action shadow-[0_0_12px_-4px_rgba(152,201,60,0.4)]"
-                            : "border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-gray-700/50 dark:text-gray-300/50 hover:border-black/20 dark:hover:border-white/20"
+                            ? "border-action/60 bg-action/10 text-action shadow-glow-lime"
+                            : "border-border bg-surface-2 text-muted hover:border-border-2"
                         )}>
-                        <span className="text-sm">✓</span> Yes
+                        <span className="text-sm">✓</span> <Typography variant="microLabel" as="span">Yes</Typography>
                       </button>
                       <button type="button" onClick={() => setFormData({ ...formData, hasWhatsapp: false })}
                         className={cn(
                           "flex-1 min-h-[50px] py-3 px-3 rounded-xl border text-xs font-black uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer",
                           formData.hasWhatsapp === false
-                            ? "border-red-500/50 bg-red-500/10 text-red-400"
-                            : "border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-gray-700/50 dark:text-gray-300/50 hover:border-black/20 dark:hover:border-white/20"
+                            ? "border-primary/50 bg-primary/10 text-primary"
+                            : "border-border bg-surface-2 text-muted hover:border-border-2"
                         )}>
-                        <span className="text-sm">✗</span> No
+                        <span className="text-sm">✗</span> <Typography variant="microLabel" as="span">No</Typography>
                       </button>
                     </div>
                   </div>
@@ -246,7 +246,7 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
                     </MineralSelect>
                   </div>
                   <div className="col-span-5 space-y-2">
-                    <Typography variant="fieldLabel" as="label" className="ml-1 font-accent font-black tracking-widest opacity-70">Nationality</Typography>
+                    <Typography variant="fieldLabel" className="ml-1 opacity-70">Nationality</Typography>
                     <NationalitySelect
                       value={formData.nationality}
                       onChange={code => setFormData({ ...formData, nationality: code })}
@@ -265,9 +265,9 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
                     <Icon name="info" className="text-action" size="md" />
                   </div>
                   <div>
-                    <Typography variant="h6" as="p" className="mb-1 font-black text-gray-900 dark:text-gray-100">After Registration</Typography>
+                    <Typography variant="h6" as="p" className="mb-1 font-black text-title">After Registration</Typography>
                     <Typography variant="caption" className="not-italic opacity-70 leading-relaxed">
-                      Once registered, you'll be able to set your <strong className="text-gray-900 dark:text-gray-100">pickup location</strong>, choose your <strong className="text-gray-900 dark:text-gray-100">preferred menu</strong>, and access exclusive member benefits — all from your personal dashboard.
+                      Once registered, you'll be able to set your <strong className="text-title">pickup location</strong>, choose your <strong className="text-title">preferred menu</strong>, and access exclusive member benefits — all from your personal dashboard.
                     </Typography>
                   </div>
                 </div>
@@ -280,19 +280,19 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
                     className={cn(
                       "mt-0.5 w-5 h-5 shrink-0 rounded border-2 flex items-center justify-center transition-all duration-200 cursor-pointer",
                       termsAccepted
-                        ? "bg-action border-action shadow-[0_0_10px_-2px_rgba(152,201,60,0.5)]"
-                        : "bg-black/5 dark:bg-white/5 border-black/20 dark:border-white/20 hover:border-action/50"
+                        ? "bg-action border-action shadow-glow-lime"
+                        : "bg-surface-2 border-border hover:border-action/50"
                     )}
                   >
                     {termsAccepted && <span className="material-symbols-outlined text-[13px] text-background font-black" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}>check</span>}
                   </button>
                   <Typography variant="caption" className="not-italic opacity-70 leading-relaxed">
                     I agree to the{" "}
-                    <button type="button" onClick={() => setLegalModal('terms')} className="text-gray-900 dark:text-gray-100 font-bold underline underline-offset-2 hover:text-action transition-colors cursor-pointer">
+                    <button type="button" onClick={() => setLegalModal('terms')} className="text-title font-bold underline underline-offset-2 hover:text-action transition-colors cursor-pointer">
                       Terms of Service
                     </button>
                     {" "}and{" "}
-                    <button type="button" onClick={() => setLegalModal('privacy')} className="text-gray-900 dark:text-gray-100 font-bold underline underline-offset-2 hover:text-action transition-colors cursor-pointer">
+                    <button type="button" onClick={() => setLegalModal('privacy')} className="text-title font-bold underline underline-offset-2 hover:text-action transition-colors cursor-pointer">
                       Privacy Policy
                     </button>
                     . Required to complete your booking.
@@ -305,16 +305,18 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
             <div className="pt-6 border-t border-border mt-6">
               <div className="flex justify-between items-end mb-4">
                 <Typography variant="h6" className="opacity-60">Total Due</Typography>
-                <Typography variant="h3" className="font-black">{finalPrice.toLocaleString()} <Typography variant="numericRegular" as="span" color="primary" className="text-sm">THB</Typography></Typography>
+                <Typography variant="h3" className="font-black">
+                  {finalPrice.toLocaleString()} <Typography variant="numericRegular" as="span" color="primary" className="text-sm">THB</Typography>
+                </Typography>
               </div>
 
               {!(authMode === 'login' && !userProfile) && (
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <button type="button" onClick={() => setPaymentMethod('arrival')} className={cn("p-4 rounded-2xl border text-left transition-all cursor-pointer", paymentMethod === 'arrival' ? "bg-action/10 border-action text-gray-900 dark:text-gray-100" : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-black/10 dark:hover:bg-white/8")}>
+                  <button type="button" onClick={() => setPaymentMethod('arrival')} className={cn("p-4 rounded-2xl border text-left transition-all cursor-pointer", paymentMethod === 'arrival' ? "bg-action/10 border-action text-title" : "bg-surface-2 border-border text-desc hover:bg-surface-2/10")}>
                     <Typography variant="h6" as="div" className="mb-1">Pay on Arrival</Typography>
                     <Typography variant="microLabel" as="div" className="opacity-70 normal-case font-medium">Cash or QR Code</Typography>
                   </button>
-                  <button type="button" onClick={() => setPaymentMethod('card')} className={cn("p-4 rounded-2xl border text-left transition-all cursor-pointer", paymentMethod === 'card' ? "bg-primary/10 border-primary text-gray-900 dark:text-gray-100" : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-black/10 dark:hover:bg-white/8")}>
+                  <button type="button" onClick={() => setPaymentMethod('card')} className={cn("p-4 rounded-2xl border text-left transition-all cursor-pointer", paymentMethod === 'card' ? "bg-primary/10 border-primary text-title" : "bg-surface-2 border-border text-desc hover:bg-surface-2/10")}>
                     <Typography variant="h6" as="div" className="mb-1">Credit Card</Typography>
                     <Typography variant="microLabel" as="div" className="opacity-70 normal-case font-medium">Stripe Secure</Typography>
                   </button>
@@ -322,14 +324,14 @@ export const BookingCheckout: React.FC<BookingCheckoutProps> = ({
               )}
 
               {!canSubmit && authMode === 'guest' && (
-                <Typography variant="caption" className="not-italic text-orange-400/80 text-center mb-3">
+                <Typography variant="caption" className="not-italic text-primary/80 text-center mb-3">
                   Please accept the Terms of Service to continue.
                 </Typography>
               )}
 
               <Button
                 variant={paymentMethod === 'card' ? "brand" : "action"}
-                size="xl"
+                size="lg"
                 fullWidth
                 onClick={handleSubmit}
                 isLoading={loading}

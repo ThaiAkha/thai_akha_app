@@ -126,7 +126,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       <button
         onClick={handleToggle}
         className={cn(
-          "fixed top-6 left-6 z-[1] size-12 rounded-2xl flex items-center justify-center transition-all duration-500 ease-cinematic",
+          "fixed bottom-6 left-6 z-[1] size-12 rounded-2xl flex items-center justify-center transition-all duration-500 ease-cinematic",
           "shadow-2xl backdrop-blur-xl border",
           "bg-surface/90 border-white/10 text-title",
           isOpen ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100"

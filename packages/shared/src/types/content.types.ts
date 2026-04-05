@@ -26,14 +26,7 @@ export interface SitePage extends PageMetadata {
   page_description: string;
 }
 
-/**
- * Chat message format - used across both admin and front apps
- */
-export interface ChatMessage {
-  role: 'user' | 'model' | 'system';
-  parts: { text: string }[];
-  timestamp?: Date;
-}
+
 
 export interface PageFeature {
   icon: string;
@@ -58,4 +51,28 @@ export interface HeaderMetadata {
   ogType?: string | null;
   twitterCard?: string | null;
   features?: PageFeature[] | null;
+}
+
+/**
+ * Cooking Class Database Model
+ */
+export interface CookingClassDB {
+  id: string;
+  title: string;
+  badge?: string | null;
+  tags?: string[] | null;
+  price: number;
+  currency?: string | null;
+  unit?: string | null;
+  theme_color?: string | null;
+  duration_text?: string | null;
+  tagline?: string | null;
+  capacity_text?: string | null;
+  image_url?: string | null;
+  description?: string | null;
+  highlights?: string[] | null;
+  schedule_items?: any[] | null;
+  inclusions?: string[] | null;
+  is_active?: boolean;
+  created_at?: string;
 }

@@ -58,7 +58,7 @@ export const CherryProvider: React.FC<CherryProviderProps> = ({ children }) => {
     startSession,
     stopSession,
     sendTextMessage,
-  } = useGeminiLive(user, 'admin', sessionId);
+  } = useGeminiLive(user, sessionId);
 
   return (
     <CherryContext.Provider

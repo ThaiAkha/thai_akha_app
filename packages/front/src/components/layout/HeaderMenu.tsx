@@ -44,7 +44,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
     <header className={cn(
       "app-header-layout flex flex-col items-center text-center w-full justify-start",
       // Spaziatura Verticale
-      "pt-8 md:pt-12 lg:pt-6 pb-8",
+      "[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-l)]",
       // Transizioni Colore (Per Light/Dark mode)
       "transition-all duration-700",
       // Altezza Minima (Evita scatti se il titolo è breve)
@@ -52,7 +52,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
     )}>
 
       {/* 1. BRAND LOGO */}
-      <div className="mb-4 mx-auto opacity-90 hover:opacity-100 transition-opacity cursor-pointer">
+      <div className="[margin-bottom:var(--space-fluid-2xs)] mx-auto opacity-90 hover:opacity-100 transition-opacity cursor-pointer">
         <img
           src={isDark ? LogoFullDark : LogoFullLight}
           alt="Thai Akha Kitchen"
@@ -62,7 +62,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
 
       {/* 2. TITOLO CENTRATO */}
       {/* Aggiustato il margine base (mb-0) per mobile e ripristinato (md:mb-2) su desktop */}
-      <h1 className="flex flex-wrap justify-center gap-x-3 mb-0 md:mb-2">
+      <h1 className="flex flex-wrap justify-center [column-gap:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-2xs)]">
         <Typography
           variant="titleMain"
           color="title"
@@ -80,7 +80,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
       </h1>
 
       {/* COMPATTATO SU MOBILE: mt-1 e mb-2 su mobile, mt-3 e mb-5 da tablet in su */}
-      <div className="mt-1 mb-2 md:mt-3 md:mb-5 mx-auto opacity-90 hover:opacity-100 transition-opacity">
+      <div className="[margin-top:0] [margin-bottom:var(--space-fluid-s)] mx-auto opacity-90 hover:opacity-100 transition-opacity">
 
         {/* Mostrato SOLO su Mobile (fino a 768px): size 5 */}
         <div className="block md:hidden">

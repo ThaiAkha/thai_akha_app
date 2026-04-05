@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
-import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
+
 import { Button, Icon, Slider, Badge, Avatar } from '../ui';
 import { Input } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -44,6 +44,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   const [loading, setLoading]         = useState(false);
   const [successMsg, setSuccessMsg]   = useState<string | null>(null);
   const [dietOptions, setDietOptions] = useState<DietOption[]>([]);
+  const [allergyMap, setAllergyMap]   = useState<Record<string, string>>({});
 
   const [fullName, setFullName]   = useState('');
   const [diet, setDiet]           = useState<string>('diet_regular');
@@ -52,6 +53,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
 
   useEffect(() => {
     contentService.getDietaryProfiles().then(p => { if (p) setDietOptions(p); });
+    contentService.getAllergyMap().then(map => { if (map) setAllergyMap(map); });
   }, []);
 
   useEffect(() => {
@@ -97,8 +99,8 @@ const UserSettings: React.FC<UserSettingsProps> = ({
     );
 
   const getAllergyInfo = (allergen: string) => {
-    const key = allergen.toLowerCase() as keyof typeof DIETARY_KNOWLEDGE_BASE.allergyWarnings;
-    return DIETARY_KNOWLEDGE_BASE.allergyWarnings[key] || 'We will exclude this ingredient safely.';
+    const key = allergen.toLowerCase();
+    return allergyMap[key] || 'We will exclude this ingredient safely.';
   };
 
   const selectedDietInfo  = dietOptions.find(d => d.id === diet);

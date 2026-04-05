@@ -15,6 +15,7 @@ import {
 import UserProfileCard from '../components/user-dashboard/UserProfileCard';
 import ContextualStatsView from '../components/user-dashboard/ContextualStatsView';
 import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 /* ── CONSTANTS ── */
 // Synced with DB profiles.role constraint — agency uses Admin App, logistics doesn't exist in schema
@@ -65,11 +66,11 @@ const UserPage: React.FC<UserPageProps> = ({
 
   /* ── TABS — filtered by role ── */
   const ALL_TABS = [
-    { value: 'overview',    label: 'Overview',        icon: 'home' },
-    { value: 'reservation', label: 'My Reservation',  icon: 'event_available' },
-    { value: 'menu',        label: 'My Menu',         icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
-    { value: 'quiz',        label: 'Akha Quiz',       icon: 'psychology' },
-    { value: 'passport',    label: 'Passport',        icon: 'account_box', activeColor: 'secondary' as const },
+    { value: 'overview',    label: t.user.tabOverview,        icon: 'home' },
+    { value: 'reservation', label: t.user.tabReservation,     icon: 'event_available' },
+    { value: 'menu',        label: t.user.tabMenu,            icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
+    { value: 'quiz',        label: t.user.tabQuiz,            icon: 'psychology' },
+    { value: 'passport',    label: t.user.tabPassport,        icon: 'account_box', activeColor: 'secondary' as const },
   ];
 
   const TABS = isStaff
@@ -168,29 +169,30 @@ const UserPage: React.FC<UserPageProps> = ({
       if (current) fetchRouteData(current);
     };
     loadDetails();
-  }, [activeBookingId, bookingsList, isStaff]);
+  }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to prevent menu re-fetching during polling
 
   /* ── SMART POLLING (today only) ── */
   useEffect(() => {
-    if (isStaff) return;
-    const current = bookingsList.find(b => b.internal_id === activeBookingId);
-    if (!current) return;
+    if (isStaff || !activeBookingId) return;
+    
+    // Use an interval that doesn't trigger effect re-runs
+    const interval = setInterval(() => {
+      const current = bookingsList.find(b => b.internal_id === activeBookingId);
+      if (!current) return;
 
-    const now = new Date();
-    const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-    const isToday  = current.booking_date === todayStr;
-    const isPending = current.transport_status !== 'dropped_off';
+      const now = new Date();
+      const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+      const isToday = current.booking_date === todayStr;
+      const isPending = current.transport_status !== 'dropped_off';
 
-    if (isToday && isPending) {
-      fetchBookings(true);
-      fetchRouteData(current);
-      const interval = setInterval(() => {
+      if (isToday && isPending) {
         fetchBookings(true);
         fetchRouteData(current);
-      }, 15000);
-      return () => clearInterval(interval);
-    }
-  }, [activeBookingId, bookingsList, isStaff]);
+      }
+    }, 20000); // 20s is enough for background sync
+
+    return () => clearInterval(interval);
+  }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to stop the loop
 
   /* ── CERTIFICATE HELPER ── */
   const getCertificateDishes = (): CertificateDish[] => {
@@ -267,16 +269,16 @@ const UserPage: React.FC<UserPageProps> = ({
                       <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
                         <span className="material-symbols-rounded text-primary text-3xl">event_busy</span>
                       </div>
-                      <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">No Active Booking</p>
+                      <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">{t.user.noActiveBooking}</p>
                       <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">
-                        Book a cooking class to manage your reservation here.
+                        {t.user.noActiveBookingHint}
                       </p>
                       <button
                         onClick={() => onNavigate('booking')}
                         className="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-2xl hover:bg-primary/90 transition-colors"
                       >
                         <span className="material-symbols-rounded text-xl">calendar_add_on</span>
-                        Book a Class
+                        {t.user.bookClass}
                       </button>
                     </div>
                   ) : (
@@ -345,8 +347,8 @@ const UserPage: React.FC<UserPageProps> = ({
             day: 'numeric', month: 'short', year: 'numeric'
           })}
           classType={activeBooking.session_id?.includes('morning')
-            ? 'Morning Market Course'
-            : 'Evening Feast Course'
+            ? t.user.morningClass
+            : t.user.eveningClass
           }
           dietLabel={userProfile.dietary_profile?.replace('diet_', '').toUpperCase()}
           dishes={getCertificateDishes()}

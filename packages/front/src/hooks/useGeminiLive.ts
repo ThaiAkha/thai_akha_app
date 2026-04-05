@@ -1,9 +1,8 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { orchestrator } from '@thaiakha/shared/prompts';
-import { getVoiceConfig } from '@thaiakha/shared/config/voice.config';
-import { saveMessage } from '@thaiakha/shared/services';
+import { GoogleGenAI, LiveServerMessage, Modality, Type } from '@google/genai';
+import { cherryFront, buildFrontPrompt } from '../prompts/cherryPrompt';
+import { saveMessage, contentService } from '@thaiakha/shared/services';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -16,7 +15,6 @@ interface SessionState {
 
 export const useGeminiLive = (
   userProfile?: any,
-  appContext: 'front' | 'admin' = 'front',
   sessionId?: string | null
 ) => {
     const [state, setState] = useState<SessionState>({
@@ -140,16 +138,19 @@ export const useGeminiLive = (
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = stream;
 
-            const voiceConfig = getVoiceConfig(userProfile, appContext);
-            const activeAgent = orchestrator.getAgent(appContext, userProfile?.role);
-            const resolvedSystemInstruction = overrideInstruction || orchestrator.buildPrompt(
-              activeAgent,
+            const [cookingClasses] = await Promise.all([
+              contentService.getCookingClasses(),
+            ]);
+
+            const resolvedSystemInstruction = overrideInstruction || buildFrontPrompt(
               userProfile || {},
               userProfile?.dietary_profile || 'diet_regular',
               userProfile?.allergies || [],
               true,
-              'front'
+              { cookingClasses }
             );
+
+
 
             const sessionPromise = ai.live.connect({
                 model: 'gemini-2.5-flash-native-audio-preview-12-2025',
@@ -192,6 +193,8 @@ export const useGeminiLive = (
                         }
                     },
                     onmessage: async (message: LiveServerMessage) => {
+
+
                         if (message.serverContent?.inputTranscription) {
                             setState(prev => ({ ...prev, inputTranscript: prev.inputTranscript + message.serverContent!.inputTranscription!.text }));
                         }
@@ -249,7 +252,7 @@ export const useGeminiLive = (
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {
                         voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: voiceConfig.voiceName }
+                            prebuiltVoiceConfig: { voiceName: cherryFront.voiceName }
                         }
                     },
                     systemInstruction: resolvedSystemInstruction,

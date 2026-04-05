@@ -41,6 +41,7 @@ const LogisticHome = lazy(() => import("./pages/logistics/LogisticHome"));
 const Home = lazy(() => import("./pages/common/Home"));
 const UserProfiles = lazy(() => import("./pages/common/UserProfiles"));
 const ComponentShowcase = lazy(() => import("./pages/admin/ComponentShowcase"));
+const AdminMedia = lazy(() => import("./pages/admin/AdminMedia"));
 
 function PageLoader() {
   return (
@@ -66,6 +67,7 @@ function App() {
               <Route path="/admin-database" element={<ProtectedRoute allowedRoles={['admin']}><AdminDatabase /></ProtectedRoute>} />
               <Route path="/admin-news" element={<ProtectedRoute allowedRoles={['admin']}><AdminNews /></ProtectedRoute>} />
               <Route path="/admin-storage" element={<ProtectedRoute allowedRoles={['admin']}><AdminStorage /></ProtectedRoute>} />
+              <Route path="/admin-media" element={<ProtectedRoute allowedRoles={['admin']}><AdminMedia /></ProtectedRoute>} />
               <Route path="/admin/showcase" element={<ProtectedRoute allowedRoles={['admin']}><ComponentShowcase /></ProtectedRoute>} />
 
               <Route path="/agency-reservations" element={<ProtectedRoute allowedRoles={['admin', 'manager', 'agency']}><AgencyReservations /></ProtectedRoute>} />
@@ -90,7 +92,7 @@ function App() {
               <Route path="/admin-calendar" element={<ProtectedRoute allowedRoles={['admin']}><AdminCalendar /></ProtectedRoute>} />
               <Route path="/admin-inventory" element={<ProtectedRoute allowedRoles={['admin']}><AdminInventory /></ProtectedRoute>} />
               <Route path="/admin-home" element={<ProtectedRoute allowedRoles={['admin']}><AdminHome /></ProtectedRoute>} />
-              
+
               {/* New B2B Slugs (Placeholders - using AdminHome as temporary view if specific page missing) */}
               <Route path="/admin-recipes" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><AdminHome /></ProtectedRoute>} />
               <Route path="/admin-classes" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><AdminHome /></ProtectedRoute>} />

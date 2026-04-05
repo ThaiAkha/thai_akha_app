@@ -19,14 +19,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, handleSend, isLi
     };
 
     return (
-        <div className="flex items-center gap-2 p-2 rounded-full glass-effect">
+        <div className="flex items-center [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-2xs)] rounded-full bg-surface-2 border border-border mt-2">
             <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={isListening ? 'Listening...' : 'Ask Cherry anything...'}
-                className="flex-grow bg-transparent text-white placeholder-white/50 focus:outline-none px-4"
+                className="flex-grow bg-transparent text-title placeholder-muted focus:outline-none px-4 [font-size:var(--text-fluid-body)]"
                 disabled={isLoading}
             />
             <MicButton isListening={isListening} onClick={handleMicClick} />

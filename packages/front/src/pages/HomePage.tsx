@@ -1,195 +1,255 @@
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { Typography, Button, Icon, Badge, Card, InfoCard } from '../components/ui/index';
+import { Button, Icon, Card, InfoCard, Typography, MediaImage } from '../components/ui/index';
 import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
+import { SmartHeaderSection } from '../components/layout/SmartHeaderSection';
+import { HeaderSection } from '../components/layout/HeaderSection';
 import { useFrontHomeCards } from '../hooks/useFrontHomeCards';
+import { useRandomCultureSection } from '../hooks/useRandomCultureSection';
+import AudioPlayer from '../components/modal/AudioPlayer';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { GlassCard } from '../components/ui/index';
+import {
+  CHERRY_FEATURES,
+  CHERRY_IMAGE_URL,
+  CHERRY_AUDIO_URL,
+  HOME_FEATURE_CARDS,
+} from '@thaiakha/shared/data';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
-const ICON_MAP: Record<string, string> = {
-  home: 'Home',
-  BookOpen: 'BookOpen',
-  ChefHat: 'ChefHat',
-  CalendarDays: 'CalendarDays',
-  landmark: 'Landmark',
-  MapPin: 'MapPin',
-  trophy: 'Trophy',
-};
+const ROW1_PATHS = ['/classes', '/recipes', '/booking'];
 
-const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ onNavigate }) => {
+const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => void }> = ({ onNavigate }) => {
   const { cards, loading } = useFrontHomeCards();
+  const { section: randomSection } = useRandomCultureSection();
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const handlePlayWelcome = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio('https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/voice_over/cherry_welcome_cherry_normal.wav');
-      audioRef.current.onended = () => setIsPlaying(false);
-    }
-    if (isPlaying) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const ROW1_PATHS = ['/classes', '/recipes', '/booking'];
   const row1Cards = cards.filter(c => ROW1_PATHS.includes(c.target_path));
   const row2Cards = cards.filter(c => !ROW1_PATHS.includes(c.target_path));
 
   return (
-    <PageLayout slug="home" loading={loading} showPatterns={true} hideDefaultHeader>
-      <div className="space-y-24 pb-32">
+    <PageLayout slug="home" loading={loading} showPatterns={true} hideDefaultHeader={false}>
+      <div className="flex flex-col [gap:var(--space-fluid-section)] [padding-bottom:var(--space-fluid-3xl)]">
 
-        {/* --- HERO SECTION --- */}
-        <section className="relative min-h-[70vh] flex flex-col items-center justify-center text-center px-4 pt-12 md:pt-20">
-          <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <div className="flex justify-center mb-8">
-              <Badge variant="solid" icon="star" pulse>Award Winning School</Badge>
-            </div>
+        {/* ── MEET CHERRY ─────────────────────────────────────────────────── */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
 
-            <Typography variant="display2" className="drop-shadow-2xl">
-              Master the Art of <Typography variant="display2" color="primary" as="span">Akha</Typography> Cooking
-            </Typography>
+          {/* Colonna testo */}
+          <div className="order-2 lg:order-1 flex flex-col [gap:var(--space-fluid-m)]">
+            <SmartHeaderSection
+              sectionId="home_01"
+              variant="section"
+              align="left"
+              gradientFrom="primary"
+              gradientTo="action"
+            />
 
-            <Typography variant="paragraphL" className="max-w-2xl mx-auto dark:opacity-80">
-              A unique culinary journey from the misty mountains of the North to your personal cooking station in Chiang Mai.
-            </Typography>
-          </div>
-
-          <div className="mt-16 opacity-30">
-            <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-          </div>
-        </section>
-
-        {/* --- MEET CHERRY SECTION --- */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-1 space-y-12">
-            <div className="inline-flex items-center">
-              <Badge variant="brand" icon="star" pulse>AI Expert Assistant</Badge>
-            </div>
-
-            <Typography variant="h2" color="title" className="italic">
-              Meet Cherry, Your Digital Host
-            </Typography>
-
-            <Typography variant="paragraphM" className="leading-relaxed">
-              Available 24/7 via text or <strong>live voice</strong>, Cherry is our official cultural ambassador. She can help you choose recipes, manage dietary restrictions, or tell you the ancestral stories behind every dish.
-            </Typography>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card variant="interactive" padding="sm" rounded="xl">
-                <Icon name="mic" className="text-primary mb-4" />
-                <Typography variant="h5">Voice Live</Typography>
-                <Typography variant="paragraphS">Real-time low-latency voice interaction.</Typography>
-              </Card>
-              <Card variant="interactive" padding="sm" rounded="xl">
-                <Icon name="menu_book" className="text-action mb-4" />
-                <Typography variant="h5">Recipe Expert</Typography>
-                <Typography variant="paragraphS">Deep knowledge of our 11 signature dishes.</Typography>
-              </Card>
+            <div className="grid grid-cols-2 md:grid-cols-2 [gap:var(--space-fluid-s)]">
+              {CHERRY_FEATURES.map(f => (
+                <Card key={f.title} variant="interactive" padding="md" rounded="xl">
+                  <Icon name={f.icon} className={`${f.colorClass} [margin-bottom:var(--space-fluid-xs)]`} />
+                  <Typography variant="h5">{f.title}</Typography>
+                  <Typography variant="paragraphS">{f.description}</Typography>
+                </Card>
+              ))}
             </div>
           </div>
 
-          <div className="order-1 lg:order-2 relative aspect-square rounded-4xl overflow-hidden border-2 border-gray-200 dark:border-white/10 shadow-2xl group">
+          {/* Colonna immagine + AudioPlayer */}
+          <div className="order-1 lg:order-2 relative aspect-square rounded-[3rem] overflow-hidden border-2 border-border shadow-2xl group">
             <img
-              src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/Akha01.jpg"
-              className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
+              src={CHERRY_IMAGE_URL}
+              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
               alt="Cherry Assistant"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            {/* Overlay on dark image */}
+            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
             <div className="absolute bottom-8 left-8 right-8">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handlePlayWelcome}
-                  title={isPlaying ? 'Stop' : 'Play welcome message'}
-                  className={`size-12 rounded-full bg-primary flex items-center justify-center text-white transition-transform hover:scale-110 ${isPlaying ? 'animate-pulse' : ''}`}
+              <AudioPlayer url={CHERRY_AUDIO_URL} hideTranscript />
+            </div>
+          </div>
+
+        </section>
+
+        <div className="[margin-top:var(--space-fluid-m)] opacity-30">
+          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
+        </div>
+
+        {/* ── EXPLORE ─────────────────────────────────────────────────────── */}
+        <section className="flex flex-col [gap:var(--space-fluid-m)]">
+          <SmartHeaderSection
+            sectionId="home_02"
+            variant="section"
+            align="center"
+            gradientFrom="btn-s"
+            gradientTo="secondary"
+          />
+
+          {/* ── EXPLORE GRID (Responsive: 2x2+1 on mobile/tablet, 3+2 on desktop) ── */}
+          <div className="grid grid-cols-2 md:grid-cols-6 [gap:var(--space-fluid-m)]">
+            {!loading && [...row1Cards, ...row2Cards.slice(0, 2)].map((card, idx) => {
+              const isLast = idx === 4;
+              return (
+                <div
+                  key={card.id}
+                  className={cn(
+                    // Desktop: le prime 3 occupano 2/6, le altre 3/6
+                    idx < 3 ? 'md:col-span-2' : 'md:col-span-3',
+                    // Mobile/Tablet: le prime 4 occupano 1/2, l'ultima 2/2
+                    isLast ? 'col-span-2' : 'col-span-1'
+                  )}
                 >
-                  <Icon name={isPlaying ? 'Volume2' : 'Play'} size="sm" />
-                </button>
-                <div>
-                  <Typography variant="h5" color="inverse" className="font-black italic">CHERRY V5.0</Typography>
-                  <Typography variant="caption" color="inverse" className="opacity-60">
-                    {isPlaying ? 'Playing welcome...' : 'Tap to hear Cherry'}
-                  </Typography>
+                  {/* 
+                    TRUCCO: Per la quarta card (idx === 3), la vogliamo verticale su mobile (per il 2x2) 
+                    ma orizzontale su desktop (per la riga a 2). Usiamo hidden/block per scambiarle.
+                  */}
+                  {idx === 3 ? (
+                    <>
+                      <div className="md:hidden">
+                        <InfoCard
+                          card={{ ...card, link: card.target_path.replace('/', ''), desc: card.description, image: card.image_url }}
+                          layout="vertical"
+                          onNavigate={onNavigate}
+                        />
+                      </div>
+                      <div className="hidden md:block">
+                        <InfoCard
+                          card={{ ...card, link: card.target_path.replace('/', ''), desc: card.description, image: card.image_url }}
+                          layout="horizontal"
+                          onNavigate={onNavigate}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <InfoCard
+                      card={{ ...card, link: card.target_path.replace('/', ''), desc: card.description, image: card.image_url }}
+                      layout={idx < 3 ? 'vertical' : 'horizontal'}
+                      onNavigate={onNavigate}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="[margin-top:var(--space-fluid-m)] opacity-30">
+          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
+        </div>
+
+        {/* ── SECTION 03 (Akha People — random culture article) ───────────── */}
+        <section className="flex flex-col [gap:var(--space-fluid-m)]">
+          <SmartHeaderSection
+            sectionId="home_03"
+            variant="section"
+            align="center"
+            gradientFrom="btn-s"
+            gradientTo="secondary"
+          />
+          <GlassCard variant="action" className="[padding:var(--space-fluid-l)] overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
+
+              {/* Photo Left */}
+              <div className="order-2 lg:order-1 rounded-4xl overflow-hidden border border-white/10 group aspect-video">
+                {randomSection?.primary_image
+                  ? <MediaImage
+                      assetId={randomSection.primary_image}
+                      showCaption={false}
+                      className="w-full h-full"
+                      imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  : <div className="w-full h-full bg-surface-2 animate-pulse" />
+                }
+              </div>
+
+              {/* Text Right */}
+              <div className="order-1 lg:order-2 flex flex-col [gap:var(--space-fluid-s)]">
+                {randomSection
+                  ? <HeaderSection
+                      title={randomSection.title}
+                      subtitle={randomSection.subtitle ?? undefined}
+                      variant="section"
+                      align="left"
+                      gradientFrom="primary"
+                      gradientTo="action"
+                      hideTag={true}
+                    />
+                  : <SmartHeaderSection
+                      sectionId="home_03"
+                      variant="section"
+                      align="left"
+                      gradientFrom="primary"
+                      gradientTo="action"
+                      hideTag={true}
+                    />
+                }
+                <div className="[padding-top:var(--space-fluid-s)]">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    icon="auto_stories"
+                    onClick={() => randomSection
+                      ? onNavigate('history', undefined, randomSection.slug)
+                      : onNavigate('history')
+                    }
+                  >
+                    {randomSection ? t.home.readChapter : t.home.discoverHeritage}
+                  </Button>
                 </div>
               </div>
+
             </div>
-          </div>
+          </GlassCard>
         </section>
 
-        <div className="mt-16 opacity-30">
+        <div className="[margin-top:var(--space-fluid-m)] opacity-30">
           <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
         </div>
 
-        {/* --- EXPLORE SECTION --- */}
-        <section className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-primary pl-6">
-            <div className="space-y-2">
-              <Typography variant="h2">
-                Explore the Kitchen
-              </Typography>
-              <Typography variant="paragraphM">Discover our classes, recipes, and heritage.</Typography>
-            </div>
-          </div>
+        {/* ── SECTION 04 (AI Quiz) ────────────────────────────────────────── */}
+        <section className="flex flex-col [gap:var(--space-fluid-m)]">
+          <SmartHeaderSection
+            sectionId="home_04"
+            variant="section"
+            align="center"
+            gradientFrom="btn-s"
+            gradientTo="secondary"
+          />
+          <GlassCard variant="secondary" className="[padding:var(--space-fluid-l)] overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
 
-          {/* Row 1 — 3 colonne verticali: Classes, Recipes, Booking */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {loading
-              ? [1, 2, 3].map(i => <div key={i} />)
-              : row1Cards.map(card => (
-                <InfoCard
-                  key={card.id}
-                  card={{ id: card.id, title: card.title, desc: card.description, link: card.target_path.replace('/', ''), image: card.image_url, icon: ICON_MAP[card.icon_name] }}
-                  layout="vertical"
-                  onNavigate={onNavigate}
+              {/* Text Left */}
+              <div className="flex flex-col [gap:var(--space-fluid-s)]">
+                <SmartHeaderSection
+                  sectionId="home_04"
+                  variant="section"
+                  align="right"
+                  gradientFrom="btn-s"
+                  gradientTo="secondary"
+                  hideTag={true}
                 />
-              ))
-            }
-          </div>
+                <div className="[padding-top:var(--space-fluid-s)] flex justify-center lg:justify-end">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    icon="psychology"
+                    onClick={() => onNavigate('quiz')}
+                  >
+                    {t.quiz.startQuiz}
+                  </Button>
+                </div>
+              </div>
 
-          {/* Row 2 — 2 colonne orizzontali: card rimanenti */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {loading
-              ? [1, 2, 3, 4].map(i => <div key={i} />)
-              : row2Cards.map(card => (
-                <InfoCard
-                  key={card.id}
-                  card={{ id: card.id, title: card.title, desc: card.description, link: card.target_path.replace('/', ''), image: card.image_url, icon: ICON_MAP[card.icon_name] }}
-                  layout="horizontal"
-                  onNavigate={onNavigate}
+              {/* Photo Right */}
+              <div className="rounded-4xl overflow-hidden border border-white/10 group aspect-video">
+                <img
+                  src={CHERRY_IMAGE_URL}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  alt="AI Quiz"
                 />
-              ))
-            }
-          </div>
-        </section>
+              </div>
 
-        <div className="mt-16 opacity-30">
-          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-        </div>
-
-        {/* --- TESTIMONIAL / CTA SECTION --- */}
-        <section className="relative py-20 px-8 rounded-[4rem] overflow-hidden text-center bg-primary/5 border border-primary/20">
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
-
-          <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-            <Icon name="format_quote" size="xl" className="text-primary opacity-50" />
-            <Typography variant="h3">
-              "An unforgettable experience that goes far beyond just cooking. It's a deep immersion into a beautiful, resilient culture."
-            </Typography>
-            <div className="space-y-1">
-              <Typography variant="h6">Sarah Jenkins</Typography>
-              <Typography variant="caption" className="dark:opacity-40">Professional Food Traveler</Typography>
             </div>
-
-            <div className="pt-8">
-              <Button variant="action" size="lg" onClick={() => onNavigate('booking')}>Start Your Journey</Button>
-            </div>
-          </div>
+          </GlassCard>
         </section>
 
       </div>

@@ -1,14 +1,13 @@
 import React from 'react';
 import {
     Typography,
-    Badge,
     Button,
     Icon,
-    AkhaPixelLine,
     MediaImage,
     AudioPlayer,
     AkhaQuote,
 } from '../ui/index';
+import AkhaHistoryLine from './AkhaHistoryLine';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface HeaderSinglePostProps {
@@ -31,7 +30,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
     onShare,
 }) => {
     return (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col [gap:var(--space-fluid-l)]">
             {/* 1. HERO */}
             <div className="relative w-full aspect-[16/9] overflow-hidden rounded-[2.5rem]">
                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
@@ -49,7 +48,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
                 )}
 
                 {/* Overlay content */}
-                <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 md:p-6 lg:p-10 gap-3">
+                <div className="absolute inset-0 z-20 flex flex-col justify-end [padding:var(--space-fluid-l)] [gap:var(--space-fluid-xs)]">
                     <Typography variant="h2" className="text-white max-w-2xl">
                         {title}
                     </Typography>
@@ -63,18 +62,18 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
             </div>
 
             {/* 2. AUDIO PLAYER + SHARE BUTTON (md size) */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 max-w-2xl mx-auto w-full px-6 md:px-0 mt-4 mb-6">
+            <div className="flex flex-col md:flex-row items-start justify-center [gap:var(--space-fluid-s)] max-w-2xl mx-auto w-full [padding-inline:var(--space-fluid-m)] md:[padding-inline:0]">
                 {hasAudio && audioAssetId && (
                     <div className="w-full flex-1">
                         <AudioPlayer
                             assetId={audioAssetId}
-                            hideTranscript={true}
+                            hideTranscript={false}
                         />
                     </div>
                 )}
                 <Button
                     variant="social"
-                    size="md"
+                    size="lg"
                     icon="share"
                     onClick={onShare}
                     className="whitespace-nowrap w-full md:w-auto shrink-0 px-8 py-4"
@@ -89,7 +88,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
             )}
 
             {/* 5. DIVIDER */}
-            <AkhaPixelLine opacity={0.8} />
+            <AkhaHistoryLine />
         </div>
     );
 };

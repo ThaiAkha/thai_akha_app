@@ -11,6 +11,17 @@ export interface Guest {
     session_name: string;
     session_id: string;
     status: string;
+    payment_method?: string;
+    payment_status?: string;
+    class_price_thb?: number;
+}
+
+export interface ClassFeeItem {
+    sku: '_class_fee';
+    name: string;
+    price: number;
+    quantity: number;
+    status: 'pending';
 }
 
 export interface Product {
@@ -40,8 +51,10 @@ interface BookingRow {
     pax_count: number;
     status: string;
     session_id: string;
+    payment_method?: string;
+    payment_status?: string;
     profiles: { full_name: string; avatar_url?: string }[] | null;
-    class_sessions: { display_name: string }[] | null;
+    class_sessions: { display_name: string; price_thb?: number }[] | { display_name: string; price_thb?: number } | null;
 }
 
 interface ShopItemRow {
@@ -106,8 +119,9 @@ export function useManagerPos() {
                 .from('bookings')
                 .select(`
                     internal_id, guest_name, pax_count, status, session_id,
+                    payment_method, payment_status,
                     profiles:user_id (full_name, avatar_url),
-                    class_sessions (display_name)
+                    class_sessions (display_name, price_thb)
                 `)
                 .eq('booking_date', selectedDate)
                 .neq('status', 'cancelled')
@@ -123,9 +137,12 @@ export function useManagerPos() {
                 full_name: b.guest_name || b.profiles?.[0]?.full_name || 'Walk-in Guest',
                 avatar_url: b.profiles?.[0]?.avatar_url,
                 pax_count: b.pax_count,
-                session_name: b.class_sessions?.[0]?.display_name || 'Class',
+                session_name: (Array.isArray(b.class_sessions) ? b.class_sessions[0] : b.class_sessions)?.display_name || 'Class',
                 session_id: b.session_id,
-                status: b.status
+                status: b.status,
+                payment_method: b.payment_method,
+                payment_status: b.payment_status,
+                class_price_thb: (Array.isArray(b.class_sessions) ? b.class_sessions[0] : b.class_sessions)?.price_thb,
             })) || []);
 
             setProducts(shopItems?.map((p: ShopItemRow) => ({
@@ -232,12 +249,42 @@ export function useManagerPos() {
         } finally { setIsProcessing(false); }
     }, [activeGuestId, currentTab, initData]);
 
+    // --- COMPUTED (must be before callbacks that depend on them) ---
+    const filteredGuests = useMemo(() => {
+        if (selectedSession === 'all') return guests;
+        return guests.filter(g => g.session_id === selectedSession || g.session_id.includes(selectedSession));
+    }, [guests, selectedSession]);
+
+    const activeGuest = useMemo(() => guests.find(g => g.internal_id === activeGuestId) || null, [guests, activeGuestId]);
+
+    // Virtual class fee line — shown when pay_on_arrival and not yet paid
+    const classFee = useMemo((): ClassFeeItem | null => {
+        if (!activeGuest) return null;
+        if (activeGuest.payment_method !== 'pay_on_arrival') return null;
+        if (activeGuest.payment_status === 'paid') return null;
+        const price = activeGuest.class_price_thb || 0;
+        if (price === 0) return null;
+        return {
+            sku: '_class_fee',
+            name: `${activeGuest.session_name} — ${activeGuest.pax_count} pax × ${price.toLocaleString()} THB`,
+            price,
+            quantity: activeGuest.pax_count,
+            status: 'pending',
+        };
+    }, [activeGuest]);
+
+    const totalDue = useMemo(() => {
+        const shopTotal = currentTab.reduce((acc, i) => i.status !== 'paid' ? acc + (i.price * i.quantity) : acc, 0);
+        const classFeeTotal = classFee ? classFee.price * classFee.quantity : 0;
+        return shopTotal + classFeeTotal;
+    }, [currentTab, classFee]);
+
     const handlePayCash = useCallback(async () => {
-        const totalDue = currentTab.reduce((acc, i) => i.status !== 'paid' ? acc + (i.price * i.quantity) : acc, 0);
         if (!activeGuestId || totalDue === 0) return;
-        if (!window.confirm(`Charge ${totalDue} THB to cash?`)) return;
+        if (!window.confirm(`Charge ${totalDue.toLocaleString()} THB to cash?`)) return;
         setIsProcessing(true);
         try {
+            // Pay shop items
             const unpaid = currentTab.filter(i => i.status !== 'paid');
             for (const item of unpaid) {
                 const prod = products.find(p => p.sku === item.sku);
@@ -245,9 +292,15 @@ export function useManagerPos() {
                 if (item.id) await supabase.from('shop_orders').update({ status: 'paid' }).eq('id', item.id);
                 else await supabase.from('shop_orders').update({ status: 'paid' }).match({ booking_id: activeGuestId, sku: item.sku, status: 'pending' });
             }
+            // Mark booking as paid if class fee was included
+            if (classFee) {
+                await supabase.from('bookings')
+                    .update({ payment_status: 'paid' })
+                    .eq('internal_id', activeGuestId);
+            }
             initData();
         } finally { setIsProcessing(false); }
-    }, [activeGuestId, currentTab, products, initData]);
+    }, [activeGuestId, totalDue, currentTab, classFee, products, initData]);
 
     const changeCategory = useCallback((cat: string) => {
         setActiveCategory(cat);
@@ -257,15 +310,6 @@ export function useManagerPos() {
     const closeInspector = useCallback(() => {
         setActiveGuestId(null);
     }, []);
-
-    // --- COMPUTED ---
-    const filteredGuests = useMemo(() => {
-        if (selectedSession === 'all') return guests;
-        return guests.filter(g => g.session_id === selectedSession || g.session_id.includes(selectedSession));
-    }, [guests, selectedSession]);
-
-    const activeGuest = useMemo(() => guests.find(g => g.internal_id === activeGuestId) || null, [guests, activeGuestId]);
-    const totalDue = useMemo(() => currentTab.reduce((acc, i) => i.status !== 'paid' ? acc + (i.price * i.quantity) : acc, 0), [currentTab]);
 
     const mainCategories = useMemo(() => {
         const uniqueCats = Array.from(new Set(products.map(p => p.category)));
@@ -293,6 +337,7 @@ export function useManagerPos() {
         subCategoryTabs,
         activeGuest,
         currentTab,
+        classFee,
         totalDue,
 
         // State

@@ -4,16 +4,20 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 // IMPORT PAGINE PUBBLICHE
 import HomePage from './pages/HomePage';
 import QuizPage from './pages/QuizPage';
-import InfoClasses from './pages/InfoClasses';
-import MenuPage from './pages/Menu';
+import QuizPageSingle from './pages/QuizPageSingle';
+import InfoClasses from './pages/ClassOverview';
+import MorningClassPage from './pages/ClassMorning';
+import EveningClassPage from './pages/ClassEvening';
+import MenuPage from './pages/UserMenu';
 import HistoryPage from './pages/HistoryPage';
-import LocationPage from './pages/LocationPage';
+import LocationPage from './pages/PickUpPage';
 import AuthPage from './pages/AuthPage';
 import UserPage from './pages/UserPage';
 import RecipesPage from './pages/Recipes';
+import RecipeSinglePage from './pages/RecipeSingle';
 import BookingPage from './pages/BookingPage';
-import StyleCards from './pages/StyleCards';
-import ColorsPage from './pages/ColorsPage';
+import StyleCards from './pages/ZZStyleCards';
+import ColorsPage from './pages/ZZColorsPage';
 
 
 
@@ -50,7 +54,10 @@ const getUrlState = () => {
     const parts = window.location.pathname.split('/').filter(Boolean);
     return {
         page: parts[0] || 'home',
-        slug: (parts[0] === 'history' || parts[0] === 'menu' || parts[0] === 'user') ? parts[1] || null : null
+        // For /history/category/:id don't pass 'category' as slug — useHistoryFeed parses URL itself
+        slug: (parts[0] === 'history' || parts[0] === 'menu' || parts[0] === 'user' || parts[0] === 'quiz' || parts[0] === 'recipes')
+            ? (parts[0] === 'history' && parts[1] === 'category' ? null : parts[1] || null)
+            : null,
     };
 };
 
@@ -86,7 +93,28 @@ const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const fetchUser = async () => {
     try {
       const profile = await authService.getCurrentUserProfile();
-      setUserProfile(profile);
+      
+      if (profile && (profile.role as string) !== 'guest_virtual') {
+        setUserProfile(profile);
+      } else {
+        // GUEST PERSISTENCE: Carica preferenze da localStorage senza simulare un login
+        const storedDiet = localStorage.getItem('guest_diet');
+        const storedAllergies = localStorage.getItem('guest_allergies');
+        const storedSpiciness = localStorage.getItem('guest_spiciness');
+        
+        if (storedDiet || storedAllergies) {
+          setUserProfile({
+            id: 'guest',
+            role: 'guest_virtual', // Role speciale per distinguere l'ospite con preferenze
+            dietary_profile: storedDiet || 'diet_regular',
+            allergies: storedAllergies ? JSON.parse(storedAllergies) : [],
+            preferred_spiciness_id: storedSpiciness ? parseInt(storedSpiciness) : 2,
+            full_name: 'Guest',
+          } as any);
+        } else {
+          setUserProfile(null);
+        }
+      }
     } catch (error) {
       console.error("Error refreshing profile:", error);
     } finally {
@@ -163,9 +191,15 @@ const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     switch (page) {
       // Pagine Pubbliche
       case 'home': return <HomePage onNavigate={handleNavigate} />;
-      case 'quiz': return <QuizPage onNavigate={handleNavigate} />;
+      case 'quiz':
+        if (targetSection) return <QuizPageSingle categoryId={targetSection} onNavigate={handleNavigate} />;
+        return <QuizPage onNavigate={handleNavigate} />;
       case 'classes': return <InfoClasses onNavigate={handleNavigate} />;
-      case 'recipes': return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} />;
+      case 'morning-class': return <MorningClassPage onNavigate={handleNavigate} />;
+      case 'evening-class': return <EveningClassPage onNavigate={handleNavigate} />;
+      case 'recipes':
+        if (targetSection) return <RecipeSinglePage slug={targetSection} onNavigate={handleNavigate} userProfile={userProfile} />;
+        return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} onProfileUpdate={fetchUser} />;
       case 'history': return <HistoryPage onNavigate={handleNavigate} targetSection={targetSection} />;
       case 'location': return <LocationPage onNavigate={handleNavigate} />;
       case 'style': return <StyleCards />;

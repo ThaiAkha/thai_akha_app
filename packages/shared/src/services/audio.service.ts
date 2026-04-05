@@ -41,9 +41,10 @@ export const audioService = {
 
     try {
       const { data, error } = await supabase
-        .from('recipe_categories')
+        .from('content_categories')
         .select('audio_story_url, title, ui_quote')
         .eq('id', categoryId)
+        .eq('domain', 'recipe')
         .single();
 
       if (error || !data || !data.audio_story_url) return null;

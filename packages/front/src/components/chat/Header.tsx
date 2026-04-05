@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ data }) => {
         // Fix: Changed 'badge' to 'mineral' as 'badge' is not a valid variant kha
         variant="mineral" 
         size="xs" 
-        className="mb-8"
+        className="[margin-bottom:var(--space-fluid-m)]"
       >
         <span className="material-symbols-outlined animate-icon-pulse text-[14px] md:text-[18px]">
           {data.icon}
@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ data }) => {
         </Typography>
       </Button>
 
-      <div className="mb-0">
+      <div className="[margin-bottom:var(--space-fluid-2xs)]">
         {/* Fix: Changed 'headingL' to 'h1' as 'headingL' is not a valid variant kha */}
         <Typography variant="h1" as="h1">
           <Typography variant="titleMain">
@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ data }) => {
         </Typography>
       </div>
 
-      <div className="h-[2px] w-[120px] max-w-full bg-primary rounded-full opacity-90 mt-4 mb-6" />
+      <div className="h-[2px] w-[120px] max-w-full bg-primary rounded-full opacity-90 [margin-top:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-s)]" />
 
       <div className="w-full">
         <Typography variant="paragraphL">

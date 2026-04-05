@@ -6,46 +6,39 @@ import { cn } from '@thaiakha/shared/lib/utils';
 /* -------------------------------------------------------------------------- */
 
 // relative + overflow-hidden + isolate are required for the flash effect
-const BASE_STYLES = "relative overflow-hidden isolate inline-flex items-center justify-center gap-3 rounded-3xl font-display font-black uppercase tracking-[0.15em] transition-all duration-500 ease-cinematic cursor-pointer active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+const BASE_STYLES = "relative overflow-hidden isolate inline-flex items-center justify-center [gap:var(--space-fluid-s)] rounded-3xl font-display font-black uppercase tracking-[0.15em] transition-all duration-500 ease-cinematic cursor-pointer active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 const BUTTON_VARIANTS = {
   // PRIMARY: High Contrast (Black/White or Dark/Light)
-  primary: "bg-title text-surface hover:shadow-lg hover:-translate-y-0.5",
+  primary: "bg-quiz-p text-white border-t border-white/40 hover:brightness-110",
 
   // BRAND: Identity (Pink) - Main CTA [Source 114]
-  brand: "bg-primary text-white shadow-brand-glow border-t border-white/40 hover:brightness-110 hover:shadow-lg",
+  brand: "bg-primary text-white border-t border-white/40 hover:brightness-110",
 
   // ACTION: Success/Confirm (Green) [Source 114]
-  action: "bg-action/80 text-white border-t border-white/40 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5",
+  action: "bg-action text-white border-t border-white/40 hover:brightness-110",
 
   // MINERAL: Glass Effect (Dark Mode Optimized)
-  mineral: "bg-white/10 backdrop-blur-2xl border-t border-white/20 text-gray-700 dark:text-gray-300 hover:brightness-110 hover:bg-white/10 hover:border-white/30 hover:text-gray-900 dark:text-gray-100 shadow-action-glow",
+  mineral: "bg-white/10 backdrop-blur-2xl border-t border-white/20 text-sub hover:brightness-110 hover:bg-white/10 hover:border-white/30 hover:text-title shadow-action-glow",
 
   // OUTLINE: Bordo sottile
-  outline: "bg-transparent border-2 border-current text-current hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
+  outline: "bg-transparent border-2 border-current text-current hover:bg-white/5 hover:text-title",
 
   // GHOST: Solo testo
-  ghost: "bg-transparent text-gray-700 dark:text-gray-300 hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
-
-  // SECONDARY: Grigio neutro
-  secondary: "bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-white/20",
-
-  // PILL: Arrotondato estremo
-  pill: "bg-white/5 rounded-full border border-white/5 px-6 hover:border-white/20",
+  ghost: "bg-transparent text-sub hover:bg-white/5 hover:text-title",
 
   // NAV: Base (La logica attiva è gestita nel componente)
-  nav: "transition-all duration-500 rounded-xl justify-start px-4 hover:bg-white/5 hover:text-gray-900 dark:text-gray-100",
+  nav: "transition-all duration-500 rounded-xl justify-start [padding-inline:var(--space-fluid-m)] hover:bg-white/5 hover:text-title",
 
   // SOCIAL: Blue Glass (English "Share")
   social: "bg-btn-s/10 border-2 border-btn-s/20 text-btn-s hover:bg-btn-s/20 hover:border-btn-s/40 shadow-glow-blue",
 };
 
 const BUTTON_SIZES = {
-  xs: "px-3 py-1 text-[9px] tracking-[0.1em]",
-  sm: "px-4 py-2 text-[10px] tracking-[0.15em]",
-  md: "px-6 py-3 text-xs tracking-[0.15em]",
-  lg: "px-8 py-4 text-base tracking-[0.2em]",
-  xl: "px-10 py-5 text-base tracking-[0.25em]"
+  xs: "[padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)] [font-size:var(--text-fluid-micro)] tracking-[0.1em]",
+  sm: "[padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-xs)] [font-size:var(--text-fluid-micro)] tracking-[0.15em]",
+  md: "[padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-s)] [font-size:var(--text-fluid-caption)] tracking-[0.15em]",
+  lg: "[padding-inline:var(--space-fluid-xl)] [padding-block:var(--space-fluid-m)] [font-size:var(--text-fluid-paragraphS)] tracking-[0.2em]"
 };
 
 // Variants where flash is disabled (no solid background or interactive nav)
@@ -125,8 +118,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const getNavClasses = () => {
       if (variant !== 'nav') return "";
       if (isActive) return "bg-action/20 text-action shadow-action-glow font-bold hover:bg-action/20";
-      if (isPast) return "bg-white/5 text-gray-700 dark:text-gray-300 opacity-60 hover:bg-white/10";
-      return "bg-transparent text-gray-700 dark:text-gray-300";
+      if (isPast) return "bg-white/5 text-sub opacity-60 hover:bg-white/10";
+      return "bg-transparent text-sub";
     };
 
     return (
@@ -167,7 +160,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ))}
 
         {/* Content — always above flash (z-10) */}
-        <span className="relative z-10 inline-flex items-center justify-center gap-3">
+        <span className="relative z-10 inline-flex items-center justify-center [gap:var(--space-fluid-s)]">
           {isLoading ? (
             <span className="size-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : (

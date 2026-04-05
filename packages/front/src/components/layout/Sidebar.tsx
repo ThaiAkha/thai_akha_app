@@ -4,7 +4,7 @@ import { contentService } from '@thaiakha/shared/services';
 import { getIcon } from '@thaiakha/shared/lib/icons';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { LogoIconLight, LogoIconDark } from '@thaiakha/shared';
-import { GraduationCap, ChevronLeft, Menu, Sun, Moon } from 'lucide-react';
+import { GraduationCap, ChevronLeft, ChevronDown, Menu, Sun, Moon } from 'lucide-react';
 
 const CLOSED_WIDTH = 'w-[108px]';
 const SIDEBAR_TRANSITION = '800ms';
@@ -32,7 +32,7 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = tr
       onClick={onClick}
       title={label}
       className={cn(
-        'relative flex items-center w-full h-12 transition-all duration-500 rounded-xl pl-0 pr-1',
+        'relative flex items-center w-full h-12 transition-all duration-500 rounded-xl pl-0 pr-1 cursor-pointer',
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
         isActive
           ? 'bg-action-500/20'
@@ -86,7 +86,7 @@ function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 
       onClick={onClick}
       title={label}
       className={cn(
-        "relative flex items-center w-full h-14 transition-all duration-500 group",
+        "relative flex items-center w-full h-14 transition-all duration-500 group cursor-pointer",
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
       )}
       style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
@@ -101,6 +101,63 @@ function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 
         isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
       )}>
         <span className="font-display font-bold tracking-wide text-sub">{label}</span>
+      </div>
+    </button>
+  );
+}
+
+const SUB_COLOR = {
+  primary: {
+    bg: 'bg-primary-500/20',
+    bgHover: 'hover:bg-primary-500/10',
+    icon: 'text-primary-600',
+    text: 'text-primary-700',
+  },
+  action: {
+    bg: 'bg-action-500/20',
+    bgHover: 'hover:bg-action-500/10',
+    icon: 'text-action-600',
+    text: 'text-action-700',
+  },
+} as const;
+
+interface SubNavItemProps {
+  icon: string;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  isOpen: boolean;
+  color?: 'primary' | 'action';
+}
+
+function SubNavItem({ icon, label, isActive, onClick, isOpen, color = 'action' }: SubNavItemProps) {
+  const IconComponent = getIcon(icon);
+  const c = SUB_COLOR[color];
+  return (
+    <button
+      onClick={onClick}
+      title={label}
+      className={cn(
+        'relative flex items-center w-full h-12 transition-all duration-300 rounded-xl pl-0 pr-1 cursor-pointer',
+        isActive ? c.bg : c.bgHover
+      )}
+    >
+      {/* Indent: small vertical line indicator on the left */}
+      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.6rem]`}>
+        <div className={cn('w-0.5 h-5 rounded-full mr-2 transition-colors duration-200', isActive ? c.icon : 'bg-border')} />
+        <IconComponent className={cn('w-5 h-5 transition-colors duration-200', isActive ? c.icon : 'text-muted')} />
+      </div>
+      <div className={cn(
+        'flex items-center flex-1 overflow-hidden whitespace-nowrap',
+        `transition-all duration-300 ${EASE_CUBIC} origin-left`,
+        isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'
+      )}>
+        <span className={cn(
+          'font-display font-bold tracking-wide',
+          isActive ? c.text : 'text-sub'
+        )}>
+          {label}
+        </span>
       </div>
     </button>
   );
@@ -147,7 +204,7 @@ function ThemeSwitcher({ isDarkMode, onToggle, isOpen, isVisible = true, index =
       onClick={onToggle}
       title={isDarkMode ? 'Light' : 'Dark'}
       className={cn(
-        "relative flex items-center w-full h-14 rounded-xl transition-all duration-500 group",
+        "relative flex items-center w-full h-14 rounded-xl transition-all duration-500 group cursor-pointer",
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
       )}
       style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
@@ -191,6 +248,7 @@ interface MenuItem {
   access_level: 'public' | 'user' | 'admin' | 'agency';
   header_badge?: string;
   is_highlighted?: boolean;
+  parent_id?: string | null;
 }
 
 interface SidebarProps {
@@ -239,6 +297,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [isLoaded, menuItems]);
 
+  const [expandedParent, setExpandedParent] = useState<string | null>(null);
+
   const studentHubItem = useMemo(() =>
     menuItems.find(item =>
       item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub'
@@ -253,9 +313,33 @@ const Sidebar: React.FC<SidebarProps> = ({
       const level = item.access_level || 'public';
       if (level === 'admin') return false;
       if (level === 'agency') return userProfile?.role === 'agency';
-      if (level === 'user') return !!userProfile;
+      if (level === 'user') return !!userProfile && (userProfile.role as string) !== 'guest_virtual';
       return true;
     }), [menuItems, userProfile]);
+
+  // Build children map keyed by parent id
+  const childrenMap = useMemo(() => {
+    const map: Record<string, MenuItem[]> = {};
+    visibleItems.forEach(item => {
+      if (item.parent_id) {
+        if (!map[item.parent_id]) map[item.parent_id] = [];
+        map[item.parent_id].push(item);
+      }
+    });
+    return map;
+  }, [visibleItems]);
+
+  const topLevelItems = useMemo(() =>
+    visibleItems.filter(item => !item.parent_id),
+    [visibleItems]);
+
+  // Auto-expand parent when current page is a child
+  useEffect(() => {
+    const parentItem = topLevelItems.find(item =>
+      childrenMap[item.id]?.some(child => child.page_slug === currentPage)
+    );
+    if (parentItem) setExpandedParent(parentItem.id);
+  }, [currentPage, topLevelItems, childrenMap]);
 
   const ToggleIcon = isOpen ? ChevronLeft : Menu;
 
@@ -277,7 +361,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onToggle}
             title="Toggle Sidebar"
-            className="relative flex items-center w-full h-14 transition-all duration-200 group"
+            className="relative flex items-center w-full h-14 transition-all duration-200 group cursor-pointer"
           >
             <div className="absolute inset-1 rounded-xl transition-colors duration-300" />
             <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[2.1rem] z-10`}>
@@ -308,12 +392,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         <Divider className="my-0 mb-4" />
 
         {/* USER AVATAR */}
-        {userProfile && (
+        {userProfile && (userProfile.role as string) !== 'guest_virtual' && (
           <>
             <div className="mt-2 mb-2">
               <button
                 onClick={() => onNavigate('user')}
-                className="relative flex items-center w-full h-14 rounded-xl transition-all group"
+                className="relative flex items-center w-full h-14 rounded-xl transition-all group cursor-pointer"
                 title="User Profile"
               >
                 <div className="absolute inset-1 rounded-xl transition-colors duration-300" />
@@ -336,20 +420,64 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* MENU */}
         <ul className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-2">
-          {visibleItems.map((item, index) => {
-            const isVisible = visibleIndices.includes(index);
+          {topLevelItems.map((item, index) => {
+            const isVisible = visibleIndices.includes(visibleItems.indexOf(item));
+            const children = childrenMap[item.id] ?? [];
+            const hasChildren = children.length > 0;
+            const isParentExpanded = expandedParent === item.id;
+            const isChildActive = children.some(c => c.page_slug === currentPage);
+
             return (
               <li key={item.page_slug}>
-                <NavItem
-                  icon={item.header_icon || 'circle'}
-                  label={item.menu_label}
-                  isActive={currentPage === item.page_slug}
-                  onClick={() => onNavigate(item.page_slug)}
-                  isOpen={isOpen}
-                  badge={item.header_badge}
-                  isVisible={isVisible}
-                  index={index}
-                />
+                <div className="relative">
+                  <NavItem
+                    icon={item.header_icon || 'circle'}
+                    label={item.menu_label}
+                    isActive={currentPage === item.page_slug || isChildActive}
+                    onClick={() => {
+                      onNavigate(item.page_slug);
+                      if (hasChildren) {
+                        setExpandedParent(isParentExpanded ? null : item.id);
+                      }
+                    }}
+                    isOpen={isOpen}
+                    badge={item.header_badge}
+                    isVisible={isVisible}
+                    index={index}
+                  />
+                  {/* Chevron for parent items — visible only when sidebar is open */}
+                  {hasChildren && isOpen && (
+                    <div className={cn(
+                      'absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300',
+                      isParentExpanded ? 'rotate-180' : 'rotate-0'
+                    )}>
+                      <ChevronDown className="w-4 h-4 text-muted" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Submenu children */}
+                {hasChildren && (
+                  <div className={cn(
+                    'overflow-hidden transition-all duration-300',
+                    isParentExpanded ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
+                  )}>
+                    <ul className="mt-1 space-y-1">
+                      {children.map(child => (
+                        <li key={child.page_slug}>
+                          <SubNavItem
+                            icon={child.header_icon || 'circle'}
+                            label={child.menu_label}
+                            isActive={currentPage === child.page_slug}
+                            onClick={() => onNavigate(child.page_slug)}
+                            isOpen={isOpen}
+                            color={child.page_slug === 'morning-class' ? 'primary' : 'action'}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </li>
             );
           })}
@@ -384,9 +512,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
 
           <ActionButton
-            icon={userProfile ? 'LogOut' : 'LogIn'}
-            label={userProfile ? 'Sign Out' : 'Log In'}
-            onClick={userProfile ? onLogout! : () => onNavigate('auth')}
+            icon={userProfile && (userProfile.role as string) !== 'guest_virtual' ? 'LogOut' : 'LogIn'}
+            label={userProfile && (userProfile.role as string) !== 'guest_virtual' ? 'Sign Out' : 'Log In'}
+            onClick={userProfile && (userProfile.role as string) !== 'guest_virtual' ? onLogout! : () => onNavigate('auth')}
             isOpen={isOpen}
             isVisible={isLoaded}
             index={visibleItems.length + 2}

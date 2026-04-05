@@ -13,6 +13,7 @@ export interface IconProps {
   color?: IconColor;
   className?: string;
   strokeWidth?: number;
+  style?: React.CSSProperties;
 }
 
 // Mappatura precisa per icona e padding del box (quando c'è un background)
@@ -71,7 +72,8 @@ export const Icon: React.FC<IconProps> = ({
   variant = 'default',
   color = 'default',
   className,
-  strokeWidth = 2
+  strokeWidth = 2,
+  style
 }) => {
   const isEmoji = name && /\p{Extended_Pictographic}/u.test(name as string);
 
@@ -91,6 +93,7 @@ export const Icon: React.FC<IconProps> = ({
     return (
       <span
         className={cn(baseLayout, variantColorClass, sizeConfig.text, className)}
+        style={style}
         role="img"
         aria-label="icon"
       >
@@ -103,7 +106,7 @@ export const Icon: React.FC<IconProps> = ({
   const IconComponent = getIcon(name as IconName);
 
   return (
-    <span className={cn(baseLayout, variantColorClass, className)}>
+    <span className={cn(baseLayout, variantColorClass, className)} style={style}>
       <IconComponent
         className={cn(sizeConfig.icon)}
         strokeWidth={strokeWidth}

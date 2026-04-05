@@ -1,2 +1,3 @@
 export { default as BlogGridSkeleton } from './BlogGridSkeleton';
 export { default as ArticleDetailSkeleton } from './ArticleDetailSkeleton';
+export { default as SkeletonHeader } from './SkeletonHeader';

@@ -32,45 +32,45 @@ const VARIANT_STYLES: Record<TypographyVariant, { element: React.ElementType; cl
   // --- DISPLAY & HERO ---
   display1: {
     element: 'h1',
-    className: "font-display font-black italic leading-[0.85] tracking-tighter text-5xl md:text-7xl lg:text-8xl text-title"
+    className: "font-display font-black italic leading-[0.85] tracking-tighter [font-size:var(--text-fluid-display1)] text-title"
   },
   display2: {
     element: 'h2',
-    className: "font-display font-black italic leading-[0.85] tracking-tighter text-4xl md:text-6xl lg:text-7xl text-title"
+    className: "font-display font-black italic leading-[0.85] tracking-tighter [font-size:var(--text-fluid-display2)] text-title"
   },
 
   // --- HEADINGS ---
-  h1: { element: 'h1', className: "font-display font-black text-3xl md:text-4xl lg:text-5xl tracking-tight md:tracking-relaxed text-title" },
-  h2: { element: 'h2', className: "font-display font-bold text-2xl md:text-3xl lg:text-4xl tracking-tight md:tracking-relaxed text-title" },
-  h3: { element: 'h3', className: "font-display font-bold text-xl md:text-2xl lg:text-3xl tracking-tight md:tracking-relaxed text-title" },
-  h4: { element: 'h4', className: "font-display font-bold text-lg md:text-xl lg:text-2xl tracking-tight md:tracking-relaxed text-title" },
-  h5: { element: 'h5', className: "font-display font-bold text-base md:text-lg lg:text-xl tracking-tight md:tracking-relaxed text-title" },
-  h6: { element: 'h6', className: "font-display font-bold text-sm md:text-base lg:text-lg tracking-tight md:tracking-relaxed text-title" },
+  h1: { element: 'h1', className: "font-display font-black [font-size:var(--text-fluid-h1)] tracking-tight text-title" },
+  h2: { element: 'h2', className: "font-display font-bold [font-size:var(--text-fluid-h2)] tracking-tight text-title" },
+  h3: { element: 'h3', className: "font-display font-bold [font-size:var(--text-fluid-h3)] tracking-tight text-title" },
+  h4: { element: 'h4', className: "font-display font-bold [font-size:var(--text-fluid-h4)] tracking-tight text-title" },
+  h5: { element: 'h5', className: "font-display font-bold [font-size:var(--text-fluid-h5)] tracking-tight text-title" },
+  h6: { element: 'h6', className: "font-display font-bold [font-size:var(--text-fluid-h6)] tracking-tight text-title" },
 
   // --- HERO SPECIFIC ---
-  titleMain: { element: 'span', className: "font-display font-black text-2xl md:text-4xl lg:text-5xl tracking-[-0.02em] text-sub" },
-  titleHighlight: { element: 'span', className: "font-display font-bold italic text-2xl md:text-4xl lg:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-action" },
+  titleMain: { element: 'span', className: "font-display font-black [font-size:var(--text-fluid-hero)] tracking-[-0.02em] text-sub" },
+  titleHighlight: { element: 'span', className: "font-display font-bold italic [font-size:var(--text-fluid-hero)] text-transparent bg-clip-text bg-gradient-to-r from-primary to-action" },
 
   // --- BODY / PARAGRAPHS ---
-  body: { element: 'p', className: "font-sans font-normal leading-relaxed text-base md:text-base lg:text-lg text-desc" },
-  paragraphS: { element: 'p', className: "font-sans font-normal leading-relaxed text-sm md:text-sm lg:text-base text-desc" },
-  paragraphM: { element: 'p', className: "font-sans font-normal leading-relaxed text-base md:text-lg lg:text-xl text-desc" },
-  paragraphL: { element: 'p', className: "font-sans font-normal leading-relaxed text-lg md:text-xl lg:text-2xl text-desc" },
+  body: { element: 'p', className: "font-sans font-normal leading-relaxed [font-size:var(--text-fluid-body)] text-desc" },
+  paragraphS: { element: 'p', className: "font-sans font-normal leading-relaxed [font-size:var(--text-fluid-paragraphS)] text-desc" },
+  paragraphM: { element: 'p', className: "font-sans font-normal leading-relaxed [font-size:var(--text-fluid-paragraphM)] text-desc" },
+  paragraphL: { element: 'p', className: "font-sans font-normal leading-relaxed [font-size:var(--text-fluid-paragraphL)] text-desc" },
 
   // --- UI & ACCENTS ---
-  accent: { element: 'span', className: "font-accent font-black uppercase tracking-[0.25em] text-sm md:text-base" },
+  accent: { element: 'span', className: "font-accent font-black uppercase tracking-[0.25em] [font-size:var(--text-fluid-accent)]" },
   badge: { element: 'span', className: "font-sans font-bold uppercase tracking-[0.25em] text-sm" },
-  quote: { element: 'blockquote', className: "font-display font-light italic leading-relaxed text-xl md:text-2xl border-l-4 border-primary pl-6 py-2 text-desc" },
-  caption: { element: 'span', className: "font-sans text-xs md:text-sm italic text-muted" },
+  quote: { element: 'blockquote', className: "font-display font-light italic leading-relaxed [font-size:var(--text-fluid-quote)] border-l-4 border-primary pl-6 py-2 text-desc" },
+  caption: { element: 'span', className: "font-sans [font-size:var(--text-fluid-caption)] italic text-muted" },
 
   // --- UI DATA ---
-  microLabel: { element: 'span', className: "font-sans text-[10px] md:text-xs font-black uppercase tracking-widest text-muted" },
+  microLabel: { element: 'span', className: "font-sans [font-size:var(--text-fluid-micro)] font-black uppercase tracking-widest text-muted" },
   fieldLabel: { element: 'label', className: "font-sans text-xs font-semibold uppercase tracking-wider text-desc" },
 
   // --- NUMERIC (font-numeric = Noto Sans + Noto Sans Thai) ---
-  numericPrice: { element: 'span', className: "font-numeric font-bold text-2xl md:text-4xl text-title" },
-  numericStat: { element: 'span', className: "font-numeric font-bold text-xl md:text-3xl text-primary" },
-  numericRegular: { element: 'span', className: "font-numeric font-normal text-base md:text-lg text-desc" },
+  numericPrice: { element: 'span', className: "font-numeric font-bold [font-size:var(--text-fluid-numericPrice)] text-title" },
+  numericStat: { element: 'span', className: "font-numeric font-bold [font-size:var(--text-fluid-numericStat)] text-primary" },
+  numericRegular: { element: 'span', className: "font-numeric font-normal [font-size:var(--text-fluid-body)] text-desc" },
 };
 
 const COLOR_STYLES: Record<TypographyColor, string> = {

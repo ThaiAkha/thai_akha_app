@@ -132,7 +132,7 @@ export const checkRateLimit = async (
     // VIP: utente con prenotazione confermata — nessun limite
     const { data: hasBooking } = await supabase
       .from('bookings')
-      .select('id')
+      .select('internal_id')
       .eq('user_id', userId)
       .eq('status', 'confirmed')
       .gte('booking_date', new Date().toISOString().split('T')[0])

@@ -38,16 +38,22 @@ const MenuManager: React.FC<MenuManagerProps> = ({
   // --- DATA FETCHING ---
   useEffect(() => {
     const fetchMenuDetails = async () => {
-      setLoading(true);
+      // Only show top-level loading if we have no dishes yet
+      if (selectedDishes.length === 0 && fixedDishes.length === 0) {
+        setLoading(true);
+      }
+      
       try {
-        // 1. Fetch Fixed Dishes (Included Experience)
-        const { data: fixed } = await supabase
-            .from('recipes')
-            .select('*, recipe_key_ingredients(ingredient)')
-            .eq('is_fixed_dish', true)
-            .order('category');
-        
-        if (fixed) setFixedDishes(fixed);
+        // 1. Fetch Fixed Dishes (Included Experience) - Fetch only once
+        if (fixedDishes.length === 0) {
+          const { data: fixed } = await supabase
+              .from('recipes')
+              .select('*, recipe_key_ingredients(ingredient)')
+              .eq('is_fixed_dish', true)
+              .order('category');
+          
+          if (fixed) setFixedDishes(fixed);
+        }
 
         // 2. Fetch Selected Dishes (Your Menu)
         if (menuSelection) {
@@ -58,14 +64,21 @@ const MenuManager: React.FC<MenuManagerProps> = ({
           ].filter(Boolean);
 
           if (ids.length > 0) {
-            const { data: selected } = await supabase.from('recipes').select('*').in('id', ids);
-            const ordered = [
-              selected?.find(r => r.id === menuSelection.curry_id),
-              selected?.find(r => r.id === menuSelection.soup_id),
-              selected?.find(r => r.id === menuSelection.stirfry_id)
-            ].filter(Boolean);
-            
-            setSelectedDishes(ordered as any[]);
+            // Check if IDs have changed before refetching
+            const currentIds = selectedDishes.map(d => d.id).sort();
+            const newIds = [...ids].sort();
+            const hasChanged = JSON.stringify(currentIds) !== JSON.stringify(newIds);
+
+            if (hasChanged || selectedDishes.length === 0) {
+              const { data: selected } = await supabase.from('recipes').select('*').in('id', ids);
+              const ordered = [
+                selected?.find(r => r.id === menuSelection.curry_id),
+                selected?.find(r => r.id === menuSelection.soup_id),
+                selected?.find(r => r.id === menuSelection.stirfry_id)
+              ].filter(Boolean);
+              
+              setSelectedDishes(ordered as any[]);
+            }
           } else {
              setSelectedDishes([]);
           }
@@ -75,7 +88,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
       } catch (err) {
         console.error("Menu Fetch Error:", err);
       } finally {
-        setTimeout(() => setLoading(false), 300);
+        setLoading(false);
       }
     };
     fetchMenuDetails();

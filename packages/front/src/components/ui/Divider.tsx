@@ -12,7 +12,7 @@ export interface DividerProps {
    * - action: Colore azione (Green)
    * - gradient: Sfumatura da trasparente a opaco (ottimo per sezioni)
    */
-  variant?: 'default' | 'mineral' | 'brand' | 'action' | 'gradient'; 
+  variant?: 'default' | 'mineral' | 'brand' | 'action' | 'gradient';
   label?: string;
   labelPosition?: 'left' | 'center' | 'right';
 }
@@ -28,19 +28,19 @@ const Divider: React.FC<DividerProps> = ({
   // 1. MAPPATURA STILI (System 4.8)
   const variantStyles = {
     // Standard: usa var(--color-border) definita in index.css [Source 567, 569]
-    default: 'border-border', 
-    
+    default: 'border-border',
+
     // Mineral: Per card scure/glass (Source 579)
-    mineral: 'border-white/10', 
-    
+    mineral: 'border-white/10',
+
     // Brand: Identità Pink
-    brand: 'border-primary/50', 
-    
+    brand: 'border-primary/50',
+
     // Action: Success/Confirm Green
     action: 'border-action/50',
 
     // Gradient: Gestito via classi background, non border
-    gradient: 'border-0 bg-gradient-to-r from-transparent via-border to-transparent h-px', 
+    gradient: 'border-0 bg-gradient-to-r from-transparent via-border to-transparent h-px',
   };
 
   // Stili specifici per il gradiente (override se necessario)
@@ -52,7 +52,7 @@ const Divider: React.FC<DividerProps> = ({
   };
 
   // 2. LOGICA LABEL (Tipografia Accent)
-  const labelStyles = "font-accent text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300 opacity-60 whitespace-nowrap px-4";
+  const labelStyles = "font-accent text-[10px] font-black uppercase tracking-[0.2em] text-muted whitespace-nowrap px-4";
 
   // Se c'è una LABEL, il layout è Flexbox
   if (label) {
@@ -60,7 +60,7 @@ const Divider: React.FC<DividerProps> = ({
     const isGradient = variant === 'gradient';
     const lineClass = cn(
       "flex-1 border-t",
-      isGradient ? gradientOverrides.brand : variantStyles[variant as keyof typeof variantStyles]
+      isGradient ? gradientOverrides.default : variantStyles[variant as keyof typeof variantStyles]
     );
 
     return (
@@ -68,7 +68,7 @@ const Divider: React.FC<DividerProps> = ({
         {(labelPosition === 'center' || labelPosition === 'right') && (
           <div className={lineClass} />
         )}
-        
+
         <span className={labelStyles}>
           {label}
         </span>
@@ -86,8 +86,8 @@ const Divider: React.FC<DividerProps> = ({
       <div
         className={cn(
           'inline-block h-auto min-h-[1em] w-px self-stretch mx-2',
-          variant === 'gradient' 
-            ? 'bg-gradient-to-b from-transparent via-border to-transparent border-0' 
+          variant === 'gradient'
+            ? 'bg-gradient-to-b from-transparent via-border to-transparent border-0'
             : `border-l ${variantStyles[variant]}`,
           className
         )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography, Icon } from '../ui';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface HeaderQuizProps {
   title: string;
@@ -10,56 +11,84 @@ interface HeaderQuizProps {
   maxScore: number;
 }
 
-const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevels, score, maxScore }) => {
+const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevels, score }) => {
   return (
     <div className={cn(
-      // Layout Base
       "app-header-layout flex flex-col items-center text-center w-full justify-start",
-      
-      // 1. Spaziatura Verticale
-      "pt-6 md:pt-12 lg:pt-16 pb-8", // Ridotto leggermente pt su mobile per guadagnare spazio
-      
-      // 2. 🟢 FIX: Padding Laterale (Allinea con il contenuto della pagina)
-      "px-4 md:px-8 lg:px-12",
-      
-      // 3. Transizioni Colore
-      "transition-all duration-700",
-
-      // 4. Altezza Minima
-      "min-h-[200px]"
+      "[padding-top:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-m)]",
+      "[padding-inline:var(--space-fluid-m)]",
+      "transition-all duration-700"
     )}>
-      
-      {/* CONTAINER PRINCIPALE: Mineral Style 4.8 */}
-      <div className="relative w-full rounded-[2.5rem] bg-white/5 backdrop-blur-3xl border border-white/10 p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl overflow-hidden group">
-        
-        {/* TITOLO DASHBOARD */}
-        <div className="flex items-center gap-6 w-full lg:w-auto">
-          <div className="relative">
-            <div className="relative size-16 rounded-2xl bg-surface border border-white/10 flex items-center justify-center text-primary shadow-brand-glow group-hover:scale-105 transition-transform duration-500">
-              <Icon name="temple_buddhist" size="xl" />
-            </div>
-          </div>
 
-          <div className="space-y-1 text-left">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--color-primary)]"></span>
-              <p className="font-accent text-primary/80 text-[10px] font-black uppercase tracking-[0.3em]">Active Quiz</p>
-            </div>
-            
-            <Typography variant="h2" className="text-3xl lg:text-5xl leading-none tracking-tighter italic text-gray-900 dark:text-gray-100">
-              {title}
-            </Typography>
+      {/* ── CONTAINER PRINCIPALE (Glass Style v4) ── */}
+      <div className={cn(
+        "relative w-full overflow-hidden group shadow-2xl",
+        "rounded-[3rem] bg-white/5 dark:bg-black/20 backdrop-blur-3xl border border-white/10",
+        "[padding:var(--space-fluid-m)]",
+        "flex flex-wrap lg:flex-nowrap items-center justify-between gap-y-6 lg:gap-y-0 lg:[gap:var(--space-fluid-m)]"
+      )}>
+
+        {/* ── 1) AVATAR (Top Left su Mobile, Sinistra su Desktop) ── */}
+        <div className="shrink-0 flex items-center justify-center order-1 lg:order-1">
+          <div className="relative size-22 rounded-[1.4rem] bg-surface flex items-center justify-center text-primary overflow-hidden border border-white/10">
+            <img
+              src="/avatarCherry/600-Avatar-Quiz.webp"
+              alt="Cherry Quiz Avatar"
+              className="size-full object-cover"
+            />
           </div>
         </div>
 
-        {/* PROGRESSO A SEGMENTI */}
-        <div className="flex-1 w-full lg:max-w-2xl flex flex-col justify-center px-4">
-          <div className="flex justify-between w-full mb-3 px-1">
+        {/* ── 2) SCORE BADGE (Top Right su Mobile, Destra su Desktop) ── */}
+        <div className="flex items-center justify-end shrink-0 order-2 lg:order-4">
+          <div className="flex items-center gap-4 bg-black/40 px-6 h-22 rounded-[1.4rem] border border-white/10 group-hover:bg-black/60 transition-colors duration-500">
+            <div className="flex flex-col items-end">
+              <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-[0.2em] mb-1">
+                Wisdom
+              </Typography>
+              <div className="flex items-center gap-2">
+                <Typography variant="numericStat" className="[font-size:2rem] leading-none text-quiz drop-shadow-lg">
+                  {score}
+                </Typography>
+                <Typography variant="microLabel" color="muted" className="font-bold self-end mb-1">XP</Typography>
+              </div>
+            </div>
+            <div className="size-12 rounded-full bg-quiz/10 flex items-center justify-center border border-quiz/20">
+              <Icon name="stars" className="text-quiz" size="xl" />
+            </div>
+          </div>
+        </div>
+
+        {/* ── 3) TITOLO (Centrato Sotto Avatar/Score su Mobile) ── */}
+        <div className="flex flex-col text-center lg:text-left w-full lg:w-auto items-center lg:items-start shrink-0 order-3 lg:order-2">
+          <div className="flex items-center gap-2 [margin-bottom:var(--space-fluid-2xs)]">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--color-primary)]"></span>
+            <Typography variant="microLabel" color="primary" className="uppercase font-black tracking-[0.3em]">
+              {t.quiz.headerBadge || "Active Quiz"}
+            </Typography>
+          </div>
+
+          <Typography
+            variant="h2"
+            color="title"
+            className="leading-none tracking-tighter italic [font-size:var(--text-fluid-h2)]"
+          >
+            {title}
+          </Typography>
+        </div>
+
+        {/* ── 4) PROGRESS BAR (Ultima in basso su Mobile) ── */}
+        <div className="flex-1 w-full lg:max-w-xl flex flex-col justify-center [padding-inline:var(--space-fluid-s)] order-4 lg:order-3">
+          <div className="flex justify-between w-full [margin-bottom:var(--space-fluid-2xs)] px-1">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Level {currentLevel}</span>
+              <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-[0.2em]">
+                Level {currentLevel}
+              </Typography>
               <div className="h-px w-8 bg-primary/30"></div>
             </div>
-            <span className="text-[10px] font-black text-gray-700/40 dark:text-gray-300/40 uppercase tracking-[0.2em]">{totalLevels} Steps</span>
+            <Typography variant="microLabel" color="muted" className="font-black uppercase tracking-[0.2em]">
+              {totalLevels} Steps
+            </Typography>
           </div>
 
           <div className="w-full">
@@ -68,30 +97,15 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
                 <div
                   key={i}
                   className={cn(
-                    "flex-1 rounded-full transition-all duration-1000",
-                    i < currentLevel 
-                      ? 'bg-primary shadow-brand-glow' 
-                      : 'bg-white/5 border border-white/5'
+                    "h-full flex-1 rounded-full transition-all duration-500",
+                    i < currentLevel
+                      ? "bg-primary shadow-[0_0_10px_var(--color-primary)]"
+                      : i === currentLevel
+                        ? "bg-primary/30 animate-pulse"
+                        : "bg-surface-elevated/50 border border-white/5"
                   )}
                 />
               ))}
-            </div>
-          </div>
-        </div>
-
-        {/* SCORE BADGE */}
-        <div className="flex items-center gap-5 w-full lg:w-auto bg-surface rounded-[2rem] p-3 pr-8 border border-white/10 shadow-xl">
-          <div className="size-14 rounded-2xl bg-quiz text-black flex items-center justify-center shadow-lg shadow-quiz/20">
-            <Icon name="emoji_events" size="xl" className="font-black" />
-          </div>
-          
-          <div className="flex flex-col text-left">
-            <span className="font-accent text-gray-700/50 dark:text-gray-300/50 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Total Score</span>
-            <div className="flex items-baseline gap-2">
-              <Typography variant="h3" className="leading-none tracking-tighter text-gray-900 dark:text-gray-100">
-                {score.toLocaleString()}
-              </Typography>
-              <span className="font-accent text-[11px] font-black text-quiz">XP</span>
             </div>
           </div>
         </div>
@@ -100,5 +114,4 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
     </div>
   );
 };
-
 export default HeaderQuiz;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { useMediaAsset } from '../../hooks/useMediaAsset';
+import AkhaLoader from '../ui/AkhaLoader';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -29,10 +30,12 @@ function ImageSkeleton({ className }: { className?: string }) {
     <div
       aria-hidden="true"
       className={cn(
-        'animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800',
+        'rounded-xl bg-gray-950 flex items-center justify-center overflow-hidden',
         className
       )}
-    />
+    >
+      <AkhaLoader variant="bloom" size={8} />
+    </div>
   );
 }
 
@@ -70,7 +73,7 @@ export const MediaImage: React.FC<MediaImageProps> = ({
           height={asset?.height ?? undefined}
           loading="lazy"
           decoding="async"
-          className={cn('block w-full rounded-xl object-cover', imgClassName)}
+          className={cn('block w-full object-cover', imgClassName)}
           {...imgProps}
         />
       )}

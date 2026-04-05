@@ -1,12 +1,13 @@
 import Button from '../../ui/button/Button';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { Search, Receipt, Trash2, CreditCard, X } from 'lucide-react';
-import { Guest, OrderItem } from '../../../hooks/useManagerPos';
+import { Search, Receipt, Trash2, CreditCard, X, GraduationCap } from 'lucide-react';
+import { Guest, OrderItem, ClassFeeItem } from '../../../hooks/useManagerPos';
 
 interface PosInspectorProps {
     activeGuest: Guest | null;
     activeGuestId: string | null;
     currentTab: OrderItem[];
+    classFee: ClassFeeItem | null;
     totalDue: number;
     isProcessing: boolean;
     onRemoveItem: (item: OrderItem) => void;
@@ -19,6 +20,7 @@ const PosInspector: React.FC<PosInspectorProps> = ({
     activeGuest,
     activeGuestId,
     currentTab,
+    classFee,
     totalDue,
     isProcessing,
     onRemoveItem,
@@ -46,13 +48,35 @@ const PosInspector: React.FC<PosInspectorProps> = ({
                         <Search className="w-8 h-8" />
                         <span className="text-xs font-medium">Select a guest first</span>
                     </div>
-                ) : currentTab.length === 0 ? (
+                ) : currentTab.length === 0 && !classFee ? (
                     <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-50 space-y-2">
                         <Receipt className="w-8 h-8" />
                         <span className="text-xs font-medium">Empty Tab</span>
                     </div>
                 ) : (
-                    currentTab.map((item, idx) => (
+                    <>
+                        {/* CLASS FEE LINE — Pay on Arrival unpaid */}
+                        {classFee && (
+                            <div className="flex gap-2 items-center animate-in fade-in duration-300">
+                                <div className="flex-1 bg-amber-50 dark:bg-amber-900/10 rounded-lg p-2.5 border border-amber-200 dark:border-amber-700 flex justify-between items-center">
+                                    <div className="flex items-center gap-3 overflow-hidden">
+                                        <div className="size-7 rounded bg-amber-500 flex items-center justify-center shrink-0">
+                                            <GraduationCap className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div className="overflow-hidden">
+                                            <span className="text-xs font-bold text-gray-900 dark:text-white block truncate">{classFee.name}</span>
+                                            <span className="text-[9px] text-amber-600 dark:text-amber-400 font-black uppercase tracking-widest">Pay on Arrival</span>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 ml-2 shrink-0">
+                                        {(classFee.price * classFee.quantity).toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* SHOP ITEMS */}
+                        {currentTab.map((item, idx) => (
                         <div key={idx} className="flex gap-2 items-center group animate-in slide-in-from-right-2 fade-in duration-300">
                             <div className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 flex justify-between items-center border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
                                 <div className="flex items-center gap-3 overflow-hidden">
@@ -75,7 +99,8 @@ const PosInspector: React.FC<PosInspectorProps> = ({
                                 </button>
                             )}
                         </div>
-                    ))
+                        ))}
+                    </>
                 )}
             </div>
 

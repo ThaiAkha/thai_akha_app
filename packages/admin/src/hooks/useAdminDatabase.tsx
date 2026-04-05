@@ -13,6 +13,7 @@ export const SYSTEM_TABLES = [
     { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
     { id: 'class_calendar_overrides', label: 'Calendar Overrides', icon: <Calendar className="w-5 h-5" /> },
     { id: 'class_sessions', label: 'Class Sessions', icon: <Calendar className="w-5 h-5" /> },
+    { id: 'content_categories', label: 'Content Categories', icon: <Package className="w-5 h-5" /> },
     { id: 'cooking_classes', label: 'Cooking Classes', icon: <Package className="w-5 h-5" /> },
     { id: 'dietary_profiles', label: 'Dietary Profiles', icon: <Users className="w-5 h-5" /> },
     { id: 'dietary_substitutions', label: 'Dietary Substitutions', icon: <Package className="w-5 h-5" /> },

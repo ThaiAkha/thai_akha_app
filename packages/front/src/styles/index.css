@@ -176,15 +176,24 @@
     animation: shine 4s infinite linear;
   }
 
-  /* Shine animation keyframes for glass-shine utility */
   @keyframes shine {
-    0% {
-      left: -100%;
-    }
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
 
-    100% {
-      left: 200%;
-    }
+  /* ── 3D Flip Card Utilities ────────────────────────────────────────────── */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
   }
 }
 

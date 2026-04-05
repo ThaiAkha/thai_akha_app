@@ -1,8 +1,6 @@
 // Path: supabase/functions/send-booking-confirmation/index.ts
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-// Importiamo i template che abbiamo creato
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7"
 import { getGuestEmailHtml, getAdminEmailHtml } from './templates.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
@@ -14,119 +12,115 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
+    // 1. GESTIONE CORS
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
     try {
-        // 1. Leggi i dati dal Webhook di Supabase
+        // 2. VALIDAZIONE ENVIRONMENT
+        if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY is missing")
+        if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("Supabase config is missing")
+
+        // 3. ESTRAZIONE DATI
         const payload = await req.json()
-        const booking = payload.record // Il record nella tabella 'bookings'
+        const booking = payload.record || payload
+        
+        if (!booking || (!booking.id && !booking.internal_id)) {
+            throw new Error("Invalid booking data")
+        }
 
-        if (!booking) throw new Error("No booking record found")
+        console.log(`📧 [EMAIL] Processing booking: ${booking.internal_id || booking.id}`)
 
-        console.log(`📧 Processing email for booking ID: ${booking.id}`)
+        const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-        const supabaseAdmin = createClient(SUPABASE_URL ?? '', SUPABASE_SERVICE_ROLE_KEY ?? '')
-
-        // 2. RECUPERA DATI AGENZIA/BOOKER
-        const { data: bookerProfile } = await supabaseAdmin
+        // 4. RECUPERO PROFILI
+        const { data: booker } = await supabaseAdmin
             .from('profiles')
-            .select('full_name, email')
+            .select('full_name, email, role')
             .eq('id', booking.user_id)
-            .single()
+            .maybeSingle()
 
-        // 3. RECUPERA DATI GUEST (se esiste account)
-        let guestProfile = null
+        let guest = null
         if (booking.guest_user_id) {
             const { data } = await supabaseAdmin
                 .from('profiles')
                 .select('full_name, email')
                 .eq('id', booking.guest_user_id)
-                .single()
-            guestProfile = data
+                .maybeSingle()
+            guest = data
         }
 
-        const isAgency = booking.payment_method === 'agency_invoice';
-        const isAccountMode = !!booking.guest_user_id;
-
-        // Dati consolidati per il template
-        const guestName = guestProfile?.full_name || booking.guest_name || 'Guest';
-        const guestEmail = guestProfile?.email || booking.guest_email;
-        const agencyName = bookerProfile?.full_name || 'Agency'
-
+        // 5. MAPPING DATI
+        const isAgency = booking.payment_method === 'agency_invoice' || booker?.role === 'agency';
+        const guestName = guest?.full_name || booking.guest_name || 'Guest';
+        const guestEmail = guest?.email || booking.guest_email;
+        
         const bookingData = {
             ...booking,
             guest_name: guestName,
-            agency_name: agencyName,
-            booking_ref: booking.internal_id?.slice(0, 8).toUpperCase() || booking.id?.slice(0, 8).toUpperCase()
+            booking_ref: (booking.internal_id || booking.id || "00000000").slice(0, 8).toUpperCase()
         };
 
-        const emailsToSend = []
+        const emails = []
 
-        // --- A. SEMPRE ALL'ADMIN ---
-        emailsToSend.push({
+        // --- A. ADMIN EMAIL ---
+        emails.push({
             from: 'Thai Akha Bot <bookings@thaiakhakitchen.com>',
             to: ['office@thaiakhakitchen.com'],
-            subject: `🔔 New Booking: ${guestName} (${booking.booking_date})`,
+            subject: `🔔 ${isAgency ? '[AGENCY]' : ''} New Booking: ${guestName} (${booking.booking_date})`,
             html: getAdminEmailHtml(bookingData, isAgency)
         })
 
-        // --- B. ALL'AGENZIA (Solo se payment_method è agency_invoice) ---
-        if (isAgency) {
-            emailsToSend.push({
-                from: 'Thai Akha Kitchen <bookings@thaiakhakitchen.com>',
-                to: [bookerProfile?.email],
-                subject: isAccountMode ? `B2B Receipt: ${guestName}` : `Booking Voucher: ${guestName}`,
-                html: isAccountMode
-                    ? `<p>Receipt for ${guestName}. Account created.</p>${getGuestEmailHtml(bookingData)}`
-                    : getGuestEmailHtml(bookingData)
-            })
-        }
-
-        // --- C. AL GUEST ---
+        // --- B. GUEST EMAIL ---
         if (guestEmail) {
-            if (isAccountMode) {
-                // INVIO WELCOME EMAIL (Account creato da Agenzia o Admin)
-                emailsToSend.push({
-                    from: 'Thai Akha Kitchen <bookings@thaiakhakitchen.com>',
-                    to: [guestEmail],
-                    subject: `Welcome to Thai Akha Kitchen!`,
-                    html: `<p>Sawasdee kha ${guestName}! Your account has been created by ${agencyName}.</p>${getGuestEmailHtml(bookingData)}<p>Login with your email and the temporary password provided.</p>`
-                })
-            } else if (!isAgency) {
-                // INVIO CONFERMA STANDARD (Prenotazione normale senza creazione account)
-                emailsToSend.push({
-                    from: 'Thai Akha Kitchen <bookings@thaiakhakitchen.com>',
-                    to: [guestEmail],
-                    subject: `Confirmation: Cooking Class on ${booking.booking_date}`,
-                    html: getGuestEmailHtml(bookingData)
-                })
-            }
+            emails.push({
+                from: 'Thai Akha Kitchen <bookings@thaiakhakitchen.com>',
+                to: [guestEmail],
+                subject: `Confirmed: Your Cooking Class on ${booking.booking_date} ✅`,
+                html: getGuestEmailHtml(bookingData)
+            })
         }
 
-        // 4. INVIO REALE TRAMITE API RESEND
-        const results = await Promise.all(emailsToSend.map(email =>
-            fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${RESEND_API_KEY}`
-                },
-                body: JSON.stringify(email)
+        // 6. INVIO TRAMITE RESEND
+        const validEmails = emails.filter(e => e.to && e.to[0]);
+
+        if (validEmails.length === 0) {
+            return new Response(JSON.stringify({ success: true, message: "No valid recipients" }), { 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
             })
-        ))
+        }
 
-        const responses = await Promise.all(results.map(r => r.json()));
-        console.log("Resend responses:", responses);
+        const results = await Promise.all(validEmails.map(async (email) => {
+            try {
+                const res = await fetch('https://api.resend.com/emails', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${RESEND_API_KEY}`
+                    },
+                    body: JSON.stringify(email)
+                })
+                const data = await res.json()
+                return { success: res.ok, data, to: email.to[0] }
+            } catch (e: any) {
+                return { success: false, error: e.message || String(e), to: email.to[0] }
+            }
+        }))
 
-        return new Response(JSON.stringify({ success: true, sent: emailsToSend.length, details: responses }), {
+        const totalSuccess = results.filter(r => r.success).length
+
+        return new Response(JSON.stringify({ 
+            success: true, 
+            sent_count: totalSuccess, 
+            results 
+        }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         })
 
-    } catch (error) {
-        console.error("Error sending emails:", error)
-        return new Response(JSON.stringify({ error: error.message }), {
+    } catch (error: any) {
+        console.error("❌ [CRITICAL ERROR]:", error.message || String(error))
+        return new Response(JSON.stringify({ error: error.message || String(error) }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 500,
         })

@@ -8,6 +8,60 @@
  * Note: brand/action/quiz color SCALES are in base-theme.css @theme
  */
 
+/* ── FLUID TYPOGRAPHY — clamp(min@375px, fluid, max@1280px) ─────────────────
+   MUST be in :root, NOT in @theme — Tailwind v4 @theme strips dynamic expressions
+   like 100vw at build time, making all clamp() values resolve to the minimum.
+   ──────────────────────────────────────────────────────────────────────────── */
+:root {
+  --text-fluid-display1:     clamp(3rem, calc(3rem + 3 * ((100vw - 23.4375rem) / 56.5625)), 6rem);
+  --text-fluid-display2:     clamp(2.25rem, calc(2.25rem + 2.25 * ((100vw - 23.4375rem) / 56.5625)), 4.5rem);
+  --text-fluid-h1:           clamp(1.875rem, calc(1.875rem + 1.125 * ((100vw - 23.4375rem) / 56.5625)), 3rem);
+  --text-fluid-h2:           clamp(1.5rem, calc(1.5rem + 0.75 * ((100vw - 23.4375rem) / 56.5625)), 2.25rem);
+  --text-fluid-h3:           clamp(1.25rem, calc(1.25rem + 0.625 * ((100vw - 23.4375rem) / 56.5625)), 1.875rem);
+  --text-fluid-h4:           clamp(1.125rem, calc(1.125rem + 0.375 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  --text-fluid-h5:           clamp(1rem, calc(1rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.25rem);
+  --text-fluid-h6:           clamp(0.875rem, calc(0.875rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.125rem);
+  --text-fluid-hero:         clamp(1.5rem, calc(1.5rem + 1.5 * ((100vw - 23.4375rem) / 56.5625)), 3rem);
+  --text-fluid-paragraphL:   clamp(1.125rem, calc(1.125rem + 0.375 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  --text-fluid-paragraphM:   clamp(1rem, calc(1rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.25rem);
+  --text-fluid-paragraphS:   clamp(0.875rem, calc(0.875rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 1rem);
+  --text-fluid-body:         clamp(1rem, calc(1rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 1.125rem);
+  --text-fluid-accent:       clamp(0.875rem, calc(0.875rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 1rem);
+  --text-fluid-quote:        clamp(1.25rem, calc(1.25rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  --text-fluid-caption:      clamp(0.75rem, calc(0.75rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 0.875rem);
+  --text-fluid-micro:        clamp(0.625rem, calc(0.625rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 0.75rem);
+  --text-fluid-numericPrice: clamp(1.5rem, calc(1.5rem + 0.75 * ((100vw - 23.4375rem) / 56.5625)), 2.25rem);
+  --text-fluid-numericStat:  clamp(1.25rem, calc(1.25rem + 0.625 * ((100vw - 23.4375rem) / 56.5625)), 1.875rem);
+}
+
+/* ── FLUID SPACE PALETTE (Utopia) — globale, riutilizzabile ovunque ─────────
+   MUST be in :root, NOT in @theme — stessa ragione dei text-fluid tokens.
+   ──────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Fixed steps */
+  --space-fluid-2xs:     clamp(0.25rem, calc(0.20rem + 0.21vw), 0.38rem);
+  --space-fluid-xs:      clamp(0.50rem, calc(0.40rem + 0.43vw), 0.75rem);
+  --space-fluid-s:       clamp(0.75rem, calc(0.65rem + 0.43vw), 1.00rem);
+  --space-fluid-m:       clamp(1.00rem, calc(0.80rem + 0.85vw), 1.50rem);
+  --space-fluid-l:       clamp(1.50rem, calc(1.30rem + 0.85vw), 2.00rem);
+  --space-fluid-xl:      clamp(2.00rem, calc(1.60rem + 1.71vw), 3.00rem);
+  --space-fluid-2xl:     clamp(3.00rem, calc(2.60rem + 1.71vw), 4.00rem);
+  --space-fluid-3xl:     clamp(4.00rem, calc(3.20rem + 3.41vw), 6.00rem);
+  --space-fluid-section: clamp(4.00rem, calc(2.40rem + 6.83vw), 8.00rem);
+
+  /* One-off pairs */
+  --space-fluid-s-l:     clamp(0.75rem, calc(0.20rem + 2.34vw), 2.00rem);
+  --space-fluid-m-xl:    clamp(1.00rem, calc(-0.10rem + 4.68vw), 3.00rem);
+  --space-fluid-l-3xl:   clamp(1.50rem, calc(-0.35rem + 7.89vw), 6.00rem);
+
+  /* Grid utilities */
+  --grid-max-width:      85rem;
+  --grid-gutter:         clamp(1.00rem, calc(0.40rem + 2.50vw), 2.50rem);
+
+  /* Auth hero image — page-specific */
+  --auth-hero-img:       clamp(9rem, calc(9rem + 4vw), 14rem);
+}
+
 :root {
   /* ========================================================================
      ☀️ LIGHT MODE — Structural semantic tokens

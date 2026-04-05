@@ -1,7 +1,6 @@
-// packages/front/src/hooks/useCherryChat.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { orchestrator, isAgentAllowed, ALL_AGENTS } from '@thaiakha/shared/prompts';
+import { buildFrontPrompt } from '../prompts/cherryPrompt';
 import {
   getOrCreateSession,
   loadRecentMessages,
@@ -11,43 +10,35 @@ import {
   type ChatSession,
   type DbChatMessage,
 } from '@thaiakha/shared/services';
+import { contentService } from '@thaiakha/shared/services';
 import type { ChatMessage } from '@thaiakha/shared';
 import type { UserProfile } from '../services/auth.service';
 
 const HISTORY_WINDOW = 5;
 const SUMMARY_THRESHOLD = 20;
 
-export interface PendingConfirmation {
-  targetAgentId: string;
-  agentName: string;
-}
-
 export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [currentAgentId, setCurrentAgentId] = useState<string>('cooking_chef');
-  const [pendingConfirmation, setPendingConfirmation] = useState<PendingConfirmation | null>(null);
 
   const chatRef = useRef<any>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
+  const cookingClassesRef = useRef<Array<{ id: string; title: string; price: number }>>([]);
+  const recipesRef = useRef<string[]>([]);
 
   // ── System prompt builder ──────────────────────────────────────────────────
 
   const buildSystemPrompt = useCallback(
-    (agentId: string, history: DbChatMessage[], summary: string | null): string => {
-      const agent =
-        orchestrator.getAgentById(agentId) ?? orchestrator.getAgent('front');
-
-      const base = orchestrator.buildPrompt(
-        agent,
+    (history: DbChatMessage[], summary: string | null): string => {
+      const base = buildFrontPrompt(
         userProfile || {},
         userProfile?.dietary_profile ?? 'diet_regular',
         userProfile?.allergies ?? [],
         false,
-        'front'
+        { cookingClasses: cookingClassesRef.current, menuList: recipesRef.current }
       );
 
       let historyBlock = '';
@@ -69,12 +60,12 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   // ── Gemini chat initializer ────────────────────────────────────────────────
 
   const initGeminiChat = useCallback(
-    (agentId: string, history: DbChatMessage[], summary: string | null) => {
+    (history: DbChatMessage[], summary: string | null) => {
       const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
       chatRef.current = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: {
-          systemInstruction: buildSystemPrompt(agentId, history, summary),
+          systemInstruction: buildSystemPrompt(history, summary),
           temperature: 0.5,
         },
       });
@@ -89,6 +80,14 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     initialized.current = true;
 
     const init = async () => {
+      // Fetch cooking classes and recipes via SWR cache (zero-latency on repeat visits)
+      const [classes, recipes] = await Promise.all([
+        contentService.getCookingClasses(),
+        contentService.getRecipes()
+      ]);
+      cookingClassesRef.current = classes;
+      recipesRef.current = recipes.map((r: { title: string }) => r.title);
+
       const session = await getOrCreateSession(userProfile?.id);
       sessionRef.current = session;
       setSessionId(session.id);
@@ -102,15 +101,25 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         })
       );
 
+      let historyForGemini = history;
       if (initialMessages.length === 0) {
         const greeting = userProfile?.full_name
-          ? `Sawasdee kha ${userProfile.full_name.split(' ')[0]}! Welcome back to your Akha kitchen. How can I help you today? kha`
+          ? `Sawasdee kha ${(userProfile.full_name).split(' ')[0]}! Welcome back to your Akha kitchen. How can I help you today? kha`
           : "Sawasdee kha! I'm Cherry, your Akha cultural guide. How can I help you today? kha";
         initialMessages.push({ id: 'greeting', role: 'model', text: greeting });
+        const greetingDbMsg: DbChatMessage = {
+          id: 'greeting',
+          sender_role: 'assistant',
+          content: greeting,
+          type: 'text',
+          created_at: new Date().toISOString(),
+          session_id: session.id,
+        };
+        historyForGemini = [...history, greetingDbMsg];
       }
 
       setMessages(initialMessages);
-      initGeminiChat('cooking_chef', history, session.summary);
+      initGeminiChat(historyForGemini, session.summary);
     };
 
     init();
@@ -119,11 +128,18 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   // ── Auto-summary ───────────────────────────────────────────────────────────
 
   const triggerAutoSummary = async (sid: string) => {
-    if (!chatRef.current) return;
     try {
-      const result = await chatRef.current.sendMessage({
-        message:
-          'Please summarize this conversation in max 2 sentences, focusing on: dietary preferences, booking interests, and any specific requests. Be concise.',
+      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+      const summaryChat = ai.chats.create({
+        model: 'gemini-3-flash-preview',
+        config: { systemInstruction: 'You are a concise conversation summarizer. Output plain text only.', temperature: 0.1 },
+      });
+      const recentMessages = await loadRecentMessages(sid, HISTORY_WINDOW * 2);
+      const transcript = recentMessages
+        .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
+        .join('\n');
+      const result = await summaryChat.sendMessage({
+        message: `Summarize in 2 sentences, focusing on: dietary preferences, booking interests, specific requests:\n${transcript}`,
       });
       const summary: string = result.text?.trim() || '';
       if (summary) await updateSummary(sid, summary);
@@ -131,72 +147,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       // silent fail
     }
   };
-
-  // ── switchAgent ────────────────────────────────────────────────────────────
-
-  /**
-   * Requests a switch to the given agent.
-   * - Security: checks `isAgentAllowed` for front context and guest state.
-   * - Requires user confirmation via `pendingConfirmation` flow.
-   */
-  const switchAgent = useCallback(
-    (agentId: string) => {
-      const agent = orchestrator.getAgentById(agentId);
-      if (!agent) return;
-
-      // Guard: agent must be allowed in front context
-      if (!isAgentAllowed(agent, 'front')) return;
-
-      // Guard: guest lock — only cooking_chef is freely accessible for guests
-      if (!userProfile && agentId !== 'cooking_chef') {
-        setError('Accedi per sbloccare questa sapienza kha!');
-        // Auto-clear the error after 3s
-        setTimeout(() => setError(null), 3000);
-        return;
-      }
-
-      // If already on this agent, no-op
-      if (agentId === currentAgentId) return;
-
-      // Require confirmation via chip
-      setPendingConfirmation({ targetAgentId: agentId, agentName: agent.name });
-    },
-    [userProfile, currentAgentId]
-  );
-
-  // ── confirmSwitch ──────────────────────────────────────────────────────────
-
-  const confirmSwitch = useCallback(async () => {
-    if (!pendingConfirmation) return;
-    const { targetAgentId } = pendingConfirmation;
-
-    setPendingConfirmation(null);
-    setCurrentAgentId(targetAgentId);
-
-    const agent = orchestrator.getAgentById(targetAgentId);
-    const agentName = agent?.name ?? targetAgentId;
-
-    // Announce the handover in the chat
-    const handoverMsgId = `handover-${Date.now()}`;
-    setMessages(prev => [
-      ...prev,
-      {
-        id: handoverMsgId,
-        role: 'model',
-        text: `Connecting you with **${agentName}** kha...`,
-      },
-    ]);
-
-    // Reinitialize Gemini with the new agent's system prompt
-    const history = await loadRecentMessages(sessionRef.current?.id ?? '', HISTORY_WINDOW * 2);
-    initGeminiChat(targetAgentId, history, sessionRef.current?.summary ?? null);
-  }, [pendingConfirmation, initGeminiChat]);
-
-  // ── cancelSwitch ───────────────────────────────────────────────────────────
-
-  const cancelSwitch = useCallback(() => {
-    setPendingConfirmation(null);
-  }, []);
 
   // ── sendMessage ────────────────────────────────────────────────────────────
 
@@ -265,10 +215,5 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     isLoading,
     error,
     sessionId,
-    currentAgentId,
-    switchAgent,
-    pendingConfirmation,
-    confirmSwitch,
-    cancelSwitch,
   };
 };

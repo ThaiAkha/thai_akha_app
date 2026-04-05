@@ -90,25 +90,25 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
       </div>
 
       {/* ── Right: content (~45%) ───────────────────────────────────────── */}
-      <div className="blog-card-glass__content flex flex-col justify-between w-full md:w-[45%] p-6 md:p-8 shrink-0 z-10">
-        <div className="flex flex-col gap-3">
+      <div className="blog-card-glass__content flex flex-col justify-between w-full md:w-[45%] [padding:var(--space-fluid-m)] shrink-0 z-10">
+        <div className="flex flex-col [gap:var(--space-fluid-xs)]">
           <div className="h-px w-8 bg-primary/50" />
           <Typography
             variant="h4"
             color="title"
-            className="leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-3"
+            className="leading-tight group-hover:text-action transition-colors duration-300 line-clamp-3"
           >
             {section.title}
           </Typography>
           <Typography
-            variant="body"
+            variant="paragraphS"
             color="sub"
             className="line-clamp-3 opacity-70 leading-relaxed"
           >
             {section.subtitle}
           </Typography>
         </div>
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end [margin-top:var(--space-fluid-s)]">
           <Button
             variant="brand"
             size="sm"

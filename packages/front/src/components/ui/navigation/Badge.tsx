@@ -4,22 +4,22 @@ import { Icon } from '../Icon';
 
 export interface BadgeProps {
   variant?: 'solid' | 'outline' | 'mineral' | 'mineral-accent' | 'brand' | 'allergy' | 'diet';
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md';
   color?: 'primary' | 'secondary' | 'action' | string;
   children: React.ReactNode;
   className?: string;
   icon?: string;
   pulse?: boolean;
   active?: boolean;
-  onClick?: () => void;
+  style?: React.CSSProperties;
 }
 
 // 🛡️ MAPPE AGGIUNTE SOLO PER LA VARIANTE MINERAL
 const MINERAL_TEXT: Record<string, string> = {
-  'primary': 'text-primary',
-  'action': 'text-action',
-  'quiz-p': 'text-quiz-p',
-  'quiz-s': 'text-quiz-s',
+  'primary': 'text-primary-400',
+  'action': 'text-action-700',
+  'quiz-p': 'text-quiz-p-400',
+  'quiz-s': 'text-quiz-s-400',
   'btn-p': 'text-btn-p',
   'btn-s': 'text-btn-s',
   'secondary': 'text-secondary',
@@ -27,14 +27,14 @@ const MINERAL_TEXT: Record<string, string> = {
 };
 
 const MINERAL_BORDER: Record<string, string> = {
-  'primary': 'border-primary/40',
-  'action': 'border-action/40',
-  'quiz-p': 'border-quiz-p/40',
-  'quiz-s': 'border-quiz-s/40',
-  'btn-p': 'border-btn-p/40',
-  'btn-s': 'border-btn-s/40',
-  'secondary': 'border-secondary/40',
-  'allergy': 'border-allergy/40',
+  'primary': 'border-primary-400/80',
+  'action': 'border-action-700/80',
+  'quiz-p': 'border-quiz-p-400/80',
+  'quiz-s': 'border-quiz-s-400/80',
+  'btn-p': 'border-btn-p/80',
+  'btn-s': 'border-btn-s/80',
+  'secondary': 'border-secondary/90',
+  'allergy': 'border-allergy/80',
 };
 
 const Badge: React.FC<BadgeProps> = ({
@@ -46,20 +46,19 @@ const Badge: React.FC<BadgeProps> = ({
   icon,
   pulse = false,
   active = false,
-  onClick,
+  style,
 }) => {
-  // Dimensioni e font originali (intatti)
+  // Dimensioni fluid — token clamp da tokens.css :root (NO text-* Tailwind)
   const sizeStyles = {
-    xs: "px-4 pt-1 pb-0.5 text-[10px] gap-1 md:text-xs gap-1.5 font-bold uppercase tracking-wider",
-    sm: "px-5 pt-2 pb-1.5 text-xs gap-2 font-bold uppercase tracking-widest",
-    md: "px-6 pt-2.5 pb-2 text-sm gap-2.5 font-bold uppercase tracking-[0.2em]",
-    lg: "px-7 pt-3 pb-2.5 text-base gap-3 font-bold uppercase tracking-[0.25em]",
+    xs: "[font-size:var(--text-fluid-micro)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-2xs)] font-bold uppercase tracking-wider",
+    sm: "[font-size:var(--text-fluid-caption)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-xs)] font-bold uppercase tracking-widest",
+    md: "[font-size:var(--text-fluid-accent)] [padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-s)] font-bold uppercase tracking-widest",
   };
 
   // Mappe colori solidi originali (intatte)
   const colorStyles: Record<string, { bg: string; text: string }> = {
     primary: { bg: "bg-gradient-to-br from-primary-700/90 via-primary-500/90 to-primary-700/90", text: "text-white" },
-    secondary: { bg: "bg-gradient-to-br from-secondary-700/90 via-secondary-500/90 to-secondary-700/90", text: "text-black" },
+    secondary: { bg: "bg-gradient-to-br from-secondary-700/90 via-secondary-500/90 to-secondary-700/90", text: "text-white" },
     action: { bg: "bg-gradient-to-br from-action-700/90 via-action-500/90 to-action-700/90", text: "text-white" }
   };
 
@@ -75,35 +74,30 @@ const Badge: React.FC<BadgeProps> = ({
   const variants: Record<string, string> = {
     'solid': cn(
       selectedColor.bg, selectedColor.text,
-      "shadow-brand-glow",
       "border-t border-white/40 rounded-full relative overflow-hidden group",
     ),
     'brand': cn(
       "bg-gradient-to-br from-primary-700/90 via-primary-500/90 to-primary-700/90 text-white",
-      "shadow-brand-glow",
       "border-t border-white/40 rounded-full relative overflow-hidden group",
     ),
     // ✨ VARIANTE MINERAL CON EFFETTO VETRO RIPRISTINATO
     'mineral': cn(
-      "rounded-full border-2 shadow-sm",
-      "backdrop-blur-md bg-white/60 dark:bg-black/30", // Forza il vero Glassmorphism bypassando i Token di sistema
+      "rounded-full border-1",
+      "backdrop-blur-md bg-white/80 dark:bg-black/80", // Forza il vero Glassmorphism bypassando i Token di sistema
       mineralBorderClass,
       mineralTextClass
     ),
   };
 
-  const Component = onClick ? 'button' : 'span';
-
   return (
-    <Component
-      onClick={onClick}
+    <span
       className={cn(
         baseStyles,
         variants[variant] || variants.solid,
         sizeStyles[size],
-        onClick && "cursor-pointer active:scale-95 hover:-translate-y-0.5",
         className
       )}
+      style={style}
     >
       {icon && !pulse && (
         <Icon
@@ -112,8 +106,10 @@ const Badge: React.FC<BadgeProps> = ({
           className="transition-transform duration-500 group-hover:scale-110"
         />
       )}
-      {children}
-    </Component>
+      <span className="inline-block mr-[-0.2em]">
+        {children}
+      </span>
+    </span>
   );
 };
 

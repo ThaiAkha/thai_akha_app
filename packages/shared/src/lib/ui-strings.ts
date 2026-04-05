@@ -41,6 +41,7 @@ const strings = {
     share: 'Condividi',
     copyLink: 'Copia link',
     copied: 'Copiato!',
+    copiedLink: 'Link copied to clipboard!',
 
     // States
     loading: 'Loading...',
@@ -57,12 +58,14 @@ const strings = {
     // Pagination / chapters
     allChapters: 'All Chapters',
     backToAllChapters: 'Back to All Chapters',
-    otherChapters: 'ALTRI CAPITOLI',
+    otherChapters: 'Other Chapters',
+    goBack: 'Go back',
     previous: 'Precedente',
     next: 'Successivo',
 
     // Dynamic
     welcomeBack: ({ name }: { name: string }) => `Welcome back, ${name}`,
+    monthsShort: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   },
 
   // ── ERRORS — global error states ───────────────────────────────────────────
@@ -75,6 +78,22 @@ const strings = {
     couldNotLoad: (resource: string) => `Could not load ${resource}`,
     connectionError: 'Could not load culture sections',
     tryDifferentTab: 'Try a different tab or check back soon.',
+  },
+
+  // ── COMPONENTS — generic reusable UI components ──────────────────────────────
+  components: {
+    audioPlayer: {
+      fallbackTitle: 'Akha Kitchen Wisdom',
+      fallbackDesc: 'Traditional voice story from the mountains.',
+      playAudio: 'Play audio',
+      pauseAudio: 'Pause audio',
+      playStory: 'Play mystery story',
+      pauseStory: 'Pause mystery story',
+      restartTitle: 'Restart',
+      restartAria: 'Restart from beginning',
+      readTranscript: 'Read Transcript',
+      hideTranscript: 'Hide Transcript',
+    },
   },
 
   // ── NAV — sidebar, header, menu items ──────────────────────────────────────
@@ -130,6 +149,9 @@ const strings = {
     switchToLogin: 'Login instead',
     afterRegistration: 'After Registration',
     afterRegistrationDesc: 'Once registered, you\'ll be able to set your pickup location, choose your preferred menu, and access exclusive member benefits — all from your personal dashboard.',
+    nextExperience: 'Next Experience',
+    loginSignup: 'Login/SignUp',
+    goToStep: ({ n }: { n: number }) => `Go to step ${n}`,
     // Errors
     authFailed: 'Authentication failed.',
   },
@@ -149,11 +171,17 @@ const strings = {
     // Step 02 — Class
     step2Number: '02',
     step2Section: 'Class Selection',
-    step2Title: 'Pick Your Session',
-    step2Subtitle: 'Choose between our Morning or Evening Class.',
+    morningSession: 'Morning Session',
+    eveningSession: 'Evening Session',
     cookingClass: 'Cooking Class',
     bahtPerPerson: 'Baht / person',
     classFull: 'FULL',
+    fullyBooked: 'Fully Booked',
+    closed: 'Closed',
+    classUnavailable: ({ status }: { status: string }) => `Sorry, this class is ${status}.`,
+    availabilityChanged: ({ count }: { count: number }) => `Sorry, availability changed. Only ${count} seats left.`,
+    toBeSelected: 'To be selected',
+    bookingError: 'Booking Error: ',
 
     // Step 03 — Pax
     step3Number: '03',
@@ -218,9 +246,10 @@ const strings = {
     chapter: ({ num }: { num: string }) => `CH. ${num}`,
     // Navigation
     back: 'All Chapters',
-    explore: 'EXPLORE',
+    explore: 'Explore',
     listen: 'Listen',
     pause: 'Pause',
+    otherChapters: 'Other Chapters',
   },
 
   // ── CLASSES — cooking class info page ───────────────────────────────────────
@@ -242,6 +271,13 @@ const strings = {
     statPickupLabel: 'Included*',
     // CTA
     bookYourClass: 'Book Your Class',
+    bookMorning: 'Book Morning Class',
+    bookEvening: 'Book Evening Class',
+    kitchenSpirit: 'The Kitchen Spirit',
+    fullMenu: 'Full Menu',
+    fullMenuDesc: 'Browse our 11 traditional dishes.',
+    location: 'Location',
+    locationDesc: 'Pickup details and directions.',
     askCherry: 'Ask Cherry',
     // About
     aboutLabel: 'About this class',
@@ -265,7 +301,7 @@ const strings = {
     regularDietName: 'Regular Diet',
     regularDietDesc: 'Standard authentic preparation.',
     // Prompt when no diet selected
-    selectPrompt: 'Select your diet style before\nviewing the content',
+    selectPrompt: 'Select your dietary style\nbefore viewing the content',
     // Diet label on cards
     originalLabel: 'ORIGINAL',
     viewRecipe: 'View Recipe',
@@ -277,6 +313,37 @@ const strings = {
     // MegaMenu
     personalize: 'Personalize',
     activeProfile: 'Active Profile',
+    askCherryDish: (p: { name: string; diet: string; allergies: string }) => `Tell me about ${p.name} for a ${p.diet} diet considering my allergies: ${p.allergies} kha`,
+  },
+
+  // ── RECIPE SINGLE — detailed recipe view ────────────────────────────────────
+  recipeSingle: {
+    heritageExplorer: 'HERITAGE EXPLORER',
+    signature: 'Signature',
+    enlarge: 'Enlarge',
+    containsAllergen: ({ allergen }: { allergen: string }) => `Contains ${allergen}`,
+    cultureStory: 'Culture Story',
+    askCherry: 'Ask Cherry',
+    keyIngredients: 'Key Ingredients',
+    viewDetails: 'View Details',
+    secretChef: "Ingredient details are kept as our Chef's secret.",
+    closeDetails: 'Close Details',
+    backToRecipes: 'Back to Recipes',
+    notFound: 'Recipe Not Found',
+    dishAdded: 'Dish added to your collection',
+    reserveMenu: 'Reserve for your Menu',
+    detailN: ({ n }: { n: number }) => `Detail ${n}`,
+    signatureDish: 'Signature Dish',
+    historyOf: ({ name, diet }: { name: string; diet: string }) => `Tell me about the history of ${name} for my ${diet} diet kha`,
+    defaultWarning: 'We will modify the preparation for your safety.',
+    categories: {
+      appetizer: 'Appetizers',
+      dessert: 'Desserts',
+      akha_specialty: 'Akha Traditional',
+      curry: 'Curry',
+      soup: 'Soup',
+      stirfry: 'Stir-Fry'
+    }
   },
 
   // ── QUIZ — quiz game ────────────────────────────────────────────────────────
@@ -301,6 +368,51 @@ const strings = {
     scoringTopic: 'How does the quiz scoring work kha?',
     // Error
     notEnoughXp: 'Not enough XP! You need 50 XP to ask for a hint.',
+    // New strings for QuizPage
+    spiritQuizTitle: 'Spirit Quiz',
+    choosePath: 'Choose Your Path',
+    noCategories: 'No categories available.',
+    backToCategories: 'Back to Categories',
+    noLevels: 'No levels found for this category.',
+
+    // ── MIGRATED FROM QUIZ_FEATURED ──
+    headerBadge: "Mission: Heritage",
+    headerTitle: "Spirit Quiz",
+    headerDesc: "Master the Akha traditions to unlock exclusive rewards and honor. Every answer brings you closer to our ancestors' wisdom.",
+    statsProgress: "Spirit Progress",
+    statsScore: "Wisdom Points",
+
+    backHome: "Back to Home",
+    backLevels: "Back to Levels",
+    abort: "Abort Mission",
+    report: "Report issue",
+    requestHint: "Request Hint (-50 XP)",
+
+    mastered: "Mastered",
+    inProgress: "In Progress",
+    score: "Score",
+    accuracy: "Accuracy",
+    xpEarned: "XP Earned",
+    completion: "Completion",
+
+    startQuiz: "Take the Quiz",
+    resume: "Resume",
+    retake: "Retake",
+    nextModule: "Next Module",
+    retry: "Try Again",
+    backToMenu: "Back to Menu",
+    viewWallet: "View Wallet",
+
+    collectionTitle: "Spirit Rewards",
+    collectionDesc: "Unlock heritage gifts by mastering the quiz.",
+    missionComplete: "Mission Complete!",
+    missionFailed: "Mission Failed",
+    questionOf: ({ current, total }: { current: number; total: number }) => `Question ${current} of ${total}`,
+    correctLabel: "Correct",
+
+    noSubtitle: "Master these modules to unlock the next stage.",
+    noTheme: "Knowledge",
+    collecting: "Collecting spiritual artifacts...",
   },
 
   // ── USER — dashboard, settings, onboarding ──────────────────────────────────
@@ -378,11 +490,6 @@ const strings = {
     protocolLabel: 'Protocol',
     spiceLabel: 'Spice Tolerance',
     selectedLabel: 'Selected',
-    spiceMild: 'Mild',
-    spiceMedium: 'Medium',
-    spiceSpicy: 'Spicy',
-    spiceLocal: 'Local',
-    spiceWarrior: 'Warrior',
     dietaryStyleLabel: 'Dietary Style',
     lifestyleLabel: 'Lifestyle',
     strictLabel: 'Strict Compliance',
@@ -397,6 +504,14 @@ const strings = {
     accessDeniedTitle: 'Operations Dashboard',
     accessDeniedBody: 'Booking and reservation management is available in the Admin App.',
     manageInAdmin: 'Manage in Admin App',
+    
+    // User Menu
+    select3Dishes: 'Please select 3 dishes to complete your menu kha!',
+    selectionSaving: 'Saving...',
+    confirmMenu: 'Confirm Menu',
+    saveFailed: 'Save failed',
+    selectionLabel: 'Selection',
+    optionsLabel: 'Options',
   },
 
   // ── LOCATION — pickup / drop-off page ───────────────────────────────────────
@@ -467,6 +582,8 @@ const strings = {
     testimonialQuote: '"An unforgettable experience that goes far beyond just cooking. It\'s a deep immersion into a beautiful, resilient culture."',
     // CTA
     startJourney: 'Start Your Journey',
+    readChapter: 'Read this Chapter',
+    discoverHeritage: 'Discover the Heritage',
   },
 
 } as const;

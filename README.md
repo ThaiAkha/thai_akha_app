@@ -1,4 +1,4 @@
-# Thai Akha Kitchen — Cherry 2026 🥥
+# Thai Akha Kitchen — Cherry 1.0 🥥
 
 Benvenuti nell'ecosistema digitale di **Thai Akha Kitchen**, la scuola di cucina più amata di Chiang Mai. Questo progetto non è solo un sito web, ma un'esperienza immersiva progettata per portare la cultura Akha e i segreti della cucina thailandese direttamente nelle mani degli ospiti.
 
@@ -45,4 +45,4 @@ Il cuore pulsante della piattaforma è basato su una moderna architettura **Mono
 
 ---
 
-© 2026 Thai Akha Kitchen Team. Designed with ❤️ in Chiang Mai.
+© 1.0 Thai Akha Kitchen Team. Designed with ❤️ in Chiang Mai.

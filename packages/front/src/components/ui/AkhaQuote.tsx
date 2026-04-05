@@ -27,7 +27,7 @@ const AkhaQuote: React.FC<AkhaQuoteProps> = ({
     const isRight = align === 'right';
 
     return (
-        <blockquote 
+        <blockquote
             className={cn(
                 "flex items-start gap-4 md:gap-6",
                 isRight ? "flex-row-reverse text-right" : "flex-row text-left",
@@ -35,9 +35,9 @@ const AkhaQuote: React.FC<AkhaQuoteProps> = ({
             )}
         >
             {/* Akha Vertical Line */}
-            <AkhaPixelPattern 
-                variant="line_vertical" 
-                size={isMain ? 10 : 8} 
+            <AkhaPixelPattern
+                variant="line_vertical"
+                size={isMain ? 10 : 8}
                 className={cn(
                     "shrink-0",
                     isMain ? "h-12 md:h-16" : "h-8 md:h-10"
@@ -47,10 +47,10 @@ const AkhaQuote: React.FC<AkhaQuoteProps> = ({
 
             {/* Quote Text */}
             <Typography
-                variant={isMain ? 'h3' : 'h5'}
+                variant={isMain ? 'h3' : 'h3'}
                 className={cn(
                     "italic drop-shadow-md",
-                    isMain ? "text-white/90" : "text-gray-800 dark:text-gray-200"
+                    isMain ? "text-white/90" : ""
                 )}
             >
                 "{children}"

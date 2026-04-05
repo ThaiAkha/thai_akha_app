@@ -15,12 +15,6 @@ export * from './types';
 // Services
 export * from './services';
 
-// Prompts
-export * from './prompts';
-
-// Config
-export * from './config/voice.config';
-
 // Assets
 export {
   LogoFullLight,

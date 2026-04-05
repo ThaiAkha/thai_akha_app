@@ -3,12 +3,13 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Badge, Icon, Button, Divider, Modal, MediaImage } from '../ui/index';
 import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
+import { contentService } from '@thaiakha/shared/services';
 
 // --- INTERFACCE ---
 
 export interface RecipeData {
   id: string;
+  slug?: string;
   name: string;
   thai_name?: string;
   description: string;
@@ -106,11 +107,12 @@ const RecipeView: React.FC<RecipeViewProps> = ({
   const [richIngredients, setRichIngredients] = useState<IngredientDetail[]>([]);
   const [activeIngredient, setActiveIngredient] = useState<IngredientDetail | null>(null);
   const [loadingIng, setLoadingIng] = useState(false);
+  const [allergyMap, setAllergyMap]   = useState<Record<string, string>>({});
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // --- 1. FETCH INGREDIENTI CON PRIVACY CHECK ---
+  // --- 1. FETCH INGREDIENTI & ALLERGY MAP ---
   useEffect(() => {
     const fetchRichIngredients = async () => {
         if (!recipe.keyIngredients || recipe.keyIngredients.length === 0) return;
@@ -122,7 +124,14 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         if (data) setRichIngredients(data);
         setLoadingIng(false);
     };
+
+    const fetchAllergies = async () => {
+        const map = await contentService.getAllergyMap();
+        setAllergyMap(map);
+    };
+
     fetchRichIngredients();
+    fetchAllergies();
     
     const mainContainer = document.getElementById('main-scroll-container');
     if (mainContainer) mainContainer.scrollTo({ top: 0, behavior: 'instant' });
@@ -134,7 +143,6 @@ const RecipeView: React.FC<RecipeViewProps> = ({
   const visibleIngredientsNames = useMemo(() => {
     return recipe.keyIngredients.filter(name => {
       const rich = richIngredients.find(ri => ri.name_en === name);
-      // Se non ancora caricato o flag false, nascondiamo per sicurezza
       return rich ? rich.is_visible_public : false;
     });
   }, [recipe.keyIngredients, richIngredients]);
@@ -154,13 +162,13 @@ const RecipeView: React.FC<RecipeViewProps> = ({
     userAllergies.forEach(allergen => {
       const key = Object.keys(checkMap).find(k => k.toLowerCase() === allergen.toLowerCase());
       if (key && checkMap[key]) {
-        const kbKey = allergen.toLowerCase() as keyof typeof DIETARY_KNOWLEDGE_BASE.allergyWarnings;
-        const warning = DIETARY_KNOWLEDGE_BASE.allergyWarnings[kbKey] || "We will modify the preparation for your safety.";
+        const kbKey = allergen.toLowerCase();
+        const warning = allergyMap[kbKey] || "We will modify the preparation for your safety.";
         conflicts.push({ allergen, warning });
       }
     });
     return conflicts;
-  }, [recipe, userAllergies]);
+  }, [recipe, userAllergies, allergyMap]);
 
   // --- 4. MEDIA & DROPDOWN DATA ---
   const galleryItems: GalleryItem[] = useMemo(() => {
@@ -372,7 +380,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       {onConfirmSelection && (
          <div className="fixed bottom-0 left-0 right-0 z-[60] p-6 bg-gradient-to-t from-black via-black/80 to-transparent flex justify-center animate-in slide-in-from-bottom-8">
             <div className="w-full max-w-lg">
-               <Button variant={isSelected ? "mineral" : "action"} size="xl" fullWidth onClick={() => onConfirmSelection(recipe)} disabled={isSelected} className="shadow-2xl h-16 rounded-[1.5rem] font-black tracking-widest text-lg">
+               <Button variant={isSelected ? "mineral" : "action"} size="lg" fullWidth onClick={() => onConfirmSelection(recipe)} disabled={isSelected} className="shadow-2xl h-16 rounded-[1.5rem] font-black tracking-widest text-lg">
                   {isSelected ? "Already in Menu" : "Add to Menu"}
                </Button>
             </div>

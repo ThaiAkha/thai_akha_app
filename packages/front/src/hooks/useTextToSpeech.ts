@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 export const useTextToSpeech = () => {
@@ -14,7 +13,7 @@ export const useTextToSpeech = () => {
 
     useEffect(() => {
         loadVoices();
-        // Voices are loaded asynchronously, so we need to listen for the event
+        // Le voci vengono caricate in modo asincrono, rimaniamo in ascolto
         window.speechSynthesis.onvoiceschanged = loadVoices;
 
         return () => {
@@ -26,30 +25,46 @@ export const useTextToSpeech = () => {
     const speak = (text: string) => {
         if (!text || !window.speechSynthesis) return;
 
-        window.speechSynthesis.cancel(); // Cancel any previous speech
+        window.speechSynthesis.cancel(); // Cancella eventuali letture precedenti
 
         const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Try to find a suitable voice
-       const preferredVoices = [
-            'Google th-TH', // <--- Il trucco è mettere questa per prima!
-            'Kanya',        // Apple Thai
-            'Narisa',       // Windows Thai
+
+        // Priorità assoluta alle voci Thai per la corretta fonetica dell'Akha Zang
+        const preferredVoices = [
+            'Google th-TH',      // Android/Chrome Thai
+            'Kanya',             // Apple Thai
+            'Narisa',            // Windows Thai
             'Google US English', // Fallback Americano
-            'Samantha', 
-];
-        let selectedVoice = voices.find(voice => preferredVoices.includes(voice.name) && voice.lang.startsWith('en'));
+            'Samantha',          // Fallback Apple Americano
+        ];
+
+        let selectedVoice: SpeechSynthesisVoice | undefined;
+
+        // 1. Forza la priorità iterando ESATTAMENTE nell'ordine del nostro array
+        for (const voiceName of preferredVoices) {
+            const found = voices.find(v => v.name === voiceName);
+            if (found) {
+                selectedVoice = found;
+                break; // Ferma il ciclo non appena trova la voce migliore disponibile
+            }
+        }
+
+        // 2. Fallback: prima voce femminile americana generica
         if (!selectedVoice) {
             selectedVoice = voices.find(voice => voice.lang.startsWith('en-US') && voice.name.includes('Female'));
         }
+
+        // 3. Fallback estremo: voce di default di sistema
         if (!selectedVoice) {
-            selectedVoice = voices.find(voice => voice.lang.startsWith('en') && voice.default);
+            selectedVoice = voices.find(voice => voice.default);
         }
 
         if (selectedVoice) {
             utterance.voice = selectedVoice;
+            // FIX CRITICO: allinea la lingua altrimenti il browser usa la fonetica inglese sulle voci Thai
+            utterance.lang = selectedVoice.lang;
         }
-        
+
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
         utterance.onerror = () => setIsSpeaking(false);

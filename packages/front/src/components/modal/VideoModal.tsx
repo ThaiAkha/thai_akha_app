@@ -74,7 +74,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
         >
           <Button
             variant="mineral"
-            size="xl"
+            size="lg"
             icon="close"
             onClick={onClose}
             className="rounded-full text-action border-action/20 hover:bg-action/10 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(0,0,0,0.6)]"

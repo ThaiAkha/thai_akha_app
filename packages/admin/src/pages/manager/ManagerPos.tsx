@@ -21,6 +21,7 @@ const ManagerPos: React.FC = () => {
         subCategoryTabs,
         activeGuest,
         currentTab,
+        classFee,
         totalDue,
         loading,
         isProcessing,
@@ -75,6 +76,7 @@ const ManagerPos: React.FC = () => {
                         activeGuest={activeGuest}
                         activeGuestId={activeGuestId}
                         currentTab={currentTab}
+                        classFee={classFee}
                         totalDue={totalDue}
                         isProcessing={isProcessing}
                         onRemoveItem={handleRemoveItem}

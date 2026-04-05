@@ -2,3 +2,4 @@ export { default as Card, CardHeader, CardTitle, CardDescription, CardContent, C
 export { default as InfoCard } from './InfoCard';
 export { default as StatCard } from './StatCard';
 export { default as Alert } from './Alert';
+export { default as GlassCard } from './GlassCard';

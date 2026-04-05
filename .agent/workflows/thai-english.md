@@ -18,13 +18,34 @@ All'inizio di ogni sessione leggi obbligatoriamente:
 - **Sincronizzazione Totale**: Ogni nuova chiave deve esistere sia in `en/` che in `th/`. Mai lasciare chiavi mancanti.
 - **Naming Gerarchico**: Usa chiavi strutturate come `[feature].[section].[element]` (es: `booking.form.submit`).
 
+## 🤖 Ollama Models
+
+| Modello | Uso | Quando |
+|---|---|---|
+| **translategemma:12b** | Traduzione EN→TH | Traduzioni di UI strings, labels, messaggi |
+| **qwen2.5-coder:14b** | Reasoning i18n | Analisi namespace, naming conventions, chiavi mancanti |
+
+**Nota**: `translategemma:12b` è specializzato per traduzione (55+ lingue), ideale per qualità Thai nativa. Usalo per le vere traduzioni.
+
+---
+
 ## 🔄 Workflow Esecutivo
 
-// turbo
 1. **Analisi JSON**: Esplora `packages/admin/src/i18n/locales/` per identificare il namespace corretto (es: `common`, `auth`, `booking`).
-2. **Consultazione DeepSeek (Ollama Thai)**: Per traduzioni complesse o terminologia specifica Akha/Culinaria, consulta DeepSeek (`qwen2.5-coder:14b`) per garantire la correttezza grammaticale Thai.
-3. **Esecuzione**: 
+
+2. **Traduzioni Thai (con translategemma:12b)**:
+   - Per UI strings, labels, messaggi di conferma → usa `translategemma:12b` (modello specializzato)
+   - Esempio: tradurre il testo EN del form di login in Thai formale
+
+3. **Reasoning i18n (con qwen2.5-coder:14b)**:
+   - Per analizzare terminologia specifica Akha/Culinaria → usa `qwen2.5-coder:14b`
+   - Per valutare naming conventions e coherenza namespace
+   - Per identificare chiavi mancanti o inconsistenze
+   - Fallback: `qwen2.5-coder:7b` se 14b non disponibile
+
+4. **Esecuzione**:
    - Estrai le stringhe hardcoded dai componenti.
-   - Aggiorna i file JSON di entrambi i locali.
+   - Aggiorna i file JSON di entrambi i locali (EN + TH).
    - Sostituisci il testo con l'hook `t('key')`.
-4. **Update Memoria**: Registra nuovi pattern o scoperte terminologiche in `agent-memory/thai-english/MEMORY.md`.
+
+5. **Update Memoria**: Registra nuovi pattern o scoperte terminologiche in `agent-memory/thai-english/MEMORY.md`.

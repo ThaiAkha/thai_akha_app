@@ -1,6 +1,6 @@
 # MCP Servers Configuration - Thai Akha Kitchen
 
-**Data**: 2026-04-05  
+**Data**: 2026-04-06  
 **File**: `~/.gemini/antigravity/mcp_config.json`  
 **Stato**: ✅ Tutti i server attivi e configurati correttamente
 
@@ -28,35 +28,20 @@
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (14)
-notebook_delete
-
-notebook_rename
-
-chat_configure
-
-studio_status
-
-studio_delete
-
-mind_map_create
-
-data_table_create
-
-quiz_create
-
-flashcards_create
-
-report_create
-
-slide_deck_create
-
-video_overview_create
-
-audio_overview_create
-
-source_delete
-
-text
+- `notebook_delete`
+- `notebook_rename`
+- `chat_configure`
+- `studio_status`
+- `studio_delete`
+- `mind_map_create`
+- `data_table_create`
+- `quiz_create`
+- `flashcards_create`
+- `report_create`
+- `slide_deck_create`
+- `video_overview_create`
+- `audio_overview_create`
+- `source_delete`
 
 ### Tool abilitati (tutti gli altri)
 - `notebook_list` ✅
@@ -79,39 +64,22 @@ text
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (16)
-rebase_branch
-
-reset_branch
-
-merge_branch
-
-delete_branch
-
-list_branches
-
-create_branch
-
-list_migrations
-
-get_logs
-
-pause_project
-
-restore_project
-
-create_project
-
-get_project
-
-get_cost
-
-confirm_cost
-
-list_organizations
-
-get_organization
-
-text
+- `rebase_branch`
+- `reset_branch`
+- `merge_branch`
+- `delete_branch`
+- `list_branches`
+- `create_branch`
+- `list_migrations`
+- `get_logs`
+- `pause_project`
+- `restore_project`
+- `create_project`
+- `get_project`
+- `get_cost`
+- `confirm_cost`
+- `list_organizations`
+- `get_organization`
 
 ### Tool abilitati (tutti gli altri)
 - `execute_sql` ✅
@@ -135,17 +103,11 @@ text
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (5)
-generate_variants
-
-edit_screens
-
-get_screen
-
-list_screens
-
-list_projects
-
-text
+- `generate_variants`
+- `edit_screens`
+- `get_screen`
+- `list_screens`
+- `list_projects`
 
 ### Tool abilitati (tutti gli altri)
 - `generate_screen_from_text` ✅
@@ -164,10 +126,15 @@ text
 **Stato**: 🟢 ATTIVO
 
 ### Modelli disponibili
+
 | Modello | Dimensione | Uso |
 |:---|:---|:---|
 | `qwen2.5-coder:7b` | 4.7 GB | Task veloci, fix semplici |
 | `qwen2.5-coder:14b` | 9.0 GB | Refactoring complessi, architettura |
+| `translategemma:12b` | 8.1 GB | Traduzioni EN↔TH e 55+ lingue |
+
+**Totale modelli**: 3  
+**Spazio totale**: ~22 GB
 
 ### Tool disabilitati: **NESSUNO** (tutti abilitati)
 
@@ -191,27 +158,16 @@ text
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (10)
-read_media_file
-
-create_directory
-
-move_file
-
-list_directory_with_sizes
-
-directory_tree
-
-search_files
-
-get_file_info
-
-list_allowed_directories
-
-read_file
-
-read_multiple_files
-
-text
+- `read_media_file`
+- `create_directory`
+- `move_file`
+- `list_directory_with_sizes`
+- `directory_tree`
+- `search_files`
+- `get_file_info`
+- `list_allowed_directories`
+- `read_file`
+- `read_multiple_files`
 
 ⚠️ **Nota**: Molti tool di lettura sono disabilitati. Per abilitarli, rimuovere dalla lista `disabledTools`.
 
@@ -229,19 +185,12 @@ text
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (6)
-developerknowledge_search_documents
-
-firebase_create_android_sha
-
-firebase_create_app
-
-firebase_create_project
-
-firebase_login
-
-firebase_logout
-
-text
+- `developerknowledge_search_documents`
+- `firebase_create_android_sha`
+- `firebase_create_app`
+- `firebase_create_project`
+- `firebase_login`
+- `firebase_logout`
 
 ### Tool abilitati
 - `firebase_get_projects` ✅
@@ -274,18 +223,41 @@ text
 
 ### Per Ollama
 - ✅ Tutti i tool sono abilitati
-- ✅ Supporto completo per Qwen 14B e 7B
+- ✅ Supporto completo per Qwen 14B, Qwen 7B e TranslateGemma 12B
+- ✅ Traduzioni EN↔TH e 55+ lingue disponibili localmente
+
+---
+
+## 🚀 Novità
+
+### TranslateGemma:12b aggiunto il 2026-04-06
+- Modello specializzato per traduzioni
+- Supporto 55+ lingue
+- Ideale per: traduzione dump database, UI strings, documentazione
+- Comando: `ollama run translategemma:12b "Translate to Thai: ..."`
 
 ---
 
 ## 🔄 Ultimo Aggiornamento
 
-**Data**: 2026-04-05  
+**Data**: 2026-04-06  
 **File salvato**: `~/.gemini/antigravity/mcp_config.json`  
 **Backup consigliato**: `cp ~/.gemini/antigravity/mcp_config.json ~/.gemini/antigravity/mcp_config.json.backup`
+
+### Modifiche recenti
+- ✅ Aggiunto TranslateGemma:12b ai modelli Ollama
+- ✅ Aggiornata lista modelli con dimensioni e usi
+- ✅ Corretta formattazione liste
 
 ---
 
 ## ✅ Stato Generale
 
 **Tutti i 6 server MCP sono operativi e pronti per l'uso in Antigravity.**
+
+### Modelli Ollama disponibili
+- `qwen2.5-coder:7b` - Task veloci
+- `qwen2.5-coder:14b` - Refactoring complessi
+- `translategemma:12b` - Traduzioni professionali
+
+**Pronto per backup, traduzioni e sviluppo multi-lingua!** 🎉

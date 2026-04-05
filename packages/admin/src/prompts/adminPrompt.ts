@@ -10,11 +10,20 @@ export interface CherryAgentDefinition {
 }
 
 export interface BookingDaySummary {
-  date: string;       // 'YYYY-MM-DD'
-  session: string;    // 'morning' | 'evening'
-  pax: number;        // paying participants
-  visitors: number;   // non-paying visitors/observers
-  status: string;     // 'confirmed' | 'pending'
+  date: string;
+  session: string;
+  pax: number;
+  visitors: number;
+  status: string;
+  bookingRef?: string;
+  hotelName?: string;
+  pickupTime?: string;
+  pickupZone?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  totalPrice?: number;
+  specialRequests?: string;
+  customerNote?: string;
 }
 
 export interface GuestAlert {
@@ -23,6 +32,10 @@ export interface GuestAlert {
   session: string;
   dietary: string;
   allergies: string[];
+  curryChoice?: string;
+  soupChoice?: string;
+  stirfryChoice?: string;
+  spicinessLevel?: string;
 }
 
 export const CHERRY_BASE_IDENTITY = `
@@ -79,7 +92,17 @@ export function buildAdminPrompt(
     const snapshotLines = contextData.bookingSnapshot.map(b => {
       const session = b.session.includes('evening') ? 'Evening' : 'Morning';
       const visitorNote = b.visitors > 0 ? ` + ${b.visitors} visitor${b.visitors > 1 ? 's' : ''}` : '';
-      return `- **${b.date}** ${session}: ${b.pax} paying pax${visitorNote} (${b.status})`;
+      const lines = [`- **${b.date} ${session}** | ${b.pax} paying pax${visitorNote} | ${b.status}`];
+      if (b.hotelName || b.pickupTime) {
+        lines.push(`  Pickup: ${b.pickupTime ?? '—'} · ${b.hotelName ?? '—'}${b.pickupZone ? ` (${b.pickupZone})` : ''}`);
+      }
+      if (b.paymentMethod || b.paymentStatus) {
+        lines.push(`  Payment: ${b.paymentMethod ?? '—'} · ${b.totalPrice ? `${b.totalPrice.toLocaleString()} THB` : '—'} · ${b.paymentStatus ?? '—'}`);
+      }
+      if (b.bookingRef) lines.push(`  Booking ref: ${b.bookingRef}`);
+      if (b.specialRequests) lines.push(`  Special requests: "${b.specialRequests}"`);
+      if (b.customerNote) lines.push(`  Customer note: "${b.customerNote}"`);
+      return lines.join('\n');
     }).join('\n');
 
     let alertLines = '';
@@ -87,7 +110,12 @@ export function buildAdminPrompt(
       alertLines = contextData.guestAlerts.map(g => {
         const allergyText = g.allergies.length ? ` + Allergic to: ${g.allergies.join(', ')}` : '';
         const session = g.session.includes('evening') ? 'Evening' : 'Morning';
-        return `- [${g.name}] ${session} ${g.date} — ${g.dietary}${allergyText}`;
+        const lines = [`- [${g.name}] ${session} ${g.date} — ${g.dietary}${allergyText}`];
+        if (g.curryChoice || g.soupChoice || g.stirfryChoice || g.spicinessLevel) {
+          const menuItems = [g.curryChoice, g.soupChoice, g.stirfryChoice].filter(Boolean).join(' · ');
+          lines.push(`  Menu pre-selection: ${menuItems || '—'} · Spice: ${g.spicinessLevel ?? '—'}`);
+        }
+        return lines.join('\n');
       }).join('\n');
     }
 

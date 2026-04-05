@@ -135,7 +135,7 @@ export const useGeminiLive = (
         contentService.getCookingClasses(),
         supabase
           .from('bookings')
-          .select('internal_id, booking_date, session_id, pax_count, visitor_count, status')
+          .select('internal_id, booking_date, session_id, pax_count, visitor_count, status, guest_name, booking_ref, hotel_name, pickup_time, pickup_zone, payment_method, payment_status, total_price, special_requests, customer_note')
           .gte('booking_date', today)
           .lte('booking_date', nextWeek)
           .neq('status', 'cancelled')
@@ -149,6 +149,15 @@ export const useGeminiLive = (
         pax: b.pax_count ?? 0,
         visitors: b.visitor_count ?? 0,
         status: b.status ?? 'unknown',
+        bookingRef: b.booking_ref ?? undefined,
+        hotelName: b.hotel_name ?? undefined,
+        pickupTime: b.pickup_time ?? undefined,
+        pickupZone: b.pickup_zone ?? undefined,
+        paymentMethod: b.payment_method ?? undefined,
+        paymentStatus: b.payment_status ?? undefined,
+        totalPrice: b.total_price ?? undefined,
+        specialRequests: b.special_requests ?? undefined,
+        customerNote: b.customer_note ?? undefined,
       }));
 
       let guestAlerts: GuestAlert[] = [];
@@ -160,7 +169,7 @@ export const useGeminiLive = (
       if (confirmedIds.length > 0) {
         const { data: selections } = await supabase
           .from('menu_selections')
-          .select('booking_id, dietary_profile, allergies')
+          .select('booking_id, dietary_profile, allergies, curry_id, soup_id, stirfry_id, spiciness_level')
           .in('booking_id', confirmedIds);
 
         if (selections?.length) {
@@ -175,6 +184,10 @@ export const useGeminiLive = (
                 session: booking?.session_id ?? '',
                 dietary: s.dietary_profile ?? 'regular',
                 allergies: Array.isArray(s.allergies) ? s.allergies : [],
+                curryChoice: s.curry_id ?? undefined,
+                soupChoice: s.soup_id ?? undefined,
+                stirfryChoice: s.stirfry_id ?? undefined,
+                spicinessLevel: s.spiciness_level ?? undefined,
               };
             });
         }

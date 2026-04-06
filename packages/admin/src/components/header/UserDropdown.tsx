@@ -105,7 +105,7 @@ export default function UserDropdown() {
                     <Moon className="w-4.5 h-4.5 text-gray-400 group-hover:text-primary-500 transition-colors" />
                   )}
                 </div>
-                <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                <span>{theme === 'dark' ? t('theme.lightMode') : t('theme.darkMode')}</span>
               </div>
               <div className={cn(
                 'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',

@@ -18,10 +18,13 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const shouldAutoScrollRef = useRef(true);
 
   const {
     messages,
     sendMessage,
+    addVoiceMessages,
     isLoading,
     error: chatError,
     sessionId,
@@ -36,21 +39,42 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
     inputTranscript,
     outputTranscript,
     error: voiceError,
-  } = useGeminiLive(userProfile, sessionId);
+  } = useGeminiLive(userProfile, sessionId, addVoiceMessages);
+
+  // Monitor manual scrolling to toggle auto-scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        // If user is within 100px of bottom, keep auto-scroll active
+        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+        shouldAutoScrollRef.current = isAtBottom;
+      }
+    };
+
+    const container = scrollContainerRef.current;
+    container?.addEventListener('scroll', handleScroll);
+    return () => container?.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Optimized Scroll: only for NEW full messages or opening chat
+  useEffect(() => {
+    if (shouldAutoScrollRef.current && isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages.length, isOpen]);
 
   const processUserMessage = async (text: string) => {
     if (!text.trim() || isLoading || isConnecting) return;
     setInput('');
+    // Re-enable auto-scroll when user sends something
+    shouldAutoScrollRef.current = true;
     if (isVoiceActive) {
       sendTextMessage(text);
     } else {
       await sendMessage(text);
     }
   };
-
-  useEffect(() => {
-    if (isOpen) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, inputTranscript, outputTranscript, isOpen]);
 
   // --- EVENT LISTENER PER TRIGGER ESTERNI (Es: Ask Cherry in RecipeSingle) ---
   useEffect(() => {
@@ -60,7 +84,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
 
       // 1. Apri la chat
       setIsOpen(true);
-      
+
       // 2. Invia il messaggio (piccolo delay per assicurarsi che lo stato sia pronto)
       setTimeout(() => {
         processUserMessage(topic);
@@ -102,25 +126,26 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
             <div className="flex items-center [gap:var(--space-fluid-xs)] relative z-10 text-white">
               <div
                 className={cn(
-                  'size-12 rounded-2xl flex items-center justify-center border transition-all duration-700',
+                  'size-12 rounded-full overflow-hidden flex items-center justify-center border transition-all duration-700 shadow-theme-md',
                   isVoiceActive
-                    ? 'bg-white text-action animate-pulse'
+                    ? 'bg-white border-action scale-105 shadow-glow-lime'
                     : 'bg-white/10 border-white/20'
                 )}
               >
-                {isVoiceActive ? (
-                  <span className="material-symbols-outlined text-2xl">graphic_eq</span>
-                ) : (
-                  <span className="text-2xl leading-none">
-                    🍒
-                  </span>
-                )}
+                <img
+                  src="/avatarCherry/600-Avatar-AuthPage.webp"
+                  alt="Cherry"
+                  className={cn(
+                    'w-full h-full object-cover transition-all duration-700',
+                    isVoiceActive ? 'scale-110' : 'scale-100'
+                  )}
+                />
               </div>
               <div>
-                <Typography variant="accent" color="inverse" className="italic text-sm">
-                  Cherry
+                <Typography variant="accent" className="text-sm text-white">
+                  Cherry Cheff
                 </Typography>
-                <Typography variant="microLabel" as="p" className="opacity-60 text-inverse">
+                <Typography variant="microLabel" as="p" className="opacity-70 text-white">
                   {voiceError || chatError ? (
                     <span className="text-white/80 normal-case">
                       {voiceError || chatError}
@@ -130,7 +155,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
                   ) : isVoiceActive ? (
                     'Live Voice'
                   ) : (
-                    'AI Assistant'
+                    'Multilingual AI Assistant'
                   )}
                 </Typography>
               </div>
@@ -139,13 +164,13 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
               onClick={handleToggleVoice}
               disabled={isConnecting}
               className={cn(
-                'p-3 rounded-xl transition-all duration-500',
+                'size-12 rounded-full flex items-center justify-center transition-all duration-500',
                 isVoiceActive
-                  ? 'bg-white text-action scale-110 shadow-lg'
-                  : 'bg-white/10 text-white hover:bg-white/20'
+                  ? 'bg-white text-action scale-110 shadow-lg shadow-glow-lime'
+                  : 'bg-white/10 text-inverse border border-white/20 hover:bg-white/20'
               )}
             >
-              <span className="material-symbols-outlined text-lg">
+              <span className="material-symbols-outlined text-xl">
                 {isVoiceActive ? 'mic_off' : 'record_voice_over'}
               </span>
             </button>
@@ -154,7 +179,10 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
 
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto [padding:var(--space-fluid-s)] flex flex-col [gap:var(--space-fluid-m)] custom-scrollbar">
+          <div 
+            ref={scrollContainerRef}
+            className="flex-1 overflow-y-auto [padding:var(--space-fluid-s)] flex flex-col [gap:var(--space-fluid-m)] custom-scrollbar"
+          >
             {messages.map((m, i) => (
               <div
                 key={m.id || i}
@@ -180,9 +208,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
 
 
 
-            {/* Live Transcription Overlay */}
-            {isVoiceActive && (
-              <div className="mt-auto space-y-4 animate-in fade-in duration-500">
+            {/* Live Transcription Overlay (Active during speech only) */}
+            {isVoiceActive && (inputTranscript || outputTranscript) && (
+              <div className="mt-auto space-y-4 animate-in fade-in duration-500 pb-4">
                 {inputTranscript && (
                   <div className="flex justify-end opacity-60">
                     <div className="bg-surface-2 p-3 rounded-2xl border border-border">
@@ -227,7 +255,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
                 }
                 disabled={isLoading || isConnecting || isVoiceActive}
                 className={cn(
-                  'w-full bg-surface border border-border rounded-2xl focus:border-primary/50 py-4 pl-6 pr-14 transition-all text-title placeholder:text-muted',
+                  'w-full bg-surface border border-border rounded-2xl focus:border-primary/50 py-4 pl-6 pr-14 transition-all text-title',
+                  'placeholder:text-muted/50 placeholder:italic',
                   '[font-size:var(--text-fluid-body)]'
                 )}
               />
@@ -243,23 +272,48 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
         </div>
       )}
 
-      {/* Toggle FAB — colore dinamico agente attivo */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          'pointer-events-auto size-16 md:size-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 ease-cinematic shadow-2xl relative',
-          isOpen
-            ? 'bg-surface text-primary rotate-90 scale-90'
-            : cn('bg-primary', 'text-white hover:scale-110 active:scale-95')
-        )}
-      >
-        <span className="material-symbols-outlined text-3xl md:text-4xl">
-          {isOpen ? 'close' : isVoiceActive ? 'graphic_eq' : 'chat'}
-        </span>
-        {isVoiceActive && !isOpen && (
-          <div className="absolute inset-0 rounded-[2rem] border-4 border-action animate-ping" />
-        )}
-      </button>
+      {/* Toggle FAB — pill aperta chat / close button */}
+      {isOpen ? (
+        <button
+          onClick={() => setIsOpen(false)}
+          className="pointer-events-auto size-16 md:size-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 ease-cinematic shadow-theme-md relative bg-surface text-primary rotate-90 scale-90 hover:scale-100 active:scale-95"
+        >
+          <span className="material-symbols-outlined text-3xl md:text-4xl">close</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="pointer-events-auto transition-all duration-300 transform hover:scale-105 active:scale-95 relative overflow-hidden shadow-glow-cherry hover:shadow-glow-cherry-h animate-bounce
+            /* Mobile: cerchio compatto */
+            flex items-center justify-center size-20 rounded-full bg-primary ring-4 ring-primary-200/60 ring-offset-2 text-white
+            /* Desktop: pill compatto senza padding laterale per tenere avatar a sinistra */
+            sm:animate-bounce-subtle sm:flex-row sm:w-auto sm:h-16 sm:pr-6 sm:gap-3 sm:rounded-full sm:ring-6 sm:ring-offset-3"
+        >
+          {/* Avatar — Misura FISSA bloccata (16) per evitare scaling elastico */}
+          <div className="shrink-0 size-16 sm:size-16 flex items-center justify-center overflow-hidden rounded-full">
+            <img
+              src="/avatarCherry/600-Avatar-AuthPage.webp"
+              alt="Cherry"
+              className="size-full object-cover bg-primary-400"
+            />
+          </div>
+
+          {/* Testo — solo desktop */}
+          <div className="hidden sm:flex flex-col items-start justify-center text-left">
+            <span className="text-sm font-black uppercase tracking-widest leading-none">
+              Chat with me
+            </span>
+            <span className="[font-size:var(--text-fluid-micro)] font-bold text-primary-100 uppercase opacity-90 tracking-tighter italic leading-none">
+              Sawasdee kha
+            </span>
+          </div>
+
+          {/* Pulse ring quando voice attiva */}
+          {isVoiceActive && (
+            <div className="absolute inset-0 rounded-full border-4 border-action animate-ping pointer-events-none" />
+          )}
+        </button>
+      )}
     </div>
   );
 };

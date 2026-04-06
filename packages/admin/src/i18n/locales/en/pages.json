@@ -86,6 +86,7 @@
     "requestAssets": "Request Custom Assets"
   },
   "adminReport": {
+    "comingSoon": "Reports dashboard coming soon...",
     "loading": "Loading Report...",
     "globalPerformance": "Global Performance",
     "season": "2026 Season",
@@ -133,6 +134,11 @@
     "noContent": "No content available",
     "prev": "Prev",
     "next": "Next"
+  },
+  "news": {
+    "placeholderMediaId": "Media ID or URL",
+    "sectionContent": "Content",
+    "sectionStatus": "Status"
   },
   "driver": {
     "status": {

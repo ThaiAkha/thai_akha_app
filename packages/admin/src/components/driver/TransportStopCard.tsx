@@ -3,6 +3,7 @@ import { CheckCircle2, Map, MessageSquare, ArrowRight } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Badge from '../ui/badge/Badge';
 import Avatar from '../ui/avatar/Avatar';
+import { useTranslation } from 'react-i18next';
 
 export type TransportStatus = 'waiting' | 'driver_en_route' | 'driver_arrived' | 'on_board' | 'dropped_off';
 
@@ -55,6 +56,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
     onOpenMap,
     onWhatsApp
 }) => {
+    const { t } = useTranslation('driver');
     const isDone = stop.transport_status === 'dropped_off';
 
     // Compact card for completed stops
@@ -68,7 +70,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                         <div className="text-[9px] text-gray-500 dark:text-white/40 uppercase">{displayHotel || stop.hotel_name}</div>
                     </div>
                 </div>
-                <div className="text-gray-700 dark:text-white/60 text-lg font-black">{stop.pax_count} Pax</div>
+                <div className="text-gray-700 dark:text-white/60 text-lg font-black">{stop.pax_count} {t('stopCard.pax')}</div>
             </div>
         );
     }
@@ -89,7 +91,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                     <Badge variant="light" color="light" className="text-[9px] px-2 h-5 bg-gray-200 dark:bg-white/5 text-gray-700 dark:text-white/60">{stop.pickup_zone?.toUpperCase()}</Badge>
                 </div>
                 <div className="px-5 flex items-center justify-center bg-gray-200 dark:bg-black/20 border-l border-gray-300 dark:border-white/5 min-w-[5rem]">
-                    <span className={cn("text-3xl font-black", isOnBoard ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white")}>{stop.pax_count} <span className="text-base">Pax</span></span>
+                    <span className={cn("text-3xl font-black", isOnBoard ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white")}>{stop.pax_count} <span className="text-base">{t('stopCard.pax')}</span></span>
                 </div>
             </div>
 
@@ -100,7 +102,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                         <h5 className="truncate leading-none mb-1 text-lg font-bold text-gray-900 dark:text-white">{stop.guest_name}</h5>
                         {stop.customer_note
                             ? <p className="text-[10px] text-yellow-600 dark:text-yellow-500 italic truncate font-bold">⚠️ "{stop.customer_note}"</p>
-                            : <p className="text-[10px] text-gray-400 dark:text-white/30 font-bold uppercase">No Notes</p>
+                            : <p className="text-[10px] text-gray-400 dark:text-white/30 font-bold uppercase">{t('stopCard.noNotes')}</p>
                         }
                     </div>
                 </div>
@@ -111,7 +113,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                         <div className="min-w-0">
                             <span className="text-sm font-bold truncate text-gray-900 dark:text-white/90 block">{displayHotel}</span>
                             {phase === 'DROPOFF' && stop.dropoff_hotel && (
-                                <span className="text-[9px] text-green-600 dark:text-green-400 uppercase font-bold">Destination</span>
+                                <span className="text-[9px] text-green-600 dark:text-green-400 uppercase font-bold">{t('stopCard.destination')}</span>
                             )}
                         </div>
                     </button>
@@ -131,7 +133,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                         )}
                     >
                         {isConfirming
-                            ? <>CONFIRM ACTION?</>
+                            ? <>{t('actions.confirmAction')}</>
                             : <>{statusCfg.actionLabel} {isOnBoard ? <CheckCircle2 className="w-5 h-5 animate-bounce" /> : <ArrowRight className="w-5 h-5 animate-bounce" />}</>
                         }
                     </button>

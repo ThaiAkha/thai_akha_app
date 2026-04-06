@@ -67,7 +67,7 @@ export default function SignInForm() {
                     id="email"
                     name="email"
                     autoComplete="email"
-                    placeholder="info@gmail.com"
+                    placeholder={t('signIn.placeholders.email')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -83,7 +83,7 @@ export default function SignInForm() {
                       id="password"
                       name="password"
                       autoComplete="current-password"
-                      placeholder="Enter your password"
+                      placeholder={t('signIn.placeholders.password')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HardDrive, Folder } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import type { Bucket } from '../../../hooks/useAdminStorage';
@@ -15,6 +16,7 @@ const StorageSidebar: React.FC<StorageSidebarProps> = ({
     selectedBucket,
     onSelect
 }) => {
+    const { t } = useTranslation('storage');
     const sidebarItems = useMemo(() => {
         return buckets.map(bucket => ({
             id: bucket.id,
@@ -28,7 +30,7 @@ const StorageSidebar: React.FC<StorageSidebarProps> = ({
 
     return (
         <DataExplorerSidebar
-            title="Buckets"
+            title={t('sidebar.title')}
             titleIcon={<HardDrive className="w-5 h-5" />}
             items={sidebarItems}
             selectedId={selectedBucket}
@@ -36,9 +38,9 @@ const StorageSidebar: React.FC<StorageSidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-blue-50 dark:bg-blue-900/10 border-t border-blue-100 dark:border-blue-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title="Status" variant="sidebar" className="text-blue-600 mb-0 ml-0" />
+                        <SectionHeader title={t('sidebar.statusLabel')} variant="sidebar" className="text-blue-600 mb-0 ml-0" />
                         <p className="text-[9px] text-blue-700 dark:text-blue-400 font-bold leading-tight uppercase">
-                            Live Storage
+                            {t('sidebar.status')}
                         </p>
                     </div>
                 </div>

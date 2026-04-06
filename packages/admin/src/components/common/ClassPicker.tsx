@@ -39,7 +39,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
     showSessionSelector = true,
     labels = {}
 }) => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation('common');
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
     const currentDate = useMemo(() => {
@@ -116,7 +116,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                             ? "hover:bg-white dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 cursor-pointer"
                             : "opacity-30 cursor-not-allowed text-gray-300 dark:text-gray-600"
                     )}
-                    aria-label="Previous day"
+                    aria-label={t('aria.prevDay')}
                 >
                     <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -127,7 +127,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                         className="dropdown-toggle flex items-center gap-2 min-w-[120px] px-2 py-1 hover:bg-white dark:hover:bg-white/10 rounded-md transition-colors"
                         aria-haspopup="dialog"
                         aria-expanded={isCalendarOpen}
-                        aria-label="Select date"
+                        aria-label={t('aria.selectDate')}
                     >
                         <Calendar className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                         <span className="text-sm font-bold text-gray-700 dark:text-gray-300 tabular-nums">
@@ -153,7 +153,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                     onClick={() => changeDate(1)}
                     onKeyDown={(e) => e.key === 'ArrowRight' && changeDate(1)}
                     className="p-1 hover:bg-white dark:hover:bg-white/10 rounded-md transition-colors text-gray-500 dark:text-gray-400"
-                    aria-label="Next day"
+                    aria-label={t('aria.nextDay')}
                 >
                     <ChevronRight className="w-4 h-4" />
                 </button>

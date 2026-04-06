@@ -1,0 +1,34 @@
+{
+  "statusLabels": {
+    "waiting": "WAITING",
+    "enRoute": "EN ROUTE",
+    "atLobby": "AT LOBBY",
+    "onBoard": "ON BOARD",
+    "completed": "COMPLETED"
+  },
+  "actions": {
+    "startPickup": "START PICKUP",
+    "imHere": "I AM HERE",
+    "pickupPax": "PICK UP PAX",
+    "dropComplete": "DROP COMPLETE",
+    "done": "DONE",
+    "confirmAction": "CONFIRM ACTION?",
+    "clickAgainToConfirm": "CLICK AGAIN TO CONFIRM"
+  },
+  "phase": {
+    "pickup": "Pickup",
+    "dropoff": "Drop-off",
+    "startPickupRoute": "Start Pickup Route",
+    "startDropoffRoute": "Start Drop-off Route"
+  },
+  "payout": {
+    "allRidesCompleted": "All Rides Completed!",
+    "dailyEarnings": "Daily Earnings",
+    "returnToHome": "Return to Home"
+  },
+  "stopCard": {
+    "pax": "Pax",
+    "noNotes": "No Notes",
+    "destination": "Destination"
+  }
+}

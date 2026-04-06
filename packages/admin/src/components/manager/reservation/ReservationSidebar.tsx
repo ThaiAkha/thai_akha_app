@@ -3,6 +3,7 @@ import { Users, Sun, Moon } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
+import { useTranslation } from 'react-i18next';
 
 interface BookingItem {
     internal_id: string;
@@ -27,6 +28,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
     activeBookingId,
     onSelectBooking,
 }) => {
+    const { t } = useTranslation('reservation');
     const getSessionIcon = (sessionId?: string) => {
         if (!sessionId) return <Users className="w-5 h-5" />;
 
@@ -101,7 +103,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
     const footer = cancelledItems.length > 0 ? (
         <div className="p-4 space-y-3">
             <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                Cancelled Bookings
+                {t('sidebar.cancelledTitle')}
             </h4>
             <div className="space-y-2">
                 {cancelledItems.map((item) => {
@@ -139,7 +141,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
 
     return (
         <DataExplorerSidebar
-            title="Clients"
+            title={t('sidebar.title')}
             titleIcon={<Users className="w-5 h-5" />}
             items={activeItems}
             selectedId={activeBookingId || ''}

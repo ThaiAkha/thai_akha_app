@@ -57,11 +57,24 @@
   "theme": {
     "light": "Light",
     "dark": "Dark",
-    "toggle": "Toggle theme"
+    "toggle": "Toggle theme",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
   },
   "aria": {
     "menuToggle": "Toggle Sidebar",
-    "userAvatar": "User avatar"
+    "userAvatar": "User avatar",
+    "prevDay": "Previous day",
+    "selectDate": "Select date",
+    "nextDay": "Next day",
+    "toggleTheme": "Toggle theme",
+    "clearSearch": "Clear search",
+    "openCherry": "Open Cherry AI",
+    "expandChat": "Expand chat",
+    "closeChat": "Close chat",
+    "toggleVoice": "Toggle voice",
+    "minimizeChat": "Minimize",
+    "close": "Close"
   },
   "yesNo": {
     "yes": "Yes",
@@ -84,9 +97,13 @@
     "editMeetingPoint": "Edit this meeting point",
     "assign": "Assign"
   },
+  "form": {
+    "phonePlaceholder": "e.g. +66 81 234 5678"
+  },
   "fallback": {
     "guest": "Guest",
-    "empty": "Empty"
+    "empty": "Empty",
+    "viewMore": "View More"
   },
   "notifications": {
     "title": "Notification",

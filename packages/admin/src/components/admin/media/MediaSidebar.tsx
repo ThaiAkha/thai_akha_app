@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
-import { 
-    Grid, 
-    Folder, 
-    Image as ImageIcon, 
-    Music, 
-    Video 
+import {
+    Grid,
+    Folder,
+    Image as ImageIcon,
+    Music,
+    Video
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import { MediaCategory } from '../../../hooks/useAdminMedia';
 
@@ -16,7 +17,8 @@ interface MediaSidebarProps {
 }
 
 const MediaSidebar: React.FC<MediaSidebarProps> = ({ categories, selectedFolder, onSelect }) => {
-    
+    const { t } = useTranslation('media');
+
     const sidebarItems = useMemo(() => {
         const getFolderIcon = (folder: string) => {
             const f = folder.toLowerCase();
@@ -27,7 +29,7 @@ const MediaSidebar: React.FC<MediaSidebarProps> = ({ categories, selectedFolder,
         };
 
         return [
-            { id: 'all', label: 'All Media Assets', icon: <Grid className="w-4 h-4" /> },
+            { id: 'all', label: t('sidebar.allAssets'), icon: <Grid className="w-4 h-4" /> },
             ...categories.map(cat => ({
                 id: cat.id,
                 label: cat.title,
@@ -35,11 +37,11 @@ const MediaSidebar: React.FC<MediaSidebarProps> = ({ categories, selectedFolder,
                 count: cat.count
             }))
         ];
-    }, [categories]);
+    }, [categories, t]);
 
     return (
         <DataExplorerSidebar
-            title="Media Folders"
+            title={t('sidebar.title')}
             titleIcon={<Folder className="w-5 h-5 text-primary-500" />}
             items={sidebarItems}
             selectedId={selectedFolder}
@@ -47,7 +49,7 @@ const MediaSidebar: React.FC<MediaSidebarProps> = ({ categories, selectedFolder,
             footer={
                 <div className="px-2 py-3 bg-primary-50 dark:bg-primary-900/10 border-t border-primary-100 dark:border-primary-900/20">
                     <p className="text-[9px] text-primary-700 dark:text-primary-400 font-black leading-tight uppercase tracking-widest text-center">
-                        Media Library System
+                        {t('sidebar.footer')}
                     </p>
                 </div>
             }

@@ -1,6 +1,6 @@
 // packages/admin/src/hooks/useCherryChat.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { getTextGeminiClient } from '../services/geminiClient';
 import { buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
 import {
   getOrCreateSession,
@@ -61,7 +61,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
   const initGeminiChat = useCallback(
     (history: DbChatMessage[], summary: string | null) => {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+      const ai = getTextGeminiClient();
       chatRef.current = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: {

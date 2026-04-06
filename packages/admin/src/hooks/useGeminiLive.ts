@@ -1,6 +1,7 @@
 // packages/admin/src/hooks/useGeminiLive.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
+import { LiveServerMessage, Modality } from '@google/genai';
+import { getLiveGeminiClient } from '../services/geminiClient';
 import { cherryAdmin, buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
 import { saveMessage, contentService } from '@thaiakha/shared/services';
 import { supabase } from '@thaiakha/shared';
@@ -116,10 +117,7 @@ export const useGeminiLive = (
     setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error('API Key is missing from environment.');
-
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = await getLiveGeminiClient();
       const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
 
       audioCtxRef.current = new AudioContextClass({ sampleRate: 24000 });
@@ -200,7 +198,7 @@ export const useGeminiLive = (
       );
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+        model: 'gemini-2.5-flash-native-audio',
         callbacks: {
           onopen: async () => {
             setState(prev => ({ ...prev, status: 'active' }));

@@ -5,6 +5,7 @@
   },
   "sidebar": {
     "title": "ตาราง",
+    "statusLabel": "สถานะ",
     "status": "แก้ไขสด"
   },
   "content": {

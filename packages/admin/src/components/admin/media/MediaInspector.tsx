@@ -1,7 +1,7 @@
 import React from 'react';
-import { 
-    FileText, 
-    Link as LinkIcon, 
+import {
+    FileText,
+    Link as LinkIcon,
     Copy,
     Settings,
     Tag,
@@ -15,6 +15,7 @@ import {
     Clock,
     User
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { type MediaAsset } from '@thaiakha/shared';
 
 interface MediaInspectorProps {
@@ -32,14 +33,15 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
     isNew,
     onDelete
 }) => {
-    
+    const { t } = useTranslation('media');
+
     const handleChange = (field: keyof MediaAsset, value: any) => {
         onEditingAssetChange({ ...editingAsset, [field]: value });
     };
 
     const handleCopyUrl = () => {
         navigator.clipboard.writeText(editingAsset.image_url);
-        alert("URL copied to clipboard kha!");
+        alert(t('inspector.hints.urlCopied'));
     };
 
     return (
@@ -67,13 +69,13 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <Settings className="w-4 h-4 text-primary-500" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-600">Core Identity</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-600">{t('inspector.sections.coreIdentity')}</h3>
                 </div>
 
                 <div className="flex flex-col gap-6">
                     {/* Asset ID (NEW) */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic">User-Defined Asset ID</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary-500 italic">{t('inspector.labels.assetId')}</label>
                         <input
                             type="text"
                             value={editingAsset.asset_id || ''}
@@ -86,7 +88,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                     {/* File Name Field */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Storage File Name</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.fileName')}</label>
                         <input
                             type="text"
                             value={editingAsset.file_name}
@@ -99,7 +101,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                     {/* Folder Path Field */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Organizational Path</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.folderPath')}</label>
                         <div className="relative">
                             <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
@@ -119,12 +121,12 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <LinkIcon className="w-4 h-4 text-blue-500" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Access & Format</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">{t('inspector.sections.accessFormat')}</h3>
                 </div>
 
                 <div className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Public Access URL</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.publicUrl')}</label>
                         <div className="relative group/input">
                             <input
                                 type="text"
@@ -144,7 +146,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Mime Type</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.mimeType')}</label>
                             <input
                                 type="text"
                                 value={editingAsset.mime_type || ''}
@@ -154,7 +156,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">File Size</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.fileSize')}</label>
                             <div className="relative">
                                 <input
                                     type="number"
@@ -174,12 +176,12 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <Monitor className="w-4 h-4 text-purple-500" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600">Visual Metrics</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600">{t('inspector.sections.visualMetrics')}</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Width (px)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.width')}</label>
                         <input
                             type="number"
                             value={(editingAsset as any).width || ''}
@@ -189,7 +191,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Height (px)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.height')}</label>
                         <input
                             type="number"
                             value={(editingAsset as any).height || ''}
@@ -205,12 +207,12 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <FileText className="w-4 h-4 text-emerald-500" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Content & SEO</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">{t('inspector.sections.contentSeo')}</h3>
                 </div>
 
                 <div className="flex flex-col gap-5">
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Display Title</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.displayTitle')}</label>
                         <input
                             type="text"
                             value={editingAsset.title || ''}
@@ -222,7 +224,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Description / Caption</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.caption')}</label>
                         <textarea
                             value={(editingAsset as any).caption || ''}
                             onChange={e => handleChange('caption' as any, e.target.value)}
@@ -233,7 +235,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Alt Text (Accessibility)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.altText')}</label>
                         <textarea
                             value={editingAsset.alt_text || ''}
                             onChange={e => handleChange('alt_text', e.target.value)}
@@ -244,7 +246,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Tags (Comma Separated)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.tags')}</label>
                         <div className="relative">
                             <Tag className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
                             <input
@@ -259,7 +261,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Copyright / Source</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.copyright')}</label>
                         <input
                             type="text"
                             value={(editingAsset as any).copyright || ''}
@@ -276,7 +278,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <Zap className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600">AI Metadata</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600">{t('inspector.sections.aiMetadata')}</h3>
                 </div>
 
                 <div className={`p-5 rounded-2xl border transition-all duration-500 
@@ -284,8 +286,8 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                 >
                     <div className="flex items-center justify-between mb-4">
                             <div className="flex flex-col">
-                            <label className="text-[10px] font-black uppercase text-orange-600">AI Generated</label>
-                            <p className="text-[9px] text-gray-400 italic">Toggle if generated by AI</p>
+                            <label className="text-[10px] font-black uppercase text-orange-600">{t('inspector.labels.aiGenerated')}</label>
+                            <p className="text-[9px] text-gray-400 italic">{t('inspector.labels.aiGeneratedHint')}</p>
                             </div>
                             <button
                             onClick={() => isEditing && handleChange('is_ai_generated', !editingAsset.is_ai_generated)}
@@ -298,7 +300,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
                     {editingAsset.is_ai_generated && (
                             <div className="relative">
-                            <label className="absolute -top-2 left-2 px-1 bg-orange-100 dark:bg-orange-950 text-[8px] font-black text-orange-600 uppercase rounded">Tool Engine</label>
+                            <label className="absolute -top-2 left-2 px-1 bg-orange-100 dark:bg-orange-950 text-[8px] font-black text-orange-600 uppercase rounded">{t('inspector.labels.toolEngine')}</label>
                             <input
                                 type="text"
                                 value={editingAsset.ai_tool || ''}
@@ -316,14 +318,14 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6 opacity-80 group">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <Database className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-primary-600">System Properties</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-primary-600">{t('inspector.sections.systemProperties')}</h3>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-white/5 space-y-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 text-gray-400">
                             <Info className="w-3.5 h-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest italic">Database UUID</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest italic">{t('inspector.labels.databaseUuid')}</span>
                         </div>
                         <span className="text-[9px] font-mono font-bold text-gray-500 select-all">{editingAsset.id}</span>
                     </div>
@@ -331,7 +333,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 text-gray-400">
                             <User className="w-3.5 h-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest italic">Uploaded By</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest italic">{t('inspector.labels.uploadedBy')}</span>
                         </div>
                         <span className="text-[9px] font-bold text-gray-500">{(editingAsset as any).uploaded_by || 'System Admin'}</span>
                     </div>
@@ -339,7 +341,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 text-gray-400">
                             <Clock className="w-3.5 h-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest italic">Created</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest italic">{t('inspector.labels.created')}</span>
                         </div>
                         <span className="text-[9px] font-bold text-gray-500">{editingAsset.created_at ? new Date(editingAsset.created_at).toLocaleString() : 'N/A'}</span>
                     </div>
@@ -347,7 +349,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 text-gray-400">
                             <Clock className="w-3.5 h-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest italic">Last Update</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest italic">{t('inspector.labels.lastUpdate')}</span>
                         </div>
                         <span className="text-[9px] font-bold text-gray-500">{(editingAsset as any).updated_at ? new Date((editingAsset as any).updated_at).toLocaleString() : 'Just now'}</span>
                     </div>
@@ -362,10 +364,10 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         className="w-full flex items-center justify-center gap-3 p-5 rounded-2xl bg-red-500/5 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] group"
                     >
                         <Trash2 size={16} className="group-hover:animate-bounce" />
-                        De-Index Asset
+                        {t('inspector.buttons.deIndex')}
                     </button>
                     <p className="mt-3 text-[9px] text-gray-400 text-center italic leading-relaxed px-4">
-                        Removes database mapping from Thai Akha CDN. <br/>Physical files in storage persist for safety.
+                        {t('inspector.hints.deIndexWarning')}
                     </p>
                 </div>
             )}

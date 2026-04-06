@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "title": "แกลเลอรีสื่อ"
+  },
+  "sidebar": {
+    "title": "โฟลเดอร์สื่อ",
+    "allAssets": "สื่อทั้งหมด",
+    "footer": "ระบบไลบรารีสื่อ"
+  },
+  "content": {
+    "emptyMessage": "ไม่พบสื่อใดๆ",
+    "table": {
+      "colMedia": "สื่อ 16:9",
+      "colIdentity": "ข้อมูลและลำดับชั้น",
+      "colSpecs": "ข้อมูลจำเพาะ",
+      "colContext": "บริบทโหนด (+20%)",
+      "untitledReference": "ไม่มีชื่ออ้างอิง",
+      "openInNewWindow": "เปิดในหน้าต่างใหม่",
+      "noUrl": "ไม่พบ URL ที่ถูกต้องสำหรับสื่อนี้"
+    }
+  },
+  "inspector": {
+    "sections": {
+      "coreIdentity": "ข้อมูลหลัก",
+      "accessFormat": "การเข้าถึงและรูปแบบ",
+      "visualMetrics": "ค่าสถิติตัวภาพ",
+      "contentSeo": "เนื้อหาและการปรับปรุง SEO",
+      "aiMetadata": "ข้อมูลเมตาที่สร้างโดย AI",
+      "systemProperties": "คุณสมบัติของระบบ"
+    },
+    "labels": {
+      "assetId": "รหัสสินทรัพย์ที่ผู้ใช้กำหนด",
+      "fileName": "ชื่อไฟล์ในระบบจัดเก็บ",
+      "folderPath": "เส้นทางโครงสร้าง",
+      "publicUrl": "URL สำหรับการเข้าถึงแบบสาธารณะ",
+      "mimeType": "ชนิด MIME",
+      "fileSize": "ขนาดไฟล์",
+      "width": "ความกว้าง (พิกเซล)",
+      "height": "ความสูง (พิกเซล)",
+      "displayTitle": "ชื่อที่แสดง",
+      "caption": "คำอธิบาย/คำบรรยาย",
+      "altText": "ข้อความ Alt (เพื่อการเข้าถึง)",
+      "tags": "แท็ก (คั่นด้วยเครื่องหมายจุลภาค)",
+      "copyright": "ลิขสิทธิ์/แหล่งที่มา",
+      "aiGenerated": "สร้างโดย AI",
+      "aiGeneratedHint": "สลับเพื่อระบุว่าสร้างโดย AI",
+      "toolEngine": "เครื่องมือที่ใช้",
+      "databaseUuid": "UUID ในฐานข้อมูล",
+      "uploadedBy": "อัปโหลดโดย",
+      "created": "สร้าง",
+      "lastUpdate": "แก้ไขล่าสุด"
+    },
+    "buttons": {
+      "deIndex": "ลบออกจากดัชนี"
+    },
+    "hints": {
+      "deIndexWarning": "ลบการแมปฐานข้อมูลออกจาก Thai Akha CDN ไฟล์จริงในระบบจัดเก็บจะยังคงอยู่เพื่อความปลอดภัย",
+      "urlCopied": "คัดลอก URL ไปยังคลิปบอร์ดแล้ว!"
+    }
+  }
+}

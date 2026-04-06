@@ -1,6 +1,7 @@
 {
   "sidebar": {
     "title": "Buckets",
+    "statusLabel": "Status",
     "status": "Live Storage"
   },
   "meta": {

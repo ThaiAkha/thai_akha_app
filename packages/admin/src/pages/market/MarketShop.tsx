@@ -88,7 +88,7 @@ const formatLongDate = (date: Date, language: string) => {
 };
 
 const MarketShop: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('market');
   const { user } = useAuth();
   // --- CORE STATE ---
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -235,7 +235,7 @@ const MarketShop: React.FC = () => {
 
   const handleSave = async () => {
     if (!activeScope) return;
-    if (!user) return alert("You must be logged in to save market reports.");
+    if (!user) return alert(t('messages.mustBeLoggedIn'));
 
     const itemsToSave = Object.entries(formState)
       .map(([id, val]) => {
@@ -250,7 +250,7 @@ const MarketShop: React.FC = () => {
         };
       });
 
-    if (itemsToSave.length === 0) return alert("Please select at least one item kha.");
+    if (itemsToSave.length === 0) return alert(t('messages.selectAtLeastOne'));
 
     setIsSaving(true);
     try {
@@ -268,12 +268,12 @@ const MarketShop: React.FC = () => {
       });
 
       if (error) throw error;
-      alert("Changes saved successfully kha!");
+      alert(t('messages.saveSuccess'));
       fetchData();
       setActiveTab('dashboard');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
-      alert("Error saving: " + message);
+      alert(t('messages.saveError', { message }));
     } finally {
       setIsSaving(false);
     }
@@ -288,14 +288,14 @@ const MarketShop: React.FC = () => {
         {/* CENTER HEADER */}
         <div className="h-16 shrink-0 flex items-center justify-between px-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-10">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            {activeTab === 'dashboard' ? 'Overview' : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} View`}
+            {activeTab === 'dashboard' ? t('tabs.overview') : `${t(`tabs.${activeTab}`)} View`}
           </h2>
 
           <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
             {[
-              { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-              { id: 'logistics', label: 'Logistics', icon: Truck },
-              { id: 'teacher', label: 'Teacher', icon: GraduationCap }
+              { id: 'dashboard', label: t('tabs.dashboard'), icon: LayoutDashboard },
+              { id: 'logistics', label: t('tabs.logistics'), icon: Truck },
+              { id: 'teacher', label: t('tabs.teacher'), icon: GraduationCap }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -339,12 +339,12 @@ const MarketShop: React.FC = () => {
                     <div className="size-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-500">
                       <Truck className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">Logistics</h3>
+                    <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">{t('tabs.logistics')}</h3>
                   </div>
                   <div className="space-y-3">
-                    <Button variant="primary" size="md" className="w-full" startIcon={<LayoutDashboard className="w-4 h-4" />} onClick={() => { setSelectedDate(new Date()); setActiveTab('logistics'); setViewMode('planner'); setFormState({}); }}>New Plan for Today</Button>
-                    <Button variant="outline" size="md" className="w-full" startIcon={<CalendarIcon className="w-4 h-4" />} onClick={() => { setActiveTab('logistics'); setIsCalendarModalOpen(true); }}>New Plan Select Date</Button>
-                    <Button variant="outline" size="md" className="w-full border-transparent" startIcon={<History className="w-4 h-4" />} onClick={() => { setActiveTab('logistics'); setViewMode('list'); }}>View History</Button>
+                    <Button variant="primary" size="md" className="w-full" startIcon={<LayoutDashboard className="w-4 h-4" />} onClick={() => { setSelectedDate(new Date()); setActiveTab('logistics'); setViewMode('planner'); setFormState({}); }}>{t('buttons.newPlanToday')}</Button>
+                    <Button variant="outline" size="md" className="w-full" startIcon={<CalendarIcon className="w-4 h-4" />} onClick={() => { setActiveTab('logistics'); setIsCalendarModalOpen(true); }}>{t('buttons.newPlanSelectDate')}</Button>
+                    <Button variant="outline" size="md" className="w-full border-transparent" startIcon={<History className="w-4 h-4" />} onClick={() => { setActiveTab('logistics'); setViewMode('list'); }}>{t('buttons.viewHistory')}</Button>
                   </div>
                 </div>
 
@@ -354,12 +354,12 @@ const MarketShop: React.FC = () => {
                     <div className="size-16 rounded-2xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-500">
                       <GraduationCap className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">Teacher</h3>
+                    <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">{t('tabs.teacher')}</h3>
                   </div>
                   <div className="space-y-3">
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" size="md" startIcon={<Edit className="w-4 h-4" />} onClick={() => { setSelectedDate(new Date()); setActiveTab('teacher'); setViewMode('planner'); setFormState({}); }}>New Report for Today</Button>
-                    <Button variant="outline" size="md" className="w-full" startIcon={<CalendarIcon className="w-4 h-4" />} onClick={() => { setActiveTab('teacher'); setIsCalendarModalOpen(true); }}>New Report Select Date</Button>
-                    <Button variant="outline" size="md" className="w-full border-transparent" startIcon={<History className="w-4 h-4" />} onClick={() => { setActiveTab('teacher'); setViewMode('list'); }}>View History</Button>
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" size="md" startIcon={<Edit className="w-4 h-4" />} onClick={() => { setSelectedDate(new Date()); setActiveTab('teacher'); setViewMode('planner'); setFormState({}); }}>{t('buttons.newReportToday')}</Button>
+                    <Button variant="outline" size="md" className="w-full" startIcon={<CalendarIcon className="w-4 h-4" />} onClick={() => { setActiveTab('teacher'); setIsCalendarModalOpen(true); }}>{t('buttons.newReportSelectDate')}</Button>
+                    <Button variant="outline" size="md" className="w-full border-transparent" startIcon={<History className="w-4 h-4" />} onClick={() => { setActiveTab('teacher'); setViewMode('list'); }}>{t('buttons.viewHistory')}</Button>
                   </div>
                 </div>
               </div>
@@ -369,7 +369,7 @@ const MarketShop: React.FC = () => {
               <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 sticky top-0 z-10">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg"><History className="w-5 h-5" /></div>
-                  <h3 className="font-bold text-lg">Report Archives</h3>
+                  <h3 className="font-bold text-lg">{t('table.reportArchives')}</h3>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -379,7 +379,7 @@ const MarketShop: React.FC = () => {
                     onClick={() => setIsEditSelectionMode(!isEditSelectionMode)}
                     className={cn("border-transparent", isEditSelectionMode && "bg-primary-50 text-primary-600 hover:bg-primary-100")}
                   >
-                    {isEditSelectionMode ? 'Cancel' : 'Edit Report'}
+                    {isEditSelectionMode ? t('buttons.cancel') : t('buttons.editReport')}
                   </Button>
                   <Button
                     variant="primary"
@@ -387,7 +387,7 @@ const MarketShop: React.FC = () => {
                     startIcon={<Plus className="w-4 h-4" />}
                     onClick={() => setIsCalendarModalOpen(true)}
                   >
-                    New {activeTab === 'teacher' ? 'Report' : 'Plan'}
+                    {activeTab === 'teacher' ? t('buttons.newReport') : t('buttons.newPlan')}
                   </Button>
                 </div>
               </div>
@@ -397,10 +397,10 @@ const MarketShop: React.FC = () => {
                   <table className="w-full text-sm text-left">
                     <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-500 uppercase font-black text-xs">
                       <tr>
-                        <th className="px-6 py-4">Date</th>
-                        <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-center">Items</th>
-                        <th className="px-6 py-4 text-right">Total Cost</th>
+                        <th className="px-6 py-4">{t('table.date')}</th>
+                        <th className="px-6 py-4">{t('table.status')}</th>
+                        <th className="px-6 py-4 text-center">{t('table.items')}</th>
+                        <th className="px-6 py-4 text-right">{t('table.totalCost')}</th>
                         <th className="px-6 py-4"></th>
                       </tr>
                     </thead>
@@ -422,7 +422,7 @@ const MarketShop: React.FC = () => {
                           <td className="px-6 py-4 text-right font-mono font-black text-primary-600 dark:text-primary-400">{row.total_cost.toLocaleString()} <span className="text-[10px] text-gray-400">THB</span></td>
                           <td className="px-6 py-4 text-right">
                             {(isEditSelectionMode && selectedRun?.id === row.id) && (
-                              <Button size="md" onClick={(e) => { e?.stopPropagation(); hydrateDraft(row); }}>Modify</Button>
+                              <Button size="md" onClick={(e) => { e?.stopPropagation(); hydrateDraft(row); }}>{t('buttons.modify')}</Button>
                             )}
                           </td>
                         </tr>
@@ -432,7 +432,7 @@ const MarketShop: React.FC = () => {
                   {filteredHistory.length === 0 && (
                     <div className="p-12 text-center text-gray-400">
                       <History className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                      <p>No history found for this category.</p>
+                      <p>{t('empty.noHistory')}</p>
                     </div>
                   )}
                 </div>
@@ -446,7 +446,7 @@ const MarketShop: React.FC = () => {
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search ingredients..."
+                    placeholder={t('placeholders.searchIngredients')}
                     className="pl-10 bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                   />
                 </div>
@@ -498,8 +498,8 @@ const MarketShop: React.FC = () => {
     <div className="h-full flex flex-col">
       <div className="h-16 shrink-0 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
         <div>
-          <h3 className="font-bold text-lg">Work Draft</h3>
-          <p className="text-xs text-gray-500">{viewMode === 'list' ? 'Archive View' : 'Live Editing'}</p>
+          <h3 className="font-bold text-lg">{t('labels.workDraft')}</h3>
+          <p className="text-xs text-gray-500">{viewMode === 'list' ? t('labels.archiveView') : t('labels.liveEditing')}</p>
         </div>
         <button onClick={() => setViewMode('list')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-600">
           <X className="w-5 h-5" />
@@ -520,7 +520,7 @@ const MarketShop: React.FC = () => {
             : "bg-primary-50 border-primary-200 dark:bg-primary-900/10 dark:border-primary-800"
         )}>
           <span className="text-xs font-black uppercase text-gray-400 tracking-widest block mb-2">
-            {activeTab === 'teacher' ? 'Total Expenses' : 'Items Required'}
+            {activeTab === 'teacher' ? t('labels.totalExpenses') : t('labels.itemsRequired')}
           </span>
           <span className="font-mono text-3xl font-black text-gray-900 dark:text-white block">
             {viewMode === 'list' && selectedRun
@@ -533,7 +533,7 @@ const MarketShop: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-100 dark:border-gray-700 pt-6">
-          <h4 className="text-xs font-bold uppercase text-gray-500 mb-4 flex items-center gap-2"><ShoppingCart className="w-4 h-4" /> Item Checklist</h4>
+          <h4 className="text-xs font-bold uppercase text-gray-500 mb-4 flex items-center gap-2"><ShoppingCart className="w-4 h-4" /> {t('labels.itemChecklist')}</h4>
 
           <div className="space-y-3 pb-32">
             {(viewMode === 'list' && selectedRun ? selectedRun.items_snapshot : Object.entries(formState)).map((entry) => {
@@ -555,7 +555,7 @@ const MarketShop: React.FC = () => {
                   {(activeTab === 'teacher' || (selectedRun && selectedRun.shopper_role === 'teacher')) && (
                     <div className="text-right">
                       <div className="font-mono font-black text-primary-600 dark:text-primary-400 text-sm">{item.price} <span className="text-[9px] opacity-40">THB</span></div>
-                      {viewMode === 'planner' && <span className="text-[8px] uppercase font-bold text-gray-300 block">Tap to edit</span>}
+                      {viewMode === 'planner' && <span className="text-[8px] uppercase font-bold text-gray-300 block">{t('labels.tapToEdit')}</span>}
                     </div>
                   )}
                 </div>
@@ -564,7 +564,7 @@ const MarketShop: React.FC = () => {
             {((viewMode === 'list' && !selectedRun) || (viewMode === 'planner' && Object.keys(formState).length === 0)) && (
               <div className="py-12 text-center opacity-40">
                 <ShoppingCart className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-                <p className="text-[10px] font-bold uppercase text-gray-400">No content</p>
+                <p className="text-[10px] font-bold uppercase text-gray-400">{t('empty.noContent')}</p>
               </div>
             )}
           </div>
@@ -581,7 +581,7 @@ const MarketShop: React.FC = () => {
             disabled={isSaving}
             onClick={handleSave}
           >
-            {activeTab === 'teacher' ? 'Submit Report' : 'Publish Plan'}
+            {activeTab === 'teacher' ? t('buttons.submitReport') : t('buttons.publishPlan')}
           </Button>
         </div>
       )}
@@ -609,7 +609,7 @@ const MarketShop: React.FC = () => {
           className="max-w-sm p-6"
         >
           <div className="mb-6 text-center">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Select Date</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('modal.selectDate')}</h3>
           </div>
           <div className="flex flex-col gap-6">
             <MiniCalendar
@@ -617,7 +617,7 @@ const MarketShop: React.FC = () => {
               onChange={(d: Date) => startNewReport(d)}
               className="w-full"
             />
-            <Button className="w-full" variant="outline" onClick={() => setIsCalendarModalOpen(false)}>Cancel</Button>
+            <Button className="w-full" variant="outline" onClick={() => setIsCalendarModalOpen(false)}>{t('buttons.cancel')}</Button>
           </div>
         </Modal>
 
@@ -625,7 +625,7 @@ const MarketShop: React.FC = () => {
         <Modal isOpen={keypadOpen} onClose={() => setKeypadOpen(false)} className="bg-transparent border-none shadow-none max-w-sm p-0">
           <div className="space-y-4">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border-2 border-primary-500 text-center shadow-2xl">
-              <span className="uppercase font-black text-primary-600 tracking-widest mb-1 block text-xs">Input THB</span>
+              <span className="uppercase font-black text-primary-600 tracking-widest mb-1 block text-xs">{t('labels.inputThb')}</span>
               <div className="font-mono text-gray-900 dark:text-white text-4xl font-bold flex items-center justify-center gap-2">
                 {tempPrice}<span className="text-xl opacity-50">฿</span>
               </div>

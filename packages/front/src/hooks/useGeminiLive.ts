@@ -1,8 +1,8 @@
-
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality, Type } from '@google/genai';
-import { cherryFront, buildFrontPrompt } from '../prompts/cherryPrompt';
-import { saveMessage, contentService } from '@thaiakha/shared/services';
+import { getLiveGeminiClient } from '../services/geminiClient';
+import { LiveServerMessage, Modality, Type } from '@google/genai';
+import { cherryFront, buildFrontPrompt, fetchChatContextData } from '../prompts/cherryPrompt';
+import { saveMessage } from '@thaiakha/shared/services';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -15,7 +15,8 @@ interface SessionState {
 
 export const useGeminiLive = (
   userProfile?: any,
-  sessionId?: string | null
+  sessionId?: string | null,
+  onTurnComplete?: (userText: string, assistantText: string) => void
 ) => {
     const [state, setState] = useState<SessionState>({
         status: 'idle',
@@ -33,6 +34,8 @@ export const useGeminiLive = (
     const sessionRef = useRef<any | null>(null); // resolved session for sync access
     const processorRef = useRef<AudioWorkletNode | null>(null);
     const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+    const inputTranscriptRef = useRef<string>(''); // accumulates user speech transcription
+    const outputTranscriptRef = useRef<string>(''); // accumulates Cherry's response transcription
 
     const encode = (bytes: Uint8Array): string => {
         let binary = '';
@@ -95,6 +98,11 @@ export const useGeminiLive = (
         sourcesRef.current.forEach(s => { try { s.stop(); } catch(e) {} });
         sourcesRef.current.clear();
         nextStartTimeRef.current = 0;
+
+        // Reset transcript refs
+        inputTranscriptRef.current = '';
+        outputTranscriptRef.current = '';
+
         setState(prev => ({ ...prev, status: 'idle', inputTranscript: '', outputTranscript: '' }));
     }, []);
 
@@ -118,18 +126,7 @@ export const useGeminiLive = (
         setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
         try {
-            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-            console.log("DEBUG: Voice Mode API Key Check:", {
-                exists: !!apiKey,
-                length: apiKey?.length,
-                prefix: apiKey?.substring(0, 5),
-                suffix: apiKey?.substring(apiKey.length - 5)
-            });
-            if (!apiKey) {
-                throw new Error("API Key is missing from environment.");
-            }
-
-            const ai = new GoogleGenAI({ apiKey });
+            const ai = await getLiveGeminiClient();
             const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
             
             audioCtxRef.current = new AudioContextClass({ sampleRate: 24000 });
@@ -138,22 +135,18 @@ export const useGeminiLive = (
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = stream;
 
-            const [cookingClasses] = await Promise.all([
-              contentService.getCookingClasses(),
-            ]);
+            const { cookingClasses, menuList, spicinessLevels } = await fetchChatContextData();
 
             const resolvedSystemInstruction = overrideInstruction || buildFrontPrompt(
               userProfile || {},
               userProfile?.dietary_profile || 'diet_regular',
               userProfile?.allergies || [],
               true,
-              { cookingClasses }
+              { cookingClasses, menuList, spicinessLevels }
             );
 
-
-
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+                model: 'gemini-2.5-flash-native-audio',
                 callbacks: {
                     onopen: async () => {
                         setState(prev => ({ ...prev, status: 'active' }));
@@ -194,28 +187,31 @@ export const useGeminiLive = (
                     },
                     onmessage: async (message: LiveServerMessage) => {
 
-
+                        // Accumulate input transcription in ref for closure access
                         if (message.serverContent?.inputTranscription) {
-                            setState(prev => ({ ...prev, inputTranscript: prev.inputTranscript + message.serverContent!.inputTranscription!.text }));
+                            inputTranscriptRef.current += message.serverContent!.inputTranscription!.text;
+                            setState(prev => ({ ...prev, inputTranscript: inputTranscriptRef.current }));
                         }
+
+                        // Accumulate output transcription in ref for closure access
                         if (message.serverContent?.outputTranscription) {
-                            setState(prev => ({ ...prev, outputTranscript: prev.outputTranscript + message.serverContent!.outputTranscription!.text }));
+                            outputTranscriptRef.current += message.serverContent!.outputTranscription!.text;
+                            setState(prev => ({ ...prev, outputTranscript: outputTranscriptRef.current }));
                         }
+
+                        // Use refs (not state) to avoid stale closure
                         if (message.serverContent?.turnComplete) {
-                            // Salva trascrizioni in Supabase se abbiamo una sessionId
-                            if (sessionId) {
-                                setState(prev => {
-                                    if (prev.outputTranscript) {
-                                        saveMessage(sessionId, 'assistant', prev.outputTranscript, 'voice');
-                                    }
-                                    if (prev.inputTranscript) {
-                                        saveMessage(sessionId, 'user', prev.inputTranscript, 'voice');
-                                    }
-                                    return { ...prev, inputTranscript: '', outputTranscript: '' };
-                                });
-                            } else {
-                                setState(prev => ({ ...prev, inputTranscript: '', outputTranscript: '' }));
+                            const userTranscript = inputTranscriptRef.current;
+                            const assistantTranscript = outputTranscriptRef.current;
+
+                            if (userTranscript && assistantTranscript && onTurnComplete) {
+                                onTurnComplete(userTranscript, assistantTranscript);
                             }
+
+                            // Reset refs and state
+                            inputTranscriptRef.current = '';
+                            outputTranscriptRef.current = '';
+                            setState(prev => ({ ...prev, inputTranscript: '', outputTranscript: '' }));
                         }
 
                         const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;

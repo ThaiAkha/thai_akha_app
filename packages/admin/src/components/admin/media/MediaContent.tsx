@@ -1,5 +1,6 @@
 import React from 'react';
 import { Music, Video, Grid, Check, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
     DataExplorerContent,
     GridCard,
@@ -31,6 +32,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
     onToggleSelectAll,
     onToggleSelectRow
 }) => {
+    const { t } = useTranslation('media');
 
     const isSelected = (id: string) => selectedIds.has(id);
 
@@ -38,7 +40,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
         <DataExplorerContent
             loading={loading && filteredAssets.length === 0}
             emptyIcon={<Grid className="w-12 h-12 opacity-10" />}
-            emptyMessage="No media assets found"
+            emptyMessage={t('content.emptyMessage')}
         >
             {filteredAssets.length > 0 && viewMode === 'grid' && (
                 <div className="p-5">
@@ -78,7 +80,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                             }
                                             footerLeft={
                                                 <p className="text-[9px] font-mono font-bold text-gray-400 tracking-tighter uppercase truncate max-w-[100px]">
-                                                    {a.asset_id || 'NO-DB-SLUG'}
+                                                    {a.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
                                                 </p>
                                             }
                                             footerRight={
@@ -111,16 +113,16 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                 checked={selectedIds.size === filteredAssets.length && filteredAssets.length > 0}
                                 onChange={onToggleSelectAll}
                             />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Media 16:9</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('content.table.colMedia')}</span>
                         </div>
                         <div className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-gray-400 border-r border-gray-100 dark:border-gray-900/50">
-                            Identity & Hierarchy
+                            {t('content.table.colIdentity')}
                         </div>
                         <div className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-gray-400 border-r border-gray-100 dark:border-gray-900/50">
-                            Specs & Meta
+                            {t('content.table.colSpecs')}
                         </div>
                         <div className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">
-                            Node Context (+20%)
+                            {t('content.table.colContext')}
                         </div>
                     </div>
 
@@ -159,7 +161,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                                 {asset.file_name}
                                             </p>
                                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter truncate max-w-[200px]">
-                                                {asset.title || 'Untitled Reference'}
+                                                {asset.title || t('content.table.untitledReference')}
                                             </p>
                                         </div>
                                         <div className="flex gap-2 items-center mt-1">
@@ -215,11 +217,11 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                                     if (asset.image_url) {
                                                         window.open(asset.image_url, '_blank', 'noopener,noreferrer');
                                                     } else {
-                                                        alert("No valid URL for this asset kha!");
+                                                        alert(t('content.table.noUrl'));
                                                     }
                                                 }}
                                                 className="group/btn relative inline-flex p-3.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-white/10 text-gray-400 hover:bg-primary-500 hover:text-white hover:border-primary-500 hover:scale-110 transition-all duration-500 shadow-xl shadow-gray-200/20 dark:shadow-none"
-                                                title="Open in new window"
+                                                title={t('content.table.openInNewWindow')}
                                             >
                                                 <ExternalLink size={18} />
                                             </button>

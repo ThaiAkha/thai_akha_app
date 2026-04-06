@@ -71,7 +71,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
               )}
             >
               <CheckCircle2 size={14} />
-              Yes
+              {t('logistics.yes')}
             </button>
             <button
               type="button"
@@ -83,7 +83,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
               )}
             >
-              No
+              {t('logistics.no')}
             </button>
           </div>
         </div>
@@ -96,8 +96,8 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                 // Hotel Search
                 <div className="relative">
                   <InputField
-                    label="Hotel"
-                    placeholder="Search hotel (min. 2 chars)..."
+                    label={t('logistics.fieldHotel')}
+                    placeholder={t('logistics.hotelPlaceholder')}
                     value={hotelSearchQuery}
                     onChange={e => onHotelSearchQueryChange(e.target.value)}
                     autoComplete="off"
@@ -132,7 +132,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
               ) : (
                 // Meeting Point Dropdown
                 <SelectField
-                  label="Meeting Point"
+                  label={t('logistics.meetingPoint')}
                   value={meetingPoint}
                   onChange={e => {
                     onMeetingPointChange(e.target.value);
@@ -141,7 +141,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                     }
                   }}
                 >
-                  <option value="">Select a meeting point...</option>
+                  <option value="">{t('logistics.selectMeetingPoint')}</option>
                   {meetingPoints.map(point => (
                     <option key={point.id} value={point.name}>
                       {point.name}
@@ -152,7 +152,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
             </div>
 
             <div className="col-span-12 md:col-span-3">
-              <SectionHeader title="Luggage" className="mb-2" />
+              <SectionHeader title={t('logistics.luggage')} className="mb-2" />
               <div className="grid grid-cols-2 gap-3 h-14">
                 <button
                   type="button"
@@ -165,7 +165,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   )}
                 >
                   <Package size={14} />
-                  Yes
+                  {t('logistics.yes')}
                 </button>
                 <button
                   type="button"
@@ -178,7 +178,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   )}
                 >
                   <HelpCircle size={14} />
-                  No
+                  {t('logistics.no')}
                 </button>
               </div>
             </div>
@@ -193,8 +193,8 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
       )}
 
       <TextArea
-        label="Extra Notes"
-        placeholder="Any special requests, dietary restrictions or additional information..."
+        label={t('logistics.extraNotes')}
+        placeholder={t('logistics.notesPlaceholder')}
         value={notes}
         onChange={onNotesChange}
         rows={4}

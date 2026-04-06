@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCherryContext } from '../../providers/CherryProvider';
 import { cn } from '@thaiakha/shared/lib/utils';
 import {
@@ -32,6 +33,7 @@ const SoundWave: React.FC = () => (
 );
 
 export const AdminChatBox: React.FC = () => {
+  const { t } = useTranslation('common');
   const [chatState, setChatState] = useState<ChatState>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -97,7 +99,7 @@ export const AdminChatBox: React.FC = () => {
         <button
           onClick={() => persistState('expanded')}
           className="size-14 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
-          aria-label="Open Cherry AI"
+          aria-label={t('aria.openCherry')}
         >
           <Bot size={24} />
         </button>
@@ -130,14 +132,14 @@ export const AdminChatBox: React.FC = () => {
           <button
             onClick={() => persistState('expanded')}
             className="size-6 rounded-lg bg-white/20 hover:bg-white/40 flex items-center justify-center transition-colors"
-            aria-label="Expand chat"
+            aria-label={t('aria.expandChat')}
           >
             <Maximize2 size={10} className="text-white" />
           </button>
           <button
             onClick={() => persistState('closed')}
             className="size-6 rounded-lg bg-white/20 hover:bg-white/40 flex items-center justify-center transition-colors"
-            aria-label="Close chat"
+            aria-label={t('aria.closeChat')}
           >
             <X size={10} className="text-white" />
           </button>
@@ -188,21 +190,21 @@ export const AdminChatBox: React.FC = () => {
               'size-9 rounded-xl flex items-center justify-center transition-all duration-300',
               isVoiceActive ? 'bg-white text-red-600' : 'bg-white/10 text-white hover:bg-white/20'
             )}
-            aria-label="Toggle voice"
+            aria-label={t('aria.toggleVoice')}
           >
             {isVoiceActive ? <MicOff size={16} /> : <Mic size={16} />}
           </button>
           <button
             onClick={() => persistState('minimized')}
             className="size-9 rounded-xl bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors"
-            aria-label="Minimize"
+            aria-label={t('aria.minimizeChat')}
           >
             <Minus size={16} />
           </button>
           <button
             onClick={() => persistState('closed')}
             className="size-9 rounded-xl bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors"
-            aria-label="Close"
+            aria-label={t('aria.close')}
           >
             <X size={16} />
           </button>

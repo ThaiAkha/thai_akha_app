@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { buildFrontPrompt } from '../prompts/cherryPrompt';
+import { getTextGeminiClient } from '../services/geminiClient';
+import { buildFrontPrompt, fetchChatContextData } from '../prompts/cherryPrompt';
 import {
   getOrCreateSession,
   loadRecentMessages,
@@ -10,8 +10,7 @@ import {
   type ChatSession,
   type DbChatMessage,
 } from '@thaiakha/shared/services';
-import { contentService } from '@thaiakha/shared/services';
-import type { ChatMessage } from '@thaiakha/shared';
+import type { ChatMessage, SpicinessLevel } from '@thaiakha/shared';
 import type { UserProfile } from '../services/auth.service';
 
 const HISTORY_WINDOW = 5;
@@ -28,6 +27,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   const initialized = useRef(false);
   const cookingClassesRef = useRef<Array<{ id: string; title: string; price: number }>>([]);
   const recipesRef = useRef<string[]>([]);
+  const spicinessLevelsRef = useRef<SpicinessLevel[]>([]);
 
   // ── System prompt builder ──────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         userProfile?.dietary_profile ?? 'diet_regular',
         userProfile?.allergies ?? [],
         false,
-        { cookingClasses: cookingClassesRef.current, menuList: recipesRef.current }
+        { cookingClasses: cookingClassesRef.current, menuList: recipesRef.current, spicinessLevels: spicinessLevelsRef.current }
       );
 
       let historyBlock = '';
@@ -61,14 +61,18 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
   const initGeminiChat = useCallback(
     (history: DbChatMessage[], summary: string | null) => {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-      chatRef.current = ai.chats.create({
-        model: 'gemini-3-flash-preview',
-        config: {
-          systemInstruction: buildSystemPrompt(history, summary),
-          temperature: 0.5,
-        },
-      });
+      try {
+        const ai = getTextGeminiClient();
+        chatRef.current = ai.chats.create({
+          model: 'gemini-3-flash-preview',
+          config: {
+            systemInstruction: buildSystemPrompt(history, summary),
+            temperature: 0.5,
+          },
+        });
+      } catch (err) {
+        console.error('[useCherryChat] Gemini init failed:', err);
+      }
     },
     [buildSystemPrompt]
   );
@@ -80,13 +84,10 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     initialized.current = true;
 
     const init = async () => {
-      // Fetch cooking classes and recipes via SWR cache (zero-latency on repeat visits)
-      const [classes, recipes] = await Promise.all([
-        contentService.getCookingClasses(),
-        contentService.getRecipes()
-      ]);
-      cookingClassesRef.current = classes;
-      recipesRef.current = recipes.map((r: { title: string }) => r.title);
+      const { cookingClasses, menuList, spicinessLevels } = await fetchChatContextData();
+      cookingClassesRef.current = cookingClasses;
+      recipesRef.current = menuList;
+      spicinessLevelsRef.current = spicinessLevels;
 
       const session = await getOrCreateSession(userProfile?.id);
       sessionRef.current = session;
@@ -101,25 +102,20 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         })
       );
 
-      let historyForGemini = history;
+      // ── Static welcome message (UI-only, never sent to Gemini) ─────────────
+      // Cherry greets the user without wasting tokens or causing a "double intro".
+      // On returning users with history, the history already provides context.
       if (initialMessages.length === 0) {
         const greeting = userProfile?.full_name
-          ? `Sawasdee kha ${(userProfile.full_name).split(' ')[0]}! Welcome back to your Akha kitchen. How can I help you today? kha`
-          : "Sawasdee kha! I'm Cherry, your Akha cultural guide. How can I help you today? kha";
-        initialMessages.push({ id: 'greeting', role: 'model', text: greeting });
-        const greetingDbMsg: DbChatMessage = {
-          id: 'greeting',
-          sender_role: 'assistant',
-          content: greeting,
-          type: 'text',
-          created_at: new Date().toISOString(),
-          session_id: session.id,
-        };
-        historyForGemini = [...history, greetingDbMsg];
+          ? `Sawasdee kha ${(userProfile.full_name).split(' ')[0]}! 🍒 Welcome back to your Akha kitchen. How can I help you today?`
+          : "Sawasdee kha! 🍒 I'm Cherry, your Akha cultural guide and chef. Ask me anything about our courses, recipes or Thai culture!";
+        // Pure UI message — id prefixed 'static:' so sendMessage never saves it to DB
+        initialMessages.push({ id: 'static:greeting', role: 'model', text: greeting });
       }
 
       setMessages(initialMessages);
-      initGeminiChat(historyForGemini, session.summary);
+      // Gemini is initialized with REAL history only
+      initGeminiChat(history, session.summary);
     };
 
     init();
@@ -129,7 +125,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
   const triggerAutoSummary = async (sid: string) => {
     try {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+      const ai = getTextGeminiClient();
       const summaryChat = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: { systemInstruction: 'You are a concise conversation summarizer. Output plain text only.', temperature: 0.1 },
@@ -151,7 +147,12 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   // ── sendMessage ────────────────────────────────────────────────────────────
 
   const sendMessage = async (userText: string) => {
-    if (!chatRef.current || !userText.trim() || isLoading) return;
+    if (!userText.trim() || isLoading) return;
+
+    if (!chatRef.current) {
+      setError('Chat not initialized. Please refresh kha.');
+      return;
+    }
 
     const sid = sessionRef.current?.id ?? null;
 
@@ -209,9 +210,39 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     }
   };
 
+  // ── addVoiceMessages (The Bridge) ────────────────────────────────────────
+  // This merges Gemini Live transcriptions into the unified chat UI and DB.
+
+  const addVoiceMessages = useCallback(async (
+    userText: string,
+    assistantText: string
+  ) => {
+    if (!userText.trim() || !assistantText.trim()) return;
+
+    const userMsgId = `voice-user-${Date.now()}`;
+    const modelMsgId = `voice-model-${Date.now()}`;
+
+    // 1. Update UI state instantly
+    setMessages(prev => [
+      ...prev,
+      { id: userMsgId, role: 'user', text: userText, type: 'voice' as any },
+      { id: modelMsgId, role: 'model', text: assistantText, type: 'voice' as any }
+    ]);
+
+    // 2. Persist to Supabase
+    const sid = sessionRef.current?.id;
+    if (sid) {
+      await Promise.all([
+        saveMessage(sid, 'user', userText, 'voice'),
+        saveMessage(sid, 'assistant', assistantText, 'voice')
+      ]);
+    }
+  }, []);
+
   return {
     messages,
     sendMessage,
+    addVoiceMessages,
     isLoading,
     error,
     sessionId,

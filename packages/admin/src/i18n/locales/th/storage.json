@@ -1,6 +1,7 @@
 {
   "sidebar": {
     "title": "บัคเก็ต",
+    "statusLabel": "สถานะ",
     "status": "สตอเรจสด"
   },
   "meta": {

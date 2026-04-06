@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { DayData, BulkSessionType, getDateKey } from '../../../hooks/useAdminCalendar';
 import CalendarMaster, { CalendarDay, LegendItem } from '../../common/CalendarMaster';
@@ -38,6 +39,8 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
     canNavigatePrev,
     isPastDate
 }) => {
+    const { t } = useTranslation('calendar');
+
     // Convert calendar days to CalendarDay format
     const masterCalendarDays = useMemo(() => {
         return calendarDays.map((date) => {
@@ -67,10 +70,10 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
     }, [calendarDays, availability, viewDate, loading, selectedDate, selectedDates, isBulkMode, isPastDate]);
 
     const legend: LegendItem[] = [
-        { label: 'Available', color: 'bg-green-500' },
-        { label: 'Booked', color: 'bg-red-500' },
-        { label: 'Closed', color: 'bg-orange-400' },
-        { label: 'Selected', color: 'bg-primary-500', borderColor: 'border-primary-400' },
+        { label: t('legend.available'), color: 'bg-green-500' },
+        { label: t('legend.booked'), color: 'bg-red-500' },
+        { label: t('legend.closed'), color: 'bg-orange-400' },
+        { label: t('legend.selected'), color: 'bg-primary-500', borderColor: 'border-primary-400' },
     ];
 
     const bulkSessionSelector = isBulkMode ? (
@@ -86,7 +89,7 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
                             : 'text-gray-900 dark:text-gray-100'
                     )}
                 >
-                    {type === 'morning_class' ? 'Morning' : type === 'evening_class' ? 'Evening' : 'All Day'}
+                    {type === 'morning_class' ? t('bulk.morning') : type === 'evening_class' ? t('bulk.evening') : t('bulk.allDay')}
                 </button>
             ))}
         </div>

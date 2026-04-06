@@ -29,7 +29,7 @@ export const initI18n = async (lng?: LangCode) => {
         'profile', 'dashboard', 'calendar',
         'booking', 'hotels', 'database',
         'storage', 'inventory', 'logistics',
-        'reservation', 'pos', 'pages',
+        'reservation', 'pos', 'pages', 'driver', 'media', 'market',
       ],
       defaultNS: 'common',
       interpolation: { escapeValue: false },

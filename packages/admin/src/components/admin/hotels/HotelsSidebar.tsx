@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2, Map as MapIcon } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import type { HotelLocation, PickupZone, MeetingPoint } from '../../../hooks/useAdminHotels';
@@ -20,6 +21,7 @@ const HotelsSidebar: React.FC<HotelsSidebarProps> = ({
     activeTab,
     onSelect
 }) => {
+    const { t } = useTranslation('hotels');
     const sidebarItems = useMemo(() => {
         // Filter out "Walk Inn" zone
         const visibleZones = zones.filter(z =>
@@ -42,13 +44,13 @@ const HotelsSidebar: React.FC<HotelsSidebarProps> = ({
         return [
             {
                 id: 'all_mps',
-                label: 'All Meeting Points',
+                label: t('sidebar.allMeetingPoints'),
                 count: meetingPoints.length,
                 icon: <MapIcon className="w-4 h-4" />
             },
             {
                 id: 'all',
-                label: 'All Hotels',
+                label: t('sidebar.allHotels'),
                 count: hotels.length,
                 icon: <Building2 className="w-4 h-4" />
             },
@@ -70,11 +72,11 @@ const HotelsSidebar: React.FC<HotelsSidebarProps> = ({
                 )
             }))
         ];
-    }, [hotels, zones, meetingPoints]);
+    }, [hotels, zones, meetingPoints, t]);
 
     return (
         <DataExplorerSidebar
-            title="Hotels"
+            title={t('sidebar.title')}
             titleIcon={<Building2 className="w-5 h-5" />}
             items={sidebarItems}
             selectedId={activeTab === 'meeting_points' ? 'all_mps' : selectedZone}

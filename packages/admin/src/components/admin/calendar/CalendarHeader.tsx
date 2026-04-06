@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../ui/button/Button';
@@ -16,11 +17,6 @@ interface CalendarHeaderProps {
   bulkSessionSelector?: React.ReactNode;
 }
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
 const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   viewDate,
   onPrev,
@@ -33,11 +29,14 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   subtitle,
   bulkSessionSelector,
 }) => {
+  const { t } = useTranslation('calendar');
+  const months = t('header.months', { returnObjects: true }) as string[];
+
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
       <div className="space-y-0.5">
         <h3 className="text-xl font-black uppercase text-gray-900 dark:text-gray-100">
-          {MONTHS[viewDate.getMonth()]} <span className="text-primary-500">{viewDate.getFullYear()}</span>
+          {months[viewDate.getMonth()]} <span className="text-primary-500">{viewDate.getFullYear()}</span>
         </h3>
         {subtitle && (
           <p className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-400">
@@ -62,7 +61,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
               onClick={() => onBulkModeChange(!isBulkMode)}
               className="text-xs font-black uppercase"
             >
-              {isBulkMode ? 'Close Bulk' : 'Bulk Edit'}
+              {isBulkMode ? t('header.closeBulk') : t('header.bulkEdit')}
             </Button>
             <div className="w-px h-8 bg-gray-200 dark:bg-gray-800 mx-2" />
           </>

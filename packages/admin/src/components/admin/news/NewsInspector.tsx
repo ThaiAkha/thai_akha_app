@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2, Image as ImageIcon, Volume2, LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
@@ -80,6 +81,7 @@ function FieldLabel({ label, isReadOnly = false }: { label: string; isReadOnly?:
 function CoverImageField({ fieldKey, value, isEditing, onChange }: {
     fieldKey: string; value: any; isEditing: boolean; onChange: (v: string) => void;
 }) {
+    const { t } = useTranslation('pages');
     const rawValue = typeof value === 'string' ? value : '';
     const { urls: resolvedUrl, loading } = useMediaResolver(rawValue);
     const [imgError, setImgError] = useState(false);
@@ -125,7 +127,7 @@ function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                     type="text"
                     value={rawValue}
                     onChange={e => { setImgError(false); onChange(e.target.value); }}
-                    placeholder="Media ID or URL"
+                    placeholder={t('news.placeholderMediaId')}
                     className="text-xs font-mono bg-white dark:bg-gray-800 h-9 px-3 rounded-lg shadow-sm"
                 />
             )}
@@ -136,6 +138,7 @@ function CoverImageField({ fieldKey, value, isEditing, onChange }: {
 function AudioField({ fieldKey, value, isEditing, onChange }: {
     fieldKey: string; value: any; isEditing: boolean; onChange: (v: string) => void;
 }) {
+    const { t } = useTranslation('pages');
     const rawValue = typeof value === 'string' ? value : '';
     const { urls: resolvedUrl, loading } = useMediaResolver(rawValue);
     const displayUrl = (typeof resolvedUrl === 'string' ? resolvedUrl : null) || rawValue;
@@ -174,7 +177,7 @@ function AudioField({ fieldKey, value, isEditing, onChange }: {
                     type="text"
                     value={rawValue}
                     onChange={e => onChange(e.target.value)}
-                    placeholder="Media ID or URL"
+                    placeholder={t('news.placeholderMediaId')}
                     className="text-xs font-mono bg-white dark:bg-gray-800 h-9 px-3 rounded-lg shadow-sm"
                 />
             )}

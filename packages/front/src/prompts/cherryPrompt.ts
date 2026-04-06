@@ -1,4 +1,43 @@
-// packages/front/src/prompts/cherryPrompt.ts
+import type { SpicinessLevel, CookingClassDB } from '@thaiakha/shared';
+import { contentService } from '@thaiakha/shared/services';
+
+// --- Shared Context Data Fetching (with simple cache) ---
+export interface ChatContextData {
+  cookingClasses: CookingClassDB[];
+  menuList: string[];
+  spicinessLevels: SpicinessLevel[];
+}
+
+let cachedChatContext: ChatContextData | null = null;
+let lastCacheUpdate = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+export async function fetchChatContextData(): Promise<ChatContextData> {
+  try {
+    const now = Date.now();
+    if (cachedChatContext && now - lastCacheUpdate < CACHE_DURATION) {
+      return cachedChatContext;
+    }
+
+    const [cookingClasses, recipes, spicinessLevels] = await Promise.all([
+      contentService.getCookingClasses(),
+      contentService.getRecipes(),
+      contentService.getSpicinessLevels(),
+    ]);
+
+    cachedChatContext = {
+      cookingClasses: (cookingClasses as CookingClassDB[]) || [],
+      menuList: (recipes || []).map((r: { title: string }) => r.title),
+      spicinessLevels: (spicinessLevels as SpicinessLevel[]) || [],
+    };
+    lastCacheUpdate = now;
+    return cachedChatContext;
+  } catch (err) {
+    console.error('[ChatContext] Failed to fetch chat context data kha:', err);
+    // Secure fallback: empty context for no-crash experience
+    return { cookingClasses: [], menuList: [], spicinessLevels: [] };
+  }
+}
 
 export interface CherryAgentDefinition {
   id: string;
@@ -14,7 +53,6 @@ export const CHERRY_BASE_IDENTITY = `
 * **Role:** Professional Host and Cultural Ambassador of Thai Akha Kitchen (Chiang Mai) since 2015.
 * **Vibe:** Warm, enthusiastic, and patient. Embody Akha hospitality with a professional business edge.
 * **Politeness:** Mandatory use of "kha" (or "ค่ะ" in Thai) naturally at greetings and conclusions.
-* **Mandatory Greeting:** "Sawasdee kha! I'm Cherry from Thai Akha Kitchen. How can I help you?"
 * **Accent:** English with a polite, soft Thai inflection and a calm, rhythmic flow.
 * **Northern Soul:** Chiang Mai spirit ("Rose of the North"). Do not use the "jao" dialect.
 * **Language Chameleon:** Automatically mirror the language the user speaks to you.
@@ -53,7 +91,7 @@ export function buildFrontPrompt(
   dietaryKey: string,
   allergies: string[],
   isVoiceMode: boolean,
-  contextData: { cookingClasses?: any[]; menuList?: string[] } = {}
+  contextData: { cookingClasses?: any[]; menuList?: string[]; spicinessLevels?: SpicinessLevel[] } = {}
 ): string {
   const agent = cherryFront;
   const wordLimit = isVoiceMode ? agent.maxWords.voice : agent.maxWords.text;
@@ -84,6 +122,19 @@ export function buildFrontPrompt(
     menuBlock = `\n### OFFICIAL DATA: MENU\nDaily signature dishes available — refer to our menu explorer kha.\n`;
   }
 
+  // Spiciness Levels Data
+  let spicinessBlock = '';
+  if (contextData.spicinessLevels?.length) {
+    const levelLines = contextData.spicinessLevels.map(s => {
+      const parts = [`- **${s.icon} ${s.title}**`];
+      if (s.label) parts.push(`(Label: ${s.label})`);
+      if (s.subtitle) parts.push(`— ${s.subtitle}`);
+      parts.push(`\n  ${s.description}`);
+      return parts.join(' ');
+    }).join('\n');
+    spicinessBlock = `\n### THE SPICE DIAL — OFFICIAL LEVELS\nWhen guests ask about spice levels, use ONLY these authoritative options:\n${levelLines}\n\nRULE: NEVER invent spice levels. If asked, describe each level using the data above.\n`;
+  }
+
   // FIX-02: Pickup Logistics (Authoritative Data)
   const pickupBlock = `
 ### PICKUP LOGISTICS (AUTHORITATIVE DATA)
@@ -101,6 +152,7 @@ RULES:
 ### OFFICIAL DATA: COOKING CLASSES
 ${classesData}
 ${menuBlock}
+${spicinessBlock}
 ${pickupBlock}
 ### AUTHORIZED DATA SCOPE
 You have access to: ${agent.dbScope.join(', ')}.

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import Button from '../../components/ui/button/Button';
 import Badge from '../../components/ui/badge/Badge';
@@ -51,6 +52,7 @@ const getShopIcon = (name: string) => {
 };
 
 const MarketRunner: React.FC = () => {
+    const { t } = useTranslation('market');
     const [loading, setLoading] = useState(true);
     const [isFinishing, setIsFinishing] = useState(false);
     const [activeRun, setActiveRun] = useState<MarketRun | null>(null);
@@ -108,7 +110,7 @@ const MarketRunner: React.FC = () => {
 
     // --- 2. LOGIC HELPERS ---
     const shopTabs = useMemo(() => {
-        const tabs = [{ value: 'all', label: 'All Items', icon: <LayoutGrid className="w-4 h-4" /> }];
+        const tabs = [{ value: 'all', label: t('tabs.allItems'), icon: <LayoutGrid className="w-4 h-4" /> }];
         const uniqueShops = Array.from(new Set(items.map(i => i.target_shop || 'General'))).sort();
         uniqueShops.forEach(shopName => {
             tabs.push({
@@ -160,9 +162,9 @@ const MarketRunner: React.FC = () => {
         if (!activeRun) return;
 
         const unboughtCount = items.filter(i => !i.is_bought).length;
-        let confirmMsg = "Mark this run as COMPLETED and save all costs? kha";
+        let confirmMsg = t('messages.finishConfirm');
         if (unboughtCount > 0) {
-            confirmMsg = `Wait! You have ${unboughtCount} items left unbought. Finish anyway? kha`;
+            confirmMsg = t('messages.unboughtWarning', { count: unboughtCount });
         }
 
         if (!window.confirm(confirmMsg)) return;
@@ -182,10 +184,10 @@ const MarketRunner: React.FC = () => {
                 .eq('id', activeRun.id);
 
             if (error) throw error;
-            alert("Run synchronized with Kitchen! Good job kha!");
+            alert(t('messages.syncSuccess'));
             fetchData();
         } catch (err: any) {
-            alert("Error: " + err.message);
+            alert(t('messages.error', { message: err.message }));
         } finally {
             setIsFinishing(false);
         }
@@ -207,7 +209,7 @@ const MarketRunner: React.FC = () => {
     if (loading) {
         return (
             <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <div className="loader">Loading...</div>
+                <div className="loader">{t('messages.loading')}</div>
             </div>
         );
     }
@@ -219,10 +221,10 @@ const MarketRunner: React.FC = () => {
                     <CalendarDays className="w-10 h-10" />
                 </div>
                 <div className="text-center space-y-2">
-                    <h3 className="text-xl font-black uppercase text-gray-900 dark:text-white italic">No List Found</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto">The Kitchen Manager hasn't published a shopping list for today yet kha.</p>
+                    <h3 className="text-xl font-black uppercase text-gray-900 dark:text-white italic">{t('empty.noListFound')}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto">{t('messages.kitchenNotPublished')}</p>
                 </div>
-                <Button onClick={fetchData} startIcon={<RefreshCw className="w-4 h-4" />}>Refresh</Button>
+                <Button onClick={fetchData} startIcon={<RefreshCw className="w-4 h-4" />}>{t('buttons.refresh')}</Button>
             </div>
         );
     }
@@ -253,7 +255,7 @@ const MarketRunner: React.FC = () => {
                         </div>
                         <div className="text-right flex items-center gap-4 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-2xl border border-gray-100 dark:border-gray-700 ml-auto">
                             <div className="text-[9px] font-black uppercase text-gray-400 tracking-widest text-left">
-                                Live<br />Total
+                                {t('labels.liveTotal')}
                             </div>
                             <div className="text-2xl font-mono font-black text-primary-600 dark:text-primary-400 leading-none">
                                 {liveTotal.toLocaleString()} <span className="text-[10px] font-sans text-gray-400 font-normal">THB</span>
@@ -276,7 +278,7 @@ const MarketRunner: React.FC = () => {
                                         <h6 className="text-gray-900 dark:text-white uppercase font-black leading-none mb-1 truncate max-w-[120px]">
                                             {activeTab}
                                         </h6>
-                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Vendor Contact</p>
+                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{t('labels.vendorContact')}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
@@ -293,7 +295,7 @@ const MarketRunner: React.FC = () => {
                                         className="px-4 h-10 rounded-xl bg-[#06C755]/10 border border-[#06C755]/30 flex items-center gap-2 text-[#06C755] font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 hover:bg-[#06C755]/20"
                                     >
                                         <MessageCircle className="w-4 h-4" />
-                                        Send Order
+                                        {t('buttons.sendOrder')}
                                     </button>
                                 </div>
                             </div>
@@ -305,7 +307,7 @@ const MarketRunner: React.FC = () => {
                         {filteredItems.length === 0 ? (
                             <div className="py-20 text-center text-gray-300 dark:text-gray-600 flex flex-col items-center gap-3">
                                 <ShoppingCart className="w-12 h-12 opacity-50" />
-                                <p className="text-xs font-bold uppercase tracking-widest">No items found for this stall</p>
+                                <p className="text-xs font-bold uppercase tracking-widest">{t('empty.noItemsForStall')}</p>
                             </div>
                         ) : (
                             filteredItems.map(item => (
@@ -331,7 +333,7 @@ const MarketRunner: React.FC = () => {
                                             {item.name}
                                         </h4>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className="font-mono text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-1.5 py-0.5 rounded">QTY: {item.quantity}</span>
+                                            <span className="font-mono text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-1.5 py-0.5 rounded">{t('labels.qty', { quantity: item.quantity })}</span>
                                             <span className="text-[9px] font-medium text-gray-400 uppercase border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded">{item.unit}</span>
                                         </div>
                                     </div>
@@ -372,7 +374,7 @@ const MarketRunner: React.FC = () => {
                         variant="outline"
                         className="aspect-square h-12 rounded-xl border-dashed border-2 shrink-0 justify-center p-0 w-12"
                         onClick={() => {
-                            const name = prompt("Emergency Item Name? kha");
+                            const name = prompt(t('messages.emergencyItemName'));
                             if (name) {
                                 const newItem: ShoppingItem = {
                                     id: crypto.randomUUID(),
@@ -398,7 +400,7 @@ const MarketRunner: React.FC = () => {
                         disabled={isFinishing}
                         className="h-12 rounded-xl shadow-lg"
                     >
-                        FINISH RUN
+                        {t('buttons.finishRun')}
                     </Button>
                 </div>
 

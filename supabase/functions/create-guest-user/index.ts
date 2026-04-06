@@ -9,8 +9,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-    console.log(`[EdgeFunc] Incoming Request: ${req.method} ${new URL(req.url).pathname}`);
-
     // 1. Gestione CORS (necessaria per chiamate dal browser)
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })

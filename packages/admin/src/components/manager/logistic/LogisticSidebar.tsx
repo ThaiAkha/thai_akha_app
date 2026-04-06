@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sun, Moon, Calendar } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import { SessionType } from '../../common/ClassPicker';
@@ -13,12 +14,12 @@ interface LogisticSidebarProps {
 
 const SESSION_CONFIG = {
     morning: {
-        label: 'Morning Class',
+        labelKey: 'sidebar.morningClass',
         icon: Sun,
         iconColor: 'text-yellow-500' // Colore per morning
     },
     evening: {
-        label: 'Evening Class',
+        labelKey: 'sidebar.eveningClass',
         icon: Moon,
         iconColor: 'text-indigo-400' // Colore per evening
     }
@@ -30,6 +31,8 @@ const LogisticSidebar: React.FC<LogisticSidebarProps> = ({
     selectedSessionId,
     onSelectSession,
 }) => {
+    const { t } = useTranslation('logistics');
+
     const sidebarItems = useMemo(() => {
         const sessionsForDate = upcomingSessions
             .filter(s => s.date === selectedDate)
@@ -46,12 +49,12 @@ const LogisticSidebar: React.FC<LogisticSidebarProps> = ({
 
             return {
                 id: `${s.date}::${s.session_id}`,
-                label: config.label,
+                label: t(config.labelKey),
                 icon: <config.icon className={`w-5 h-5 ${config.iconColor}`} />,
                 // badgeValue e badgeType sono stati rimossi
             };
         });
-    }, [upcomingSessions, selectedDate]);
+    }, [upcomingSessions, selectedDate, t]);
 
     const selectedId = `${selectedDate}::${selectedSessionId}`;
 
@@ -64,7 +67,7 @@ const LogisticSidebar: React.FC<LogisticSidebarProps> = ({
 
     return (
         <DataExplorerSidebar
-            title="Cooking Class"
+            title={t('sidebar.title')}
             titleIcon={<Calendar className="w-5 h-5" />}
             items={sidebarItems}
             selectedId={selectedId}

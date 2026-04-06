@@ -86,6 +86,7 @@
     "requestAssets": "ขอสินทรัพย์ที่กำหนดเอง"
   },
   "adminReport": {
+    "comingSoon": "แดชบอร์ดรายงานเร็วๆ นี้...",
     "loading": "กำลังโหลดรายงาน...",
     "globalPerformance": "ประสิทธิภาพโดยรวม",
     "season": "ฤดูกาล 2026",
@@ -133,6 +134,11 @@
     "noContent": "ไม่มีเนื้อหา",
     "prev": "ก่อนหน้า",
     "next": "ถัดไป"
+  },
+  "news": {
+    "placeholderMediaId": "รหัสสื่อ หรือ URL",
+    "sectionContent": "เนื้อหา",
+    "sectionStatus": "สถานะ"
   },
   "driver": {
     "status": {

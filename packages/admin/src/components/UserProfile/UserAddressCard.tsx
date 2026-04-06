@@ -176,7 +176,7 @@ export default function UserAddressCard() {
             value={formData.postalCode}
             onChange={handleChange}
             isEditing={isEditing}
-            placeholder="00000"
+            placeholder={t("agency.placeholderPostalCode")}
           />
 
           <ProfileRow

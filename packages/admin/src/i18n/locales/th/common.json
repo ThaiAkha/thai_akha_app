@@ -57,11 +57,24 @@
   "theme": {
     "light": "สว่าง",
     "dark": "มืด",
-    "toggle": "สลับธีม"
+    "toggle": "สลับธีม",
+    "lightMode": "โหมดสว่าง",
+    "darkMode": "โหมดมืด"
   },
   "aria": {
     "menuToggle": "เปิด/ปิดแถบด้านข้าง",
-    "userAvatar": "รูปโปรไฟล์ผู้ใช้"
+    "userAvatar": "รูปโปรไฟล์ผู้ใช้",
+    "prevDay": "วันที่ก่อนหน้า",
+    "selectDate": "เลือกวันที่",
+    "nextDay": "วันที่ถัดไป",
+    "toggleTheme": "สลับโหมด",
+    "clearSearch": "ล้างการค้นหา",
+    "openCherry": "เปิดใช้งาน Cherry AI",
+    "expandChat": "ขยายหน้าต่างแชท",
+    "closeChat": "ปิดหน้าต่างแชท",
+    "toggleVoice": "เปิด/ปิดเสียง",
+    "minimizeChat": "ย่อขนาด",
+    "close": "ปิด"
   },
   "yesNo": {
     "yes": "ใช่",
@@ -84,9 +97,13 @@
     "editMeetingPoint": "แก้ไขจุดนัดหมายนี้",
     "assign": "มอบหมาย"
   },
+  "form": {
+    "phonePlaceholder": "เช่น +66 81 234 5678"
+  },
   "fallback": {
     "guest": "แขก",
-    "empty": "ว่าง"
+    "empty": "ว่าง",
+    "viewMore": "ดูเพิ่มเติม"
   },
   "notifications": {
     "title": "การแจ้งเตือน",

@@ -1,0 +1,34 @@
+{
+  "statusLabels": {
+    "waiting": "กำลังรอ",
+    "enRoute": "กำลังเดินทาง",
+    "atLobby": "รอที่จุดนัดพบ",
+    "onBoard": "ขึ้นรถแล้ว",
+    "completed": "เสร็จสิ้น"
+  },
+  "actions": {
+    "startPickup": "เริ่มการรับผู้โดยสาร",
+    "imHere": "ฉันอยู่ที่นี่",
+    "pickupPax": "รับผู้โดยสาร",
+    "dropComplete": "สิ้นสุดการส่งผู้โดยสาร",
+    "done": "เสร็จ",
+    "confirmAction": "ยืนยันการดำเนินการหรือไม่",
+    "clickAgainToConfirm": "คลิกอีกครั้งเพื่อยืนยัน"
+  },
+  "phase": {
+    "pickup": "จุดรับ",
+    "dropoff": "จุดส่ง",
+    "startPickupRoute": "เริ่มเส้นทางรับผู้โดยสาร",
+    "startDropoffRoute": "เริ่มเส้นทางส่งผู้โดยสาร"
+  },
+  "payout": {
+    "allRidesCompleted": "การเดินทางทั้งหมดเสร็จสมบูรณ์",
+    "dailyEarnings": "รายได้ประจำวัน",
+    "returnToHome": "กลับสู่หน้าหลัก"
+  },
+  "stopCard": {
+    "pax": "ผู้โดยสาร",
+    "noNotes": "ไม่มีหมายเหตุ",
+    "destination": "จุดหมายปลายทาง"
+  }
+}

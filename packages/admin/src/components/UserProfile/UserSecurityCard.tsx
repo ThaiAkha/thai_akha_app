@@ -76,7 +76,7 @@ export default function UserSecurityCard() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             isEditing={true}
-                            placeholder="••••••••"
+                            placeholder={t("security.placeholderPassword")}
                         />
 
                         <ProfileRow
@@ -86,7 +86,7 @@ export default function UserSecurityCard() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             isEditing={true}
-                            placeholder="••••••••"
+                            placeholder={t("security.placeholderPassword")}
                         />
                     </div>
 

@@ -1,3 +1,5 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ImageIcon, Eye, EyeOff } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
@@ -24,6 +26,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
     isNew,
     onDelete,
 }) => {
+    const { t } = useTranslation('inventory');
     const handleChange = (field: keyof Product, value: any) => {
         onEditingProductChange({ ...editingProduct, [field]: value });
     };
@@ -39,12 +42,12 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-3">
                                 <ImageIcon className="w-12 h-12 opacity-20" />
-                                <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50">No Image Provided</span>
+                                <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50">{t('inspector.noImage')}</span>
                             </div>
                         )}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-6 backdrop-blur-sm">
                             <div className="w-full space-y-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                <SectionHeader title="Update Image URL" className="text-white" />
+                                <SectionHeader title={t('inspector.updateImageUrl')} className="text-white" />
                                 <Input
                                     placeholder="https://..."
                                     value={editingProduct.catalog_image_url}
@@ -57,9 +60,9 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-4 border-t border-gray-100 dark:border-gray-800">
                         <div className="space-y-1.5">
-                            <SectionHeader title="Product Name" />
+                            <SectionHeader title={t('inspector.fieldName')} />
                             <Input
-                                placeholder="Enter product name..."
+                                placeholder={t('inspector.placeholderName')}
                                 value={editingProduct.item_name}
                                 onChange={(e) => handleChange('item_name', e.target.value)}
                                 disabled={!isEditing && !isNew}
@@ -71,7 +74,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title="SKU" />
+                            <SectionHeader title={t('inspector.fieldSku')} />
                             <Input
                                 placeholder="SKU-CODE"
                                 value={editingProduct.sku}
@@ -85,13 +88,13 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title="Category" />
+                            <SectionHeader title={t('inspector.fieldCategory')} />
                             <SelectField
                                 value={editingProduct.category_id}
                                 onChange={(e) => handleChange('category_id', e.target.value)}
                                 disabled={!isEditing && !isNew}
                             >
-                                <option value="">Select Category</option>
+                                <option value="">{t('inspector.selectCategory')}</option>
                                 {categories.map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.title}</option>
                                 ))}
@@ -99,7 +102,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title="Stock Quantity" />
+                            <SectionHeader title={t('inspector.fieldStock')} />
                             <Input
                                 type="number"
                                 value={editingProduct.stock_quantity}
@@ -113,7 +116,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title="Price (THB)" />
+                            <SectionHeader title={t('inspector.fieldPrice')} />
                             <Input
                                 type="number"
                                 value={editingProduct.price_thb}
@@ -127,10 +130,10 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5 md:col-span-2">
-                            <SectionHeader title="Internal Description" />
+                            <SectionHeader title={t('inspector.fieldDescription')} />
                             <TextArea
                                 rows={4}
-                                placeholder="Internal notes/description..."
+                                placeholder={t('inspector.descPlaceholder')}
                                 value={editingProduct.description_internal || ''}
                                 onChange={(val) => handleChange('description_internal', val)}
                                 disabled={!isEditing && !isNew}
@@ -155,10 +158,10 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                             >
                                 <div className="flex items-center gap-2">
                                     {editingProduct.is_active ? <Eye className="w-3 h-3 text-green-600" /> : <EyeOff className="w-3 h-3 text-red-600" />}
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Status</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t('inspector.statusLabel')}</span>
                                 </div>
                                 <span className={cn("text-xs font-bold", editingProduct.is_active ? "text-green-600" : "text-red-600")}>
-                                    {editingProduct.is_active ? 'ACTIVE' : 'INACTIVE'}
+                                    {editingProduct.is_active ? t('inspector.active') : t('inspector.inactive')}
                                 </span>
                             </button>
                             <button
@@ -172,9 +175,9 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed"
                                 )}
                             >
-                                <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Visibility</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t('inspector.visibilityLabel')}</span>
                                 <span className={cn("text-xs font-bold", editingProduct.is_visible_online ? "text-blue-600" : "text-gray-600")}>
-                                    {editingProduct.is_visible_online ? 'ONLINE' : 'HIDDEN'}
+                                    {editingProduct.is_visible_online ? t('inspector.visOnline') : t('inspector.visHidden')}
                                 </span>
                             </button>
                         </div>
@@ -184,7 +187,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
 
             {/* Delete Zone */}
             {isEditing && !isNew && editingProduct.id && (
-                <DeleteZone label="DELETE PRODUCT" onDelete={onDelete} />
+                <DeleteZone label={t('inspector.deleteProduct')} onDelete={onDelete} />
             )}
         </div>
     );

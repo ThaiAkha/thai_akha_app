@@ -17,7 +17,7 @@ import BasicCard from '../../components/dashboard/BasicCard';
 import CTABanner from '../../components/dashboard/CTABanner';
 
 const AgencyHome: React.FC = () => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation('common');
     // ✅ Use hook for metadata (AppHeader handles setPageHeader automatically)
     const { pageMeta } = usePageMetadata('agency-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
@@ -78,7 +78,7 @@ const AgencyHome: React.FC = () => {
                                     key={card.id}
                                     title={card.title || card.card_title}
                                     description={card.description || card.card_description}
-                                    ctaLabel={card.link_label || 'View More'}
+                                    ctaLabel={card.link_label || t('fallback.viewMore')}
                                     ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
                                     variant={card.variant || 'dark'}
                                     className="flex items-center justify-between gap-6 p-13"

@@ -32,7 +32,7 @@ nlm source add "6c156743-1952-4568-b9b1-9bb7d4ac0fd5" --file /Users/svevomondino
 echo "✅ File aggiunti"
 
 
-nlm source add "6c156743-1952-4568-b9b1-9bb7d4ac0fd5" --file /Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/thai-english.md
+nlm source add "6c156743-1952-4568-b9b1-9bb7d4ac0fd5" --file /Users/svevomondino/Desktop/thaiakha-cherry-2026/packages/front/src/prompts/cherryPrompt.md
 
 echo "📄 Aggiungo File" && \
 nlm source add "6c156743-1952-4568-b9b1-9bb7d4ac0fd5" --file /Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/88-Admin-TH-EN.md && \

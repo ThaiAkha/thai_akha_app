@@ -5,6 +5,7 @@
   },
   "sidebar": {
     "title": "Tables",
+    "statusLabel": "Status",
     "status": "Live edits"
   },
   "content": {

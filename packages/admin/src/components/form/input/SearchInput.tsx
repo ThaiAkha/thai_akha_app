@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     onClear?: () => void;
@@ -16,6 +17,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     containerClassName,
     ...props
 }) => {
+    const { t } = useTranslation('common');
     return (
         <div className={cn("relative group", containerClassName)}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
@@ -39,7 +41,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                         onClear();
                     }}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors z-30 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                    aria-label="Clear search"
+                    aria-label={t('aria.clearSearch')}
                 >
                     <X className="w-4 h-4" />
                 </button>

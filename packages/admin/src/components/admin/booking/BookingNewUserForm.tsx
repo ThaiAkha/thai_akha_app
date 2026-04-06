@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
@@ -16,6 +17,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
   newUser,
   onNewUserChange,
 }) => {
+  const { t } = useTranslation('booking');
   const [nationalitySearchQuery, setNationalitySearchQuery] = useState('');
   const [nationalitySearchResults, setNationalitySearchResults] = useState<any[]>([]);
 
@@ -41,17 +43,17 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 md:col-span-6">
           <InputField
-            label="Full Name"
-            placeholder="e.g. John Doe"
+            label={t('newUser.fieldFullName')}
+            placeholder={t('newUser.placeholderName')}
             value={newUser.fullName}
             onChange={e => onNewUserChange({ ...newUser, fullName: e.target.value })}
           />
         </div>
         <div className="col-span-6 md:col-span-3">
           <InputField
-            label="Age"
+            label={t('newUser.fieldAge')}
             type="number"
-            placeholder="Age"
+            placeholder={t('newUser.placeholderAge')}
             value={newUser.age}
             onChange={e => {
               const value = e.target.value ? Number(e.target.value) : '';
@@ -63,14 +65,14 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
         </div>
         <div className="col-span-6 md:col-span-3">
           <SelectField
-            label="Gender"
+            label={t('newUser.fieldGender')}
             value={newUser.gender || ''}
             onChange={e => onNewUserChange({ ...newUser, gender: e.target.value as any })}
           >
-            <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+            <option value="">{t('newUser.genderSelect')}</option>
+            <option value="male">{t('newUser.genderMale')}</option>
+            <option value="female">{t('newUser.genderFemale')}</option>
+            <option value="other">{t('newUser.genderOther')}</option>
           </SelectField>
         </div>
       </div>
@@ -78,15 +80,15 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
       {/* Row 2: Email, Password */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InputField
-          label="Email Address"
-          placeholder="john@doe.com"
+          label={t('newUser.fieldEmail')}
+          placeholder={t('newUser.placeholderEmail')}
           value={newUser.email}
           onChange={e => onNewUserChange({ ...newUser, email: e.target.value })}
         />
         <InputField
-          label="Password"
+          label={t('newUser.fieldPassword')}
           type="password"
-          placeholder="Min. 8 characters"
+          placeholder={t('newUser.passwordHint')}
           value={newUser.password}
           onChange={e => onNewUserChange({ ...newUser, password: e.target.value })}
         />
@@ -96,8 +98,8 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-4 relative">
           <InputField
-            label="Nationality"
-            placeholder="Search country..."
+            label={t('newUser.fieldNationality')}
+            placeholder={t('newUser.searchCountry')}
             value={nationalitySearchQuery || (newUser.nationality ? getCountryByCode(newUser.nationality)?.name || newUser.nationality : '')}
             onChange={e => {
               const val = e.target.value;
@@ -137,7 +139,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
 
         <div className="col-span-12 md:col-span-8 lg:col-span-5">
           <PhoneCountryInput
-            label="Phone Number"
+            label={t('newUser.fieldPhone')}
             value={newUser.phone}
             onChange={val => onNewUserChange({ ...newUser, phone: val })}
             selectedCountry={newUser.nationality}
@@ -150,7 +152,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
         </div>
 
         <div className="col-span-12 md:col-span-4 lg:col-span-3">
-          <SectionHeader title="WhatsApp" className="mb-2" />
+          <SectionHeader title={t('newUser.whatsapp')} className="mb-2" />
           <div className="grid grid-cols-2 gap-3 h-14">
             <button
               type="button"
@@ -163,7 +165,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
               )}
             >
               <span className="text-sm">✓</span>
-              Yes
+              {t('newUser.yes')}
             </button>
             <button
               type="button"
@@ -176,7 +178,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
               )}
             >
               <span className="text-sm">✗</span>
-              No
+              {t('newUser.no')}
             </button>
           </div>
         </div>

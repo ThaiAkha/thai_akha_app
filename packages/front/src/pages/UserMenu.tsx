@@ -9,6 +9,8 @@ import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
 import { useDietaryKnowledge } from '../hooks/useDietaryKnowledge';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '@thaiakha/shared/lib/ui-strings';
+import { contentService } from '@thaiakha/shared/services';
+import { ContentCategoryDB } from '@thaiakha/shared';
 
 const normalizeCat = (cat: string) => {
   const lower = cat.toLowerCase();
@@ -40,7 +42,8 @@ const MenuPage: React.FC<{
   const [selectedSpicinessId, setSelectedSpicinessId] = useState<number>(2);
 
   // Selezioni
-  const [selections, setSelections] = useState<Record<string, any>>({ curry: null, soup: null, stirfry: null });
+  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
+  const [selections, setSelections] = useState<Record<string, any>>({});
   const [viewingRecipe, setViewingRecipe] = useState<RecipeData | null>(null);
 
   // Dietary Knowledge
@@ -51,10 +54,21 @@ const MenuPage: React.FC<{
     const init = async () => {
       setLoading(true);
       try {
-        const [recRes, spiceRes] = await Promise.all([
+        const [cats, recRes, spiceRes] = await Promise.all([
+          contentService.getContentCategories('recipe'),
           supabase.from('recipes').select(`*, recipe_key_ingredients(ingredient)`).order('category, name'),
           supabase.from('spiciness_levels').select('*').order('id')
         ]);
+
+        if (cats) {
+          setCategories(cats);
+          // Initialize selections with category IDs that are selection-based
+          // Selection-based categories are identified by specific IDs or simply all active categories for now
+          const selectionCats = cats.filter(c => ['curry', 'soup', 'stirfry'].includes(c.id.toLowerCase()));
+          const initialSelections: Record<string, any> = {};
+          selectionCats.forEach(c => { initialSelections[c.id.toLowerCase()] = null; });
+          setSelections(initialSelections);
+        }
 
         if (recRes.data) {
           setRecipes(recRes.data.map(r => ({
@@ -94,11 +108,11 @@ const MenuPage: React.FC<{
               .maybeSingle();
 
             if (savedMenu && recRes.data) {
-              setSelections({
-                curry: recRes.data.find(r => r.id === savedMenu.curry_id) || null,
-                soup: recRes.data.find(r => r.id === savedMenu.soup_id) || null,
-                stirfry: recRes.data.find(r => r.id === savedMenu.stirfry_id) || null,
-              });
+              const menuSelections: Record<string, any> = {};
+              menuSelections.curry = recRes.data.find(r => r.id === savedMenu.curry_id) || null;
+              menuSelections.soup = recRes.data.find(r => r.id === savedMenu.soup_id) || null;
+              menuSelections.stirfry = recRes.data.find(r => r.id === savedMenu.stirfry_id) || null;
+              setSelections(menuSelections);
             }
           }
         } else {
@@ -226,19 +240,19 @@ const MenuPage: React.FC<{
             />
           </div>
 
-            {['curry', 'soup', 'stirfry'].map(cat => (
-              <section key={cat} className="space-y-8 scroll-mt-48 px-4 md:px-8 max-w-[85rem] mx-auto" id={cat}>
+            {categories.filter(c => ['curry', 'soup', 'stirfry'].includes(c.id.toLowerCase())).map(cat => (
+              <section key={cat.id} className="space-y-8 scroll-mt-48 px-4 md:px-8 max-w-[85rem] mx-auto" id={cat.id.toLowerCase()}>
                 <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
-                  <Typography variant="h2" className="italic uppercase text-gray-900 dark:text-gray-100">{cat} <span className="text-primary">{t.user.selectionLabel}</span></Typography>
-                  <Badge variant="mineral" className="bg-white/5">{getRecipes(cat).length} {t.user.optionsLabel}</Badge>
+                  <Typography variant="h2" className="italic uppercase text-gray-900 dark:text-gray-100">{cat.title} <span className="text-primary">{t.user.selectionLabel}</span></Typography>
+                  <Badge variant="mineral" className="bg-white/5">{getRecipes(cat.id.toLowerCase()).length} {t.user.optionsLabel}</Badge>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                  {getRecipes(cat).map(recipe => (
+                  {getRecipes(cat.id.toLowerCase()).map(recipe => (
                     <MenuCard
                       key={recipe.id}
                       dish={{...recipe, colorTheme: recipe.color_theme || '#ff7597', image: recipe.image}}
-                      isSelected={selections[cat]?.id === recipe.id}
-                      onClick={() => setSelections({...selections, [cat]: recipe})}
+                      isSelected={selections[cat.id.toLowerCase()]?.id === recipe.id}
+                      onClick={() => setSelections({...selections, [cat.id.toLowerCase()]: recipe})}
                       onPreview={() => onNavigate('recipes', undefined, `${recipe.slug}?source=menu`)}
                     />
                   ))}

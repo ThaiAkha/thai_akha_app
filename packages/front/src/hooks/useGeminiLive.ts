@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLiveGeminiClient } from '../services/geminiClient';
 import { LiveServerMessage, Modality, Type } from '@google/genai';
 import { cherryFront, buildFrontPrompt, fetchChatContextData } from '../prompts/cherryPrompt';
-import { saveMessage } from '@thaiakha/shared/services';
+import { saveMessage, checkRateLimit } from '@thaiakha/shared/services';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -123,6 +123,14 @@ export const useGeminiLive = (
 
     const startSession = async (overrideInstruction?: string, initialPrompt?: string) => {
         if (state.status !== 'idle') stopSession();
+
+        // Rate limit check before connecting
+        const rateLimit = await checkRateLimit(userProfile?.id, undefined);
+        if (!rateLimit.allowed) {
+            setState(prev => ({ ...prev, status: 'error', error: rateLimit.reason ?? 'Voice limit reached.' }));
+            return;
+        }
+
         setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
         try {

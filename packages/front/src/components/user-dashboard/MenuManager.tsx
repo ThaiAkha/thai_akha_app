@@ -6,6 +6,8 @@ import { MenuCard } from '../menu';
 import RecipeView, { RecipeData } from '../menu/RecipeView';
 import { cn } from '@thaiakha/shared/lib/utils';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import { contentService } from '@thaiakha/shared/services';
+import { ContentCategoryDB } from '@thaiakha/shared';
 
 interface MenuManagerProps {
   bookingId: string | null;
@@ -15,8 +17,8 @@ interface MenuManagerProps {
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
 }
 
-// Dati statici per le descrizioni delle categorie (System 4.8)
-const CATEGORY_INFO: Record<string, string> = {
+// Legacy fallback for descriptions
+const FALLBACK_CATEGORY_INFO: Record<string, string> = {
   akha_specialty: "Authentic Akha mountain dishes using traditional techniques and foraged ingredients.",
   appetizer: "Handcrafted starters designed to awaken your senses with crunchy textures and fresh Thai herbs.",
   dessert: "Traditional Thai sweets showcasing the natural sweetness of ripe tropical fruits and coconut cream."
@@ -32,6 +34,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
   const [loading, setLoading] = useState(true);
   const [selectedDishes, setSelectedDishes] = useState<any[]>([]);
   const [fixedDishes, setFixedDishes] = useState<any[]>([]);
+  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('akha_specialty');
   const [viewingRecipe, setViewingRecipe] = useState<RecipeData | null>(null);
 
@@ -44,6 +47,17 @@ const MenuManager: React.FC<MenuManagerProps> = ({
       }
       
       try {
+        // 0. Fetch Categories for Tabs
+        if (categories.length === 0) {
+            const cats = await contentService.getContentCategories('recipe');
+            // Filter only fixed experience categories for these tabs
+            const fixedCats = cats.filter(c => ['akha_specialty', 'appetizer', 'dessert'].includes(c.id.toLowerCase()));
+            setCategories(fixedCats);
+            if (fixedCats.length > 0 && !activeCategory) {
+               setActiveCategory(fixedCats[0].id);
+            }
+        }
+
         // 1. Fetch Fixed Dishes (Included Experience) - Fetch only once
         if (fixedDishes.length === 0) {
           const { data: fixed } = await supabase
@@ -134,11 +148,17 @@ const MenuManager: React.FC<MenuManagerProps> = ({
   };
 
   // Tabs Configuration
-  const FIXED_TABS = [
-    { value: 'akha_specialty', label: 'Akha Heritage', icon: 'landscape', activeColor: 'secondary' as const },
-    { value: 'appetizer', label: 'Appetizers', icon: 'tapas', activeColor: 'secondary' as const },
-    { value: 'dessert', label: 'Desserts', icon: 'icecream', activeColor: 'secondary' as const },
-  ];
+  const FIXED_TABS = categories.map(cat => ({
+    value: cat.id,
+    label: cat.title,
+    icon: cat.icon_name || 'landscape',
+    activeColor: 'secondary' as const
+  }));
+
+  const getCategoryDescription = (catId: string) => {
+      const cat = categories.find(c => c.id === catId);
+      return cat?.description || cat?.subtitle || FALLBACK_CATEGORY_INFO[catId.toLowerCase()] || "";
+  };
 
   // 2. MAPPER CORRETTO (Senza errori rossi)
   const mapToRecipeData = (r: any): RecipeData => ({
@@ -337,7 +357,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
         {/* Descrizione Categoria */}
         <div className="text-center max-w-2xl mt-4 mb-4 mx-auto min-h-[4rem] animate-in fade-in slide-in-from-bottom-2 duration-500 key={activeCategory}">
             <Typography variant="paragraphL" className="italic text-gray-700/80 dark:text-gray-300/80 leading-relaxed">
-                "{CATEGORY_INFO[activeCategory]}"
+                "{getCategoryDescription(activeCategory)}"
             </Typography>
         </div>
 

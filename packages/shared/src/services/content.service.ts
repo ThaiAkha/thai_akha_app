@@ -2,7 +2,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata, CultureSection, CultureSectionDetail, CultureGalleryItem, QuizCategoryDB, QuizRewardDB, ContentCategoryDB, SpicinessLevel, CookingClassDB } from '../types';
 
 // Cache Version Key: Aggiornala per invalidare la cache locale se cambi la struttura dati
-const GLOBAL_CACHE_KEY = 'akha_cache_content_v11';
+const GLOBAL_CACHE_KEY = 'akha_cache_content_v14';
 
 /**
  * 🧠 INTELLIGENT CACHE MANAGER
@@ -575,10 +575,10 @@ export const contentService = {
 
     /** 🍜 RECIPES: All complete recipes with ingredients */
     async getAllRecipesFull(): Promise<any[]> {
-        const data = await fetchWithCache<any[]>('recipes_full_v1', async () => {
+        const data = await fetchWithCache<any[]>('recipes_full_v2', async () => {
             const { data, error } = await supabase
                 .from('recipes')
-                .select('*, recipe_key_ingredients(ingredient)')
+                .select('*, content_categories(*), recipe_key_ingredients(ingredient)')
                 .order('name', { ascending: true });
             if (error) {
                 console.error('Recipes fetch error:', error);
@@ -591,10 +591,10 @@ export const contentService = {
 
     /** 🍜 RECIPE BY SLUG: Fetch single recipe with category */
     async getRecipeBySlug(slug: string): Promise<any | null> {
-        const data = await fetchWithCache<any | null>(`recipe_${slug}_v1`, async () => {
+        const data = await fetchWithCache<any | null>(`recipe_${slug}_v3`, async () => {
             const { data, error } = await supabase
                 .from('recipes')
-                .select('*, recipe_categories(*), recipe_key_ingredients(ingredient)')
+                .select('*, content_categories(*), recipe_key_ingredients(ingredient)')
                 .eq('slug', slug)
                 .single();
             if (error) {

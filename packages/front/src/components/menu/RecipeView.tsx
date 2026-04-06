@@ -4,6 +4,7 @@ import { Typography, Badge, Icon, Button, Divider, Modal, MediaImage } from '../
 import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { contentService } from '@thaiakha/shared/services';
+import { ContentCategoryDB } from '@thaiakha/shared';
 
 // --- INTERFACCE ---
 
@@ -68,17 +69,7 @@ interface RecipeViewProps {
   isSelected?: boolean;
 }
 
-const CATEGORY_ORDER = ['appetizer', 'dessert', 'akha_specialty', 'curry', 'soup', 'stirfry'];
-
-const CATEGORY_LABELS: Record<string, string> = {
-  appetizer: 'Appetizers',
-  dessert: 'Desserts',
-  akha_specialty: 'Akha Traditional',
-  curry: 'Curry',
-  soup: 'Soup',
-  stirfry: 'Stir-Fry'
-};
-
+// Fallback colors for categories if not specified in DB
 const CAT_COLORS: Record<string, string> = {
   curry: 'bg-red-500/80 text-white border-red-400/50',
   soup: 'bg-btn-p-500/80 text-white border-btn-p-400/50',
@@ -104,6 +95,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
   const [galleryStartIndex, setGalleryStartIndex] = useState(0);
   const [activeAudio, setActiveAudio] = useState<'story' | 'cooking' | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
   const [richIngredients, setRichIngredients] = useState<IngredientDetail[]>([]);
   const [activeIngredient, setActiveIngredient] = useState<IngredientDetail | null>(null);
   const [loadingIng, setLoadingIng] = useState(false);
@@ -130,8 +122,14 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         setAllergyMap(map);
     };
 
+    const fetchCategories = async () => {
+        const cats = await contentService.getContentCategories('recipe');
+        setCategories(cats);
+    };
+
     fetchRichIngredients();
     fetchAllergies();
+    fetchCategories();
     
     const mainContainer = document.getElementById('main-scroll-container');
     if (mainContainer) mainContainer.scrollTo({ top: 0, behavior: 'instant' });
@@ -179,21 +177,29 @@ const RecipeView: React.FC<RecipeViewProps> = ({
 
   const groupedRecipes = useMemo(() => {
     const groups: Record<string, RecipeData[]> = {};
-    CATEGORY_ORDER.forEach(cat => groups[cat] = []);
+    categories.forEach(cat => groups[cat.id] = []);
     allRecipes.forEach(r => {
-      let key = r.category;
-      if (!groups[key]) {
-         if (key.includes('curry')) key = 'curry';
-         else if (key.includes('soup')) key = 'soup';
-         else if (key.includes('stir')) key = 'stirfry';
-         else if (key.includes('akha')) key = 'akha_specialty';
-         else if (key.includes('appetizer')) key = 'appetizer';
-         else if (key.includes('dessert')) key = 'dessert';
+      const catId = r.category;
+      if (!groups[catId]) {
+         // Try finding matching category by prefix or ID
+         const found = categories.find(c => catId.includes(c.id.toLowerCase()) || c.id.toLowerCase().includes(catId.toLowerCase()));
+         if (found) {
+            if (!groups[found.id]) groups[found.id] = [];
+            groups[found.id].push(r);
+         }
+      } else {
+         groups[catId].push(r);
       }
-      if (groups[key]) groups[key].push(r);
     });
     return groups;
-  }, [allRecipes]);
+  }, [allRecipes, categories]);
+
+  const categoryOrder = useMemo(() => categories.map(c => c.id), [categories]);
+
+  const getCategoryLabel = (catId: string) => {
+      const cat = categories.find(c => c.id === catId);
+      return cat?.title || catId.toUpperCase();
+  };
 
   // --- HANDLERS ---
   const handleAskCherry = () => {
@@ -248,11 +254,11 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                      <Badge variant="mineral" className="bg-primary/10 text-primary">{allRecipes.length} Options</Badge>
                   </div>
                   <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-10">
-                     {CATEGORY_ORDER.map(catKey => groupedRecipes[catKey]?.length > 0 && (
-                        <div key={catKey} className="space-y-4">
-                           <Badge variant="outline" className="border-white/20 text-white/40 px-3">{CATEGORY_LABELS[catKey]}</Badge>
+                     {categoryOrder.map(catId => groupedRecipes[catId]?.length > 0 && (
+                        <div key={catId} className="space-y-4">
+                           <Badge variant="outline" className="border-white/20 text-white/40 px-3">{getCategoryLabel(catId)}</Badge>
                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                              {groupedRecipes[catKey].map((item) => (
+                              {groupedRecipes[catId].map((item) => (
                                  <button key={item.id} onClick={() => { onSelectDish(item); setIsMenuOpen(false); }} className={cn("relative group w-full h-20 rounded-2xl overflow-hidden border transition-all duration-300 flex items-center text-left", item.id === recipe.id ? "bg-secondary/20 border-secondary/50 text-secondary shadow-lg" : "bg-surface-elevated border-white/5 text-white/60 hover:bg-white/5")}>
                                     <div className="w-1/4 h-full border-r border-white/5 overflow-hidden">
                                        <MediaImage
@@ -288,7 +294,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               {/* Mobile Labels */}
-              <div className="absolute top-4 left-4 md:hidden z-20"><Badge variant="mineral" className={CAT_COLORS[recipe.category]}>{recipe.category.toUpperCase()}</Badge></div>
+              <div className="absolute top-4 left-4 md:hidden z-20"><Badge variant="mineral" className={CAT_COLORS[recipe.category] || 'bg-surface/80'}>{getCategoryLabel(recipe.category).toUpperCase()}</Badge></div>
               <div className="absolute bottom-6 left-6 right-6 md:hidden z-20">
                  <h1 className="text-4xl font-display font-black uppercase text-white leading-[0.9] drop-shadow-xl">{recipe.name}</h1>
               </div>
@@ -318,7 +324,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         {/* INFO SIDE (Right) */}
         <div className="md:col-span-7 space-y-10 lg:pt-2">
            <div className="space-y-4 hidden md:block">
-              <div className="flex gap-3"><Badge variant="mineral">{recipe.category.toUpperCase()}</Badge></div>
+              <div className="flex gap-3"><Badge variant="mineral">{getCategoryLabel(recipe.category).toUpperCase()}</Badge></div>
               <h1 className="text-4xl md:text-5xl font-display font-black uppercase text-gray-900 dark:text-gray-100 leading-[0.9]">{recipe.name}</h1>
               {recipe.thai_name && <Typography variant="h4" className="text-primary italic opacity-90">{recipe.thai_name}</Typography>}
            </div>

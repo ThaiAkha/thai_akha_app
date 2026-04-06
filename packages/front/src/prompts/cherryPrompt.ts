@@ -148,7 +148,14 @@ RULES:
 3. NEVER invent times. NEVER guess. NEVER say "approximately".
 `;
 
-  const dataBlock = `
+  const dataBlock = isVoiceMode
+    ? `
+### VOICE MODE – DATA ACCESS RULES
+- You have access to cooking classes, menu, and spice levels.
+- NEVER list items. Answer in max ${wordLimit} words.
+- For specific info (price, schedule, dish details), say: "Please check our website or ask me for details kha."
+`
+    : `
 ### OFFICIAL DATA: COOKING CLASSES
 ${classesData}
 ${menuBlock}

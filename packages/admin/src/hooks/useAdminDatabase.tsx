@@ -37,7 +37,6 @@ export const SYSTEM_TABLES = [
     { id: 'quiz_modules', label: 'Quiz Modules', icon: <Package className="w-5 h-5" /> },
     { id: 'quiz_questions', label: 'Quiz Questions', icon: <Package className="w-5 h-5" /> },
     { id: 'quiz_rewards', label: 'Quiz Rewards', icon: <Package className="w-5 h-5" /> },
-    { id: 'recipe_categories', label: 'Recipe Categories', icon: <Package className="w-5 h-5" /> },
     { id: 'recipe_composition', label: 'Recipe Composition', icon: <Package className="w-5 h-5" /> },
     { id: 'recipe_key_ingredients', label: 'Recipe Key Ingredients', icon: <Package className="w-5 h-5" /> },
     { id: 'recipe_selection_categories', label: 'Recipe Selection Categories', icon: <Package className="w-5 h-5" /> },

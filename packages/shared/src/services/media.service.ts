@@ -19,7 +19,7 @@ export const mediaService = {
         .from('media_assets')
         .select('*')
         .eq('asset_id', assetId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         // We log as info since some assets might legitimately be missing during dev/migration

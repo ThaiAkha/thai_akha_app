@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getTextGeminiClient } from '../services/geminiClient';
-import { buildFrontPrompt, fetchChatContextData } from '../prompts/cherryPrompt';
+import { sendChatMessageProxy } from '@thaiakha/shared/services';
+import { buildCherryPrompt, type CherryUserContext } from '../prompts/cherryPrompt';
 import {
   getOrCreateSession,
   loadRecentMessages,
@@ -8,12 +8,11 @@ import {
   updateSummary,
   checkRateLimit,
   type ChatSession,
-  type DbChatMessage,
 } from '@thaiakha/shared/services';
-import type { ChatMessage, SpicinessLevel } from '@thaiakha/shared';
+import type { ChatMessage } from '@thaiakha/shared';
 import type { UserProfile } from '../services/auth.service';
 
-const HISTORY_WINDOW = 5;
+const HISTORY_WINDOW = 3;
 const SUMMARY_THRESHOLD = 20;
 
 export const useCherryChat = (userProfile?: UserProfile | null) => {
@@ -22,60 +21,8 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  const chatRef = useRef<any>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
-  const cookingClassesRef = useRef<Array<{ id: string; title: string; price: number }>>([]);
-  const recipesRef = useRef<string[]>([]);
-  const spicinessLevelsRef = useRef<SpicinessLevel[]>([]);
-
-  // ── System prompt builder ──────────────────────────────────────────────────
-
-  const buildSystemPrompt = useCallback(
-    (history: DbChatMessage[], summary: string | null): string => {
-      const base = buildFrontPrompt(
-        userProfile || {},
-        userProfile?.dietary_profile ?? 'diet_regular',
-        userProfile?.allergies ?? [],
-        false,
-        { cookingClasses: cookingClassesRef.current, menuList: recipesRef.current, spicinessLevels: spicinessLevelsRef.current }
-      );
-
-      let historyBlock = '';
-      if (summary) {
-        historyBlock += `\n### SESSION SUMMARY (previous context):\n${summary}\n`;
-      }
-      if (history.length > 0) {
-        historyBlock += `\n### RECENT CONVERSATION:\n`;
-        historyBlock += history
-          .slice(-HISTORY_WINDOW)
-          .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
-          .join('\n');
-      }
-      return base + historyBlock;
-    },
-    [userProfile]
-  );
-
-  // ── Gemini chat initializer ────────────────────────────────────────────────
-
-  const initGeminiChat = useCallback(
-    (history: DbChatMessage[], summary: string | null) => {
-      try {
-        const ai = getTextGeminiClient();
-        chatRef.current = ai.chats.create({
-          model: 'gemini-3-flash-preview',
-          config: {
-            systemInstruction: buildSystemPrompt(history, summary),
-            temperature: 0.5,
-          },
-        });
-      } catch (err) {
-        console.error('[useCherryChat] Gemini init failed:', err);
-      }
-    },
-    [buildSystemPrompt]
-  );
 
   // ── Initialization ─────────────────────────────────────────────────────────
 
@@ -84,11 +31,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     initialized.current = true;
 
     const init = async () => {
-      const { cookingClasses, menuList, spicinessLevels } = await fetchChatContextData();
-      cookingClassesRef.current = cookingClasses;
-      recipesRef.current = menuList;
-      spicinessLevelsRef.current = spicinessLevels;
-
       const session = await getOrCreateSession(userProfile?.id);
       sessionRef.current = session;
       setSessionId(session.id);
@@ -114,8 +56,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       }
 
       setMessages(initialMessages);
-      // Gemini is initialized with REAL history only
-      initGeminiChat(history, session.summary);
     };
 
     init();
@@ -125,19 +65,16 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
   const triggerAutoSummary = async (sid: string) => {
     try {
-      const ai = getTextGeminiClient();
-      const summaryChat = ai.chats.create({
-        model: 'gemini-3-flash-preview',
-        config: { systemInstruction: 'You are a concise conversation summarizer. Output plain text only.', temperature: 0.1 },
-      });
       const recentMessages = await loadRecentMessages(sid, HISTORY_WINDOW * 2);
       const transcript = recentMessages
         .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
         .join('\n');
-      const result = await summaryChat.sendMessage({
+
+      const summary = await sendChatMessageProxy({
         message: `Summarize in 2 sentences, focusing on: dietary preferences, booking interests, specific requests:\n${transcript}`,
+        systemInstruction: 'You are a concise conversation summarizer. Output plain text only.',
       });
-      const summary: string = result.text?.trim() || '';
+
       if (summary) await updateSummary(sid, summary);
     } catch {
       // silent fail
@@ -148,11 +85,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
   const sendMessage = async (userText: string) => {
     if (!userText.trim() || isLoading) return;
-
-    if (!chatRef.current) {
-      setError('Chat not initialized. Please refresh kha.');
-      return;
-    }
 
     const sid = sessionRef.current?.id ?? null;
 
@@ -178,24 +110,36 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     if (sid) saveMessage(sid, 'user', userText, 'text');
 
     try {
-      const streamResponse = await chatRef.current.sendMessageStream({ message: userText });
-      let fullResponse = '';
+      // Build system prompt with full context
+      const userContext: CherryUserContext = {
+        isLogged: !!userProfile,
+        name: userProfile?.full_name,
+        dietary_profile: userProfile?.dietary_profile,
+        allergies: userProfile?.allergies,
+        preferred_spiciness: userProfile?.preferred_spiciness_id ? String(userProfile.preferred_spiciness_id) : undefined,
+      };
+      const basePrompt = buildCherryPrompt(userContext);
 
-      for await (const chunk of streamResponse) {
-        const text = (chunk as any).text;
-        if (text) {
-          fullResponse += text;
-          setMessages(prev =>
-            prev.map(m => (m.id === modelMsgId ? { ...m, text: fullResponse } : m))
-          );
-        }
-      }
+      // Get recent conversation for context
+      const recentHistory = await loadRecentMessages(sid || '', HISTORY_WINDOW * 2);
+      const historyText = recentHistory
+        .slice(-HISTORY_WINDOW)
+        .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
+        .join('\n');
+
+      const systemInstruction = basePrompt + (historyText ? `\n### RECENT CONVERSATION:\n${historyText}` : '');
+
+      // Call proxy with full system instruction
+      const response = await sendChatMessageProxy({
+        message: userText,
+        systemInstruction,
+      });
 
       setMessages(prev =>
-        prev.map(m => (m.id === modelMsgId ? { ...m, isStreaming: false } : m))
+        prev.map(m => (m.id === modelMsgId ? { ...m, text: response, isStreaming: false } : m))
       );
 
-      if (sid) saveMessage(sid, 'assistant', fullResponse, 'text');
+      if (sid) saveMessage(sid, 'assistant', response, 'text');
 
       if (sid && sessionRef.current && sessionRef.current.message_count >= SUMMARY_THRESHOLD) {
         sessionRef.current.message_count = 0;

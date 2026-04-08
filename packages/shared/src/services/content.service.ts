@@ -308,12 +308,12 @@ export const contentService = {
 
     /** 🧩 QUIZ ENGINE: Deep Fetch (Levels -> Modules -> Questions) — split query per compatibilità PostgREST */
     async getQuizData(categoryId?: string) {
-        const cacheKey = categoryId ? `quiz_data_cat_v2_${categoryId}` : 'quiz_full_structure_v3';
+        const cacheKey = categoryId ? `quiz_data_cat_v3_${categoryId}` : 'quiz_full_structure_v4';
         return fetchWithCache(cacheKey, async () => {
             // Step 1: fetch levels (filtered by category if provided)
             let levelsQuery = supabase
                 .from('quiz_levels')
-                .select('id, title, subtitle, image_url, display_order, is_active, category_id')
+                .select('id, title, subtitle, image_url, display_order, is_active, category_id, completion_bonus')
                 .eq('is_active', true)
                 .order('display_order', { ascending: true });
             if (categoryId) levelsQuery = levelsQuery.eq('category_id', categoryId);
@@ -327,7 +327,7 @@ export const contentService = {
             const levelIds = levels.map((l: any) => l.id);
             const modulesRes = await supabase
                 .from('quiz_modules')
-                .select('id, level_id, title, icon, theme, display_order')
+                .select('id, level_id, title, icon, theme, image_url, display_order')
                 .in('level_id', levelIds)
                 .order('display_order', { ascending: true });
             if (modulesRes.error) { console.error('Quiz modules error:', modulesRes.error); return []; }
@@ -339,7 +339,7 @@ export const contentService = {
 
             const questionsRes = await supabase
                 .from('quiz_questions')
-                .select('id, module_id, text, options, correct_index, explanation, display_order')
+                .select('id, module_id, text, options, correct_index, explanation, display_order, points')
                 .in('module_id', moduleIds)
                 .order('display_order', { ascending: true });
             if (questionsRes.error) { console.error('Quiz questions error:', questionsRes.error); return []; }
@@ -364,6 +364,7 @@ export const contentService = {
                                     options: opts,
                                     correctAnswer: opts[q.correct_index],
                                     explanation: q.explanation,
+                                    points: q.points ?? 10,
                                 };
                             }),
                     })),
@@ -589,12 +590,30 @@ export const contentService = {
         return data || [];
     },
 
-    /** 🍜 RECIPE BY SLUG: Fetch single recipe with category */
+    /** 🍜 RECIPE BY SLUG: Fetch single recipe with deep composition */
     async getRecipeBySlug(slug: string): Promise<any | null> {
-        const data = await fetchWithCache<any | null>(`recipe_${slug}_v3`, async () => {
+        const data = await fetchWithCache<any | null>(`recipe_${slug}_v4`, async () => {
             const { data, error } = await supabase
                 .from('recipes')
-                .select('*, content_categories(*), recipe_key_ingredients(ingredient)')
+                .select(`
+                    *,
+                    content_categories (*), 
+                    recipe_composition (
+                        quantity,
+                        unit,
+                        prep_note,
+                        is_key_ingredient,
+                        ingredients_library (
+                            id,
+                            name_en,
+                            name_th,
+                            phonetic,
+                            description,
+                            image_url,
+                            category_id
+                        )
+                    )
+                `)
                 .eq('slug', slug)
                 .single();
             if (error) {

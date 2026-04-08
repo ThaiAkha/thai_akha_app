@@ -9,6 +9,7 @@ export interface QuizQuestion {
   options: string[];
   correctAnswer: string;
   explanation: string;
+  points: number; // XP earned for correct answer (default 10, from quiz_questions.points)
 }
 
 export interface QuizModule {
@@ -16,6 +17,7 @@ export interface QuizModule {
   title: string;
   icon: string;
   theme: string;
+  image_url?: string | null;
   questions: QuizQuestion[];
 }
 
@@ -27,4 +29,5 @@ export interface QuizLevel {
   modules: QuizModule[];
   rewardId?: number;
   is_active?: boolean;
+  completion_bonus: number; // Bonus XP for completing all modules in level (from quiz_levels.completion_bonus)
 }

@@ -26,15 +26,15 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
     "relative overflow-hidden isolate flex items-center justify-center transition-all duration-300",
     "active:scale-[0.97] disabled:opacity-30 disabled:pointer-events-none select-none",
     "rounded-full border antialiased",
-    "[padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-s)]",
+    "[padding-inline:var(--space-fluid-s)] py-2",
     "[gap:var(--space-fluid-2xs)]"
   );
 
   const variants = {
-    primary: "bg-surface text-title border-border hover:bg-quiz hover:text-color-inverse hover:border-quiz hover:scale-105 shadow-theme-lg hover:shadow-brand-glow/30",
-    secondary: "bg-white/5 text-color-inverse border-white/10 hover:bg-white/10 hover:border-white/20",
-    outline: "bg-transparent text-color-inverse border-white/20 hover:border-white",
-    ghost: "bg-transparent text-muted hover:text-color-inverse hover:bg-white/5 border-transparent",
+    primary: "bg-primary text-white border-primary/50 hover:bg-primary/80 hover:scale-105 shadow-glow-cherry hover:shadow-glow-cherry-h",
+    secondary: "bg-white/5 text-white border-white/20 hover:bg-white/10 hover:border-white/40",
+    outline: "bg-transparent text-white border-white/30 hover:border-white hover:bg-white/5",
+    ghost: "bg-transparent text-muted hover:text-white hover:bg-white/5 border-transparent",
   };
 
   const [flashes, setFlashes] = useState<FlashPoint[]>([]);
@@ -76,12 +76,12 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
         />
       ))}
 
-      <span className="relative z-10 inline-flex items-center [gap:var(--space-fluid-xs)]">
-        <Icon name={config.icon} className="[font-size:1.25em]" />
-        <Typography 
-          variant="badge" 
-          as="span" 
-          className="font-black uppercase tracking-widest [font-size:var(--text-fluid-caption)]"
+      <span className="relative z-10 inline-flex items-center gap-1.5">
+        <Icon name={config.icon} size="sm" />
+        <Typography
+          variant="microLabel"
+          as="span"
+          className="font-black uppercase tracking-widest"
         >
           {config.label}
         </Typography>

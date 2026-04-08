@@ -123,78 +123,84 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                 key={mod.id}
                 onClick={() => onStartModule(mod.id)}
                 className={cn(
-                  "relative rounded-[3rem] overflow-hidden border transition-all duration-500 group hover:scale-[1.02] shadow-2xl cursor-pointer",
-                  "flex flex-col min-h-[440px]",
+                  "relative rounded-3xl overflow-hidden border transition-all duration-500 group hover:scale-[1.02] shadow-2xl cursor-pointer bg-black",
                   theme.border
                 )}
               >
-                {/* ── Top Image (chiaro, senza overlay) ── */}
+                {/* ── BG Image + Overlay (PhotoModal style) ── */}
                 {mod.image_url && (
-                  <div className="h-48 overflow-hidden">
+                  <div className="absolute inset-0 pointer-events-none">
                     <img
                       src={mod.image_url}
-                      alt={mod.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      alt=""
+                      className="w-full h-full object-cover opacity-80 mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>
                 )}
 
                 {/* ── Content ── */}
-                <div className="flex flex-col h-full [padding:var(--space-fluid-m)]">
+                <div className="relative z-10 flex items-center [gap:var(--space-fluid-m)] [padding:var(--space-fluid-m)]">
 
-                  {/* Top — badge perfetto/in progress */}
-                  <div className="flex justify-end [margin-bottom:var(--space-fluid-m)]">
-                    {isPerfect ? (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-                        <Icon name="auto_awesome" size="xs" className="text-emerald-400" />
-                        <Typography variant="microLabel" className="font-black text-emerald-400 uppercase tracking-widest">{t.quiz.mastered}</Typography>
-                      </div>
-                    ) : isAttempted ? (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-                        <Icon name="timer" size="xs" className="text-primary" />
-                        <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-widest">{t.quiz.inProgress}</Typography>
-                      </div>
-                    ) : null}
-                  </div>
+                  {/* Avatar quadrato */}
+                  {mod.image_url && (
+                    <div className="shrink-0 size-20 rounded-2xl overflow-hidden border border-white/20 shadow-lg">
+                      <img
+                        src={mod.image_url}
+                        alt={mod.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
 
-                  {/* Centro — titolo + tema ── */}
-                  <div className="flex-1 flex flex-col justify-center [gap:var(--space-fluid-s)]">
+                  {/* Testo + bottom row */}
+                  <div className="flex-1 min-w-0 flex flex-col [gap:var(--space-fluid-xs)]">
+
+                    {/* Status badge (top) */}
+                    <div className="flex justify-between items-center">
+                      <Typography variant="microLabel" color="muted" className="font-bold uppercase tracking-widest truncate">
+                        {mod.theme || t.quiz.noTheme}
+                      </Typography>
+                      {isPerfect ? (
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 shrink-0">
+                          <Icon name="auto_awesome" size="xs" className="text-emerald-400" />
+                          <Typography variant="microLabel" className="font-black text-emerald-400 uppercase tracking-[0.15em]">{t.quiz.mastered}</Typography>
+                        </div>
+                      ) : isAttempted ? (
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 shrink-0">
+                          <Icon name="timer" size="xs" className="text-primary" />
+                          <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-[0.15em]">{t.quiz.inProgress}</Typography>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {/* Titolo */}
                     <Typography
-                      variant="h3"
+                      variant="h4"
                       color="title"
-                      className="uppercase tracking-tight leading-tight line-clamp-2"
+                      className="uppercase italic tracking-tight leading-tight line-clamp-2"
                     >
                       {mod.title}
                     </Typography>
 
-                    <Typography variant="microLabel" color="muted" className="font-bold uppercase tracking-widest">
-                      {mod.theme || t.quiz.noTheme}
-                    </Typography>
-                  </div>
+                    {/* Score + Button */}
+                    <div className="flex items-center justify-between [margin-top:var(--space-fluid-2xs)]">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/40 border border-white/10 backdrop-blur-sm">
+                        <Icon name="stars" size="xs" className={isPerfect ? 'text-emerald-400' : 'text-primary'} />
+                        <Typography
+                          variant="numericRegular"
+                          className={cn("font-black leading-none", isPerfect ? 'text-emerald-400' : 'text-white')}
+                        >
+                          {percentage}%
+                        </Typography>
+                      </div>
 
-                  {/* Bottom — score + button ── */}
-                  <div className="flex flex-col [gap:var(--space-fluid-s)] [margin-top:var(--space-fluid-s)]">
-                    {/* STATS */}
-                    <div className="flex items-center justify-between [padding:var(--space-fluid-s)] bg-black/40 rounded-2xl border border-white/10 backdrop-blur-sm">
-                      <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-widest">{t.quiz.score}</Typography>
-                      <Typography
-                        variant="numericStat"
-                        className={cn("font-black leading-none", isPerfect ? 'text-emerald-400' : 'text-white')}
-                      >
-                        {percentage}%
-                      </Typography>
+                      <ButtonQuiz
+                        config={currentBtnConfig}
+                        className={cn(isPerfect ? "border-emerald-500/30" : "")}
+                      />
                     </div>
 
-                    {/* ACTION BUTTON */}
-                    <ButtonQuiz
-                      fullWidth
-                      config={currentBtnConfig}
-                      className={cn(
-                        isPerfect ? "bg-white/10 hover:bg-white/20 border-white/10" : ""
-                      )}
-                    />
                   </div>
-
                 </div>
               </div>
             );

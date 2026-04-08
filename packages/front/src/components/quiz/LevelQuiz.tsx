@@ -58,23 +58,17 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
   };
 
   return (
-    <div
-      className="flex-grow w-full min-h-full relative animate-in fade-in duration-700"
-      style={{
-        backgroundImage: level.image ? `url('${level.image}')` : undefined,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
-      {/* ── Background Overlay (scuro con riflesso rosso/primary in alto) ── */}
-      <div className="absolute inset-0 bg-black/70" />
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/3 opacity-20 blur-3xl pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, var(--color-primary) 0%, transparent 70%)',
-        }}
-      />
+    <div className="flex-grow w-full min-h-full relative animate-in fade-in duration-700">
+      {/* ── ATMOSPHERIC BACKGROUND (PhotoModal style) ── */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-black">
+        {level.image && (
+          <img
+            src={level.image}
+            alt="Level background"
+            className="w-full h-full object-cover opacity-80 mix-blend-multiply"
+          />
+        )}
+      </div>
 
       {/* ── Content ── */}
       <div className="relative z-10 flex-grow w-full max-w-[85rem] mx-auto [padding:var(--space-fluid-m)] [padding-top:var(--space-fluid-2xs)]">
@@ -134,9 +128,9 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                   theme.border
                 )}
               >
-                {/* ── Background immagine modulo ── */}
+                {/* ── Top Image (chiaro, senza overlay) ── */}
                 {mod.image_url && (
-                  <div className="absolute inset-0">
+                  <div className="h-48 overflow-hidden">
                     <img
                       src={mod.image_url}
                       alt={mod.title}
@@ -145,17 +139,8 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                   </div>
                 )}
 
-                {/* ── Overlay scuro + riflesso rosso in alto ── */}
-                <div className="absolute inset-0 bg-black/70 transition-opacity duration-500 group-hover:bg-black/60" />
-                <div
-                  className="absolute top-0 right-0 w-1/2 h-1/3 opacity-30 blur-3xl pointer-events-none"
-                  style={{
-                    background: 'radial-gradient(ellipse at top right, var(--color-primary) 0%, transparent 60%)',
-                  }}
-                />
-
                 {/* ── Content ── */}
-                <div className="relative z-10 flex flex-col h-full [padding:var(--space-fluid-m)]">
+                <div className="flex flex-col h-full [padding:var(--space-fluid-m)]">
 
                   {/* Top — badge perfetto/in progress */}
                   <div className="flex justify-end [margin-bottom:var(--space-fluid-m)]">

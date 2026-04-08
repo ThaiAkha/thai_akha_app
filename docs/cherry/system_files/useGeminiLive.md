@@ -1,15 +1,18 @@
-# useGeminiLive.ts
+# 🎤 useGeminiLive Hook (Voice Orchestration)
 
-**Status**: ✅ Production (v2.0 — Model Migration 2026-04-06)
-**Model**: `gemini-2.5-flash-native-audio` (Live WebSocket API)
-**Updated**: 2026-04-06
+**Source File:** `packages/front/src/hooks/useGeminiLive.ts`  
+**Description:** The primary React hook for managing Gemini Multimodal Live API sessions. It handles high-performance WebRTC-style audio streaming, transcription synchronization, and automated 'Kha' response logic.
 
-```ts
+---
+
+## 📄 Full File Content (1:1 with Code)
+
+```typescript
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLiveGeminiClient } from '../services/geminiClient';
 import { LiveServerMessage, Modality, Type } from '@google/genai';
-import { cherryFront, buildFrontPrompt, fetchChatContextData } from '../prompts/cherryPrompt';
-import { saveMessage } from '@thaiakha/shared/services';
+import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
+import { saveMessage, checkRateLimit } from '@thaiakha/shared/services';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -39,8 +42,11 @@ export const useGeminiLive = (
     const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     const sessionPromiseRef = useRef<Promise<any> | null>(null);
     const sessionRef = useRef<any | null>(null); // resolved session for sync access
+    const isSessionActiveRef = useRef<boolean>(false); // guards sendRealtimeInput against CLOSING/CLOSED WebSocket
     const processorRef = useRef<AudioWorkletNode | null>(null);
     const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+    const inputTranscriptRef = useRef<string>(''); // accumulates user speech transcription
+    const outputTranscriptRef = useRef<string>(''); // accumulates Cherry's response transcription
 
     const encode = (bytes: Uint8Array): string => {
         let binary = '';
@@ -67,8 +73,12 @@ export const useGeminiLive = (
     };
 
     const stopSession = useCallback(() => {
+        // Mark session inactive immediately — prevents worklet onmessage from calling sendRealtimeInput
+        isSessionActiveRef.current = false;
+
         // Disconnect mic pipeline first to stop sending audio
         if (processorRef.current) {
+            processorRef.current.port.onmessage = null; // detach handler before disconnect
             try { processorRef.current.disconnect(); } catch(e) {}
             processorRef.current = null;
         }
@@ -103,6 +113,11 @@ export const useGeminiLive = (
         sourcesRef.current.forEach(s => { try { s.stop(); } catch(e) {} });
         sourcesRef.current.clear();
         nextStartTimeRef.current = 0;
+
+        // Reset transcript refs
+        inputTranscriptRef.current = '';
+        outputTranscriptRef.current = '';
+
         setState(prev => ({ ...prev, status: 'idle', inputTranscript: '', outputTranscript: '' }));
     }, []);
 
@@ -123,6 +138,14 @@ export const useGeminiLive = (
 
     const startSession = async (overrideInstruction?: string, initialPrompt?: string) => {
         if (state.status !== 'idle') stopSession();
+
+        // Rate limit check before connecting
+        const rateLimit = await checkRateLimit(userProfile?.id, undefined);
+        if (!rateLimit.allowed) {
+            setState(prev => ({ ...prev, status: 'error', error: rateLimit.reason ?? 'Voice limit reached.' }));
+            return;
+        }
+
         setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
         try {
@@ -135,22 +158,19 @@ export const useGeminiLive = (
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = stream;
 
-            const { cookingClasses, menuList, spicinessLevels } = await fetchChatContextData();
-
-            const resolvedSystemInstruction = overrideInstruction || buildFrontPrompt(
-              userProfile || {},
-              userProfile?.dietary_profile || 'diet_regular',
-              userProfile?.allergies || [],
-              true,
-              { cookingClasses, menuList, spicinessLevels }
-            );
-
-
+            const resolvedSystemInstruction = overrideInstruction || buildCherryPrompt({
+              isLogged: !!userProfile,
+              name: userProfile?.full_name,
+              dietary_profile: userProfile?.dietary_profile,
+              allergies: userProfile?.allergies,
+              preferred_spiciness: userProfile?.preferred_spiciness_id ? String(userProfile.preferred_spiciness_id) : undefined,
+            });
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio',
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 callbacks: {
                     onopen: async () => {
+                        isSessionActiveRef.current = true;
                         setState(prev => ({ ...prev, status: 'active' }));
 
                         // Resume AudioContexts — required by Chrome autoplay policy
@@ -166,7 +186,7 @@ export const useGeminiLive = (
                         processorRef.current = workletNode;
 
                         workletNode.port.onmessage = (event) => {
-                            if (!sessionRef.current) return;
+                            if (!isSessionActiveRef.current || !sessionRef.current) return;
                             const float32Data = event.data as Float32Array;
                             const int16 = new Int16Array(float32Data.length);
                             for (let i = 0; i < float32Data.length; i++) { int16[i] = float32Data[i] * 32768; }
@@ -177,7 +197,10 @@ export const useGeminiLive = (
                                         mimeType: 'audio/pcm;rate=16000',
                                     }
                                 });
-                            } catch(e) { /* session may be closing */ }
+                            } catch {
+                                // WebSocket entered CLOSING before onclose fired — mark inactive
+                                isSessionActiveRef.current = false;
+                            }
                         };
 
                         source.connect(workletNode);
@@ -189,22 +212,30 @@ export const useGeminiLive = (
                     },
                     onmessage: async (message: LiveServerMessage) => {
 
-
+                        // Accumulate input transcription in ref for closure access
                         if (message.serverContent?.inputTranscription) {
-                            setState(prev => ({ ...prev, inputTranscript: prev.inputTranscript + message.serverContent!.inputTranscription!.text }));
+                            inputTranscriptRef.current += message.serverContent!.inputTranscription!.text;
+                            setState(prev => ({ ...prev, inputTranscript: inputTranscriptRef.current }));
                         }
+
+                        // Accumulate output transcription in ref for closure access
                         if (message.serverContent?.outputTranscription) {
-                            setState(prev => ({ ...prev, outputTranscript: prev.outputTranscript + message.serverContent!.outputTranscription!.text }));
+                            outputTranscriptRef.current += message.serverContent!.outputTranscription!.text;
+                            setState(prev => ({ ...prev, outputTranscript: outputTranscriptRef.current }));
                         }
+
+                        // Use refs (not state) to avoid stale closure
                         if (message.serverContent?.turnComplete) {
-                            const userTranscript = state.inputTranscript;
-                            const assistantTranscript = state.outputTranscript;
+                            const userTranscript = inputTranscriptRef.current;
+                            const assistantTranscript = outputTranscriptRef.current;
 
                             if (userTranscript && assistantTranscript && onTurnComplete) {
                                 onTurnComplete(userTranscript, assistantTranscript);
                             }
-                            
-                            // Reset local transcripts
+
+                            // Reset refs and state
+                            inputTranscriptRef.current = '';
+                            outputTranscriptRef.current = '';
                             setState(prev => ({ ...prev, inputTranscript: '', outputTranscript: '' }));
                         }
 
@@ -230,11 +261,13 @@ export const useGeminiLive = (
                     },
                     onerror: (e) => {
                         console.error("Live API Error:", e);
+                        isSessionActiveRef.current = false;
                         setState(prev => ({ ...prev, status: 'error', error: 'Connection failed kha. Check your network.' }));
                         stopSession();
                     },
                     onclose: () => {
                         console.log("Live API Closed");
+                        isSessionActiveRef.current = false;
                         stopSession();
                     }
                 },
@@ -252,7 +285,7 @@ export const useGeminiLive = (
             });
 
             sessionPromiseRef.current = sessionPromise;
-            // Store resolved session for sync access in onaudioprocess (no .then() per chunk)
+            // Store resolved session for sync access (no .then() per chunk)
             sessionPromise.then(session => { sessionRef.current = session; }).catch(() => {});
 
         } catch (err: any) {
@@ -277,3 +310,8 @@ export const useGeminiLive = (
     };
 };
 ```
+
+---
+
+## 🛠 Usage in System
+This hook is used by `ChatBox.tsx` to handle the **Gemini Live (Voice)** mode. It utilizes the `audio-processor.js` worklet for high-frequency sampling and automatically compiles the user's static RAG context via `buildCherryPrompt`.

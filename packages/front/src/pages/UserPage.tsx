@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { PageLayout, HeaderMenu, StickyTabNav } from '../components/layout';
-import { Tabs } from '../components/ui';
 import { UserProfile } from '../services/auth.service';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
 import {
@@ -225,8 +224,6 @@ const UserPage: React.FC<UserPageProps> = ({
           items={TABS}
           value={activeTab}
           onChange={setActiveTab}
-          topOffset="top-20"
-          bottomMargin="mb-8 md:mb-10"
         />
 
         {/* ── GRID LAYOUT ── */}
@@ -234,7 +231,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
           {/* ── ASIDE — 4 cols (below tabs on mobile, left on desktop) ── */}
           <aside className="lg:col-span-4 flex flex-col gap-5 lg:sticky lg:top-36">
-            <UserProfileCard userProfile={userProfile} />
+            <UserProfileCard userProfile={userProfile} activeTab={activeTab} />
             <ContextualStatsView
               activeTab={activeTab}
               activeBooking={activeBooking ?? null}
@@ -251,7 +248,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 {activeTab === 'overview' && (
                   <OverviewView
                     userProfile={userProfile}
-                    activeBooking={activeBooking ?? null}
+                    bookings={bookingsList}
                     menuSelection={menuSelection}
                     onChangeTab={setActiveTab}
                     onNavigate={onNavigate}

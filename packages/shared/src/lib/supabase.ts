@@ -29,6 +29,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase environment variables are missing! Check your .env files.');
 }
 
+export { supabaseUrl, supabaseAnonKey };
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     // Fix per React StrictMode double-mount issue

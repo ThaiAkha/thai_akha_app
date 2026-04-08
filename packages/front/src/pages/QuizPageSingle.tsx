@@ -83,11 +83,13 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
             subtitle: l.subtitle,
             image: l.image_url,
             rewardId: l.reward_id,
+            completion_bonus: l.completion_bonus ?? 0,
             modules: (l.modules ?? []).map((m: any) => ({
               id: m.id,
               title: m.title,
               icon: m.icon_name ?? m.icon,
               theme: m.theme_color ?? m.theme,
+              image_url: m.image_url,
               questions: (m.questions ?? []).map((q: any) => ({
                 id: q.id,
                 text: q.question_text ?? q.text,
@@ -97,6 +99,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
                   ? q.options[q.correct_index] ?? q.options[q.correct_answer] ?? q.correctAnswer
                   : q.correct_answer ?? q.correctAnswer,
                 explanation: q.explanation,
+                points: q.points ?? 10, // XP per correct answer (default 10)
               })),
             })),
           }));
@@ -170,7 +173,10 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
 
   const maxTotalScore = useMemo(() => {
     let total = 0;
-    quizLevels.forEach(l => l.modules.forEach(m => (total += m.questions.length * 10)));
+    quizLevels.forEach(l => {
+      l.modules.forEach(m => m.questions.forEach(q => (total += q.points ?? 10)));
+      total += l.completion_bonus ?? 0;
+    });
     return Math.max(total, 100);
   }, [quizLevels]);
 
@@ -194,8 +200,10 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
     setSelectedOption(option);
     setShowFeedback(true);
 
-    const isCorrect = option === currentModule.questions[currentQuestionIndex].correctAnswer;
-    if (isCorrect) setSessionScore(prev => prev + 1);
+    const question = currentModule.questions[currentQuestionIndex];
+    const isCorrect = option === question.correctAnswer;
+    const pts = isCorrect ? (question.points ?? 10) : 0;
+    if (isCorrect) setSessionScore(prev => prev + pts);
 
     setTimeout(() => {
       const nextIndex = currentQuestionIndex + 1;
@@ -204,7 +212,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
         setShowFeedback(false);
         setSelectedOption(null);
       } else {
-        finishModule(isCorrect ? sessionScore + 1 : sessionScore);
+        finishModule(isCorrect ? sessionScore + pts : sessionScore);
       }
     }, 1500);
   };
@@ -212,15 +220,16 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
   const finishModule = (finalSessionScore: number) => {
     if (!currentModule || !currentLevel) return;
 
-    const totalQuestions = currentModule.questions.length;
-    const isPerfect = finalSessionScore === totalQuestions;
+    // isPerfect: user earned the max possible points for this module
+    const maxModulePoints = currentModule.questions.reduce((sum, q) => sum + (q.points ?? 10), 0);
+    const isPerfect = finalSessionScore >= maxModulePoints;
 
     const prevBest = bestScores[currentModule.id] || 0;
     const newBest = Math.max(prevBest, finalSessionScore);
     const newBestScores = { ...bestScores, [currentModule.id]: newBest };
 
-    let newTotalScore = 0;
-    Object.values(newBestScores).forEach(s => (newTotalScore += s * 10));
+    // Sum best scores per module (already in XP points, no * 10)
+    let newTotalScore = Object.values(newBestScores).reduce((sum, s) => sum + s, 0);
 
     const newCompleted = completedModules.includes(currentModule.id)
       ? completedModules
@@ -229,6 +238,12 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
     const newPerfect = (isPerfect && !perfectModules.includes(currentModule.id))
       ? [...perfectModules, currentModule.id]
       : perfectModules;
+
+    // completion_bonus: if all modules in this level are now completed
+    const allLevelModulesCompleted = currentLevel.modules.every(m => newCompleted.includes(m.id));
+    if (allLevelModulesCompleted && currentLevel.completion_bonus > 0) {
+      newTotalScore += currentLevel.completion_bonus;
+    }
 
     // Sblocco reward per soglia XP cumulativa (required_points)
     const newBonuses = quizRewards
@@ -272,7 +287,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
         />
       }
     >
-      <div className={`w-full ${view !== 'HOME' ? 'flex items-center justify-center' : ''}`}>
+      <div className={`w-full [padding-top:var(--space-fluid-xl)] ${view !== 'HOME' ? 'flex items-center justify-center' : ''}`}>
 
         {/* HOME — level list */}
         {view === 'HOME' && (
@@ -444,7 +459,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
             module={currentModule as any}
             correctAnswers={sessionScore}
             totalQuestions={currentModule.questions.length}
-            xpEarned={sessionScore * 10}
+            xpEarned={sessionScore}
             onNext={() => setView('LEVEL_SELECT')}
             onPlayAgain={() => handleStartModule(currentModule.id)}
             onReturn={() => setView('LEVEL_SELECT')}

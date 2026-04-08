@@ -128,43 +128,26 @@ export const checkRateLimit = async (
   userId?: string,
   _sessionToken?: string
 ): Promise<{ allowed: boolean; reason?: string }> => {
-  if (userId) {
-    // VIP: utente con prenotazione confermata — nessun limite
-    const { data: hasBooking } = await supabase
-      .from('bookings')
-      .select('internal_id')
-      .eq('user_id', userId)
-      .eq('status', 'confirmed')
-      .gte('booking_date', new Date().toISOString().split('T')[0])
-      .limit(1)
-      .maybeSingle();
-    if (hasBooking) return { allowed: true };
+  try {
+    const { data, error } = await supabase.rpc('check_chat_rate_limit', {
+      p_user_id: userId ?? null,
+      p_session_token: null,
+      // TODO (quando si riattivano i limiti): passare il sessionToken reale.
+      // I caller (useCherryChat, useGeminiLive) hanno accesso a sessionRef.current?.id
+      // ma non lo passano ancora. Aggiornare la chiamata a:
+      //   checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined)
+    });
 
-    // Utente loggato normale: max 30 messaggi/giorno
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const session = await getOrCreateSession(userId);
-    const { count } = await supabase
-      .from('chat_messages')
-      .select('*', { count: 'exact', head: true })
-      .eq('sender_role', 'user')
-      .gte('created_at', oneDayAgo)
-      .eq('session_id', session.id);
-    if (count && count >= 30) {
-      return {
-        allowed: false,
-        reason: 'Daily limit reached. Come back tomorrow or book a class!',
-      };
-    }
+    if (error) throw error;
+
+    const row = Array.isArray(data) ? data[0] : data;
+    return {
+      allowed: row.allowed,
+      reason: row.reason ?? undefined,
+    };
+  } catch (err) {
+    // Fallback silenzioso: non bloccare l'utente se la RPC fallisce
+    console.warn('[checkRateLimit] RPC failed, allowing by default:', err);
     return { allowed: true };
   }
-
-  // Guest: max 10 messaggi per sessione
-  const session = await getOrCreateSession();
-  if (session.message_count >= 10) {
-    return {
-      allowed: false,
-      reason: 'Guest limit reached. Create a free account to continue chatting!',
-    };
-  }
-  return { allowed: true };
 };

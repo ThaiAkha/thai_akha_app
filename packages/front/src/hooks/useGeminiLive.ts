@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLiveGeminiClient } from '../services/geminiClient';
 import { LiveServerMessage, Modality, Type } from '@google/genai';
-import { cherryFront, buildFrontPrompt, fetchChatContextData } from '../prompts/cherryPrompt';
+import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
 import { saveMessage, checkRateLimit } from '@thaiakha/shared/services';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
@@ -32,10 +32,12 @@ export const useGeminiLive = (
     const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     const sessionPromiseRef = useRef<Promise<any> | null>(null);
     const sessionRef = useRef<any | null>(null); // resolved session for sync access
+    const isSessionActiveRef = useRef<boolean>(false); // guards sendRealtimeInput against CLOSING/CLOSED WebSocket
     const processorRef = useRef<AudioWorkletNode | null>(null);
     const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
     const inputTranscriptRef = useRef<string>(''); // accumulates user speech transcription
     const outputTranscriptRef = useRef<string>(''); // accumulates Cherry's response transcription
+    const analyserRef = useRef<AnalyserNode | null>(null); // for waveform visualization
 
     const encode = (bytes: Uint8Array): string => {
         let binary = '';
@@ -62,8 +64,12 @@ export const useGeminiLive = (
     };
 
     const stopSession = useCallback(() => {
+        // Mark session inactive immediately — prevents worklet onmessage from calling sendRealtimeInput
+        isSessionActiveRef.current = false;
+
         // Disconnect mic pipeline first to stop sending audio
         if (processorRef.current) {
+            processorRef.current.port.onmessage = null; // detach handler before disconnect
             try { processorRef.current.disconnect(); } catch(e) {}
             processorRef.current = null;
         }
@@ -90,6 +96,10 @@ export const useGeminiLive = (
         if (audioCtxRef.current) {
             audioCtxRef.current.close().catch(() => {});
             audioCtxRef.current = null;
+        }
+        if (analyserRef.current) {
+            try { analyserRef.current.disconnect(); } catch(e) {}
+            analyserRef.current = null;
         }
         if (inputAudioCtxRef.current) {
             inputAudioCtxRef.current.close().catch(() => {});
@@ -140,23 +150,24 @@ export const useGeminiLive = (
             audioCtxRef.current = new AudioContextClass({ sampleRate: 24000 });
             inputAudioCtxRef.current = new AudioContextClass({ sampleRate: 16000 });
 
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+            });
             streamRef.current = stream;
 
-            const { cookingClasses, menuList, spicinessLevels } = await fetchChatContextData();
-
-            const resolvedSystemInstruction = overrideInstruction || buildFrontPrompt(
-              userProfile || {},
-              userProfile?.dietary_profile || 'diet_regular',
-              userProfile?.allergies || [],
-              true,
-              { cookingClasses, menuList, spicinessLevels }
-            );
+            const resolvedSystemInstruction = overrideInstruction || buildCherryPrompt({
+              isLogged: !!userProfile,
+              name: userProfile?.full_name,
+              dietary_profile: userProfile?.dietary_profile,
+              allergies: userProfile?.allergies,
+              preferred_spiciness: userProfile?.preferred_spiciness_id ? String(userProfile.preferred_spiciness_id) : undefined,
+            });
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio',
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 callbacks: {
                     onopen: async () => {
+                        isSessionActiveRef.current = true;
                         setState(prev => ({ ...prev, status: 'active' }));
 
                         // Resume AudioContexts — required by Chrome autoplay policy
@@ -168,11 +179,23 @@ export const useGeminiLive = (
                         const source = inputCtx.createMediaStreamSource(stream);
                         const workletNode = new AudioWorkletNode(inputCtx, 'audio-processor');
 
+                        const analyser = inputCtx.createAnalyser();
+                        analyser.fftSize = 64;
+                        analyserRef.current = analyser;
+
                         micSourceRef.current = source;
                         processorRef.current = workletNode;
 
                         workletNode.port.onmessage = (event) => {
-                            if (!sessionRef.current) return;
+                            if (!isSessionActiveRef.current || !sessionRef.current) return;
+                            
+                            // Extra safety: Check if WebSocket is actually OPEN before calling send
+                            // The underlying lib uses a WebSocket or similar stream
+                            const session = sessionRef.current;
+                            if (session.ws && session.ws.readyState !== 1) { // 1 = OPEN
+                                return;
+                            }
+
                             const float32Data = event.data as Float32Array;
                             const int16 = new Int16Array(float32Data.length);
                             for (let i = 0; i < float32Data.length; i++) { int16[i] = float32Data[i] * 32768; }
@@ -183,10 +206,15 @@ export const useGeminiLive = (
                                         mimeType: 'audio/pcm;rate=16000',
                                     }
                                 });
-                            } catch(e) { /* session may be closing */ }
+                            } catch {
+                                // WebSocket entered CLOSING before onclose fired — mark inactive
+                                // to prevent further calls until onclose resets the pipeline
+                                isSessionActiveRef.current = false;
+                            }
                         };
 
-                        source.connect(workletNode);
+                        source.connect(analyser);
+                        analyser.connect(workletNode);
                         workletNode.connect(inputCtx.destination);
 
                         if (initialPrompt) {
@@ -244,11 +272,13 @@ export const useGeminiLive = (
                     },
                     onerror: (e) => {
                         console.error("Live API Error:", e);
+                        isSessionActiveRef.current = false;
                         setState(prev => ({ ...prev, status: 'error', error: 'Connection failed kha. Check your network.' }));
                         stopSession();
                     },
                     onclose: () => {
                         console.log("Live API Closed");
+                        isSessionActiveRef.current = false;
                         stopSession();
                     }
                 },
@@ -276,17 +306,24 @@ export const useGeminiLive = (
         }
     };
 
-    useEffect(() => () => stopSession(), [stopSession]);
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            isSessionActiveRef.current = false;
+            stopSession();
+        };
+    }, []); // Fixed: empty array to prevent "changed size between renders" error
 
-    return { 
+    return {
         isActive: state.status === 'active',
         isConnecting: state.status === 'connecting',
         status: state.status,
         error: state.error,
         inputTranscript: state.inputTranscript,
         outputTranscript: state.outputTranscript,
-        startSession, 
-        stopSession, 
-        sendTextMessage 
+        analyserRef,
+        startSession,
+        stopSession,
+        sendTextMessage
     };
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { sendChatMessageProxy } from '@thaiakha/shared/services';
+import { sendChatMessageProxy, sendChatMessageStream } from '@thaiakha/shared/services';
 import { buildCherryPrompt, type CherryUserContext } from '../prompts/cherryPrompt';
 import {
   getOrCreateSession,
@@ -13,7 +13,29 @@ import type { ChatMessage } from '@thaiakha/shared';
 import type { UserProfile } from '../services/auth.service';
 
 const HISTORY_WINDOW = 3;
+
+const SPICINESS_MAP: Record<string, string> = {
+  '1': 'The Farang (Soft)',
+  '2': 'Thai Smile (Mild)',
+  '3': 'Respect! (Medium)',
+  '4': 'Thai Spicy (Local)',
+  '5': 'Akha Warrior (Extreme)',
+};
+
+const DIETARY_MAP: Record<string, string> = {
+  diet_regular: 'Regular',
+  diet_vegan: 'Vegan',
+  diet_vegetarian: 'Vegetarian',
+  diet_pescatarian: 'Pescatarian',
+  diet_meat_lover: 'Meat Lover',
+  diet_halal: 'Halal Friendly',
+  diet_kosher: 'Kosher Friendly',
+  diet_rastafari: 'Rastafari (Ital)',
+  diet_jain: 'Jain Friendly',
+  diet_hindu: 'Hindu Friendly',
+};
 const SUMMARY_THRESHOLD = 20;
+const TYPEWRITER_INTERVAL_MS = 35; // ~28 words/sec
 
 export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -23,6 +45,30 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
+
+  // ── Typewriter refs ─────────────────────────────────────────────────────────
+  const typeQueueRef = useRef<string[]>([]);
+  const typeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const serverDoneRef = useRef(false);
+  const fullResponseRef = useRef('');
+
+  const stopTypewriter = useCallback((msgId: string) => {
+    if (typeIntervalRef.current) {
+      clearInterval(typeIntervalRef.current);
+      typeIntervalRef.current = null;
+    }
+    typeQueueRef.current = [];
+    setMessages(prev =>
+      prev.map(m => m.id === msgId ? { ...m, text: fullResponseRef.current, isStreaming: false } : m)
+    );
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
+    };
+  }, []);
 
   // ── Initialization ─────────────────────────────────────────────────────────
 
@@ -44,14 +90,10 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         })
       );
 
-      // ── Static welcome message (UI-only, never sent to Gemini) ─────────────
-      // Cherry greets the user without wasting tokens or causing a "double intro".
-      // On returning users with history, the history already provides context.
       if (initialMessages.length === 0) {
         const greeting = userProfile?.full_name
           ? `Sawasdee kha ${(userProfile.full_name).split(' ')[0]}! 🍒 Welcome back to your Akha kitchen. How can I help you today?`
           : "Sawasdee kha! 🍒 I'm Cherry, your Akha cultural guide and chef. Ask me anything about our courses, recipes or Thai culture!";
-        // Pure UI message — id prefixed 'static:' so sendMessage never saves it to DB
         initialMessages.push({ id: 'static:greeting', role: 'model', text: greeting });
       }
 
@@ -75,7 +117,12 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         systemInstruction: 'You are a concise conversation summarizer. Output plain text only.',
       });
 
-      if (summary) await updateSummary(sid, summary);
+      if (summary) {
+        await updateSummary(sid, summary);
+        if (sessionRef.current && sessionRef.current.id === sid) {
+          sessionRef.current.summary = summary;
+        }
+      }
     } catch {
       // silent fail
     }
@@ -109,35 +156,85 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
 
     if (sid) saveMessage(sid, 'user', userText, 'text');
 
+    // Reset typewriter state for this message
+    typeQueueRef.current = [];
+    serverDoneRef.current = false;
+    fullResponseRef.current = '';
+    if (typeIntervalRef.current) {
+      clearInterval(typeIntervalRef.current);
+      typeIntervalRef.current = null;
+    }
+
+    // Start typewriter consumer — drains word queue at fixed cadence
+    typeIntervalRef.current = setInterval(() => {
+      if (typeQueueRef.current.length > 0) {
+        const token = typeQueueRef.current.shift()!;
+        setMessages(prev =>
+          prev.map(m => m.id === modelMsgId ? { ...m, text: m.text + token } : m)
+        );
+      } else if (serverDoneRef.current) {
+        // Queue empty + server stream finished → snap to final text and close
+        stopTypewriter(modelMsgId);
+      }
+      // else: queue empty but server still streaming → wait next tick
+    }, TYPEWRITER_INTERVAL_MS);
+
     try {
-      // Build system prompt with full context
       const userContext: CherryUserContext = {
         isLogged: !!userProfile,
         name: userProfile?.full_name,
-        dietary_profile: userProfile?.dietary_profile,
+        dietary_profile: userProfile?.dietary_profile ? (DIETARY_MAP[userProfile.dietary_profile] ?? userProfile.dietary_profile) : undefined,
         allergies: userProfile?.allergies,
-        preferred_spiciness: userProfile?.preferred_spiciness_id ? String(userProfile.preferred_spiciness_id) : undefined,
+        preferred_spiciness: userProfile?.preferred_spiciness_id ? SPICINESS_MAP[String(userProfile.preferred_spiciness_id)] : undefined,
       };
       const basePrompt = buildCherryPrompt(userContext);
 
-      // Get recent conversation for context
       const recentHistory = await loadRecentMessages(sid || '', HISTORY_WINDOW * 2);
       const historyText = recentHistory
         .slice(-HISTORY_WINDOW)
         .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
         .join('\n');
 
-      const systemInstruction = basePrompt + (historyText ? `\n### RECENT CONVERSATION:\n${historyText}` : '');
+      const summaryText = sessionRef.current?.summary
+        ? `\n### PREVIOUS CONVERSATION SUMMARY:\n${sessionRef.current.summary}`
+        : '';
+      const systemInstruction = basePrompt + summaryText + (historyText ? `\n### RECENT CONVERSATION:\n${historyText}` : '');
 
-      // Call proxy with full system instruction
-      const response = await sendChatMessageProxy({
-        message: userText,
-        systemInstruction,
-      });
+      // 🛡️ SECURITY HELPER: Clean JSON artifacts from response
+      const cleanResponse = (text: string) => {
+        if (text.includes('{"response":"')) {
+          try {
+            // Tentativo parsing se è un JSON completo
+            const parsed = JSON.parse(text);
+            return parsed.response || text;
+          } catch {
+            // Fallback: pulizia manuale regex se è un chunk parziale o malformato
+            return text
+              .replace(/^\{"response":"/, '')
+              .replace(/"\}$/, '')
+              .replace(/\\n/g, '\n')
+              .replace(/\\"/g, '"');
+          }
+        }
+        return text;
+      };
 
-      setMessages(prev =>
-        prev.map(m => (m.id === modelMsgId ? { ...m, text: response, isStreaming: false } : m))
+      // Stream from server — push word tokens into the typewriter queue
+      const rawResponse = await sendChatMessageStream(
+        { message: userText, systemInstruction },
+        (chunk) => {
+          const cleanChunk = cleanResponse(chunk);
+          fullResponseRef.current += cleanChunk;
+          // Split cleanChunk into word tokens (preserving trailing spaces)
+          const tokens = cleanChunk.match(/\S+[ \t]*/g) ?? [cleanChunk];
+          typeQueueRef.current.push(...tokens);
+        }
       );
+
+      // Signal server is done — typewriter will finalize when queue empties
+      const response = cleanResponse(rawResponse);
+      fullResponseRef.current = response;
+      serverDoneRef.current = true;
 
       if (sid) saveMessage(sid, 'assistant', response, 'text');
 
@@ -147,6 +244,10 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       }
     } catch (err) {
       console.error('[useCherryChat] sendMessage error:', err);
+      if (typeIntervalRef.current) {
+        clearInterval(typeIntervalRef.current);
+        typeIntervalRef.current = null;
+      }
       setError('The kitchen is very busy kha! Please try again.');
       setMessages(prev => prev.filter(m => m.id !== modelMsgId));
     } finally {
@@ -155,7 +256,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   };
 
   // ── addVoiceMessages (The Bridge) ────────────────────────────────────────
-  // This merges Gemini Live transcriptions into the unified chat UI and DB.
 
   const addVoiceMessages = useCallback(async (
     userText: string,
@@ -166,14 +266,12 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     const userMsgId = `voice-user-${Date.now()}`;
     const modelMsgId = `voice-model-${Date.now()}`;
 
-    // 1. Update UI state instantly
     setMessages(prev => [
       ...prev,
       { id: userMsgId, role: 'user', text: userText, type: 'voice' as any },
       { id: modelMsgId, role: 'model', text: assistantText, type: 'voice' as any }
     ]);
 
-    // 2. Persist to Supabase
     const sid = sessionRef.current?.id;
     if (sid) {
       await Promise.all([

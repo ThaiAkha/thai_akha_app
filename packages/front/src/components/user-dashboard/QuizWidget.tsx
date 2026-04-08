@@ -70,10 +70,10 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24 space-y-8">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24 [space-y:var(--space-fluid-l)]">
       
       {/* 1. HERO DASHBOARD: PLAYER STATUS */}
-      <div className="relative bg-surface border border-white/10 rounded-[3rem] p-8 overflow-hidden shadow-2xl group">
+      <div className="relative bg-surface border border-border rounded-3xl p-6 md:p-8 overflow-hidden shadow-2xl group">
         
         {/* Background Effects */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-quiz/10 rounded-full blur-[80px] group-hover:bg-quiz/20 transition-colors duration-1000" />
@@ -86,10 +86,10 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
                 <div className="relative size-24 shrink-0 flex items-center justify-center">
                     <svg className="size-full -rotate-90 transform" viewBox="0 0 40 40">
                         {/* Track */}
-                        <circle className="text-white/10" stroke="currentColor" strokeWidth="3" fill="transparent" r={radius} cx="20" cy="20" />
+                        <circle className="stroke-surface-3" stroke="currentColor" strokeWidth="3" fill="transparent" r={radius} cx="20" cy="20" />
                         {/* Progress */}
                         <circle 
-                            className="text-quiz transition-all duration-1000 ease-out" 
+                            className="stroke-quiz transition-all duration-1000 ease-out" 
                             stroke="currentColor" 
                             strokeWidth="3" 
                             strokeLinecap="round"
@@ -101,8 +101,8 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
                         />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-2xl font-black text-white leading-none">{level}</span>
-                        <span className="text-[7px] font-bold uppercase text-white/40 tracking-wider">Level</span>
+                        <Typography variant="numericRegular" className="text-2xl font-black text-title leading-none">{level}</Typography>
+                        <Typography variant="microLabel" color="muted">Level</Typography>
                     </div>
                 </div>
 
@@ -111,31 +111,32 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
                         <Badge variant="mineral-accent">
                             {rankTitle}
                         </Badge>
-                        <span className="text-[10px] font-mono text-white/40">ID: {userProfile?.id.slice(0,4).toUpperCase() || 'GUEST'}</span>
+                        <Typography variant="numericRegular" color="muted" className="text-[10px]">ID: {userProfile?.id.slice(0,4).toUpperCase() || 'GUEST'}</Typography>
                     </div>
-                    <Typography variant="h3" className="text-white italic uppercase tracking-tighter leading-none mb-1">
-                        {userProfile?.full_name?.split(' ') || "Warrior"}
+                    <Typography variant="h3" color="title" className="italic uppercase tracking-tighter leading-none mb-1">
+                      {userProfile?.full_name?.split(' ')[0] || "Warrior"}
                     </Typography>
-                    <div className="text-xs text-white/60 font-medium flex items-center gap-2">
+                    <div className="text-xs font-medium flex items-center gap-2">
                         <Icon name="bolt" size="xs" className="text-quiz"/>
-                        <span className="text-white font-bold">{xp} XP</span> Total Earned
+                        <Typography variant="numericRegular" weight="bold" color="title">{xp} XP</Typography>
+                        <Typography variant="paragraphXS" color="sub">Total Earned</Typography>
                     </div>
                 </div>
             </div>
 
             {/* RIGHT: NEXT REWARD TEASER */}
             <div 
-                className="w-full md:w-auto bg-white/5 border border-white/10 p-1 pr-6 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-white/10 hover:border-quiz/30 transition-all group/reward" 
+                className="w-full md:w-auto bg-surface-2 border border-border p-1 pr-6 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-surface-3 hover:border-quiz transition-all group/reward" 
                 onClick={() => onNavigate('quiz')}
             >
-                <div className="size-14 rounded-xl bg-gradient-to-br from-quiz to-btn-p-500 flex items-center justify-center text-black shadow-lg group-hover/reward:scale-105 transition-transform">
+                <div className="size-14 rounded-xl bg-quiz text-black flex items-center justify-center shadow-lg group-hover/reward:scale-105 transition-transform">
                     <Icon name={nextReward?.icon_name ?? 'redeem'} size="md"/>
                 </div>
                 <div>
-                    <div className="text-[9px] font-black uppercase text-quiz tracking-widest mb-0.5">Next Unlock</div>
-                    <div className="font-bold text-white text-sm">{nextReward?.label ?? '...'}</div>
+                    <Typography variant="microLabel" className="text-quiz mb-0.5">Next Unlock</Typography>
+                    <Typography variant="paragraphS" weight="bold" color="title">{nextReward?.label ?? '...'}</Typography>
                 </div>
-                <Icon name="arrow_forward" className="text-white/20 group-hover/reward:text-white group-hover/reward:translate-x-1 transition-all ml-2"/>
+                <Icon name="arrow_forward" size="sm" color="muted" className="group-hover/reward:text-title group-hover/reward:translate-x-1 transition-all ml-2"/>
             </div>
         </div>
       </div>
@@ -145,13 +146,13 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
 
         {/* COL 1: ACTIVE CHALLENGE (Hero Card) */}
         <div className="lg:col-span-2 relative group cursor-pointer" onClick={() => onNavigate('quiz')}>
-            <div className="absolute inset-0 bg-quiz/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[3rem]" />
+            <div className="absolute inset-0 bg-quiz/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
             
-            <Card variant="glass" padding="none" className="h-full bg-surface-elevated border-white/10 overflow-hidden relative min-h-[320px]">
+            <Card variant="glass" padding="none" className="h-full bg-surface border-border overflow-hidden relative min-h-[320px] rounded-3xl">
                 {/* Image BG */}
                 <div className="absolute inset-0">
                     <img src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/Akha01.jpg" className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-[3s]" alt="Challenge" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent dark:from-surface-elevated dark:via-surface-elevated/80 dark:to-transparent" />
                 </div>
 
                 <div className="relative z-10 p-8 h-full flex flex-col justify-between">
@@ -165,59 +166,61 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
                             </div>
                         </div>
                         
-                        <Typography variant="h3" className="text-white italic uppercase tracking-tighter max-w-md mb-2 leading-none">
+                        <Typography variant="h3" className="text-white dark:text-title italic uppercase tracking-tighter max-w-md mb-2 leading-none">
                             Ancestral Lore: <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">The Spirit Gate</span>
                         </Typography>
                         
-                        <p className="text-white/70 text-sm max-w-sm line-clamp-2 mt-4 font-medium">
+                        <Typography variant="paragraphS" className="text-white/70 dark:text-sub max-w-sm line-clamp-2 mt-4">
                             Deep dive into the complex history of Akha migration. Only 4% have achieved a perfect score.
-                        </p>
+                        </Typography>
                     </div>
 
                     <div className="flex items-center gap-4 mt-8">
                         <Button variant="brand" className="bg-white text-black hover:bg-quiz border-none shadow-xl h-12 px-6" icon="play_arrow">
                             Start Mission
                         </Button>
-                        <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest pl-2">+1.2k Joined Today</span>
+                        <Typography variant="microLabel" color="muted" className="pl-2">+1.2k Joined Today</Typography>
                     </div>
                 </div>
             </Card>
         </div>
 
         {/* COL 2: LEADERBOARD (Compact List) */}
-        <Card variant="glass" padding="none" className="bg-surface border-white/10 p-6 flex flex-col h-full min-h-[300px]">
+        <Card variant="glass" padding="none" className="bg-surface border-border p-6 flex flex-col h-full min-h-[300px] rounded-3xl">
             <div className="flex justify-between items-center mb-6">
-                <Typography variant="h6" className="text-white flex items-center gap-2 text-sm uppercase">
+                <Typography variant="h6" color="title" className="flex items-center gap-2 uppercase">
                     <Icon name="leaderboard" className="text-quiz"/> Top Warriors
                 </Typography>
-                <button className="text-[9px] font-bold text-white/40 hover:text-white uppercase tracking-widest">Global</button>
+                <button className="text-[9px] font-bold text-muted hover:text-title uppercase tracking-widest transition-colors">Global</button>
             </div>
 
             <div className="space-y-2 flex-1">
                 {LEADERBOARD.map((p, i) => (
-                    <div key={i} className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+                    <div key={i} className="flex items-center gap-3 p-2 rounded-xl hover:bg-surface-2 transition-colors border border-transparent hover:border-border">
                         <div className={cn("size-6 rounded flex items-center justify-center font-black text-xs", 
-                            i === 0 ? "bg-yellow-500 text-black shadow-lg shadow-yellow-500/20" : 
-                            i === 1 ? "bg-gray-400 text-black" : 
-                            i === 2 ? "bg-btn-p-700 text-white" : "bg-white/10 text-white/60")}>
+                            i === 0 ? "bg-quiz text-black shadow-lg shadow-quiz/20" : 
+                            i === 1 ? "bg-muted text-surface" : 
+                            i === 2 ? "bg-primary text-white" : "bg-surface-3 text-muted")}>
                             {p.rank}
                         </div>
-                        <div className="size-8 rounded-full bg-white/10 flex items-center justify-center text-sm">
+                        <div className="size-8 rounded-full bg-surface-2 flex items-center justify-center text-sm border border-border">
                             {p.avatar}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="font-bold text-white text-xs truncate">{p.name}</div>
-                            <div className="text-[9px] text-quiz font-mono">{p.xp.toLocaleString()} XP</div>
+                            <Typography variant="paragraphXS" weight="bold" color="title" className="truncate">{p.name}</Typography>
+                            <Typography variant="numericRegular" className="text-[9px] text-quiz">{p.xp.toLocaleString()} XP</Typography>
                         </div>
                     </div>
                 ))}
                 
                 {/* User Rank Divider */}
-                <div className="border-t border-white/10 my-2 pt-2">
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="border-t border-border my-2 pt-2">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border">
                         <div className="size-6 rounded bg-primary text-white flex items-center justify-center font-black text-xs">42</div>
-                        <div className="flex-1 font-bold text-white text-xs">You</div>
-                        <div className="text-[9px] text-white/60 font-mono">{xp.toLocaleString()} XP</div>
+                        <div className="flex-1">
+                          <Typography variant="paragraphXS" weight="bold" color="title">You</Typography>
+                        </div>
+                        <Typography variant="numericRegular" color="sub" className="text-[9px]">{xp.toLocaleString()} XP</Typography>
                     </div>
                 </div>
             </div>
@@ -229,14 +232,13 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
          {[
             { label: "Quizzes Passed", val: completedCount },
-            // ✅ FIX: Usa awardedBonuses.length che ora è definita nello state
             { label: "Artifacts", val: awardedBonuses.length },
             { label: "Accuracy", val: `${accuracy}%`, color: "text-action" },
             { label: "Total XP", val: xp, color: "text-quiz" }
          ].map((stat, i) => (
-             <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center hover:bg-white/10 transition-colors">
-                <div className={cn("text-2xl font-black mb-1", stat.color || "text-white")}>{stat.val}</div>
-                <div className="text-[9px] uppercase tracking-widest text-white/40">{stat.label}</div>
+             <div key={i} className="bg-surface-2 rounded-2xl p-4 border border-border text-center hover:bg-surface-3 transition-colors shadow-sm">
+                <Typography variant="numericStat" className={cn("mb-1 block", stat.color || "text-title")}>{stat.val}</Typography>
+                <Typography variant="microLabel" color="muted">{stat.label}</Typography>
              </div>
          ))}
       </div>

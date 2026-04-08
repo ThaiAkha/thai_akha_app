@@ -14,23 +14,23 @@ interface HeaderQuizProps {
 const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevels, score }) => {
   return (
     <div className={cn(
-      "app-header-layout flex flex-col items-center text-center w-full justify-start",
-      "[padding-top:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-m)]",
+      "app-header-layout w-full",
+      "[padding-top:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-s)]",
       "[padding-inline:var(--space-fluid-m)]",
       "transition-all duration-700"
     )}>
 
-      {/* ── CONTAINER PRINCIPALE (Glass Style v4) ── */}
+      {/* ── Glass Container — single row ── */}
       <div className={cn(
-        "relative w-full overflow-hidden group shadow-2xl",
-        "rounded-[3rem] bg-white/5 dark:bg-black/20 backdrop-blur-3xl border border-white/10",
-        "[padding:var(--space-fluid-m)]",
-        "flex flex-wrap lg:flex-nowrap items-center justify-between gap-y-6 lg:gap-y-0 lg:[gap:var(--space-fluid-m)]"
+        "relative w-full overflow-hidden shadow-theme-lg",
+        "rounded-[2rem] bg-white/5 dark:bg-black/20 backdrop-blur-3xl border border-white/10",
+        "[padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-s)]",
+        "flex flex-nowrap items-center [gap:var(--space-fluid-s)]"
       )}>
 
-        {/* ── 1) AVATAR (Top Left su Mobile, Sinistra su Desktop) ── */}
-        <div className="shrink-0 flex items-center justify-center order-1 lg:order-1">
-          <div className="relative size-22 rounded-[1.4rem] bg-surface flex items-center justify-center text-primary overflow-hidden border border-white/10">
+        {/* 1 — Avatar */}
+        <div className="shrink-0">
+          <div className="size-12 rounded-xl overflow-hidden border border-white/10 bg-surface">
             <img
               src="/avatarCherry/600-Avatar-Quiz.webp"
               alt="Cherry Quiz Avatar"
@@ -39,74 +39,62 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
           </div>
         </div>
 
-        {/* ── 2) SCORE BADGE (Top Right su Mobile, Destra su Desktop) ── */}
-        <div className="flex items-center justify-end shrink-0 order-2 lg:order-4">
-          <div className="flex items-center gap-4 bg-black/40 px-6 h-22 rounded-[1.4rem] border border-white/10 group-hover:bg-black/60 transition-colors duration-500">
-            <div className="flex flex-col items-end">
-              <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-[0.2em] mb-1">
-                Wisdom
-              </Typography>
-              <div className="flex items-center gap-2">
-                <Typography variant="numericStat" className="[font-size:2rem] leading-none text-quiz drop-shadow-lg">
-                  {score}
-                </Typography>
-                <Typography variant="microLabel" color="muted" className="font-bold self-end mb-1">XP</Typography>
-              </div>
-            </div>
-            <div className="size-12 rounded-full bg-quiz/10 flex items-center justify-center border border-quiz/20">
-              <Icon name="stars" className="text-quiz" size="xl" />
-            </div>
-          </div>
-        </div>
-
-        {/* ── 3) TITOLO (Centrato Sotto Avatar/Score su Mobile) ── */}
-        <div className="flex flex-col text-center lg:text-left w-full lg:w-auto items-center lg:items-start shrink-0 order-3 lg:order-2">
-          <div className="flex items-center gap-2 [margin-bottom:var(--space-fluid-2xs)]">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--color-primary)]"></span>
-            <Typography variant="microLabel" color="primary" className="uppercase font-black tracking-[0.3em]">
-              {t.quiz.headerBadge || "Active Quiz"}
+        {/* 2 — Title + badge (hidden su mobile xs, visibile da sm) */}
+        <div className="hidden sm:flex flex-col shrink-0 [gap:var(--space-fluid-3xs)]">
+          <div className="flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_6px_var(--color-primary)]" />
+            <Typography variant="microLabel" color="primary" className="uppercase font-black tracking-[0.25em]">
+              {t.quiz.headerBadge || 'Active Quiz'}
             </Typography>
           </div>
-
-          <Typography
-            variant="h2"
-            color="title"
-            className="leading-none tracking-tighter italic [font-size:var(--text-fluid-h2)]"
-          >
+          <Typography variant="h5" color="title" className="leading-none tracking-tight italic">
             {title}
           </Typography>
         </div>
 
-        {/* ── 4) PROGRESS BAR (Ultima in basso su Mobile) ── */}
-        <div className="flex-1 w-full lg:max-w-xl flex flex-col justify-center [padding-inline:var(--space-fluid-s)] order-4 lg:order-3">
-          <div className="flex justify-between w-full [margin-bottom:var(--space-fluid-2xs)] px-1">
-            <div className="flex items-center gap-2">
-              <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-[0.2em]">
-                Level {currentLevel}
-              </Typography>
-              <div className="h-px w-8 bg-primary/30"></div>
-            </div>
-            <Typography variant="microLabel" color="muted" className="font-black uppercase tracking-[0.2em]">
+        {/* 2 mobile — solo badge */}
+        <div className="flex sm:hidden shrink-0 items-center gap-1.5">
+          <span className="size-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_6px_var(--color-primary)]" />
+          <Typography variant="microLabel" color="primary" className="uppercase font-black tracking-[0.25em]">
+            {t.quiz.headerBadge || 'Quiz'}
+          </Typography>
+        </div>
+
+        {/* 3 — Progress bar (flex-1) */}
+        <div className="flex-1 flex flex-col justify-center [gap:var(--space-fluid-3xs)] min-w-0">
+          <div className="flex justify-between px-0.5">
+            <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-[0.15em]">
+              Lv. {currentLevel}
+            </Typography>
+            <Typography variant="microLabel" color="muted" className="uppercase tracking-[0.15em]">
               {totalLevels} Steps
             </Typography>
           </div>
+          <div className="flex [gap:var(--space-fluid-3xs)] h-1.5">
+            {Array.from({ length: totalLevels }).map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "h-full flex-1 rounded-full transition-all duration-500",
+                  i < currentLevel
+                    ? "bg-primary shadow-[0_0_8px_var(--color-primary)]"
+                    : i === currentLevel
+                      ? "bg-primary/30 animate-pulse"
+                      : "bg-white/10 border border-white/5"
+                )}
+              />
+            ))}
+          </div>
+        </div>
 
-          <div className="w-full">
-            <div className="flex gap-2 h-2">
-              {Array.from({ length: totalLevels }).map((_, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "h-full flex-1 rounded-full transition-all duration-500",
-                    i < currentLevel
-                      ? "bg-primary shadow-[0_0_10px_var(--color-primary)]"
-                      : i === currentLevel
-                        ? "bg-primary/30 animate-pulse"
-                        : "bg-surface-elevated/50 border border-white/5"
-                  )}
-                />
-              ))}
-            </div>
+        {/* 4 — Score badge */}
+        <div className="shrink-0 flex items-center [gap:var(--space-fluid-2xs)] bg-black/30 rounded-xl border border-white/10 [padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)]">
+          <Icon name="stars" className="text-quiz-p-400" size="sm" />
+          <div className="flex items-baseline gap-1">
+            <Typography variant="numericStat" className="leading-none text-quiz drop-shadow-lg">
+              {score}
+            </Typography>
+            <Typography variant="microLabel" color="muted" className="font-bold">XP</Typography>
           </div>
         </div>
 
@@ -114,4 +102,5 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({ title, currentLevel, totalLevel
     </div>
   );
 };
+
 export default HeaderQuiz;

@@ -4,15 +4,16 @@ import { CultureSection } from '@thaiakha/shared/types';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface SiblingCardProps {
-  section: CultureSection;
+  section: any;
   direction: 'prev' | 'next';
+  label?: string;
   onClick: () => void;
 }
 
 /**
  * Navigation card for Previous/Next chapters at the end of a blog post.
  */
-export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, onClick }) => (
+export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, label, onClick }) => (
   <button
     onClick={onClick}
     className={cn(
@@ -50,7 +51,7 @@ export const SiblingCard: React.FC<SiblingCardProps> = ({ section, direction, on
         className={cn("flex items-center gap-2 [margin-bottom:var(--space-fluid-2xs)]", direction === 'next' && "sm:ml-auto")}
       >
         {direction === 'prev' && <Icon name="arrow_back" size="sm" />}
-        <span>{direction === 'prev' ? 'PREVIOUS' : 'NEXT'}</span>
+        <span>{label || (direction === 'prev' ? 'PREVIOUS' : 'NEXT')}</span>
         {direction === 'next' && <Icon name="arrow_forward" size="sm" />}
       </Typography>
 

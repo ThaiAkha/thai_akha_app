@@ -11,6 +11,7 @@ import HeaderQuiz from '../components/quiz/HeaderQuiz';
 import QuizCardCategory from '../components/quiz/QuizCardCategory';
 import QuizCardRewards from '../components/quiz/QuizCardRewards';
 import { t } from '@thaiakha/shared/lib/ui-strings';
+import { AkhaHistoryLine } from '../components/blog';
 
 // ── Score helpers ─────────────────────────────────────────────────────────────
 const SCORE_KEY = 'thai_akha_quiz_points';
@@ -37,10 +38,10 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
           contentService.getQuizCategories(),
           contentService.getQuizRewards(),
         ]);
-        
+
         // Ordiniamo le ricompense per punteggio per calcolare correttamente la "prossima"
         const sortedRewards = (rwds ?? []).sort((a, b) => a.required_points - b.required_points);
-        
+
         setCategories(cats ?? []);
         setRewards(sortedRewards);
 
@@ -90,7 +91,7 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col [gap:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-3xl)]">
+        <div className="flex flex-col [gap:var(--space-fluid-l)] [padding-top:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-3xl)]">
 
           <SmartHeaderSection
             sectionId="quiz-01"
@@ -100,9 +101,11 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
             gradientTo="primary"
           />
 
+          <AkhaHistoryLine />
+
           {/* Categories grid */}
           <section className="flex flex-col [gap:var(--space-fluid-m)]">
-            <Typography variant="h3">{t.quiz.choosePath}</Typography>
+            <Typography variant="h2" className="text-center">{t.quiz.choosePath}</Typography>
             {categories.length === 0 ? (
               <Typography variant="paragraphM" color="muted">{t.quiz.noCategories}</Typography>
             ) : (
@@ -117,10 +120,14 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
               </div>
             )}
           </section>
-          
+
+          <div className="[padding-top:var(--space-fluid-l)]">
+            <AkhaHistoryLine />
+          </div>
+
           <SmartHeaderSection
             sectionId="quiz-02"
-            variant="section"
+            variant="hero"
             align="center"
             gradientFrom="quiz"
             gradientTo="primary"
@@ -130,10 +137,10 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
           {rewards.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 [gap:var(--space-fluid-m)]">
               {rewards.map(reward => (
-                <QuizCardRewards 
-                  key={reward.id} 
-                  reward={reward} 
-                  currentScore={score} 
+                <QuizCardRewards
+                  key={reward.id}
+                  reward={reward}
+                  currentScore={score}
                   isNextToUnlock={reward.id === nextRewardId}
                 />
               ))}

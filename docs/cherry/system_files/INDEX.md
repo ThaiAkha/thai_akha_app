@@ -1,65 +1,88 @@
-# 🍒 Cherry AI - System Documentation Interface
+# Cherry AI - System Documentation Index
 
 Welcome to the internal documentation of the Cherry AI ecosystem (Voice & Text) for **Thai Akha Kitchen 2026**.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The system is built as a hybrid real-time communication stack:
-1.  **Text Engine**: Uses `useCherryChat` with `gemini-3-flash-preview` (REST API) and Supabase for session persistence.
-2.  **Voice Engine**: Powered by **Gemini 2.5 Flash Native Audio** via `useGeminiLive` (Live/WebSocket API).
-3.  **Core Intelligence**: Managed by `cherryPrompt.ts` (System Instruction logic).
-4.  **Audio Pipeline**: Low-latency sampling using `audio-processor.js` (Web Audio API).
+1. **Text Engine**: `useCherryChat` + `sendChatMessageProxy` (ai.service) -> Edge Function `gemini-proxy-chat`
+2. **Voice Engine**: `useGeminiLive` + `getLiveGeminiClient` (geminiClient) -> Gemini 2.5 Flash Native Audio Live WebSocket
+3. **System Prompt**: `cherryPrompt.ts` assembla 6 sub-agenti modulari con blocco utente dinamico
+4. **Audio Pipeline**: `audio-processor.js` (AudioWorklet) cattura PCM 16kHz senza bloccare il main thread
+5. **Persistenza**: `chatSession.service.ts` gestisce sessioni, messaggi e rate limiting su Supabase
 
 ---
 
-## 📂 System Files Catalog
+## File di Documentazione
 
-| Category | File | Description |
-| :--- | :--- | :--- |
-| **Logic** | [cherryPrompt.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/cherryPrompt.md) | **[Updated]** The "Brain": System instructions, personality, and **Context Caching**. |
-| **Service**| [geminiClient.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/geminiClient.md) | **[Updated 2026-04-06]** Dual-client factory: `getTextGeminiClient()` (REST) + `getLiveGeminiClient()` (ephemeral tokens). |
-| **Hooks** | [useCherryChat.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/useCherryChat.md) | **[Updated 2026-04-06]** Text chat: `gemini-3-flash-preview` (REST API). Main controller for history & DB. |
-| **Hooks** | [useGeminiLive.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/useGeminiLive.md) | **[Updated 2026-04-06]** Voice chat: `gemini-2.5-flash-native-audio` (Live WebSocket). Decoupled from text engine. |
-| **UI** | [ChatBox.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/ChatBox.md) | **[Optimized]** Monolithic UI with **Jank-Free Smart Scroll** + responsive mobile button. |
-| **Audio** | [audio-processor.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/audio-processor.md) | **[Stable]** Web Audio API worklet: 16kHz PCM Int16 microphone input. |
-| **Changelog** | [MIGRATION_v2.0.md](file:///Users/svevomondino/Desktop/thaiakha-cherry-2026/docs/cherry/system_files/MIGRATION_v2.0.md) | **[NEW 2026-04-06]** Model migration log, bug fixes, architecture decisions. |
+### Hook (Front)
+
+| File | Sorgente | Descrizione |
+|---|---|---|
+| [useCherryChat.md](useCherryChat.md) | `packages/front/src/hooks/useCherryChat.ts` | Chat testuale: sessioni Supabase, rate limiting, bridge voice, auto-summary |
+| [useGeminiLive.md](useGeminiLive.md) | `packages/front/src/hooks/useGeminiLive.ts` | Voice realtime: WebSocket, AudioWorklet, trascrizioni live, onTurnComplete bridge |
+
+### Componenti UI (Front)
+
+| File | Sorgente | Descrizione |
+|---|---|---|
+| [ChatBox.md](ChatBox.md) | `packages/front/src/components/chat/ChatBox.tsx` | Widget chat floating: FAB, pannello, toggle voice, live transcription, input |
+| [Message.md](Message.md) | `packages/front/src/components/chat/Message.tsx` | Bubble singolo messaggio (standalone, non usato da ChatBox) |
+| [LoadingIndicator.md](LoadingIndicator.md) | `packages/front/src/components/chat/LoadingIndicator.tsx` | Tre dot animati (standalone, non usato da ChatBox) |
+
+### Servizi (Front)
+
+| File | Sorgente | Descrizione |
+|---|---|---|
+| [geminiClient.md](geminiClient.md) | `packages/front/src/services/geminiClient.ts` | Client Gemini Live con token efimeri da Edge Function |
+
+### Servizi (Shared)
+
+| File | Sorgente | Descrizione |
+|---|---|---|
+| [ai.service.md](ai.service.md) | `packages/shared/src/services/ai.service.ts` | Proxy chat testuale verso Edge Function `gemini-proxy-chat` |
+| [chatSession.service.md](chatSession.service.md) | `packages/shared/src/services/chatSession.service.ts` | Sessioni, messaggi, rate limiting (VIP / loggato / guest) su Supabase |
+
+### Prompt e Sub-Agenti (Front)
+
+| File | Sorgente | Descrizione |
+|---|---|---|
+| [cherryPrompt.md](cherryPrompt.md) | `packages/front/src/prompts/cherryPrompt.ts` | Compiler del system prompt: assembla 6 sub-agenti + blocco utente dinamico |
+| [01-identity.md](01-identity.md) | `subagents/01-identity.ts` | Persona Cherry, Golden Rules, firma "kha" |
+| [02-spices-allergies.md](02-spices-allergies.md) | `subagents/02-spices-allergies.ts` | 5 livelli spiciness, regole allergie e sostituzioni |
+| [03-recipes.md](03-recipes.md) | `subagents/03-recipes.ts` | 11 piatti, Akha Trinity, regole anti-hallucination |
+| [04-akha-history.md](04-akha-history.md) | `subagents/04-akha-history.ts` | Heritage culturale Akha |
+| [05-classes-booking.md](05-classes-booking.md) | `subagents/05-classes-booking.ts` | Classi, prezzi, pickup zones |
+| [06-examples.md](06-examples.md) | `subagents/06-examples.ts` | Few-shot patterns |
+
+### Audio
+
+| File | Sorgente | Descrizione |
+|---|---|---|
+| [audio-processor.md](audio-processor.md) | `packages/front/public/audio-processor.js` | AudioWorkletProcessor: buffer 512 campioni, PCM Float32, 16kHz |
+
+### Deprecati
+
+| File | Stato |
+|---|---|
+| [cherry-core-knowledge.md](cherry-core-knowledge.md) | DEPRECATO — sorgente eliminato, contenuto migrato ai sub-agenti 01-06 |
 
 ---
 
-## 🔄 Interaction Diagram
+## Interazione tra i moduli
 
-\`\`\`mermaid
-graph TD
-    User([User]) <--> ChatBox
-    ChatBox -- "onTurnComplete" --> useCherryChat
-    ChatBox <--> useGeminiLive
-    useCherryChat -- "saveMessage" --> Supabase[(Supabase DB)]
-    useGeminiLive -- "Unified Prompt" --> geminiClient[geminiClient Singleton]
-    useCherryChat -- "Unified Prompt" --> geminiClient
-    geminiClient <--> GeminiAPI[Gemini 3 Flash API]
-    useGeminiLive --- AudioAPI[Web Audio API]
-    AudioAPI --- AudioProcessor[audio-processor.js]
-    useCherryChat --- Prompt[cherryPrompt.ts Context]
-    useGeminiLive --- Prompt
-\`\`\`
+```
+ChatBox
+  |
+  |-- useCherryChat (testo)
+  |     |-- sendChatMessageProxy (ai.service) --> Edge Function gemini-proxy-chat
+  |     |-- getOrCreateSession / saveMessage (chatSession.service) --> Supabase
+  |     |-- buildCherryPrompt (cherryPrompt) --> 6 sub-agenti
+  |
+  |-- useGeminiLive (voce) [onTurnComplete -> addVoiceMessages -> useCherryChat]
+        |-- getLiveGeminiClient (geminiClient) --> Edge Function gemini-token --> Gemini Live WS
+        |-- audio-processor.js (AudioWorklet) --> PCM 16kHz --> sendRealtimeInput
+        |-- buildCherryPrompt (cherryPrompt) --> stesso prompt del testo
+```
 
----
-
-## 🛠️ Maintenance Notes (v2.0 — Model Migration)
-
-**2026-04-06 — Production Model Migration**:
-- ✅ **Text Chat**: Migrated to `gemini-3-flash-preview` (REST API) — more capable than gemini-pro
-- ✅ **Voice Chat**: Migrated to `gemini-2.5-flash-native-audio` (Live WebSocket) — production-stable
-- ✅ **Dual Clients**: `getTextGeminiClient()` (direct API key) vs `getLiveGeminiClient()` (ephemeral tokens via Supabase)
-- ⚙️ **Bug Fixes**: Fixed stale closure in voice transcription, explicit error on chat init failure
-
-**Architecture**:
-- **The "Bridge" Pattern**: Unified persistence where `useGeminiLive` notifies `useCherryChat` to save transcripts
-- **Context Data Caching**: Database lookups (recipes/classes) cached for 5 minutes in `cherryPrompt.ts`
-- **Smart Scroll**: The `ChatBox` only auto-scrolls for new *complete* messages, ignoring live chunks
-- **Static Greeting**: Initial "Sawasdee kha!" is UI-only to save prompt tokens
-
-**Roadmap (Future)**:
-- 📅 **June 2026+**: Evaluate `gemini-3.1-flash-live` (2x conversation memory, improved audio quality)
-
-*Last Index Update: 06 Apr 2026 (Model Migration v2.0)*
+*Ultimo aggiornamento indice: 07 Apr 2026*

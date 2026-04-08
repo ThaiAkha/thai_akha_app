@@ -1,6 +1,6 @@
 // packages/admin/src/hooks/useCherryChat.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getTextGeminiClient } from '../services/geminiClient';
+import { sendChatMessageProxy } from '@thaiakha/shared/services';
 import { buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
 import {
   getOrCreateSession,
@@ -24,7 +24,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const chatRef = useRef<any>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
   const cookingClassesRef = useRef<any[]>([]);
@@ -57,20 +56,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       return base + historyBlock;
     },
     [userProfile]
-  );
-
-  const initGeminiChat = useCallback(
-    (history: DbChatMessage[], summary: string | null) => {
-      const ai = getTextGeminiClient();
-      chatRef.current = ai.chats.create({
-        model: 'gemini-3-flash-preview',
-        config: {
-          systemInstruction: buildSystemPrompt(history, summary),
-          temperature: 0.5,
-        },
-      });
-    },
-    [buildSystemPrompt]
   );
 
   useEffect(() => {
@@ -159,39 +144,27 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         })
       );
 
-      let historyForGemini = history;
       if (initialMessages.length === 0) {
         const greeting = userProfile?.full_name
           ? `Sawasdee kha ${userProfile.full_name.split(' ')[0]}! Admin panel active. How can I assist you today? kha`
           : "Sawasdee kha! I'm Cherry, your kitchen AI. How can I help the team today? kha";
         initialMessages.push({ id: 'greeting', role: 'model', text: greeting });
 
-        const greetingDbMsg: DbChatMessage = {
-          id: 'greeting',
-          sender_role: 'assistant',
-          content: greeting,
-          type: 'text',
-          created_at: new Date().toISOString(),
-          session_id: session.id,
-        };
-        historyForGemini = [...history, greetingDbMsg];
       }
 
       setMessages(initialMessages);
-      initGeminiChat(historyForGemini, session.summary);
     };
 
     init();
   }, [userProfile?.id]);
 
   const triggerAutoSummary = async (sid: string) => {
-    if (!chatRef.current) return;
     try {
-      const result = await chatRef.current.sendMessage({
+      const summary = await sendChatMessageProxy({
         message:
           'Please summarize this conversation in max 2 sentences, focusing on: operational requests, booking summaries, and any staff notes. Be concise.',
+        systemInstruction: 'You are a concise conversation summarizer. Output plain text only.',
       });
-      const summary: string = result.text?.trim() || '';
       if (summary) await updateSummary(sid, summary);
     } catch {
       // silent fail
@@ -199,7 +172,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   };
 
   const sendMessage = async (userText: string) => {
-    if (!chatRef.current || !userText.trim() || isLoading) return;
+    if (!userText.trim() || isLoading) return;
 
     const sid = sessionRef.current?.id ?? null;
 
@@ -225,24 +198,21 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     if (sid) saveMessage(sid, 'user', userText, 'text');
 
     try {
-      const streamResponse = await chatRef.current.sendMessageStream({ message: userText });
-      let fullResponse = '';
+      // Build system prompt with full context (booking data, alerts, etc.)
+      const recentHistory = await loadRecentMessages(sid || '', HISTORY_WINDOW * 2);
+      const systemInstruction = buildSystemPrompt(recentHistory, sessionRef.current?.summary || null);
 
-      for await (const chunk of streamResponse) {
-        const text = (chunk as any).text;
-        if (text) {
-          fullResponse += text;
-          setMessages(prev =>
-            prev.map(m => (m.id === modelMsgId ? { ...m, text: fullResponse } : m))
-          );
-        }
-      }
+      // Call proxy with full system instruction
+      const response = await sendChatMessageProxy({
+        message: userText,
+        systemInstruction,
+      });
 
       setMessages(prev =>
-        prev.map(m => (m.id === modelMsgId ? { ...m, isStreaming: false } : m))
+        prev.map(m => (m.id === modelMsgId ? { ...m, text: response, isStreaming: false } : m))
       );
 
-      if (sid) saveMessage(sid, 'assistant', fullResponse, 'text');
+      if (sid) saveMessage(sid, 'assistant', response, 'text');
 
       if (sid && sessionRef.current && sessionRef.current.message_count >= SUMMARY_THRESHOLD) {
         sessionRef.current.message_count = 0;

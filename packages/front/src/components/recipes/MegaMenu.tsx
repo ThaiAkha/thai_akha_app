@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Icon, Badge, Button, Typography } from '../ui/index';
+import { Icon, Typography } from '../ui/index';
 import { Input } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -42,7 +42,7 @@ interface MegaMenuProps {
 const MegaMenu: React.FC<MegaMenuProps> = ({
   variant = 'grid',
   title,
-  subtitle,
+  subtitle: _subtitle,
   icon = 'tune',
   items = [],
   activeLabel,
@@ -127,7 +127,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
       case 'diet':
         return (
           <div className="flex flex-col h-full bg-surface">
-            <div className="flex-1 overflow-y-auto custom-scrollbar [padding:var(--space-fluid-m)] flex flex-col [gap:var(--space-fluid-m)]">
+            <div className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar p-6 md:p-8 flex flex-col [gap:var(--space-fluid-m)]">
               {customContent}
             </div>
           </div>
@@ -203,13 +203,13 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
   };
 
   return (
-    <div ref={menuRef} className={cn("sticky top-[12px] md:top-[28px] z-[100] w-full flex flex-col items-center transition-all px-4 pb-4 pt-0", className)}>
-      <div className="w-full max-w-2xl relative z-50">
+    <div ref={menuRef} className={cn("sticky top-[20px] z-[9995] w-full flex flex-col items-center transition-all pb-4 pt-0", className)}>
+      <div className="w-full relative z-[9995]">
 
         {/* SUPER PILL TRIGGER - NO BORDER (as per InfoClasses wrapper) */}
         <div
           className={cn(
-            "w-full flex items-center justify-between p-2 md:p-2.5 [margin-bottom:var(--space-fluid-s)] rounded-full transition-all duration-500 backdrop-blur-xl md:scale-110 origin-top shrink-0 relative group",
+            "w-full max-w-2xl mx-auto flex items-center justify-between p-2 md:p-2.5 [margin-bottom:var(--space-fluid-s)] rounded-full transition-all duration-500 backdrop-blur-xl md:scale-110 origin-top shrink-0 relative group",
             isOpen
               ? "bg-surface dark:bg-surface border border-border/50 shadow-2xl"
               : highlight
@@ -286,10 +286,10 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
         </div>
 
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-2 z-40 animate-in fade-in slide-in-from-top-4 duration-500 origin-top">
+          <div className="fixed md:absolute inset-x-0 md:inset-x-auto md:left-0 md:right-0 top-[76px] md:top-full md:mt-2 z-[9999] md:z-40 px-3 md:px-0 animate-in fade-in slide-in-from-top-4 duration-500 origin-top">
             <div className={cn(
-              "bg-surface/95 backdrop-blur-3xl border-2 border-border rounded-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] overflow-hidden",
-              "max-h-[calc(100dvh-160px)] flex flex-col"
+              "max-w-4xl mx-auto bg-surface/90 backdrop-blur-3xl border border-border rounded-3xl shadow-sm overflow-hidden",
+              "h-[calc(100dvh-92px)] md:max-h-[calc(100dvh-160px)] flex flex-col"
             )}>
               {renderContent()}
             </div>
@@ -298,7 +298,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 z-30 bg-black/40 backdrop-blur-[4px]" onClick={handleClose} aria-hidden="true" />
+        <div className="fixed inset-0 z-[9990] bg-black/40 backdrop-blur-[4px]" onClick={handleClose} aria-hidden="true" />
       )}
     </div>
   );

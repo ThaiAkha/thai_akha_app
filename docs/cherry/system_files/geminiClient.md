@@ -1,43 +1,15 @@
-# geminiClient.ts
+# 🛠️ Gemini Live Client (Infrastructure)
 
-**Status**: ✅ Production (v2.0 — Dual Client Architecture 2026-04-06)
-**Updated**: 2026-04-06
-
----
-
-## Architecture: Two Separate Clients
-
-The Gemini API is split into two distinct clients because text (REST) and voice (WebSocket) have different authentication and model requirements:
-
-| Client | API Type | Authentication | Model | Use Case |
-|---|---|---|---|---|
-| **Text** | REST | Direct API Key | `gemini-3-flash-preview` | `useCherryChat` streaming text |
-| **Voice** | WebSocket (Live) | Ephemeral Token | `gemini-2.5-flash-native-audio` | `useGeminiLive` real-time audio |
+**Source File:** `packages/front/src/services/geminiClient.ts`  
+**Description:** The low-level service that manages authentication and initialization for the Google GenAI Multimodal Live API. It implements a secure "Ephemeral Token" pattern to avoid exposing master API keys in the client-side bundle.
 
 ---
 
-## Implementation
+## 📄 Full File Content (1:1 with Code)
 
-```ts
+```typescript
 import { GoogleGenAI } from '@google/genai';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-
-// ── TEXT CLIENT (REST API) ────────────────────────────────────────────────────
-// The regular Chats API (REST) does NOT support ephemeral tokens.
-// We use VITE_GEMINI_API_KEY directly. This is safe because text requests
-// are stateless and rate-limited per-request by Google.
-let textClient: GoogleGenAI | null = null;
-
-export function getTextGeminiClient(): GoogleGenAI {
-  if (textClient) return textClient;
-
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('[GeminiClient] VITE_GEMINI_API_KEY is missing kha!');
-  }
-  textClient = new GoogleGenAI({ apiKey });
-  return textClient;
-}
 
 // ── LIVE CLIENT (WebSocket / Voice) ──────────────────────────────────────────
 // The Live API (WebSocket audio) DOES support ephemeral tokens.
@@ -67,7 +39,10 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
       throw new Error(error?.message || 'Failed to fetch ephemeral token kha!');
     }
 
-    liveClient = new GoogleGenAI({ apiKey: data.ephemeralToken });
+    liveClient = new GoogleGenAI({
+      apiKey: data.ephemeralToken,
+      httpOptions: { apiVersion: 'v1alpha' },
+    });
     liveTokenExpiresAt = now + 25 * 60 * 1000; // 25-min cache
 
     return liveClient;
@@ -78,10 +53,10 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
 }
 
 /**
- * Invalidate all cached clients (e.g. on logout).
+ * Invalidate cached live client (e.g. on logout).
+ * Text chat now uses Edge Function proxy, no client to invalidate.
  */
 export function invalidateGeminiClients(): void {
-  textClient = null;
   liveClient = null;
   liveTokenExpiresAt = 0;
 }
@@ -89,17 +64,7 @@ export function invalidateGeminiClients(): void {
 
 ---
 
-## Key Design Decisions
-
-1. **Separation of Concerns**: Text and voice use different models, auth methods, and APIs
-2. **Ephemeral Tokens for Voice**: Supabase Edge Function generates 30-min tokens to avoid exposing master key
-3. **Singleton Pattern**: Both clients are cached to prevent redundant instantiations
-4. **Cache Invalidation**: `invalidateGeminiClients()` called on logout to clear cache
-
----
-
-## Notes
-
-- **Text API**: Uses `generateContent` endpoint (streaming)
-- **Voice API**: Uses `live.connect` (WebSocket, real-time bidirectional)
-- **No Cross-Contamination**: Each client is independent; voice issues won't affect text chat
+## 🛡️ Security Architecture
+- **Ephemeral Access**: Unlike standard text chat, the **Gemini Live API** requires a persistent WebSocket connection. We use a 30-minute ephemeral token generated via the `gemini-token` Edge Function.
+- **Edge Proxy (Text Mode)**: Text-based messages bypass this client entirely, using a secondary Proxy service for maximum speed and security.
+- **Caching Logic**: The client is cached for **25 minutes** to minimize redundant Edge Function calls during active user sessions.

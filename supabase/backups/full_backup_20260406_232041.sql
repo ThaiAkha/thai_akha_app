@@ -1180,7 +1180,8 @@ CREATE TABLE IF NOT EXISTS "public"."culture_sections" (
     "seo_keywords" "text"[] DEFAULT '{}'::"text"[],
     "seo_robots" "text" DEFAULT 'index, follow'::"text",
     "og_image" "text",
-    "category_id" "text"
+    "category_id" "text",
+    "json_ld" "jsonb"
 );
 
 
@@ -1421,21 +1422,6 @@ CREATE TABLE IF NOT EXISTS "public"."hotel_pickup_rules" (
 
 
 ALTER TABLE "public"."hotel_pickup_rules" OWNER TO "postgres";
-
-
-CREATE TABLE IF NOT EXISTS "public"."ingredient_categories" (
-    "id" "text" NOT NULL,
-    "title" "text" NOT NULL,
-    "name_th" "text",
-    "description" "text",
-    "display_order" integer DEFAULT 0,
-    "icon_name" "text",
-    "is_active" boolean DEFAULT true,
-    "image_url" "text"
-);
-
-
-ALTER TABLE "public"."ingredient_categories" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."ingredients_library" (
@@ -1725,25 +1711,6 @@ ALTER SEQUENCE "public"."quiz_rewards_id_seq" OWNER TO "postgres";
 
 ALTER SEQUENCE "public"."quiz_rewards_id_seq" OWNED BY "public"."quiz_rewards"."id";
 
-
-
-CREATE TABLE IF NOT EXISTS "public"."recipe_categories" (
-    "id" "text" NOT NULL,
-    "title" "text" NOT NULL,
-    "description" "text",
-    "image" "text",
-    "display_order" integer DEFAULT 0,
-    "ui_quote" "text",
-    "content_body" "text",
-    "audio_story_url" "text",
-    "icon_name" "text" DEFAULT 'utensils'::"text",
-    "cherry_context" "text",
-    "chef_secrets" "text"[],
-    "keywords" "text"[]
-);
-
-
-ALTER TABLE "public"."recipe_categories" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."recipe_composition" (
@@ -2281,11 +2248,6 @@ ALTER TABLE ONLY "public"."hotel_pickup_rules"
 
 
 
-ALTER TABLE ONLY "public"."ingredient_categories"
-    ADD CONSTRAINT "ingredient_categories_pkey" PRIMARY KEY ("id");
-
-
-
 ALTER TABLE ONLY "public"."ingredients_library"
     ADD CONSTRAINT "ingredients_library_pkey" PRIMARY KEY ("id");
 
@@ -2368,11 +2330,6 @@ ALTER TABLE ONLY "public"."quiz_questions"
 
 ALTER TABLE ONLY "public"."quiz_rewards"
     ADD CONSTRAINT "quiz_rewards_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."recipe_categories"
-    ADD CONSTRAINT "recipe_categories_pkey" PRIMARY KEY ("id");
 
 
 
@@ -2806,7 +2763,7 @@ ALTER TABLE ONLY "public"."hotel_pickup_rules"
 
 
 ALTER TABLE ONLY "public"."ingredients_library"
-    ADD CONSTRAINT "ingredients_library_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."ingredient_categories"("id");
+    ADD CONSTRAINT "ingredients_library_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."content_categories"("id");
 
 
 
@@ -2871,7 +2828,7 @@ ALTER TABLE ONLY "public"."recipe_selections"
 
 
 ALTER TABLE ONLY "public"."recipes"
-    ADD CONSTRAINT "recipes_category_fkey" FOREIGN KEY ("category") REFERENCES "public"."recipe_categories"("id");
+    ADD CONSTRAINT "recipes_category_fkey" FOREIGN KEY ("category") REFERENCES "public"."content_categories"("id") ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 
@@ -3006,10 +2963,6 @@ CREATE POLICY "Admin Write" ON "public"."home_cards" USING ("public"."is_admin"(
 
 
 
-CREATE POLICY "Admin Write" ON "public"."ingredient_categories" USING ("public"."is_admin"());
-
-
-
 CREATE POLICY "Admin Write" ON "public"."ingredients_library" USING ("public"."is_admin"());
 
 
@@ -3039,10 +2992,6 @@ CREATE POLICY "Admin Write" ON "public"."quiz_questions" USING ("public"."is_adm
 
 
 CREATE POLICY "Admin Write" ON "public"."quiz_rewards" USING ("public"."is_admin"());
-
-
-
-CREATE POLICY "Admin Write" ON "public"."recipe_categories" USING ("public"."is_admin"());
 
 
 
@@ -3242,10 +3191,6 @@ CREATE POLICY "Public Read" ON "public"."home_cards" FOR SELECT USING (true);
 
 
 
-CREATE POLICY "Public Read" ON "public"."ingredient_categories" FOR SELECT USING (true);
-
-
-
 CREATE POLICY "Public Read" ON "public"."ingredients_library" FOR SELECT USING (true);
 
 
@@ -3279,10 +3224,6 @@ CREATE POLICY "Public Read" ON "public"."quiz_questions" FOR SELECT USING (true)
 
 
 CREATE POLICY "Public Read" ON "public"."quiz_rewards" FOR SELECT USING (true);
-
-
-
-CREATE POLICY "Public Read" ON "public"."recipe_categories" FOR SELECT USING (true);
 
 
 
@@ -3596,9 +3537,6 @@ ALTER TABLE "public"."hotel_locations" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."hotel_pickup_rules" ENABLE ROW LEVEL SECURITY;
 
 
-ALTER TABLE "public"."ingredient_categories" ENABLE ROW LEVEL SECURITY;
-
-
 ALTER TABLE "public"."ingredients_library" ENABLE ROW LEVEL SECURITY;
 
 
@@ -3664,9 +3602,6 @@ ALTER TABLE "public"."quiz_questions" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."quiz_rewards" ENABLE ROW LEVEL SECURITY;
-
-
-ALTER TABLE "public"."recipe_categories" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."recipe_composition" ENABLE ROW LEVEL SECURITY;
@@ -5079,12 +5014,6 @@ GRANT ALL ON TABLE "public"."hotel_pickup_rules" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."ingredient_categories" TO "anon";
-GRANT ALL ON TABLE "public"."ingredient_categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."ingredient_categories" TO "service_role";
-
-
-
 GRANT ALL ON TABLE "public"."ingredients_library" TO "anon";
 GRANT ALL ON TABLE "public"."ingredients_library" TO "authenticated";
 GRANT ALL ON TABLE "public"."ingredients_library" TO "service_role";
@@ -5172,12 +5101,6 @@ GRANT ALL ON TABLE "public"."quiz_rewards" TO "service_role";
 GRANT ALL ON SEQUENCE "public"."quiz_rewards_id_seq" TO "anon";
 GRANT ALL ON SEQUENCE "public"."quiz_rewards_id_seq" TO "authenticated";
 GRANT ALL ON SEQUENCE "public"."quiz_rewards_id_seq" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."recipe_categories" TO "anon";
-GRANT ALL ON TABLE "public"."recipe_categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."recipe_categories" TO "service_role";
 
 
 

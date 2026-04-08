@@ -1,6 +1,6 @@
 // data/pixelPatterns.ts
 
-export type PatternName = | 'logo' | 'diamond' | 'flower' | 'arrow' | 'line_simple' | 'line' | 'line_vertical' | 'mountain' | 'zig_zag';
+export type PatternName = | 'logo' | 'diamond' | "line_divider" | 'flower' | 'arrow' | 'line_simple' | 'line' | 'line_vertical' | 'mountain' | 'zig_zag';
 
 export interface PatternDef {
   data: number[];
@@ -114,6 +114,14 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
     data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
       2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2,
       1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
+    ]
+  },
+
+  // 3. SEPARATORE LINEARE (Per Header)
+  line_divider: {
+    columns: 44,
+    data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
+
     ]
   },
 

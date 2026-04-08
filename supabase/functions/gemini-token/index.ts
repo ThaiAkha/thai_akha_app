@@ -43,8 +43,8 @@ Deno.serve(async (req: Request) => {
 
     const client = new GoogleGenAI({ apiKey, httpOptions: { apiVersion: 'v1alpha' } });
 
-    const expireTime = new Date(Date.now() + 30 * 60 * 1000);      // 30 minuti
-    const newSessionExpireTime = new Date(Date.now() + 60 * 1000); // 1 minuto per avviare
+    const expireTime = new Date(Date.now() + 30 * 60 * 1000);          // 30 minuti
+    const newSessionExpireTime = new Date(Date.now() + 29 * 60 * 1000); // 29 minuti (allineato alla cache 25min)
 
     const token = await client.authTokens.create({
       config: {

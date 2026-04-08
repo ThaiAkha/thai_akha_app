@@ -25,7 +25,6 @@ export const SYSTEM_TABLES = [
     { id: 'home_cards_translations', label: 'Home Cards Translations', icon: <Package className="w-5 h-5" /> },
     { id: 'hotel_locations', label: 'Hotel Locations', icon: <Package className="w-5 h-5" /> },
     { id: 'hotel_pickup_rules', label: 'Hotel Pickup Rules', icon: <MapPin className="w-5 h-5" /> },
-    { id: 'ingredient_categories', label: 'Ingredient Categories', icon: <Package className="w-5 h-5" /> },
     { id: 'ingredients_library', label: 'Ingredients Library', icon: <Package className="w-5 h-5" /> },
     { id: 'market_runs', label: 'Market Runs', icon: <Package className="w-5 h-5" /> },
     { id: 'media_assets', label: 'Media Assets', icon: <Image className="w-5 h-5" /> },

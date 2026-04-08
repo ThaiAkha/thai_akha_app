@@ -70,12 +70,11 @@ I ruoli sono stati ufficialmente allineati tra Database e TypeScript tramite agg
 | Tabella | Colonne | Note |
 | ------ | ------ | ------ |
 | recipes | 21 | Con dietary_variants, gallery_images e json_ld [4] |
-| recipe_categories | 13 | [4] |
 | recipe_composition | 8 | recipe → ingredients [4] |
 | recipe_key_ingredients | 3 | Ingredienti chiave per ricetta [4] |
 | recipe_selections | 4 | Selezioni per categoria [4] |
 | recipe_selection_categories | 3 | Categorie selezione ricette [4] |
-| content_categories | 3 | Categorie contenuto multi-dominio [4] |
+| content_categories | 3 | Categorie contenuto multi-dominio (recipe, blog, quiz) [4] |
 | site_metadata | 24 | SEO + OG + JSON-LD (rimossa colonna features) [4] |
 | site_metadata_admin | 24 | incl. og_type, twitter_card, cache_ttl, redirect_to [4] |
 | site_metadata_admin_translations | 14 | Traduzioni EN/TH per pagine admin [4] |
@@ -96,7 +95,6 @@ I ruoli sono stati ufficialmente allineati tra Database e TypeScript tramite agg
 | ------ | ------ | ------ |
 | market_runs | 11 | + zoho_expense_id [5] |
 | ingredients_library | 17 | [5] |
-| ingredient_categories | 4 | [5] |
 
 ##### Dominio Chat (Cherry AI)
 | Tabella | Colonne | Note |

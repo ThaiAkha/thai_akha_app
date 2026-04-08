@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Icon, Badge } from '../ui';
+import { Card, Button, Icon, Badge, Typography } from '../ui';
 import { UserProfile } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -32,10 +32,10 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
 
   if (!activeBooking) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 bg-surface border border-border border-dashed rounded-3xl text-center">
-        <Icon name="event_busy" size="2xl" className="text-gray-500 dark:text-gray-500 mb-4" />
-        <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">No Active Booking</p>
-        <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">Book a cooking class to manage your reservation here.</p>
+      <div className="flex flex-col items-center justify-center [padding-vertical:var(--space-fluid-3xl)] bg-surface border border-border border-dashed rounded-3xl text-center">
+        <Icon name="event_busy" size="2xl" color="muted" className="mb-4" />
+        <Typography variant="h4" color="title" className="mb-2">No Active Booking</Typography>
+        <Typography variant="paragraphS" color="sub" className="mb-6">Book a cooking class to manage your reservation here.</Typography>
         <Button variant="brand" size="lg" onClick={() => onNavigate('booking')}>
           <Icon name="calendar_add_on" />
           Book a Class
@@ -59,9 +59,9 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   /* ── UNIFIED TIMELINE ── */
   const renderTimeline = () => {
     if (isPast) return (
-      <div className="mt-6 p-6 bg-surface rounded-2xl border border-border text-center">
-        <Icon name="verified" className="text-gray-500 dark:text-gray-500 mb-2" size="lg" />
-        <p className="font-bold text-gray-500 dark:text-gray-500">Journey Completed</p>
+      <div className="mt-6 [padding:var(--space-fluid-m)] bg-surface rounded-2xl border border-border text-center">
+        <Icon name="verified" color="muted" className="mb-2" size="lg" />
+        <Typography variant="body" color="muted" className="font-bold">Journey Completed</Typography>
       </div>
     );
 
@@ -79,8 +79,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               : "bg-surface border-border"
           )} />
           <div className="flex items-center gap-3">
-            <Icon name="local_shipping" size="sm" className={transportStatus !== 'waiting' ? "text-action" : "text-gray-500 dark:text-gray-500"} />
-            <span className="font-bold text-sm text-gray-600 dark:text-gray-400">Driver Started Route</span>
+            <Icon name="local_shipping" size="sm" className={transportStatus !== 'waiting' ? "text-action" : "text-muted"} />
+            <Typography variant="paragraphS" color="sub" className="font-bold">Driver Started Route</Typography>
           </div>
         </div>
 
@@ -88,20 +88,20 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
         {showFullRoute && routeStops.map((stop) => {
           const isMe = stop.internal_id === activeBooking.internal_id;
 
-          let rowClass = "border-border bg-surface text-gray-500 dark:text-gray-500";
+          let rowClass = "border-border bg-surface text-muted";
           let iconName = "radio_button_unchecked";
           let stopLabel = "Waiting";
 
           if (stop.transport_status === 'dropped_off' || stop.transport_status === 'on_board') {
-            rowClass = "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400";
+            rowClass = "border-action/30 bg-action/5 text-action";
             iconName = "check_circle";
             stopLabel = "Picked Up";
           } else if (stop.transport_status === 'driver_arrived') {
-            rowClass = "border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 animate-pulse";
+            rowClass = "border-sys-notice/50 bg-sys-notice/10 text-sys-notice animate-pulse";
             iconName = "local_taxi";
             stopLabel = "Driver Here!";
           } else if (stop.transport_status === 'driver_en_route') {
-            rowClass = "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400 animate-pulse";
+            rowClass = "border-secondary/50 bg-secondary/10 text-secondary animate-pulse";
             iconName = "directions_car";
             stopLabel = "En Route";
           }
@@ -111,43 +111,43 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               <div key={stop.internal_id} className="relative pl-8">
                 <div className={cn(
                   "absolute -left-[11px] top-5 size-5 rounded-full border-4 transition-all duration-500 z-10",
-                  stop.transport_status === 'driver_en_route'  ? "bg-blue-500 border-blue-500 animate-pulse" :
-                  stop.transport_status === 'driver_arrived'   ? "bg-yellow-500 border-yellow-500 animate-bounce" :
+                  stop.transport_status === 'driver_en_route'  ? "bg-secondary border-secondary animate-pulse" :
+                  stop.transport_status === 'driver_arrived'   ? "bg-sys-notice border-sys-notice animate-bounce" :
                   (stop.transport_status === 'on_board' || stop.transport_status === 'dropped_off')
-                    ? "bg-green-500 border-green-500"
+                    ? "bg-action border-action"
                     : "bg-surface border-border"
                 )} />
 
                 <div className={cn(
                   "p-5 rounded-2xl border relative overflow-hidden transition-all duration-500",
-                  stop.transport_status === 'driver_arrived' ? "bg-yellow-500/10 border-yellow-500/50" :
-                  stop.transport_status === 'driver_en_route' ? "bg-blue-500/10 border-blue-500/50" :
+                  stop.transport_status === 'driver_arrived' ? "bg-sys-notice/10 border-sys-notice/50" :
+                  stop.transport_status === 'driver_en_route' ? "bg-secondary/10 border-secondary/50" :
                   "bg-surface border-border"
                 )}>
                   {stop.transport_status === 'driver_arrived' && (
-                    <div className="absolute inset-0 bg-yellow-500/5 animate-pulse pointer-events-none" />
+                    <div className="absolute inset-0 bg-sys-notice/5 animate-pulse pointer-events-none" />
                   )}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <span className="font-mono text-xl font-black text-gray-900 dark:text-gray-100">
+                        <Typography variant="numericRegular" color="title" className="text-xl font-black">
                           {stop.pickup_time?.slice(0, 5)}
-                        </span>
+                        </Typography>
                         {transportStatus !== 'waiting' && (
                           <Badge variant="mineral-accent">LIVE</Badge>
                         )}
                       </div>
-                      <p className={cn(
-                        "font-bold text-base leading-tight mb-1",
-                        stop.transport_status === 'driver_arrived' ? "text-yellow-600 dark:text-yellow-400" :
-                        stop.transport_status === 'driver_en_route' ? "text-blue-600 dark:text-blue-400" :
-                        "text-gray-900 dark:text-gray-100"
+                      <Typography variant="body" className={cn(
+                        "font-bold leading-tight mb-1",
+                        stop.transport_status === 'driver_arrived' ? "text-sys-notice" :
+                        stop.transport_status === 'driver_en_route' ? "text-secondary font-display" :
+                        "text-title"
                       )}>
                         {stop.transport_status === 'driver_arrived' ? "Driver is Waiting for YOU!" :
                          stop.transport_status === 'driver_en_route' ? "Driver is on the way!" :
                          stop.transport_status === 'on_board' ? "You are On Board" : "Your Pickup"}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-500">{stop.hotel_name || "Location not set"}</p>
+                      </Typography>
+                      <Typography variant="caption" color="muted">{stop.hotel_name || "Location not set"}</Typography>
                     </div>
                     {hasHotel && !isWalkIn && transportStatus === 'waiting' && (
                       <Button variant="mineral" size="sm" onClick={() => { localStorage.setItem('current_booking_id', activeBooking.internal_id); onNavigate('location'); }}>
@@ -170,15 +170,15 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               <div className={cn(
                 "absolute -left-[9px] top-3 size-4 rounded-full border-2",
                 (stop.transport_status === 'on_board' || stop.transport_status === 'dropped_off')
-                  ? "bg-green-500 border-green-500"
+                  ? "bg-action border-action"
                   : "bg-surface border-border"
               )} />
-              <div className={cn("flex items-center justify-between p-3 rounded-xl border text-xs", rowClass)}>
+              <div className={cn("flex items-center justify-between p-3 rounded-xl border", rowClass)}>
                 <div className="flex items-center gap-2">
                   <Icon name={iconName} size="sm" />
-                  <span className="font-bold uppercase">{stopLabel}</span>
+                  <Typography variant="microLabel" color="inherit" className="font-bold">{stopLabel}</Typography>
                 </div>
-                <span className="font-mono opacity-60">{stop.pickup_time?.slice(0, 5)}</span>
+                <Typography variant="numericRegular" color="inherit" className="opacity-60">{stop.pickup_time?.slice(0, 5)}</Typography>
               </div>
             </div>
           );
@@ -192,16 +192,16 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
               hasHotel ? "bg-surface border-border" : "bg-sys-notice border-sys-notice animate-pulse"
             )} />
             <div className="p-5 rounded-2xl border bg-surface border-border">
-              <p className="font-bold text-gray-900 dark:text-gray-100 mb-1">
+              <Typography variant="body" color="title" className="font-bold mb-1">
                 {isWalkIn ? "Meeting at School" : "Your Pickup"}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
+              </Typography>
+              <Typography variant="caption" color="muted">
                 {activeBooking.hotel_name || (isWalkIn ? "Thai Akha Kitchen" : "Location not set")}
-              </p>
+              </Typography>
               {isWalkIn && (
-                <p className="mt-3 text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">
+                <Typography variant="microLabel" color="secondary" className="mt-3 block font-bold">
                   Self Transport
-                </p>
+                </Typography>
               )}
               {!hasHotel && !isWalkIn && (
                 <Button variant="brand" size="sm" className="mt-4" icon="add_location" onClick={() => { localStorage.setItem('current_booking_id', activeBooking.internal_id); onNavigate('location'); }}>
@@ -219,10 +219,10 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
             (transportStatus === 'dropped_off' || isPast) ? "bg-action border-action" : "bg-surface border-border"
           )} />
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-500 bg-surface border border-border px-2 py-1 rounded">
+            <Typography variant="numericRegular" color="muted" className="bg-surface border border-border px-2 py-1 rounded text-xs font-bold">
               Finish
-            </span>
-            <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Thai Akha Kitchen</span>
+            </Typography>
+            <Typography variant="paragraphS" color="sub" className="font-bold">Thai Akha Kitchen</Typography>
           </div>
         </div>
       </div>
@@ -230,11 +230,11 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   };
 
   return (
-    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="[space-y:var(--space-fluid-s)] animate-in fade-in slide-in-from-bottom-4 duration-500">
 
       {/* ── BOOKING SELECTOR (horizontal chips, only when multiple bookings) ── */}
       {bookings.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
           {bookings.map((b) => {
             const d = new Date(b.booking_date);
             const isSelected = activeBooking.internal_id === b.internal_id;
@@ -247,23 +247,23 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                   "shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border transition-all",
                   isSelected
                     ? "bg-primary/10 border-primary/50"
-                    : "bg-surface border-border hover:bg-black/5 dark:hover:bg-white/5",
+                    : "bg-surface border-border hover:bg-surface-2",
                   isItemPast && !isSelected && "opacity-50"
                 )}
               >
                 <div className={cn(
-                  "size-7 rounded-lg flex items-center justify-center shrink-0 font-black text-sm",
-                  isSelected ? "bg-primary text-white" : "bg-black/5 dark:bg-white/5 text-gray-900 dark:text-gray-100"
+                  "size-8 rounded-lg flex items-center justify-center shrink-0 font-black",
+                  isSelected ? "bg-primary text-white" : "bg-surface-2 text-title"
                 )}>
-                  {d.getDate()}
+                  <Typography variant="numericRegular" color="inherit">{d.getDate()}</Typography>
                 </div>
                 <div className="text-left">
-                  <p className={cn("text-xs font-bold whitespace-nowrap", isSelected ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400")}>
+                  <Typography variant="paragraphS" className={cn("font-bold whitespace-nowrap", isSelected ? "text-title" : "text-sub")}>
                     {b.session_id.includes('morning') ? 'Morning Class' : 'Evening Feast'}
-                  </p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-500 font-mono whitespace-nowrap">
+                  </Typography>
+                  <Typography variant="numericRegular" color="muted" className="text-[10px] whitespace-nowrap">
                     {d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
-                  </p>
+                  </Typography>
                 </div>
               </button>
             );
@@ -277,7 +277,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* Header */}
         <div className={cn(
           "p-6 md:p-8 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4",
-          hotelPending ? "bg-sys-notice/5" : "bg-black/[0.02] dark:bg-white/[0.03]"
+          hotelPending ? "bg-sys-notice/5" : "bg-surface-2/30"
         )}>
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -285,20 +285,20 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                 variant="solid"
                 className={cn(
                   "text-white",
-                  isPast        ? "bg-black/20 dark:bg-white/15 !text-gray-500 dark:text-gray-500" :
+                  isPast        ? "bg-muted/20 !text-muted border-transparent" :
                   hasHotel      ? "bg-action border-action" :
                                   "bg-sys-notice border-sys-notice"
                 )}
               >
                 {isPast ? 'COMPLETED' : (hasHotel ? 'CONFIRMED' : 'ACTION REQUIRED')}
               </Badge>
-              <span className="font-mono text-[10px] text-gray-500 dark:text-gray-500 tracking-widest">#{bookingRef}</span>
+              <Typography variant="numericRegular" color="muted" className="text-[10px] tracking-widest">#{bookingRef}</Typography>
             </div>
-            <p className="font-display font-bold text-2xl text-gray-900 dark:text-gray-100 italic leading-none">
+            <Typography variant="h2" color="title" className="italic leading-none">
               {isMorning ? "Morning Market Tour" : "Evening Sunset Feast"}
-            </p>
+            </Typography>
             {hotelPending && (
-              <div className="flex items-center gap-1.5 mt-2 text-amber-800 dark:text-yellow-400 text-xs font-semibold">
+              <div className="flex items-center gap-1.5 mt-2 text-sys-notice text-xs font-semibold">
                 <Icon name="warning" size="sm" />
                 Pickup location not set — please add your hotel
               </div>
@@ -308,9 +308,9 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
 
         {/* Timeline body */}
         <div className="p-6 md:p-8">
-          <p className="text-gray-500 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest">
+          <Typography variant="microLabel" color="muted">
             {isPast ? "Journey Log" : "Live Logistics"}
-          </p>
+          </Typography>
           {renderTimeline()}
         </div>
 
@@ -321,83 +321,83 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
           <button
             onClick={() => onChangeTab('menu')}
             className={cn(
-              "group relative p-4 h-20 flex flex-col items-center justify-center gap-1.5 transition-all border-r border-border",
-              "hover:bg-black/5 dark:hover:bg-white/5",
+              "group relative p-4 h-24 flex flex-col items-center justify-center gap-1.5 transition-all border-r border-border",
+              "hover:bg-surface-2",
               !menuStatus && "bg-primary/5"
             )}
           >
             <div className={cn(
-              "size-9 rounded-full flex items-center justify-center transition-all group-hover:scale-110",
+              "size-10 rounded-full flex items-center justify-center transition-all group-hover:scale-110",
               menuStatus
-                ? "bg-black/5 dark:bg-white/10 text-gray-900 dark:text-gray-100"
+                ? "bg-surface-2 text-title border border-border"
                 : "bg-primary text-white shadow-sm animate-pulse"
             )}>
               <Icon name="restaurant_menu" size="sm" />
             </div>
-            <span className={cn(
-              "text-[10px] font-black uppercase tracking-wider",
-              menuStatus ? "text-gray-600 dark:text-gray-400" : "text-primary"
+            <Typography variant="microLabel" className={cn(
+              "font-black uppercase tracking-wider",
+              menuStatus ? "text-sub" : "text-primary"
             )}>
               {menuStatus ? "My Menu" : "Select Menu"}
-            </span>
+            </Typography>
           </button>
 
           {/* Pickup */}
           {!isPast ? (
             <button
               onClick={() => { localStorage.setItem('current_booking_id', activeBooking.internal_id); onNavigate('location'); }}
-              className="group p-4 h-20 flex flex-col items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all border-r border-border"
+              className="group p-4 h-24 flex flex-col items-center justify-center gap-1.5 hover:bg-surface-2 transition-all border-r border-border"
             >
               <div className={cn(
-                "size-9 rounded-full flex items-center justify-center transition-all group-hover:scale-110",
+                "size-10 rounded-full flex items-center justify-center transition-all group-hover:scale-110",
                 hasHotel
-                  ? "bg-black/5 dark:bg-white/10 text-gray-900 dark:text-gray-100"
+                  ? "bg-surface-2 text-title border border-border"
                   : "bg-sys-notice text-white shadow-sm animate-pulse"
               )}>
                 <Icon name="local_taxi" size="sm" />
               </div>
-              <span className={cn(
-                "text-[10px] font-black uppercase tracking-wider",
-                hasHotel ? "text-gray-600 dark:text-gray-400" : "text-sys-notice"
+              <Typography variant="microLabel" className={cn(
+                "font-black uppercase tracking-wider",
+                hasHotel ? "text-sub" : "text-sys-notice"
               )}>
                 {hasHotel ? "Pickup" : "Add Pickup"}
-              </span>
+              </Typography>
             </button>
           ) : (
-            <div className="p-4 h-20 flex flex-col items-center justify-center gap-1.5 opacity-30 border-r border-border">
-              <Icon name="local_taxi" size="sm" className="text-gray-500 dark:text-gray-500" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-500">Transport</span>
+            <div className="p-4 h-24 flex flex-col items-center justify-center gap-1.5 opacity-30 border-r border-border">
+              <Icon name="local_taxi" size="sm" color="muted" />
+              <Typography variant="microLabel" color="muted">Transport</Typography>
             </div>
           )}
 
           {/* Certificate */}
           <button
             onClick={() => onShowCertificate?.()}
-            className="group p-4 h-20 flex flex-col items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all border-r border-border"
+            className="group p-4 h-24 flex flex-col items-center justify-center gap-1.5 hover:bg-surface-2 transition-all border-r border-border"
           >
-            <div className="size-9 rounded-full border border-border text-gray-900 dark:text-gray-100 flex items-center justify-center transition-all group-hover:border-quiz-p group-hover:text-quiz-p group-hover:scale-110">
+            <div className="size-10 rounded-full border border-border text-title flex items-center justify-center transition-all group-hover:border-quiz-p group-hover:text-quiz-p group-hover:scale-110">
               <Icon name="workspace_premium" size="sm" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-400 group-hover:text-quiz-p">
+            <Typography variant="microLabel" color="sub" className="group-hover:text-quiz-p">
               Certificate
-            </span>
+            </Typography>
           </button>
 
           {/* Modify / Completed */}
           {!isPast ? (
             <button
               onClick={() => onNavigate('booking')}
-              className="group p-4 h-20 flex flex-col items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+              className="group p-4 h-24 flex flex-col items-center justify-center gap-1.5 hover:bg-surface-2 transition-all"
             >
-              <div className="size-9 rounded-full border border-border text-gray-900 dark:text-gray-100 flex items-center justify-center transition-all group-hover:border-title group-hover:scale-110">
+              <div className="size-10 rounded-full border border-border text-title flex items-center justify-center transition-all group-hover:border-primary group-hover:scale-110">
                 <Icon name="edit_calendar" size="sm" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-400">Modify</span>
+              <Typography variant="microLabel" color="sub">Modify</Typography>
             </button>
           ) : (
-            <div className="p-4 h-20 flex flex-col items-center justify-center gap-1.5 opacity-30">
+            <div className="p-4 h-24 flex flex-col items-center justify-center gap-1.5 opacity-30">
               <Icon name="check_circle" size="sm" className="text-action" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-action">Done</span>
+              <Typography variant="microLabel" color="action">Done</Typography>
             </div>
           )}
         </div>

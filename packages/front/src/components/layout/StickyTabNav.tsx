@@ -27,8 +27,8 @@ const StickyTabNav: React.FC<StickyTabNavProps> = ({
   items,
   value,
   onChange,
-  topOffset = 'top-[12px] md:top-[28px]',
-  bottomMargin = '',
+  topOffset = 'top-[20px]',
+  bottomMargin = 'mb-6 md:mb-8',
 }) => {
   return (
     <div

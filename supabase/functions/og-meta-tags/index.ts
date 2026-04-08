@@ -272,7 +272,7 @@ async function resolveAssetImage(
 
     if (error || !data?.image_url) {
       return { url: `${SITE_URL}/og-culture.jpg`, mimeType: "image/jpeg" };
-    }
+    }\
     return { url: data.image_url, mimeType: data.mime_type || "image/jpeg" };
   } catch {
     return { url: `${SITE_URL}/og-culture.jpg`, mimeType: "image/jpeg" };

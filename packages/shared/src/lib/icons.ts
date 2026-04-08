@@ -246,6 +246,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
   account_box: LucideIcons.SquareUserRound,
   add: LucideIcons.Plus,
   add_circle: LucideIcons.PlusCircle,
+  radio_button_unchecked: LucideIcons.Circle,
   add_location_alt: LucideIcons.MapPin,
   arrow_back: LucideIcons.ArrowLeft,
   arrow_forward: LucideIcons.ArrowRight,
@@ -337,7 +338,7 @@ export const iconRegistry: Record<string, LucideIcon> = {
 
   // ============================================================
   // DB kebab-case ALIASES
-  // (used in quiz_modules, quiz_rewards, shop_categories, recipe_categories)
+  // (used in quiz_modules, quiz_rewards, shop_categories, content_categories)
   // ============================================================
   'cooking-pot': LucideIcons.CookingPot,
   'door-open': LucideIcons.DoorOpen,

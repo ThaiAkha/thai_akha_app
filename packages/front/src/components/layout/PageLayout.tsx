@@ -104,7 +104,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
                - Se vuoi l'effetto slide, devi applicarlo a un div INTERNO a main, non al main stesso.
             */}
             <main className={cn(
-              "relative z-10 flex-grow w-full mx-auto animate-in fade-in duration-700 delay-100",
+              "relative z-30 flex-grow w-full mx-auto animate-in fade-in duration-700 delay-100",
               isFullScreen ? "p-0 max-w-none" : "max-w-[85rem] px-4 md:px-8 lg:px-12 pb-32"
             )}>
               {children}

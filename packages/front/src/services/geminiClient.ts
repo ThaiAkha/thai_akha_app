@@ -1,23 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 
-// ── TEXT CLIENT (REST API) ────────────────────────────────────────────────────
-// The regular Chats API (REST) does NOT support ephemeral tokens.
-// We use VITE_GEMINI_API_KEY directly. This is safe because text requests
-// are stateless and rate-limited per-request by Google.
-let textClient: GoogleGenAI | null = null;
-
-export function getTextGeminiClient(): GoogleGenAI {
-  if (textClient) return textClient;
-
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('[GeminiClient] VITE_GEMINI_API_KEY is missing kha!');
-  }
-  textClient = new GoogleGenAI({ apiKey });
-  return textClient;
-}
-
 // ── LIVE CLIENT (WebSocket / Voice) ──────────────────────────────────────────
 // The Live API (WebSocket audio) DOES support ephemeral tokens.
 // We fetch a one-time-use, 30-minute token from our Supabase Edge Function.
@@ -46,7 +29,10 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
       throw new Error(error?.message || 'Failed to fetch ephemeral token kha!');
     }
 
-    liveClient = new GoogleGenAI({ apiKey: data.ephemeralToken });
+    liveClient = new GoogleGenAI({
+      apiKey: data.ephemeralToken,
+      httpOptions: { apiVersion: 'v1alpha' },
+    });
     liveTokenExpiresAt = now + 25 * 60 * 1000; // 25-min cache
 
     return liveClient;
@@ -57,10 +43,10 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
 }
 
 /**
- * Invalidate all cached clients (e.g. on logout).
+ * Invalidate cached live client (e.g. on logout).
+ * Text chat now uses Edge Function proxy, no client to invalidate.
  */
 export function invalidateGeminiClients(): void {
-  textClient = null;
   liveClient = null;
   liveTokenExpiresAt = 0;
 }

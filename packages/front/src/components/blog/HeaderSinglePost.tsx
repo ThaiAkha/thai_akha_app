@@ -49,12 +49,12 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
 
                 {/* Overlay content */}
                 <div className="absolute inset-0 z-20 flex flex-col justify-end [padding:var(--space-fluid-l)] [gap:var(--space-fluid-xs)]">
-                    <Typography variant="h2" className="text-white max-w-2xl">
+                    <Typography variant="h2" className="text-white max-w-3xl">
                         {title}
                     </Typography>
 
                     {subtitle && (
-                        <Typography variant="paragraphM" className="text-white/65 max-w-xl hidden md:block">
+                        <Typography variant="paragraphM" className="text-white/65 max-w-xl">
                             {subtitle}
                         </Typography>
                     )}
@@ -62,7 +62,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
             </div>
 
             {/* 2. AUDIO PLAYER + SHARE BUTTON (md size) */}
-            <div className="flex flex-col md:flex-row items-start justify-center [gap:var(--space-fluid-s)] max-w-2xl mx-auto w-full [padding-inline:var(--space-fluid-m)] md:[padding-inline:0]">
+            <div className="flex flex-col md:flex-row items-start justify-center [gap:var(--space-fluid-s)] max-w-3xl mx-auto w-full [padding-inline:var(--space-fluid-m)] md:[padding-inline:0]">
                 {hasAudio && audioAssetId && (
                     <div className="w-full flex-1">
                         <AudioPlayer
@@ -82,7 +82,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
 
             {/* 4. QUOTE */}
             {quote && (
-                <AkhaQuote variant="base" align="left" className="max-w-2xl mx-auto">
+                <AkhaQuote variant="base" align="left" className="max-w-3xl mx-auto">
                     {quote}
                 </AkhaQuote>
             )}

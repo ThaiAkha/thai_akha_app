@@ -127,6 +127,7 @@ export interface SpicinessLevel {
   label?: string | null;
   subtitle?: string | null;
   color_code?: string | null;
+  photo_url?: string | null;
 }
 
 /**

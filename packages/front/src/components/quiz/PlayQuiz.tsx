@@ -42,10 +42,23 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
   ];
 
   return (
-    <div className={cn(
-      "relative z-10 w-full max-w-[72rem] mx-auto h-full md:h-auto flex flex-col justify-center animate-in fade-in zoom-in-95 duration-500",
-      "[padding:var(--space-fluid-m)] [padding-top:var(--space-fluid-xs)]"
-    )}>
+    <div className="flex-grow w-full min-h-full relative animate-in fade-in duration-700">
+      {/* ── ATMOSPHERIC BACKGROUND (PhotoModal style) ── */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-black">
+        {module.image_url && (
+          <img
+            src={module.image_url}
+            alt="Module background"
+            className="w-full h-full object-cover opacity-80 mix-blend-multiply"
+          />
+        )}
+      </div>
+
+      {/* ── CONTENT CONTAINER ── */}
+      <div className={cn(
+        "relative z-10 w-full max-w-[72rem] mx-auto h-full md:h-auto flex flex-col justify-center animate-in fade-in zoom-in-95 duration-500",
+        "[padding:var(--space-fluid-m)] [padding-top:var(--space-fluid-xs)]"
+      )}>
       
       {/* ── CARD VETROSMORPHICA ── */}
       <div className={cn(
@@ -202,6 +215,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
 
         </div>
 
+      </div>
       </div>
     </div>
   );

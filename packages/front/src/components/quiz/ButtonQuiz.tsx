@@ -26,7 +26,7 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
     "relative overflow-hidden isolate flex items-center justify-center transition-all duration-300",
     "active:scale-[0.97] disabled:opacity-30 disabled:pointer-events-none select-none",
     "rounded-full border antialiased",
-    "[padding-inline:var(--space-fluid-s)] py-2",
+    "px-4 py-2",
     "[gap:var(--space-fluid-2xs)]"
   );
 

@@ -40,10 +40,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
     });
   }, [level]);
 
-  const getModuleTheme = (isPerfect: boolean, idx: number) => {
-    const icons = ["eco", "local_fire_department", "restaurant_menu"];
-    const icon = level.modules[idx]?.icon || icons[idx % icons.length];
-
+  const getModuleTheme = (isPerfect: boolean) => {
     if (isPerfect) {
       return {
         border: "border-emerald-500/50",
@@ -105,7 +102,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
 
         {/* ── GRID MODULI ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)] pb-20">
-          {level.modules.map((mod, idx) => {
+          {level.modules.map((mod) => {
             const isPerfect = perfectModules.includes(mod.id);
             const isAttempted = completedModules.includes(mod.id);
 
@@ -113,7 +110,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
             const totalQuestions = mod.questions?.length || 0;
             const percentage = totalQuestions > 0 ? Math.round((bestCount / totalQuestions) * 100) : 0;
 
-            const theme = getModuleTheme(isPerfect, idx);
+            const theme = getModuleTheme(isPerfect);
             const currentBtnConfig = isPerfect
               ? BUTTON_CONFIG.RETAKE
               : (isAttempted ? BUTTON_CONFIG.RESUME : BUTTON_CONFIG.START);

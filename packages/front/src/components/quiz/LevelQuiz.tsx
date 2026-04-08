@@ -123,7 +123,8 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                 key={mod.id}
                 onClick={() => onStartModule(mod.id)}
                 className={cn(
-                  "relative rounded-3xl overflow-hidden border transition-all duration-500 group hover:scale-[1.02] shadow-2xl cursor-pointer bg-black",
+                  "relative rounded-[3rem] overflow-hidden border transition-all duration-500 group hover:scale-[1.02] shadow-2xl cursor-pointer bg-black",
+                  "flex flex-col md:flex-row md:items-center",
                   theme.border
                 )}
               >
@@ -138,8 +139,8 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                   </div>
                 )}
 
-                {/* ── Content ── */}
-                <div className="relative z-10 flex items-center [gap:var(--space-fluid-m)] [padding:var(--space-fluid-m)]">
+                {/* ── MOBILE: Horizontal Layout ── */}
+                <div className="md:hidden relative z-10 flex items-center [gap:var(--space-fluid-m)] [padding:var(--space-fluid-m)] w-full">
 
                   {/* Avatar quadrato */}
                   {mod.image_url && (
@@ -201,6 +202,63 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                     </div>
 
                   </div>
+                </div>
+
+                {/* ── TABLET/DESKTOP: Vertical Layout (compatto) ── */}
+                <div className="hidden md:flex md:flex-col md:h-full relative z-10 w-full [padding:var(--space-fluid-m)]">
+
+                  {/* Top — badge perfetto/in progress */}
+                  <div className="flex justify-end [margin-bottom:var(--space-fluid-s)]">
+                    {isPerfect ? (
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                        <Icon name="auto_awesome" size="xs" className="text-emerald-400" />
+                        <Typography variant="microLabel" className="font-black text-emerald-400 uppercase tracking-[0.15em]">{t.quiz.mastered}</Typography>
+                      </div>
+                    ) : isAttempted ? (
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+                        <Icon name="timer" size="xs" className="text-primary" />
+                        <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-[0.15em]">{t.quiz.inProgress}</Typography>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {/* Centro — titolo + tema ── */}
+                  <div className="flex-1 flex flex-col justify-center [gap:var(--space-fluid-2xs)] [margin-bottom:var(--space-fluid-s)]">
+                    <Typography
+                      variant="h3"
+                      color="title"
+                      className="uppercase tracking-tight leading-tight line-clamp-2"
+                    >
+                      {mod.title}
+                    </Typography>
+
+                    <Typography variant="microLabel" color="muted" className="font-bold uppercase tracking-widest">
+                      {mod.theme || t.quiz.noTheme}
+                    </Typography>
+                  </div>
+
+                  {/* Bottom — score + button ── */}
+                  <div className="flex items-center justify-between [gap:var(--space-fluid-s)]">
+                    {/* STATS */}
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/40 border border-white/10 backdrop-blur-sm">
+                      <Icon name="stars" size="xs" className={isPerfect ? 'text-emerald-400' : 'text-primary'} />
+                      <Typography
+                        variant="numericRegular"
+                        className={cn("font-black leading-none", isPerfect ? 'text-emerald-400' : 'text-white')}
+                      >
+                        {percentage}%
+                      </Typography>
+                    </div>
+
+                    {/* ACTION BUTTON */}
+                    <ButtonQuiz
+                      config={currentBtnConfig}
+                      className={cn(
+                        isPerfect ? "border-emerald-500/30" : ""
+                      )}
+                    />
+                  </div>
+
                 </div>
               </div>
             );

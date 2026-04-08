@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { QuizLevel, QuizModule } from '@thaiakha/shared';
 import ButtonQuiz from './ButtonQuiz';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -30,6 +30,15 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
   onStartModule,
   onBack
 }) => {
+  // Debug: log level data
+  useEffect(() => {
+    console.log('🎯 LevelQuiz loaded:', {
+      levelId: level.id,
+      levelImage: level.image,
+      modulesCount: level.modules.length,
+      modules: level.modules.map(m => ({ id: m.id, title: m.title, imageUrl: m.image_url }))
+    });
+  }, [level]);
 
   const getModuleTheme = (isPerfect: boolean, idx: number) => {
     const icons = ["eco", "local_fire_department", "restaurant_menu"];
@@ -50,7 +59,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
 
   return (
     <div
-      className="w-full min-h-screen relative animate-in fade-in duration-700"
+      className="flex-grow w-full min-h-full relative animate-in fade-in duration-700"
       style={{
         backgroundImage: level.image ? `url('${level.image}')` : undefined,
         backgroundSize: 'cover',

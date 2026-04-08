@@ -308,7 +308,7 @@ export const contentService = {
 
     /** 🧩 QUIZ ENGINE: Deep Fetch (Levels -> Modules -> Questions) — split query per compatibilità PostgREST */
     async getQuizData(categoryId?: string) {
-        const cacheKey = categoryId ? `quiz_data_cat_v3_${categoryId}` : 'quiz_full_structure_v4';
+        const cacheKey = categoryId ? `quiz_data_cat_v4_${categoryId}` : 'quiz_full_structure_v5';
         return fetchWithCache(cacheKey, async () => {
             // Step 1: fetch levels (filtered by category if provided)
             let levelsQuery = supabase

@@ -9,6 +9,7 @@ import { Heading, Paragraph } from '../../components/typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/button/Button';
 import SelectField from '../../components/form/input/SelectField';
+import { Printer, Download } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DriverOpt {
@@ -207,16 +208,16 @@ const ManagerDriverPayouts: React.FC = () => {
     }
   };
 
+  const reportBtnClass = 'inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border text-xs font-bold transition-colors ' +
+    'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 ' +
+    'hover:border-green-500 hover:text-green-600 disabled:opacity-50';
   const reportButtons = (w: WeekGroup) => (
-    <div className="flex gap-1.5">
-      <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'print')}
-        className="text-xs font-bold text-gray-600 dark:text-gray-300 hover:text-green-600 disabled:opacity-50">
-        {reportBusy === w.key ? '…' : 'Stampa'}
+    <div className="flex gap-2">
+      <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'print')} className={reportBtnClass}>
+        <Printer className="size-4" /> {reportBusy === w.key ? 'Genero…' : 'Stampa report'}
       </button>
-      <span className="text-gray-300">·</span>
-      <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'download')}
-        className="text-xs font-bold text-gray-600 dark:text-gray-300 hover:text-green-600 disabled:opacity-50">
-        PDF
+      <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'download')} className={reportBtnClass}>
+        <Download className="size-4" /> Scarica PDF
       </button>
     </div>
   );

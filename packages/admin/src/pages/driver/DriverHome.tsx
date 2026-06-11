@@ -15,12 +15,17 @@ import FeatureCardsGrid from '../../components/dashboard/FeatureCardsGrid';
 import DashboardNavCard from '../../components/dashboard/DashboardNavCard';
 import BasicCard from '../../components/dashboard/BasicCard';
 import CTABanner from '../../components/dashboard/CTABanner';
+import { cn } from '@thaiakha/shared/lib/utils';
+// BYPASS-PAYOUT (temporaneo) — vista form iniezione manuale payout, vedi _temp_driver_payout/
+import DriverPayoutForm from './DriverPayoutForm';
 
 const DriverHome: React.FC = () => {
     const { t, i18n } = useTranslation('common');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('driver-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
+    // BYPASS-PAYOUT (temporaneo) — toggle tra dashboard e form dichiarazione servizio
+    const [view, setView] = useState<'dashboard' | 'payout'>('dashboard');
 
     useEffect(() => {
         const loadHomeCards = async () => {
@@ -64,8 +69,32 @@ const DriverHome: React.FC = () => {
                     />
                 )}
 
+                {/* BYPASS-PAYOUT (temporaneo) — toggle Dashboard / Dichiara servizio */}
+                <div className="my-[var(--space-fluid-s,1rem)] inline-flex rounded-xl border border-gray-200 dark:border-gray-700/50 p-1 [gap:0.25rem]">
+                    {([
+                        { key: 'dashboard', label: 'Dashboard' },
+                        { key: 'payout', label: 'Dichiara servizio' },
+                    ] as const).map((tab) => (
+                        <button
+                            key={tab.key}
+                            type="button"
+                            onClick={() => setView(tab.key)}
+                            className={cn(
+                                'px-4 h-10 rounded-lg text-sm font-bold transition-all duration-300',
+                                view === tab.key
+                                    ? 'bg-green-500/10 text-green-700 dark:text-green-400'
+                                    : 'text-gray-600 dark:text-gray-300 hover:text-green-600'
+                            )}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {view === 'payout' && <DriverPayoutForm />}
+
                 {/* ROW 2: MAIN CONTENT (Features + CTA) then SIDEBAR (Nav + Basic) */}
-                <div className="grid grid-cols-12 gap-8">
+                <div className={cn('grid grid-cols-12 gap-8', view !== 'dashboard' && 'hidden')}>
                     {/* MAIN CONTENT (9 col) - Features + CTA */}
                     <div className="col-span-12 md:col-span-8 lg:col-span-9">
                         {/* Features Grid */}

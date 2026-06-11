@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# Template "driver_report" — port del template 2030 validato (driver_report_a5.py),
-# generalizzato A4/A5 e parametrico sui dati.
-from ..renderer import page_shell, akha, HF  # noqa: F401
+# Template "driver_report" — A4/A5, layout WeasyPrint-safe (tabelle, niente flex).
+from ..renderer import page_shell, akha  # noqa: F401
 
 LOGO = 'assets/logo-2026.png'
 LOGO_FOOTER = 'assets/logo_footer.png'
@@ -16,11 +15,8 @@ def _int(v):
 
 def build(data, fmt='A5'):
     """
-    data = {
-      "driver": "At",
-      "period": "3–9 June 2026",
-      "rows": [ {"date","class","pax","fare"}, ... ]
-    }
+    data = { "driver": "At", "period": "3–9 June 2026",
+             "rows": [ {"date","class","pax","fare"}, ... ] }
     """
     driver = data.get('driver', '')
     period = data.get('period', '')
@@ -30,11 +26,14 @@ def build(data, fmt='A5'):
     guests = sum(_int(r.get('pax')) for r in rows)
     total = sum(_int(r.get('fare')) for r in rows)
 
+    # KPI come tabella con celle spacer (gap reale, niente flex-gap)
     kpis = [(str(pickups), 'Pickups'), (str(guests), 'Guests'), (f'{total:,}', 'Total THB')]
-    kpi_html = ''.join(
-        f'<div class="kpi"><span class="kn">{n}</span>&nbsp;<span class="kl">{l}</span></div>'
-        for n, l in kpis
+    kpi_cells = ''.join(
+        (f'<td class="kpisp"></td>' if i else '') +
+        f'<td class="kpi"><span class="kn">{n}</span> <span class="kl">{l}</span></td>'
+        for i, (n, l) in enumerate(kpis)
     )
+    kpi_html = f'<table class="kpis"><tr>{kpi_cells}</tr></table>'
 
     body = ''.join(
         f'<tr><td>{r.get("date","")}</td><td>{r.get("class","")}</td>'
@@ -46,27 +45,35 @@ def build(data, fmt='A5'):
         f'<td class="n">{guests:,}</td><td class="n">{total:,}</td></tr>'
     )
 
+    # Header: tabella -> logo | titolo (affiancati) ............ Period (destra)
     header = f'''
-    <div class="row">
-      <div class="left"><img class="lg" src="{LOGO}"><div>
+    <table class="htab"><tr>
+      <td class="lg"><img src="{LOGO}"></td>
+      <td class="gap"></td>
+      <td valign="middle">
         <div class="kick">Driver Report · Pickup</div>
         <h1>Driver Pickup Report</h1>
         <div class="sub">Thai Akha Kitchen · Chiang Mai</div>
-      </div></div>
-      <div class="period"><div class="plab">Period</div><div class="pval">{period}</div></div>
-    </div>'''
+      </td>
+      <td class="period">
+        <div class="plab">Period</div>
+        <div class="pval">{period}</div>
+      </td>
+    </tr></table>'''
 
     content = f'''
-    <div class="kpis">{kpi_html}</div>
-    <div class="sech">{akha(14, 5)} Driver: {driver}</div>
-    <table><thead><tr><th>Date</th><th style="text-align:left">Class</th><th>Pax</th><th>Fare (THB)</th></tr></thead>
-    <tbody>{body}</tbody></table>'''
+    {kpi_html}
+    <div class="sech">{akha(14, 6, 3, full=False)}Driver: {driver}</div>
+    <table class="data">
+      <thead><tr><th>Date</th><th>Class</th><th class="n">Pax</th><th class="n">Fare (THB)</th></tr></thead>
+      <tbody>{body}</tbody>
+    </table>'''
 
-    footer = (
-        '<div class="row">'
-        f'<img class="lg" src="{LOGO_FOOTER}">'
-        '<span class="ft">Thai Akha Kitchen · Driver Report · 2030</span>'
-        '<span class="pg">p. 1 / 1</span></div>'
-    )
+    footer = f'''
+    <table class="ftab"><tr>
+      <td class="lg"><img src="{LOGO_FOOTER}"></td>
+      <td class="ft">Thai Akha Kitchen · Driver Report · 2030</td>
+      <td class="pg">p. 1 / 1</td>
+    </tr></table>'''
 
     return page_shell(fmt, header, content, footer)

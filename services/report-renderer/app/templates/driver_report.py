@@ -23,6 +23,7 @@ def build(data, fmt='A5'):
     rows = data.get('rows', []) or []
 
     pickups = len(rows)
+    stops_sum = sum(_int(r.get('stops')) for r in rows)
     guests = sum(_int(r.get('pax')) for r in rows)
     total = sum(_int(r.get('fare')) for r in rows)
 
@@ -37,12 +38,13 @@ def build(data, fmt='A5'):
 
     body = ''.join(
         f'<tr><td>{r.get("date","")}</td><td>{r.get("class","")}</td>'
+        f'<td class="n">{_int(r.get("stops"))}</td>'
         f'<td class="n">{_int(r.get("pax"))}</td><td class="n">{_int(r.get("fare")):,}</td></tr>'
         for r in rows
     )
     body += (
         f'<tr class="tot"><td colspan="2">TOTAL · {pickups} pickups</td>'
-        f'<td class="n">{guests:,}</td><td class="n">{total:,}</td></tr>'
+        f'<td class="n">{stops_sum:,}</td><td class="n">{guests:,}</td><td class="n">{total:,}</td></tr>'
     )
 
     # Header: tabella -> logo | titolo (affiancati) ............ Period (destra)
@@ -51,7 +53,6 @@ def build(data, fmt='A5'):
       <td class="lg"><img src="{LOGO}"></td>
       <td class="gap"></td>
       <td valign="middle">
-        <div class="kick">Driver Report · Pickup</div>
         <h1>Driver Pickup Report</h1>
         <div class="sub">Thai Akha Kitchen · Chiang Mai</div>
       </td>
@@ -63,9 +64,9 @@ def build(data, fmt='A5'):
 
     content = f'''
     {kpi_html}
-    <div class="sech">{akha(14, 6, 3, full=False)}Driver: {driver}</div>
+    <div class="sech">{akha(10, 6, 3, full=False)}Driver: {driver}</div>
     <table class="data">
-      <thead><tr><th>Date</th><th>Class</th><th class="n">Pax</th><th class="n">Fare (THB)</th></tr></thead>
+      <thead><tr><th>Date</th><th>Class</th><th class="n">Stops</th><th class="n">Pax</th><th class="n">Fare (THB)</th></tr></thead>
       <tbody>{body}</tbody>
     </table>'''
 

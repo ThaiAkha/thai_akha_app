@@ -55,7 +55,7 @@ Deno.serve(async (req: Request) => {
     const { data: driver } = await admin.from('profiles').select('full_name').eq('id', driver_id).single()
     const { data: rows } = await admin
       .from('driver_payments')
-      .select('run_date, session_id, total_pax, payout_amount')
+      .select('run_date, session_id, total_stops, total_pax, payout_amount')
       .eq('driver_id', driver_id)
       .gte('run_date', week_start)
       .lte('run_date', week_end)
@@ -67,6 +67,7 @@ Deno.serve(async (req: Request) => {
       rows: (rows ?? []).map((r) => ({
         date: r.run_date,
         class: SESSION_LABEL[r.session_id ?? ''] ?? r.session_id,
+        stops: r.total_stops,
         pax: r.total_pax,
         fare: r.payout_amount,
       })),

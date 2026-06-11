@@ -61,6 +61,7 @@ const ManagerDriverPayouts: React.FC = () => {
   const [rows, setRows] = useState<PayoutRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busyWeek, setBusyWeek] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
   const [weekResult, setWeekResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
 
   // Lista driver
@@ -135,7 +136,21 @@ const ManagerDriverPayouts: React.FC = () => {
       const { data, error: invErr } = await supabase.functions.invoke('zoho-create-driver-expense', {
         body: { driver_id: selectedDriver.id, week_start: w.key, week_end: w.endISO },
       });
-      if (invErr) throw invErr;
+      if (invErr) {
+        // Estrae il messaggio reale dal corpo della risposta (FunctionsHttpError.context)
+        let detail = invErr.message;
+        const ctx = (invErr as { context?: { json?: () => Promise<{ message?: string; read_authorized?: boolean }> } }).context;
+        if (ctx?.json) {
+          try {
+            const b = await ctx.json();
+            detail = b?.message ?? detail;
+            if (typeof b?.read_authorized === 'boolean') {
+              detail += b.read_authorized ? ' · (lettura OK → manca permesso CREATE/expenses)' : ' · (anche lettura negata → scope token assente)';
+            }
+          } catch { /* ignore */ }
+        }
+        throw new Error(detail);
+      }
       const res = data as { success: boolean; skipped?: boolean; zoho_expense_id?: string; message?: string };
       if (!res.success) throw new Error(res.message ?? 'Errore Zoho');
 
@@ -216,14 +231,33 @@ const ManagerDriverPayouts: React.FC = () => {
                   <span className="text-sm font-bold text-green-700 dark:text-green-400">Fatturata · {w.zohoId}</span>
                   <span className="text-xs text-gray-400">nessuna azione</span>
                 </div>
+              ) : confirming === w.key ? (
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 [padding:var(--space-fluid-s,1rem)]">
+                  <Paragraph size="sm" className="font-bold text-gray-900 dark:text-white">
+                    {w.fullyPaid ? 'Generare la fattura Zoho?' : 'Sei sicuro del pagamento?'}
+                  </Paragraph>
+                  <Paragraph size="xs" color="muted">
+                    {w.fullyPaid
+                      ? `Crea l'Expense in Zoho per ${w.total} Baht.`
+                      : `Le righe passano a "pagato" e viene generata automaticamente la fattura Zoho (${w.total} Baht).`}
+                  </Paragraph>
+                  <div className="flex gap-2 mt-3">
+                    <Button type="button" className="flex-1" isLoading={busyWeek === w.key}
+                            onClick={() => { setConfirming(null); handlePay(w, w.fullyPaid ? 'bill-only' : 'mark+bill'); }}>
+                      Conferma
+                    </Button>
+                    <Button type="button" variant="outline" className="flex-1" disabled={busyWeek === w.key}
+                            onClick={() => setConfirming(null)}>
+                      Annulla
+                    </Button>
+                  </div>
+                </div>
               ) : w.fullyPaid ? (
-                <Button type="button" variant="outline" className="w-full" isLoading={busyWeek === w.key}
-                        onClick={() => handlePay(w, 'bill-only')}>
+                <Button type="button" variant="outline" className="w-full" onClick={() => setConfirming(w.key)}>
                   Ripeti fattura Zoho
                 </Button>
               ) : (
-                <Button type="button" className="w-full" isLoading={busyWeek === w.key}
-                        onClick={() => handlePay(w, 'mark+bill')}>
+                <Button type="button" className="w-full" onClick={() => setConfirming(w.key)}>
                   Segna pagato & fattura Zoho
                 </Button>
               )}

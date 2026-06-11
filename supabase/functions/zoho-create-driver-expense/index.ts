@@ -118,8 +118,30 @@ Deno.serve(async (req: Request) => {
       }),
     })
     const zdata = await zres.json()
-    if (zdata.code !== 0 || !zdata.expense?.expense_id)
-      return json({ success: false, message: `Zoho error: ${zdata.message ?? JSON.stringify(zdata)}` }, 502)
+    if (zdata.code !== 0 || !zdata.expense?.expense_id) {
+      console.error('ZOHO_EXPENSE_FAIL', zres.status, JSON.stringify(zdata))
+      // Diagnostica: la LETTURA è autorizzata? (distingue scope mancante vs permesso CREATE)
+      let readAuthorized = false
+      let readMessage = ''
+      try {
+        const rres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${orgId}&per_page=1`, {
+          headers: { Authorization: `Zoho-oauthtoken ${token}` },
+        })
+        const rdata = await rres.json()
+        readAuthorized = rdata.code === 0
+        readMessage = rdata.message ?? ''
+      } catch (re) {
+        readMessage = String(re instanceof Error ? re.message : re)
+      }
+      return json({
+        success: false,
+        message: `Zoho error: ${zdata.message ?? JSON.stringify(zdata)}`,
+        zoho_code: zdata.code ?? null,
+        read_authorized: readAuthorized,
+        read_message: readMessage,
+        zoho: zdata,
+      }, 502)
+    }
 
     const expenseId = zdata.expense.expense_id as string
 

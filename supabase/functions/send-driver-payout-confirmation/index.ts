@@ -76,10 +76,10 @@ Deno.serve(async (req: Request) => {
       results.driver = 'skipped (no email)'
     }
 
-    // 2) Ufficio — EN "Payout to confirm"
+    // 2) Ufficio — EN (riepilogo, niente conferma)
     const a = await sendResend(
       OFFICE,
-      `Payout to confirm — ${data.driver_name} (${data.run_date})`,
+      `Driver: ${data.driver_name} – ${session} (${data.run_date})`,
       renderEmail(ADMIN_EN_HTML, data),
     )
     results.office = a.ok ? 'sent' : a.detail

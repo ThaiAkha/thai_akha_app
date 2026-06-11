@@ -62,6 +62,7 @@ const ManagerDriverPayouts: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [busyWeek, setBusyWeek] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [reportBusy, setReportBusy] = useState<string | null>(null);
   const [weekResult, setWeekResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
 
   // Lista driver
@@ -169,6 +170,57 @@ const ManagerDriverPayouts: React.FC = () => {
     }
   };
 
+  // Report PDF (Cloud Run via edge function render-report). Genera on-the-fly, niente archivio.
+  const handleReport = async (w: WeekGroup, mode: 'print' | 'download') => {
+    if (!selectedDriver || reportBusy) return;
+    setReportBusy(w.key);
+    try {
+      const { data, error: e } = await supabase.functions.invoke('render-report', {
+        body: { report: 'driver_report', driver_id: selectedDriver.id, week_start: w.key, week_end: w.endISO, format: 'A5' },
+      });
+      if (e) {
+        let msg = e.message;
+        const ctx = (e as { context?: { json?: () => Promise<{ error?: string }> } }).context;
+        if (ctx?.json) { try { msg = (await ctx.json())?.error ?? msg; } catch { /* ignore */ } }
+        throw new Error(msg);
+      }
+      const blob = data as Blob;
+      const url = URL.createObjectURL(blob);
+      if (mode === 'download') {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ThaiAkha_Driver_Report_${selectedDriver.full_name.replace(/\s+/g, '')}_${w.key}.pdf`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      } else {
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+        iframe.src = url;
+        iframe.onload = () => { iframe.contentWindow?.focus(); iframe.contentWindow?.print(); };
+        document.body.appendChild(iframe);
+        setTimeout(() => { iframe.remove(); URL.revokeObjectURL(url); }, 60000);
+      }
+    } catch (err: unknown) {
+      setWeekResult((p) => ({ ...p, [w.key]: { ok: false, msg: err instanceof Error ? err.message : 'Errore report' } }));
+    } finally {
+      setReportBusy(null);
+    }
+  };
+
+  const reportButtons = (w: WeekGroup) => (
+    <div className="flex gap-1.5">
+      <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'print')}
+        className="text-xs font-bold text-gray-600 dark:text-gray-300 hover:text-green-600 disabled:opacity-50">
+        {reportBusy === w.key ? '…' : 'Stampa'}
+      </button>
+      <span className="text-gray-300">·</span>
+      <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'download')}
+        className="text-xs font-bold text-gray-600 dark:text-gray-300 hover:text-green-600 disabled:opacity-50">
+        PDF
+      </button>
+    </div>
+  );
+
   if (error) return <Paragraph size="sm" className="text-red-600 dark:text-red-400">Errore: {error}</Paragraph>;
 
   return (
@@ -212,6 +264,9 @@ const ManagerDriverPayouts: React.FC = () => {
                 {w.total} <span className="text-sm font-medium opacity-70">Baht</span>
               </span>
             </div>
+
+            {/* Report A5: stampa / download (Cloud Run, on-the-fly) */}
+            <div className="flex justify-end mb-[var(--space-fluid-2xs,0.5rem)]">{reportButtons(w)}</div>
 
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
               {w.rows.map((r) => (

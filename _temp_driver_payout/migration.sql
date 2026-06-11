@@ -79,3 +79,53 @@ GRANT EXECUTE ON FUNCTION public.inject_driver_payout_manual TO authenticated;
 --    "1-2"  -> 2     "3-4" -> 4     "5-6" -> 6     "7plus" -> 7
 --  La tariffa dipende solo dallo scaglione, non dal valore esatto.
 -- ============================================================
+
+
+-- ============================================================
+--  FASE 2 — UI dinamica: lucchetto settimana, delete self, mark-paid admin.
+--  NB: inject_driver_payout_manual (sopra) include già il lucchetto settimana.
+-- ============================================================
+
+-- Driver elimina un proprio servizio SOLO se pending e settimana non chiusa.
+CREATE OR REPLACE FUNCTION public.delete_my_payout(p_run_date date, p_session_id text)
+RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
+AS $$
+DECLARE v_driver uuid := auth.uid(); v_status text;
+BEGIN
+  SELECT dp.status INTO v_status FROM driver_payments dp
+   WHERE dp.driver_id=v_driver AND dp.run_date=p_run_date AND dp.session_id=p_session_id;
+  IF v_status IS NULL THEN RAISE EXCEPTION 'Nessun servizio da eliminare'; END IF;
+  IF v_status = 'paid' THEN RAISE EXCEPTION 'Servizio già pagato: non eliminabile'; END IF;
+  IF EXISTS (
+    SELECT 1 FROM driver_payments dp
+     WHERE dp.driver_id=v_driver AND dp.status='paid'
+       AND dp.run_date >= date_trunc('week', p_run_date)::date
+       AND dp.run_date <  date_trunc('week', p_run_date)::date + 7
+  ) THEN
+    RAISE EXCEPTION 'Settimana già pagata e chiusa: impossibile eliminare';
+  END IF;
+  DELETE FROM driver_payments dp
+   WHERE dp.driver_id=v_driver AND dp.run_date=p_run_date AND dp.session_id=p_session_id;
+END;
+$$;
+GRANT EXECUTE ON FUNCTION public.delete_my_payout TO authenticated;
+
+-- Admin chiude l'intera settimana (pending -> paid) per un driver.
+CREATE OR REPLACE FUNCTION public.mark_driver_week_paid(p_driver_id uuid, p_week_monday date)
+RETURNS integer
+LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
+AS $$
+DECLARE v_count integer;
+BEGIN
+  IF NOT is_admin() THEN RAISE EXCEPTION 'Solo admin può segnare i pagamenti'; END IF;
+  UPDATE driver_payments dp
+     SET status='paid', paid_at=NOW(), updated_at=NOW()
+   WHERE dp.driver_id=p_driver_id AND dp.status='pending'
+     AND dp.run_date >= date_trunc('week', p_week_monday)::date
+     AND dp.run_date <  date_trunc('week', p_week_monday)::date + 7;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RETURN v_count;
+END;
+$$;
+GRANT EXECUTE ON FUNCTION public.mark_driver_week_paid TO authenticated;

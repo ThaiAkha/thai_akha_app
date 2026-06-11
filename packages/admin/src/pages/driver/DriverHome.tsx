@@ -17,15 +17,25 @@ import BasicCard from '../../components/dashboard/BasicCard';
 import CTABanner from '../../components/dashboard/CTABanner';
 import { cn } from '@thaiakha/shared/lib/utils';
 // BYPASS-PAYOUT (temporaneo) — vista form iniezione manuale payout, vedi _temp_driver_payout/
-import DriverPayoutForm from './DriverPayoutForm';
+import DriverPayoutForm, { type PayoutEditTarget } from './DriverPayoutForm';
+import DriverPayoutDashboard from './DriverPayoutDashboard';
 
 const DriverHome: React.FC = () => {
     const { t, i18n } = useTranslation('common');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('driver-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
-    // BYPASS-PAYOUT (temporaneo) — toggle tra dashboard e form dichiarazione servizio
-    const [view, setView] = useState<'dashboard' | 'payout'>('dashboard');
+    // BYPASS-PAYOUT (temporaneo) — toggle tra form dichiarazione (default) e dashboard payout
+    const [view, setView] = useState<'payout' | 'dashboard'>('payout');
+    // BYPASS-PAYOUT — modifica da card: la dashboard passa il target, il form si apre precompilato
+    const [editTarget, setEditTarget] = useState<PayoutEditTarget | null>(null);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const openEdit = (target: PayoutEditTarget) => { setEditTarget(target); setView('payout'); };
+    const goTab = (next: 'payout' | 'dashboard') => {
+        if (next === 'payout') setEditTarget(null); // tab = form nuovo (oggi)
+        setView(next);
+    };
 
     useEffect(() => {
         const loadHomeCards = async () => {
@@ -56,7 +66,7 @@ const DriverHome: React.FC = () => {
 
     return (
         <PageContainer variant="wide">
-            <div>
+            <div className="pb-[max(48px,env(safe-area-inset-bottom))]">
                 {/* ROW 1: HERO SECTION (full width) */}
                 {pageMeta && (
                     <WelcomeHero
@@ -69,29 +79,45 @@ const DriverHome: React.FC = () => {
                     />
                 )}
 
-                {/* BYPASS-PAYOUT (temporaneo) — toggle Dashboard / Dichiara servizio */}
-                <div className="my-[var(--space-fluid-s,1rem)] inline-flex rounded-xl border border-gray-200 dark:border-gray-700/50 p-1 [gap:0.25rem]">
-                    {([
-                        { key: 'dashboard', label: 'Dashboard' },
-                        { key: 'payout', label: 'Dichiara servizio' },
-                    ] as const).map((tab) => (
-                        <button
-                            key={tab.key}
-                            type="button"
-                            onClick={() => setView(tab.key)}
-                            className={cn(
-                                'px-4 h-10 rounded-lg text-sm font-bold transition-all duration-300',
-                                view === tab.key
-                                    ? 'bg-green-500/10 text-green-700 dark:text-green-400'
-                                    : 'text-gray-600 dark:text-gray-300 hover:text-green-600'
-                            )}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+                {/* BYPASS-PAYOUT (temporaneo) — tab centrali: Dichiara servizio (default) / Dashboard */}
+                <div className="my-[var(--space-fluid-m,1.5rem)] flex justify-center">
+                    <div className="inline-flex rounded-xl border border-gray-200 dark:border-gray-700/50 p-1 [gap:0.25rem]">
+                        {([
+                            { key: 'payout', label: 'Dichiara servizio' },
+                            { key: 'dashboard', label: 'Dashboard' },
+                        ] as const).map((tab) => (
+                            <button
+                                key={tab.key}
+                                type="button"
+                                onClick={() => goTab(tab.key)}
+                                className={cn(
+                                    'px-4 h-10 rounded-lg text-sm font-bold transition-all duration-300',
+                                    view === tab.key
+                                        ? 'bg-green-500/10 text-green-700 dark:text-green-400'
+                                        : 'text-gray-600 dark:text-gray-300 hover:text-green-600'
+                                )}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {view === 'payout' && <DriverPayoutForm />}
+                {view === 'payout' && (
+                    <div className="flex justify-center">
+                        <DriverPayoutForm
+                            editTarget={editTarget}
+                            onDone={() => setRefreshKey((k) => k + 1)}
+                        />
+                    </div>
+                )}
+
+                {/* BYPASS-PAYOUT — vista payout settimanale (sopra le card storiche) */}
+                {view === 'dashboard' && (
+                    <div className="flex justify-center mb-[var(--space-fluid-l,2rem)]">
+                        <DriverPayoutDashboard onEdit={openEdit} refreshKey={refreshKey} />
+                    </div>
+                )}
 
                 {/* ROW 2: MAIN CONTENT (Features + CTA) then SIDEBAR (Nav + Basic) */}
                 <div className={cn('grid grid-cols-12 gap-8', view !== 'dashboard' && 'hidden')}>

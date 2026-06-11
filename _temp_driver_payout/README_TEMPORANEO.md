@@ -26,8 +26,8 @@ Esegui `rollback.sql`:
 Dopo, il DB è identico a oggi.
 
 ### 2. App (package `admin`)
-- Rimuovi la **vista form** aggiunta in `pages/driver/DriverHome.tsx` — è marcata col commento `// BYPASS-PAYOUT (temporaneo)`.
-- Elimina il componente `pages/driver/DriverPayoutForm.tsx`.
+- Rimuovi i **tab + viste** aggiunti in `pages/driver/DriverHome.tsx` — marcati col commento `// BYPASS-PAYOUT (temporaneo)`.
+- Elimina i componenti `pages/driver/DriverPayoutForm.tsx` e `pages/driver/DriverPayoutDashboard.tsx`.
 - Elimina l'edge function `supabase/functions/send-driver-payout-confirmation`.
 - Disattiva/elimina lo **scheduled task** del report settimanale (quando esisterà; il job `weekly_driver_payouts` esistente non va toccato).
 - Rigenera `packages/shared/src/types/database.types.ts` (sparisce la colonna `source`).

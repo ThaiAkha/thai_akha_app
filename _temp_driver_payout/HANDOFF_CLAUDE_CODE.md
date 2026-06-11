@@ -3,22 +3,40 @@
 > Documento da passare a **Claude Code** in una nuova chat nel repo `thaiakha-cherry-2026`.
 > Tutto il materiale è in `_temp_driver_payout/`. È una soluzione **TEMPORANEA**: vedi `README_TEMPORANEO.md`.
 
-## STATO (agg. 2026-06-11)
+## STATO (agg. 2026-06-11, sera)
 
-**✅ Fatto — Task 1–4 + verifica (Task 6).**
+**✅ Fatto — Task 1–4 + verifica + EMAIL LIVE.**
 - DB produzione: colonna `source` + RPC `inject_driver_payout_manual` applicate e testate. **Bug fix**: le colonne nelle query interne sono qualificate (`dp.`/`t.`) per evitare l'ambiguità con gli OUT param omonimi (`status`, `total_stops`, `payout_amount`); INSERT con alias `AS dp`. Vedi `migration.sql` aggiornato.
 - Sicurezza verificata: RLS (driver legge solo i propri), blocco record `paid`, UPSERT idempotente, rifiuto driver≠self senza admin.
 - Tipi TS rigenerati (`database.types.ts`).
-- Form **"Dichiara servizio"** in `DriverHome.tsx` (toggle Dashboard/Payout) + nuovo componente `DriverPayoutForm.tsx`, con componenti UI esistenti.
-- Edge function `send-driver-payout-confirmation/index.ts` **scritta, pronta al deploy**.
+- Form **"Dichiara servizio"** in `DriverHome.tsx` + `DriverPayoutForm.tsx`, componenti UI esistenti.
+- Edge function `send-driver-payout-confirmation` **deployata e funzionante** (ACTIVE v1, `verify_jwt: true` — ok perché invocata da driver loggato).
 
-**Design chiave — degradazione graziosa:** il form salva il payout e mostra la conferma **anche senza email/deploy**. L'invio è in `try/catch` e degrada a *"Payout salvato (email non disponibile)"*. Il modulo è quindi già usabile end-to-end; quando il flusso email è sistemato e la function deployata, la conferma parte da sola **senza toccare il frontend**.
+**📧 Email — VERDE end-to-end (verificato con test send reale):**
+- `RESEND_API_KEY` **già impostato** sul progetto live e valido.
+- Dominio `thaiakhakitchen.com` **verificato** su Resend (il test send ha restituito message-id, HTTP 200).
+- Test inviato a `office@thaiakhakitchen.com` con esito `{"success":true}`.
+- Mittente payout: `Thai Akha Kitchen <driver@thaiakhakitchen.com>`, bcc `office@`.
+- NB: la welcome (`send-welcome-email`) resta rotta a parte per `from: noreply@yourdomain.com` placeholder + webhook signup non attivo — non riguarda il payout.
 
-**⏳ Rimandato — Task 5 (report settimanale):** si costruisce quando le email consegnano davvero. Il job esistente `weekly_driver_payouts` continua a girare, **non toccato**.
+**🆕 Modifiche form/UI (2026-06-11 sera):**
+- Pax → **menu a tendina 1–14** (non più input numerico).
+- Rimosso il badge "Modulo temporaneo · bypass booking".
+- Tab **centrali**, ordine: **1) Dichiara servizio (default)** · 2) Dashboard.
+- Nuovo **`DriverPayoutDashboard.tsx`**: vista payout giornalieri **raggruppati per settimana ISO (lun→dom)**, settimana corrente in cima, totale **pending = blocco da reportare/pagare**, badge stato per riga. Mostrato nel tab Dashboard sopra le card storiche.
 
-**🔧 Da fare lato utente (parallelo):**
-1. Fix consegna email (dominio Resend / secret / webhook) — Supabase, dominio dell'agente `/email`.
-2. Deploy: `supabase functions deploy send-driver-payout-confirmation`.
+**Modello payout settimanale (chiarito):** NON esiste un record settimanale separato per il bypass. Ogni submit = 1 riga `driver_payments` (per giorno+sessione). La "settimana" è **pura aggregazione** delle righe per settimana ISO, fatta lato client nella dashboard. Il cron `weekly_driver_payouts` → `generate_weekly_payouts()` è **booking-based** (path auto bypassato), **non toccato e non rilevante** qui.
+
+**Design chiave — degradazione graziosa:** il form salva il payout e mostra la conferma **anche se l'email fallisce** (try/catch). Email ora attiva, ma il frontend non dipende da essa.
+
+**🆕 Fase 2 — UI dinamica (2026-06-11 sera):**
+- DB: nuove RPC `delete_my_payout(date,text)` (driver cancella un proprio servizio solo se `pending` e settimana non chiusa) e `mark_driver_week_paid(uuid,date)` (admin: chiude l'intera settimana `pending→paid`). `inject` aggiornata con **lucchetto settimana**: se la settimana ISO contiene un `paid`, blocca create/edit/delete su quei giorni.
+- Form: rimosso campo Driver e campo Note · data sola lettura (oggi o data card) · **success card** col riepilogo (Data·Classe·N°hotel·Prezzo) + "Nuovo invio" · **smart-UI** (rileva servizio già inviato per data+classe → precompila + "stai modificando, sovrascrive") · **modifica da card** (date/sessione bloccate) · **elimina** su pending.
+- Dashboard: **card cliccabili** per modifica · settimane **pagate compresse** a una riga · **filtro mese** (ultimi 6, settimana assegnata al mese del suo lunedì, settimane intere) · **realtime** su `driver_payments` + **popup "pagamento ricevuto"** (flag visto via localStorage).
+
+**⏳ Rimandato:**
+- **Task 5** (report settimanale PDF via email): sbloccabile, pattern `pg_net → Resend`.
+- **UI admin "segna pagato"**: l'RPC `mark_driver_week_paid` è pronta, ma manca la **pagina admin** (selettore driver + lista settimane + bottone paga). La dashboard driver mostra solo i propri payout (RLS), quindi mark-paid vuole una sede admin dedicata.
 
 ## Obiettivo
 
@@ -80,7 +98,8 @@ Si costruisce quando le email consegnano. Scheduled task settimanale: legge `dri
 - `README_TEMPORANEO.md` — natura temporanea + istruzioni di rollback.
 
 ## File toccati nel repo (per il rollback)
-- `packages/admin/src/pages/driver/DriverHome.tsx` — toggle vista (marcato `// BYPASS-PAYOUT`).
-- `packages/admin/src/pages/driver/DriverPayoutForm.tsx` — **nuovo** componente form.
+- `packages/admin/src/pages/driver/DriverHome.tsx` — tab centrali Dichiara servizio/Dashboard (marcato `// BYPASS-PAYOUT`).
+- `packages/admin/src/pages/driver/DriverPayoutForm.tsx` — **nuovo** componente form (pax dropdown 1–14, no badge).
+- `packages/admin/src/pages/driver/DriverPayoutDashboard.tsx` — **nuovo** componente dashboard payout settimanale (read-only, grouping ISO week).
 - `packages/shared/src/types/database.types.ts` — tipi rigenerati.
-- `supabase/functions/send-driver-payout-confirmation/index.ts` — **nuova** edge function.
+- `supabase/functions/send-driver-payout-confirmation/index.ts` — **nuova** edge function (deployata).

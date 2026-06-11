@@ -2355,7 +2355,6 @@ export type Database = {
           age: number | null
           agency_address: string | null
           agency_city: string | null
-          agency_commission_rate: number | null
           agency_company_name: string | null
           agency_country: string | null
           agency_phone: string | null
@@ -2388,7 +2387,6 @@ export type Database = {
           age?: number | null
           agency_address?: string | null
           agency_city?: string | null
-          agency_commission_rate?: number | null
           agency_company_name?: string | null
           agency_country?: string | null
           agency_phone?: string | null
@@ -2421,7 +2419,6 @@ export type Database = {
           age?: number | null
           agency_address?: string | null
           agency_city?: string | null
-          agency_commission_rate?: number | null
           agency_company_name?: string | null
           agency_country?: string | null
           agency_phone?: string | null
@@ -3830,6 +3827,14 @@ export type Database = {
           status: string
           total_stops: number
         }[]
+      }
+      delete_my_payout: {
+        Args: { p_run_date: string; p_session_id: string }
+        Returns: undefined
+      }
+      mark_driver_week_paid: {
+        Args: { p_driver_id: string; p_week_monday: string }
+        Returns: number
       }
       insert_recipe_with_ingredients: {
         Args: {

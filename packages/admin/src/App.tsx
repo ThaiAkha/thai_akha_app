@@ -80,7 +80,7 @@ function App() {
               <Route path="/agency-home" element={<ProtectedRoute allowedRoles={['agency']}><AgencyHome /></ProtectedRoute>} />
               <Route path="/agency-dashboard" element={<ProtectedRoute allowedRoles={['agency']}><AgencyDashboard /></ProtectedRoute>} />
               <Route path="/manager-booking" element={<ProtectedRoute allowedRoles={['manager']}><ManagerBooking /></ProtectedRoute>} />
-              <Route path="/manager-reports" element={<ProtectedRoute allowedRoles={['manager']}><ManagerReports /></ProtectedRoute>} />
+              <Route path="/manager-reports" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ManagerReports /></ProtectedRoute>} />
               <Route path="/manager-home" element={<ProtectedRoute allowedRoles={['manager']}><ManagerHome /></ProtectedRoute>} />
               <Route path="/manager-logistics" element={<ProtectedRoute allowedRoles={['manager', 'logistics']}><ManagerLogistic onNavigate={() => { }} /></ProtectedRoute>} />
               <Route path="/driver" element={<ProtectedRoute allowedRoles={['admin', 'manager', 'driver']}><DriverRoute /></ProtectedRoute>} />

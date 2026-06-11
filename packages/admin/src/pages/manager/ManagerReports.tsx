@@ -6,19 +6,20 @@
  */
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import WelcomeHero from '../../components/dashboard/WelcomeHero';
+import { Heading } from '../../components/typography';
+// BYPASS-PAYOUT (temporaneo) — report payout driver + pagamento/fatturazione Zoho
+import ManagerDriverPayouts from './ManagerDriverPayouts';
 
 const ManagerReports: React.FC = () => {
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('manager-reports');
-    const { t } = useTranslation('pages');
 
     return (
         <PageContainer variant="wide">
-            <div>
+            <div className="pb-[max(48px,env(safe-area-inset-bottom))]">
                 {/* HERO SECTION */}
                 {pageMeta && (
                     <WelcomeHero
@@ -31,12 +32,11 @@ const ManagerReports: React.FC = () => {
                     />
                 )}
 
-                {/* PLACEHOLDER: Reports content will be added here */}
-                <div className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-white/[0.03] p-12 text-center">
-                    <p className="text-gray-500 dark:text-gray-400 text-lg">
-                        {t('adminReport.comingSoon')}
-                    </p>
-                </div>
+                {/* BYPASS-PAYOUT — Report Payout Driver */}
+                <section className="mt-[var(--space-fluid-m,1.5rem)]">
+                    <Heading level="h3" className="mb-[var(--space-fluid-s,1rem)]">Report Payout Driver</Heading>
+                    <ManagerDriverPayouts />
+                </section>
             </div>
         </PageContainer>
     );

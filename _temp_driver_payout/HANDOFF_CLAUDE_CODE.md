@@ -30,13 +30,35 @@
 **Design chiave — degradazione graziosa:** il form salva il payout e mostra la conferma **anche se l'email fallisce** (try/catch). Email ora attiva, ma il frontend non dipende da essa.
 
 **🆕 Fase 2 — UI dinamica (2026-06-11 sera):**
-- DB: nuove RPC `delete_my_payout(date,text)` (driver cancella un proprio servizio solo se `pending` e settimana non chiusa) e `mark_driver_week_paid(uuid,date)` (admin: chiude l'intera settimana `pending→paid`). `inject` aggiornata con **lucchetto settimana**: se la settimana ISO contiene un `paid`, blocca create/edit/delete su quei giorni.
+- DB: nuove RPC `delete_my_payout(date,text)` (driver cancella un proprio servizio solo se `pending` e settimana non chiusa), `mark_driver_week_paid(uuid,date)` (admin: chiude l'intera settimana `pending→paid`) e **`admin_delete_payout(uuid,date,text)`** (admin/manager elimina UN servizio di un driver — guardia `is_admin()`, solo `pending`, settimana non chiusa). `inject` aggiornata con **lucchetto settimana**: se la settimana ISO contiene un `paid`, blocca create/edit/delete su quei giorni.
+- Manager (`ManagerDriverPayouts`): **cestino per riga** (conferma inline) che chiama `admin_delete_payout` + `send-driver-cancellation` (driver TH + office EN). Visibile solo su righe `pending` di settimane non fatturate.
 - Form: rimosso campo Driver e campo Note · data sola lettura (oggi o data card) · **success card** col riepilogo (Data·Classe·N°hotel·Prezzo) + "Nuovo invio" · **smart-UI** (rileva servizio già inviato per data+classe → precompila + "stai modificando, sovrascrive") · **modifica da card** (date/sessione bloccate) · **elimina** su pending.
 - Dashboard: **card cliccabili** per modifica · settimane **pagate compresse** a una riga · **filtro mese** (ultimi 6, settimana assegnata al mese del suo lunedì, settimane intere) · **realtime** su `driver_payments` + **popup "pagamento ricevuto"** (flag visto via localStorage).
 
-**⏳ Rimandato:**
-- **Task 5** (report settimanale PDF via email): sbloccabile, pattern `pg_net → Resend`.
-- **UI admin "segna pagato"**: l'RPC `mark_driver_week_paid` è pronta, ma manca la **pagina admin** (selettore driver + lista settimane + bottone paga). La dashboard driver mostra solo i propri payout (RLS), quindi mark-paid vuole una sede admin dedicata.
+**🆕 Fase 3 — Manager, report PDF & Zoho (verificato 2026-06-12):**
+- Pagine manager: `ManagerReports.tsx` (report payout + pagamento/fatturazione) e `ManagerDriverPayouts.tsx` (report driver-centric, **segna pagato** via `mark_driver_week_paid`). Rotta `/manager-reports` (admin, manager). i18n nuovo `manager.json` (en/th).
+- Edge `render-report` — genera il **PDF report A5** (proxy Cloud Run / WeasyPrint), stile Driver Report con colonna Stops, divider Akha, layout print-safe.
+- Edge `zoho-create-driver-expense` — crea la **spesa driver su Zoho Books** (fatturazione, conferma umana).
+
+**⏳ Aperto:**
+- **Task 5 — invio automatico schedulato** del report settimanale via email: il report PDF on-demand esiste (`render-report` + bottoni Stampa/PDF nelle card), manca solo il **cron** che lo genera e lo spedisce ogni settimana (pattern `pg_net → render-report → Resend`).
+- **Commit working tree:** le pagine manager, le dashboard e gli i18n sono ancora **non committati** sul branch `feature/driver-payout-bypass` (vedi nota a fondo file).
+
+## Mappa driver ↔ Zoho vendor (agg. 2026-06-12)
+
+Reset dati demo eseguito: `driver_payments` svuotata. Mapping profili→vendor Zoho Books (org `663160082`):
+
+**2 driver attivi** (`role='driver'`): At, Kasem.
+
+| Profilo Supabase | id | role | Zoho vendor | Note |
+|---|---|---|---|---|
+| **Kasem** | `1f947c52…f47cc` | driver | `1215788000003602337` ("04 - Driver - Kasem") | ✅ **definitivo**. Vendor spostato qui dall'ex profilo test. |
+| **At** (profilo reale) | `5629d491…ba45f` | driver | `1215788000001485001` ("03 - Driver - At") | ✅ **collegato** (vendor spostato qui dal vecchio profilo At il 2026-06). Default pickup booking-based aggiornato a questo id. |
+| At (vecchio) | `b7866c46…73de5` | kitchen | `null` | Ex profilo driver di At, ora convertito a kitchen. Fuori dal mondo driver. |
+| **Teacher 01** (ex-Som) | `b85dffbe…a757f37` | logistics | `null` | Ex profilo test driver, ora convertito (kitchen→logistics). Fuori dal mondo driver. |
+
+> ⚠️ Expenses Zoho demo: **NON toccate da noi** (le gestisce Svevo a mano).
+> ⚠️ `useAdminBooking.ts` ha il default pickup driver booking-based su At (`b7866c46`): rivedere alla migrazione di At.
 
 ## Obiettivo
 
@@ -78,11 +100,11 @@ Integrare il form di `pickup-form-prototype.html` come **vista React dentro `Dri
 - Submit → `supabase.rpc('inject_driver_payout_manual', { p_run_date, p_session_id, p_total_stops, p_total_pax })` usando lo stop rappresentativo. Mostrare il payout ritornato in conferma.
 - Marcare il codice con un commento `// BYPASS-PAYOUT (temporaneo)` per il rollback.
 
-### ☑ Task 4 — Edge function email conferma ✅ SCRITTA (deploy pendente)
-`supabase/functions/send-driver-payout-confirmation/index.ts` pronta (pattern Resend). Invocata dal client dopo l'RPC, in `try/catch` con degradazione graziosa. ⚠️ Restano da fare lato utente: **dominio mittente verificato** + `supabase functions deploy send-driver-payout-confirmation`.
+### ☑ Task 4 — Edge function email conferma ✅ DEPLOYATA E LIVE
+`send-driver-payout-confirmation` ACTIVE. `RESEND_API_KEY` valido, dominio `thaiakhakitchen.com` verificato, mittente `driver@thaiakhakitchen.com` (bcc `office@`). Invocata dal client dopo l'RPC, `try/catch` con degradazione graziosa.
 
-### ⏳ Task 5 — Report settimanale schedulato — RIMANDATO
-Si costruisce quando le email consegnano. Scheduled task settimanale: legge `driver_payments` della settimana (filtrabile `source='manual'`), raggruppa per driver, genera PDF nello **stile Driver Report approvato**, invia via email. Riusare l'asset report del brain (skill `driver-ops`). Nota: il job esistente `weekly_driver_payouts` continua a girare, non toccato.
+### ◐ Task 5 — Report settimanale — PDF FATTO, cron APERTO
+Report PDF A5 **costruito** (edge `render-report` + bottoni Stampa/PDF nelle card manager, stile Driver Report con colonna Stops). Manca solo l'**invio automatico schedulato**: cron settimanale `pg_net → render-report → Resend`. Il job esistente `weekly_driver_payouts` (booking-based) continua a girare, non toccato.
 
 ### ☑ Task 6 — Verifica ✅ FATTO
 - Test RPC: tier corretto per ogni range/sessione; UPSERT idempotente; rifiuto su record `paid`; rifiuto driver≠self senza admin. ✅
@@ -97,9 +119,28 @@ Si costruisce quando le email consegnano. Scheduled task settimanale: legge `dri
 - `rollback.sql` — rimozione completa del bypass.
 - `README_TEMPORANEO.md` — natura temporanea + istruzioni di rollback.
 
-## File toccati nel repo (per il rollback)
-- `packages/admin/src/pages/driver/DriverHome.tsx` — tab centrali Dichiara servizio/Dashboard (marcato `// BYPASS-PAYOUT`).
-- `packages/admin/src/pages/driver/DriverPayoutForm.tsx` — **nuovo** componente form (pax dropdown 1–14, no badge).
-- `packages/admin/src/pages/driver/DriverPayoutDashboard.tsx` — **nuovo** componente dashboard payout settimanale (read-only, grouping ISO week).
-- `packages/shared/src/types/database.types.ts` — tipi rigenerati.
-- `supabase/functions/send-driver-payout-confirmation/index.ts` — **nuova** edge function (deployata).
+## File toccati nel repo (per il rollback — tutti marcati `// BYPASS-PAYOUT`)
+Driver:
+- `packages/admin/src/pages/driver/DriverHome.tsx` — tab Dichiara servizio/Dashboard.
+- `packages/admin/src/pages/driver/DriverPayoutForm.tsx` — **nuovo** form (pax dropdown 1–14, smart-UI, modifica/elimina).
+- `packages/admin/src/pages/driver/DriverPayoutDashboard.tsx` — **nuovo** dashboard settimanale ISO + popup pagamento realtime.
+
+Manager:
+- `packages/admin/src/pages/manager/ManagerReports.tsx` — report + pagamento/fatturazione Zoho.
+- `packages/admin/src/pages/manager/ManagerDriverPayouts.tsx` — report driver-centric + **segna pagato**.
+- Rotta `/manager-reports` in `packages/admin/src/App.tsx`.
+
+Shared / i18n / edge:
+- `packages/shared/src/types/database.types.ts` — tipi rigenerati (`source` + nuove RPC).
+- `packages/admin/src/i18n/locales/{en,th}/driver.json` — chiavi payout.
+- `packages/admin/src/i18n/locales/{en,th}/manager.json` — **nuovo**.
+- `supabase/functions/send-driver-payout-confirmation/index.ts` — email creazione/modifica (deployata, live).
+- `supabase/functions/send-driver-cancellation/index.ts` — **email cancellazione** (driver TH + office EN, payload-driven). Trigger collegato in `DriverPayoutForm.handleDelete`. ⏳ da **deployare** (`supabase functions deploy send-driver-cancellation`) + test.
+- `supabase/functions/render-report/index.ts` — **nuova**, PDF report A5 (Cloud Run/WeasyPrint).
+- `supabase/functions/zoho-create-driver-expense/index.ts` — **nuova**, spesa driver su Zoho Books.
+
+---
+
+## ⚠️ Working tree (stato git al 2026-06-12)
+Committati sul branch `feature/driver-payout-bypass`: migrazione/supporto + prima ondata (DriverHome, DriverPayoutForm, types, edge email) + sistema report (commit `b67c2c3`…`8ad8d9e`).
+**Non ancora committati**: pagine manager (`ManagerReports`, `ManagerDriverPayouts`), `DriverPayoutDashboard`, i18n `driver.json`/`manager.json`, hook manager. Committare **solo i path della feature** (restano fuori ~230 file di rumore pre-esistente + modifiche front non correlate come `ContentRenderer.tsx`, `MenuManager.tsx`).

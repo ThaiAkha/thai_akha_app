@@ -4,19 +4,25 @@
 // RLS: manager passa is_admin() (admin+manager) -> legge tutti i driver_payments.
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Heading, Paragraph } from '../../components/typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/button/Button';
 import SelectField from '../../components/form/input/SelectField';
-import { Printer, Download } from 'lucide-react';
+import { Printer, Download, Trash2 } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DriverOpt {
   id: string;
   full_name: string;
+  email: string | null;
   zoho_contact_id: string | null;
 }
+
+// BYPASS-PAYOUT — total_stops numerico -> range per l'email di cancellazione
+const stopsToRange = (n: number): string =>
+  n <= 2 ? '1-2' : n <= 4 ? '3-4' : n <= 6 ? '5-6' : '7plus';
 interface PayoutRow {
   run_date: string;
   session_id: string;
@@ -39,8 +45,6 @@ interface WeekGroup {
   fullyPaid: boolean;
 }
 
-const SESSION_LABEL: Record<string, string> = { morning_class: 'Morning', evening_class: 'Evening' };
-
 function mondayOf(d: Date): Date {
   const day = (d.getDay() + 6) % 7;
   const m = new Date(d);
@@ -52,11 +56,15 @@ const isoDate = (d: Date) => {
   const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
   return z.toISOString().split('T')[0];
 };
-const fmtDay = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short' });
-const fmtRange = (a: Date, b: Date) =>
-  `${a.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })} – ${b.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+const getLocale = (lang: string) => (lang === 'th' ? 'th-TH' : 'en-GB');
+const fmtDay = (s: string, lang = 'en') => new Date(s + 'T00:00:00').toLocaleDateString(getLocale(lang), { weekday: 'short', day: '2-digit', month: 'short' });
+const fmtRange = (a: Date, b: Date, lang = 'en') => {
+  const locale = getLocale(lang);
+  return `${a.toLocaleDateString(locale, { day: '2-digit', month: 'short' })} – ${b.toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' })}`;
+};
 
 const ManagerDriverPayouts: React.FC = () => {
+  const { t, i18n } = useTranslation('manager');
   const [drivers, setDrivers] = useState<DriverOpt[] | null>(null);
   const [selected, setSelected] = useState<string>('');
   const [rows, setRows] = useState<PayoutRow[] | null>(null);
@@ -64,13 +72,15 @@ const ManagerDriverPayouts: React.FC = () => {
   const [busyWeek, setBusyWeek] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
   const [reportBusy, setReportBusy] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [deletingRow, setDeletingRow] = useState<string | null>(null);
   const [weekResult, setWeekResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
 
   // Lista driver
   useEffect(() => {
     supabase
       .from('profiles')
-      .select('id, full_name, zoho_contact_id')
+      .select('id, full_name, email, zoho_contact_id')
       .eq('role', 'driver')
       .order('full_name')
       .then(({ data, error: e }) => {
@@ -91,7 +101,7 @@ const ManagerDriverPayouts: React.FC = () => {
       .eq('driver_id', driverId)
       .order('run_date', { ascending: false });
     if (e) { setError(e.message); return; }
-    setRows((data as PayoutRow[]) ?? []);
+    setRows((data as unknown as PayoutRow[]) ?? []);
   }, []);
 
   useEffect(() => {
@@ -126,7 +136,7 @@ const ManagerDriverPayouts: React.FC = () => {
   const handlePay = async (w: WeekGroup, mode: 'mark+bill' | 'bill-only') => {
     if (!selectedDriver || busyWeek) return;
     setBusyWeek(w.key);
-    setWeekResult((p) => ({ ...p, [w.key]: { ok: true, msg: 'Elaboro…' } }));
+    setWeekResult((p) => ({ ...p, [w.key]: { ok: true, msg: t('driverPayouts.processing') } }));
     try {
       if (mode === 'mark+bill') {
         const { error: markErr } = await supabase.rpc('mark_driver_week_paid', {
@@ -154,17 +164,17 @@ const ManagerDriverPayouts: React.FC = () => {
         throw new Error(detail);
       }
       const res = data as { success: boolean; skipped?: boolean; zoho_expense_id?: string; message?: string };
-      if (!res.success) throw new Error(res.message ?? 'Errore Zoho');
+      if (!res.success) throw new Error(res.message ?? t('driverPayouts.errorGeneric'));
 
       const msg = res.skipped
-        ? 'Già registrata in Zoho.'
-        : `Expense Zoho creata (${res.zoho_expense_id}).`;
+        ? t('driverPayouts.alreadyInZoho')
+        : t('driverPayouts.zohoExpenseCreated', { id: res.zoho_expense_id });
       setWeekResult((p) => ({ ...p, [w.key]: { ok: true, msg } }));
       await fetchRows(selectedDriver.id);
     } catch (err: unknown) {
       setWeekResult((p) => ({
         ...p,
-        [w.key]: { ok: false, msg: err instanceof Error ? err.message : 'Errore' },
+        [w.key]: { ok: false, msg: err instanceof Error ? err.message : t('driverPayouts.errorGeneric') },
       }));
     } finally {
       setBusyWeek(null);
@@ -202,9 +212,45 @@ const ManagerDriverPayouts: React.FC = () => {
         setTimeout(() => { iframe.remove(); URL.revokeObjectURL(url); }, 60000);
       }
     } catch (err: unknown) {
-      setWeekResult((p) => ({ ...p, [w.key]: { ok: false, msg: err instanceof Error ? err.message : 'Errore report' } }));
+      setWeekResult((p) => ({ ...p, [w.key]: { ok: false, msg: err instanceof Error ? err.message : t('driverPayouts.errorReport') } }));
     } finally {
       setReportBusy(null);
+    }
+  };
+
+  // BYPASS-PAYOUT — elimina UN servizio (admin_delete_payout) + email cancellazione (driver TH + office EN)
+  const handleDeleteRow = async (w: WeekGroup, r: PayoutRow) => {
+    if (!selectedDriver) return;
+    const rowKey = `${r.run_date}-${r.session_id}`;
+    setDeletingRow(rowKey);
+    try {
+      const { error: delErr } = await supabase.rpc('admin_delete_payout', {
+        p_driver_id: selectedDriver.id,
+        p_run_date: r.run_date,
+        p_session_id: r.session_id,
+      });
+      if (delErr) throw delErr;
+
+      // Email cancellazione — non blocca il successo (degradazione graziosa).
+      try {
+        await supabase.functions.invoke('send-driver-cancellation', {
+          body: {
+            driver_name: selectedDriver.full_name,
+            email: selectedDriver.email,
+            run_date: r.run_date,
+            session_id: r.session_id,
+            stops_range: stopsToRange(r.total_stops),
+            reason: null,
+          },
+        });
+      } catch { /* degradazione graziosa */ }
+
+      setWeekResult((p) => ({ ...p, [w.key]: { ok: true, msg: t('driverPayouts.serviceDeleted') } }));
+      await fetchRows(selectedDriver.id);
+    } catch (err: unknown) {
+      setWeekResult((p) => ({ ...p, [w.key]: { ok: false, msg: err instanceof Error ? err.message : t('driverPayouts.errorGeneric') } }));
+    } finally {
+      setDeletingRow(null);
     }
   };
 
@@ -214,21 +260,21 @@ const ManagerDriverPayouts: React.FC = () => {
   const reportButtons = (w: WeekGroup) => (
     <div className="flex gap-2">
       <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'print')} className={reportBtnClass}>
-        <Printer className="size-4" /> {reportBusy === w.key ? 'Genero…' : 'Stampa report'}
+        <Printer className="size-4" /> {reportBusy === w.key ? t('driverPayouts.generating') : t('driverPayouts.printReport')}
       </button>
       <button type="button" disabled={reportBusy === w.key} onClick={() => handleReport(w, 'download')} className={reportBtnClass}>
-        <Download className="size-4" /> Scarica PDF
+        <Download className="size-4" /> {t('driverPayouts.downloadPdf')}
       </button>
     </div>
   );
 
-  if (error) return <Paragraph size="sm" className="text-red-600 dark:text-red-400">Errore: {error}</Paragraph>;
+  if (error) return <Paragraph size="sm" className="text-red-600 dark:text-red-400">{t('driverPayouts.errorPrefix')} {error}</Paragraph>;
 
   return (
     <div className="flex flex-col [gap:var(--space-fluid-m,1.5rem)] w-full max-w-[680px]">
       {/* Selettore driver */}
       <div className="w-full max-w-[280px]">
-        <SelectField label="Driver" value={selected} onChange={(e) => setSelected(e.target.value)}>
+        <SelectField label={t('driverPayouts.driverLabel')} value={selected} onChange={(e) => setSelected(e.target.value)}>
           {(drivers ?? []).map((d) => (
             <option key={d.id} value={d.id}>{d.full_name}</option>
           ))}
@@ -237,14 +283,14 @@ const ManagerDriverPayouts: React.FC = () => {
 
       {selectedDriver && !selectedDriver.zoho_contact_id && (
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 [padding:var(--space-fluid-s,1rem)]">
-          <Paragraph size="sm" className="text-amber-700 dark:text-amber-400 font-bold">⚠ Vendor Zoho non collegato</Paragraph>
-          <Paragraph size="xs" color="muted">Si può segnare pagato, ma la fattura Zoho fallirà finché manca <code>zoho_contact_id</code>.</Paragraph>
+          <Paragraph size="sm" className="text-amber-700 dark:text-amber-400 font-bold">⚠ {t('driverPayouts.zohoWarningTitle')}</Paragraph>
+          <Paragraph size="xs" color="muted">{t('driverPayouts.zohoWarningMsg')}</Paragraph>
         </div>
       )}
 
-      {rows === null && <Paragraph size="sm" color="muted">Caricamento…</Paragraph>}
+      {rows === null && <Paragraph size="sm" color="muted">{t('driverPayouts.loading')}</Paragraph>}
       {rows && weeks.length === 0 && (
-        <Card size="lg"><Paragraph size="sm" color="muted">Nessun servizio per questo driver.</Paragraph></Card>
+        <Card size="lg"><Paragraph size="sm" color="muted">{t('driverPayouts.noServices')}</Paragraph></Card>
       )}
 
       {weeks.map((w) => {
@@ -253,12 +299,12 @@ const ManagerDriverPayouts: React.FC = () => {
           <Card key={w.key} size="lg">
             <div className="flex items-start justify-between gap-4 mb-[var(--space-fluid-s,1rem)]">
               <div>
-                <Heading level="h4">{fmtRange(w.start, w.end)}</Heading>
+                <Heading level="h4">{fmtRange(w.start, w.end, i18n.language)}</Heading>
                 <span className={cn(
                   'text-[10px] font-black uppercase tracking-widest',
                   w.fullyPaid ? 'text-green-600 dark:text-green-400' : 'text-amber-600'
                 )}>
-                  {w.fullyPaid ? (w.zohoId ? 'Pagata · Fatturata' : 'Pagata · da fatturare') : 'Pending'}
+                  {w.fullyPaid ? (w.zohoId ? t('driverPayouts.statusPaidBilled') : t('driverPayouts.statusPaidUnbilled')) : t('driverPayouts.statusPending')}
                 </span>
               </div>
               <span className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -270,51 +316,100 @@ const ManagerDriverPayouts: React.FC = () => {
             <div className="flex justify-end mb-[var(--space-fluid-2xs,0.5rem)]">{reportButtons(w)}</div>
 
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
-              {w.rows.map((r) => (
-                <div key={`${r.run_date}-${r.session_id}`} className="flex items-center justify-between gap-3 py-2">
-                  <span className="text-sm text-gray-700 dark:text-gray-200 capitalize">
-                    {fmtDay(r.run_date)} · {SESSION_LABEL[r.session_id] ?? r.session_id} · {r.total_stops} stop · {r.total_pax} pax
-                  </span>
-                  <span className="text-sm font-bold text-gray-900 dark:text-white shrink-0">{r.payout_amount} ฿</span>
-                </div>
-              ))}
+              {w.rows.map((r) => {
+                const rowKey = `${r.run_date}-${r.session_id}`;
+                const canDelete = r.status !== 'paid' && !w.zohoId;
+                return (
+                  <div key={rowKey} className="py-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-sm text-gray-700 dark:text-gray-200 capitalize">
+                        {fmtDay(r.run_date, i18n.language)} · {r.session_id === 'morning_class' ? t('driverPayouts.morningSession') : t('driverPayouts.eveningSession')} · {r.total_stops} stop · {r.total_pax} pax
+                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{r.payout_amount} ฿</span>
+                        {canDelete && (
+                          <button
+                            type="button"
+                            aria-label={t('driverPayouts.deleteService')}
+                            title={t('driverPayouts.deleteService')}
+                            disabled={deletingRow === rowKey}
+                            onClick={() => setConfirmDelete(rowKey)}
+                            className="p-1 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Conferma inline cancellazione riga */}
+                    {confirmDelete === rowKey && (
+                      <div className="mt-2 rounded-lg border border-red-500/30 bg-red-500/5 [padding:var(--space-fluid-2xs,0.5rem)]">
+                        <Paragraph size="xs" className="font-bold text-gray-900 dark:text-white">
+                          {t('driverPayouts.confirmDeleteTitle')}
+                        </Paragraph>
+                        <Paragraph size="xs" color="muted">
+                          {t('driverPayouts.confirmDeleteMsg', { date: fmtDay(r.run_date, i18n.language) })}
+                        </Paragraph>
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            type="button"
+                            disabled={deletingRow === rowKey}
+                            onClick={() => { setConfirmDelete(null); handleDeleteRow(w, r); }}
+                            className="h-8 px-3 rounded-lg text-xs font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                          >
+                            {t('driverPayouts.deleteConfirm')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDelete(null)}
+                            className="h-8 px-3 rounded-lg text-xs font-bold border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300"
+                          >
+                            {t('driverPayouts.deleteCancel')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Azione settimana */}
             <div className="mt-[var(--space-fluid-s,1rem)] pt-3 border-t border-gray-200 dark:border-gray-700">
               {w.zohoId ? (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-green-700 dark:text-green-400">Fatturata · {w.zohoId}</span>
-                  <span className="text-xs text-gray-400">nessuna azione</span>
+                  <span className="text-sm font-bold text-green-700 dark:text-green-400">{t('driverPayouts.billedLabel', { zohoId: w.zohoId })}</span>
+                  <span className="text-xs text-gray-400">{t('driverPayouts.noAction')}</span>
                 </div>
               ) : confirming === w.key ? (
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 [padding:var(--space-fluid-s,1rem)]">
                   <Paragraph size="sm" className="font-bold text-gray-900 dark:text-white">
-                    {w.fullyPaid ? 'Generare la fattura Zoho?' : 'Sei sicuro del pagamento?'}
+                    {w.fullyPaid ? t('driverPayouts.confirmBillTitle') : t('driverPayouts.confirmPayTitle')}
                   </Paragraph>
                   <Paragraph size="xs" color="muted">
                     {w.fullyPaid
-                      ? `Crea l'Expense in Zoho per ${w.total} Baht.`
-                      : `Le righe passano a "pagato" e viene generata automaticamente la fattura Zoho (${w.total} Baht).`}
+                      ? t('driverPayouts.confirmBillMsg', { amount: w.total })
+                      : t('driverPayouts.confirmPayMsg', { amount: w.total })}
                   </Paragraph>
                   <div className="flex gap-2 mt-3">
                     <Button type="button" className="flex-1" isLoading={busyWeek === w.key}
                             onClick={() => { setConfirming(null); handlePay(w, w.fullyPaid ? 'bill-only' : 'mark+bill'); }}>
-                      Conferma
+                      {t('driverPayouts.confirm')}
                     </Button>
                     <Button type="button" variant="outline" className="flex-1" disabled={busyWeek === w.key}
                             onClick={() => setConfirming(null)}>
-                      Annulla
+                      {t('driverPayouts.cancel')}
                     </Button>
                   </div>
                 </div>
               ) : w.fullyPaid ? (
                 <Button type="button" variant="outline" className="w-full" onClick={() => setConfirming(w.key)}>
-                  Ripeti fattura Zoho
+                  {t('driverPayouts.rebillZoho')}
                 </Button>
               ) : (
                 <Button type="button" className="w-full" onClick={() => setConfirming(w.key)}>
-                  Segna pagato & fattura Zoho
+                  {t('driverPayouts.markPaidAndBill')}
                 </Button>
               )}
 

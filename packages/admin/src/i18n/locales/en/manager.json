@@ -1,0 +1,42 @@
+{
+  "reports": {
+    "driverPayoutTitle": "Driver Payout Report"
+  },
+  "driverPayouts": {
+    "driverLabel": "Driver",
+    "loading": "Loading...",
+    "noServices": "No services for this driver.",
+    "zohoWarningTitle": "Zoho vendor not linked",
+    "zohoWarningMsg": "Payment can be marked, but the Zoho invoice will fail until zoho_contact_id is set.",
+    "printReport": "Print report",
+    "generating": "Generating...",
+    "downloadPdf": "Download PDF",
+    "statusPaidBilled": "Paid · Billed",
+    "statusPaidUnbilled": "Paid · to bill",
+    "statusPending": "Pending",
+    "noAction": "no action",
+    "billedLabel": "Billed · {{zohoId}}",
+    "confirmBillTitle": "Generate the Zoho invoice?",
+    "confirmPayTitle": "Confirm payment?",
+    "confirmBillMsg": "Creates the Expense in Zoho for {{amount}} Baht.",
+    "confirmPayMsg": "Rows will be marked as paid and the Zoho invoice will be generated automatically ({{amount}} Baht).",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "rebillZoho": "Re-bill Zoho",
+    "markPaidAndBill": "Mark paid & bill Zoho",
+    "processing": "Processing...",
+    "alreadyInZoho": "Already registered in Zoho.",
+    "zohoExpenseCreated": "Zoho Expense created ({{id}}).",
+    "errorGeneric": "Error",
+    "errorReport": "Report error",
+    "errorPrefix": "Error:",
+    "morningSession": "Morning",
+    "eveningSession": "Evening",
+    "deleteService": "Delete service",
+    "confirmDeleteTitle": "Delete this service?",
+    "confirmDeleteMsg": "The service on {{date}} will be removed. The driver and office are notified by email.",
+    "deleteConfirm": "Delete",
+    "deleteCancel": "Cancel",
+    "serviceDeleted": "Service deleted."
+  }
+}

@@ -129,3 +129,31 @@ BEGIN
 END;
 $$;
 GRANT EXECUTE ON FUNCTION public.mark_driver_week_paid TO authenticated;
+
+-- Admin/manager elimina UN servizio di un driver (solo pending, settimana non chiusa).
+CREATE OR REPLACE FUNCTION public.admin_delete_payout(
+  p_driver_id uuid, p_run_date date, p_session_id text
+)
+RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
+AS $$
+DECLARE v_status text;
+BEGIN
+  IF NOT is_admin() THEN RAISE EXCEPTION 'Solo admin/manager puo eliminare un servizio'; END IF;
+  SELECT dp.status INTO v_status FROM driver_payments dp
+   WHERE dp.driver_id=p_driver_id AND dp.run_date=p_run_date AND dp.session_id=p_session_id;
+  IF v_status IS NULL THEN RAISE EXCEPTION 'Nessun servizio da eliminare'; END IF;
+  IF v_status = 'paid' THEN RAISE EXCEPTION 'Servizio gia pagato: non eliminabile'; END IF;
+  IF EXISTS (
+    SELECT 1 FROM driver_payments dp
+     WHERE dp.driver_id=p_driver_id AND dp.status='paid'
+       AND dp.run_date >= date_trunc('week', p_run_date)::date
+       AND dp.run_date <  date_trunc('week', p_run_date)::date + 7
+  ) THEN
+    RAISE EXCEPTION 'Settimana gia pagata e chiusa: impossibile eliminare';
+  END IF;
+  DELETE FROM driver_payments dp
+   WHERE dp.driver_id=p_driver_id AND dp.run_date=p_run_date AND dp.session_id=p_session_id;
+END;
+$$;
+GRANT EXECUTE ON FUNCTION public.admin_delete_payout TO authenticated;

@@ -1,0 +1,42 @@
+{
+  "reports": {
+    "driverPayoutTitle": "รายงานการจ่ายเงินไดรเวอร์"
+  },
+  "driverPayouts": {
+    "driverLabel": "ไดรเวอร์",
+    "loading": "กำลังโหลด...",
+    "noServices": "ไม่มีบริการสำหรับไดรเวอร์คนนี้",
+    "zohoWarningTitle": "ไม่ได้เชื่อมต่อ Zoho vendor",
+    "zohoWarningMsg": "สามารถบันทึกการชำระเงินได้ แต่ใบแจ้งหนี้ Zoho จะล้มเหลวหาก zoho_contact_id ยังไม่ได้ตั้งค่า",
+    "printReport": "พิมพ์รายงาน",
+    "generating": "กำลังสร้าง...",
+    "downloadPdf": "ดาวน์โหลด PDF",
+    "statusPaidBilled": "จ่ายแล้ว · ออกใบแจ้งหนี้แล้ว",
+    "statusPaidUnbilled": "จ่ายแล้ว · รอออกใบแจ้งหนี้",
+    "statusPending": "รอดำเนินการ",
+    "noAction": "ไม่มีการดำเนินการ",
+    "billedLabel": "ออกใบแจ้งหนี้แล้ว · {{zohoId}}",
+    "confirmBillTitle": "สร้างใบแจ้งหนี้ Zoho?",
+    "confirmPayTitle": "ยืนยันการชำระเงิน?",
+    "confirmBillMsg": "สร้าง Expense ใน Zoho สำหรับ {{amount}} บาท",
+    "confirmPayMsg": "รายการจะถูกทำเครื่องหมายว่าชำระแล้ว และใบแจ้งหนี้ Zoho จะถูกสร้างโดยอัตโนมัติ ({{amount}} บาท)",
+    "confirm": "ยืนยัน",
+    "cancel": "ยกเลิก",
+    "rebillZoho": "ออกใบแจ้งหนี้ Zoho อีกครั้ง",
+    "markPaidAndBill": "ทำเครื่องหมายชำระแล้ว & ออกใบแจ้งหนี้ Zoho",
+    "processing": "กำลังดำเนินการ...",
+    "alreadyInZoho": "บันทึกใน Zoho แล้ว",
+    "zohoExpenseCreated": "สร้าง Zoho Expense แล้ว ({{id}})",
+    "errorGeneric": "ข้อผิดพลาด",
+    "errorReport": "ข้อผิดพลาดในรายงาน",
+    "errorPrefix": "ข้อผิดพลาด:",
+    "morningSession": "เช้า",
+    "eveningSession": "เย็น",
+    "deleteService": "ลบบริการ",
+    "confirmDeleteTitle": "ลบบริการนี้?",
+    "confirmDeleteMsg": "บริการวันที่ {{date}} จะถูกลบ ไดรเวอร์และออฟฟิศจะได้รับแจ้งทางอีเมล",
+    "deleteConfirm": "ลบ",
+    "deleteCancel": "ยกเลิก",
+    "serviceDeleted": "ลบบริการแล้ว"
+  }
+}

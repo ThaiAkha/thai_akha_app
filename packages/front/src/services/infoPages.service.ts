@@ -20,11 +20,12 @@ import type {
 } from '@thaiakha/shared';
 
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
-// Categorie universali + domande della libreria centrale. Filtro per pubblico:
-// audience @> {front} + category_id valorizzato (le FAQ entity/page senza
-// categoria non appartengono all'accordion hub). entity_type NON è più il
-// discriminante (libera il Gate 4). Ordinate per category.display_order poi
-// question.display_order. Forma = FaqCategoryUI[].
+// Categorie universali + domande della LIBRERIA CONDIVISA (entity_type IS NULL):
+// le page-specific (entity_type='page') vivono SOLO sulle loro pagine via
+// faq_refs e NON entrano nell'accordion hub (duplicerebbero le condivise).
+// Selettore hub = entity_type IS NULL AND audience @> {ROLE}: future-proof per
+// l'hub agency cambiando solo il ruolo. Ordinate per category.display_order
+// poi question.display_order. Forma = FaqCategoryUI[].
 // links: la colonna DB è stata unificata dentro cta.links → la forma UI
 // (FAQItem.links) resta identica per i renderer (FAQRichAnswer/FAQPage).
 export async function getFaqData(): Promise<FaqCategoryUI[]> {
@@ -38,8 +39,8 @@ export async function getFaqData(): Promise<FaqCategoryUI[]> {
       .from('faq_questions')
       .select('category_id, question, answer, cta, display_order')
       .eq('is_active', true)
+      .is('entity_type', null)
       .contains('audience', ['front'])
-      .not('category_id', 'is', null)
       .order('display_order', { ascending: true }),
   ]);
 

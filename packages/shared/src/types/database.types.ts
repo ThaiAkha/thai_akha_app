@@ -1,6 +1,3 @@
-// AUTO-GENERATED from Supabase (project mtqullobcsypkqgdkaob) — DO NOT EDIT BY HAND.
-// Regenerate via Supabase MCP generate_typescript_types. Single source of truth for DB types.
-
 export type Json =
   | string
   | number
@@ -15,8 +12,96 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
+      agency_invoices: {
+        Row: {
+          agency_id: string
+          amount: number
+          booking_ids: Json
+          confirmed_by: string | null
+          created_at: string
+          declared_at: string | null
+          id: string
+          paid_at: string | null
+          payment_proof_url: string | null
+          status: string
+          updated_at: string
+          zoho_invoice_id: string | null
+          zoho_invoice_number: string | null
+        }
+        Insert: {
+          agency_id: string
+          amount?: number
+          booking_ids?: Json
+          confirmed_by?: string | null
+          created_at?: string
+          declared_at?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_proof_url?: string | null
+          status?: string
+          updated_at?: string
+          zoho_invoice_id?: string | null
+          zoho_invoice_number?: string | null
+        }
+        Update: {
+          agency_id?: string
+          amount?: number
+          booking_ids?: Json
+          confirmed_by?: string | null
+          created_at?: string
+          declared_at?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_proof_url?: string | null
+          status?: string
+          updated_at?: string
+          zoho_invoice_id?: string | null
+          zoho_invoice_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_invoices_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agency_invoices_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       akha_news: {
         Row: {
           access_level: string | null
@@ -189,6 +274,60 @@ export type Database = {
           },
         ]
       }
+      app_manuals: {
+        Row: {
+          body: string
+          created_at: string
+          icon: string | null
+          id: string
+          images: Json
+          is_active: boolean
+          lang: string
+          role: string | null
+          section_order: number
+          slug: string
+          source_manual: string | null
+          source_path: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          images?: Json
+          is_active?: boolean
+          lang?: string
+          role?: string | null
+          section_order?: number
+          slug: string
+          source_manual?: string | null
+          source_path?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          images?: Json
+          is_active?: boolean
+          lang?: string
+          role?: string | null
+          section_order?: number
+          slug?: string
+          source_manual?: string | null
+          source_path?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       audio_assets: {
         Row: {
           asset_id: string
@@ -248,51 +387,66 @@ export type Database = {
       }
       authors: {
         Row: {
+          app_role: string | null
           avatar_asset_id: string | null
-          avatar_url: string | null
           created_at: string | null
           description: string | null
+          display_order: number | null
           expertise_tags: string[] | null
           id: string
+          is_active: boolean | null
           is_ai_agent: boolean | null
           is_organization: boolean | null
           json_ld: Json
           metadata: Json | null
           name: string
+          salary_thb: number | null
           same_as: string[] | null
           slug: string
+          staff_group: string | null
+          terminated_at: string | null
           title: string | null
         }
         Insert: {
+          app_role?: string | null
           avatar_asset_id?: string | null
-          avatar_url?: string | null
           created_at?: string | null
           description?: string | null
+          display_order?: number | null
           expertise_tags?: string[] | null
           id?: string
+          is_active?: boolean | null
           is_ai_agent?: boolean | null
           is_organization?: boolean | null
           json_ld?: Json
           metadata?: Json | null
           name: string
+          salary_thb?: number | null
           same_as?: string[] | null
           slug: string
+          staff_group?: string | null
+          terminated_at?: string | null
           title?: string | null
         }
         Update: {
+          app_role?: string | null
           avatar_asset_id?: string | null
-          avatar_url?: string | null
           created_at?: string | null
           description?: string | null
+          display_order?: number | null
           expertise_tags?: string[] | null
           id?: string
+          is_active?: boolean | null
           is_ai_agent?: boolean | null
           is_organization?: boolean | null
           json_ld?: Json
           metadata?: Json | null
           name?: string
+          salary_thb?: number | null
           same_as?: string[] | null
           slug?: string
+          staff_group?: string | null
+          terminated_at?: string | null
           title?: string | null
         }
         Relationships: [
@@ -370,6 +524,7 @@ export type Database = {
           hotel_name: string | null
           internal_id: string
           is_split_child: boolean | null
+          kitchen_id: string | null
           meeting_point: string | null
           parent_booking_id: string | null
           pax_count: number | null
@@ -383,6 +538,8 @@ export type Database = {
           pickup_sequence: number | null
           pickup_time: string | null
           pickup_zone: string | null
+          pos_saved_at: string | null
+          pos_tender: string | null
           requires_dropoff: boolean | null
           reservation_id_agency: string | null
           route_order: number | null
@@ -422,6 +579,7 @@ export type Database = {
           hotel_name?: string | null
           internal_id?: string
           is_split_child?: boolean | null
+          kitchen_id?: string | null
           meeting_point?: string | null
           parent_booking_id?: string | null
           pax_count?: number | null
@@ -435,6 +593,8 @@ export type Database = {
           pickup_sequence?: number | null
           pickup_time?: string | null
           pickup_zone?: string | null
+          pos_saved_at?: string | null
+          pos_tender?: string | null
           requires_dropoff?: boolean | null
           reservation_id_agency?: string | null
           route_order?: number | null
@@ -474,6 +634,7 @@ export type Database = {
           hotel_name?: string | null
           internal_id?: string
           is_split_child?: boolean | null
+          kitchen_id?: string | null
           meeting_point?: string | null
           parent_booking_id?: string | null
           pax_count?: number | null
@@ -487,6 +648,8 @@ export type Database = {
           pickup_sequence?: number | null
           pickup_time?: string | null
           pickup_zone?: string | null
+          pos_saved_at?: string | null
+          pos_tender?: string | null
           requires_dropoff?: boolean | null
           reservation_id_agency?: string | null
           route_order?: number | null
@@ -512,6 +675,13 @@ export type Database = {
           {
             foreignKeyName: "bookings_guest_user_id_fkey"
             columns: ["guest_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_kitchen_id_fkey"
+            columns: ["kitchen_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -554,6 +724,7 @@ export type Database = {
           aggregate_rating: Json | null
           area_served: Json | null
           business_type: string | null
+          contact_channels: Json
           created_at: string
           email: string | null
           founding_date: string | null
@@ -561,6 +732,7 @@ export type Database = {
           has_map: string | null
           id: string
           latitude: number | null
+          legal_name: string | null
           longitude: number | null
           name: string
           opening_hours: Json | null
@@ -570,6 +742,7 @@ export type Database = {
           service_radius: number | null
           service_type: string[] | null
           street_address: string | null
+          tax_id: string | null
           telephone: string | null
           timezone: string | null
           updated_at: string
@@ -581,6 +754,7 @@ export type Database = {
           aggregate_rating?: Json | null
           area_served?: Json | null
           business_type?: string | null
+          contact_channels?: Json
           created_at?: string
           email?: string | null
           founding_date?: string | null
@@ -588,6 +762,7 @@ export type Database = {
           has_map?: string | null
           id?: string
           latitude?: number | null
+          legal_name?: string | null
           longitude?: number | null
           name: string
           opening_hours?: Json | null
@@ -597,6 +772,7 @@ export type Database = {
           service_radius?: number | null
           service_type?: string[] | null
           street_address?: string | null
+          tax_id?: string | null
           telephone?: string | null
           timezone?: string | null
           updated_at?: string
@@ -608,6 +784,7 @@ export type Database = {
           aggregate_rating?: Json | null
           area_served?: Json | null
           business_type?: string | null
+          contact_channels?: Json
           created_at?: string
           email?: string | null
           founding_date?: string | null
@@ -615,6 +792,7 @@ export type Database = {
           has_map?: string | null
           id?: string
           latitude?: number | null
+          legal_name?: string | null
           longitude?: number | null
           name?: string
           opening_hours?: Json | null
@@ -624,6 +802,7 @@ export type Database = {
           service_radius?: number | null
           service_type?: string[] | null
           street_address?: string | null
+          tax_id?: string | null
           telephone?: string | null
           timezone?: string | null
           updated_at?: string
@@ -897,6 +1076,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          handled_at: string | null
+          id: string
+          message: string
+          name: string
+          source: string
+          status: string
+          topic: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          handled_at?: string | null
+          id?: string
+          message: string
+          name: string
+          source?: string
+          status?: string
+          topic?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          handled_at?: string | null
+          id?: string
+          message?: string
+          name?: string
+          source?: string
+          status?: string
+          topic?: string
+        }
+        Relationships: []
+      }
       content_categories: {
         Row: {
           audio_story_url: string | null
@@ -1075,13 +1290,13 @@ export type Database = {
           cherry_button_ids: string[] | null
           cherry_prompt: string | null
           cherry_response: string | null
+          cover_asset_id: string | null
           created_at: string | null
           currency: string | null
           description: string | null
           duration_text: string | null
           highlights: string[] | null
           id: string
-          image_url: string | null
           inclusions: string[] | null
           is_active: boolean | null
           key_entities: Json | null
@@ -1101,13 +1316,13 @@ export type Database = {
           cherry_button_ids?: string[] | null
           cherry_prompt?: string | null
           cherry_response?: string | null
+          cover_asset_id?: string | null
           created_at?: string | null
           currency?: string | null
           description?: string | null
           duration_text?: string | null
           highlights?: string[] | null
           id: string
-          image_url?: string | null
           inclusions?: string[] | null
           is_active?: boolean | null
           key_entities?: Json | null
@@ -1127,13 +1342,13 @@ export type Database = {
           cherry_button_ids?: string[] | null
           cherry_prompt?: string | null
           cherry_response?: string | null
+          cover_asset_id?: string | null
           created_at?: string | null
           currency?: string | null
           description?: string | null
           duration_text?: string | null
           highlights?: string[] | null
           id?: string
-          image_url?: string | null
           inclusions?: string[] | null
           is_active?: boolean | null
           key_entities?: Json | null
@@ -1147,7 +1362,15 @@ export type Database = {
           title?: string
           unit?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_cooking_classes_cover"
+            columns: ["cover_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+        ]
       }
       culture_sections: {
         Row: {
@@ -1323,7 +1546,7 @@ export type Database = {
           icon: string | null
           icon_name: string | null
           id: string
-          image_url: string | null
+          image_asset_id: string | null
           introduction: string | null
           name: string
           slug: string
@@ -1336,7 +1559,7 @@ export type Database = {
           icon?: string | null
           icon_name?: string | null
           id: string
-          image_url?: string | null
+          image_asset_id?: string | null
           introduction?: string | null
           name: string
           slug: string
@@ -1349,13 +1572,21 @@ export type Database = {
           icon?: string | null
           icon_name?: string | null
           id?: string
-          image_url?: string | null
+          image_asset_id?: string | null
           introduction?: string | null
           name?: string
           slug?: string
           type?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_dietary_profiles_image"
+            columns: ["image_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+        ]
       }
       dietary_substitutions: {
         Row: {
@@ -1430,6 +1661,8 @@ export type Database = {
           total_pax: number
           total_stops: number
           updated_at: string | null
+          zoho_expense_id: string | null
+          zoho_synced_at: string | null
         }
         Insert: {
           created_at?: string | null
@@ -1444,6 +1677,8 @@ export type Database = {
           total_pax: number
           total_stops: number
           updated_at?: string | null
+          zoho_expense_id?: string | null
+          zoho_synced_at?: string | null
         }
         Update: {
           created_at?: string | null
@@ -1458,6 +1693,8 @@ export type Database = {
           total_pax?: number
           total_stops?: number
           updated_at?: string | null
+          zoho_expense_id?: string | null
+          zoho_synced_at?: string | null
         }
         Relationships: [
           {
@@ -1496,6 +1733,265 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_categories: {
+        Row: {
+          audience: string[]
+          avatar_asset_id: string | null
+          category_key: string
+          created_at: string
+          display_order: number
+          id: string
+          image_asset_id: string | null
+          is_active: boolean
+          section_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string[]
+          avatar_asset_id?: string | null
+          category_key: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_asset_id?: string | null
+          is_active?: boolean
+          section_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string[]
+          avatar_asset_id?: string | null
+          category_key?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_asset_id?: string | null
+          is_active?: boolean
+          section_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_categories_avatar_asset_fk"
+            columns: ["avatar_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "faq_categories_image_asset_fk"
+            columns: ["image_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+        ]
+      }
+      faq_categories_translations: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          lang: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          lang: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          lang?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_categories_translations_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "faq_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      faq_questions: {
+        Row: {
+          answer: string
+          audience: string[]
+          avatar_asset_id: string | null
+          category_id: string | null
+          created_at: string
+          cta: Json | null
+          display_order: number
+          entity_slug: string | null
+          entity_type: string | null
+          faq_key: string | null
+          faq_style: string
+          id: string
+          is_active: boolean
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          audience?: string[]
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string
+          cta?: Json | null
+          display_order?: number
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string
+          id?: string
+          is_active?: boolean
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          audience?: string[]
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string
+          cta?: Json | null
+          display_order?: number
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string
+          id?: string
+          is_active?: boolean
+          question?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_questions_avatar_asset_fk"
+            columns: ["avatar_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "faq_questions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "faq_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      faq_questions_bak_20260703: {
+        Row: {
+          answer: string | null
+          avatar_asset_id: string | null
+          category_id: string | null
+          created_at: string | null
+          cta: Json | null
+          display_order: number | null
+          entity_slug: string | null
+          entity_type: string | null
+          faq_key: string | null
+          id: string | null
+          is_active: boolean | null
+          is_global: boolean | null
+          links: Json | null
+          question: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          answer?: string | null
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_global?: boolean | null
+          links?: Json | null
+          question?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string | null
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_global?: boolean | null
+          links?: Json | null
+          question?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      faq_questions_translations: {
+        Row: {
+          answer: string | null
+          created_at: string
+          cta: Json | null
+          id: string
+          lang: string
+          links: Json | null
+          question: string | null
+          question_id: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: string | null
+          created_at?: string
+          cta?: Json | null
+          id?: string
+          lang: string
+          links?: Json | null
+          question?: string | null
+          question_id: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string | null
+          created_at?: string
+          cta?: Json | null
+          id?: string
+          lang?: string
+          links?: Json | null
+          question?: string | null
+          question_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_questions_translations_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "faq_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gallery_items: {
         Row: {
           asset_id: string
@@ -1531,6 +2027,125 @@ export type Database = {
           },
         ]
       }
+      herb_teas: {
+        Row: {
+          botanical_name: string | null
+          code: string | null
+          cover_asset_id: string | null
+          created_at: string | null
+          display_order: number | null
+          emoji: string | null
+          id: string
+          is_published: boolean | null
+          json_ld: Json | null
+          og_type: string | null
+          slug: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          botanical_name?: string | null
+          code?: string | null
+          cover_asset_id?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          emoji?: string | null
+          id?: string
+          is_published?: boolean | null
+          json_ld?: Json | null
+          og_type?: string | null
+          slug: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          botanical_name?: string | null
+          code?: string | null
+          cover_asset_id?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          emoji?: string | null
+          id?: string
+          is_published?: boolean | null
+          json_ld?: Json | null
+          og_type?: string | null
+          slug?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      herb_teas_translations: {
+        Row: {
+          author_note: string | null
+          benefits: Json | null
+          brews: Json | null
+          canonical_url: string | null
+          conclusion: string | null
+          created_at: string | null
+          general_benefit_description: string | null
+          general_description: string | null
+          herb_tea_id: string
+          id: string
+          ingredient_sheet: Json | null
+          language: string
+          name: string | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
+          subtitle: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_note?: string | null
+          benefits?: Json | null
+          brews?: Json | null
+          canonical_url?: string | null
+          conclusion?: string | null
+          created_at?: string | null
+          general_benefit_description?: string | null
+          general_description?: string | null
+          herb_tea_id: string
+          id?: string
+          ingredient_sheet?: Json | null
+          language: string
+          name?: string | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          subtitle?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_note?: string | null
+          benefits?: Json | null
+          brews?: Json | null
+          canonical_url?: string | null
+          conclusion?: string | null
+          created_at?: string | null
+          general_benefit_description?: string | null
+          general_description?: string | null
+          herb_tea_id?: string
+          id?: string
+          ingredient_sheet?: Json | null
+          language?: string
+          name?: string | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          subtitle?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "herb_teas_translations_herb_tea_id_fkey"
+            columns: ["herb_tea_id"]
+            isOneToOne: false
+            referencedRelation: "herb_teas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       home_cards: {
         Row: {
           card_type: string | null
@@ -1538,7 +2153,6 @@ export type Database = {
           icon_name: string | null
           id: number
           image_asset_id: string | null
-          image_url: string
           is_active: boolean | null
           role: string | null
           target_path: string | null
@@ -1550,7 +2164,6 @@ export type Database = {
           icon_name?: string | null
           id?: number
           image_asset_id?: string | null
-          image_url: string
           is_active?: boolean | null
           role?: string | null
           target_path?: string | null
@@ -1562,7 +2175,6 @@ export type Database = {
           icon_name?: string | null
           id?: number
           image_asset_id?: string | null
-          image_url?: string
           is_active?: boolean | null
           role?: string | null
           target_path?: string | null
@@ -1799,23 +2411,99 @@ export type Database = {
           },
         ]
       }
+      info_page_sections: {
+        Row: {
+          body: Json | null
+          created_at: string
+          heading: string | null
+          id: string
+          is_active: boolean
+          page_slug: string | null
+          section_order: number
+          updated_at: string
+        }
+        Insert: {
+          body?: Json | null
+          created_at?: string
+          heading?: string | null
+          id?: string
+          is_active?: boolean
+          page_slug?: string | null
+          section_order: number
+          updated_at?: string
+        }
+        Update: {
+          body?: Json | null
+          created_at?: string
+          heading?: string | null
+          id?: string
+          is_active?: boolean
+          page_slug?: string | null
+          section_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      info_page_sections_translations: {
+        Row: {
+          body: Json | null
+          created_at: string
+          heading: string | null
+          id: string
+          lang: string
+          section_id: string
+          updated_at: string
+        }
+        Insert: {
+          body?: Json | null
+          created_at?: string
+          heading?: string | null
+          id?: string
+          lang: string
+          section_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: Json | null
+          created_at?: string
+          heading?: string | null
+          id?: string
+          lang?: string
+          section_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "info_page_sections_translations_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "info_page_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ingredients_library: {
         Row: {
+          author_id: string | null
           breadcrumbs: Json | null
           canonical_url: string | null
-          category: string | null
           category_id: string | null
           cherry_button_ids: string[] | null
           cherry_prompt: string | null
           cherry_response: string | null
+          conclusion: string | null
           content_quality_score: number | null
           created_at: string | null
+          culinary_uses: string | null
           default_unit: string | null
           description: string | null
+          faq: Json | null
+          health_benefits: string | null
+          hreflang: Json | null
           id: string
           image_asset_id: string | null
-          image_url: string | null
           is_logistics_item: boolean | null
+          is_published: boolean
           is_teacher_item: boolean | null
           is_visible_public: boolean | null
           json_ld: Json | null
@@ -1825,11 +2513,14 @@ export type Database = {
           name_en: string
           name_th: string | null
           og_description: string | null
-          og_image: string | null
           og_title: string | null
           og_type: string | null
           phonetic: string | null
+          primary_focus_keyword: string | null
+          published_at: string | null
           purchase_group: string | null
+          reading_time_minutes: number | null
+          related_ingredients: string[] | null
           related_queries_geo: Json | null
           semantic_vector: string | null
           seo_description: string | null
@@ -1840,25 +2531,31 @@ export type Database = {
           storage_area: string | null
           summary_ai: string | null
           teacher_shop: string | null
+          the_essential: Json | null
           twitter_card: string | null
           updated_at: string | null
         }
         Insert: {
+          author_id?: string | null
           breadcrumbs?: Json | null
           canonical_url?: string | null
-          category?: string | null
           category_id?: string | null
           cherry_button_ids?: string[] | null
           cherry_prompt?: string | null
           cherry_response?: string | null
+          conclusion?: string | null
           content_quality_score?: number | null
           created_at?: string | null
+          culinary_uses?: string | null
           default_unit?: string | null
           description?: string | null
+          faq?: Json | null
+          health_benefits?: string | null
+          hreflang?: Json | null
           id?: string
           image_asset_id?: string | null
-          image_url?: string | null
           is_logistics_item?: boolean | null
+          is_published?: boolean
           is_teacher_item?: boolean | null
           is_visible_public?: boolean | null
           json_ld?: Json | null
@@ -1868,11 +2565,14 @@ export type Database = {
           name_en: string
           name_th?: string | null
           og_description?: string | null
-          og_image?: string | null
           og_title?: string | null
           og_type?: string | null
           phonetic?: string | null
+          primary_focus_keyword?: string | null
+          published_at?: string | null
           purchase_group?: string | null
+          reading_time_minutes?: number | null
+          related_ingredients?: string[] | null
           related_queries_geo?: Json | null
           semantic_vector?: string | null
           seo_description?: string | null
@@ -1883,25 +2583,31 @@ export type Database = {
           storage_area?: string | null
           summary_ai?: string | null
           teacher_shop?: string | null
+          the_essential?: Json | null
           twitter_card?: string | null
           updated_at?: string | null
         }
         Update: {
+          author_id?: string | null
           breadcrumbs?: Json | null
           canonical_url?: string | null
-          category?: string | null
           category_id?: string | null
           cherry_button_ids?: string[] | null
           cherry_prompt?: string | null
           cherry_response?: string | null
+          conclusion?: string | null
           content_quality_score?: number | null
           created_at?: string | null
+          culinary_uses?: string | null
           default_unit?: string | null
           description?: string | null
+          faq?: Json | null
+          health_benefits?: string | null
+          hreflang?: Json | null
           id?: string
           image_asset_id?: string | null
-          image_url?: string | null
           is_logistics_item?: boolean | null
+          is_published?: boolean
           is_teacher_item?: boolean | null
           is_visible_public?: boolean | null
           json_ld?: Json | null
@@ -1911,11 +2617,14 @@ export type Database = {
           name_en?: string
           name_th?: string | null
           og_description?: string | null
-          og_image?: string | null
           og_title?: string | null
           og_type?: string | null
           phonetic?: string | null
+          primary_focus_keyword?: string | null
+          published_at?: string | null
           purchase_group?: string | null
+          reading_time_minutes?: number | null
+          related_ingredients?: string[] | null
           related_queries_geo?: Json | null
           semantic_vector?: string | null
           seo_description?: string | null
@@ -1926,10 +2635,18 @@ export type Database = {
           storage_area?: string | null
           summary_ai?: string | null
           teacher_shop?: string | null
+          the_essential?: Json | null
           twitter_card?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "ingredients_library_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ingredients_library_category_id_fkey"
             columns: ["category_id"]
@@ -1948,6 +2665,8 @@ export type Database = {
       }
       market_runs: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           created_at: string | null
           created_by: string | null
           id: string
@@ -1959,8 +2678,11 @@ export type Database = {
           total_cost: number | null
           updated_at: string | null
           zoho_expense_id: string | null
+          zoho_synced_at: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string | null
           created_by?: string | null
           id?: string
@@ -1972,8 +2694,11 @@ export type Database = {
           total_cost?: number | null
           updated_at?: string | null
           zoho_expense_id?: string | null
+          zoho_synced_at?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string | null
           created_by?: string | null
           id?: string
@@ -1985,8 +2710,17 @@ export type Database = {
           total_cost?: number | null
           updated_at?: string | null
           zoho_expense_id?: string | null
+          zoho_synced_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_runs_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       media_assets: {
         Row: {
@@ -2116,6 +2850,7 @@ export type Database = {
           google_maps_link: string | null
           icon_url: string | null
           id: string
+          image_asset_id: string | null
           image_url: string | null
           is_dropoff_point: boolean
           latitude: number | null
@@ -2133,6 +2868,7 @@ export type Database = {
           google_maps_link?: string | null
           icon_url?: string | null
           id: string
+          image_asset_id?: string | null
           image_url?: string | null
           is_dropoff_point?: boolean
           latitude?: number | null
@@ -2150,6 +2886,7 @@ export type Database = {
           google_maps_link?: string | null
           icon_url?: string | null
           id?: string
+          image_asset_id?: string | null
           image_url?: string | null
           is_dropoff_point?: boolean
           latitude?: number | null
@@ -2159,7 +2896,15 @@ export type Database = {
           name?: string
           point_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_meeting_points_image"
+            columns: ["image_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+        ]
       }
       menu_selections: {
         Row: {
@@ -2246,8 +2991,12 @@ export type Database = {
       page_sections: {
         Row: {
           audio_asset_id: string | null
+          bullets: Json | null
           button_link_url: string | null
           button_text: string | null
+          cards: Json | null
+          cherry_prompt: string | null
+          cherry_response: string | null
           created_at: string | null
           description: string | null
           highlight: string | null
@@ -2265,8 +3014,12 @@ export type Database = {
         }
         Insert: {
           audio_asset_id?: string | null
+          bullets?: Json | null
           button_link_url?: string | null
           button_text?: string | null
+          cards?: Json | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           created_at?: string | null
           description?: string | null
           highlight?: string | null
@@ -2284,8 +3037,12 @@ export type Database = {
         }
         Update: {
           audio_asset_id?: string | null
+          bullets?: Json | null
           button_link_url?: string | null
           button_text?: string | null
+          cards?: Json | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           created_at?: string | null
           description?: string | null
           highlight?: string | null
@@ -2362,8 +3119,11 @@ export type Database = {
           agency_province: string | null
           agency_tax_id: string | null
           allergies: Json | null
+          auto_invoice: boolean
           avatar_url: string | null
+          base_salary: number | null
           commission_config: Json | null
+          default_kitchen_id: string | null
           dietary_profile: string | null
           email: string | null
           full_name: string | null
@@ -2394,8 +3154,11 @@ export type Database = {
           agency_province?: string | null
           agency_tax_id?: string | null
           allergies?: Json | null
+          auto_invoice?: boolean
           avatar_url?: string | null
+          base_salary?: number | null
           commission_config?: Json | null
+          default_kitchen_id?: string | null
           dietary_profile?: string | null
           email?: string | null
           full_name?: string | null
@@ -2426,8 +3189,11 @@ export type Database = {
           agency_province?: string | null
           agency_tax_id?: string | null
           allergies?: Json | null
+          auto_invoice?: boolean
           avatar_url?: string | null
+          base_salary?: number | null
           commission_config?: Json | null
+          default_kitchen_id?: string | null
           dietary_profile?: string | null
           email?: string | null
           full_name?: string | null
@@ -2448,6 +3214,13 @@ export type Database = {
           zoho_contact_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_default_kitchen_id_fkey"
+            columns: ["default_kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_managed_by_fkey"
             columns: ["managed_by"]
@@ -2650,7 +3423,7 @@ export type Database = {
           description: string | null
           icon_name: string
           id: number
-          image_url: string | null
+          image_asset_id: string | null
           is_active: boolean | null
           label: string
           required_points: number | null
@@ -2660,7 +3433,7 @@ export type Database = {
           description?: string | null
           icon_name: string
           id?: number
-          image_url?: string | null
+          image_asset_id?: string | null
           is_active?: boolean | null
           label: string
           required_points?: number | null
@@ -2670,12 +3443,20 @@ export type Database = {
           description?: string | null
           icon_name?: string
           id?: number
-          image_url?: string | null
+          image_asset_id?: string | null
           is_active?: boolean | null
           label?: string
           required_points?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_quiz_rewards_image"
+            columns: ["image_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
+        ]
       }
       recipe_composition: {
         Row: {
@@ -3277,7 +4058,7 @@ export type Database = {
           display_name: string
           display_order: number | null
           id: string
-          image_url: string
+          image_asset_id: string | null
           is_active: boolean | null
           linked_sku: string
         }
@@ -3289,7 +4070,7 @@ export type Database = {
           display_name: string
           display_order?: number | null
           id?: string
-          image_url: string
+          image_asset_id?: string | null
           is_active?: boolean | null
           linked_sku: string
         }
@@ -3301,11 +4082,18 @@ export type Database = {
           display_name?: string
           display_order?: number | null
           id?: string
-          image_url?: string
+          image_asset_id?: string | null
           is_active?: boolean | null
           linked_sku?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_shop_storefront_image"
+            columns: ["image_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
           {
             foreignKeyName: "shop_storefront_linked_sku_fkey"
             columns: ["linked_sku"]
@@ -3343,7 +4131,9 @@ export type Database = {
           cover_asset_id: string | null
           created_at: string
           date_modified: string | null
+          date_published: string | null
           faq: Json | null
+          faq_refs: Json
           header_badge: string | null
           header_icon: string | null
           header_title_highlight: string | null
@@ -3354,6 +4144,7 @@ export type Database = {
           key_entities: Json | null
           last_content_audit_ai: string | null
           last_seo_audit_at: string | null
+          legal_version: string | null
           menu_label: string | null
           menu_location: string | null
           menu_order: number | null
@@ -3394,7 +4185,9 @@ export type Database = {
           cover_asset_id?: string | null
           created_at?: string
           date_modified?: string | null
+          date_published?: string | null
           faq?: Json | null
+          faq_refs?: Json
           header_badge?: string | null
           header_icon?: string | null
           header_title_highlight?: string | null
@@ -3405,6 +4198,7 @@ export type Database = {
           key_entities?: Json | null
           last_content_audit_ai?: string | null
           last_seo_audit_at?: string | null
+          legal_version?: string | null
           menu_label?: string | null
           menu_location?: string | null
           menu_order?: number | null
@@ -3445,7 +4239,9 @@ export type Database = {
           cover_asset_id?: string | null
           created_at?: string
           date_modified?: string | null
+          date_published?: string | null
           faq?: Json | null
+          faq_refs?: Json
           header_badge?: string | null
           header_icon?: string | null
           header_title_highlight?: string | null
@@ -3456,6 +4252,7 @@ export type Database = {
           key_entities?: Json | null
           last_content_audit_ai?: string | null
           last_seo_audit_at?: string | null
+          legal_version?: string | null
           menu_label?: string | null
           menu_location?: string | null
           menu_order?: number | null
@@ -3519,6 +4316,7 @@ export type Database = {
           access_level: string | null
           cache_ttl: number | null
           canonical_url: string | null
+          cover_asset_id: string | null
           created_at: string
           header_badge: string | null
           header_icon: string | null
@@ -3543,6 +4341,7 @@ export type Database = {
           access_level?: string | null
           cache_ttl?: number | null
           canonical_url?: string | null
+          cover_asset_id?: string | null
           created_at?: string
           header_badge?: string | null
           header_icon?: string | null
@@ -3567,6 +4366,7 @@ export type Database = {
           access_level?: string | null
           cache_ttl?: number | null
           canonical_url?: string | null
+          cover_asset_id?: string | null
           created_at?: string
           header_badge?: string | null
           header_icon?: string | null
@@ -3588,6 +4388,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_site_metadata_admin_cover"
+            columns: ["cover_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["asset_id"]
+          },
           {
             foreignKeyName: "site_metadata_admin_parent_id_fkey"
             columns: ["parent_id"]
@@ -3640,6 +4447,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_metadata_faq_bak_20260703: {
+        Row: {
+          faq: Json | null
+          faq_refs: Json | null
+          id: string | null
+          page_slug: string | null
+        }
+        Insert: {
+          faq?: Json | null
+          faq_refs?: Json | null
+          id?: string | null
+          page_slug?: string | null
+        }
+        Update: {
+          faq?: Json | null
+          faq_refs?: Json | null
+          id?: string | null
+          page_slug?: string | null
+        }
+        Relationships: []
       }
       spiciness_levels: {
         Row: {
@@ -3694,6 +4522,59 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["asset_id"]
+          },
+        ]
+      }
+      staff_salaries: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          employee_id: string
+          id: string
+          overtime_note: string | null
+          paid_at: string | null
+          pay_method: string
+          period: string
+          status: string
+          total_amount: number
+          zoho_expense_id: string | null
+          zoho_synced_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          employee_id: string
+          id?: string
+          overtime_note?: string | null
+          paid_at?: string | null
+          pay_method?: string
+          period: string
+          status?: string
+          total_amount?: number
+          zoho_expense_id?: string | null
+          zoho_synced_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          employee_id?: string
+          id?: string
+          overtime_note?: string | null
+          paid_at?: string | null
+          pay_method?: string
+          period?: string
+          status?: string
+          total_amount?: number
+          zoho_expense_id?: string | null
+          zoho_synced_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_salaries_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -3765,6 +4646,14 @@ export type Database = {
         Args: { p_booking_id: string; p_profile_id: string }
         Returns: Json
       }
+      admin_delete_payout: {
+        Args: { p_driver_id: string; p_run_date: string; p_session_id: string }
+        Returns: undefined
+      }
+      agency_declare_payment: {
+        Args: { p_invoice_ids: string[]; p_proof_url?: string }
+        Returns: Json
+      }
       approve_hotel_location: {
         Args: { target_hotel_id: string }
         Returns: undefined
@@ -3793,6 +4682,10 @@ export type Database = {
         }[]
       }
       cleanup_old_chat_messages: { Args: never; Returns: undefined }
+      delete_my_payout: {
+        Args: { p_run_date: string; p_session_id: string }
+        Returns: undefined
+      }
       generate_weekly_payouts: {
         Args: { p_end_date: string; p_start_date: string }
         Returns: undefined
@@ -3813,7 +4706,60 @@ export type Database = {
           t_name: string
         }[]
       }
+      get_market_expense_report: {
+        Args: { p_end: string; p_start: string }
+        Returns: {
+          period_end: string
+          period_label: string
+          period_start: string
+          run_ids: string[]
+          runs: number
+          shop: string
+          status: string
+          stream: string
+          total: number
+          zoho_expense_id: string
+        }[]
+      }
+      get_market_pending_expenses: {
+        Args: never
+        Returns: {
+          period_label: string
+          run_ids: string[]
+          runs: number
+          stream: string
+          total: number
+        }[]
+      }
       get_my_role: { Args: never; Returns: string }
+      get_pos_daily_invoice: {
+        Args: { p_day: string }
+        Returns: {
+          amount: number
+          booking_id: string
+          line_type: string
+          quantity: number
+          session: string
+          sku: string
+          tender: string
+        }[]
+      }
+      get_salary_run: {
+        Args: { p_period: string }
+        Returns: {
+          base_salary: number
+          employee_id: string
+          full_name: string
+          overtime_note: string
+          pay_method: string
+          role: string
+          salary_id: string
+          status: string
+          total_amount: number
+          zoho_contact_id: string
+          zoho_expense_id: string
+        }[]
+      }
       inject_driver_payout_manual: {
         Args: {
           p_driver_id?: string
@@ -3827,14 +4773,6 @@ export type Database = {
           status: string
           total_stops: number
         }[]
-      }
-      delete_my_payout: {
-        Args: { p_run_date: string; p_session_id: string }
-        Returns: undefined
-      }
-      mark_driver_week_paid: {
-        Args: { p_driver_id: string; p_week_monday: string }
-        Returns: number
       }
       insert_recipe_with_ingredients: {
         Args: {
@@ -3860,12 +4798,20 @@ export type Database = {
         Returns: undefined
       }
       is_admin: { Args: never; Returns: boolean }
+      is_booking_participant: {
+        Args: { p_booking_id: string }
+        Returns: boolean
+      }
       is_staff: { Args: never; Returns: boolean }
       join_booking_by_ref: {
         Args: { p_booking_ref: string; p_user_id: string }
         Returns: Json
       }
       manages_profile: { Args: { p_id: string }; Returns: boolean }
+      mark_driver_week_paid: {
+        Args: { p_driver_id: string; p_week_monday: string }
+        Returns: number
+      }
       match_semantic: {
         Args: {
           match_count?: number
@@ -3877,9 +4823,22 @@ export type Database = {
           similarity: number
         }[]
       }
+      merge_split_child: { Args: { p_child: string }; Returns: Json }
       reject_hotel_location: {
         Args: { reason: string; target_hotel_id: string }
         Returns: undefined
+      }
+      set_agency_auto_invoice: {
+        Args: { p_agency_id: string; p_value: boolean }
+        Returns: Json
+      }
+      set_booking_kitchen: {
+        Args: { p_internal_id: string; p_kitchen_id: string }
+        Returns: undefined
+      }
+      split_booking_participants: {
+        Args: { p_parent: string; p_user_ids: string[] }
+        Returns: Json
       }
       split_booking_pax: {
         Args: {
@@ -3889,6 +4848,14 @@ export type Database = {
           original_booking_id: string
           pax_to_move: number
         }
+        Returns: Json
+      }
+      split_booking_pax_payment: {
+        Args: { p_parent: string; p_pax: number }
+        Returns: Json
+      }
+      split_booking_seats: {
+        Args: { p_parent: string; p_pax: number; p_user_ids: string[] }
         Returns: Json
       }
       standardize_allergy_value: { Args: { allergy: string }; Returns: string }
@@ -4033,6 +5000,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

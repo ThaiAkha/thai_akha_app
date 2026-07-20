@@ -1,19 +1,19 @@
 import React, { useState, useCallback } from 'react';
-import { PageLayout, StickyTabNav } from '../components/layout';
+import { PageLayout, StickyTabNav, PageSEO } from '../components/layout';
 import {
   Typography,
   Button,
   Icon,
-  GalleryModal,
-  AkhaLoader,
+  FaqBottomPage,
+  TableOfContents,
 } from '../components/ui/index';
-import { AkhaHistoryLine } from '../components/blog';
-import { Photo, Gallery } from '../components/modal';
-import { useMediaAsset } from '../hooks/useMediaAsset';
+
 import { CultureSection } from '@thaiakha/shared/types';
-import { GalleryItem } from '../components/modal/GalleryModal';
 import { useAudioAsset } from '../hooks/useAudioAsset';
-import { HeaderSinglePost, ContentRenderer, SiblingCard } from '../components/blog';
+import { AuthorBlock, HeaderSinglePost, ContentRenderer, parseContent, slugify, AkhaThemedLine } from '../components/blog';
+import { CherryEntryCard } from '../components/chat/CherryEntryCard';
+import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
+import { SiblingSection } from '../components/layout/SiblingSection';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useCultureDetail } from '../hooks/useCultureDetail';
 import { t } from '@thaiakha/shared/lib/ui-strings';
@@ -35,46 +35,8 @@ interface HistoryPageSingleProps {
   onCategoryChange?: (cat: string) => void;
   tabItems?: TabItem[];
   returnTo?: 'history' | 'all' | string;
+  onNavigate?: (page: string) => void;
 }
-
-// ─── PhotoAsset ──────────────────────────────────────────────────────────────
-// Risolve un assetId → GalleryItem e delega il render a <Photo variant="video">
-
-const PhotoAsset: React.FC<{ 
-  assetId: string; 
-  onClick: (id: string) => void;
-  onLoaded: (id: string, item: GalleryItem) => void;
-}> = ({ assetId, onClick, onLoaded }) => {
-  const { asset, loading } = useMediaAsset({ assetId });
-  
-  React.useEffect(() => {
-    if (asset?.image_url) {
-      onLoaded(assetId, {
-        image_url: asset.image_url,
-        title: asset.title ?? '',
-        description: asset.caption ?? '',
-        quote: '',
-        asset_id: assetId,
-      });
-    }
-  }, [asset, assetId, onLoaded]);
-
-  if (loading) return (
-    <div className="w-full aspect-video rounded-[2.5rem] bg-surface flex items-center justify-center border border-white/10 shadow-theme-lg">
-      <AkhaLoader />
-    </div>
-  );
-  if (!asset?.image_url) return null;
-
-  const item: GalleryItem = {
-    image_url: asset.image_url,
-    title: asset.title ?? '',
-    description: asset.caption ?? '',
-    quote: '',
-    asset_id: assetId,
-  };
-  return <Photo item={item} variant="video" onClick={() => onClick(assetId)} />;
-};
 
 // ─── HistoryPageSingle ───────────────────────────────────────────────────────
 
@@ -86,23 +48,17 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
   activeCategory = 'all',
   onCategoryChange,
   tabItems = [],
+  onNavigate,
 }) => {
   const {
     section,
-    galleryItems,
     previous,
     next,
     loading: dataLoading,
     error
   } = useCultureDetail(slug, sections);
 
-  const [galleryOpen, setGalleryOpen] = useState(false);
-  const [galleryStart, setGalleryStart] = useState(0);
-  const [fetchedAssets, setFetchedAssets] = useState<Record<string, GalleryItem>>({});
-
-  const handleAssetLoaded = useCallback((id: string, item: GalleryItem) => {
-    setFetchedAssets(prev => prev[id] ? prev : { ...prev, [id]: item });
-  }, []);
+  const [copied, setCopied] = useState(false);
 
   // Audio assets
   const audioId = section?.audio_asset_id ?? undefined;
@@ -118,7 +74,8 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
       }).catch(console.error);
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert(t.common.copiedLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   }, [section]);
 
@@ -126,103 +83,29 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
     if (onOpen) onOpen(newSlug);
   }, [onOpen]);
 
-  // ─── Dynamic SEO injection ───────────────────────────────────────────────
-
-  const SITE_URL = 'https://www.thaiakha.com';
-
-  React.useEffect(() => {
-    if (!section) return;
-
-    const title = section.seo_title || section.title;
-    const description = section.seo_description || section.subtitle || '';
-    const image = section.og_image || section.primary_image || '';
-    const url = `${SITE_URL}/history/${section.slug}`;
-
-    document.title = `${title} | Thai Akha Kitchen`;
-
-    const setMeta = (attr: string, key: string, value: string) => {
-      let el = document.querySelector(`meta[${attr}="${key}"]`);
-      if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
-      el.setAttribute('content', value);
-    };
-
-    setMeta('name', 'description', description);
-    setMeta('property', 'og:title', title);
-    setMeta('property', 'og:description', description);
-    setMeta('property', 'og:image', image);
-    setMeta('property', 'og:url', url);
-    setMeta('property', 'og:type', 'article');
-
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) { canonical = document.createElement('link'); canonical.setAttribute('rel', 'canonical'); document.head.appendChild(canonical); }
-    canonical.setAttribute('href', url);
-
-    // JSON-LD Article
-    document.querySelector('script[data-article-ld]')?.remove();
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.setAttribute('data-article-ld', 'true');
-    script.text = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: title,
-      description,
-      image,
-      url,
-      author: { '@type': 'Person', name: section.author_name || 'Niti Muelaeku' },
-      datePublished: section.published_at || undefined,
-      dateModified: section.updated_at || undefined,
-      publisher: { '@type': 'Organization', name: 'Thai Akha Kitchen', url: SITE_URL },
-    });
-    document.head.appendChild(script);
-
-    return () => {
-      document.querySelector('script[data-article-ld]')?.remove();
-    };
-  }, [section]);
-
-  // Gallery processing: Map CultureGalleryItem -> GalleryItem (standardized for modals)
-  const galleryModalItems: GalleryItem[] = galleryItems?.map(item => ({
-    image_url: item.media_assets?.image_url || '',
-    title: item.media_assets?.title ?? '',
-    description: item.media_assets?.caption ?? '',
-    quote: item.quote ?? '',
-    asset_id: item.asset_id
-  })) ?? [];
-
-  const hasGallery = galleryModalItems.length > 0;
-  
-  // Filter out any potentially falsy or empty strings added by mistake in the DB array
-  const validGalleryIds = section?.gallery_images?.filter(id => id && id.trim() !== '') ?? [];
-
-  const topImages = validGalleryIds.slice(0, 2);
-  const bottomImages = validGalleryIds.slice(2, 4);
-  const extraImages = validGalleryIds.slice(4);
-
-  // Unify all items for the mega GalleryModal
-  const fullGalleryItems: GalleryItem[] = [
-    ...validGalleryIds.map(id => fetchedAssets[id]).filter(Boolean),
-    ...galleryModalItems
-  ];
-
-  const handleOpenUnifiedGallery = useCallback((startAssetId?: string) => {
-    if (!startAssetId) {
-      setGalleryStart(0);
-      setGalleryOpen(true);
-      return;
-    }
-    const idx = fullGalleryItems.findIndex(i => i.asset_id === startAssetId);
-    setGalleryStart(Math.max(0, idx)); // fallback to 0 if not found precisely
-    setGalleryOpen(true);
-  }, [fullGalleryItems]);
-
   return (
     <PageLayout
-      slug={`history-${slug}`}
+      slug="akha-culture-highland-heritage-single"
+      customMetadata={section ? {
+        titleMain: section.title,
+        description: section.seo_description || section.subtitle || '',
+        imageUrl: section.cover_data?.image_url || '',
+      } : undefined}
       showPatterns={true}
       hideDefaultHeader={true}
     >
-      <div className="w-full flex flex-col">
+      {section && (
+        <PageSEO
+          title={section.seo_title || section.title}
+          description={section.seo_description || section.subtitle || ''}
+          canonical={section.canonical_url || `${window.location.origin}/akha-culture-highland-heritage/${section.slug}`}
+          ogImage={section.cover_data?.image_url || ''}
+          ogType="article"
+          jsonLd={section.json_ld || undefined}
+          hreflang={section.hreflang as Record<string, string> | undefined}
+        />
+      )}
+      <div className="contents">
         {onCategoryChange && (
           <StickyTabNav
             items={tabItems}
@@ -231,11 +114,11 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
           />
         )}
 
-        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-top:var(--space-fluid-l)] pb-32">
+        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
           {dataLoading && <ArticleDetailSkeleton />}
 
           {!dataLoading && (error || !section) && (
-            <div className="flex flex-col items-center justify-center py-32 text-center [gap:var(--space-fluid-s)]">
+            <div className="flex flex-col items-center justify-center py-24 text-center [gap:var(--space-fluid-s)]">
               <Icon name="wifi_off" size="xl" className="text-primary/40" />
               <Typography variant="h5" color="sub">{t.history.chapterLoadError}</Typography>
               <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">{t.common.goBack}</Button>
@@ -243,127 +126,125 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
           )}
 
           {!dataLoading && section && (
-            <article className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <article className="flex flex-col [gap:var(--space-fluid-m)] animate-in fade-in slide-in-from-bottom-4 duration-700">
               <HeaderSinglePost
                 title={section.title}
                 subtitle={section.subtitle ?? undefined}
-                primaryImage={section.primary_image ?? undefined}
+                primaryImage={section.cover_data?.image_url ?? undefined}
+                primaryImageAlt={section.cover_data?.alt_text ?? undefined}
                 audioAssetId={audioId}
                 hasAudio={!!audioAsset}
-                quote={section.quote ?? undefined}
+                quote={section.ui_quote ?? section.quote ?? undefined}
+                authorName={section.author?.name}
+                categoryName={section.category?.title}
                 onShare={handleShare}
+                isCopied={copied}
+                theme="history"
               />
 
-              {topImages.length > 0 && (
-                <div className="max-w-5xl mx-auto w-full grid grid-cols-2 [gap:var(--space-fluid-m)] pt-6">
-                  {topImages.map((id) => <PhotoAsset key={id} assetId={id} onClick={handleOpenUnifiedGallery} onLoaded={handleAssetLoaded} />)}
-                </div>
-              )}
+              {section.content && (() => {
+                const tocItems = parseContent(section.content).filter((b: any) => b.type === 'heading' && b.level === 2) as any[];
+                return (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] items-start pt-8 pb-6">
+                    {/* Main content — 9 cols */}
+                    <div className="col-span-1 lg:col-span-9 w-full flex flex-col [gap:var(--space-fluid-l)]">
+                      <ContentRenderer content={section.content} theme="history" />
 
-              {section.content && (
-                <div className="max-w-3xl mx-auto w-full flex flex-col [gap:var(--space-fluid-l)] pb-6">
-                  <ContentRenderer content={section.content} />
-                </div>
-              )}
-
-              {(bottomImages.length > 0 || extraImages.length > 0) && (
-                <div className="max-w-5xl mx-auto w-full flex flex-col [gap:var(--space-fluid-m)]">
-                  {bottomImages.length > 0 && (
-                    <div className="grid grid-cols-2 [gap:var(--space-fluid-m)]">
-                      {bottomImages.map((id) => <PhotoAsset key={id} assetId={id} onClick={handleOpenUnifiedGallery} onLoaded={handleAssetLoaded} />)}
-                    </div>
-                  )}
-                  {extraImages.length > 0 && (
-                    <div className="grid grid-cols-2 [gap:var(--space-fluid-m)]">
-                      {extraImages.map((id) => <PhotoAsset key={id} assetId={id} onClick={handleOpenUnifiedGallery} onLoaded={handleAssetLoaded} />)}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {hasGallery && (
-                <>
-                  <AkhaHistoryLine />
-                  <div className="flex flex-col [gap:var(--space-fluid-l)]">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 h-px bg-border" />
-                      <div className="flex items-center gap-2 text-action/60">
-                        <Icon name="photo_library" size="sm" />
-                        <Typography variant="caption" color="muted">
-                          {t.history.galleryLabel({ count: galleryModalItems.length })}
-                        </Typography>
-                      </div>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                      <Gallery
-                        imageUrl={galleryModalItems[0]?.image_url || ''}
-                        onClick={() => handleOpenUnifiedGallery(galleryModalItems[0]?.asset_id)}
+                      {/* --- AUTHOR & VERIFICATION BOX --- */}
+                      <AuthorBlock
+                        author={section.author}
+                        auditDate={section.last_content_audit_ai}
+                        theme="history"
+                        className="[margin-top:var(--space-fluid-m)]"
                       />
-                      {galleryModalItems.slice(1, 4).map((item, idx) => (
-                        <Photo
-                          key={item.asset_id || idx}
-                          item={item}
-                          onClick={() => handleOpenUnifiedGallery(item.asset_id)}
+                    </div>
+
+                    {/* Sticky ToC sidebar — 3 cols, desktop only. Componente unico
+                        (TableOfContents), tema History: divider Akha 'history' + accent sunset. */}
+                    {tocItems.length > 0 && (
+                      <aside className="hidden lg:flex lg:col-span-3 flex-col sticky top-[100px] pt-4">
+                        <TableOfContents
+                          items={tocItems.map((block: any) => ({
+                            id: block.anchorId || slugify(block.text),
+                            label: block.text,
+                          }))}
+                          title={t.blog.contents}
+                          dividerTheme="history"
+                          accent="sunset"
                         />
-                      ))}
-                    </div>
-
-                    {galleryModalItems.length > 4 && (
-                      <div className="flex justify-center pt-2">
-                        <Button variant="mineral" size="md" icon="collections" iconPosition="left"
-                          onClick={() => handleOpenUnifiedGallery(galleryModalItems[0]?.asset_id)}>
-                          {t.history.openGallery}
-                        </Button>
-                      </div>
+                      </aside>
                     )}
                   </div>
-                </>
-              )}
+                );
+              })()}
 
-              <AkhaHistoryLine />
-
-              {(previous || next) && (
-                <div className="flex flex-col [gap:var(--space-fluid-xs)]">
-                  <Typography variant="microLabel" color="muted" className="text-center tracking-widest uppercase">
-                    {t.history.otherChapters}
-                  </Typography>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 [gap:var(--space-fluid-l)]">
-                    {previous && (
-                      <SiblingCard
-                        section={previous}
-                        direction="prev"
-                        onClick={() => handleSiblingOpen(previous.slug)}
-                      />
-                    )}
-                    {next && (
-                      <SiblingCard
-                        section={next}
-                        direction="next"
-                        onClick={() => handleSiblingOpen(next.slug)}
-                      />
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-center pt-8 pb-4">
-                <Button variant="brand" size="md" icon="arrow_back" iconPosition="left" onClick={onBack}>
-                  {t.history.back}
-                </Button>
-              </div>
             </article>
           )}
         </div>
-      </div>
 
-      <GalleryModal
-        isOpen={galleryOpen}
-        onClose={() => setGalleryOpen(false)}
-        items={fullGalleryItems}
-        startIndex={galleryStart}
-      />
+        {/* Ask Cherry entry card — standard, subito prima del blocco FAQ */}
+        {!dataLoading && section && (section.cherry_prompt || section.cherry_response) && (
+          <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [margin-bottom:var(--space-fluid-l)]">
+            <CherryEntryCard
+              cherry_prompt={section.cherry_prompt}
+              cherry_response={section.cherry_response}
+              cherry_button_ids={section.cherry_button_ids}
+            />
+          </div>
+        )}
+
+        {/* FAQ — full width, outside max-w-6xl */}
+        {!dataLoading && section && (
+          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+            <FaqBottomPage
+              entityType="culture"
+              slug={section.slug}
+              items={section.faq && section.faq.length > 0 ? section.faq : undefined}
+              onNavigate={onNavigate}
+            />
+          </div>
+        )}
+
+        {/* Sibling nav — full width, outside max-w-6xl */}
+        {!dataLoading && section && (previous || next) && (
+          <>
+            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+              <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
+            </div>
+            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+              <SiblingSection sectionId="sibiling_history">
+                {previous && (
+                  <SiblingCardPost
+                    item={{
+                      title: previous.title,
+                      subtitle: previous.subtitle,
+                      imageUrl: previous.cover_data?.image_url ?? null,
+                      href: `/akha-culture-highland-heritage/${previous.slug}`,
+                      slug: previous.slug,
+                    } satisfies SiblingPost}
+                    direction="prev"
+                    onClick={() => handleSiblingOpen(previous.slug)}
+                  />
+                )}
+                {next && (
+                  <SiblingCardPost
+                    item={{
+                      title: next.title,
+                      subtitle: next.subtitle,
+                      imageUrl: next.cover_data?.image_url ?? null,
+                      href: `/akha-culture-highland-heritage/${next.slug}`,
+                      slug: next.slug,
+                    } satisfies SiblingPost}
+                    direction="next"
+                    onClick={() => handleSiblingOpen(next.slug)}
+                  />
+                )}
+              </SiblingSection>
+            </div>
+          </>
+        )}
+
+      </div>
     </PageLayout>
   );
 };

@@ -199,7 +199,6 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
             <FaqBottomPage
               entityType="culture"
               slug={section.slug}
-              items={section.faq && section.faq.length > 0 ? section.faq : undefined}
               onNavigate={onNavigate}
             />
           </div>

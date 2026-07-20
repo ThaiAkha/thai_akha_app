@@ -361,9 +361,6 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
             <FaqBottomPage
               entityType="recipe"
               slug={slug}
-              items={Array.isArray(recipeRaw?.faq) && (recipeRaw.faq as unknown[]).length > 0
-                ? recipeRaw.faq as Parameters<typeof FaqBottomPage>[0]['items']
-                : undefined}
             />
           </div>
 

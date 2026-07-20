@@ -7,6 +7,7 @@ import { Typography, Card } from '../ui/index';
 import { AkhaPixelPattern, AkhaPixelLine } from '../divider';
 import { SmartHeaderSection } from '../layout/SmartHeaderSection';
 import { CherryEntryCard } from '../chat/CherryEntryCard';
+import { handleFaqAnswerClick } from './faqLinkNav';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,9 +32,9 @@ export interface FaqBottomPageProps {
 }
 
 // ─── FAQ card — avatar risolto da avatar_asset_id via media_assets (frozen) ─────
-// Deterministico: nessun Math.random. L'avatar arriva dal DB (getPageFaqs) o è
-// assente per le pagine non ancora migrate (fallback legacy site_metadata.faq).
-const FaqCard: React.FC<{ card: FaqCardUI }> = ({ card }) => {
+// Deterministico: nessun Math.random. L'avatar arriva dalla centrale faq_questions
+// (getPageFaqs/getEntityFaqs); assente solo per gli items di demo/mock.
+const FaqCard: React.FC<{ card: FaqCardUI; onNavigate?: (path: string) => void }> = ({ card, onNavigate }) => {
   const { asset } = useMediaAsset({ assetId: card.avatarAssetId });
   const avatarUrl = asset?.image_url ?? '';
 
@@ -65,8 +66,10 @@ const FaqCard: React.FC<{ card: FaqCardUI }> = ({ card }) => {
 
       {/* ── Answer ──────────────────────────────────────────────── */}
       <div className="flex-1" style={{ padding: 'var(--space-fluid-m)' }}>
+        {/* link interni nell'HTML → SPA navigation (click delegato, no full reload) */}
         <div
-          className="leading-relaxed [font-size:var(--text-fluid-paragraphM)] font-sans text-muted [&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_a]:font-bold [&_a]:text-ocean-blue [&_a]:no-underline hover:[&_a]:opacity-75 [&_a]:transition-opacity"
+          onClick={(e) => handleFaqAnswerClick(e, onNavigate)}
+          className="leading-relaxed [font-size:var(--text-fluid-paragraphM)] font-sans text-muted [&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_a]:font-bold [&_a]:text-ocean-blue [&_a]:no-underline hover:[&_a]:opacity-75 [&_a]:transition-opacity [&_a]:cursor-pointer"
           dangerouslySetInnerHTML={{ __html: card.answerHtml }}
         />
       </div>
@@ -82,34 +85,29 @@ const FaqCard: React.FC<{ card: FaqCardUI }> = ({ card }) => {
 
 interface PageCherry { prompt?: string | null; response?: string | null; buttonIds?: string[] | null; }
 
-const _faqCache = new Map<string, FaqItem[]>();
 const _cherryCache = new Map<string, PageCherry>();
 const _cardsCache = new Map<string, FaqCardUI[]>();
 
-/** Legacy site_metadata.faq item → FaqCardUI (nessun avatar: pagina non migrata). */
+/** items espliciti (solo demo/mock, es. ZZStyleCards) → FaqCardUI. */
 const legacyToCard = (f: FaqItem): FaqCardUI => ({ name: f.name, answerHtml: f.acceptedAnswer.text });
 
-async function fetchPageData(slug: string): Promise<{ faq: FaqItem[]; cherry: PageCherry }> {
-  if (_faqCache.has(slug) && _cherryCache.has(slug)) {
-    return { faq: _faqCache.get(slug)!, cherry: _cherryCache.get(slug)! };
-  }
+// Cherry entry-point (prompt/response/button_ids) da site_metadata. Le FAQ NON
+// vengono più da qui: fonte unica = centrale faq_questions (getPageFaqs/getEntityFaqs).
+async function fetchPageCherry(slug: string): Promise<PageCherry> {
+  if (_cherryCache.has(slug)) return _cherryCache.get(slug)!;
   const { data, error } = await supabase
     .from('site_metadata')
-    .select('faq, cherry_prompt, cherry_response, cherry_button_ids')
+    .select('cherry_prompt, cherry_response, cherry_button_ids')
     .eq('page_slug', slug)
     .maybeSingle();
-  if (error || !data) {
-    _faqCache.set(slug, []); _cherryCache.set(slug, {});
-    return { faq: [], cherry: {} };
-  }
-  const faq = ((data.faq as unknown as FaqItem[]) ?? []).filter(f => f?.name && f?.acceptedAnswer?.text);
+  if (error || !data) { _cherryCache.set(slug, {}); return {}; }
   const cherry: PageCherry = {
     prompt: (data as Record<string, unknown>).cherry_prompt as string | null,
     response: (data as Record<string, unknown>).cherry_response as string | null,
     buttonIds: (data as Record<string, unknown>).cherry_button_ids as string[] | null,
   };
-  _faqCache.set(slug, faq); _cherryCache.set(slug, cherry);
-  return { faq, cherry };
+  _cherryCache.set(slug, cherry);
+  return cherry;
 }
 
 
@@ -122,16 +120,16 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
   hideTopDivider = false,
   items: itemsProp,
   entityType,
+  onNavigate,
 }) => {
   const slugKey = slug ?? '';
   // Cache key distinta per modalità entità (stesso slug possibile su tabelle diverse).
   const cacheKey = entityType ? `${entityType}:${slugKey}` : slugKey;
 
-  // Card model unificato (FaqCardUI). Sorgenti in ordine:
-  // 1. entityType → centrale faq_questions (entity_type+entity_slug, avatar frozen);
-  // 2. slug (pagina) → site_metadata.faq_refs → centrale;
-  // 3. fallback legacy embedded (items o site_metadata.faq) finché la migrazione
-  //    non è verificata live (deploy #2 li rimuove).
+  // Card model unificato (FaqCardUI). Fonte UNICA = centrale faq_questions:
+  // 1. entityType → getEntityFaqs (entity_type+entity_slug);
+  // 2. slug (pagina) → getPageFaqs (site_metadata.faq_refs → centrale);
+  // 3. items espliciti → SOLO demo/mock (nessuna lettura embedded DB).
   const [cards, setCards] = useState<FaqCardUI[]>(() => {
     if (_cardsCache.has(cacheKey)) return _cardsCache.get(cacheKey)!;
     if (itemsProp && !entityType) return itemsProp.filter(f => f?.name && f?.acceptedAnswer?.text).map(legacyToCard);
@@ -157,12 +155,8 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
     if (entityType && slugKey) {
       setLoading(true);
       getEntityFaqs(entityType, slugKey).then(entity => {
-        // Bridge transizione: centrale vuota → embedded items (se forniti).
-        const resolved: FaqCardUI[] = entity.length > 0
-          ? entity
-          : (itemsProp ?? []).filter(f => f?.name && f?.acceptedAnswer?.text).map(legacyToCard);
-        _cardsCache.set(cacheKey, resolved);
-        if (!cancelled) { setCards(resolved); setCherry(null); setLoading(false); }
+        _cardsCache.set(cacheKey, entity);
+        if (!cancelled) { setCards(entity); setCherry(null); setLoading(false); }
       });
       return () => { cancelled = true; };
     }
@@ -175,13 +169,11 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
       return;
     }
 
-    // ── Modalità slug-pagina: refs → centrale, fallback embedded ──
+    // ── Modalità slug-pagina: site_metadata.faq_refs → centrale faq_questions ──
     setLoading(true);
-    Promise.all([fetchPageData(slugKey), getPageFaqs(slugKey)]).then(([{ faq, cherry: c }, entity]) => {
-      // Migrata → entity rows (con avatar); non migrata → fallback legacy JSONB (no avatar).
-      const resolved: FaqCardUI[] = entity.length > 0 ? entity : faq.map(legacyToCard);
-      _cardsCache.set(cacheKey, resolved);
-      if (!cancelled) { setCards(resolved); setCherry(c); setLoading(false); }
+    Promise.all([fetchPageCherry(slugKey), getPageFaqs(slugKey)]).then(([c, entity]) => {
+      _cardsCache.set(cacheKey, entity);
+      if (!cancelled) { setCards(entity); setCherry(c); setLoading(false); }
     });
     return () => { cancelled = true; };
   }, [cacheKey, slugKey, itemsProp, entityType]);
@@ -240,7 +232,7 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-m)]">
           {cards.map((card, idx) => (
-            <FaqCard key={idx} card={card} />
+            <FaqCard key={idx} card={card} onNavigate={onNavigate} />
           ))}
         </div>
       )}

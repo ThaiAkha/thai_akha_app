@@ -246,7 +246,6 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
             <FaqBottomPage
               entityType="news"
               slug={detail.slug}
-              items={detail.faq && detail.faq.length > 0 ? detail.faq : undefined}
               onNavigate={onNavigate}
             />
           </div>

@@ -37,7 +37,7 @@ const HotelsInspectorActions: React.FC<HotelsInspectorActionsProps> = ({
                     onClick={() => setIsEditing(true)}
                     variant="outline"
                     size="md"
-                    className="h-9 px-4 text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
+                    className="h-9 px-4 text-xs font-black uppercase tracking-widest active:scale-95 transition-all"
                     startIcon={<Edit className="w-4 h-4" />}
                 >
                     {t('actions.edit')}
@@ -54,7 +54,7 @@ const HotelsInspectorActions: React.FC<HotelsInspectorActionsProps> = ({
                 disabled={saving}
                 variant="primary"
                 size="md"
-                className="h-9 px-4 text-[10px] font-black uppercase tracking-widest transition-all"
+                className="h-9 px-4 text-xs font-black uppercase tracking-widest transition-all"
                 startIcon={<Save className="w-4 h-4" />}
             >
                 {saving ? t('actions.saving') : t('actions.save')}

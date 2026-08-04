@@ -1,7 +1,9 @@
 // packages/admin/src/hooks/useCherryChat.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { sendChatMessageProxy } from '@thaiakha/shared/services';
-import { buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
+import { selectAdminAgent, buildAdminAgentPrompt } from '../prompts/adminAgents';
+import { formatScopedDataBlocks } from '../prompts/scopedData';
+import { fetchAdminScopedData, type AdminScopedData } from '../prompts/adminScopedFetch';
 import {
   getOrCreateSession,
   loadRecentMessages,
@@ -11,13 +13,12 @@ import {
   type ChatSession,
   type DbChatMessage,
 } from '@thaiakha/shared/services';
-import { contentService } from '@thaiakha/shared/services';
-import { supabase } from '@thaiakha/shared';
 import type { ChatMessage } from '@thaiakha/shared';
 import type { UserProfile } from '../services/auth.service';
 
 const HISTORY_WINDOW = 5;
 const SUMMARY_THRESHOLD = 20;
+const TYPEWRITER_MS = 80; // cadenza reveal — allineata al front (Cherry v6)
 
 export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -26,21 +27,16 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
-  const cookingClassesRef = useRef<any[]>([]);
-  const bookingSnapshotRef = useRef<BookingDaySummary[]>([]);
-  const guestAlertsRef = useRef<GuestAlert[]>([]);
+  const scopedDataRef = useRef<AdminScopedData | null>(null);
 
   const buildSystemPrompt = useCallback(
     (history: DbChatMessage[], summary: string | null): string => {
-      const base = buildAdminPrompt(
-        userProfile || {},
-        false,
-        {
-          cookingClasses: cookingClassesRef.current,
-          bookingSnapshot: bookingSnapshotRef.current,
-          guestAlerts: guestAlertsRef.current,
-        }
-      );
+      // Multi-Cherry per ruolo (Fase 3): agente + DATI scopati per ruolo.
+      const agent = selectAdminAgent(userProfile?.role);
+      const scopedDataBlocks = scopedDataRef.current
+        ? formatScopedDataBlocks(scopedDataRef.current)
+        : 'No live data loaded kha.';
+      const base = buildAdminAgentPrompt(agent, userProfile || {}, scopedDataBlocks, false);
 
       let historyBlock = '';
       if (summary) {
@@ -66,74 +62,14 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       const today = new Date().toISOString().split('T')[0];
       const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
 
-      const [classes, session, bookingsResult] = await Promise.all([
-        contentService.getCookingClasses(),
+      // Fase 3: dati SCOPATI per ruolo (un solo punto di scoping, condiviso con la voce).
+      const [scoped, session] = await Promise.all([
+        fetchAdminScopedData(userProfile?.role, userProfile?.id, today, nextWeek),
         getOrCreateSession(userProfile?.id),
-        supabase
-          .from('bookings')
-          .select('internal_id, booking_date, session_id, pax_count, visitor_count, status, guest_name, booking_ref, hotel_name, pickup_time, pickup_zone, payment_method, payment_status, total_price, special_requests, customer_note')
-          .gte('booking_date', today)
-          .lte('booking_date', nextWeek)
-          .neq('status', 'cancelled')
-          .order('booking_date'),
       ]);
-
-      cookingClassesRef.current = classes;
+      scopedDataRef.current = scoped;
       sessionRef.current = session;
       setSessionId(session.id);
-
-      // Build booking snapshot
-      const bookings = bookingsResult.data ?? [];
-      bookingSnapshotRef.current = bookings.map(b => ({
-        date: b.booking_date,
-        session: b.session_id ?? 'unknown',
-        pax: b.pax_count ?? 0,
-        visitors: b.visitor_count ?? 0,
-        status: b.status ?? 'unknown',
-        bookingRef: b.booking_ref ?? undefined,
-        hotelName: b.hotel_name ?? undefined,
-        pickupTime: b.pickup_time ?? undefined,
-        pickupZone: b.pickup_zone ?? undefined,
-        paymentMethod: b.payment_method ?? undefined,
-        paymentStatus: b.payment_status ?? undefined,
-        totalPrice: b.total_price ?? undefined,
-        specialRequests: b.special_requests ?? undefined,
-        customerNote: b.customer_note ?? undefined,
-      }));
-
-      // Fetch dietary alerts from menu_selections for confirmed bookings
-      const bookingIds = bookings
-        .filter(b => b.status === 'confirmed')
-        .map(b => b.internal_id)
-        .filter(Boolean) as string[];
-
-      if (bookingIds.length > 0) {
-        const { data: selections } = await supabase
-          .from('menu_selections')
-          .select('booking_id, dietary_profile, allergies, curry_id, soup_id, stirfry_id, spiciness_level')
-          .in('booking_id', bookingIds);
-
-        if (selections?.length) {
-          // Map booking_id → booking date/session for context
-          const bookingMap = new Map(bookings.map(b => [b.internal_id, b]));
-          guestAlertsRef.current = selections
-            .filter(s => s.dietary_profile !== 'diet_regular' || (Array.isArray(s.allergies) && s.allergies.length > 0))
-            .map(s => {
-              const booking = bookingMap.get(s.booking_id);
-              return {
-                name: bookingMap.get(s.booking_id)?.guest_name ?? 'Guest',
-                date: booking?.booking_date ?? '',
-                session: booking?.session_id ?? '',
-                dietary: s.dietary_profile ?? 'regular',
-                allergies: Array.isArray(s.allergies) ? s.allergies : [],
-                curryChoice: s.curry_id ?? undefined,
-                soupChoice: s.soup_id ?? undefined,
-                stirfryChoice: s.stirfry_id ?? undefined,
-                spicinessLevel: s.spiciness_level ?? undefined,
-              };
-            });
-        }
-      }
 
       const history = await loadRecentMessages(session.id, HISTORY_WINDOW * 2);
       const initialMessages: ChatMessage[] = history.map(
@@ -145,9 +81,12 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       );
 
       if (initialMessages.length === 0) {
-        const greeting = userProfile?.full_name
-          ? `Sawasdee kha ${userProfile.full_name.split(' ')[0]}! Admin panel active. How can I assist you today? kha`
-          : "Sawasdee kha! I'm Cherry, your kitchen AI. How can I help the team today? kha";
+        // Greeting con il nome della Cherry-ruolo (così l'utente sa quale assistente è attivo).
+        const agent = selectAdminAgent(userProfile?.role);
+        const firstName = userProfile?.full_name?.split(' ')[0];
+        const greeting = firstName
+          ? `Sawasdee kha ${firstName}! I'm ${agent.name}. How can I help you today? kha`
+          : `Sawasdee kha! I'm ${agent.name}. How can I help the team today? kha`;
         initialMessages.push({ id: 'greeting', role: 'model', text: greeting });
 
       }
@@ -177,7 +116,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     const sid = sessionRef.current?.id ?? null;
 
     if (sid) {
-      const rateLimit = await checkRateLimit(userProfile?.id, undefined);
+      const rateLimit = await checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined);
       if (!rateLimit.allowed) {
         setError(rateLimit.reason ?? 'Limit reached.');
         return;
@@ -208,11 +147,28 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
         systemInstruction,
       });
 
-      setMessages(prev =>
-        prev.map(m => (m.id === modelMsgId ? { ...m, text: response, isStreaming: false } : m))
-      );
-
+      // Persist subito (la persistenza non aspetta l'animazione).
       if (sid) saveMessage(sid, 'assistant', response, 'text');
+
+      // Typewriter: rivela la risposta progressivamente (parità UX col front).
+      await new Promise<void>((resolve) => {
+        const tokens = response.match(/\S+[ \t]*|\n+/g) ?? [response];
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < tokens.length) {
+            const chunk = tokens[i++];
+            setMessages(prev =>
+              prev.map(m => (m.id === modelMsgId ? { ...m, text: m.text + chunk } : m))
+            );
+          } else {
+            clearInterval(interval);
+            setMessages(prev =>
+              prev.map(m => (m.id === modelMsgId ? { ...m, isStreaming: false } : m))
+            );
+            resolve();
+          }
+        }, TYPEWRITER_MS);
+      });
 
       if (sid && sessionRef.current && sessionRef.current.message_count >= SUMMARY_THRESHOLD) {
         sessionRef.current.message_count = 0;

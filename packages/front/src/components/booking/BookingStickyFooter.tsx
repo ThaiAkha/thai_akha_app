@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../ui/index';
+import { Button, Typography } from '../ui/index';
 import { BookingSummaryPills } from './BookingSummaryPills';
 
 interface BookingStickyFooterProps {
@@ -26,8 +26,8 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
   if (viewStep !== 'selection') return null;
 
   return (
-    <div className="sticky bottom-6 w-full px-4 z-50 animate-in slide-in-from-bottom duration-500">
-      <div className="w-full max-w-5xl mx-auto bg-surface/90 backdrop-blur-3xl border border-border/50 rounded-3xl md:rounded-[2.5rem] p-4 md:p-6 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col gap-6">
+    <div className="sticky [bottom:var(--space-fluid-m)] w-full [padding-inline:var(--space-fluid-s)] z-50 animate-in slide-in-from-bottom duration-500">
+      <div className="w-full max-w-5xl mx-auto bg-surface/90 backdrop-blur-3xl border border-border/50 rounded-3xl md:rounded-[2.5rem] [padding:var(--space-fluid-m)] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col [gap:var(--space-fluid-m)]">
 
         {/* PILLS ROW */}
         <BookingSummaryPills
@@ -43,16 +43,16 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
 
         {/* PRICE & CONTINUE */}
         {pax > 0 && (
-          <div className="flex items-center justify-between w-full border-t border-border/50 pt-4 md:pt-6 px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div className="flex items-center justify-between w-full border-t border-border/50 [padding-top:var(--space-fluid-m)] px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="flex flex-col text-left">
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500 mb-1">Total Amount Due</span>
-              <span className="text-2xl md:text-4xl font-mono font-black text-gray-900 dark:text-gray-100 leading-none">
-                {finalPrice.toLocaleString()} <span className="text-sm md:text-base font-sans font-bold uppercase opacity-40">THB</span>
-              </span>
+              <Typography variant="microLabel" color="muted" className="[margin-bottom:var(--space-fluid-2xs)]">Totale Prenotazione</Typography>
+              <Typography variant="numericPrice" color="title">
+                {finalPrice.toLocaleString()} <Typography variant="microLabel" as="span" className="opacity-40">THB</Typography>
+              </Typography>
               {visitors > 0 && (
-                <span className="text-[10px] text-gray-500 dark:text-gray-500 mt-1">
-                  + {visitors} visitor{visitors > 1 ? 's' : ''} (no extra charge)
-                </span>
+                <Typography variant="microLabel" color="muted" className="[margin-top:var(--space-fluid-2xs)]">
+                  + {visitors} accompagnatore{visitors > 1 ? 'i' : ''} (nessun costo extra)
+                </Typography>
               )}
             </div>
 
@@ -64,7 +64,7 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
               icon="arrow_forward"
               className="px-10 md:px-16 h-14 md:h-16 text-base md:text-xl shadow-action-glow transition-all active:scale-95 rounded-full font-black min-w-[160px] md:min-w-[200px]"
             >
-              Confirm & Continue
+              Conferma e Continua
             </Button>
           </div>
         )}

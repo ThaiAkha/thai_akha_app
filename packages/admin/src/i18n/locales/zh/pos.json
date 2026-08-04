@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "title": "访客",
+    "guest": "访客",
+    "selectGuest": "Select a guest to start billing"
+  },
+  "content": {
+    "loading": "加载中..."
+  },
+  "meta": {
+    "title": "店面 | Thai Akha Kitchen",
+    "description": "管理课程期间的现场销售、商品和访客账单。"
+  },
+  "inspector": {
+    "customerName": "客户姓名",
+    "selectGuest": "选择访客",
+    "emptySelectHint": "请先选择访客",
+    "emptyTab": "空账单",
+    "totalAmount": "总金额",
+    "payOnArrival": "到付",
+    "saveTab": "保存账单",
+    "payCash": "现金支付"
+  },
+  "alerts": {
+    "selectGuestFirst": "请先选择访客",
+    "outOfStock": "缺货！",
+    "confirmCharge": "向现金收取{{amount}}泰铢？"
+  }
+}

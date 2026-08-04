@@ -50,7 +50,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-gray-500">{u.email}</p>
                   {userMode === 'agency' && u.agency_company_name && (
-                    <p className="text-[10px] bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">
+                    <p className="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">
                       {u.full_name}
                     </p>
                   )}

@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "title": "日历 | Thai Akha Kitchen",
+    "description": "管理课程可用性和预订日历。"
+  },
+  "legend": {
+    "available": "可用",
+    "booked": "已预订",
+    "closed": "已关闭",
+    "selected": "已选"
+  },
+  "bulk": {
+    "morning": "上午",
+    "evening": "下午",
+    "allDay": "全天"
+  },
+  "header": {
+    "bulkEdit": "批量编辑",
+    "closeBulk": "关闭批量编辑",
+    "months": [
+      "一月", "二月", "三月", "四月", "五月", "六月",
+      "七月", "八月", "九月", "十月", "十一月", "十二月"
+    ]
+  },
+  "inspector": {
+    "emptyBulk": "选择日期进行批量编辑",
+    "emptySelect": "选择日期开始",
+    "bulkDays_one": "{{count}}天",
+    "bulkDays_other": "{{count}}天",
+    "bulkUpdateAll": "批量更新：全天",
+    "bulkUpdateMorning": "批量更新：仅上午",
+    "bulkUpdateEvening": "批量更新：仅下午",
+    "editingDay": "编辑日期",
+    "quickPreview": "快速预览",
+    "morningClass": "上午课程",
+    "eveningClass": "下午课程",
+    "allClasses": "所有课程",
+    "session": "场次",
+    "booked": "已预订",
+    "available": "可用",
+    "classClose": "关闭课程",
+    "forceClose": "强制关闭",
+    "closingReason": "关闭原因",
+    "reasonPlaceholder": "例如：私人活动",
+    "addRemoveSpots": "增减名额",
+    "availableSeats": "可用席位",
+    "bulkModHint": "修改将在当前容量基础上增减名额",
+    "totalCapacity": "总容量：{{count}}",
+    "saveDays_one": "保存{{count}}天",
+    "saveDays_other": "保存{{count}}天",
+    "saveChanges": "保存更改",
+    "editAvailability": "编辑可用性",
+    "cancel": "取消"
+  },
+  "sidebar": {
+    "morningClass": "上午课程",
+    "eveningClass": "下午课程",
+    "bulkModeTitle": "批量编辑模式",
+    "bulkModeInfo": "有预订的日期已锁定以确保安全。"
+  },
+  "session": {
+    "booked": "已预订：",
+    "seatsLeft": "剩余席位：",
+    "empty": "空场次"
+  }
+}

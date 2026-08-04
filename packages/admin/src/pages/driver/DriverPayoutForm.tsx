@@ -3,6 +3,7 @@
 // tornano la fonte di verità del payout. Vedi _temp_driver_payout/README_TEMPORANEO.md.
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { authService, type UserProfile } from '../../services/auth.service';
 import { Heading, Paragraph } from '../../components/typography';
@@ -11,6 +12,7 @@ import Button from '../../components/ui/button/Button';
 import Card from '../../components/ui/Card';
 import SectionHeader from '../../components/ui/SectionHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { getLocaleCode } from '../../lib/dateFormatter';
 
 export type SessionId = 'morning_class' | 'evening_class';
 type StopsRange = '1-2' | '3-4' | '5-6' | '7plus';
@@ -41,12 +43,6 @@ interface ExistingRow {
 
 // Mappa range UI -> n° fermate rappresentativo per la RPC (la tariffa dipende solo dallo scaglione)
 const STOPS_REP: Record<StopsRange, number> = { '1-2': 2, '3-4': 4, '5-6': 6, '7plus': 7 };
-const STOPS_OPTIONS: { value: StopsRange; label: string }[] = [
-  { value: '1-2', label: '1-2 hotel' },
-  { value: '3-4', label: '3-4 hotel' },
-  { value: '5-6', label: '5-6 hotel' },
-  { value: '7plus', label: '7+ hotel' },
-];
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
@@ -58,12 +54,8 @@ function rangeFromStops(stops: number): StopsRange {
   return '7plus';
 }
 
-const SESSION_LABEL: Record<SessionId, string> = {
-  morning_class: 'Morning Class',
-  evening_class: 'Evening Class',
-};
-
 const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
+  const { t, i18n } = useTranslation('driver');
   const isEditMode = !!editTarget;
   const runDate = editTarget?.run_date ?? todayISO();
   const isToday = runDate === todayISO();
@@ -171,7 +163,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
       setResult({ kind: 'saved', payout, emailSent, date: runDate, session, stops: stopsRange });
       onDone?.();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Errore durante l’invio. Riprova.');
+      setError(err instanceof Error ? err.message : t('payoutForm.errorSubmit'));
     } finally {
       setSubmitting(false);
     }
@@ -187,10 +179,27 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
         p_session_id: session,
       });
       if (delError) throw delError;
+
+      // BYPASS-PAYOUT — email di cancellazione (driver TH + office EN). Non blocca il successo.
+      try {
+        await supabase.functions.invoke('send-driver-cancellation', {
+          body: {
+            driver_name: profile?.full_name,
+            email: profile?.email,
+            run_date: runDate,
+            session_id: session,
+            stops_range: stopsRange,
+            reason: null,
+          },
+        });
+      } catch {
+        /* degradazione graziosa: la cancellazione è comunque andata a buon fine */
+      }
+
       setResult({ kind: 'deleted' });
       onDone?.();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Errore durante l’eliminazione.');
+      setError(err instanceof Error ? err.message : t('payoutForm.errorDelete'));
     } finally {
       setDeleting(false);
     }
@@ -209,43 +218,43 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
   // ---- Success / Deleted card ----
   if (result) {
     return (
-      <Card size="lg" className="max-w-[560px] mx-auto text-center">
+      <Card size="lg" className="w-full max-w-[560px] mx-auto text-center">
         {result.kind === 'saved' ? (
           <>
             <div className="text-4xl mb-2">✅</div>
-            <Heading level="h3">Servizio registrato</Heading>
+            <Heading level="h3">{t('payoutForm.successTitle')}</Heading>
             <div className="mt-[var(--space-fluid-s,1rem)] text-left rounded-xl border border-gray-100 dark:border-gray-800 [padding:var(--space-fluid-s,1rem)] space-y-2">
-              <SummaryRow label="Data" value={fmtDate(result.date)} />
-              <SummaryRow label="Classe" value={SESSION_LABEL[result.session]} />
-              <SummaryRow label="N° hotel" value={result.stops} />
-              <SummaryRow label="Prezzo" value={`${result.payout} Baht`} highlight />
+              <SummaryRow label={t('payoutForm.summaryDate')} value={fmtDate(result.date, i18n.language)} />
+              <SummaryRow label={t('payoutForm.summaryClass')} value={result.session === 'morning_class' ? t('payoutForm.morningClass') : t('payoutForm.eveningClass')} />
+              <SummaryRow label={t('payoutForm.summaryHotels')} value={result.stops} />
+              <SummaryRow label={t('payoutForm.summaryPrice')} value={`${result.payout} ${t('payoutForm.baht')}`} highlight />
             </div>
             <Paragraph size="xs" color="muted" className="mt-2">
-              {result.emailSent ? 'Email di conferma inviata.' : 'Salvato (email non disponibile).'}
+              {result.emailSent ? t('payoutForm.emailSent') : t('payoutForm.emailFallback')}
             </Paragraph>
           </>
         ) : (
           <>
             <div className="text-4xl mb-2">🗑️</div>
-            <Heading level="h3">Servizio eliminato</Heading>
+            <Heading level="h3">{t('payoutForm.deletedTitle')}</Heading>
             <Paragraph size="sm" color="muted" className="mt-1">
-              Il servizio è stato rimosso.
+              {t('payoutForm.deletedMessage')}
             </Paragraph>
           </>
         )}
         <Button type="button" className="w-full mt-[var(--space-fluid-m,1.5rem)]" onClick={resetForm}>
-          Nuovo invio
+          {t('payoutForm.newSubmission')}
         </Button>
       </Card>
     );
   }
 
   return (
-    <Card size="lg" className="max-w-[560px] mx-auto">
+    <Card size="lg" className="w-full max-w-[560px] mx-auto">
       <header className="mb-[var(--space-fluid-s,1rem)]">
-        <Heading level="h3">{isEditMode || isExistingPending ? 'Modifica servizio' : 'Dichiara servizio'}</Heading>
+        <Heading level="h3">{isEditMode || isExistingPending ? t('payoutForm.editTitle') : t('payoutForm.declareTitle')}</Heading>
         <Paragraph size="sm" color="muted" className="mt-1">
-          Inserisci i dati del servizio per generare il payout.
+          {t('payoutForm.formSubtitle')}
         </Paragraph>
       </header>
 
@@ -253,35 +262,35 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
       {isPaid && (
         <div className="mb-[var(--space-fluid-s,1rem)] rounded-xl border border-green-500/30 bg-green-500/10 [padding:var(--space-fluid-s,1rem)]">
           <Paragraph size="sm" className="text-green-700 dark:text-green-400 font-bold">
-            Già pagato — sola lettura
+            {t('payoutForm.paidBannerTitle')}
           </Paragraph>
-          <Paragraph size="xs" color="muted">Questo servizio è stato pagato e non è più modificabile.</Paragraph>
+          <Paragraph size="xs" color="muted">{t('payoutForm.paidBannerMessage')}</Paragraph>
         </div>
       )}
       {isExistingPending && (
         <div className="mb-[var(--space-fluid-s,1rem)] rounded-xl border border-amber-500/30 bg-amber-500/10 [padding:var(--space-fluid-s,1rem)]">
           <Paragraph size="sm" className="text-amber-700 dark:text-amber-400 font-bold">
-            Già inviato per questo giorno e classe
+            {t('payoutForm.pendingBannerTitle')}
           </Paragraph>
-          <Paragraph size="xs" color="muted">Salvando sovrascrivi il servizio esistente (parte una nuova email).</Paragraph>
+          <Paragraph size="xs" color="muted">{t('payoutForm.pendingBannerMessage')}</Paragraph>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col [gap:var(--space-fluid-s,1rem)]">
-        {/* Data — oggi (auto) o data della card in modifica; sempre sola lettura */}
+        {/* Date — read only */}
         <div className="w-full space-y-1.5">
-          <SectionHeader title="Data" variant="formfield" />
+          <SectionHeader title={t('payoutForm.dateLabel')} variant="formfield" />
           <div className="h-12 flex items-center px-4 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/40 text-base font-bold text-gray-900 dark:text-white">
-            <span className="capitalize">{fmtDate(runDate)}</span>
+            <span className="capitalize">{fmtDate(runDate, i18n.language)}</span>
             {isToday && (
-              <span className="ml-auto text-[10px] font-black uppercase tracking-widest text-gray-400">Oggi</span>
+              <span className="ml-auto text-xs font-black uppercase tracking-widest text-gray-400">{t('payoutForm.todayLabel')}</span>
             )}
           </div>
         </div>
 
-        {/* Tipo classe — segmented (bloccato in modifica da card) */}
+        {/* Class type — segmented (locked in edit mode) */}
         <div className="w-full space-y-1.5">
-          <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Tipo classe</span>
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500">{t('payoutForm.classTypeLabel')}</span>
           <div className="grid grid-cols-2 [gap:var(--space-fluid-2xs,0.5rem)]">
             {(['morning_class', 'evening_class'] as SessionId[]).map((s) => (
               <button
@@ -297,41 +306,42 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
                   isEditMode && 'opacity-60 cursor-not-allowed'
                 )}
               >
-                {s === 'morning_class' ? 'Morning Class' : 'Evening Class'}
+                {s === 'morning_class' ? t('payoutForm.morningClass') : t('payoutForm.eveningClass')}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Numero hotel (stop) */}
+        {/* Number of hotels (stops) */}
         <SelectField
-          label="Numero hotel (stop)"
+          label={t('payoutForm.hotelsLabel')}
           value={stopsRange}
           disabled={isPaid}
           onChange={(e) => setStopsRange(e.target.value as StopsRange)}
         >
-          {STOPS_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
+          <option value="1-2">{t('payoutForm.stops12')}</option>
+          <option value="3-4">{t('payoutForm.stops34')}</option>
+          <option value="5-6">{t('payoutForm.stops56')}</option>
+          <option value="7plus">{t('payoutForm.stops7plus')}</option>
         </SelectField>
 
-        {/* Prezzo payout (auto) */}
+        {/* Payout price (auto) */}
         <div className="flex items-center justify-between rounded-xl bg-gray-900 dark:bg-gray-800 text-white [padding:var(--space-fluid-s,1rem)]">
-          <span className="text-xs opacity-80">Prezzo payout</span>
+          <span className="text-xs opacity-80">{t('payoutForm.payoutPriceLabel')}</span>
           <span className="text-2xl font-bold">
-            {price ?? '—'} <span className="text-sm font-medium opacity-80">Baht</span>
+            {price ?? '—'} <span className="text-sm font-medium opacity-80">{t('payoutForm.baht')}</span>
           </span>
         </div>
 
-        {/* Numero clienti totali — tendina 1..14 */}
+        {/* Total guests */}
         <SelectField
-          label="Numero clienti totali (persone in auto)"
+          label={t('payoutForm.paxLabel')}
           value={pax}
           disabled={isPaid}
           onChange={(e) => setPax(e.target.value)}
         >
           {Array.from({ length: 14 }, (_, i) => i + 1).map((n) => (
-            <option key={n} value={String(n)}>{n} {n === 1 ? 'persona' : 'persone'}</option>
+            <option key={n} value={String(n)}>{n} {n === 1 ? t('payoutForm.person') : t('payoutForm.people')}</option>
           ))}
         </SelectField>
 
@@ -341,11 +351,11 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
 
         {!isPaid && (
           <Button type="submit" className="w-full mt-1" disabled={!profile} isLoading={submitting}>
-            {submitting ? 'Invio…' : isExistingPending ? 'Salva modifica' : 'Invia'}
+            {submitting ? t('payoutForm.submitting') : isExistingPending ? t('payoutForm.saveEdit') : t('payoutForm.submit')}
           </Button>
         )}
 
-        {/* Elimina — solo su pending esistente */}
+        {/* Delete — only for existing pending */}
         {isExistingPending && !isPaid && (
           <Button
             type="button"
@@ -354,7 +364,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
             onClick={handleDelete}
             isLoading={deleting}
           >
-            {deleting ? 'Elimino…' : 'Elimina servizio'}
+            {deleting ? t('payoutForm.deleting') : t('payoutForm.deleteService')}
           </Button>
         )}
       </form>
@@ -371,9 +381,11 @@ const SummaryRow: React.FC<{ label: string; value: string; highlight?: boolean }
   </div>
 );
 
-function fmtDate(dateStr: string): string {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('it-IT', {
-    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+function fmtDate(dateStr: string, lang = 'en'): string {
+  const locale = getLocaleCode(lang);
+  // Solo giorno + mese (niente nome giorno, niente anno)
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString(locale, {
+    day: '2-digit', month: 'long',
   });
 }
 

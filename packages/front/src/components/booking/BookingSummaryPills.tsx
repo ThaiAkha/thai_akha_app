@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '../ui/index';
+import { Icon, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface BookingSummaryPillsProps {
@@ -18,7 +18,7 @@ interface BookingSummaryPillsProps {
 const PILL_ACTIVE = 'bg-action/10 border-action shadow-[0_0_20px_-5px_rgba(152,201,60,0.3)]';
 const PILL_INACTIVE = 'bg-surface border-dashed border-border/60 opacity-60';
 const ICON_ACTIVE = 'bg-action text-background';
-const ICON_INACTIVE = 'bg-black/10 dark:bg-white/10 text-gray-700 dark:text-gray-300';
+const ICON_INACTIVE = 'bg-surface-elevated text-muted';
 
 interface PillProps {
   label: string;
@@ -42,12 +42,12 @@ const Pill: React.FC<PillProps> = ({ label, value, icon, active, onClick, sessio
         <Icon name={icon} size="sm" />
       </div>
       <div className="flex flex-col items-start">
-        <span className="text-[10px] font-black uppercase tracking-widest text-gray-700/50 dark:text-gray-300/50 leading-none mb-0.5">
+        <Typography variant="microLabel" as="span" color="muted" className="leading-none mb-0.5">
           {label}
-        </span>
-        <span className={cn('text-base font-bold leading-none', active ? (sessionColor || 'text-gray-900 dark:text-gray-100') : 'text-gray-700 dark:text-gray-300')}>
+        </Typography>
+        <Typography variant="numericMedium" as="span" className={cn('leading-none', active ? (sessionColor || 'text-title') : 'text-muted')}>
           {value}
-        </span>
+        </Typography>
       </div>
     </>
   );
@@ -70,7 +70,7 @@ export const BookingSummaryPills: React.FC<BookingSummaryPillsProps> = ({
   className,
 }) => {
   const sessionLabel = session === 'morning_class' ? 'Morning' : session === 'evening_class' ? 'Evening' : 'Select';
-  const sessionColor = session === 'morning_class' ? 'text-orange-500' : session === 'evening_class' ? 'text-action' : undefined;
+  const sessionColor = session === 'morning_class' ? 'text-allergy' : session === 'evening_class' ? 'text-action' : undefined;
   const sessionIcon = session === 'morning_class' ? 'wb_sunny' : 'dark_mode';
   const groupValue = pax > 0
     ? `${pax} Cook${pax > 1 ? 's' : ''}${visitors > 0 ? ` + ${visitors}` : ''}`
@@ -86,7 +86,7 @@ export const BookingSummaryPills: React.FC<BookingSummaryPillsProps> = ({
         onClick={onDateClick}
       />
 
-      <Icon name="chevron_right" size="xs" className="text-gray-700/20 dark:text-gray-300/20 hidden lg:block shrink-0" />
+      <Icon name="chevron_right" size="xs" className="text-muted opacity-20 hidden lg:block shrink-0" />
 
       <Pill
         label="Class"
@@ -97,7 +97,7 @@ export const BookingSummaryPills: React.FC<BookingSummaryPillsProps> = ({
         sessionColor={session ? sessionColor : undefined}
       />
 
-      <Icon name="chevron_right" size="xs" className="text-gray-700/20 dark:text-gray-300/20 hidden lg:block shrink-0" />
+      <Icon name="chevron_right" size="xs" className="text-muted opacity-20 hidden lg:block shrink-0" />
 
       <Pill
         label="Group"

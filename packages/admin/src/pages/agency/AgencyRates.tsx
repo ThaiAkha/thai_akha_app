@@ -50,10 +50,10 @@ const AgencyRates: React.FC = () => {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                                    <th className="pb-4 text-[10px] font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colClass')}</th>
-                                    <th className="pb-4 text-[10px] font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colRack')}</th>
-                                    <th className="pb-4 text-[10px] font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colNet')}</th>
-                                    <th className="pb-4 text-[10px] font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colCommission')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colClass')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colRack')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colNet')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colCommission')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">

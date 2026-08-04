@@ -133,7 +133,9 @@
     "readTime": "Read time",
     "noContent": "No content available",
     "prev": "Prev",
-    "next": "Next"
+    "next": "Next",
+    "expandPhoto": "Expand photo",
+    "exitPhotoView": "Exit photo view"
   },
   "news": {
     "placeholderMediaId": "Media ID or URL",

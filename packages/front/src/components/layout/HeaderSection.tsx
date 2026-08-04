@@ -1,15 +1,15 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Typography from '../ui/Typography';
-import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import Badge from '../ui/navigation/Badge';
-export type HeaderSectionVariant = 'hero' | 'section' | 'history' | 'kitchen';
+export type HeaderSectionVariant = 'hero' | 'hero-1' | 'hero2' | 'section' | 'history' | 'kitchen';
 export type HeaderSectionAlign = 'left' | 'center' | 'right';
 
 export interface HeaderSectionProps {
   title: string;
-  subtitle?: string;
-  description?: string;
+  subtitle?: React.ReactNode | string;
+  description?: React.ReactNode | string;
   highlight?: string;
   tag?: string;
   variant?: HeaderSectionVariant;
@@ -22,6 +22,8 @@ export interface HeaderSectionProps {
   hideDivider?: boolean;
   hideDescription?: boolean;
   hideTag?: boolean;
+  /** Theme color for the header divider pixel pattern */
+  dividerTheme?: import('../divider/AkhaPixelPattern').AkhaTheme;
 }
 
 // 🛡️ MAPPE STATICHE PER TAILWIND V4
@@ -34,6 +36,13 @@ const GRADIENT_FROM: Record<string, string> = {
   'btn-s': 'from-btn-s',
   'secondary': 'from-secondary',
   'allergy': 'from-allergy',
+  // Cherry/FAQ ocean family
+  'deep-ocean': 'from-deep-ocean',
+  'deep-blue': 'from-deep-blue',
+  'ocean-blue': 'from-ocean-blue',
+  'sky-blue': 'from-sky-blue',
+  'light-blue': 'from-light-blue',
+  'pale-ice': 'from-pale-ice',
 };
 
 const GRADIENT_TO: Record<string, string> = {
@@ -45,6 +54,13 @@ const GRADIENT_TO: Record<string, string> = {
   'btn-s': 'to-btn-s',
   'secondary': 'to-secondary',
   'allergy': 'to-allergy',
+  // Cherry/FAQ ocean family
+  'deep-ocean': 'to-deep-ocean',
+  'deep-blue': 'to-deep-blue',
+  'ocean-blue': 'to-ocean-blue',
+  'sky-blue': 'to-sky-blue',
+  'light-blue': 'to-light-blue',
+  'pale-ice': 'to-pale-ice',
 };
 
 export const HeaderSection: React.FC<HeaderSectionProps> = ({
@@ -63,7 +79,11 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
   hideDivider,
   hideDescription,
   hideTag,
+  dividerTheme,
 }) => {
+  // Se non specificato, inferiamo il tema dal gradiente (es. quiz-p -> quiz)
+  const activeDividerTheme = dividerTheme || (gradientFrom === 'quiz-p' ? 'quiz' : 'akha');
+
   // Mappatura allineamento responsiva: Forza centro su mobile, rispetta prop su md+
   const alignmentClasses = {
     left: 'text-center items-center md:text-left md:items-start',
@@ -73,7 +93,8 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
 
   // Mappatura semantica delle varianti tipografiche
   const getTitleVariant = () => {
-    if (variant === 'hero') return 'titleMain';
+    if (variant === 'hero' || variant === 'hero2') return 'titleMain';
+    if (variant === 'hero-1') return 'display2';
     if (variant === 'history' || variant === 'kitchen') return 'h3';
     return 'h2';
   };
@@ -84,11 +105,16 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
   // Helper per renderizzare il titolo
   const renderTitle = () => {
     const titleVariant = getTitleVariant();
-    const AsTag = variant === 'hero' ? 'h1' : (variant === 'section' ? 'h2' : 'h3');
+    const AsTag = variant === 'hero' ? 'h1' : (variant === 'hero-1' || variant === 'hero2' || variant === 'section' || variant === 'kitchen' ? 'h2' : 'h3');
 
     if (!highlight) {
       return (
-        <Typography variant={titleVariant} as={AsTag} color="title">
+        <Typography
+          variant={titleVariant}
+          as={AsTag}
+          color="title"
+          className={cn(variant === 'hero-1' && "![font-size:calc(var(--text-fluid-display2)*0.9)] leading-[1]")}
+        >
           {title}
         </Typography>
       );
@@ -99,15 +125,34 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
         variant={titleVariant}
         as={AsTag}
         color="title"
-        className={cn("[column-gap:var(--space-fluid-xs)] flex flex-wrap", align === 'center' ? 'justify-center' : 'justify-center md:justify-start')}
+        // aria-label ensures crawlers and screen readers get "Title Highlight"
+        // with a space — CSS column-gap provides visual spacing but creates no
+        // text node between the two spans, resulting in "TitleHighlight" in textContent.
+        aria-label={`${title} ${highlight}`}
+        className={cn(
+          "flex [column-gap:var(--space-fluid-xs)]",
+          variant === 'hero-1' ? "flex-col" : "flex-wrap",
+          align === 'center' && "justify-center items-baseline text-center",
+          align === 'left' && [
+            "justify-center md:justify-start text-center md:text-left",
+            variant === 'hero-1' ? "items-center md:items-start" : "items-baseline"
+          ],
+          variant === 'hero-1' && "![font-size:calc(var(--text-fluid-display2)*0.9)] leading-[1.0] [gap:var(--space-fluid-xs)]"
+        )}
       >
-        <span>{title}</span>
+        <span aria-hidden="true" className={cn(variant === 'hero-1' && "mb-0")}>{title}</span>
+        {' '}
         <Typography
-          variant={variant === 'hero' ? 'titleHighlight' : titleVariant}
+          variant={(variant === 'hero' || variant === 'hero-1' || variant === 'hero2') ? 'titleHighlight' : titleVariant}
           as="span"
+          aria-hidden="true"
           className={cn(
-            variant !== 'hero' && `text-transparent bg-clip-text bg-gradient-to-r ${fromClass} ${toClass}`,
-            "pb-1"
+            "text-transparent bg-clip-text bg-gradient-to-r inline-block",
+            fromClass,
+            toClass,
+            "pe-[0.25em]",
+            variant === 'hero-1' ? "pt-1 pb-4" : "pb-1",
+            variant === 'hero-1' && "![font-size:0.85em] leading-none"
           )}
         >
           {highlight}
@@ -121,7 +166,7 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
 
       {/* 1. TAG BADGE - Dimensione "sm" e testo con gradiente dell'highlight */}
       {tag && !hideTag && (
-        <div className="[margin-bottom:var(--space-fluid-s)]">
+        <div className="[margin-bottom:var(--space-fluid-xs)]">
           <Badge variant="mineral" color={gradientTo} size="sm">
             <Typography
               variant="badge"
@@ -140,7 +185,7 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
 
       {/* 2. TITLE + HIGHLIGHT */}
       {!hideTitle && (
-        <div className="[margin-bottom:var(--space-fluid-3xs)]">
+        <div className={(variant === 'hero' || variant === 'hero-1' || variant === 'hero2') ? 'mb-0' : '[margin-bottom:0px]'}>
           {renderTitle()}
         </div>
       )}
@@ -159,24 +204,19 @@ export const HeaderSection: React.FC<HeaderSectionProps> = ({
       {/* 4. DIVIDER RESPONSIVE */}
       {!hideDivider && (
         <div className={cn(
-          "[margin-top:var(--space-fluid-2xs)] [margin-bottom:var(--space-fluid-s)] opacity-90 hover:opacity-100 transition-opacity mx-auto md:mx-0",
+          "[margin-top:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-m)] opacity-90 hover:opacity-100 transition-opacity mx-auto md:mx-0",
           align === 'center' ? 'md:mx-auto' : (align === 'right' ? 'md:ml-auto md:mr-0' : 'md:mr-auto md:ml-0')
         )}>
-          <div className="block md:hidden">
-            <AkhaPixelPattern variant="line_simple" size={5} speed={40} />
-          </div>
-          <div className="hidden md:block">
-            <AkhaPixelPattern variant="line_simple" size={8} speed={40} />
-          </div>
+          <AkhaPixelPattern variant="line_simple" size={8} speed={40} theme={activeDividerTheme} />
         </div>
       )}
 
       {/* 5. DESCRIPTION */}
       {!hideDescription && description && (
         <Typography
-          variant={variant === 'hero' ? 'paragraphM' : 'body'}
+          variant={(variant === 'hero' || variant === 'hero-1' || variant === 'hero2') ? 'paragraphM' : 'body'}
           color="sub"
-          className="max-w-2xl whitespace-pre-line"
+          className={cn("max-w-2xl whitespace-pre-line", variant === 'hero-1' && "leading-snug")}
         >
           {description}
         </Typography>

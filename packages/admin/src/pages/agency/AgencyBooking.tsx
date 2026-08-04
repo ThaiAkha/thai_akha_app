@@ -39,6 +39,10 @@ const AgencyBooking: React.FC = () => {
     // --- 3. BOOKING  DETAILS ---
     const [pax, setPax] = useState(1);
     const [amount, setAmount] = useState(1400);
+    // Commissione agenzia (per-pax, tiered) — single source: RPC calculate_agency_commission.
+    const [commission, setCommission] = useState<{ amount: number; ratePerPax: number; tier: string | null }>({
+        amount: 0, ratePerPax: 0, tier: null,
+    });
 
     // --- 4. LOGISTICS ---
     const [hotel, setHotel] = useState('');
@@ -46,13 +50,37 @@ const AgencyBooking: React.FC = () => {
     const [pickupTime, setPickupTime] = useState('08:30');
     const [notes, setNotes] = useState('');
 
-    // Auto-calc Price (Net for Agency)
+    // Auto-calc Price (Net for Agency) — commissione per-pax tiered via RPC single-source.
+    // Solo classi per-persona (morning/evening). Fallback safe: nessuno sconto, non blocca.
     useEffect(() => {
-        const basePrice = PRICES[session] || 1400;
-        const commissionRate = user?.agency_commission_rate || 0;
-        const gross = basePrice * pax;
-        const discount = Math.round((gross * commissionRate) / 100);
-        setAmount(gross - discount);
+        const gross = (PRICES[session] || 1400) * pax;
+        if (!user?.id) {
+            setAmount(gross);
+            setCommission({ amount: 0, ratePerPax: 0, tier: null });
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            const { data, error } = await supabase.rpc('calculate_agency_commission', {
+                p_agency_id: user.id,
+                p_pax: pax,
+            });
+            if (cancelled) return;
+            const res = (data ?? {}) as { success?: boolean; commission_amount?: number; rate_per_pax?: number; tier?: string };
+            if (error || !res.success) {
+                if (error) console.warn('[AgencyBooking] commission calc failed:', error.message);
+                setCommission({ amount: 0, ratePerPax: 0, tier: null });
+                setAmount(gross);
+                return;
+            }
+            setCommission({
+                amount: res.commission_amount ?? 0,
+                ratePerPax: res.rate_per_pax ?? 0,
+                tier: res.tier ?? null,
+            });
+            setAmount(gross - (res.commission_amount ?? 0));
+        })();
+        return () => { cancelled = true; };
     }, [pax, session, user]);
 
     // Auto-set Pickup Time
@@ -92,8 +120,8 @@ const AgencyBooking: React.FC = () => {
                 session_id: session,
                 pax_count: pax,
                 total_price: amount,
-                commission_amount: Math.round(((PRICES[session] * pax) * (user.agency_commission_rate || 0)) / 100),
-                applied_commission_rate: user.agency_commission_rate || 0,
+                commission_amount: commission.amount,
+                applied_commission_rate: commission.ratePerPax,
                 status: 'confirmed',
                 payment_status: 'pending_invoice',
                 payment_method: 'agency_invoice',
@@ -129,7 +157,7 @@ const AgencyBooking: React.FC = () => {
                     <div className="lg:col-span-7 space-y-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-8">
                             <div>
-                                <h6 className="text-[10px] uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepGuest')}</h6>
+                                <h6 className="text-xs uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepGuest')}</h6>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <InputField
                                         label={t('agencyBooking.fieldFullName')}
@@ -149,7 +177,7 @@ const AgencyBooking: React.FC = () => {
                             <hr className="border-gray-100 dark:border-gray-800" />
 
                             <div>
-                                <h6 className="text-[10px] uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepClass')}</h6>
+                                <h6 className="text-xs uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepClass')}</h6>
                                 <AdminClassPicker
                                     date={date}
                                     session={session}
@@ -160,7 +188,7 @@ const AgencyBooking: React.FC = () => {
                         </div>
 
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-6">
-                            <h6 className="text-[10px] uppercase font-black text-primary-600 tracking-widest mb-2">{t('agencyBooking.stepPickup')}</h6>
+                            <h6 className="text-xs uppercase font-black text-primary-600 tracking-widest mb-2">{t('agencyBooking.stepPickup')}</h6>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <InputField
@@ -177,7 +205,7 @@ const AgencyBooking: React.FC = () => {
                                     onChange={e => setPickupTime(e.target.value)}
                                 />
                                 <div>
-                                    <label className="text-[10px] uppercase font-black text-gray-500 mb-1.5 block ml-1">{t('agencyBooking.fieldZone')}</label>
+                                    <label className="text-xs uppercase font-black text-gray-500 mb-1.5 block ml-1">{t('agencyBooking.fieldZone')}</label>
                                     <select
                                         value={zone}
                                         onChange={e => setZone(e.target.value)}
@@ -200,7 +228,7 @@ const AgencyBooking: React.FC = () => {
                     {/* RIGHT COL: SUMMARY & ACTION */}
                     <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl space-y-8">
-                            <h6 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">{t('agencyBooking.summaryTitle')}</h6>
+                            <h6 className="text-xs uppercase font-black text-gray-400 tracking-widest">{t('agencyBooking.summaryTitle')}</h6>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700">
@@ -216,12 +244,12 @@ const AgencyBooking: React.FC = () => {
                             <div className="bg-primary-50 dark:bg-primary-500/5 p-6 rounded-3xl border border-primary-100 dark:border-primary-500/20 space-y-2">
                                 <div className="flex justify-between items-center text-xs font-bold text-primary-600">
                                     <span>{t('agencyBooking.summaryNetRate')}</span>
-                                    <span>{user?.agency_commission_rate}% {t('agencyBooking.summaryDiscount')}</span>
+                                    <span>{commission.ratePerPax.toLocaleString()} THB/pax{commission.tier ? ` · ${commission.tier}` : ''}</span>
                                 </div>
                                 <div className="flex justify-between items-end">
                                     <span className="text-xs text-gray-400 line-through mb-1">{(PRICES[session] * pax).toLocaleString()} THB</span>
                                     <div className="text-right">
-                                        <span className="block text-[10px] uppercase font-black text-gray-400 mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
+                                        <span className="block text-xs uppercase font-black text-gray-400 mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
                                         <h3 className="text-4xl font-black text-primary-600 dark:text-primary-400 italic">
                                             {amount.toLocaleString()} <span className="text-sm font-normal text-gray-400 not-italic uppercase">THB</span>
                                         </h3>
@@ -229,7 +257,7 @@ const AgencyBooking: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 text-[10px] text-gray-400 font-bold uppercase tracking-widest px-2">
+                            <div className="flex gap-3 text-xs text-gray-400 font-bold uppercase tracking-widest px-2">
                                 <Info className="size-4 text-primary-500 shrink-0" />
                                 <span>{t('agencyBooking.invoiceNote')}</span>
                             </div>

@@ -392,3 +392,14 @@ verify_jwt = false
 
 [functions.gemini-token]
 verify_jwt = false
+
+[functions.og-meta-tags]
+verify_jwt = false
+
+# Password reset is triggered by an UNauthenticated user (reset page) → no JWT.
+[functions.send-password-reset]
+verify_jwt = false
+
+# Welcome email is triggered right at signup, before a session is guaranteed.
+[functions.send-admin-welcome]
+verify_jwt = false

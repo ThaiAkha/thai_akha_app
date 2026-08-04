@@ -5,7 +5,7 @@
  * Le PAGINE consumano le forme UI esistenti (FAQCategory[] / LegalDocument),
  * mappate dal service front (infoPages.service.ts).
  */
-import type { FAQCta, FAQCategory } from '../data/faqQuestion';
+import type { FAQCta, FAQCategory } from './faq.types';
 
 // ── faq_categories ──────────────────────────────────────────────────────────
 export interface FaqCategoryRow {
@@ -90,4 +90,6 @@ export interface InfoPageSectionRow {
   section_order: number;
   heading: string;
   body: InfoPageBlock[];
+  /** Stable short anchor id for deep-linking (e.g. 'cancellations'). NULL → fallback slugify(heading). */
+  anchor?: string | null;
 }

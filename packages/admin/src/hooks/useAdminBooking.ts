@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { getSmartAvatarUrlSafe } from '@thaiakha/shared/lib/avatarSystem';
@@ -19,6 +20,7 @@ export interface NewUser {
 }
 
 export const useAdminBooking = () => {
+    const { t } = useTranslation('booking');
     const { user: authUser } = useAuth();
     // --- STATE ---
     const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -229,9 +231,9 @@ export const useAdminBooking = () => {
     }, [maxPax]);
 
     const handleCreate = async () => {
-        if (!date || !session) return alert("Missing Date/Session");
-        if (!amount || amount <= 0) return alert("⚠️ Price missing — check session configuration in the database before booking.");
-        if (userMode === 'new' && (!newUser.fullName || !newUser.password)) return alert("Full Name and Password Required");
+        if (!date || !session) return alert(t('alerts.missingDateSession'));
+        if (!amount || amount <= 0) return alert(t('alerts.priceMissing'));
+        if (userMode === 'new' && (!newUser.fullName || !newUser.password)) return alert(t('alerts.namePasswordRequired'));
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         console.log("[useAdminBooking] handleCreate - session:", currentSession?.user?.id || 'NO SESSION');
 
@@ -267,7 +269,7 @@ export const useAdminBooking = () => {
                 const uData = await response.json();
                 userId = uData.userId;
                 if (userId) {
-                    const avatarUrl = getSmartAvatarUrlSafe(newUser.gender, newUser.age);
+                    const avatarUrl = await getSmartAvatarUrlSafe(newUser.gender, newUser.age);
                     await supabase.from('profiles').update({
                         dietary_profile: 'diet_regular',
                         phone_number: newUser.phone,
@@ -281,7 +283,8 @@ export const useAdminBooking = () => {
             }
 
             // Default values for missing logistics data
-            const defaultDriverId = 'b7866c46-221d-4b16-9fd8-72722d173de5'; // Driver 01
+            // BYPASS-PAYOUT (driver mapping) — default pickup driver booking-based = "At" (profilo driver reale).
+            const defaultDriverId = '5629d491-6cd1-4344-9254-9bf8ccbba45f'; // At
 
             const { error: bError } = await supabase.from('bookings').insert({
                 user_id: userMode === 'internal' ? authUser?.id : userId,
@@ -314,7 +317,7 @@ export const useAdminBooking = () => {
 
             if (bError) throw bError;
 
-            alert("Booking Created Successfully!");
+            alert(t('alerts.bookingCreated'));
             // Reset
             setPax(1); setNotes(''); setHotel(null); setPickupZone(null); setSelectedUser(null);
             setNewUser({ fullName: '', email: '', phone: '', password: '', isWhatsapp: true, gender: '', age: '', nationality: '' });
@@ -325,7 +328,7 @@ export const useAdminBooking = () => {
             setHasLuggage(false);
             fetchAvailability();
         } catch (e: any) {
-            alert(`Error: ${e.message}`);
+            alert(t('alerts.errorPrefix', { message: e.message }));
         } finally {
             setLoading(false);
         }

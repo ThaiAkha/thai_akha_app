@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Camera, BadgeCheck, Mail, Loader2, Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileFooter, ProfileRow } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
-import { getSmartAvatarUrl, isSmartAvatar } from "@thaiakha/shared/lib/avatarSystem";
+import { getSmartAvatarUrl } from "@thaiakha/shared/lib/avatarSystem";
 import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
 import { useTranslation } from "react-i18next";
 
@@ -72,9 +72,11 @@ export default function UserMetaCard() {
     try {
       let finalAvatarUrl = user.avatar_url;
 
-      // Smart Avatar logic still uses these but they are hidden from UI
-      if ((!user.avatar_url || isSmartAvatar(user.avatar_url)) && formData.gender && formData.age) {
-        finalAvatarUrl = getSmartAvatarUrl(formData.gender as any, Number(formData.age));
+      // Assign a Smart Avatar ONLY when the user has none yet.
+      // Re-generating it for an existing preset avatar picked a NEW random
+      // variant on every save — that was the "random avatar on each edit" bug.
+      if (!user.avatar_url && formData.gender && formData.age) {
+        finalAvatarUrl = await getSmartAvatarUrl(formData.gender as any, Number(formData.age));
       }
 
       await updateProfile(user.id, {
@@ -118,7 +120,7 @@ export default function UserMetaCard() {
         <div className="relative group shrink-0">
           <div className="w-28 h-28 lg:w-40 lg:h-40 overflow-hidden border-4 border-white dark:border-gray-800 rounded-full transition-all duration-500 group-hover:scale-105 shadow-2xl shadow-primary-500/10">
             <img
-              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random&size=128`}
+              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&size=128`}
               alt="Profile"
               className="object-cover w-full h-full"
             />
@@ -210,7 +212,7 @@ export default function UserMetaCard() {
                         </div>
                         <div>
                           <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{country.name}</p>
-                          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{country.code}</p>
+                          <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{country.code}</p>
                         </div>
                       </div>
                       <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />

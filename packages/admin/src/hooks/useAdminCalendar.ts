@@ -70,7 +70,7 @@ export const useAdminCalendar = () => {
             }
 
             const split: Record<string, BookingMember[]> = { morning_class: [], evening_class: [] };
-            data?.forEach((b: { guest_name: string | null; pax_count: number; session_id: string | null }) => {
+            (data as { guest_name: string | null; pax_count: number; session_id: string | null }[] | null)?.forEach((b) => {
                 if (b.session_id && split[b.session_id]) {
                     split[b.session_id].push({ guest_name: b.guest_name || 'Unknown Guest', pax_count: b.pax_count });
                 }

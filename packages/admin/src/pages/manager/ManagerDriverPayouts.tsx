@@ -301,7 +301,7 @@ const ManagerDriverPayouts: React.FC = () => {
               <div>
                 <Heading level="h4">{fmtRange(w.start, w.end, i18n.language)}</Heading>
                 <span className={cn(
-                  'text-[10px] font-black uppercase tracking-widest',
+                  'text-xs font-black uppercase tracking-widest',
                   w.fullyPaid ? 'text-green-600 dark:text-green-400' : 'text-amber-600'
                 )}>
                   {w.fullyPaid ? (w.zohoId ? t('driverPayouts.statusPaidBilled') : t('driverPayouts.statusPaidUnbilled')) : t('driverPayouts.statusPending')}

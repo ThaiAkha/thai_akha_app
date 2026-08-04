@@ -53,5 +53,12 @@
     "saving": "SAVING...",
     "tooltipEdit": "Edit this record",
     "tooltipSave": "Save changes"
+  },
+  "alerts": {
+    "nameSkuRequired": "Please enter at least Name and SKU",
+    "savedSuccess": "Product saved successfully",
+    "saveFailed": "Failed to save: {{message}}",
+    "confirmDelete": "Are you sure you want to delete this product?",
+    "copiedCount": "{{count}} items copied to clipboard"
   }
 }

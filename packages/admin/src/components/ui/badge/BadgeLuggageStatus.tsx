@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Luggage } from 'lucide-react';
 import Tooltip from '../Tooltip';
 
@@ -8,6 +9,7 @@ interface BadgeLuggageStatusProps {
 }
 
 const BadgeLuggageStatus: React.FC<BadgeLuggageStatusProps> = ({ hasLuggage, size = 'md' }) => {
+    const { t } = useTranslation('common');
     if (!hasLuggage) return null;
 
     const sizeClasses = size === 'sm'
@@ -17,7 +19,7 @@ const BadgeLuggageStatus: React.FC<BadgeLuggageStatusProps> = ({ hasLuggage, siz
     const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
 
     return (
-        <Tooltip content="Has luggage" position="left">
+        <Tooltip content={t('badges.hasLuggage')} position="left">
             <div className={`flex items-center justify-center ${sizeClasses} bg-orange-50 dark:bg-btn-p-900/20 rounded-md border border-orange-500 dark:border-orange-500 shrink-0`}>
                 <Luggage className={`${iconSize} text-orange-500`} />
             </div>

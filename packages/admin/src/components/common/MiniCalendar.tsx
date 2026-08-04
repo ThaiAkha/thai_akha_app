@@ -95,7 +95,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
 
             <div className="grid grid-cols-7 gap-1 text-center mb-2">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                    <div key={i} className="text-[9px] font-black text-gray-400 uppercase">{day}</div>
+                    <div key={i} className="text-xs font-black text-gray-400 uppercase">{day}</div>
                 ))}
             </div>
 

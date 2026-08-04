@@ -1,4 +1,5 @@
-import React, { useState, ReactNode } from 'react';
+import React, { useState, useRef, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface TooltipProps {
@@ -8,6 +9,9 @@ interface TooltipProps {
     className?: string;
 }
 
+// Render via portal su document.body con position:fixed → il tooltip NON viene tagliato
+// da antenati con overflow-hidden/auto (es. liste scrollabili, card). Posizione calcolata
+// dal bounding rect del trigger al momento dell'hover.
 const Tooltip: React.FC<TooltipProps> = ({
     children,
     content,
@@ -15,39 +19,47 @@ const Tooltip: React.FC<TooltipProps> = ({
     className
 }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const [coords, setCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+    const triggerRef = useRef<HTMLDivElement>(null);
 
-    const positionClasses = {
-        top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-        bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
-        left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-        right: 'left-full top-1/2 -translate-y-1/2 ml-2'
+    const show = () => {
+        const el = triggerRef.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const GAP = 8;
+        let top = r.top + r.height / 2;
+        let left = r.left + r.width / 2;
+        if (position === 'top') top = r.top - GAP;
+        else if (position === 'bottom') top = r.bottom + GAP;
+        else if (position === 'left') left = r.left - GAP;
+        else if (position === 'right') left = r.right + GAP;
+        setCoords({ top, left });
+        setIsVisible(true);
     };
 
-    const arrowClasses = {
-        top: 'top-full left-1/2 -translate-x-1/2 -mt-1 border-t-gray-900',
-        bottom: 'bottom-full left-1/2 -translate-x-1/2 -mb-1 border-b-gray-900',
-        left: 'left-full top-1/2 -translate-y-1/2 -ml-1 border-l-gray-900',
-        right: 'right-full top-1/2 -translate-y-1/2 -mr-1 border-r-gray-900'
-    };
+    const transform = {
+        top: 'translate(-50%, -100%)',
+        bottom: 'translate(-50%, 0)',
+        left: 'translate(-100%, -50%)',
+        right: 'translate(0, -50%)',
+    }[position];
 
     return (
         <div
-            className={cn("relative inline-block", className)}
-            onMouseEnter={() => setIsVisible(true)}
+            ref={triggerRef}
+            className={cn('relative inline-block', className)}
+            onMouseEnter={show}
             onMouseLeave={() => setIsVisible(false)}
         >
             {children}
-            {isVisible && (
-                <div className={cn(
-                    "absolute z-[99999] whitespace-nowrap px-2 py-1 text-[10px] font-bold text-white bg-gray-900 rounded shadow-xl animate-in fade-in zoom-in duration-200",
-                    positionClasses[position]
-                )}>
+            {isVisible && createPortal(
+                <div
+                    style={{ position: 'fixed', top: coords.top, left: coords.left, transform }}
+                    className="z-[99999] whitespace-nowrap px-2 py-1 text-xs font-bold text-white bg-gray-900 rounded shadow-xl pointer-events-none animate-in fade-in zoom-in duration-200"
+                >
                     {content}
-                    <div className={cn(
-                        "absolute border-4 border-transparent",
-                        arrowClasses[position]
-                    )} />
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

@@ -13,31 +13,43 @@ export interface RecipeData {
   slug?: string;
   name: string;
   thai_name?: string;
+  subtitle?: string;
+  excerpt?: string;
   description: string;
   category: string;
   image: string;
-  spiciness: number;
   // Diete & Allergeni
-  isVegan: boolean;
-  isVegetarian: boolean;
   hasPeanuts: boolean;
   hasGluten: boolean;
   hasShellfish: boolean;
   hasSoy: boolean;
-  hasEggs?: boolean;
-  hasDairy?: boolean;
+  hasEggs: boolean;
+  hasFish: boolean;
+  hasFishSauce: boolean;
+  hasSeafood: boolean;
+  hasSesame: boolean;
+  hasSoySauce: boolean;
+  hasTreeNuts: boolean;
   // Metadata
   isSignature: boolean;
   isFixedDish: boolean;
   healthBenefits: string;
   keyIngredients: string[];
-  colorTheme?: string;
   // Media
+  coverAltText?: string;
   audio_story_url?: string;
   audio_cooking_url?: string;
   galleryImages: string[];
   dietary_variants?: Record<string, any>;
   activeDietLabel?: string;
+  // Cookbook / Recipe Detail
+  servings?: string;
+  prep_time_min?: number;
+  cook_time_min?: number;
+  directions?: Array<{ step: number; text: string }>;
+  garnish?: string;
+  cooks_tip?: string;
+  notes?: string;
 }
 
 export interface CategoryData {
@@ -111,9 +123,23 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         setLoadingIng(true);
         const { data } = await supabase
             .from('ingredients_library')
-            .select('id, name_en, name_th, phonetic, description, image_url, is_visible_public')
+            .select('id, name_en, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
             .in('name_en', recipe.keyIngredients);
-        if (data) setRichIngredients(data);
+        // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
+        if (data) setRichIngredients(
+            (data as Array<Record<string, unknown>>).map((item) => {
+                const cover = item.cover as { image_url?: string } | null;
+                return {
+                    id: item.id as string,
+                    name_en: item.name_en as string,
+                    name_th: item.name_th as string,
+                    phonetic: item.phonetic as string | undefined,
+                    description: item.description as string,
+                    is_visible_public: item.is_visible_public as boolean,
+                    image_url: cover?.image_url ?? '',
+                };
+            })
+        );
         setLoadingIng(false);
     };
 
@@ -153,8 +179,13 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       'Shellfish': recipe.hasShellfish,
       'Gluten': recipe.hasGluten,
       'Soy': recipe.hasSoy,
-      'Eggs': recipe.hasEggs || false,
-      'Dairy': recipe.hasDairy || false
+      'Eggs': recipe.hasEggs,
+      'Fish': recipe.hasFish,
+      'Fish Sauce': recipe.hasFishSauce,
+      'Seafood': recipe.hasSeafood,
+      'Sesame': recipe.hasSesame,
+      'Soy Sauce': recipe.hasSoySauce,
+      'Tree Nuts': recipe.hasTreeNuts
     };
 
     userAllergies.forEach(allergen => {
@@ -416,7 +447,14 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                  </div>
               </div>
               <div className="p-8 pt-4 space-y-6">
-                 <Typography variant="body" className="text-white/70 leading-relaxed text-sm font-light">{activeIngredient.description}</Typography>
+                 {/* description dal DB è HTML (192 righe con <p>/<strong>) → render con prose
+                     come IngredientModal/IngredientPageSingle, non testo grezzo. */}
+                 <Typography
+                    as="div"
+                    variant="body"
+                    className="text-white/70 leading-relaxed text-sm font-light [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
+                    dangerouslySetInnerHTML={{ __html: activeIngredient.description ?? '' }}
+                 />
                  <Button variant="mineral" fullWidth onClick={() => setActiveIngredient(null)} className="h-12">Close Details</Button>
               </div>
            </div>

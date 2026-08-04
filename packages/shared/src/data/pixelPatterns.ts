@@ -1,6 +1,6 @@
 // data/pixelPatterns.ts
 
-export type PatternName = | 'logo' | 'diamond' | "line_divider" | 'flower' | 'arrow' | 'line_simple' | 'line' | 'line_vertical' | 'mountain' | 'zig_zag';
+export type PatternName = | 'logo' | 'diamond' | 'news' | "line_divider" | 'flower' | 'wok' | 'arrow' | 'line_simple' | 'line_simple_medium' | 'line' | 'line_vertical' | 'mountain' | 'zig_zag';
 
 export interface PatternDef {
   data: number[];
@@ -78,6 +78,55 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
     ]
   },
 
+  // 1. IL ROMBO CLASSICO (7 Colonne) usato in News PAGE
+  news: {
+    columns: 7,
+    data: [
+      1, 3, 2, 1, 2, 3, 1,
+      0, 1, 3, 2, 3, 1, 0,
+      0, 0, 1, 3, 1, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 3, 0, 0, 0,
+      0, 0, 0, 2, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 2, 0, 0, 0,
+      0, 0, 0, 3, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 3, 0, 0, 0,
+      0, 0, 0, 2, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 1, 2, 1, 0, 0,
+      0, 1, 2, 3, 2, 1, 0,
+      1, 2, 3, 1, 3, 2, 1,
+      0, 1, 2, 3, 2, 1, 0,
+      0, 0, 1, 2, 1, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 1, 2, 1, 0, 0,
+      0, 1, 2, 3, 2, 1, 0,
+      1, 2, 3, 1, 3, 2, 1,
+      0, 1, 2, 3, 2, 1, 0,
+      0, 0, 1, 2, 1, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 2, 0, 0, 0,
+      0, 0, 0, 3, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 3, 0, 0, 0,
+      0, 0, 0, 2, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 2, 0, 0, 0,
+      0, 0, 0, 3, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0,
+      0, 0, 1, 3, 1, 0, 0,
+      0, 1, 3, 2, 3, 1, 0,
+      1, 3, 2, 1, 2, 3, 1,
+    ]
+  },
+
   // 2. FIORE DI MONTAGNA (5 Colonne)
   flower: {
     columns: 9,
@@ -87,6 +136,19 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
       1, 3, 2, 3, 4, 3, 2, 3, 1,
       0, 0, 0, 3, 3, 3, 0, 0, 0,
       0, 0, 1, 0, 2, 0, 1, 0, 0,
+    ]
+  },
+
+  // 2. WOK (9 Colonne)
+  wok: {
+    columns: 9,
+    data: [
+      0, 4, 0, 0, 0, 0, 0, 4, 0,
+      4, 4, 4, 4, 4, 4, 4, 4, 4,
+      0, 4, 4, 4, 4, 4, 4, 4, 0,
+      0, 0, 4, 4, 4, 4, 4, 0, 0,
+      0, 0, 0, 1, 3, 1, 0, 0, 0,
+      0, 0, 1, 1, 1, 1, 1, 0, 0,
     ]
   },
 
@@ -108,19 +170,23 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
     data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,]
   },
 
+  // 33. SEPARATORE LINEARE (Per Header)
+  line_simple_medium: {
+    columns: 22,
+    data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3]
+  },
+
   // 3. SEPARATORE LINEARE (Per Header)
   line: {
     columns: 44,
     data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
-      2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2,
-      1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
     ]
   },
 
   // 3. SEPARATORE LINEARE (Per Header)
   line_divider: {
-    columns: 44,
-    data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3,
+    columns: 74,
+    data: [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2
 
     ]
   },
@@ -128,7 +194,7 @@ export const AKHA_PATTERNS: Record<PatternName, PatternDef> = {
   // 3. SEPARATORE LINEARE (Per Header)
   line_vertical: {
     columns: 1,
-    data: [1, 2, 3, 2, 1, 2,
+    data: [1, 2, 3, 2, 1,
     ]
   },
 

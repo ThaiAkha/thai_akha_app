@@ -75,8 +75,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="size-20 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
                             <Plus className="w-10 h-10" />
                         </div>
-                        <p className="text-[12px] font-black uppercase text-amber-600 tracking-tighter">{t('inspector.stagingAsset')}</p>
-                        <p className="text-[10px] font-bold text-gray-500 mt-2 max-w-[180px] break-all">{pendingFile.name}</p>
+                        <p className="text-xs font-black uppercase text-amber-600 tracking-tighter">{t('inspector.stagingAsset')}</p>
+                        <p className="text-xs font-bold text-gray-500 mt-2 max-w-[180px] break-all">{pendingFile.name}</p>
                     </div>
                 ) : (selectedFile && selectedFile.metadata?.mimetype?.startsWith('image/')) ? (
                     <img
@@ -100,7 +100,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="size-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
                             {selectedFile && getFileIcon(selectedFile.metadata?.mimetype)}
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-center">{selectedFile?.metadata?.mimetype || t('inspector.unknownFile')}</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-center">{selectedFile?.metadata?.mimetype || t('inspector.unknownFile')}</p>
                     </div>
                 )}
             </div>
@@ -112,7 +112,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <Button
                             onClick={onConfirmUpload}
                             variant="olive"
-                            className="w-full h-12 text-[12px] font-black uppercase tracking-[0.1em] border-none shadow-xl shadow-amber-500/30 transition-all active:scale-95"
+                            className="w-full h-12 text-xs font-black uppercase tracking-[0.1em] border-none shadow-xl shadow-amber-500/30 transition-all active:scale-95"
                             startIcon={isUploading ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : <Save className="w-5 h-5 text-white" />}
                             disabled={isUploading}
                         >
@@ -124,7 +124,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <Button
                             onClick={onRename}
                             variant="olive"
-                            className="w-full h-12 text-[12px] font-black uppercase tracking-[0.1em] border-none shadow-xl shadow-blue-500/30 transition-all active:scale-95"
+                            className="w-full h-12 text-xs font-black uppercase tracking-[0.1em] border-none shadow-xl shadow-blue-500/30 transition-all active:scale-95"
                             startIcon={isUploading ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : <Save className="w-5 h-5 text-white" />}
                             disabled={isUploading}
                         >
@@ -144,8 +144,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                             <div className="flex items-center gap-3">
                                                 <ImageIcon className="w-4 h-4 text-primary-500" />
                                                 <div className="text-left">
-                                                    <p className="text-[11px] font-bold text-gray-700 dark:text-gray-200">{t('inspector.origQuality')}</p>
-                                                    <p className="text-[9px] text-gray-400 tracking-tight">{t('inspector.origQualityDesc')}</p>
+                                                    <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('inspector.origQuality')}</p>
+                                                    <p className="text-xs text-gray-400 tracking-tight">{t('inspector.origQualityDesc')}</p>
                                                 </div>
                                             </div>
                                             <Check className="w-3 h-3 text-gray-300 group-hover:text-primary-500" />
@@ -157,8 +157,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                             <div className="flex items-center gap-3">
                                                 <Music className="w-4 h-4 text-purple-500" />
                                                 <div className="text-left">
-                                                    <p className="text-[11px] font-bold text-gray-700 dark:text-gray-200">{t('inspector.standardMp3')}</p>
-                                                    <p className="text-[9px] text-gray-400 tracking-tight">{t('inspector.mp3Desc')}</p>
+                                                    <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('inspector.standardMp3')}</p>
+                                                    <p className="text-xs text-gray-400 tracking-tight">{t('inspector.mp3Desc')}</p>
                                                 </div>
                                             </div>
                                             <Check className="w-3 h-3 text-gray-300 group-hover:text-purple-500" />
@@ -169,8 +169,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                         <div className="flex items-center gap-3">
                                             <FileText className="w-4 h-4 text-gray-500" />
                                             <div className="text-left">
-                                                <p className="text-[11px] font-bold text-gray-700 dark:text-gray-200">{t('inspector.rawDocument')}</p>
-                                                <p className="text-[9px] text-gray-400 tracking-tight">{t('inspector.rawDocDesc')}</p>
+                                                <p className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('inspector.rawDocument')}</p>
+                                                <p className="text-xs text-gray-400 tracking-tight">{t('inspector.rawDocDesc')}</p>
                                             </div>
                                         </div>
                                         <Check className="w-3 h-3 text-gray-300 group-hover:text-gray-500" />
@@ -184,7 +184,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                             <Button
                                 onClick={onCopyUrl}
                                 variant="outline"
-                                className="flex-1 h-10 text-[10px] font-black uppercase tracking-widest border-gray-200 dark:border-gray-800 bg-white"
+                                className="flex-1 h-10 text-xs font-black uppercase tracking-widest border-gray-200 dark:border-gray-800 bg-white"
                                 startIcon={copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                             >
                                 {copied ? t('inspector.copied') : t('inspector.copyLink')}
@@ -192,7 +192,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                             <Button
                                 onClick={() => window.open(getFilePreview(selectedFile?.name || ''), '_blank')}
                                 variant="outline"
-                                className="flex-1 h-10 text-[10px] font-black uppercase tracking-widest border-gray-200 dark:border-gray-800 bg-white"
+                                className="flex-1 h-10 text-xs font-black uppercase tracking-widest border-gray-200 dark:border-gray-800 bg-white"
                                 startIcon={<ExternalLink className="w-4 h-4" />}
                             >
                                 {t('inspector.preview')}
@@ -210,18 +210,18 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <Input
                             value={pendingFileName}
                             onChange={(e) => onPendingFileNameChange(e.target.value)}
-                            className="h-11 text-[12px] font-bold border-primary-300 focus:border-primary-600 bg-primary-50/30 shadow-inner"
+                            className="h-11 text-xs font-bold border-primary-300 focus:border-primary-600 bg-primary-50/30 shadow-inner"
                             placeholder={t('inspector.filenamePlaceholder')}
                         />
                     ) : isEditing ? (
                         <Input
                             value={editingNameValue}
                             onChange={(e) => onEditingNameValueChange(e.target.value)}
-                            className="h-11 text-[12px] font-bold border-blue-300 focus:border-blue-600 bg-blue-50/30 shadow-inner"
+                            className="h-11 text-xs font-bold border-blue-300 focus:border-blue-600 bg-blue-50/30 shadow-inner"
                             placeholder={t('inspector.newNamePlaceholder')}
                         />
                     ) : (
-                        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-[12px] font-bold text-gray-700 dark:text-gray-300 break-all leading-relaxed border border-gray-100 dark:border-gray-800 shadow-sm transition-all hover:border-gray-200">
+                        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 break-all leading-relaxed border border-gray-100 dark:border-gray-800 shadow-sm transition-all hover:border-gray-200">
                             {selectedFile?.name}
                         </div>
                     )}
@@ -232,7 +232,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="space-y-2">
                             <SectionHeader title={t('inspector.diskSize')} variant="inspector" />
                             <div className={cn(
-                                "p-3 bg-gray-50/50 dark:bg-gray-800/20 rounded-lg text-[11px] font-black text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-800/50",
+                                "p-3 bg-gray-50/50 dark:bg-gray-800/20 rounded-lg text-xs font-black text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-800/50",
                                 isEditing && "opacity-60 cursor-not-allowed"
                             )}>
                                 {formatBytes(pendingFile ? pendingFile.size : (selectedFile?.metadata?.size || 0))}
@@ -243,7 +243,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="space-y-2">
                             <SectionHeader title={t('inspector.mimeType')} variant="inspector" />
                             <div className={cn(
-                                "p-3 bg-gray-50/50 dark:bg-gray-800/20 rounded-lg text-[11px] font-black text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-800/50 truncate",
+                                "p-3 bg-gray-50/50 dark:bg-gray-800/20 rounded-lg text-xs font-black text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-800/50 truncate",
                                 isEditing && "opacity-60 cursor-not-allowed"
                             )}>
                                 {pendingFile
@@ -259,7 +259,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="space-y-2">
                             <SectionHeader title={t('inspector.createdAt')} variant="inspector" />
                             <div className={cn(
-                                "p-3 bg-gray-50/30 dark:bg-gray-800/10 rounded-lg text-[11px] font-bold text-gray-500 border border-gray-100 dark:border-gray-800/50",
+                                "p-3 bg-gray-50/30 dark:bg-gray-800/10 rounded-lg text-xs font-bold text-gray-500 border border-gray-100 dark:border-gray-800/50",
                                 isEditing && "opacity-60 cursor-not-allowed"
                             )}>
                                 {new Date(selectedFile.created_at).toLocaleString()}
@@ -268,7 +268,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="space-y-2 pb-10">
                             <SectionHeader title={t('inspector.lastSynced')} variant="inspector" />
                             <div className={cn(
-                                "p-3 bg-gray-50/30 dark:bg-gray-800/10 rounded-lg text-[11px] font-bold text-gray-500 border border-gray-100 dark:border-gray-800/50",
+                                "p-3 bg-gray-50/30 dark:bg-gray-800/10 rounded-lg text-xs font-bold text-gray-500 border border-gray-100 dark:border-gray-800/50",
                                 isEditing && "opacity-60 cursor-not-allowed"
                             )}>
                                 {new Date(selectedFile.updated_at).toLocaleString()}

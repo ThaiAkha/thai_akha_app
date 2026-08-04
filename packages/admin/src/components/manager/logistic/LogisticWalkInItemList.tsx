@@ -103,7 +103,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
 
             {items.length === 0 && (
                 <div className="h-full flex flex-col items-center justify-center opacity-30 gap-2">
-                    <span className="text-[10px] font-bold uppercase">Empty</span>
+                    <span className="text-xs font-bold uppercase">Empty</span>
                 </div>
             )}
         </div>

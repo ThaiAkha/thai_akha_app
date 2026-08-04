@@ -7,6 +7,8 @@ export interface DietOption {
   name: string;
   icon: string;
   type: 'lifestyle' | 'religious';
+  /** Testo ricco per-dieta (dietary_profiles.description_long) — mostrato sotto la dieta scelta. */
+  description_long?: string | null;
 }
 
 interface DietSelectorProps {
@@ -79,6 +81,13 @@ const DietSelector: React.FC<DietSelectorProps> = ({ options, selected, onChange
       ) : (
         <Typography variant="h4" color="title" className="text-center">
           Select your Dietary Style
+        </Typography>
+      )}
+
+      {/* Testo ricco per-dieta (description_long) — sotto la dieta selezionata */}
+      {current?.description_long && (
+        <Typography variant="paragraphM" color="sub" className="text-center max-w-[60ch] mx-auto leading-relaxed">
+          {current.description_long}
         </Typography>
       )}
 

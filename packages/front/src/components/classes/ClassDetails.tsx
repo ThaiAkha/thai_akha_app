@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Badge, Icon } from '../ui/index';
-import GlassCard from '../ui/card/GlassCard';
+import { GlassCard } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import ClassSectionBlock, { ClassSection } from './ClassSectionBlock';
 

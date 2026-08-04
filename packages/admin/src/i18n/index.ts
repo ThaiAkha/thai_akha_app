@@ -3,8 +3,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
 
-export type LangCode = 'en' | 'th';
-export const LANGUAGES: readonly LangCode[] = ['en', 'th'] as const;
+export type LangCode = 'en' | 'th' | 'es' | 'zh';
+export const LANGUAGES: readonly LangCode[] = ['en', 'th', 'es', 'zh'] as const;
 export const DEFAULT_LANGUAGE: LangCode = 'en';
 export const LANG_STORAGE_KEY = 'thaiakha_admin_lang';
 
@@ -29,7 +29,8 @@ export const initI18n = async (lng?: LangCode) => {
         'profile', 'dashboard', 'calendar',
         'booking', 'hotels', 'database',
         'storage', 'inventory', 'logistics',
-        'reservation', 'pos', 'pages', 'driver', 'media', 'market',
+        'reservation', 'pos', 'pages', 'driver', 'media', 'market', 'manager',
+        'legal',
       ],
       defaultNS: 'common',
       interpolation: { escapeValue: false },

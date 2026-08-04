@@ -35,5 +35,13 @@
     "saving": "กำลังบันทึก...",
     "tooltipEdit": "แก้ไขข้อมูลนี้",
     "tooltipSave": "บันทึกการแก้ไข"
+  },
+  "alerts": {
+    "loadFailed": "โหลดข้อมูล {{table}} ล้มเหลว",
+    "savedSuccess": "บันทึกข้อมูลสำเร็จ",
+    "saveFailed": "บันทึกล้มเหลว: {{message}}",
+    "deletedSuccess": "ลบสำเร็จแล้ว",
+    "deleteFailed": "ลบล้มเหลว: {{message}}",
+    "copiedCount": "คัดลอก {{count}} รายการแล้ว"
   }
 }

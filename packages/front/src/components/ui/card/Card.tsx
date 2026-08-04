@@ -7,7 +7,7 @@ export interface CardProps {
   className?: string;
   variant?: 'default' | 'glass' | 'outline' | 'interactive' | 'ghost';
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
-  rounded?: 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
+  rounded?: 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'quiz';
   onClick?: () => void;
   hoverable?: boolean;
   shadow?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
@@ -35,15 +35,16 @@ const Card: React.FC<CardProps> = ({
     lg: 'rounded-2xl',
     xl: 'rounded-3xl',
     '2xl': 'rounded-[2rem]',
+    quiz: 'rounded-[2.5rem]',
     '3xl': 'rounded-[3rem]',
     '4xl': 'rounded-[4rem]',
   };
 
   const variantStyles = {
-    default: 'bg-white dark:bg-surface border-2 border-black/5 dark:border-white/5 shadow-2xl',
+    default: 'bg-surface border-2 border-border shadow-2xl',
 
     // Glassmorphism ultra-pulito con bordo luminoso
-    glass: 'bg-white/80 dark:bg-black/40 backdrop-blur-3xl border-2 border-white/20 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]',
+    glass: 'bg-white/80 dark:bg-black/40 backdrop-blur-3xl border-2 border-white/20 dark:border-white/10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.25)]',
 
     outline: 'bg-transparent border-2 border-black/10 dark:border-white/10',
 
@@ -100,7 +101,7 @@ export const CardContent: React.FC<{ children: React.ReactNode; className?: stri
 );
 
 export const CardFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <div className={cn('[margin-top:var(--space-fluid-l)] [padding-top:var(--space-fluid-m)] border-t border-black/5 dark:border-white/5 flex items-center justify-between', className)}>{children}</div>
+  <div className={cn('[margin-top:var(--space-fluid-l)] [padding-top:var(--space-fluid-m)] border-t border-border flex items-center justify-between', className)}>{children}</div>
 );
 
 export default Card;

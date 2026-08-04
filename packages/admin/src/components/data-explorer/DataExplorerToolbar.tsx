@@ -11,7 +11,7 @@ type ViewMode = 'table' | 'grid';
 const ICON_BTN = "h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-500/10 primary-btn-animation";
 
 /** Shared style for primary action button - premium theme */
-const PRIMARY_BTN = "h-9 px-4 inline-flex items-center gap-2 rounded-lg border border-primary-500 bg-primary-500 text-white text-[10px] font-black uppercase tracking-widest primary-shadow primary-btn-animation disabled:opacity-50 disabled:cursor-not-allowed";
+const PRIMARY_BTN = "h-9 px-4 inline-flex items-center gap-2 rounded-lg border border-primary-500 bg-primary-500 text-white text-xs font-black uppercase tracking-widest primary-shadow primary-btn-animation disabled:opacity-50 disabled:cursor-not-allowed";
 
 interface DataExplorerToolbarProps {
     // View mode toggle

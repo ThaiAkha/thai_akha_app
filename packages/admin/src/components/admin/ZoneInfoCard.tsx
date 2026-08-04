@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import Card from '../ui/Card';
 
@@ -19,6 +20,7 @@ interface ZoneInfoCardProps {
 }
 
 const ZoneInfoCard: React.FC<ZoneInfoCardProps> = ({ zone, session = 'morning_class' }) => {
+    const { t } = useTranslation('logistics');
     const color = zone.color_code || '#9CA3AF';
     const isMorning = session === 'morning_class';
 
@@ -54,7 +56,7 @@ const ZoneInfoCard: React.FC<ZoneInfoCardProps> = ({ zone, session = 'morning_cl
                     {/* Right: Session Time */}
                     <div className="text-right">
                         <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                            {isMorning ? 'Morning Pickup' : 'Evening Pickup'}
+                            {isMorning ? t('zone.morningPickup') : t('zone.eveningPickup')}
                         </div>
                         <div className="text-lg font-black text-gray-900 dark:text-white">
                             {isMorning

@@ -5,9 +5,11 @@ import { contentService } from '@thaiakha/shared/services';
 
 import { Button, Icon } from '../ui';
 import { Typography } from '../ui/Typography';
-import AkhaPixelLine from '../ui/AkhaPixelLine';
+import AkhaPixelLine from '../divider/AkhaPixelLine';
 import Alert from '../ui/card/Alert';
 import { AllergySelector, DietSelector, SpicySelector } from '../menu';
+import { useUserPassport } from '../../hooks/useUserPassport';
+import { useActiveProfile } from '../../context/ActiveProfileContext';
 
 interface UserSettingsProps {
   userProfile: UserProfile | null;
@@ -41,42 +43,43 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   const [dietOptions, setDietOptions] = useState<DietOption[]>([]);
   const [allergyMap, setAllergyMap] = useState<Record<string, string>>({});
 
+  // F2 — il passport segue il PROFILO ATTIVO (host o un suo gestito), non l'host fisso.
+  const { managedProfiles, activeProfileId, isActingAsManaged } = useActiveProfile();
+  const activeManaged = managedProfiles.find(p => p.id === activeProfileId) ?? null;
+  const passportTarget = isActingAsManaged ? activeManaged : userProfile;
+  const activeName = (isActingAsManaged ? activeManaged?.full_name : userProfile?.full_name) ?? '';
+
+  const { passport, updatePassport } = useUserPassport(passportTarget, onUpdate);
+
   const [fullName, setFullName] = useState('');
-  const [diet, setDiet] = useState<string>('diet_regular');
-  const [allergies, setAllergies] = useState<string[]>([]);
-  const [spiceId, setSpiceId] = useState<number>(2);
 
   useEffect(() => {
-    contentService.getDietaryProfiles().then(p => { if (p) setDietOptions(p); });
+    contentService.getDietaryProfiles().then(p => { if (p) setDietOptions(p as unknown as DietOption[]); });
     contentService.getAllergyMap().then(map => { if (map) setAllergyMap(map); });
   }, []);
 
   useEffect(() => {
-    if (userProfile) {
-      setFullName(userProfile.full_name || '');
-      setDiet(userProfile.dietary_profile || 'diet_regular');
-      setAllergies(userProfile.allergies || []);
-      // @ts-ignore
-      setSpiceId(userProfile.preferred_spiciness_id || 2);
-    }
-  }, [userProfile]);
+    setFullName(activeName);
+  }, [activeName]);
 
   const handleSave = async () => {
-    if (!userProfile) return;
     setLoading(true);
     setSuccessMsg(null);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: fullName,
-          dietary_profile: diet,
-          allergies: allergies.filter(a => a.trim() !== '') as any,
-          preferred_spiciness_id: spiceId,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userProfile.id);
-      if (error) throw error;
+      // Scrive il full_name sul PROFILO ATTIVO (host o gestito). RLS profiles.update
+      // è estesa a managed_by → l'host può aggiornare i suoi gestiti.
+      const targetId = activeProfileId ?? userProfile?.id ?? null;
+      if (targetId && targetId !== 'guest') {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            full_name: fullName,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', targetId);
+        if (error) throw error;
+      }
+      
       setSuccessMsg('Passport updated successfully kha!');
       setTimeout(() => setSuccessMsg(null), 3000);
       onUpdate();
@@ -88,13 +91,18 @@ const UserSettings: React.FC<UserSettingsProps> = ({
     }
   };
 
+  // Aggiornamento live del Passport 
+  const handleDietChange = (dietId: string) => updatePassport({ dietary_profile: dietId });
+  const handleAllergyChange = (allergies: string[]) => updatePassport({ allergies });
+  const handleSpiceChange = (spiceId: number) => updatePassport({ preferred_spiciness_id: spiceId });
+
 
   // Derive allergy list from DB keys (same source as MegaMenu)
   const allergyList = Object.keys(allergyMap).map(
     key => key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
   );
 
-  const selectedDietInfo = dietOptions.find(d => d.id === diet);
+  const selectedDietInfo = dietOptions.find(d => d.id === passport.dietary_profile);
 
   return (
     <div className="space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -108,31 +116,31 @@ const UserSettings: React.FC<UserSettingsProps> = ({
           <section>
             <AllergySelector
               options={allergyList}
-              selected={allergies}
-              onChange={setAllergies}
+              selected={passport.allergies}
+              onChange={handleAllergyChange}
               allergyMap={allergyMap}
               showInfoCards
             />
           </section>
 
           {/* Divider */}
-          <AkhaPixelLine variant="line_divider" size={5} className="py-2" />
+          <AkhaPixelLine size={5} className="py-2" />
 
           {/* 2. SPICE LEVEL */}
           <section>
             <SpicySelector
               options={spicinessLevels}
-              selected={spiceId}
-              onChange={setSpiceId}
+              selected={passport.preferred_spiciness_id}
+              onChange={handleSpiceChange}
             />
           </section>
 
           {/* Divider */}
-          <AkhaPixelLine variant="line_divider" size={5} className="py-2" />
+          <AkhaPixelLine size={5} className="py-2" />
 
           {/* 3. DIETARY STYLE */}
           <section>
-            <DietSelector options={dietOptions} selected={diet} onChange={setDiet} />
+            <DietSelector options={dietOptions} selected={passport.dietary_profile} onChange={handleDietChange} />
 
             {selectedDietInfo && (
               <Alert
@@ -170,27 +178,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({
         </div>
       </div>
 
-      {/* ── CERTIFICATE SECTION (non-staff only) ── */}
-      {!isStaff && (
-        <div className="bg-surface/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-3xl [padding:var(--space-fluid-m)]">
-          <div className="flex items-center gap-3 mb-2">
-            <Icon name="workspace_premium" className="text-quiz-p" />
-            <Typography variant="h4" className="uppercase tracking-tight">Your Certificate</Typography>
-          </div>
-          <Typography variant="paragraphS" color="sub" className="mb-5 leading-relaxed">
-            Once your class is complete and your menu is set, download your personalised Thai Akha certificate of participation.
-          </Typography>
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => onShowCertificate?.()}
-            className="border-quiz-p/40 text-quiz-p hover:bg-quiz-p/10 transition-all active:scale-95"
-          >
-            <Icon name="download" size="sm" />
-            Download Certificate
-          </Button>
-        </div>
-      )}
 
     </div>
   );

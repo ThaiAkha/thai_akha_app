@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
-import { Typography, Badge, MediaImage, AkhaQuote } from '../ui/index';
+import { Typography, Badge, RippleLink, AkhaPixelPattern } from '../ui/index';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 import './BlogCardGlass.css';
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
@@ -15,12 +16,12 @@ interface BlogCardProps {
 
 // ─── CinematicHeroCard — Full-width 16:9 hero with overlay ─────────────────────
 const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categories, onCategoryClick }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const catObj = categories?.find(c => c.id === section.category_id);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const catObj = categories?.find(c => c.id === section.category?.id);
   const categoryLabel = catObj?.tab_label 
     ?? catObj?.title 
-    ?? section.category
-    ?? 'Culture & History';
+    ?? section.category?.title
+    ?? t.blog.cultureHistory;
 
   useEffect(() => {
     const card = cardRef.current;
@@ -49,17 +50,18 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categorie
   }, []);
 
   return (
-    <article
+    <RippleLink
       ref={cardRef}
-      onClick={() => onOpen(section.slug)}
+      href={`/history/${section.slug}`}
+      onNavigate={() => onOpen(section.slug)}
       className={cn(
         'blog-card-glass',
-        'group relative w-full cursor-pointer flex flex-col',
-        'rounded-[3rem] border-4 border-border bg-surface',
+        'group relative w-full flex flex-col',
+        'rounded-[3rem] border-2 border-border/30 bg-surface',
         'transition-all duration-500 ease-out',
-        'hover:-translate-y-1.5',
-        'hover:border-primary/60',
-        'hover:shadow-[0_24px_64px_-12px_rgb(var(--color-primary)/0.25)]',
+        'md:hover:-translate-y-1.5',
+        'md:hover:border-secondary',
+        'md:hover:shadow-[0_24px_64_rgb(var(--color-secondary)/0.25)]',
         'overflow-hidden',
       )}
       style={{
@@ -72,34 +74,36 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categorie
       <div className="blog-card-glass__glow rounded-[3rem]" />
 
       {/* ── Hero image ───────────────────────────────────────────────────── */}
-      <div className="relative w-full aspect-video min-h-[240px] shrink-0 overflow-hidden">
-        {section.primary_image ? (
-          <MediaImage
-            assetId={section.primary_image}
-            showCaption={false}
-            fallbackAlt={section.title}
-            className="absolute inset-0 w-full h-full"
-            imgClassName="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+      <div className="relative w-full aspect-video shrink-0 overflow-hidden">
+        {section.cover_data?.image_url ? (
+          <img
+            src={section.cover_data.image_url}
+            alt={section.cover_data.alt_text || section.title}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out md:group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 bg-border/10" />
         )}
-        <div className="absolute inset-0 card-gradient-overlay opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
+        <div className="absolute inset-0 card-gradient-overlay opacity-80 md:group-hover:opacity-95 transition-opacity duration-500" />
+        
         {/* Cherry vignette al hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
         {/* Badge categoria + quote sull'immagine */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-between [padding:var(--space-fluid-m)]">
+        <div className="absolute inset-0 z-10 flex flex-col justify-between [padding:var(--space-fluid-xl)]">
           <div className="flex items-start justify-between">
-            {onCategoryClick && section.category_id ? (
+            {onCategoryClick && section.category?.id ? (
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
-                  onCategoryClick(section.category_id!);
+                  onCategoryClick(section.category!.id);
                 }}
-                className="hover:scale-105 active:scale-95 transition-transform"
+                className="md:hover:scale-105 active:scale-95 transition-transform"
               >
-                <Badge variant="mineral" size="md" className="cursor-pointer hover:border-action/60 hover:text-action">
+                <Badge variant="mineral" size="md" className="cursor-pointer md:hover:border-secondary/60 md:hover:text-secondary">
                   {categoryLabel}
                 </Badge>
               </button>
@@ -109,18 +113,46 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categorie
               </Badge>
             )}
             {section.featured && (
-              <Badge variant="mineral" size="md" icon="star" className="text-allergy border-allergy/60">Featured</Badge>
+              <Badge variant="mineral" size="md" icon="star" className="text-allergy border-allergy/60">{t.history.featuredBadge}</Badge>
             )}
           </div>
-          {section.quote && (
-            <AkhaQuote variant="main" align="left" className="max-w-xl">
-              {section.quote}
-            </AkhaQuote>
-          )}
+
+          <div className="flex-1 flex flex-col items-center justify-end text-center [padding-bottom:var(--space-fluid-xl)]">
+            {/* Desktop-only bottom-aligned title overlay */}
+            <div className="hidden md:flex flex-col items-center [gap:var(--space-fluid-2xs)] max-w-2xl px-6">
+              <Typography 
+                variant="titleMain" 
+                color="white" 
+                className="![line-height:1] drop-shadow-2xl [text-shadow:0_4px_12px_rgba(0,0,0,0.6)]"
+              >
+                {section.title}
+              </Typography>
+              {section.subtitle && (
+                <Typography 
+                  variant="paragraphM" 
+                  color="white" 
+                  className="opacity-90 font-medium drop-shadow-lg"
+                >
+                  {section.subtitle}
+                </Typography>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-    </article>
+      {/* Mobile-only title block below image */}
+      <div className="flex md:hidden flex-col items-center [padding:var(--space-fluid-m)] [gap:var(--space-fluid-2xs)] text-center">
+        <Typography variant="h3" color="title" className="font-bold">
+          {section.title}
+        </Typography>
+        {section.subtitle && (
+          <Typography variant="paragraphM" color="sub">
+            {section.subtitle}
+          </Typography>
+        )}
+      </div>
+    </RippleLink>
   );
 };
 

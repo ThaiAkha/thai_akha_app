@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import Button from '../../ui/button/Button';
-import { cn } from '@thaiakha/shared/lib/utils';
-import { Search, Receipt, Trash2, CreditCard, X, GraduationCap } from 'lucide-react';
+import { InspectorShell, InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../ui/inspector/InspectorShell';
+import { ReportLineRow, ReportLineMedia } from '../../reports';
+import { Search, Receipt, CreditCard, GraduationCap, Banknote } from 'lucide-react';
 import { Guest, OrderItem, ClassFeeItem } from '../../../hooks/useManagerPos';
 
 interface PosInspectorProps {
@@ -14,7 +15,11 @@ interface PosInspectorProps {
     onRemoveItem: (item: OrderItem) => void;
     onSave: () => void;
     onPayCash: () => void;
+    /** Optional: only the manager settles (canSettle). Kitchen is save-only. */
+    onPayCard?: () => void;
     onClose: () => void;
+    /** When false (kitchen/teacher), hide payment — the user can only save the order. */
+    canSettle?: boolean;
 }
 
 const PosInspector: React.FC<PosInspectorProps> = ({
@@ -27,113 +32,98 @@ const PosInspector: React.FC<PosInspectorProps> = ({
     onRemoveItem,
     onSave,
     onPayCash,
+    onPayCard,
     onClose,
+    canSettle = true,
 }) => {
     const { t } = useTranslation('pos');
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 shrink-0">
-                <div className="flex flex-col">
-                    <h6 className="tracking-widest text-xs font-bold text-gray-500">{t('inspector.customerName')}</h6>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[150px]">{activeGuest?.full_name || t('inspector.selectGuest')}</span>
-                </div>
-                {activeGuestId && (
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                        <X className="w-4 h-4" />
-                    </button>
-                )}
-            </div>
+        <InspectorShell>
+            <InspectorHeader
+                subtitle={t('inspector.customerName')}
+                title={activeGuest?.full_name || t('inspector.selectGuest')}
+                onClose={activeGuestId ? onClose : undefined}
+            />
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
+            <InspectorBody className="p-4 space-y-3">
                 {!activeGuestId ? (
-                    <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-50 space-y-2">
-                        <Search className="w-8 h-8" />
-                        <span className="text-xs font-medium">{t('inspector.emptySelectHint')}</span>
-                    </div>
+                    <InspectorEmpty icon={<Search className="w-8 h-8" />} hint={t('inspector.emptySelectHint')} />
                 ) : currentTab.length === 0 && !classFee ? (
-                    <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-50 space-y-2">
-                        <Receipt className="w-8 h-8" />
-                        <span className="text-xs font-medium">{t('inspector.emptyTab')}</span>
-                    </div>
+                    <InspectorEmpty icon={<Receipt className="w-8 h-8" />} hint={t('inspector.emptyTab')} />
                 ) : (
                     <>
                         {/* CLASS FEE LINE — Pay on Arrival unpaid */}
                         {classFee && (
-                            <div className="flex gap-2 items-center animate-in fade-in duration-300">
-                                <div className="flex-1 bg-amber-50 dark:bg-amber-900/10 rounded-lg p-2.5 border border-amber-200 dark:border-amber-700 flex justify-between items-center">
-                                    <div className="flex items-center gap-3 overflow-hidden">
-                                        <div className="size-7 rounded bg-amber-500 flex items-center justify-center shrink-0">
-                                            <GraduationCap className="w-4 h-4 text-white" />
-                                        </div>
-                                        <div className="overflow-hidden">
-                                            <span className="text-xs font-bold text-gray-900 dark:text-white block truncate">{classFee.name}</span>
-                                            <span className="text-[9px] text-amber-600 dark:text-amber-400 font-black uppercase tracking-widest">{t('inspector.payOnArrival')}</span>
-                                        </div>
-                                    </div>
-                                    <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 ml-2 shrink-0">
-                                        {(classFee.price * classFee.quantity).toLocaleString()}
-                                    </span>
-                                </div>
-                            </div>
+                            <ReportLineRow
+                                density="sm"
+                                leading={<ReportLineMedia tone="amber" icon={<GraduationCap className="w-4 h-4" />} />}
+                                title={classFee.name}
+                                subtitle={t('inspector.payOnArrival')}
+                                amount={(classFee.price * classFee.quantity).toLocaleString()}
+                            />
                         )}
 
                         {/* SHOP ITEMS */}
                         {currentTab.map((item, idx) => (
-                        <div key={idx} className="flex gap-2 items-center group animate-in slide-in-from-right-2 fade-in duration-300">
-                            <div className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 flex justify-between items-center border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
-                                <div className="flex items-center gap-3 overflow-hidden">
-                                    <div className={cn(
-                                        "size-6 rounded flex items-center justify-center text-[10px] font-bold text-white shrink-0",
-                                        item.status === 'new' ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-700"
-                                    )}>
-                                        {item.quantity}
-                                    </div>
-                                    <span className="text-xs font-bold text-gray-900 dark:text-white truncate">{item.name}</span>
-                                </div>
-                                <span className="text-xs font-mono text-gray-500 ml-2">{item.price * item.quantity}</span>
-                            </div>
-                            {item.status !== 'paid' && (
-                                <button
-                                    onClick={() => onRemoveItem(item)}
-                                    className="size-8 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 flex items-center justify-center transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            )}
-                        </div>
+                            <ReportLineRow
+                                key={idx}
+                                density="sm"
+                                leading={<ReportLineMedia tone={item.status === 'new' ? 'primary' : 'gray'} badge={item.quantity} />}
+                                title={item.name}
+                                amount={(item.price * item.quantity).toLocaleString()}
+                                onDelete={item.status !== 'paid' ? () => onRemoveItem(item) : undefined}
+                                confirmDelete={{
+                                    title: t('inspector.removeItemTitle', { defaultValue: 'Remove item?' }),
+                                    message: t('inspector.removeItemMsg', { defaultValue: 'Remove "{{name}}" from this order?', name: item.name }),
+                                    confirmLabel: t('inspector.remove', { defaultValue: 'Remove' }),
+                                }}
+                            />
                         ))}
                     </>
                 )}
-            </div>
+            </InspectorBody>
 
-            <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/20 space-y-4">
+            <InspectorFooter>
                 <div className="flex justify-between items-end">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('inspector.totalAmount')}</span>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t('inspector.totalAmount')}</span>
                     <span className="text-xl font-mono font-black text-gray-900 dark:text-white">{totalDue.toLocaleString()} <span className="text-xs text-gray-400 font-normal">THB</span></span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-3">
                     <Button
-                        variant="outline"
+                        variant={canSettle ? 'outline' : 'primary'}
                         onClick={onSave}
                         disabled={isProcessing || !activeGuestId || currentTab.filter(i => i.status === 'new').length === 0}
                         className="w-full justify-center"
                     >
                         {t('inspector.saveTab')}
                     </Button>
-                    <Button
-                        variant="primary"
-                        startIcon={<CreditCard className="w-4 h-4" />}
-                        onClick={onPayCash}
-                        disabled={isProcessing || totalDue === 0}
-                        className="w-full justify-center bg-green-600 hover:bg-green-700 text-white ring-0"
-                    >
-                        {t('inspector.payCash')}
-                    </Button>
+                    {canSettle && (
+                        <div className="grid grid-cols-2 gap-3">
+                            <Button
+                                variant="primary"
+                                startIcon={<Banknote className="w-4 h-4" />}
+                                onClick={onPayCash}
+                                disabled={isProcessing || totalDue === 0}
+                                className="w-full justify-center bg-green-600 hover:bg-green-700 text-white ring-0"
+                            >
+                                {t('inspector.payCash', { defaultValue: 'Cash' })}
+                            </Button>
+                            <Button
+                                variant="primary"
+                                startIcon={<CreditCard className="w-4 h-4" />}
+                                onClick={onPayCard}
+                                disabled={isProcessing || totalDue === 0}
+                                className="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white ring-0"
+                            >
+                                {t('inspector.payCard', { defaultValue: 'Card' })}
+                            </Button>
+                        </div>
+                    )}
                 </div>
-            </div>
-        </div>
+            </InspectorFooter>
+        </InspectorShell>
     );
 };
 

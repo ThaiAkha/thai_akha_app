@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Newspaper, BookOpen, Globe, Layout } from 'lucide-react';
 
@@ -14,6 +15,8 @@ export const NEWS_TABLES = [
 ];
 
 export const NEWS_READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid'];
+// Colonne galleria legacy: la fonte unica è gallery_items → mai più scritte dagli editor.
+export const LEGACY_GALLERY_COLUMNS = ['gallery_images', 'gallery_asset_ids', 'culture_asset_ids'];
 
 export const NEWS_PRIMARY_KEY_MAP: Record<string, string> = {
     page_sections: 'section_id',
@@ -21,17 +24,17 @@ export const NEWS_PRIMARY_KEY_MAP: Record<string, string> = {
 
 export const NEWS_COLUMN_ORDER_CONFIG: Record<string, string[]> = {
     akha_news: [
-        'title', 'category', 'image_url', 'gallery_images', 'audio_url',
+        'title', 'category', 'image_url','audio_url',
         'content', 'subtitle', 'slug', 'is_active', 'display_order',
         'id', 'created_at', 'updated_at',
     ],
     culture_sections: [
-        'title', 'subtitle', 'image_url', 'gallery_images', 'content',
+        'title', 'subtitle', 'image_url','content',
         'content_body', 'display_order', 'is_active',
         'id', 'created_at', 'updated_at',
     ],
     ethnic_groups: [
-        'name', 'thai_name', 'image_url', 'gallery_images', 'description',
+        'name', 'thai_name', 'image_url','description',
         'audio_url', 'slug', 'display_order', 'is_active',
         'id', 'created_at', 'updated_at',
     ],
@@ -54,6 +57,7 @@ export const NEWS_GRID_PRIMARY_FIELDS: Record<string, { title: string; subtitle?
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const useAdminNews = () => {
+    const { t } = useTranslation('database');
     const [selectedTable, setSelectedTable] = useState('akha_news');
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -74,14 +78,14 @@ export const useAdminNews = () => {
         setSelectedIds(new Set());
         try {
             const { data: tableData, error } = await supabase
-                .from(tableName)
+                .from(tableName as "akha_news")
                 .select('*')
                 .limit(100);
             if (error) throw error;
             setData(tableData || []);
         } catch (err) {
             console.error(`Error fetching table ${tableName}:`, err);
-            alert(`Failed to load ${tableName} kha!`);
+            alert(t('alerts.loadFailed', { table: tableName }));
         } finally {
             setLoading(false);
         }
@@ -99,28 +103,31 @@ export const useAdminNews = () => {
             const isNew = !selectedRow.id && !selectedRow.internal_id;
             const payload = { ...selectedRow };
             NEWS_READ_ONLY_COLUMNS.forEach(col => delete payload[col]);
+            // Gallery unification: le gallerie vivono in gallery_items → NON scrivere più
+            // le colonne array legacy (così /database può droppare le colonne in sicurezza).
+            LEGACY_GALLERY_COLUMNS.forEach(col => delete payload[col]);
 
             let error;
             if (isNew) {
-                const { error: insertError } = await supabase.from(selectedTable).insert(payload);
+                const { error: insertError } = await supabase.from(selectedTable as "akha_news").insert(payload);
                 error = insertError;
             } else {
                 const idField = NEWS_PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
                 const idValue = selectedRow[idField];
                 if (!idValue) throw new Error(`Primary key ${idField} not found in row data.`);
                 const { error: updateError } = await supabase
-                    .from(selectedTable)
+                    .from(selectedTable as "akha_news")
                     .update(payload)
                     .eq(idField, idValue);
                 error = updateError;
             }
             if (error) throw error;
-            alert('Saved successfully kha! 🙏');
+            alert(t('alerts.savedSuccess'));
             setIsEditing(false);
             fetchTableData(selectedTable);
         } catch (err: any) {
             console.error('Save error:', err);
-            alert(`Save failed: ${err.message || 'Unknown error'}`);
+            alert(t('alerts.saveFailed', { message: err.message || '' }));
         } finally {
             setIsSaving(false);
         }
@@ -133,16 +140,16 @@ export const useAdminNews = () => {
             const idValue = selectedRow[idField];
             if (!idValue) throw new Error(`Primary key ${idField} not found.`);
             const { error } = await supabase
-                .from(selectedTable)
+                .from(selectedTable as "akha_news")
                 .delete()
                 .eq(idField, idValue);
             if (error) throw error;
-            alert('Deleted successfully. 🙏');
+            alert(t('alerts.deletedSuccess'));
             setShowDeleteConfirm(false);
             fetchTableData(selectedTable);
         } catch (err: any) {
             console.error('Delete error:', err);
-            alert(`Delete failed: ${err.message || 'Unknown error'}`);
+            alert(t('alerts.deleteFailed', { message: err.message || '' }));
         }
     };
 
@@ -234,7 +241,7 @@ export const useAdminNews = () => {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(JSON.stringify(getExportData(), null, 2));
-        alert(`${getExportData().length} items copied kha!`);
+        alert(t('alerts.copiedCount', { count: getExportData().length }));
         setIsExportOpen(false);
     };
 

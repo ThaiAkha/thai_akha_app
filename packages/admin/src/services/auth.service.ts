@@ -47,7 +47,8 @@ export const authService = {
         contactName: string,
         companyName: string,
         taxId: string,
-        phone: string
+        phone: string,
+        lineId: string = ''
     ) {
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
@@ -70,13 +71,22 @@ export const authService = {
                     agency_company_name: companyName,
                     agency_tax_id: taxId,
                     agency_phone: phone,
-                    agency_commission_rate: 20,
+                    line_id: lineId || null,
                     commission_config: {
                         mode: 'tiered',
+                        unit: 'per_passenger',
+                        currency: 'THB',
                         tiers: [
-                            { threshold: 1, rate: 20 },
-                            { threshold: 10, rate: 25 }
-                        ]
+                            { tier: 'silver', min_pax: 0, rate: 350 },
+                            { tier: 'gold', min_pax: 50, rate: 400 },
+                            { tier: 'platinum', min_pax: 150, rate: 450 }
+                        ],
+                        cycle: 'rolling_3m_from_registration',
+                        reset_to: 'silver',
+                        applies_to: ['morning_class', 'evening_class'],
+                        private_pax_counts_volume: true,
+                        private_earns_tier: false,
+                        volume_statuses: ['confirmed', 'completed']
                     },
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });

@@ -59,7 +59,7 @@ const OverviewView: React.FC<OverviewViewProps> = ({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="[space-y:var(--space-fluid-l)]">
       {bookings.map(booking => (
         <CardOverviewBooking
           key={booking.internal_id}

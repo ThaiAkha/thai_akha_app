@@ -5,9 +5,10 @@ import { Typography, Icon, Badge, Tabs, Button } from '../ui'; // [Source: UI In
 import { MenuCard } from '../menu';
 import RecipeView, { RecipeData } from '../menu/RecipeView';
 import { cn } from '@thaiakha/shared/lib/utils';
-import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import { contentService } from '@thaiakha/shared/services';
 import { ContentCategoryDB } from '@thaiakha/shared';
+import { mapToRecipeData } from '../../lib/recipeHelpers';
 
 interface MenuManagerProps {
   bookingId: string | null;
@@ -16,6 +17,19 @@ interface MenuManagerProps {
   menuSelection: any | null;
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
 }
+
+// content_categories.id / recipes.category are SLUGS (e.g. 'authentic-akha-recipes').
+// Normalize them to the short keys the UI logic uses (akha_specialty/appetizer/dessert…).
+const normalizeCatKey = (cat: string): string => {
+  const c = (cat || '').toLowerCase();
+  if (c.includes('curry')) return 'curry';
+  if (c.includes('soup')) return 'soup';
+  if (c.includes('stir')) return 'stirfry';
+  if (c.includes('akha')) return 'akha_specialty';
+  if (c.includes('appetizer')) return 'appetizer';
+  if (c.includes('dessert')) return 'dessert';
+  return c;
+};
 
 // Legacy fallback for descriptions
 const FALLBACK_CATEGORY_INFO: Record<string, string> = {
@@ -51,10 +65,10 @@ const MenuManager: React.FC<MenuManagerProps> = ({
         if (categories.length === 0) {
             const cats = await contentService.getContentCategories('recipe');
             // Filter only fixed experience categories for these tabs
-            const fixedCats = cats.filter(c => ['akha_specialty', 'appetizer', 'dessert'].includes(c.id.toLowerCase()));
+            const fixedCats = cats.filter(c => ['akha_specialty', 'appetizer', 'dessert'].includes(normalizeCatKey(c.id)));
             setCategories(fixedCats);
             if (fixedCats.length > 0 && !activeCategory) {
-               setActiveCategory(fixedCats[0].id);
+               setActiveCategory(normalizeCatKey(fixedCats[0].id));
             }
         }
 
@@ -62,7 +76,8 @@ const MenuManager: React.FC<MenuManagerProps> = ({
         if (fixedDishes.length === 0) {
           const { data: fixed } = await supabase
               .from('recipes')
-              .select('*, recipe_key_ingredients(ingredient)')
+              .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
+              .eq('recipe_type', 'class')
               .eq('is_fixed_dish', true)
               .order('category');
           
@@ -84,13 +99,19 @@ const MenuManager: React.FC<MenuManagerProps> = ({
             const hasChanged = JSON.stringify(currentIds) !== JSON.stringify(newIds);
 
             if (hasChanged || selectedDishes.length === 0) {
-              const { data: selected } = await supabase.from('recipes').select('*').in('id', ids);
+              const { data: selected } = await supabase
+                .from('recipes')
+                .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
+                .eq('recipe_type', 'class')
+                .in('id', ids);
               const ordered = [
                 selected?.find(r => r.id === menuSelection.curry_id),
                 selected?.find(r => r.id === menuSelection.soup_id),
                 selected?.find(r => r.id === menuSelection.stirfry_id)
-              ].filter(Boolean);
-              
+              ].filter(Boolean)
+                // Resolve cover → image so the "Your Menu" hero cards (<img src={dish.image}>) render.
+                .map((r: any) => ({ ...r, image: r.cover?.image_url || r.image }));
+
               setSelectedDishes(ordered as any[]);
             }
           } else {
@@ -112,7 +133,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
   
   // LOGICA CUSTOM: Unisce piatti DB e Schede Culturali
   const getDisplayItems = (cat: string) => {
-    const dbItems = fixedDishes.filter(d => d.category === cat);
+    const dbItems = fixedDishes.filter(d => normalizeCatKey(d.category) === cat);
 
     // 1. APPETIZER: Aggiungi scheda "Wooden Mortar"
     if (cat === 'appetizer') {
@@ -121,7 +142,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
             name: 'The Wooden Mortar',
             thai_name: 'Krok Mai',
             // Placeholder immagine Mortaio
-            image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/bg-04.webp', 
+            image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg',
             description: 'Why wood? We use the "Krok" to gently bruise the papaya, absorbing flavors without crushing the texture.',
             isCultural: true,
             icon: 'soup_kitchen'
@@ -136,7 +157,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
             name: 'Natural Chemistry',
             thai_name: 'Anchan Lime',
             // Placeholder immagine Blue Tea
-            image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/bg-05.webp', 
+            image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg',
             description: 'Watch the magic! We boil Blue Pea flowers, then squeeze lime to turn the rice from blue to vibrant purple.',
             isCultural: true,
             icon: 'science'
@@ -149,49 +170,16 @@ const MenuManager: React.FC<MenuManagerProps> = ({
 
   // Tabs Configuration
   const FIXED_TABS = categories.map(cat => ({
-    value: cat.id,
+    value: normalizeCatKey(cat.id),
     label: cat.title,
     icon: cat.icon_name || 'landscape',
     activeColor: 'secondary' as const
   }));
 
   const getCategoryDescription = (catId: string) => {
-      const cat = categories.find(c => c.id === catId);
+      const cat = categories.find(c => normalizeCatKey(c.id) === catId);
       return cat?.description || cat?.subtitle || FALLBACK_CATEGORY_INFO[catId.toLowerCase()] || "";
   };
-
-  // 2. MAPPER CORRETTO (Senza errori rossi)
-  const mapToRecipeData = (r: any): RecipeData => ({
-    id: r.id,
-    name: r.name,
-    thai_name: r.thai_name,
-    description: r.description,
-    category: r.category,
-    image: r.image,
-    spiciness: r.spiciness || 0,
-    
-    // Booleani Dietetici
-    isVegan: r.is_vegan,
-    isVegetarian: r.is_vegetarian,
-    
-    // Allergeni (TUTTI OBBLIGATORI per RecipeData)
-    hasPeanuts: r.has_peanuts || false,
-    hasGluten: r.has_gluten || false,
-    hasShellfish: r.has_shellfish || false,
-    hasSoy: r.has_soy || false,
-    
-    // Metadata (OBBLIGATORI)
-    isSignature: r.is_signature || false,
-    isFixedDish: r.is_fixed_dish || false,
-    
-    healthBenefits: r.health_benefits || "Traditional Akha medicine and nutrition.",
-    keyIngredients: r.recipe_key_ingredients?.map((i: any) => i.ingredient) || [],
-    
-    // Fix: Added missing galleryImages property kha
-    galleryImages: r.gallery_images || [],
-    // ✅ FIX COLORE: Priorità DB > Fallback
-    colorTheme: r.color_theme || '#ED5565'
-  });
 
   const handleEditMenu = () => {
       if (bookingId) onNavigate('menu', undefined, bookingId);

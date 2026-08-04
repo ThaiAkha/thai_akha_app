@@ -57,5 +57,12 @@
     "saving": "กำลังบันทึก...",
     "tooltipEdit": "แก้ไขข้อมูลเมตาของไฟล์",
     "tooltipSave": "บันทึกการเปลี่ยนแปลง"
+  },
+  "alerts": {
+    "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบ \"{{name}}\"?",
+    "deleteFailed": "ลบล้มเหลว: {{message}}",
+    "uploadFailed": "อัปโหลดล้มเหลว: {{message}}",
+    "renamedSuccess": "เปลี่ยนชื่อไฟล์สำเร็จ",
+    "renameFailed": "เปลี่ยนชื่อล้มเหลว: {{message}}"
   }
 }

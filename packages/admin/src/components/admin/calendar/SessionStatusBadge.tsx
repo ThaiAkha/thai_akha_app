@@ -31,7 +31,7 @@ const SessionStatusBadge: React.FC<SessionStatusBadgeProps> = ({
 
   const containerClass = cn(
     'flex items-center justify-between rounded border font-bold transition-all',
-    size === 'sm' ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-1 text-xs',
+    size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2 py-1 text-xs',
     isOpen
       ? 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-300 border-green-200 dark:border-green-500/40'
       : isFull

@@ -1,6 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { authCoreService } from '@thaiakha/shared/services';
 import type { UserProfile } from '@thaiakha/shared/types';
+import { invalidateGeminiClients } from './geminiClient';
 
 export const authService = {
     ...authCoreService, // Eredita signIn, signOut, getCurrentUserProfile, ecc.
@@ -59,7 +60,9 @@ export const authService = {
     async signOut() {
         // 1. Prima facciamo il logout ufficiale da Supabase (serve che i token siano ancora nel localStorage)
         await supabase.auth.signOut();
-        // 2. Poi puliamo tutto il resto in modo brute-force
+        // 2. Invalida il client Gemini cached (token vocale legato all'utente)
+        invalidateGeminiClients();
+        // 3. Poi puliamo tutto il resto in modo brute-force
         localStorage.clear();
     }
 };

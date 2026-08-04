@@ -21,11 +21,11 @@ export type TypographyVariant =
   | 'paragraphL' | 'paragraphM' | 'paragraphS' | 'body'
   | 'accent' | 'badge' | 'quote' | 'caption'
   | 'microLabel' | 'fieldLabel'
-  | 'numericPrice' | 'numericStat' | 'numericRegular';
+  | 'numericPrice' | 'numericStat' | 'numericMedium' | 'numericRegular';
 
 export type TypographyColor =
-  | 'primary' | 'secondary' | 'action' | 'quiz'
-  | 'default' | 'title' | 'sub' | 'muted' | 'inverse' | 'inherit';
+  | 'primary' | 'secondary' | 'action' | 'quiz' | 'quiz-p' | 'btn-p' | 'btn-s' | 'ocean-blue'
+  | 'default' | 'title' | 'sub' | 'muted' | 'inverse' | 'inherit' | 'white';
 
 const VARIANT_STYLES: Record<TypographyVariant, { element: React.ElementType; className: string }> = {
 
@@ -36,7 +36,7 @@ const VARIANT_STYLES: Record<TypographyVariant, { element: React.ElementType; cl
   },
   display2: {
     element: 'h2',
-    className: "font-display font-black italic leading-[0.85] tracking-tighter [font-size:var(--text-fluid-display2)] text-title"
+    className: "font-display font-black italic leading-[0.9] tracking-tighter [font-size:var(--text-fluid-display2)] text-title"
   },
 
   // --- HEADINGS ---
@@ -59,17 +59,18 @@ const VARIANT_STYLES: Record<TypographyVariant, { element: React.ElementType; cl
 
   // --- UI & ACCENTS ---
   accent: { element: 'span', className: "font-accent font-black uppercase tracking-[0.25em] [font-size:var(--text-fluid-accent)]" },
-  badge: { element: 'span', className: "font-sans font-bold uppercase tracking-[0.25em] text-sm" },
+  badge: { element: 'span', className: "font-sans font-bold uppercase tracking-[0.25em] [font-size:var(--text-fluid-chip)]" },
   quote: { element: 'blockquote', className: "font-display font-light italic leading-relaxed [font-size:var(--text-fluid-quote)] border-l-4 border-primary pl-6 py-2 text-desc" },
   caption: { element: 'span', className: "font-sans [font-size:var(--text-fluid-caption)] italic text-muted" },
 
   // --- UI DATA ---
   microLabel: { element: 'span', className: "font-sans [font-size:var(--text-fluid-micro)] font-black uppercase tracking-widest text-muted" },
-  fieldLabel: { element: 'label', className: "font-sans text-xs font-semibold uppercase tracking-wider text-desc" },
+  fieldLabel: { element: 'label', className: "font-sans [font-size:var(--text-fluid-micro)] font-semibold uppercase tracking-wider text-desc" },
 
   // --- NUMERIC (font-numeric = Noto Sans + Noto Sans Thai) ---
   numericPrice: { element: 'span', className: "font-numeric font-bold [font-size:var(--text-fluid-numericPrice)] text-title" },
   numericStat: { element: 'span', className: "font-numeric font-bold [font-size:var(--text-fluid-numericStat)] text-primary" },
+  numericMedium: { element: 'span', className: "font-numeric font-bold [font-size:var(--text-fluid-numericMedium)] text-title" },
   numericRegular: { element: 'span', className: "font-numeric font-normal [font-size:var(--text-fluid-body)] text-desc" },
 };
 
@@ -84,9 +85,14 @@ const COLOR_STYLES: Record<TypographyColor, string> = {
   secondary: "text-secondary",
   action: "text-action",
   quiz: "text-quiz",
+  'quiz-p': "text-quiz-p",
+  'btn-p': "text-btn-p",
+  'btn-s': "text-btn-s",
+  'ocean-blue': "text-ocean-blue",
+  white: "text-white",
 };
 
-export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
+export interface TypographyProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   variant?: TypographyVariant;
   color?: TypographyColor;
   as?: React.ElementType;

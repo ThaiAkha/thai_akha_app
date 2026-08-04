@@ -1,5 +1,6 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
+import { Heading, Paragraph } from '../typography';
 import { getIcon, type IconName } from '@thaiakha/shared/lib/icons';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -37,13 +38,13 @@ const WelcomeHero: React.FC<WelcomeHeroProps> = ({
                         {badge}
                     </Badge>
                 )}
-                <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 dark:text-white leading-none">
-                    {titleMain} {titleHighlight && <span className="text-primary-600 drop-shadow-sm">{titleHighlight}</span>}
-                </h1>
+                <Heading level="display" className="uppercase tracking-tighter !leading-none">
+                    {titleMain} {titleHighlight && <span className="text-primary-600 dark:text-primary-400 drop-shadow-sm">{titleHighlight}</span>}
+                </Heading>
                 {description && (
-                    <p className="text-lg font-medium text-gray-900 dark:text-gray-300 max-w-lg leading-relaxed">
+                    <Paragraph size="lg" color="primary" className="font-medium max-w-lg">
                         {description}
-                    </p>
+                    </Paragraph>
                 )}
                 {/* Optional interactive actions (like New Booking button) */}
                 {children && (
@@ -55,12 +56,13 @@ const WelcomeHero: React.FC<WelcomeHeroProps> = ({
 
             {/* Background Decorator (Image or Icon) */}
             {imageUrl ? (
-                <div className="absolute inset-y-0 right-0 h-full pointer-events-none">
-                    {/* Photo fixed to card height; right-aligned on all devices. Mobile shows image at 50% opacity. */}
+                <div className="absolute inset-0 md:inset-y-0 md:left-auto md:right-0 h-full pointer-events-none">
+                    {/* Mobile: image covers the whole card, heavily faded so the titles stay readable.
+                        Desktop (md+): right-aligned, natural width, full opacity. */}
                     <img
                         src={imageUrl}
                         alt=""
-                        className="h-full w-auto max-w-none object-cover object-right opacity-50 md:opacity-100"
+                        className="h-full w-full object-cover object-right opacity-20 md:w-auto md:max-w-none md:opacity-100"
                     />
                 </div>
             ) : (

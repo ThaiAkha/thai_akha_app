@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "title": "媒体库"
+  },
+  "sidebar": {
+    "title": "媒体文件夹",
+    "allAssets": "所有媒体资源",
+    "footer": "媒体库系统"
+  },
+  "content": {
+    "emptyMessage": "未找到媒体资源",
+    "table": {
+      "colMedia": "媒体 16:9",
+      "colIdentity": "标识与层级",
+      "colSpecs": "规格与元数据",
+      "colContext": "节点上下文 (+20%)",
+      "untitledReference": "未命名引用",
+      "openInNewWindow": "在新窗口中打开",
+      "noUrl": "此资源没有有效的URL。"
+    }
+  },
+  "inspector": {
+    "sections": {
+      "coreIdentity": "核心标识",
+      "accessFormat": "访问与格式",
+      "visualMetrics": "视觉指标",
+      "contentSeo": "内容与SEO",
+      "aiMetadata": "AI元数据",
+      "systemProperties": "系统属性"
+    },
+    "labels": {
+      "assetId": "用户定义资源ID",
+      "fileName": "存储文件名",
+      "folderPath": "组织路径",
+      "publicUrl": "公开访问URL",
+      "mimeType": "MIME类型",
+      "fileSize": "文件大小",
+      "width": "宽度 (px)",
+      "height": "高度 (px)",
+      "displayTitle": "显示标题",
+      "caption": "描述 / 说明",
+      "altText": "替代文本（无障碍）",
+      "tags": "标签（逗号分隔）",
+      "copyright": "版权 / 来源",
+      "aiGenerated": "AI生成",
+      "aiGeneratedHint": "如由AI生成请开启",
+      "toolEngine": "工具引擎",
+      "databaseUuid": "数据库UUID",
+      "uploadedBy": "上传者",
+      "created": "创建时间",
+      "lastUpdate": "最后更新"
+    },
+    "buttons": {
+      "deIndex": "取消索引"
+    },
+    "hints": {
+      "deIndexWarning": "从Thai Akha CDN中移除数据库映射。存储中的物理文件将保留以确保安全。",
+      "urlCopied": "URL已复制到剪贴板！"
+    }
+  },
+  "alerts": {
+    "saveFailed": "保存资源失败。请查看控制台获取详情。",
+    "confirmDelete": "确定要删除此数据库条目吗？存储文件将保留。"
+  },
+  "actions": {
+    "syncing": "同步中...",
+    "deploy": "部署更改",
+    "editProperties": "编辑属性"
+  }
+}

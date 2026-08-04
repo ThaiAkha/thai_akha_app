@@ -25,5 +25,12 @@ export default {
     'bg-action-700',
     // ========== SIDEBAR ICON PADDING ==========
     'pl-5',
+    // ========== SIDEBAR WIDTHS (used via JS constants — must be safelisted) ==========
+    // ========== FOOTER GROUPS (Information, Settings, Login) ==========
+    // All footer buttons use a gray base with quiz-p colored icons
+    'bg-gray-25', 'bg-gray-50', 'border-gray-200', 'hover:bg-gray-100', 'hover:border-gray-300', 'bg-gray-100',
+    'bg-white', 'hover:bg-gray-50',
+    'dark:bg-gray-950', 'dark:bg-gray-900', 'dark:border-gray-800', 'dark:hover:bg-gray-800', 'dark:bg-gray-800', 'dark:border-gray-700', 'dark:hover:bg-gray-900',
+    'text-quiz-p-700', 'dark:text-quiz-p-400',
   ],
 };

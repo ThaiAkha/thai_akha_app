@@ -2,7 +2,7 @@
  * Front App — Tailwind @theme
  *
  * ─── WHAT LIVES HERE ──────────────────────────────────────────────────────
- *  • Font families (Raleway/Nunito — premium, warm, consumer-facing)
+ *  • Font families (Raleway / Montserrat — premium, geometric, readable)
  *  • Semantic layout colors (background, surface, title, desc, border)
  *  • Dark mode overrides for layout semantics
  *  • secondary scale (dark cherry #8D1A31 — front-specific, invariato)
@@ -30,7 +30,7 @@
      FONT FAMILIES
      ============================================================================ */
   --font-*: initial;
-  --font-sans:    'Nunito', 'Noto Sans', 'Noto Sans Thai', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans JP', sans-serif;
+  --font-sans:    'Montserrat', 'Noto Sans', 'Noto Sans Thai', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans JP', sans-serif;
   --font-display: 'Raleway', 'Noto Sans', 'Noto Sans Thai', sans-serif;
   --font-accent:  'Roboto Condensed', 'Noto Sans', 'Noto Sans Thai', sans-serif;
   --font-mono:    'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -41,7 +41,8 @@
      ============================================================================ */
 
   /* Quiz shorthand (front only — quiz-p-500 alias used throughout quiz UI) */
-  --color-quiz: #9A0050;
+  --color-quiz: #9b3357;  /* Quiz Color Set primary (quiz-p) */
+  --color-quiz-text: var(--text-quiz-p);
 
   /* Dietary secondary (front only — allergy warning background) */
   --color-allergy-secondary: #FEE2E2;
@@ -50,16 +51,24 @@
      SEMANTIC LAYOUT — generates bg-background, text-title, etc.
      Light mode defaults — overridden in dark mode below.
      ============================================================================ */
-  --color-background:       #FAFAFA;
+  --color-background:       var(--bg);
   --color-surface:          #FFFFFF;
+  /* Delega allo strutturale (gestito per classe/media in tokens.css) così bg-surface-2
+     segue light/dark correttamente — NON hardcodare il dark via @variant @theme (che
+     lo issa in :root incondizionato → card "nera" in light). */
+  --color-surface-2:        var(--surface-2);
   --color-border:           #E2E8F0;
   /* NOTE: --color-title, --color-desc, --color-sub, --color-muted, --color-inverse
      are defined in tokens.css :root — single source of truth. */
 
-  /* Fixed dark surfaces (always dark, never theme-switched) */
-  --color-surface-elevated: #1a1a1a;
+  /* Elevated surface — delega allo strutturale (dark gestito in tokens.css html.dark/media) */
+  --color-surface-elevated: var(--surface-elevated);
+  /* Fixed dark overlay — always dark in both modes */
   --color-surface-overlay:  #0a0b0d;
   --color-map-bg:           #1d1d1d;
+
+  /* Layout width tokens */
+  --width-8xl: 88rem; /* 1408px — used for full-width sections (FAQ, sibling nav) */
 
 }
 
@@ -70,7 +79,10 @@
    @variant dark { @theme {} } generates unconditional :root rules that always apply. */
 @variant dark {
   @theme {
-    --color-background:        #0A0A0A;
+    /* Surface/background/elevated NON qui: delegano a var(--bg)/var(--surface)/
+       var(--surface-2)/var(--surface-elevated) in :root, con dark gestito per
+       classe in tokens.css (html.dark + @media). Metterli in @variant @theme li
+       issa in :root incondizionato → rompono il light (card "nere"). */
     --color-surface:           #121212;
     --color-border:            #2D2D2D;
     --color-allergy-secondary: var(--color-allergy-dark);

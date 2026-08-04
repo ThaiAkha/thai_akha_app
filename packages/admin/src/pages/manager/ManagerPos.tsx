@@ -2,10 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import PageMeta from '../../components/common/PageMeta';
 import { DataExplorerLayout } from '../../components/data-explorer';
-import ClassPicker from '../../components/common/ClassPicker';
 
 // Modular Components
-import PosSidebar from '../../components/manager/pos/PosSidebar';
+import PosClassSidebar from '../../components/manager/pos/PosClassSidebar';
+import PosClassToolbar from '../../components/manager/pos/PosClassToolbar';
 import PosContent from '../../components/manager/pos/PosContent';
 import PosInspector from '../../components/manager/pos/PosInspector';
 
@@ -15,7 +15,7 @@ import { useManagerPos } from '../../hooks/useManagerPos';
 const ManagerPos: React.FC = () => {
     const { t } = useTranslation('pos');
     const {
-        filteredGuests,
+        guests,
         displayedProducts,
         mainCategories,
         subCategoryTabs,
@@ -25,12 +25,10 @@ const ManagerPos: React.FC = () => {
         totalDue,
         loading,
         isProcessing,
-        selectedDate,
-        selectedSession,
         activeCategory,
         activeSubCategory,
         activeGuestId,
-        setSelectedDate,
+        selectedSession,
         setSelectedSession,
         setActiveGuestId,
         setActiveCategory,
@@ -39,8 +37,12 @@ const ManagerPos: React.FC = () => {
         handleRemoveItem,
         handleSaveConfirmed,
         handlePayCash,
+        handlePayCard,
         closeInspector,
+        doSplit,
+        doMergeChild,
     } = useManagerPos();
+    const sessionKey = selectedSession.includes('evening') ? 'evening' : 'morning';
 
     return (
         <>
@@ -54,22 +56,17 @@ const ManagerPos: React.FC = () => {
                 inspectorOpen={true}
                 onInspectorClose={closeInspector}
                 sidebar={
-                    <PosSidebar
-                        filteredGuests={filteredGuests}
+                    <PosClassSidebar
+                        guests={guests}
+                        session={sessionKey}
                         activeGuestId={activeGuestId}
                         onSelectGuest={setActiveGuestId}
+                        onSplit={doSplit}
+                        onMerge={doMergeChild}
                     />
                 }
                 toolbar={
-                    <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-2 bg-gray-50/50 dark:bg-gray-900/50 shadow-sm shrink-0">
-                        <ClassPicker
-                            date={selectedDate}
-                            onDateChange={setSelectedDate}
-                            session={selectedSession}
-                            onSessionChange={setSelectedSession}
-                        />
-                        <div className="flex-1" />
-                    </div>
+                    <PosClassToolbar selectedSession={selectedSession} onSessionChange={setSelectedSession} />
                 }
                 inspector={
                     <PosInspector
@@ -82,6 +79,7 @@ const ManagerPos: React.FC = () => {
                         onRemoveItem={handleRemoveItem}
                         onSave={handleSaveConfirmed}
                         onPayCash={handlePayCash}
+                        onPayCard={handlePayCard}
                         onClose={closeInspector}
                     />
                 }

@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ data }) => {
         </Typography>
       </div>
 
-      <div className="h-[2px] w-[120px] max-w-full bg-primary rounded-full opacity-90 [margin-top:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-s)]" />
+      <div className="h-[2px] w-[120px] max-w-full bg-cherry-ai rounded-full opacity-90 [margin-top:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-s)]" />
 
       <div className="w-full">
         <Typography variant="paragraphL">

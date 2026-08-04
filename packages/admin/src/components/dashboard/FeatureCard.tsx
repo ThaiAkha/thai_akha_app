@@ -21,6 +21,8 @@ import { type IconName } from '@thaiakha/shared/lib/icons';
 import Icon from '../ui/Icon';
 import { Heading, Paragraph } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { useFlash } from '../../hooks/useFlash';
+import { FlashLayer } from '../ui/FlashLayer';
 
 export interface FeatureCardProps {
   /** Card title */
@@ -59,19 +61,24 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   aspectRatio = 'aspect-[5/2.7]'
 }) => {
   const IconComponent = icon ? icon : null; // keep prop name but render with Icon component below
+  const { flashes, onMouseMove, onClick } = useFlash();
 
   return (
     <Link
       to={path}
+      onMouseMove={onMouseMove}
+      onClick={onClick}
       className={cn(
-        "group relative bg-white dark:bg-gray-900 rounded-3xl overflow-hidden",
+        "group relative isolate bg-white dark:bg-gray-900 rounded-3xl overflow-hidden",
         "shadow-sm border border-gray-100 dark:border-gray-800",
         "flex flex-col transition-all duration-300",
         "hover:shadow-xl hover:shadow-primary-500/5 hover:-translate-y-1",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900",
         "no-underline block",
         className
       )}
     >
+      <FlashLayer flashes={flashes} />
       {/* Decorative Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
@@ -109,7 +116,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
         {/* Link Label */}
         {linkLabel && (
-          <div className="inline-flex items-center text-primary-500 font-bold text-md uppercase tracking-wider transition-colors group-hover:text-primary-600 w-fit">
+          <div className="inline-flex items-center text-primary-500 font-bold text-base uppercase tracking-wider transition-colors group-hover:text-primary-600 w-fit">
             {linkLabel}
             <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
           </div>

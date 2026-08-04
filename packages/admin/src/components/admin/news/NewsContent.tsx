@@ -46,7 +46,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                 title={String(item[titleField] ?? '—')}
                 subtitle={subtitleField ? String(item[subtitleField] ?? '') : undefined}
                 badges={badgeField && item[badgeField] != null ? (
-                    <Badge color="light" size="sm" className="text-[9px] font-bold tracking-widest uppercase">
+                    <Badge color="light" size="sm" className="text-xs font-bold tracking-widest uppercase">
                         {String(item[badgeField])}
                     </Badge>
                 ) : undefined}
@@ -58,7 +58,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                 ) : (
-                    <p className="text-[10px] font-mono font-bold text-gray-300 uppercase tracking-tighter">
+                    <p className="text-xs font-mono font-bold text-gray-300 uppercase tracking-tighter">
                         {String(item[columns[2]] || '—').substring(0, 12)}
                     </p>
                 )}
@@ -86,7 +86,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                                 />
                             </TableCell>
                             {columns.map(col => (
-                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">
+                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">
                                     {col}
                                 </TableCell>
                             ))}

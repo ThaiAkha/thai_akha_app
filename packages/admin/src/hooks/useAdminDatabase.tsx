@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import {
-    AlertTriangle, Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music
+    Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music
 } from 'lucide-react';
 
 // --- CONFIG ---
 // Note: akha_news, culture_sections, ethnic_groups, page_sections → moved to AdminNews
 export const SYSTEM_TABLES = [
-    { id: 'allergy_knowledge', label: 'Allergy Knowledge', icon: <AlertTriangle className="w-5 h-5" /> },
     { id: 'audio_assets', label: 'Audio Assets', icon: <Music className="w-5 h-5" /> },
     { id: 'booking_participants', label: 'Booking Participants', icon: <Users className="w-5 h-5" /> },
     { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
@@ -55,7 +55,6 @@ export const SYSTEM_TABLES = [
 export const READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid'];
 
 export const PRIMARY_KEY_MAP: Record<string, string> = {
-    allergy_knowledge: 'allergy_key',
     bookings: 'internal_id',
     page_sections: 'section_id',
     shop_contacts: 'shop_name',
@@ -75,7 +74,7 @@ export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
     ],
     profiles: [
         'id', 'full_name', 'email', 'dietary_profile', 'allergies', 'updated_at',
-        'role', 'preferred_spiciness_id', 'avatar_url', 'agency_commission_rate',
+        'role', 'preferred_spiciness_id', 'avatar_url',
         'agency_company_name', 'agency_tax_id', 'agency_phone', 'agency_address',
         'agency_city', 'agency_province', 'agency_country', 'agency_postal_code'
     ],
@@ -89,10 +88,11 @@ export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
         'description', 'created_at', 'display_order', 'morning_pickup_end', 'evening_pickup_end'
     ],
     recipes: [
-        'id', 'name', 'thai_name', 'description', 'is_vegan', 'is_vegetarian',
-        'category', 'has_peanuts', 'has_shellfish', 'has_gluten', 'has_soy',
+        'id', 'name', 'thai_name', 'description', 'category',
+        'has_peanuts', 'has_gluten', 'has_shellfish', 'has_soy', 'has_eggs',
+        'has_fish', 'has_fish_sauce', 'has_seafood', 'has_sesame', 'has_soy_sauce', 'has_tree_nuts',
         'image', 'spiciness', 'color_theme', 'health_benefits', 'is_signature',
-        'is_fixed_dish', 'created_at', 'updated_at', 'dietary_variants', 'gallery_images'
+        'is_fixed_dish', 'created_at', 'updated_at', 'dietary_variants'
     ],
     site_metadata: [
         'id', 'page_slug', 'header_title_main', 'header_title_highlight', 'header_badge',
@@ -134,11 +134,12 @@ export const GRID_PRIMARY_FIELDS: Record<string, { title: string; subtitle?: str
 };
 
 export const useAdminDatabase = () => {
+    const { t } = useTranslation('database');
     // ✅ AppHeader handles metadata loading automatically
     const [selectedTable, setSelectedTable] = useState('profiles');
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<Record<string, unknown>[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedRow, setSelectedRow] = useState<any | null>(null);
+    const [selectedRow, setSelectedRow] = useState<Record<string, unknown> | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -155,15 +156,15 @@ export const useAdminDatabase = () => {
         setSelectedIds(new Set());
         try {
             const { data: tableData, error } = await supabase
-                .from(tableName)
+                .from(tableName as any)
                 .select('*')
                 .limit(100);
 
             if (error) throw error;
-            setData(tableData || []);
+            setData((tableData as any) || []);
         } catch (err) {
             console.error(`Error fetching table ${tableName}:`, err);
-            alert(`Failed to load ${tableName} kha!`);
+            alert(t('alerts.loadFailed', { table: tableName }));
         } finally {
             setLoading(false);
         }
@@ -182,10 +183,13 @@ export const useAdminDatabase = () => {
             const isNew = !selectedRow.id && !selectedRow.internal_id;
             const payload = { ...selectedRow };
             READ_ONLY_COLUMNS.forEach(col => delete payload[col]);
+            // Gallery unification: la fonte unica è gallery_items → NON scrivere più le
+            // colonne array legacy (così /database può droppare le colonne in sicurezza).
+            ['gallery_images', 'gallery_asset_ids', 'culture_asset_ids'].forEach(col => delete (payload as Record<string, unknown>)[col]);
 
             let error;
             if (isNew) {
-                const { error: insertError } = await supabase.from(selectedTable).insert(payload);
+                const { error: insertError } = await supabase.from(selectedTable as any).insert(payload);
                 error = insertError;
             } else {
                 const idField = PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
@@ -196,19 +200,19 @@ export const useAdminDatabase = () => {
                 }
 
                 const { error: updateError } = await supabase
-                    .from(selectedTable)
+                    .from(selectedTable as any)
                     .update(payload)
                     .eq(idField, idValue);
                 error = updateError;
             }
 
             if (error) throw error;
-            alert('Data saved successfully kha! 🙏');
+            alert(t('alerts.savedSuccess'));
             setIsEditing(false);
             fetchTableData(selectedTable);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Save error:', err);
-            alert(`Save failed: ${err.message || 'Unknown error'}. Check console for details.`);
+            alert(t('alerts.saveFailed', { message: err instanceof Error ? err.message : '' }));
         } finally {
             setIsSaving(false);
         }
@@ -225,17 +229,17 @@ export const useAdminDatabase = () => {
             }
 
             const { error } = await supabase
-                .from(selectedTable)
+                .from(selectedTable as any)
                 .delete()
                 .eq(idField, idValue);
 
             if (error) throw error;
-            alert('Deleted successfully. 🙏');
+            alert(t('alerts.deletedSuccess'));
             setShowDeleteConfirm(false);
             fetchTableData(selectedTable);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Delete error:', err);
-            alert(`Delete failed: ${err.message || 'Unknown error'}`);
+            alert(t('alerts.deleteFailed', { message: err instanceof Error ? err.message : '' }));
         }
     };
 
@@ -273,7 +277,7 @@ export const useAdminDatabase = () => {
         );
     }, [data, searchTerm]);
 
-    const getRowId = (r: any) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
+    const getRowId = (r: Record<string, unknown>) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
 
     const toggleSelectAll = () => {
         if (selectedIds.size === filteredData.length && filteredData.length > 0) {
@@ -285,7 +289,7 @@ export const useAdminDatabase = () => {
         }
     };
 
-    const toggleSelectRow = (row: any) => {
+    const toggleSelectRow = (row: Record<string, unknown>) => {
         const id = getRowId(row);
         const newSet = new Set(selectedIds);
         if (newSet.has(id)) {
@@ -341,7 +345,7 @@ export const useAdminDatabase = () => {
     const copyToClipboard = () => {
         const exportData = getExportData();
         navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
-        alert(`${exportData.length} items copied to clipboard kha!`);
+        alert(t('alerts.copiedCount', { count: exportData.length }));
         setIsExportOpen(false);
     };
 

@@ -3,13 +3,20 @@
  * Maps i18n language codes to Intl locale strings
  */
 
+/**
+ * Mappa le 4 lingue dell'interfaccia (LangCode) sui locale Intl.
+ * SORGENTE UNICA: non ridefinire una `getLocale` locale nei componenti - era gia'
+ * successo in 4 punti, tutti fermi a en/th, quindi in cinese e spagnolo date e numeri
+ * uscivano in formato inglese.
+ */
 export const getLocaleCode = (language: string): string => {
   const localeMap: Record<string, string> = {
-    en: 'en-US',
+    en: 'en-GB',
     th: 'th-TH',
-    it: 'it-IT',
+    es: 'es-ES',
+    zh: 'zh-CN',
   };
-  return localeMap[language] || 'en-US';
+  return localeMap[language] || 'en-GB';
 };
 
 /**

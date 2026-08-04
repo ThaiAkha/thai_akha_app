@@ -52,7 +52,7 @@ const Badge: React.FC<BadgeProps> = ({
   const sizeStyles = {
     xs: "[font-size:var(--text-fluid-micro)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-2xs)] font-bold uppercase tracking-wider",
     sm: "[font-size:var(--text-fluid-caption)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-xs)] font-bold uppercase tracking-widest",
-    md: "[font-size:var(--text-fluid-accent)] [padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-s)] font-bold uppercase tracking-widest",
+    md: "[font-size:var(--text-fluid-caption)] md:[font-size:var(--text-fluid-accent)] [padding-inline:var(--space-fluid-m)] md:[padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-xs)] md:[gap:var(--space-fluid-s)] font-bold uppercase tracking-widest",
   };
 
   // Mappe colori solidi originali (intatte)

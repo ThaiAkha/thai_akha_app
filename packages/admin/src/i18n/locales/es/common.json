@@ -1,0 +1,119 @@
+{
+  "breadcrumb": {
+    "home": "Inicio"
+  },
+  "buttons": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "upload": "Subir",
+    "download": "Descargar",
+    "preview": "Vista previa",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "apply": "Aplicar",
+    "clear": "Limpiar",
+    "confirm": "Confirmar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "close": "Cerrar"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "paid": "Pagado",
+    "confirmed": "Confirmado",
+    "cancelled": "Cancelado",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "feedback": {
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "success": "Éxito",
+    "error": "Se produjo un error",
+    "noData": "Sin datos disponibles"
+  },
+  "language": {
+    "switch": "Cambiar idioma",
+    "current": "Idioma actual",
+    "en": "Inglés",
+    "th": "Tailandés",
+    "es": "Español",
+    "zh": "Chino"
+  },
+  "user": {
+    "menu": "Menú de usuario",
+    "editProfile": "Editar perfil",
+    "signOut": "Cerrar sesión",
+    "fallbackName": "Usuario"
+  },
+  "header": {
+    "toggleMenu": "Alternar menú",
+    "toggleSidebar": "Alternar barra",
+    "visitSite": "Visitar sitio",
+    "exploreSite": "Explorar el sitio web público",
+    "goLive": "Ver sitio web"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "toggle": "Cambiar tema",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro"
+  },
+  "aria": {
+    "menuToggle": "Alternar barra lateral",
+    "userAvatar": "Avatar de usuario",
+    "prevDay": "Día anterior",
+    "selectDate": "Seleccionar fecha",
+    "nextDay": "Día siguiente",
+    "toggleTheme": "Cambiar tema",
+    "clearSearch": "Borrar búsqueda",
+    "openCherry": "Abrir Cherry AI",
+    "expandChat": "Expandir chat",
+    "closeChat": "Cerrar chat",
+    "toggleVoice": "Activar voz",
+    "minimizeChat": "Minimizar",
+    "close": "Cerrar"
+  },
+  "yesNo": {
+    "yes": "Sí",
+    "no": "No"
+  },
+  "actions": {
+    "save": "GUARDAR",
+    "saving": "GUARDANDO...",
+    "cancel": "CANCELAR",
+    "edit": "EDITAR",
+    "confirm": "CONFIRMAR",
+    "deleteRecord": "ELIMINAR",
+    "editAvailability": "EDITAR DISP.",
+    "viewMore": "Ver más",
+    "editRecord": "Editar este registro",
+    "saveModifications": "Guardar modificaciones",
+    "saveChanges": "Guardar cambios",
+    "editFileMetadata": "Editar metadatos",
+    "editHotel": "Editar este hotel",
+    "editMeetingPoint": "Editar punto de encuentro",
+    "assign": "Asignar"
+  },
+  "form": {
+    "phonePlaceholder": "ej. +66 81 234 5678"
+  },
+  "fallback": {
+    "guest": "Huésped",
+    "empty": "Vacío",
+    "viewMore": "Ver más"
+  },
+  "notifications": {
+    "title": "Notificación",
+    "viewAll": "Ver notificaciones",
+    "empty": "Sin notificaciones",
+    "markAllRead": "Marcar todo leído"
+  },
+  "badges": {
+    "hasLuggage": "Con equipaje"
+  }
+}

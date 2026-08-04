@@ -8,4 +8,5 @@ export { default as ContextualStatsView } from './ContextualStatsView';
 export { default as InviteGroupBlock } from './InviteGroupBlock';
 export { default as StaffWelcomeCard } from './StaffWelcomeCard';
 export { default as AccessDeniedView } from './AccessDeniedView';
+export { default as NoBookingBanner } from './NoBookingBanner';
 

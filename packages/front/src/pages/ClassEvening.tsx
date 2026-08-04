@@ -1,101 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import { contentService } from '@thaiakha/shared/services';
-import { PageLayout, SmartHeaderSection, HeaderMenu } from '../components/layout';
-import { Button, AkhaPixelLine } from '../components/ui/index';
-import { CookingClassDB } from '@thaiakha/shared';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import React from 'react';
+import { PageLayout, PageEssentials, SmartHeaderSection, HeaderMenu, PageSEO, SiblingInfoSection } from '../components/layout';
+import { AkhaThemedLine, AkhaQuote, FaqBottomPage, GlassCardFull } from '../components/ui';
 import { HeroContent } from '../components/classes/HeroContent';
-import ClassDetails from '../components/classes/ClassDetails';
-import ClassSectionBlock, { ClassSection } from '../components/classes/ClassSectionBlock';
+import ClassScheduleTimeline from '../components/classes/ClassScheduleTimeline';
+import type { ScheduleStep } from '../components/classes/ClassScheduleTimeline';
+import ClassGallery from '../components/classes/ClassGallery';
+import ClassInclusions from '../components/classes/ClassInclusions';
+import AkhaButtonLine from '../components/divider/AkhaButtonLine';
+import { useClassPageData } from '../hooks/useClassPageData';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface EveningClassPageProps {
-  onNavigate: (page: string, topic?: string) => void;
+  onNavigate: (page: string, topic?: string, sectionId?: string) => void;
 }
 
 const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
-  const [loading, setLoading] = useState(true);
-  const [classData, setClassData] = useState<CookingClassDB | null>(null);
-  const [session, setSession] = useState<any>(null);
-  const [sections, setSections] = useState<ClassSection[]>([]);
+  const {
+    classData,
+    gallery1,
+    gallery2,
+    pickupSection,
+    exclusionsSection,
+    seoMetadata,
+    loading,
+  } = useClassPageData('evening');
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const [classes, sessionData, sectionData] = await Promise.all([
-          contentService.getCookingClasses(),
-          contentService.getClassSession('evening_class'),
-          contentService.getClassSections('evening_class'),
-        ]);
-        const found = classes.find((c: CookingClassDB) => c.id === 'evening_class');
-        setClassData(found ?? null);
-        setSession(sessionData);
-        setSections(sectionData.filter((s: ClassSection) => !s.assigned_classes?.includes('morning_class')));
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const inclusions = (classData?.inclusions ?? []) as string[];
 
   return (
     <PageLayout
-      slug="evening-class"
+      slug="evening-cooking-class-dinner"
       loading={loading}
       showPatterns={true}
       hideDefaultHeader={true}
-      customHeader={<HeaderMenu customSlug="evening-class" />}
+      customHeader={<HeaderMenu customSlug="evening-cooking-class-dinner" />}
     >
-      <div className="w-full flex flex-col space-y-12 pb-16">
+      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
+          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
+      <PageSEO
+        title={seoMetadata?.seo_title || t.seo.evening.title}
+        description={seoMetadata?.seo_description || t.seo.evening.description}
+        canonical={seoMetadata?.canonical_url || t.seo.evening.canonical}
+        ogTitle={seoMetadata?.og_title || seoMetadata?.seo_title || undefined}
+        ogDescription={seoMetadata?.og_description || seoMetadata?.seo_description || undefined}
+        ogImage={seoMetadata?.og_image || t.seo.ogDefault}
+        ogType={(seoMetadata?.og_type as 'website' | 'article' | 'profile') || 'website'}
+      />
 
+      <div className="w-full flex flex-col [gap:var(--space-fluid-xl)]">
+
+        {/* ── 1. Hero ────────────────────────────────────────────────────────── */}
         <HeroContent
           activeTab="evening"
           currentClass={classData}
+          sectionId="evening-01"
+          audioAssetId="class-03"
         />
 
-        {classData && (
-          <ClassDetails
+        {/* ── 2. Gallery 1 — 8 photos + Book CTA ─────────────────────────── */}
+        <div className="flex flex-col [gap:var(--space-fluid-m)]">
+          <SmartHeaderSection sectionId="evening-02" variant="section" align="center" />
+          <ClassGallery items={gallery1} />
+          <AkhaButtonLine
+            label={t.classes.bookYourClass}
+            icon="calendar_month"
+            href="/booking"
+            onClick={() => onNavigate('booking')}
+            theme="akha"
+          />
+        </div>
+
+        {/* ── 3. Daily Schedule Timeline ──────────────────────────────────── */}
+        {classData && (classData.schedule_items ?? []).length > 0 && (
+          <ClassScheduleTimeline
+            steps={(classData.schedule_items ?? []) as unknown as ScheduleStep[]}
             color="secondary"
-            tags={classData.tags ?? []}
-            inclusions={classData.inclusions ?? []}
-            schedule={(classData.schedule_items ?? []) as any[]}
-            tagline={classData.tagline}
-            meetingPoints={session?.meeting_points ?? []}
-            classSections={sections}
+            sectionId="evening-03"
+            onNavigate={onNavigate}
           />
         )}
 
-        {sections.length > 0 && (
-          <div className="space-y-3">
-            {sections.map((section, idx) => (
-              <ClassSectionBlock
-                key={section.id}
-                section={section}
-                color="secondary"
-                isLast={idx === sections.length - 1}
-              />
-            ))}
-          </div>
+        {/* ── 4. Gallery 2 + Quote (evening-04 header) ────────────────────── */}
+        <AkhaThemedLine theme="akha" />
+
+        <div className="flex flex-col [gap:var(--space-fluid-l)]">
+          <SmartHeaderSection sectionId="evening-04" variant="section" align="center" />
+          <ClassGallery items={gallery2} />
+
+          {classData?.tagline && (
+            <div className="flex justify-center [padding-inline:var(--space-fluid-xl)] [padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-m)]">
+              <AkhaQuote variant="main" className="max-w-2xl">
+                {classData.tagline}
+              </AkhaQuote>
+            </div>
+          )}
+        </div>
+
+        {/* ── 5. Inclusions ───────────────────────────────────────────────── */}
+        {inclusions.length > 0 && (
+          <>
+            <AkhaThemedLine theme="akha" />
+
+            <div className="flex flex-col [gap:var(--space-fluid-l)]">
+              <SmartHeaderSection sectionId="evening-05" variant="section" align="center" />
+              <ClassInclusions items={inclusions} />
+            </div>
+          </>
         )}
 
-        <AkhaPixelLine />
-
-        <SmartHeaderSection
-          sectionId="class-02"
-          variant="section"
-          align="center"
+        {/* ── 6. Pickup — GlassCard ───────────────────────────────────────── */}
+        <GlassCardFull
+          sectionId="evening-06"
+          prefetchedData={pickupSection}
+          glassVariant="secondary"
+          imagePosition="right"
+          onNavigate={(path) => onNavigate(path)}
         />
 
-        <div className="flex justify-center pt-4">
-          <Button
-            variant="brand"
-            size="lg"
-            icon="calendar_month"
-            onClick={() => onNavigate('booking')}
-          >
-            {t.classes.bookEvening}
-          </Button>
-        </div>
+        <AkhaThemedLine theme="akha" />
+
+        {/* ── 7. Universal Exclusions ─────────────────────────────────────── */}
+        <GlassCardFull
+          sectionId="universal_exclusions"
+          prefetchedData={exclusionsSection}
+          glassVariant="primary"
+          imagePosition="left"
+          onNavigate={(path) => onNavigate(path)}
+        />
+
+        <PageEssentials slug="evening-cooking-class-dinner" />
+
+        <FaqBottomPage
+          slug="evening-cooking-class-dinner"
+          onNavigate={onNavigate}
+        />
+
+        <SiblingInfoSection
+          currentSlug="evening-cooking-class-dinner"
+          onNavigate={onNavigate}
+        />
       </div>
     </PageLayout>
   );

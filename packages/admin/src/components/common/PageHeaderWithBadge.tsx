@@ -1,5 +1,6 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
+import { Heading } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface PageHeaderWithBadgeProps {
@@ -35,9 +36,9 @@ const PageHeaderWithBadge: React.FC<PageHeaderWithBadgeProps> = ({
         </Badge>
       )}
 
-      <h2 className="text-4xl font-black uppercase italic tracking-tighter text-gray-900 dark:text-white">
+      <Heading level="h1" className="font-black uppercase italic tracking-tighter">
         {title} {titleHighlight && <span className="text-primary-600">{titleHighlight}</span>}
-      </h2>
+      </Heading>
 
       {description && (
         <p className="text-gray-500 dark:text-gray-400 text-sm max-w-prose">

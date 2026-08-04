@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon, MediaImage } from '../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { GalleryItem } from './GalleryModal';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 // square  — 1:1  (default, usato in InfoClasses gallery grid)
@@ -36,7 +37,7 @@ export const Photo: React.FC<PhotoProps> = ({
   <div
     onClick={() => onClick(item)}
     className={cn(
-      'group relative overflow-hidden rounded-[2.5rem] border border-white/10',
+      'group relative overflow-hidden rounded-[2rem] border border-white/10',
       'cursor-pointer shadow-theme-lg isolate',
       'hover:-translate-y-1 transition-all duration-500',
       ASPECT[variant],
@@ -46,7 +47,7 @@ export const Photo: React.FC<PhotoProps> = ({
     <MediaImage
       assetId={item.asset_id}
       url={item.image_url}
-      fallbackAlt={item.title || 'Photo'}
+      fallbackAlt={item.title || t.components.media.photoFallback}
       showCaption={false}
       imgClassName="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
     />

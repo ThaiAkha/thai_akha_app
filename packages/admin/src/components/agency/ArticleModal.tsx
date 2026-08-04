@@ -102,7 +102,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                         {article.cover_image_url && (
                             <button
                                 onClick={togglePhotoMode}
-                                aria-label={isPhotoMode ? "Exit photo view" : "Expand photo"}
+                                aria-label={isPhotoMode ? t('pages:articleModal.exitPhotoView') : t('pages:articleModal.expandPhoto')}
                                 className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-all duration-200 border border-white/20"
                             >
                                 {isPhotoMode ? (
@@ -199,7 +199,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                             
                             {/* Author / Read time metadata */}
                             {(article.author || article.reading_time) && (
-                                <div className="flex items-center gap-4 mb-4 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                                <div className="flex items-center gap-4 mb-4 text-xs font-bold uppercase tracking-widest text-gray-400">
                                     {article.author && (
                                         <span>{t('pages:articleModal.author')}: {article.author}</span>
                                     )}

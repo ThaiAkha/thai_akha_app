@@ -1,7 +1,9 @@
 {
   "sidebar": {
     "title": "Guests",
-    "guest": "Guest"
+    "guest": "Guest",
+    "selectGuest": "Select a guest to start billing",
+    "noClass": "No classes to bill."
   },
   "content": {
     "loading": "Loading..."
@@ -19,5 +21,17 @@
     "payOnArrival": "Pay on Arrival",
     "saveTab": "Save Tab",
     "payCash": "Pay Cash"
+  },
+  "alerts": {
+    "selectGuestFirst": "Select a guest first",
+    "outOfStock": "Out of stock!",
+    "confirmCharge": "Charge {{amount}} THB to cash?"
+  },
+  "split": {
+    "button": "Split → new group",
+    "create": "Create group",
+    "cancel": "Cancel",
+    "merge": "Merge back",
+    "paxToMove": "Pax to move"
   }
 }

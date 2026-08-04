@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
 
+// Voice priority list for Thai Akha phonetics — Thai first, English fallback
+const PREFERRED_TTS_VOICES = [
+  'Google th-TH',      // Android / Chrome Thai
+  'Kanya',             // Apple Thai
+  'Narisa',            // Windows Thai
+  'Google US English', // English fallback
+  'Samantha',          // Apple English fallback
+] as const;
+
 export const useTextToSpeech = () => {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -29,14 +38,7 @@ export const useTextToSpeech = () => {
 
         const utterance = new SpeechSynthesisUtterance(text);
 
-        // Priorità assoluta alle voci Thai per la corretta fonetica dell'Akha Zang
-        const preferredVoices = [
-            'Google th-TH',      // Android/Chrome Thai
-            'Kanya',             // Apple Thai
-            'Narisa',            // Windows Thai
-            'Google US English', // Fallback Americano
-            'Samantha',          // Fallback Apple Americano
-        ];
+        const preferredVoices = PREFERRED_TTS_VOICES;
 
         let selectedVoice: SpeechSynthesisVoice | undefined;
 

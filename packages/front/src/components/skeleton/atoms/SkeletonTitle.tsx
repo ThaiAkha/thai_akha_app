@@ -3,13 +3,15 @@ import { cn } from '@thaiakha/shared/lib/utils';
 
 interface SkeletonTitleProps {
   /** hero → h-12 md:h-16 | section → h-10 md:h-12 | sub → h-6 */
-  variant?: 'hero' | 'section' | 'sub';
+  variant?: 'hero' | 'hero-1' | 'hero2' | 'section' | 'sub';
   width?: string;
   className?: string;
 }
 
 const HEIGHT: Record<NonNullable<SkeletonTitleProps['variant']>, string> = {
   hero: 'h-12 md:h-16',
+  'hero-1': 'h-12 md:h-16',
+  hero2: 'h-12 md:h-16',
   section: 'h-10 md:h-12',
   sub: 'h-6',
 };

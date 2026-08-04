@@ -131,5 +131,12 @@
     "btnConfirm": "Confirm Booking",
     "errorNameRequired": "Guest Name is required",
     "successConfirmed": "Booking Confirmed! Your client has been registered."
+  },
+  "alerts": {
+    "missingDateSession": "Missing Date/Session",
+    "priceMissing": "Price missing — check session configuration in the database before booking.",
+    "namePasswordRequired": "Full Name and Password Required",
+    "bookingCreated": "Booking Created Successfully!",
+    "errorPrefix": "Error: {{message}}"
   }
 }

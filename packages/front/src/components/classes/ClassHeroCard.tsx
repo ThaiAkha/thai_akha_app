@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import GlassCard from '../ui/GlassCard';
+import { GlassCard } from '../ui/index';
 import Typography from '../ui/Typography';
 
 interface ClassHeroCardProps {

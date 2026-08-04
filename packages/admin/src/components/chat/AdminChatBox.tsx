@@ -119,7 +119,7 @@ export const AdminChatBox: React.FC = () => {
             <SoundWave />
             <button
               onClick={stopSession}
-              className="text-[10px] text-white/80 hover:text-white transition-colors"
+              className="text-xs text-white/80 hover:text-white transition-colors"
             >
               Stop voice
             </button>
@@ -172,7 +172,7 @@ export const AdminChatBox: React.FC = () => {
           </div>
           <div>
             <h4 className="font-bold text-sm tracking-wide">Cherry</h4>
-            <p className="text-[10px] opacity-60 uppercase tracking-widest">
+            <p className="text-xs opacity-60 uppercase tracking-widest">
               {activeError
                 ? <span className="normal-case opacity-80">{activeError}</span>
                 : isConnecting ? 'Connecting...'
@@ -219,7 +219,7 @@ export const AdminChatBox: React.FC = () => {
             className={cn('flex flex-col', m.role === 'user' ? 'items-end' : 'items-start')}
           >
             <div className={cn(
-              'max-w-[85%] p-3 rounded-2xl text-[13px] leading-relaxed',
+              'max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed',
               m.role === 'user'
                 ? 'bg-brand-500 text-white rounded-tr-none'
                 : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none'
@@ -237,14 +237,14 @@ export const AdminChatBox: React.FC = () => {
           <div className="mt-auto space-y-3">
             {inputTranscript && (
               <div className="flex justify-end opacity-60">
-                <div className="bg-white/10 p-2 rounded-xl text-[11px] text-white italic">
+                <div className="bg-white/10 p-2 rounded-xl text-xs text-white italic">
                   &ldquo;{inputTranscript}...&rdquo;
                 </div>
               </div>
             )}
             {outputTranscript && (
               <div className="flex justify-start">
-                <div className="bg-brand-500/20 p-3 rounded-xl text-[12px] text-white border border-brand-500/30">
+                <div className="bg-brand-500/20 p-3 rounded-xl text-xs text-white border border-brand-500/30">
                   Cherry: {outputTranscript}
                 </div>
               </div>

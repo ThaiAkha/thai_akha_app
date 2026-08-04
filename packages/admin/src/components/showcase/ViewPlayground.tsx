@@ -106,14 +106,14 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
                         <div key={prop.name} className="space-y-2">
                             <div className="flex items-baseline justify-between">
                                 <label className="text-xs font-bold uppercase text-gray-500 tracking-wider font-mono">{prop.name}</label>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 font-mono">{prop.type}</span>
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 font-mono">{prop.type}</span>
                             </div>
                             <PropControl
                                 prop={prop}
                                 value={props[prop.name]}
                                 onChange={(val) => handlePropChange(prop.name, val)}
                             />
-                            {prop.description && <p className="text-[10px] text-gray-400">{prop.description}</p>}
+                            {prop.description && <p className="text-xs text-gray-400">{prop.description}</p>}
                         </div>
                     ))}
                 </div>

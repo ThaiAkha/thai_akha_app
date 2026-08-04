@@ -27,7 +27,7 @@ const ViewCatalog: React.FC<ViewCatalogProps> = ({ components }) => {
                     <div className="p-4">
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors">{config.name}</h3>
-                            <span className="text-[10px] font-black uppercase text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
+                            <span className="text-xs font-black uppercase text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
                                 {config.props.length} Props
                             </span>
                         </div>

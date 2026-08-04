@@ -23,7 +23,7 @@ const Toggle: React.FC<ToggleProps> = ({
   };
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center [gap:var(--space-fluid-xs)]", className)}>
       <button
         type="button"
         role="switch"
@@ -57,7 +57,7 @@ const Toggle: React.FC<ToggleProps> = ({
 
       {/* LABEL OPZIONALE (Typography Semantica) */}
       {label && (
-        <span className="font-accent text-sm font-bold tracking-wider text-gray-700 dark:text-gray-300 select-none cursor-pointer" onClick={handleToggle}>
+        <span className="font-accent text-sm font-bold tracking-wider text-sub select-none cursor-pointer" onClick={handleToggle}>
           {label}
         </span>
       )}

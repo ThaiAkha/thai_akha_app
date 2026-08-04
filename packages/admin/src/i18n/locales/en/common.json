@@ -39,7 +39,9 @@
     "switch": "Switch language",
     "current": "Current language",
     "en": "English",
-    "th": "Thai"
+    "th": "Thai",
+    "es": "Spanish",
+    "zh": "Chinese"
   },
   "user": {
     "menu": "User Menu",
@@ -110,5 +112,8 @@
     "viewAll": "View All Notifications",
     "empty": "No notifications yet",
     "markAllRead": "Mark all as read"
+  },
+  "badges": {
+    "hasLuggage": "Has luggage"
   }
 }

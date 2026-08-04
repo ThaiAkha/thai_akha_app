@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, MediaImage } from '../ui/index';
 import Modal from './Modal';
 import ModalMediaHeader from './ModalMediaHeader';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface PhotoModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ const PhotoModal: React.FC<PhotoModalProps> = ({
   assetId,
   title,
   description,
-  buttonText = "Close Photo",
+  buttonText = t.common.closePhoto,
 }) => {
   if (!isOpen) return null;
 

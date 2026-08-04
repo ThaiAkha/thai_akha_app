@@ -3,7 +3,7 @@
 // Merge field: driver_name · session_id · run_date · stops_range · total_pax · payout_amount
 
 export const ADMIN_EN_HTML = `<!DOCTYPE html>
-<!-- Thai Akha Kitchen — brand email · email-safe · responsive · light/dark · logo https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/logo-email.png -->
+<!-- Thai Akha Kitchen — brand email · email-safe · responsive · light/dark · logo https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/1114_Logo_Main_600.png -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
 <meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark">
@@ -25,7 +25,7 @@ export const ADMIN_EN_HTML = `<!DOCTYPE html>
     <tr><td class="px" style="padding:24px 30px 0;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
         <td valign="middle"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-          <td valign="middle"><img src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/logo-email.png" alt="Thai Akha Kitchen" height="53" style="display:block;height:53px;border:0;"></td>
+          <td valign="middle"><img src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/1114_Logo_Main_600.png" alt="Thai Akha Kitchen" height="53" style="display:block;height:53px;border:0;"></td>
           <td width="12" style="font-size:0;line-height:0;">&nbsp;</td>
           <td valign="middle" class="wm" style="font-family:'Raleway','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;font-weight:bold;color:#121311;letter-spacing:.2px;white-space:nowrap;">Thai <span style="color:#98C93C;">Akha</span> Kitchen</td>
         </tr></table></td>
@@ -43,7 +43,7 @@ export const ADMIN_EN_HTML = `<!DOCTYPE html>
 </body></html>`;
 
 export const DRIVER_TH_HTML = `<!DOCTYPE html>
-<!-- Thai Akha Kitchen — brand email · email-safe · responsive · light/dark · logo https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/logo-email.png -->
+<!-- Thai Akha Kitchen — brand email · email-safe · responsive · light/dark · logo https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/1114_Logo_Main_600.png -->
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
 <meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark">
@@ -65,7 +65,7 @@ export const DRIVER_TH_HTML = `<!DOCTYPE html>
     <tr><td class="px" style="padding:24px 30px 0;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
         <td valign="middle"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-          <td valign="middle"><img src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/logo-email.png" alt="Thai Akha Kitchen" height="53" style="display:block;height:53px;border:0;"></td>
+          <td valign="middle"><img src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/brand-asset/1114_Logo_Main_600.png" alt="Thai Akha Kitchen" height="53" style="display:block;height:53px;border:0;"></td>
           <td width="12" style="font-size:0;line-height:0;">&nbsp;</td>
           <td valign="middle" class="wm" style="font-family:'Raleway','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;font-weight:bold;color:#121311;letter-spacing:.2px;white-space:nowrap;">Thai <span style="color:#98C93C;">Akha</span> Kitchen</td>
         </tr></table></td>

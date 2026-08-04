@@ -3,7 +3,13 @@
 > Documento da passare a **Claude Code** in una nuova chat nel repo `thaiakha-cherry-2026`.
 > Tutto il materiale è in `_temp_driver_payout/`. È una soluzione **TEMPORANEA**: vedi `README_TEMPORANEO.md`.
 
-## STATO (agg. 2026-06-11, sera)
+## STATO (ricontrollo live 2026-06-14)
+
+**✅ Sistema verificato attivo sul DB `mtqullobcsypkqgdkaob`:** 5 RPC presenti (`inject_driver_payout_manual`, `delete_my_payout`, `mark_driver_week_paid`, `admin_delete_payout`, legacy `calculate_driver_payout`); colonna `source`; Realtime ON. 3 driver (`role='driver'`): At → vendor `…1485001`, Kasem → vendor `…3602337`, Thai Akha → zoho null (generico). 4 edge function: `send-driver-payout-confirmation`, `send-driver-cancellation`, `render-report`, `zoho-create-driver-expense`. Report PDF via servizio Cloud Run `services/report-renderer` (WeasyPrint + font Sarabun; template `driver_report` + `market_report`). Manager delete committato (`fb34e4c`).
+
+**Email coverage:** creazione ✅ · modifica ✅ · cancellazione driver ✅ · cancellazione manager ✅ (tutte driver TH + office EN, graceful). Scoperta: conferma pagamento settimanale (non esiste). `send-driver-cancellation`: verificare che sia deployata.
+
+---
 
 **✅ Fatto — Task 1–4 + verifica + EMAIL LIVE.**
 - DB produzione: colonna `source` + RPC `inject_driver_payout_manual` applicate e testate. **Bug fix**: le colonne nelle query interne sono qualificate (`dp.`/`t.`) per evitare l'ambiguità con gli OUT param omonimi (`status`, `total_stops`, `payout_amount`); INSERT con alias `AS dp`. Vedi `migration.sql` aggiornato.
@@ -54,11 +60,10 @@ Reset dati demo eseguito: `driver_payments` svuotata. Mapping profili→vendor Z
 |---|---|---|---|---|
 | **Kasem** | `1f947c52…f47cc` | driver | `1215788000003602337` ("04 - Driver - Kasem") | ✅ **definitivo**. Vendor spostato qui dall'ex profilo test. |
 | **At** (profilo reale) | `5629d491…ba45f` | driver | `1215788000001485001` ("03 - Driver - At") | ✅ **collegato** (vendor spostato qui dal vecchio profilo At il 2026-06). Default pickup booking-based aggiornato a questo id. |
-| At (vecchio) | `b7866c46…73de5` | kitchen | `null` | Ex profilo driver di At, ora convertito a kitchen. Fuori dal mondo driver. |
 | **Teacher 01** (ex-Som) | `b85dffbe…a757f37` | logistics | `null` | Ex profilo test driver, ora convertito (kitchen→logistics). Fuori dal mondo driver. |
 
 > ⚠️ Expenses Zoho demo: **NON toccate da noi** (le gestisce Svevo a mano).
-> ⚠️ `useAdminBooking.ts` ha il default pickup driver booking-based su At (`b7866c46`): rivedere alla migrazione di At.
+> ✅ `useAdminBooking.ts`: default pickup driver booking-based = At (`5629d491`).
 
 ## Obiettivo
 
@@ -69,7 +74,7 @@ Bypassare temporaneamente il sistema booking. Un **driver** (self-service) dichi
 - **`driver_payments`**: `id, driver_id (FK profiles.id), run_date, session_id, total_stops, total_pax, payout_amount, status('pending'|'paid'), paid_at, source, created_at, updated_at`. Vincolo UNIQUE `(driver_id, run_date, session_id)`. RLS attiva: policy `Driver Read Own` (`auth.uid()=driver_id`, SELECT) e `Admin Payment Access` (`is_admin()`, ALL).
 - **`driver_payout_tiers`**: scaglioni tariffa. Morning: 1‑2→450, 3‑4→550, 5‑6→650, 7+→750. Evening: 1‑2→400, 3‑4→500, 5‑6→600, 7+→700 (THB).
 - **RPC esistente** `calculate_driver_payout(driver_id, run_date, session_id)`: deriva il payout dai `bookings`. **NON** va riusata per il bypass (legge i booking che qui saltiamo).
-- **Driver attuali** (`profiles.role='driver'`): Driver 01 `b7866c46-221d-4b16-9fd8-72722d173de5`, Driver 02 `b85dffbe-a935-40ae-99cc-ed453a757f37`, Thai Akha `5810f384-5390-49f1-8277-035487b11cb5`.
+- **Driver attuali** (`profiles.role='driver'`): At `5629d491-6cd1-4344-9254-9bf8ccbba45f`, Kasem `1f947c52-f087-4584-8408-c65e74cf47cc`, Thai Akha `5810f384-5390-49f1-8277-035487b11cb5`.
 - **Email**: Resend già in uso (`supabase/functions/send-welcome-email`, `send-booking-confirmation`). ⚠️ Mittente ancora placeholder `noreply@yourdomain.com` → serve dominio verificato.
 - **App driver**: package `admin`. `pages/driver/DriverHome.tsx` (landing), `pages/driver/DriverRoute.tsx` (rotta live). Rotte `/driver-home`, `/driver`. Regole repo in `CLAUDE.md` (Typography, token semantici, mobile-first, import da `@thaiakha/shared`).
 
@@ -141,6 +146,7 @@ Shared / i18n / edge:
 
 ---
 
-## ⚠️ Working tree (stato git al 2026-06-12)
-Committati sul branch `feature/driver-payout-bypass`: migrazione/supporto + prima ondata (DriverHome, DriverPayoutForm, types, edge email) + sistema report (commit `b67c2c3`…`8ad8d9e`).
-**Non ancora committati**: pagine manager (`ManagerReports`, `ManagerDriverPayouts`), `DriverPayoutDashboard`, i18n `driver.json`/`manager.json`, hook manager. Committare **solo i path della feature** (restano fuori ~230 file di rumore pre-esistente + modifiche front non correlate come `ContentRenderer.tsx`, `MenuManager.tsx`).
+## ⚠️ Working tree (stato git al 2026-06-14)
+Committati sul branch `feature/driver-payout-bypass`: migrazione/supporto, prima ondata driver, sistema report (`b67c2c3`…`8ad8d9e`), **manager delete** (`fb34e4c`).
+**Ancora NON committati** (nuova ondata): `send-driver-cancellation/` (untracked), il trigger cancellazione in `DriverPayoutForm`, mapping driver in `useAdminBooking.ts`, `DriverPayoutDashboard`, `ManagerReports`, i18n `driver.json`, `render-report/index.ts`, `send-driver-payout-confirmation/index.ts`, `services/report-renderer/*` (font Sarabun + template), prototipo e `_temp_driver_payout/*`, `PROMPT_manager_delete_payout.md`.
+Committare **solo i path della feature** — il working tree ha ~500 file totali, in gran parte rumore pre-esistente + modifiche front non correlate (`ContentRenderer.tsx`, `MenuManager.tsx`, hook pos/reservation/logistic).

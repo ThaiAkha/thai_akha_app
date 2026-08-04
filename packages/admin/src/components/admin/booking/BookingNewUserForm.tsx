@@ -127,7 +127,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
                     </div>
                     <div>
                       <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{country.name}</p>
-                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{country.code}</p>
+                      <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{country.code}</p>
                     </div>
                   </div>
                   <span className="text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">✓</span>
@@ -158,7 +158,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
               type="button"
               onClick={() => onNewUserChange({ ...newUser, isWhatsapp: true })}
               className={cn(
-                "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
+                "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 newUser.isWhatsapp === true
                   ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
@@ -171,7 +171,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
               type="button"
               onClick={() => onNewUserChange({ ...newUser, isWhatsapp: false })}
               className={cn(
-                "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
+                "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 newUser.isWhatsapp === false
                   ? "border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400 shadow-lg shadow-red-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"

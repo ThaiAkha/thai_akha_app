@@ -7,3 +7,5 @@ export { default as ModalMediaHeader } from './ModalMediaHeader';
 export { default as PhotoModal } from './PhotoModal';
 export { default as VideoModal } from './VideoModal';
 export { default as GalleryModal } from './GalleryModal';
+export { default as MapBlock } from './MapBlock';
+export type { GalleryItem } from './GalleryModal';

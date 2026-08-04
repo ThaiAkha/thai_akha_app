@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/index';
 import { Typography } from '../ui/Typography';
-import AkhaPixelLine from '../ui/AkhaPixelLine';
+import AkhaPixelLine from '../divider/AkhaPixelLine';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { AllergySelector, DietSelector, SpicySelector } from '../menu';
 
@@ -17,6 +17,8 @@ interface MegaMenuCardProps {
     culture: any[];
   };
   onConfirm: (diet: string, allergies: string[], spiciness?: string | number) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
+  onClose?: () => void;
 }
 
 const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
@@ -28,6 +30,8 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
   allergyMap = {},
   groupedDiets,
   onConfirm,
+  onDirtyChange,
+  onClose,
 }) => {
   // Draft state — local until Confirm is clicked. Discarded on menu close without confirm.
   const [draftDiet, setDraftDiet] = useState(initialDiet);
@@ -46,6 +50,10 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
     draftSpiciness !== initialSpiciness ||
     draftAllergies.length !== initialAllergies.length ||
     draftAllergies.some(a => !initialAllergies.includes(a));
+
+  React.useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
 
   const canConfirm = isDirty && !!draftDiet;
@@ -67,7 +75,7 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
         />
       </div>
 
-      <AkhaPixelLine variant="line_divider" size={5} className="py-2" />
+      <AkhaPixelLine size={5} className="py-2" />
 
       {/* ── Diet Section ── */}
       <div id="diet-section" className="scroll-mt-24">
@@ -78,7 +86,7 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
         />
       </div>
 
-      <AkhaPixelLine variant="line_divider" size={5} className="py-2" />
+      <AkhaPixelLine size={5} className="py-2" />
 
       {/* ── Spiciness Section ── */}
       <div id="spiciness-section" className="scroll-mt-24">
@@ -89,20 +97,32 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
         />
       </div>
 
-      <AkhaPixelLine variant="line_divider" size={5} className="py-2" />
+      <AkhaPixelLine size={5} className="py-2" />
 
-      {/* ── Confirm Button ── */}
+      {/* ── Confirm / Close Buttons ── */}
       <div className="flex flex-col items-center gap-3">
-        <Button
-          variant="action"
-          size="md"
-          className={cn("px-8 transition-all duration-300", !canConfirm && "opacity-50 grayscale")}
-          onClick={handleConfirm}
-          disabled={!canConfirm}
-          icon="save"
-        >
-          Confirm Passport
-        </Button>
+        <div className="flex items-center gap-4">
+          {onClose && (
+            <Button
+              variant="outline"
+              size="md"
+              onClick={onClose}
+              icon="close"
+            >
+              Close
+            </Button>
+          )}
+          <Button
+            variant="action"
+            size="md"
+            className={cn("px-8 transition-all duration-300", !canConfirm && "opacity-50 grayscale")}
+            onClick={handleConfirm}
+            disabled={!canConfirm}
+            icon="save"
+          >
+            Confirm Passport
+          </Button>
+        </div>
         <Typography variant="paragraphS" color="muted" className="text-center max-w-sm leading-relaxed">
           Don't worry, you can change your data any time, and it would be fine for the teacher to keep following with your selection.
         </Typography>

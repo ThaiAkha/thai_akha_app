@@ -57,5 +57,14 @@
       "deIndexWarning": "Removes database mapping from Thai Akha CDN. Physical files in storage persist for safety.",
       "urlCopied": "URL copied to clipboard!"
     }
+  },
+  "alerts": {
+    "saveFailed": "Failed to save asset. Check console for details.",
+    "confirmDelete": "Are you sure you want to delete this database entry? Storage file will remain."
+  },
+  "actions": {
+    "syncing": "Syncing...",
+    "deploy": "Deploy Changes",
+    "editProperties": "Edit Properties"
   }
 }

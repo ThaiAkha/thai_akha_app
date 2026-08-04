@@ -41,7 +41,7 @@ export default function RecentBookings() {
                 .limit(5);
 
             if (error) throw error;
-            setBookings(data || []);
+            setBookings((data as unknown as Booking[]) || []);
         } catch (error) {
             console.error("Error fetching recent bookings:", error);
         } finally {

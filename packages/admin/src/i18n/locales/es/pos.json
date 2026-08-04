@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "title": "Huéspedes",
+    "guest": "Huésped",
+    "selectGuest": "Select a guest to start billing"
+  },
+  "content": {
+    "loading": "Cargando..."
+  },
+  "meta": {
+    "title": "Tienda | Thai Akha Kitchen",
+    "description": "Gestionar ventas, mercancía y cuentas de huéspedes durante las clases."
+  },
+  "inspector": {
+    "customerName": "Nombre del cliente",
+    "selectGuest": "Seleccionar huésped",
+    "emptySelectHint": "Selecciona un huésped primero",
+    "emptyTab": "Cuenta vacía",
+    "totalAmount": "Monto total",
+    "payOnArrival": "Pago al llegar",
+    "saveTab": "Guardar cuenta",
+    "payCash": "Pagar efectivo"
+  },
+  "alerts": {
+    "selectGuestFirst": "Selecciona un huésped primero",
+    "outOfStock": "¡Sin existencias!",
+    "confirmCharge": "¿Cobrar {{amount}} THB en efectivo?"
+  }
+}

@@ -32,11 +32,12 @@ interface MegaMenuProps {
   forceOpen?: boolean;
   onClose?: () => void;
   onRegisterClose?: (closeFn: () => void) => void;
+  onRegisterOpen?: (openFn: () => void) => void;
   highlight?: boolean;
   onDietClick?: (isNewOpening: boolean) => void;
-  onAllergyClick?: (isNewOpening: boolean) => void;
   onNavigate?: (slug: string) => void;
   userProfile?: any | null;
+  disableOutsideClick?: boolean;
 }
 
 const MegaMenu: React.FC<MegaMenuProps> = ({
@@ -54,9 +55,10 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
   className,
   onClose,
   onRegisterClose,
+  onRegisterOpen,
   highlight = false,
   onDietClick,
-  onAllergyClick
+  disableOutsideClick = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -67,20 +69,25 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
     setIsOpen(false);
   };
 
-  // Register close fn with parent so external content (e.g. MegaMenuCard Confirm button) can close
+  // Register close/open fns with parent
   useEffect(() => {
     onRegisterClose?.(handleClose);
   }, [onRegisterClose]);
 
   useEffect(() => {
+    onRegisterOpen?.(() => { handleOpen(); });
+  }, [onRegisterOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (disableOutsideClick) return;
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         handleClose();
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+  }, [isOpen, disableOutsideClick]);
 
   // Prevent background scrolling when open — use rAF so any pending scrollIntoView fires first
   useEffect(() => {
@@ -257,7 +264,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   const isNew = handleOpen();
-                  onAllergyClick?.(isNew);
+                  onDietClick?.(isNew);
                 }}
                 className="flex w-1/2 h-full items-center justify-center gap-2.5 md:gap-3 px-2 md:px-4 bg-allergy/5 text-allergy border border-allergy/20 rounded-full opacity-60 hover:opacity-100 hover:bg-allergy/10 transition-colors"
               >
@@ -269,7 +276,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   const isNew = handleOpen();
-                  onAllergyClick?.(isNew);
+                  onDietClick?.(isNew);
                 }}
                 className={cn(
                   "w-1/2 h-full flex items-center justify-center gap-2.5 md:gap-3 px-2 md:px-4 rounded-full transition-all border overflow-hidden",

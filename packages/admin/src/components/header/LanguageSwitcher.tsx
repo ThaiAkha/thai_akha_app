@@ -1,18 +1,26 @@
 import { Globe } from 'lucide-react';
 import { useI18n } from '../../context/I18nContext';
-import type { LangCode } from '../../i18n';
+import { LANGUAGES } from '../../i18n';
+
+const LANG_LABELS: Record<string, string> = {
+  en: 'EN',
+  th: 'TH',
+  es: 'ES',
+  zh: 'ZH',
+};
 
 export const LanguageSwitcher: React.FC = () => {
   const { lang, setLang, switching } = useI18n();
 
-  const toggle = () => {
-    const next: LangCode = lang === 'en' ? 'th' : 'en';
+  const cycle = () => {
+    const idx = LANGUAGES.indexOf(lang);
+    const next = LANGUAGES[(idx + 1) % LANGUAGES.length];
     setLang(next);
   };
 
   return (
     <button
-      onClick={toggle}
+      onClick={cycle}
       disabled={switching}
       className="flex items-center gap-1.5 h-10 px-3 rounded-lg
                  hover:bg-gray-100 dark:hover:bg-gray-800
@@ -22,7 +30,7 @@ export const LanguageSwitcher: React.FC = () => {
     >
       <Globe className="w-4 h-4 shrink-0" />
       <span className="text-sm font-bold uppercase tracking-widest">
-        {lang}
+        {LANG_LABELS[lang] ?? lang.toUpperCase()}
       </span>
       {switching && (
         <span className="h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />

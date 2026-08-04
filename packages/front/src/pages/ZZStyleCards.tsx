@@ -13,11 +13,14 @@ import Toggle from '../components/ui/navigation/Toggle';
 import Tabs from '../components/ui/navigation/Tabs';
 import Pagination from '../components/ui/navigation/Pagination';
 import Tooltip from '../components/ui/navigation/Tooltip';
-import AkhaLoader from '../components/ui/AkhaLoader';
-import AkhaPixelLine from '../components/ui/AkhaPixelLine';
-import AkhaQuote from '../components/ui/AkhaQuote';
-import AkhaHistoryLine from '../components/blog/AkhaHistoryLine';
-import Divider from '../components/ui/Divider';
+import AkhaLoader from '../components/divider/AkhaLoader';
+import AkhaPixelLine from '../components/divider/AkhaPixelLine';
+import AkhaQuote from '../components/divider/AkhaQuote';
+import AkhaThemedLine from '../components/divider/AkhaThemedLine';
+import AkhaButtonLine from '../components/divider/AkhaButtonLine';
+import Divider from '../components/divider/Divider';
+import { AKHA_PATTERNS } from '@thaiakha/shared';
+import { AKHA_THEMES, AkhaTheme } from '../components/divider/AkhaPixelPattern';
 // Skeleton atoms
 import { SkeletonBase, SkeletonText, SkeletonTitle, SkeletonDivider } from '../components/skeleton/atoms/index';
 // Skeleton compositions
@@ -30,13 +33,16 @@ import LevelQuiz from '../components/quiz/LevelQuiz';
 import PlayQuiz from '../components/quiz/PlayQuiz';
 import ResultQuiz from '../components/quiz/ResultQuiz';
 import type { QuizLevel, QuizModule } from '@thaiakha/shared';
+import { AskCherryButton } from '../components/chat/AskCherryButton';
+import FaqBottomPage from '../components/faq/FaqBottomPage';
+import StyleColorsTab from './style-cards/StyleColorsTab';
 
 // Card components
 import Card, { CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card/Card';
 import InfoCard from '../components/ui/card/InfoCard';
 import StatCard from '../components/ui/card/StatCard';
 import Alert from '../components/ui/card/Alert';
-import GlassCard from '../components/ui/card/GlassCard';
+import { GlassCard } from '../components/ui/index';
 
 // ── MOCK DATA ─────────────────────────────────────────────────────────────────
 
@@ -49,23 +55,29 @@ const MOCK_MODULE: QuizModule = {
     {
       id: 'q1',
       text: 'Which spice gives Khao Soi its distinctive golden colour?',
-      options: ['Turmeric', 'Curry Powder', 'Saffron'],
+      options: [{ label: 'Turmeric' }, { label: 'Curry Powder' }, { label: 'Saffron' }],
       correctAnswer: 'Turmeric',
+      questionType: 'single',
       explanation: 'Turmeric (ขมิ้น) is the key spice responsible for the golden hue in Khao Soi broth.',
+      points: 10,
     },
     {
       id: 'q2',
       text: 'What is the Akha word for chilli pepper?',
-      options: ['Prik', 'Kapi', 'Nam Pla'],
+      options: [{ label: 'Prik' }, { label: 'Kapi' }, { label: 'Nam Pla' }],
       correctAnswer: 'Prik',
+      questionType: 'single',
       explanation: 'Prik (พริก) is the Thai/Akha word commonly used for chilli peppers.',
+      points: 10,
     },
     {
       id: 'q3',
       text: 'Which herb is essential for authentic Thai basil stir-fry?',
-      options: ['Holy Basil', 'Sweet Basil', 'Lemon Basil'],
+      options: [{ label: 'Holy Basil' }, { label: 'Sweet Basil' }, { label: 'Lemon Basil' }],
       correctAnswer: 'Holy Basil',
+      questionType: 'single',
       explanation: 'Holy basil (กะเพรา) is the authentic choice for Pad Kra Pao, not sweet or lemon basil.',
+      points: 10,
     },
   ],
 };
@@ -88,11 +100,13 @@ const MOCK_MODULE_3: QuizModule = {
 
 const MOCK_LEVEL: QuizLevel = {
   id: 1,
+  display_order: 1,
   title: 'The Akha Path',
   subtitle: 'Master the foundations of Northern Thai cuisine and unlock your culinary heritage.',
   image: '/avatarCherry/600-Avatar-AuthPage.webp',
   modules: [MOCK_MODULE, MOCK_MODULE_2, MOCK_MODULE_3],
   rewardId: 1,
+  completion_bonus: 50,
   is_active: true,
 };
 
@@ -104,26 +118,28 @@ const MOCK_FEATURED_DATA = [
 ];
 
 const MOCK_REWARDS = [
-  { id: 1, label: 'First Steps', icon: 'star' },
-  { id: 2, label: 'Spice Master', icon: 'local_fire_department' },
-  { id: 3, label: 'Temple Visit', icon: 'temple_buddhist' },
-  { id: 4, label: 'Market Expert', icon: 'storefront' },
-  { id: 5, label: 'Chef Hat', icon: 'restaurant' },
-  { id: 6, label: 'Gold Medal', icon: 'emoji_events' },
-  { id: 7, label: 'Cherry Fan', icon: 'favorite' },
-  { id: 8, label: 'Guardian', icon: 'shield' },
+  { id: 1, label: 'First Steps', icon: 'star', required_points: 50 },
+  { id: 2, label: 'Spice Master', icon: 'local_fire_department', required_points: 100 },
+  { id: 3, label: 'Temple Visit', icon: 'temple_buddhist', required_points: 200 },
+  { id: 4, label: 'Market Expert', icon: 'storefront', required_points: 300 },
+  { id: 5, label: 'Chef Hat', icon: 'restaurant', required_points: 400 },
+  { id: 6, label: 'Gold Medal', icon: 'emoji_events', required_points: 500 },
+  { id: 7, label: 'Cherry Fan', icon: 'favorite', required_points: 700 },
+  { id: 8, label: 'Guardian', icon: 'shield', required_points: 1000 },
 ];
 
 const TYPOGRAPHY_VARIANTS = [
   'display1', 'display2', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
   'titleMain', 'titleHighlight', 'paragraphL', 'paragraphM',
-  'paragraphS', 'body', 'accent', 'badge', 'caption', 'quote',
-  'numericPrice', 'numericStat', 'numericRegular'
+  'paragraphS', 'body', 'accent', 'badge', 'quote', 'caption',
+  'microLabel', 'fieldLabel',
+  'numericPrice', 'numericStat', 'numericMedium', 'numericRegular'
 ] as const;
 
-type TabValue = 'typography' | 'ui' | 'skeleton' | 'layout' | 'quiz' | 'card' | 'patterns';
+type TabValue = 'colors' | 'typography' | 'ui' | 'skeleton' | 'layout' | 'quiz' | 'card' | 'patterns' | 'cherry' | 'faq';
 
 const NAV_TABS = [
+  { value: 'colors', label: 'Colors & Tokens', icon: 'palette' },
   { value: 'typography', label: 'Typography', icon: 'text_fields' },
   { value: 'ui', label: 'UI Components', icon: 'widgets' },
   { value: 'patterns', label: 'Patterns & Dividers', icon: 'line_style' },
@@ -131,10 +147,32 @@ const NAV_TABS = [
   { value: 'skeleton', label: 'Skeleton', icon: 'motion_photos_off' },
   { value: 'layout', label: 'Layout & Headers', icon: 'dashboard' },
   { value: 'quiz', label: 'Quiz', icon: 'psychology' },
+  { value: 'cherry', label: 'Cherry AI', icon: 'smart_toy' },
+  { value: 'faq', label: 'FAQ', icon: 'quiz' },
 ];
 
+// FAQ showcase mock — cooking class questions (Thai Akha Kitchen)
+const MOCK_FAQ = [
+  { q: 'How do I book a cooking class?', a: 'Pick a date on the booking page, choose morning or evening, select the number of seats and confirm. You receive an instant email confirmation with the meeting point.', cat: 'Booking' },
+  { q: 'Is hotel pickup included?', a: 'Yes — free pickup from most hotels within Chiang Mai old city and Nimman area. Add your hotel name during checkout and our driver will meet you in the lobby.', cat: 'Logistics' },
+  { q: 'Do you offer vegan and vegetarian options?', a: 'Absolutely. Every dish can be adapted to vegan, vegetarian, halal or gluten-free. Tell us your dietary needs when booking and Cherry will adjust the menu.', cat: 'Menu' },
+  { q: 'What is the difference between morning and evening class?', a: 'The morning class includes a local market tour before cooking 6 dishes. The evening class skips the market and focuses on a relaxed twilight session with family recipes.', cat: 'Classes' },
+  { q: 'Can children join the class?', a: 'Yes, children are welcome with a participating adult. We provide a gentler station and non-spicy versions of each dish.', cat: 'Classes' },
+];
+
+// FAQ topic categories
+const MOCK_FAQ_TOPICS = [
+  { icon: 'event_available', title: 'Booking & Payment', count: 8 },
+  { icon: 'directions_car', title: 'Pickup & Logistics', count: 5 },
+  { icon: 'restaurant_menu', title: 'Menu & Diet', count: 11 },
+  { icon: 'group', title: 'Groups & Private', count: 4 },
+];
+
+// Shape per FaqBottomPage (blocco FAQ reale di fine pagina): { name, acceptedAnswer: { text } }
+const MOCK_FAQ_BOTTOM = MOCK_FAQ.map((f) => ({ name: f.q, acceptedAnswer: { text: f.a } }));
+
 const StyleCards: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabValue>('typography');
+  const [activeTab, setActiveTab] = useState<TabValue>('colors');
 
   // UI state
   const [toggleA, setToggleA] = useState(false);
@@ -143,6 +181,7 @@ const StyleCards: React.FC = () => {
   const [tabsValue, setTabsValue] = useState('menu');
   const [tabsPillValue, setTabsPillValue] = useState('bookings');
   const [page, setPage] = useState(2);
+  const [faqOpen, setFaqOpen] = useState<number | null>(0);
 
   // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -156,70 +195,256 @@ const StyleCards: React.FC = () => {
   // ── PATTERNS ──────────────────────────────────────────────────────────────
 
   const renderPatterns = () => (
-    <div className="space-y-16">
-      <SectionHead title="Patterns & Decorative" subtitle="AkhaPixelPattern · Loader · Dividers · Quotes" />
+    <div className="space-y-24">
+      <SectionHead title="Divider System Showroom" subtitle="Esplorazione completa dei componenti AkhaPixelLine e AkhaPixelPattern in contesti reali." />
 
+      {/* 1. DIMENSIONI E RESPONSIVITÀ */}
       <div>
-        <SubHead title="Akha Pixel Pattern Variants" />
-        <PropDoc text="Pattern geometrici tradizionali renderizzati pixel-by-pixel. Definiti in pixelPatterns.ts." />
+        <SubHead title="1. Responsive & Spacing System" />
+        <PropDoc text="I divider si adattano al contenitore. Usando la prop 'fill' diventano 100% responsive. Spaziatura e dimensioni fisiche dei pixel ('size') sono personalizzabili." />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <DemoBox label="variant: logo (size 16)">
-            <AkhaPixelPattern variant="logo" size={16} />
-          </DemoBox>
-          <DemoBox label="variant: diamond (default)">
-            <AkhaPixelPattern variant="diamond" />
-          </DemoBox>
-          <DemoBox label="variant: flower">
-            <AkhaPixelPattern variant="flower" />
-          </DemoBox>
-          <DemoBox label="variant: mountain">
-            <AkhaPixelPattern variant="mountain" />
-          </DemoBox>
-          <DemoBox label="variant: arrow">
-            <AkhaPixelPattern variant="arrow" />
-          </DemoBox>
-          <DemoBox label="variant: zig_zag">
-            <AkhaPixelPattern variant="zig_zag" />
-          </DemoBox>
-          <DemoBox label="variant: line_simple">
-            <AkhaPixelPattern variant="line_simple" />
-          </DemoBox>
-          <DemoBox label="variant: line (size 8)">
-            <AkhaPixelPattern variant="line" size={8} />
-          </DemoBox>
+        <div className="space-y-12">
+          {/* Full Width / Truncated Responsive */}
+          <div className="space-y-4">
+            <Typography variant="h5" color="title">Responsive Truncate (Fixed Size + Overflow Hidden)</Typography>
+            <Typography variant="paragraphS" color="sub">La linea usa una dimensione fissa che scala in base al dispositivo (es. size 6 su mobile, 8 su tablet, 12 su desktop), ed è contenuta in un wrapper con <code>overflow-hidden</code> che la taglia morbidamente ai lati.</Typography>
+            
+            {['akha', 'history', 'news', 'kitchen'].map((t) => (
+              <div key={`full-${t}`} className="bg-surface-2 p-8 rounded-3xl w-full border border-border">
+                <Typography variant="caption" color="muted" className="block mb-4 uppercase">Theme: {t}</Typography>
+                <div className="w-full overflow-hidden flex items-center justify-center">
+                  {/* Mobile */}
+                  <div className="block md:hidden w-max">
+                    <AkhaPixelPattern variant="line_divider" size={6} theme={t as AkhaTheme} />
+                  </div>
+                  {/* Tablet */}
+                  <div className="hidden md:block lg:hidden w-max">
+                    <AkhaPixelPattern variant="line_divider" size={8} theme={t as AkhaTheme} />
+                  </div>
+                  {/* Desktop */}
+                  <div className="hidden lg:block w-max">
+                    <AkhaPixelPattern variant="line_divider" size={12} theme={t as AkhaTheme} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Sizing standard in 4 colors */}
+          <div className="space-y-4">
+            <Typography variant="h5" color="title">Standard Sizing (4 Temi)</Typography>
+            <Typography variant="paragraphS" color="sub">Standard consigliati: 6px (Micro), 8px (Small), 12px (Medium), 16px (Hero). Esposti in tutte le colorazioni.</Typography>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {['akha', 'history', 'news', 'kitchen'].map((t) => (
+                <React.Fragment key={`sizing-${t}`}>
+                  <DemoBox label={`size={6} (${t})`}>
+                    <div className="flex items-center gap-4">
+                      <Typography variant="caption" color="muted">TEXT</Typography>
+                      <AkhaPixelPattern variant="line_simple" size={6} theme={t as AkhaTheme} />
+                    </div>
+                  </DemoBox>
+                  <DemoBox label={`size={8} (${t})`}>
+                    <AkhaPixelLine geometry="none" length="short" size={8} theme={t as AkhaTheme} />
+                  </DemoBox>
+                  <DemoBox label={`size={12} (${t})`}>
+                    <AkhaPixelLine geometry="wok" length="medium" size={12} theme={t as AkhaTheme} />
+                  </DemoBox>
+                  <DemoBox label={`size={16} (${t})`}>
+                    <div className="flex justify-center">
+                      <AkhaPixelPattern variant="flower" size={16} theme={t as AkhaTheme} />
+                    </div>
+                  </DemoBox>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          {/* Linee semplici scalate */}
+          <div className="space-y-4 mt-8">
+            <Typography variant="h5" color="title">Linee Semplici (Scala Dimensioni 12 → 3)</Typography>
+            <Typography variant="paragraphS" color="sub">Esempi della variante <code>line_simple</code> (la linea sfumata usata negli header) in tutte le misurazioni per mostrare la scalabilità vettoriale del pixel pattern.</Typography>
+            <div className="bg-surface-2 p-8 rounded-3xl space-y-6">
+              {[12, 10, 8, 6, 5, 4, 3].map((s) => (
+                <div key={s} className="flex items-center justify-between gap-8 border-b border-border/50 pb-4 last:border-0 last:pb-0">
+                  <Typography variant="caption" color="muted" className="w-16">size={s}</Typography>
+                  <div className="flex-1 overflow-hidden flex items-center justify-center">
+                    <AkhaPixelPattern variant="line_simple_medium" size={s} theme="history" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Gap Control (Automatico) */}
+          <div className="space-y-4">
+            <Typography variant="h5" color="title">Regola Aurea della Spaziatura</Typography>
+            <Typography variant="paragraphS" color="sub">La spaziatura tra i pixel non è più fissa. Abbiamo stabilito una regola geometrica per mantenere la purezza del design: <strong>Il gap è sempre esattamente la metà della dimensione del pixel (gap = size / 2)</strong>. Il componente calcola questo valore automaticamente.</Typography>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <DemoBox label="size={4} → gap 2px">
+                <AkhaPixelPattern variant="diamond" size={4} />
+              </DemoBox>
+              <DemoBox label="size={8} → gap 4px">
+                <AkhaPixelPattern variant="diamond" size={8} />
+              </DemoBox>
+              <DemoBox label="size={12} → gap 6px">
+                <AkhaPixelPattern variant="diamond" size={12} />
+              </DemoBox>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* 2. INTERATTIVITÀ */}
       <div>
-        <SubHead title="Specialized Pixel Components" />
-        <PropDoc text="Componenti UI evoluti che utilizzano i pixel pattern per scopi specifici." />
+        <SubHead title="2. Interactive Zoom (Hover 105% / 125%)" />
+        <PropDoc text="Abilitando la prop 'interactive' su AkhaPixelPattern o AkhaPixelLine, i singoli pixel si ingrandiranno al passaggio del mouse creando un effetto dinamico bellissimo. Prova a passare il mouse sul wok!" />
+        
+        <div className="bg-surface-2 p-12 rounded-3xl flex justify-center border border-border">
+          <AkhaPixelLine 
+            length="long" 
+            geometry="wok" 
+            theme="kitchen" 
+            size={14} 
+            interactive={true} 
+          />
+        </div>
+      </div>
+
+      {/* 3. CONTESTI DI UTILIZZO REALI */}
+      <div>
+        <SubHead title="3. Esempi di Layout Reali" />
+        <PropDoc text="Come si comportano i divider quando inseriti in griglie strette, schede o layout complessi." />
+
+        <div className="space-y-12">
+          {/* Card a 3 Colonne */}
+          <div className="space-y-4">
+            <Typography variant="h5" color="title">Dentro Schede: Griglia 3 Colonne</Typography>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <CardTitle>Articolo {i}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Typography variant="paragraphS" color="default">
+                      Contenuto della card molto interessante. Il divider si restringe in automatico overflow-hidden.
+                    </Typography>
+                    <AkhaPixelLine geometry="flower" length="short" size={6} theme="history" />
+                    <Typography variant="caption" color="muted">Continua a leggere...</Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Layout a 2 Colonne asimmetrico */}
+          <div className="space-y-4">
+            <Typography variant="h5" color="title">Layout Asimmetrico (Es. Dettaglio Classe)</Typography>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+              <div className="md:col-span-8 bg-surface-2 p-8 rounded-3xl">
+                <Typography variant="h3" color="title" className="mb-6">Morning Class</Typography>
+                <AkhaPixelLine geometry="mountain" length="long" size={10} theme="akha" />
+                <Typography variant="paragraphM" color="default" className="mt-6">
+                  Scopri le tradizioni millenarie del popolo Akha...
+                </Typography>
+              </div>
+              <div className="md:col-span-4 bg-primary/5 p-8 rounded-3xl border border-primary/20">
+                <Typography variant="h5" color="primary" className="mb-4">Informazioni</Typography>
+                <AkhaPixelPattern variant="line_simple" fill theme="akha" />
+                <div className="mt-4 space-y-2">
+                  <Typography variant="body" color="title">Orario: 09:00 - 13:00</Typography>
+                  <Typography variant="body" color="title">Prezzo: 1,400 THB</Typography>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sezione FAQ */}
+          <div className="space-y-4">
+            <Typography variant="h5" color="title">Lista FAQ (Standard Divider vs Pixel Divider)</Typography>
+            <div className="bg-surface p-8 rounded-3xl border border-border space-y-6 max-w-3xl">
+              <div>
+                <Typography variant="h6" color="title">Come posso prenotare?</Typography>
+                <Typography variant="paragraphS" color="default" className="mt-2">Puoi prenotare direttamente dal nostro sito.</Typography>
+              </div>
+              <Divider variant="default" />
+              <div>
+                <Typography variant="h6" color="title">Siete aperti la domenica?</Typography>
+                <Typography variant="paragraphS" color="default" className="mt-2">Sì, la cucina non dorme mai.</Typography>
+              </div>
+              <AkhaPixelPattern variant="line_simple" fill theme="news" className="my-6 opacity-30" />
+              <div>
+                <Typography variant="h6" color="title">Offrite opzioni vegane?</Typography>
+                <Typography variant="paragraphS" color="default" className="mt-2">Assolutamente sì, ogni piatto può essere adattato.</Typography>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 4. CATALOGO COMPLETO GEOMETRIE */}
+      <div>
+        <SubHead title="4. Catalogo Completo Geometrie (pixelPatterns.ts)" />
+        <PropDoc text="Elenco esaustivo di tutti i pattern geometrici definiti nel monorepo." />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Object.keys(AKHA_PATTERNS).map((variantName) => (
+            <DemoBox key={variantName} label={`variant: ${variantName}`}>
+              <div className="flex justify-center items-center min-h-[40px] w-full overflow-hidden">
+                <AkhaPixelPattern variant={variantName as any} size={8} theme="history" />
+              </div>
+            </DemoBox>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. CATALOGO COMPLETO TEMI COLORE */}
+      <div>
+        <SubHead title="5. Catalogo Completo Temi Colore" />
+        <PropDoc text="Tutte le palette disponibili nel sistema, applicate alla stessa geometria per confronto." />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <DemoBox label="AkhaLoader (variant: bloom)">
+          {Object.keys(AKHA_THEMES).map((themeName) => (
+            <DemoBox key={themeName} label={`theme: ${themeName}`}>
+              <AkhaPixelLine length="medium" geometry="flower" theme={themeName as any} size={10} />
+            </DemoBox>
+          ))}
+        </div>
+      </div>
+
+      {/* 6. COMPONENTI UI EVOLUTI */}
+      <div>
+        <SubHead title="6. Tutti i Componenti Esistenti" />
+        <PropDoc text="Elenco di tutti i componenti di alto livello che sfruttano il motore dei pixel." />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <DemoBox label="<AkhaLoader />">
             <AkhaLoader variant="bloom" size={8} />
           </DemoBox>
-          <DemoBox label="AkhaQuote (variant: main)">
+          <DemoBox label="<AkhaQuote />">
             <AkhaQuote variant="main">The path to Akha wisdom starts in the kitchen.</AkhaQuote>
           </DemoBox>
-          <DemoBox label="AkhaPixelLine (Mirrored divider)">
-            <AkhaPixelLine />
+          <DemoBox label="<AkhaThemedLine />">
+            <AkhaThemedLine theme="kitchen" />
           </DemoBox>
-          <DemoBox label="AkhaHistoryLine (Multicolor Blog divider)">
-            <AkhaHistoryLine />
+          <DemoBox label="<AkhaButtonLine theme='kitchen' />">
+            <AkhaButtonLine label="Start Cooking" theme="kitchen" icon="restaurant" />
+          </DemoBox>
+          <DemoBox label="<AkhaButtonLine /> (Test Cmd+Click)">
+            <AkhaButtonLine 
+              label="Check FAQ (Cmd+Click me)" 
+              theme="block_faq" 
+              href="/faq"
+            />
+          </DemoBox>
+          <DemoBox label="<Divider variant='brand' />">
+            <Divider variant="brand" />
+          </DemoBox>
+          <DemoBox label="<Divider variant='gradient' />">
+            <Divider variant="gradient" />
           </DemoBox>
         </div>
       </div>
 
-      <div>
-        <SubHead title="Semantic Dividers" />
-        <PropDoc text="Linee di separazione semantiche. variant: default | mineral | brand | action | gradient" />
-        <div className="space-y-4 max-w-xl">
-          <Divider label="Standard Divider" />
-          <Divider variant="brand" label="Brand Style" />
-          <Divider variant="action" label="Action Style" />
-          <Divider variant="gradient" label="Gradient Style" />
-        </div>
-      </div>
+
     </div>
   );
 
@@ -248,7 +473,7 @@ const StyleCards: React.FC = () => {
       <div className="flex flex-col gap-5">
         {TYPOGRAPHY_VARIANTS.map((variant) => (
           <div key={variant} className="flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-xl border border-border bg-surface-2">
-            <div className="w-44 shrink-0">
+            <div className="w-64 shrink-0">
               <Badge variant="solid" color="secondary">{variant}</Badge>
             </div>
             <div className="flex-1 overflow-hidden">
@@ -258,6 +483,23 @@ const StyleCards: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-16">
+        <SubHead title="Quotes & Blockquotes" />
+        <PropDoc text="Variazioni dello stile citazione. Typography (variant='quote') vs AkhaQuote (componente decorato)." />
+
+        <div className="grid grid-cols-1 gap-8">
+          <DemoBox label="Typography variant='quote' (Standard)">
+            <Typography variant="quote">
+              "The path to Akha wisdom starts in the kitchen, where every spice tells a story of heritage and resilience passed down through generations."
+            </Typography>
+          </DemoBox>
+
+          <DemoBox label="AkhaQuote (Componente decorato con Pixel Pattern)">
+            <AkhaQuote variant="main">The path to Akha wisdom starts in the kitchen, where every spice tells a story of heritage and resilience passed down through generations.</AkhaQuote>
+          </DemoBox>
+        </div>
       </div>
     </div>
   );
@@ -885,6 +1127,7 @@ const StyleCards: React.FC = () => {
             <div className="bg-surface-overlay rounded-3xl overflow-hidden">
               <LevelQuiz
                 level={MOCK_LEVEL}
+                levelNumber={1}
                 completedModules={[]}
                 perfectModules={[]}
                 bestScores={{}}
@@ -897,6 +1140,7 @@ const StyleCards: React.FC = () => {
             <div className="bg-surface-overlay rounded-3xl overflow-hidden">
               <LevelQuiz
                 level={MOCK_LEVEL}
+                levelNumber={1}
                 completedModules={['mod-1', 'mod-2']}
                 perfectModules={['mod-2']}
                 bestScores={{ 'mod-1': 2, 'mod-2': 3 }}
@@ -922,7 +1166,11 @@ const StyleCards: React.FC = () => {
               score={150}
               selectedOption={null}
               showFeedback={false}
+              showExplanations={null}
               onAnswer={(opt) => console.log('answer', opt)}
+              onSubmitSelection={(idx) => console.log('selection', idx)}
+              onNext={() => console.log('next')}
+              onToggleExplanations={(v) => console.log('explanations', v)}
               onBack={() => console.log('back')}
               onGetHint={(q) => console.log('hint', q)}
             />
@@ -936,7 +1184,11 @@ const StyleCards: React.FC = () => {
               score={200}
               selectedOption="Prik"
               showFeedback={true}
+              showExplanations={true}
               onAnswer={() => { }}
+              onSubmitSelection={(idx) => console.log('selection', idx)}
+              onNext={() => console.log('next')}
+              onToggleExplanations={(v) => console.log('explanations', v)}
               onBack={() => console.log('back')}
               onGetHint={() => { }}
             />
@@ -950,7 +1202,11 @@ const StyleCards: React.FC = () => {
               score={30}
               selectedOption="Sweet Basil"
               showFeedback={true}
+              showExplanations={true}
               onAnswer={() => { }}
+              onSubmitSelection={(idx) => console.log('selection', idx)}
+              onNext={() => console.log('next')}
+              onToggleExplanations={(v) => console.log('explanations', v)}
               onBack={() => console.log('back')}
               onGetHint={() => { }}
             />
@@ -1008,115 +1264,32 @@ const StyleCards: React.FC = () => {
 
   const renderCard = () => (
     <div className="space-y-24">
-      <SectionHead title="Card Components" subtitle="Card · GlassCard · InfoCard · StatCard · Alert" />
+      <SectionHead title="Card Gallery by Page" subtitle="Riferimento visivo dei componenti card utilizzati nelle diverse sezioni del sito." />
 
-      {/* GLASSCARD */}
+      {/* ── 1. HOME PAGE ────────────────────────────────────────────────── */}
       <div>
-        <SubHead title="GlassCard" />
-        <PropDoc text="variant: primary | action | secondary | subtle — Un componente premium con effetto vetro, riflesso che segue il mouse e borsi luminosi." />
-        <div className="space-y-6">
-          <DemoBox label="Tutte le varianti" bg>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-[url('/avatarCherry/600-Avatar-AuthPage.webp')] bg-cover relative">
-              <div className="absolute inset-0 bg-black/80 rounded-2xl"></div>
+        <SubHead title="1. Home Page" />
 
-              <div className="relative z-10 space-y-4">
-                <GlassCard variant="primary" className="p-6">
-                  <Typography variant="h4" className="text-white mb-2">Primary Flow</Typography>
-                  <Typography variant="paragraphS" className="text-white/70">Riflessi caldi Cherry Red (var(--primary)).</Typography>
-                </GlassCard>
-                <GlassCard variant="action" className="p-6">
-                  <Typography variant="h4" className="text-white mb-2">Action Accent</Typography>
-                  <Typography variant="paragraphS" className="text-white/70">Luce interattiva verde chiaro (var(--action)).</Typography>
-                </GlassCard>
+        {/* Cherry Section Focus */}
+        <DemoBox label="Sezione 'Meet Cherry': 2 Premium Glass Cards (Layout consigliato)">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <GlassCard variant="primary" className="p-8 flex flex-col gap-4 min-h-[320px] justify-end bg-[url('/avatarCherry/600-Avatar-AuthPage.webp')] bg-cover bg-center relative overflow-hidden group border-white/10">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              <div className="relative z-10">
+                <Typography variant="h3" className="text-white mb-2">Meet Cherry</Typography>
+                <Typography variant="paragraphM" className="text-white/80">The heart and soul of Thai Akha Kitchen, sharing her heritage through every dish.</Typography>
               </div>
+            </GlassCard>
 
-              <div className="relative z-10 space-y-4">
-                <GlassCard variant="secondary" className="p-6">
-                  <Typography variant="h4" className="text-white mb-2">Secondary Warmth</Typography>
-                  <Typography variant="paragraphS" className="text-white/70">Luci arancioni tenui (var(--secondary)).</Typography>
-                </GlassCard>
-                <GlassCard variant="subtle" className="p-6">
-                  <Typography variant="h4" className="text-white mb-2">Subtle Glass</Typography>
-                  <Typography variant="paragraphS" className="text-white/70">Luce bianca neutra per un contrasto minimo.</Typography>
-                </GlassCard>
-              </div>
-            </div>
-          </DemoBox>
-        </div>
-      </div>
+            <GlassCard variant="action" className="p-8 flex flex-col gap-4 min-h-[320px] justify-center border-action/30 bg-surface-2/40">
+              <Icon name="volunteer_activism" size="xl" className="text-action mb-2" />
+              <Typography variant="h3" className="text-white">Our Philosophy</Typography>
+              <Typography variant="paragraphM" className="text-white/80">Cooking is more than recipes; it's an open door to our culture and a bridge between generations.</Typography>
+            </GlassCard>
+          </div>
+        </DemoBox>
 
-      {/* CARD */}
-      <div>
-        <SubHead title="Card (Core)" />
-        <PropDoc text="variant: default | glass | outline | interactive | ghost  —  padding: none | sm | md | lg | xl  —  rounded: lg | xl | 2xl | 3xl | 4xl  —  shadow: sm | md | lg | xl | 2xl" />
-        <div className="space-y-6">
-          <DemoBox label="variant=glass · default" bg>
-            <Card variant="glass">
-              <CardHeader>
-                <CardTitle>Glass Card</CardTitle>
-                <CardDescription>Default variant with beautiful glassmorphism.</CardDescription>
-              </CardHeader>
-              <CardContent>This is the standard Card component. It uses CardHeader, CardTitle, CardDescription, and CardContent for consistent layout.</CardContent>
-              <CardFooter>
-                <Button variant="outline" size="sm">Cancel</Button>
-                <Button variant="primary" size="sm">Confirm</Button>
-              </CardFooter>
-            </Card>
-          </DemoBox>
-          <DemoBox label="variant=interactive · padding=lg · rounded=2xl" bg>
-            <Card variant="interactive" padding="lg" rounded="2xl" onClick={() => { }}>
-              <CardTitle>Interactive Clickable</CardTitle>
-              <CardContent>Hovers lift the card and add a nice brand-colored rim lighting effect.</CardContent>
-            </Card>
-          </DemoBox>
-          <DemoBox label="variant=outline · shadow=none" bg>
-            <Card variant="outline" padding="sm" shadow={undefined}>
-              <CardContent>Simple outline card.</CardContent>
-            </Card>
-          </DemoBox>
-        </div>
-      </div>
-
-      {/* INFOCARD */}
-      <div>
-        <SubHead title="InfoCard" />
-        <PropDoc text="props: card { title, desc, link, image, icon } · layout: vertical | horizontal  —  For interactive item lists." />
-        <div className="space-y-8">
-          <DemoBox label="layout=vertical" bg>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              <InfoCard
-                layout="vertical"
-                card={{ link: '#', title: 'Curry Paste', desc: 'Learn the secrets of pounding fresh herbs.', image: '/avatarCherry/600-Avatar-AuthPage.webp', icon: 'local_dining' }}
-                onNavigate={() => { }}
-              />
-              <InfoCard
-                layout="vertical"
-                card={{ link: '#', title: 'Market Tour', desc: 'Discover vibrant local ingredients.', image: '', icon: 'storefront' }}
-                onNavigate={() => { }}
-              />
-            </div>
-          </DemoBox>
-          <DemoBox label="layout=horizontal" bg>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InfoCard
-                layout="horizontal"
-                card={{ link: '#', title: 'Spicy Tom Yum', desc: 'A balance of sour, spicy, and fragrant herbs in a classic bowl.', image: '/avatarCherry/600-Avatar-AuthPage.webp', icon: 'soup_kitchen' }}
-                onNavigate={() => { }}
-              />
-              <InfoCard
-                layout="horizontal"
-                card={{ link: '#', title: 'Pad Thai', desc: 'The national dish explained.', image: '', icon: 'ramen_dining' }}
-                onNavigate={() => { }}
-              />
-            </div>
-          </DemoBox>
-        </div>
-      </div>
-
-      {/* HOME FEATURED SECTION */}
-      <div>
-        <SubHead title="Home Page Featured Grid" />
-        <PropDoc text="Griglia completa utilizzata nella Homepage per presentare le sezioni chiave (dati mock da dataFeatured.ts)." />
+        <PropDoc text="Utilizzo di InfoCard (vertical) per le sezioni principali della dashboard/landing." />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {MOCK_FEATURED_DATA.map((card) => (
             <InfoCard key={card.id} card={card} onNavigate={() => { }} />
@@ -1124,55 +1297,424 @@ const StyleCards: React.FC = () => {
         </div>
       </div>
 
-      {/* STATCARD */}
+      {/* ── 2. CLASSES OVERVIEW ─────────────────────────────────────────── */}
       <div>
-        <SubHead title="StatCard" />
-        <PropDoc text="color: primary | secondary | action | success | warning | error | info | default | quiz | transparent  —  trend: up | down | neutral  —  valuePosition: top | bottom  —  align: left | center | right  —  iconPosition: top | left | right" />
-        <div className="space-y-8">
-          <DemoBox label="color=primary · align=center · iconPosition=top" bg>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <StatCard title="Total Classes" value="12" icon="event" color="primary" align="center" iconPosition="top" />
-              <StatCard title="Active Students" value="1,240" icon="groups" color="action" align="center" iconPosition="top" />
-              <StatCard title="Avg Rating" value="4.9" suffix="/5" icon="star" color="quiz" align="center" iconPosition="top" />
+        <SubHead title="2. Classes Overview" />
+        <PropDoc text="Utilizzo di InfoCard (layout='horizontal') per confrontare le classi disponibili." />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InfoCard
+            layout="horizontal"
+            card={{ link: '#', title: 'Morning Class', desc: 'Market tour and 6 traditional dishes.', image: '/avatarCherry/600-Avatar-AuthPage.webp', icon: 'wb_sunny' }}
+            onNavigate={() => { }}
+          />
+          <InfoCard
+            layout="horizontal"
+            card={{ link: '#', title: 'Evening Class', desc: 'Twilight cooking and family recipes.', image: '', icon: 'dark_mode' }}
+            onNavigate={() => { }}
+          />
+        </div>
+      </div>
+
+      {/* ── 3. CLASS MORNING / EVENING ──────────────────────────────────── */}
+      <div>
+        <SubHead title="3. Class Details (Morning & Evening)" />
+        <div className="space-y-12">
+
+          {/* Inclusions Card */}
+          <DemoBox label="Sezione 'Inclusions': Card variant='glass' + rounded='2xl' + padding='none'">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card variant="glass" padding="none" rounded="2xl" className="flex flex-col">
+                <div className="p-6 space-y-3">
+                  {['Local Market Tour', '6 Traditional Dishes', 'Recipe Book'].map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-action shrink-0" />
+                      <Typography variant="paragraphM" color="muted">{item}</Typography>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+              <Card variant="glass" padding="none" rounded="2xl" className="flex flex-col">
+                <div className="p-6 space-y-3">
+                  {['Hotel Pickup Included', 'Free Drinking Water', 'Certificate'].map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-action shrink-0" />
+                      <Typography variant="paragraphM" color="muted">{item}</Typography>
+                    </div>
+                  ))}
+                </div>
+              </Card>
             </div>
           </DemoBox>
-          <DemoBox label="align=left · iconPosition=left · valuePosition=bottom" bg>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <StatCard title="Revenue" value="15,400" suffix="THB" icon="payments" color="success" align="left" iconPosition="left" valuePosition="bottom" description="Up from last week" />
-              <StatCard title="Refunds" value="3" icon="money_off" color="error" align="left" iconPosition="left" valuePosition="bottom" description="Requires attention" />
+
+          {/* Meeting Points Card */}
+          <DemoBox label="Sezione 'Meeting Points': Interactive Surface Card (rounded-[2rem] + border + bg-surface-2)">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="group flex flex-col rounded-[2rem] border border-border bg-surface-2 p-6 gap-2 hover:shadow-theme-md transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-wider">Market Meeting</Badge>
+                  <Typography variant="accent" className="text-xs font-bold text-primary">08:30 AM</Typography>
+                </div>
+                <Typography variant="h6" color="title" className="font-bold">Siri-Wattana Market</Typography>
+                <Typography variant="caption" color="muted">Meeting point for market tour.</Typography>
+                <div className="flex items-center mt-1 text-muted group-hover:text-sub transition-colors gap-1">
+                  <Icon name="location_on" size="xs" />
+                  <Typography variant="caption">View on Maps</Typography>
+                </div>
+              </div>
             </div>
           </DemoBox>
         </div>
       </div>
 
-      {/* ALERT */}
+      {/* ── 4. SYSTEM & GENERIC ─────────────────────────────────────────── */}
       <div>
-        <SubHead title="Alert" />
-        <PropDoc text="variant: info | success | warning | error  —  props: title, subtitle, message, body, icon, list" />
+        <SubHead title="4. System Components (Generic)" />
+        <PropDoc text="Componenti card atomici utilizzati trasversalmente nel sistema." />
+
+        <div className="space-y-12">
+          {/* GLASS CARD VARIANTS */}
+          <DemoBox label="GlassCard Premium Variants (per overlay fotografici)">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <GlassCard variant="primary" className="p-6">
+                <Typography variant="h6" className="text-white">Primary Glass</Typography>
+                <Typography variant="paragraphS" className="text-white/70">Usato per highlight del brand.</Typography>
+              </GlassCard>
+              <GlassCard variant="action" className="p-6">
+                <Typography variant="h6" className="text-white">Action Glass</Typography>
+                <Typography variant="paragraphS" className="text-white/70">Usato per feedback positivi/call to action.</Typography>
+              </GlassCard>
+            </div>
+          </DemoBox>
+
+          {/* STAT CARD */}
+          <DemoBox label="StatCard (Dashboard & Stats)">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard title="Morning Bookings" value="24" icon="wb_sunny" color="primary" align="center" iconPosition="top" />
+              <StatCard title="Average Rating" value="4.9" suffix="/5" icon="star" color="action" align="center" iconPosition="top" />
+              <StatCard title="Revenue" value="12,500" suffix="THB" icon="payments" color="success" align="center" iconPosition="top" />
+            </div>
+          </DemoBox>
+
+          {/* ALERTS */}
+          <DemoBox label="Alerts (System Messages)">
+            <div className="space-y-4">
+              <Alert variant="info" message="Standard informative message." />
+              <Alert variant="success" title="Success" message="Your action was successful." />
+              <Alert variant="warning" title="Warning" message="Please review your dietary preferences." />
+              <Alert variant="error" title="Error" message="Something went wrong. Please try again." />
+            </div>
+          </DemoBox>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── CHERRY AI ─────────────────────────────────────────────────────────────
+
+  const renderCherry = () => (
+    <div className="space-y-16">
+      <SectionHead
+        title="Cherry AI — Component System"
+        subtitle="AskCherryButton: variant inline | prominent  —  context: recipe-category | recipe-dish | class-philosophy | history-general | manual topic"
+      />
+
+      {/* INLINE VARIANT */}
+      <div>
+        <SubHead title="variant='inline' (Default)" />
+        <PropDoc text="Bottone compatto con miniatura avatar di Cherry. Usato inline nelle card, nelle sezioni ricette e nella categoria menu." />
         <div className="space-y-6">
-          <DemoBox label="variant=info · basic">
-            <Alert variant="info" message="This is an informational message perfect for general guidance." />
-          </DemoBox>
-          <DemoBox label="variant=success · with title and close">
-            <Alert variant="success" title="Booking Confirmed" message="Your cooking class has been successfully booked for tomorrow." onClose={() => { }} />
-          </DemoBox>
-          <DemoBox label="variant=warning · with body and custom generic icon">
-            <Alert variant="warning" title="Dietary Note" subtitle="Vegetarian" icon="grass" message="This recipe contains fish sauce." body="Can be replaced with soy sauce or vegan fish sauce upon request." />
-          </DemoBox>
-          <DemoBox label="variant=error · with list array">
-            <Alert
-              variant="error"
-              title="Severe Allergy Warning"
-              subtitle="Peanut Allergy"
-              message="This dish uses crushed peanuts as a garnish."
-              list={["Remove peanuts entirely", "Substitute with toasted sesame seeds", "Use cashews if safely tolerated"]}
+
+          <DemoBox label="context='recipe-category' — auto-genera prompt sulla categoria culinaria">
+            <AskCherryButton
+              variant="inline"
+              context="recipe-category"
+              data={{ title: 'Akha Morning Dishes' }}
             />
           </DemoBox>
+
+          <DemoBox label="context='recipe-dish' — prompt su piatto specifico (dieta + allergie)">
+            <AskCherryButton
+              variant="inline"
+              context="recipe-dish"
+              data={{ name: 'Pad Thai', diet: 'vegan', allergies: 'gluten' }}
+            />
+          </DemoBox>
+
+          <DemoBox label="context='class-philosophy' — filosofia del social enterprise">
+            <AskCherryButton
+              variant="inline"
+              context="class-philosophy"
+              label="Why Thai Akha Kitchen?"
+            />
+          </DemoBox>
+
+          <DemoBox label="context='history-general' — storia Akha">
+            <AskCherryButton
+              variant="inline"
+              context="history-general"
+              label="Discover Akha History"
+            />
+          </DemoBox>
+
+          <DemoBox label="topic manuale (override libero)">
+            <AskCherryButton
+              variant="inline"
+              topic="What is the best spice to start with for a beginner Thai cook?"
+              label="Ask Cherry Anything"
+            />
+          </DemoBox>
+
+          <DemoBox label="Dati DB diretti: cherry_prompt + cherry_response (Zero-Latency)">
+            <AskCherryButton
+              variant="inline"
+              data={{
+                cherry_prompt: 'Tell me about Akha herbal medicine in cooking',
+                cherry_response: 'Akha people have used herbal plants like lemongrass, galangal and kaffir lime for centuries...'
+              }}
+            />
+          </DemoBox>
+
+        </div>
+      </div>
+
+      {/* PROMINENT VARIANT */}
+      <div>
+        <SubHead title="variant='prominent' — Call to Action Banner" />
+        <PropDoc text="Banner orizzontale con avatar grande di Cherry, testo di ingaggio e bottone primary. Ideale per footer di sezione, fine articolo, card hero." />
+        <div className="space-y-6">
+
+          <DemoBox label="context='recipe-category' — prominent banner">
+            <AskCherryButton
+              variant="prominent"
+              context="recipe-category"
+              data={{ title: 'Northern Thai Street Food' }}
+              label="Ask Cherry about this category"
+            />
+          </DemoBox>
+
+          <DemoBox label="context='class-philosophy' — prominent banner">
+            <AskCherryButton
+              variant="prominent"
+              context="class-philosophy"
+              label="Learn about our mission"
+            />
+          </DemoBox>
+
+          <DemoBox label="topic manuale — prominent banner">
+            <AskCherryButton
+              variant="prominent"
+              topic="What makes Akha cooking different from standard Thai cuisine?"
+              label="Discover the difference"
+            />
+          </DemoBox>
+
+        </div>
+      </div>
+
+      {/* COME FUNZIONA */}
+      <div>
+        <SubHead title="Come funziona il sistema (Flusso Tecnico)" />
+        <PropDoc text="Il bottone dispatcha un CustomEvent globale 'trigger-chat-topic'. Il widget Cherry globale (montato in App.tsx) ascolta l'evento, si apre e pre-compila il messaggio con il topic e il systemContext forniti." />
+        <div className="bg-surface-2 border border-border rounded-3xl [padding:var(--space-fluid-m)] space-y-4">
+          <Typography variant="caption" color="muted" className="uppercase tracking-widest block">Event Payload</Typography>
+          <pre className="text-sm text-desc font-mono bg-black/5 dark:bg-white/5 rounded-2xl p-4 overflow-x-auto">{`window.dispatchEvent(
+  new CustomEvent('trigger-chat-topic', {
+    detail: {
+      topic: string,           // Il prompt da inviare a Cherry
+      systemContext: string,   // Istruzioni di comportamento per il modello
+      presetResponse: string | null  // Risposta pre-cacheata (Zero-Latency)
+    }
+  })
+);`}</pre>
         </div>
       </div>
 
     </div>
   );
+
+  // ── FAQ ───────────────────────────────────────────────────────────────────
+
+  const renderFaq = () => {
+    return (
+      <div className="space-y-16">
+        <SectionHead
+          title="FAQ — Content System"
+          subtitle="Mondo informazioni / domande & risposte. Palette dedicata Ocean → vedi tab 'Colors & Tokens' (btn-s mappa su ocean-blue)."
+        />
+
+        {/* SEARCH + CATEGORY CHIPS */}
+        <div>
+          <SubHead title="Search & Category Chips" />
+          <PropDoc text="Barra di ricerca FAQ e chip categorie. Focus ring e accenti in ocean-blue." />
+          <div className="space-y-5 max-w-3xl">
+            <div className="flex items-center [gap:var(--space-fluid-s)] [padding:var(--space-fluid-s)] rounded-full border border-ocean-blue/30 bg-surface focus-within:border-ocean-blue focus-within:shadow-glow-blue transition-all">
+              <Icon name="search" size="md" className="text-deep-blue shrink-0 ml-2" />
+              <input
+                type="text"
+                placeholder="Search a question…"
+                className="flex-1 bg-transparent outline-none text-desc placeholder:text-muted [font-size:var(--text-fluid-paragraphM)]"
+              />
+              <button className="shrink-0 rounded-full bg-ocean-blue text-white px-5 py-2 text-sm font-bold hover:brightness-110 shadow-glow-blue transition-all">
+                Search
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {['All', 'Booking', 'Logistics', 'Menu', 'Classes', 'Groups'].map((c, i) => (
+                <span
+                  key={c}
+                  className={cn(
+                    'px-4 py-2 rounded-full text-sm font-semibold border transition-colors cursor-pointer',
+                    i === 0
+                      ? 'bg-ocean-blue text-white border-ocean-blue'
+                      : 'bg-ocean-blue/10 text-desc border-ocean-blue/20 hover:bg-ocean-blue/20'
+                  )}
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ACCORDION QUESTION CARDS */}
+        <div>
+          <SubHead title="Question Cards (Accordion)" />
+          <PropDoc text="Card domanda/risposta espandibili. Aperta → wash pale-ice, bullet e chevron ocean-blue. Clicca una domanda per aprirla." />
+          <div className="space-y-4 max-w-3xl">
+            {MOCK_FAQ.map((item, i) => {
+              const open = faqOpen === i;
+              return (
+                <div
+                  key={item.q}
+                  className={cn(
+                    'rounded-[1.5rem] border overflow-hidden transition-all duration-300',
+                    open ? 'border-ocean-blue/40 shadow-glow-blue' : 'border-ocean-blue/15'
+                  )}
+                >
+                  <button
+                    onClick={() => setFaqOpen(open ? null : i)}
+                    className="w-full text-left flex items-center justify-between [gap:var(--space-fluid-s)] [padding:var(--space-fluid-m)] bg-surface hover:bg-ocean-blue/5 transition-colors"
+                  >
+                    <span className="flex items-center [gap:var(--space-fluid-s)]">
+                      <span className={cn('shrink-0 w-2 h-2 rounded-full transition-colors', open ? 'bg-ocean-blue' : 'bg-ocean-blue/50')} aria-hidden="true" />
+                      <Typography variant="h6" color="title" className="font-bold">{item.q}</Typography>
+                    </span>
+                    <Icon name={open ? 'expand_less' : 'expand_more'} size="md" className="text-deep-blue shrink-0" />
+                  </button>
+                  {open && (
+                    <div className="[padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)] bg-ocean-blue/5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-ocean-blue/10 text-ocean-blue border border-ocean-blue/20">{item.cat}</span>
+                      </div>
+                      <Typography variant="paragraphM" color="muted" className="leading-relaxed">{item.a}</Typography>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* TOPIC CARDS */}
+        <div>
+          <SubHead title="Topic Cards" />
+          <PropDoc text="Card categoria FAQ. Icona in container sky-blue, titolo deep-ocean, contatore ocean-blue." />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {MOCK_FAQ_TOPICS.map((t) => (
+              <div
+                key={t.title}
+                className="group flex flex-col gap-3 rounded-[1.5rem] border border-ocean-blue/15 bg-surface p-5 hover:border-ocean-blue/40 hover:shadow-glow-blue transition-all cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-ocean-blue/10 border border-ocean-blue/20 group-hover:bg-ocean-blue/20 transition-colors">
+                  <Icon name={t.icon} size="md" className="text-ocean-blue" />
+                </div>
+                <Typography variant="h6" color="title" className="font-bold">{t.title}</Typography>
+                <Typography variant="caption" className="text-ocean-blue font-bold">{t.count} questions</Typography>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* BUTTONS */}
+        <div>
+          <SubHead title="FAQ Buttons" />
+          <PropDoc text="Pulsanti del mondo FAQ in palette ocean. 'social' (componente Button) ora rende ocean-blue. Sotto, varianti raw ocean." />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="social" icon="help" iconPosition="left">Ask a question</Button>
+            <button className="rounded-full bg-ocean-blue text-white px-6 py-3 font-bold hover:brightness-110 shadow-glow-blue transition-all flex items-center gap-2">
+              <Icon name="quiz" size="sm" /> Browse all FAQ
+            </button>
+            <button className="rounded-full bg-deep-ocean text-white px-6 py-3 font-bold hover:brightness-125 transition-all">
+              Contact us
+            </button>
+            <button className="rounded-full border-2 border-ocean-blue text-ocean-blue px-6 py-3 font-bold hover:bg-ocean-blue/10 transition-all">
+              Outline
+            </button>
+            <button className="rounded-full bg-ocean-blue/10 text-ocean-blue px-6 py-3 font-bold hover:bg-ocean-blue/20 transition-all">
+              Soft
+            </button>
+          </div>
+        </div>
+
+        {/* ASK CHERRY — OCEAN TONE */}
+        <div>
+          <SubHead title="Ask Cherry — Ocean Tone" />
+          <PropDoc text="AskCherryButton con la nuova prop tone='ocean'. Stesso componente del brand rosso, ma in tonalità ocean-blue per il mondo FAQ/info. La versione 'cherry' (default) resta invariata." />
+          <div className="space-y-6">
+            <DemoBox label="inline · tone='ocean' (default era cherry rosso)">
+              <div className="flex flex-wrap items-center gap-4">
+                <AskCherryButton variant="inline" tone="ocean" topic="How do I pick the right class?" label="Ask Cherry" />
+                <AskCherryButton variant="inline" tone="ocean" size="sm" topic="Pickup info?" label="Pickup help" />
+                <AskCherryButton variant="inline" tone="ocean" size="lg" topic="Diet options?" label="Diet & allergies" />
+              </div>
+            </DemoBox>
+            <DemoBox label="inline · confronto tone='cherry' (brand) vs tone='ocean'">
+              <div className="flex flex-wrap items-center gap-4">
+                <AskCherryButton variant="inline" tone="cherry" topic="x" label="Cherry (brand)" />
+                <AskCherryButton variant="inline" tone="ocean" topic="x" label="Ocean (FAQ)" />
+              </div>
+            </DemoBox>
+            <DemoBox label="prominent · tone='ocean' — banner fine sezione FAQ">
+              <AskCherryButton
+                variant="prominent"
+                tone="ocean"
+                topic="What should I know before my first cooking class?"
+                label="Ask Cherry about classes"
+              />
+            </DemoBox>
+          </div>
+        </div>
+
+        {/* BLOCCO FAQ DI FINE PAGINA (componente reale) */}
+        <div>
+          <SubHead title="End-of-Page FAQ Block (FaqBottomPage)" />
+          <PropDoc text="Il blocco FAQ reale che compare in fondo a ogni pagina. Componente <FaqBottomPage> con items mock (normalmente carica da site_metadata). Le card glass, il ring avatar e i link usano btn-s → ora ocean-blue. Tema divider: block_faq." />
+          <DemoBox label="<FaqBottomPage items={...} hideTopDivider />" bg>
+            <FaqBottomPage items={MOCK_FAQ_BOTTOM} hideTopDivider />
+          </DemoBox>
+        </div>
+
+        {/* INFO BANNER */}
+        <div>
+          <SubHead title="Info / Help Banner" />
+          <PropDoc text="Banner informativo a fondo sezione. Gradiente deep-ocean → ocean-blue, CTA pale-ice." />
+          <div className="rounded-[2rem] overflow-hidden bg-gradient-to-br from-deep-ocean to-ocean-blue p-8 flex flex-col md:flex-row md:items-center gap-6">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center shrink-0">
+              <Icon name="support_agent" size="lg" className="text-white" />
+            </div>
+            <div className="flex-1">
+              <Typography variant="h4" className="text-white font-bold">Still have questions?</Typography>
+              <Typography variant="paragraphM" className="text-white/80">Our team and Cherry AI are here to help you plan the perfect cooking class.</Typography>
+            </div>
+            <button className="shrink-0 rounded-full bg-pale-ice text-deep-ocean px-7 py-3 font-bold hover:bg-white transition-colors">
+              Get in touch
+            </button>
+          </div>
+        </div>
+
+      </div>
+    );
+  };
 
   // ── RENDER ────────────────────────────────────────────────────────────────
 
@@ -1200,6 +1742,7 @@ const StyleCards: React.FC = () => {
 
         {/* ── Content ── */}
         <div className="animate-fade-slide-up">
+          {activeTab === 'colors' && <StyleColorsTab />}
           {activeTab === 'typography' && renderTypography()}
           {activeTab === 'ui' && renderUI()}
           {activeTab === 'patterns' && renderPatterns()}
@@ -1207,6 +1750,8 @@ const StyleCards: React.FC = () => {
           {activeTab === 'card' && renderCard()}
           {activeTab === 'layout' && renderLayout()}
           {activeTab === 'quiz' && renderQuiz()}
+          {activeTab === 'cherry' && renderCherry()}
+          {activeTab === 'faq' && renderFaq()}
         </div>
 
       </div>

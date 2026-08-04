@@ -98,12 +98,17 @@ const DriverRoute: React.FC = () => {
     const fetchRoute = useCallback(async () => {
         if (!userProfile) return;
         try {
+            // Legge da driver_route_v, non da bookings: la vista espone i campi di
+            // trasporto + guest_name/avatar_url e NON le colonne sanitarie del profilo
+            // (allergies, dietary_profile). Vedi Privacy 2142 e la migration
+            // 20260728000200_profiles_privilege_guard. La vista si auto-scopa come
+            // bookings_select_scoped, quindi i filtri qui sotto restano identici.
             const { data, error } = await supabase
-                .from('bookings')
+                .from('driver_route_v')
                 .select(`
                     internal_id, status, pax_count, hotel_name, pickup_zone, pickup_time, phone_number, customer_note, session_id, route_order,
                     pickup_driver_uid, transport_status, dropoff_hotel, requires_dropoff,
-                    profiles: user_id(full_name, avatar_url)
+                    guest_name, avatar_url
                 `)
                 .eq('booking_date', activeDate)
                 .neq('status', 'cancelled')
@@ -113,14 +118,7 @@ const DriverRoute: React.FC = () => {
             if (error) throw error;
 
             if (data) {
-                setStops(data.map((b: any) => {
-                    const profile = b.profiles;
-                    return {
-                        ...b,
-                        guest_name: profile?.full_name || 'Guest',
-                        avatar_url: profile?.avatar_url,
-                    } as Stop;
-                }));
+                setStops(data.map((b) => ({ ...b }) as Stop));
             }
         } catch (error) {
             console.error("Supabase Fetch Error:", error);
@@ -356,7 +354,7 @@ const DriverRoute: React.FC = () => {
                             <button
                                 onClick={() => setPhase('PICKUP')}
                                 className={cn(
-                                    "flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    "flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'PICKUP'
                                         ? "bg-primary-600 text-white shadow-lg"
                                         : "text-gray-400 dark:text-white/40 hover:text-white/60"
@@ -367,7 +365,7 @@ const DriverRoute: React.FC = () => {
                             <button
                                 onClick={() => setPhase('DROPOFF')}
                                 className={cn(
-                                    "flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    "flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'DROPOFF'
                                         ? "bg-green-600 text-white shadow-lg"
                                         : "text-gray-400 dark:text-white/40 hover:text-white/60"
@@ -379,7 +377,7 @@ const DriverRoute: React.FC = () => {
 
                         <div className="bg-primary-50 dark:bg-primary-500/10 px-4 py-2 rounded-xl border border-primary-100 dark:border-primary-500/20 flex items-center gap-3">
                             <span className="text-xl font-mono font-black text-primary-600 dark:text-primary-400 leading-none">{completedPax}</span>
-                            <span className="text-[10px] font-bold text-primary-400 dark:text-white/40 uppercase tracking-widest">/ {totalPax} {t('stopCard.pax')}</span>
+                            <span className="text-xs font-bold text-primary-400 dark:text-white/40 uppercase tracking-widest">/ {totalPax} {t('stopCard.pax')}</span>
                         </div>
                     </div>
                 </div>

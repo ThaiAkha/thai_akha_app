@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import Typography from '../ui/Typography';
 import { contentService } from '@thaiakha/shared/services'; // ✅ Usa il Service (Cache)
 import { HeaderMetadata } from './Header';
-import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { LogoFullLight, LogoFullDark } from '@thaiakha/shared';
 
 interface HeaderMenuProps {
   currentStep?: 1 | 2;
   customSlug?: string;
+  descriptionOverride?: string;
 }
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug, descriptionOverride }) => {
   const [data, setData] = useState<HeaderMetadata | null>(null);
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 
@@ -73,7 +74,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
         <Typography
           variant="titleHighlight"
           as="span"
-          className="pb-1"
+          className="pe-[0.25em] pb-1"
         >
           {data.titleHighlight}
         </Typography>
@@ -94,13 +95,13 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
 
       </div>
 
-      {/* 3. DESCRIZIONE */}
+      {/* 3. DESCRIZIONE — override dinamico se passato (es. dieta attiva), altrimenti DB */}
       <Typography
         variant="paragraphM"
         color="sub"
-        className="max-w-2xl whitespace-pre-line"
+        className="max-w-2xl whitespace-pre-line transition-all duration-500"
       >
-        {data.description}
+        {descriptionOverride ?? data.description}
       </Typography>
 
     </header>

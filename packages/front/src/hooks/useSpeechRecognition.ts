@@ -1,14 +1,34 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+interface SpeechRecognitionResult {
+    readonly isFinal: boolean;
+    readonly transcript: string;
+    [index: number]: { transcript: string; confidence: number };
+}
+
+interface SpeechRecognitionResultList {
+    readonly length: number;
+    [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionEvent extends Event {
+    readonly resultIndex: number;
+    readonly results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+    readonly error: string;
+}
+
 interface SpeechRecognitionAPI extends EventTarget {
     continuous: boolean;
     interimResults: boolean;
     lang: string;
     start(): void;
     stop(): void;
-    abort(): void; // <-- Aggiunto per il cleanup sicuro
-    onresult: (event: any) => void;
-    onerror: (event: any) => void;
+    abort(): void;
+    onresult: (event: SpeechRecognitionEvent) => void;
+    onerror: (event: SpeechRecognitionErrorEvent) => void;
     onend: () => void;
 }
 
@@ -19,7 +39,8 @@ export const useSpeechRecognition = (language: string = 'th-TH') => {
     const recognitionRef = useRef<SpeechRecognitionAPI | null>(null);
 
     useEffect(() => {
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const w = window as Window & { SpeechRecognition?: new () => SpeechRecognitionAPI; webkitSpeechRecognition?: new () => SpeechRecognitionAPI };
+        const SpeechRecognition = w.SpeechRecognition || w.webkitSpeechRecognition;
         if (!SpeechRecognition) {
             console.error("Speech Recognition API non supportata in questo browser.");
             return;
@@ -30,7 +51,7 @@ export const useSpeechRecognition = (language: string = 'th-TH') => {
         recognition.interimResults = true;
         recognition.lang = language; // <-- Ora è dinamico!
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
             let interimTranscript = '';
             let finalTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -43,7 +64,7 @@ export const useSpeechRecognition = (language: string = 'th-TH') => {
             setTranscript(finalTranscript + interimTranscript);
         };
 
-        recognition.onerror = (event: any) => {
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
             console.error("Errore Speech Recognition:", event.error);
             setIsListening(false);
         };

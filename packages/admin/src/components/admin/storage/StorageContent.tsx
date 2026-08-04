@@ -1,10 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { File as FileIcon, Image as ImageIcon, Video, Music, FileText, ExternalLink, Search } from 'lucide-react';
 import { DataExplorerContent, GridCard, DataExplorerRow, DataCardContent, DataRowText } from '../../../components/data-explorer';
 import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
 import Button from '../../../components/ui/button/Button';
 import { FileObject, formatBytes } from '../../../hooks/useAdminStorage';
+import { getLocaleCode } from '../../../lib/dateFormatter';
+
+// Locale da sorgente unica: copre tutte e 4 le lingue (en/th/es/zh).
+const getLocale = getLocaleCode;
 
 interface StorageContentProps {
     loading: boolean;
@@ -32,6 +37,7 @@ const StorageContent: React.FC<StorageContentProps> = ({
     onFileSelect,
     getFilePreview
 }) => {
+    const { i18n } = useTranslation('storage');
     return (
         <DataExplorerContent
             loading={loading}
@@ -64,18 +70,18 @@ const StorageContent: React.FC<StorageContentProps> = ({
                                         <DataCardContent
                                             title={item.name}
                                             badges={
-                                                <Badge color="light" size="sm" className="text-[9px] font-bold uppercase tracking-widest bg-gray-50 dark:bg-gray-800/40">
+                                                <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-50 dark:bg-gray-800/40">
                                                     {item.metadata?.mimetype?.split('/')[1] || 'FILE'}
                                                 </Badge>
                                             }
                                             footerLeft={
-                                                <p className="text-[10px] font-mono font-bold text-gray-400 tracking-tighter uppercase shrink-0">
+                                                <p className="text-xs font-mono font-bold text-gray-400 tracking-tighter uppercase shrink-0">
                                                     {formatBytes(item.metadata?.size || 0)}
                                                 </p>
                                             }
                                             footerRight={
-                                                <p className="text-[9px] font-bold text-gray-300">
-                                                    {new Date(item.updated_at).toLocaleDateString()}
+                                                <p className="text-xs font-bold text-gray-300">
+                                                    {new Date(item.updated_at).toLocaleDateString(getLocale(i18n.language))}
                                                 </p>
                                             }
                                         />
@@ -92,10 +98,10 @@ const StorageContent: React.FC<StorageContentProps> = ({
                     <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
                         <TableRow>
                             <TableCell isHeader className="px-4 py-3 w-10"> </TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">File Name</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Size</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Type</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Last Modified</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">File Name</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Size</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Type</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Last Modified</TableCell>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -120,13 +126,13 @@ const StorageContent: React.FC<StorageContentProps> = ({
                                     />
                                 </TableCell>
                                 <TableCell className="px-4 py-3">
-                                    <Badge color="light" size="sm" className="font-bold text-[10px] uppercase tracking-widest">
+                                    <Badge color="light" size="sm" className="font-bold text-xs uppercase tracking-widest">
                                         {file.metadata?.mimetype?.split('/')[1]?.toUpperCase() || 'FILE'}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="px-4 py-3">
                                     <DataRowText
-                                        extra={new Date(file.updated_at).toLocaleDateString()}
+                                        extra={new Date(file.updated_at).toLocaleDateString(getLocale(i18n.language))}
                                     />
                                 </TableCell>
                             </DataExplorerRow>

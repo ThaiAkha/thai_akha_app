@@ -48,7 +48,7 @@ const MediaSidebar: React.FC<MediaSidebarProps> = ({ categories, selectedFolder,
             onSelect={onSelect}
             footer={
                 <div className="px-2 py-3 bg-primary-50 dark:bg-primary-900/10 border-t border-primary-100 dark:border-primary-900/20">
-                    <p className="text-[9px] text-primary-700 dark:text-primary-400 font-black leading-tight uppercase tracking-widest text-center">
+                    <p className="text-xs text-primary-700 dark:text-primary-400 font-black leading-tight uppercase tracking-widest text-center">
                         {t('sidebar.footer')}
                     </p>
                 </div>

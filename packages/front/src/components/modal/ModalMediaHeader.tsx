@@ -5,6 +5,8 @@ import { HeaderSection } from '../layout/HeaderSection';
 
 interface ModalMediaHeaderProps {
   title?: string;
+  highlight?: string;
+  subtitle?: string;
   description?: string;
   counter?: string;
   className?: string;
@@ -16,11 +18,13 @@ interface ModalMediaHeaderProps {
  */
 const ModalMediaHeader: React.FC<ModalMediaHeaderProps> = ({
   title,
+  highlight,
+  subtitle,
   description,
   counter,
   className,
 }) => {
-  if (!title && !description && !counter) return null;
+  if (!title && !highlight && !subtitle && !description && !counter) return null;
 
   return (
     <div className={cn(
@@ -37,15 +41,16 @@ const ModalMediaHeader: React.FC<ModalMediaHeaderProps> = ({
         </div>
       )}
 
-      {(title || description) && (
+      {(title || highlight || subtitle || description) && (
         <HeaderSection
           title={title ?? ''}
-          subtitle={description}
+          highlight={highlight}
+          subtitle={subtitle || description}
           variant="history"
           align="center"
-          hideTitle={!title}
-          hideSubtitle={!description}
-          hideDivider={!title}
+          hideTitle={!title && !highlight}
+          hideSubtitle={!subtitle && !description}
+          hideDivider={!title && !highlight}
           hideDescription
           hideTag
           className="text-white [&_*]:text-white [&_*]:drop-shadow-2xl"

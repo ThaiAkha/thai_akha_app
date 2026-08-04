@@ -142,7 +142,7 @@ export default function UserAddressCard() {
                       </div>
                       <div>
                         <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{country.name}</p>
-                        <p className="text-[10px] text-gray-600 dark:text-gray-400 font-bold uppercase tracking-widest">{country.code}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-widest">{country.code}</p>
                       </div>
                     </div>
                     <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -190,7 +190,9 @@ export default function UserAddressCard() {
 
           <ProfileRow
             label={t("agency.fieldCommission")}
-            value={user?.agency_commission_rate ? `${user.agency_commission_rate}%` : t("agency.commissionDefault")}
+            value={user?.commission_config?.tiers?.[0]
+              ? `${user.commission_config.tiers[0].tier} · ${user.commission_config.tiers[0].rate} ${user.commission_config.currency ?? 'THB'}/pax`
+              : t("agency.commissionDefault")}
             isEditing={false}
           />
         </div>

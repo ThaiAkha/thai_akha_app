@@ -1,59 +1,75 @@
-import React from 'react';
-import { Icon } from '../ui';
+import React, { useState } from 'react';
+import { Icon, Typography } from '../ui';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface VideoProps {
+  videoId: string;
   imageUrl?: string;
-  onClick?: () => void;
-  variant?: 'thumbnail' | 'inline';
-  videoId?: string;
+  altText?: string;
   title?: string;
+  className?: string;
+  onClick?: () => void;
 }
 
 export const Video: React.FC<VideoProps> = ({ 
-  imageUrl, 
-  onClick, 
-  variant = 'thumbnail',
   videoId,
-  title
+  imageUrl, 
+  altText,
+  title,
+  className,
+  onClick
 }) => {
-  if (variant === 'inline' && videoId) {
-    return (
-      <div className="relative w-full aspect-video rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] border border-white/10 bg-black ring-1 ring-white/10 group animate-in zoom-in-95 duration-700">
-        <iframe
-          width="100%"
-          height="100%"
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&autohide=1`}
-          title={title}
-          style={{ border: 'none' }}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="absolute inset-0 z-20 w-full h-full bg-black transition-opacity duration-1000"
-        />
-      </div>
-    );
-  }
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setIsPlaying(true);
+    }
+  };
 
   return (
-    <div 
-      onClick={onClick} 
-      className="relative h-64 rounded-[2rem] overflow-hidden cursor-pointer group shadow-2xl border border-white/10"
-    >
-      {imageUrl && (
-        <img 
-          src={imageUrl} 
-          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-all duration-[2s]" 
-          alt={title || "Watch Trailer"} 
-        />
-      )}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="size-14 rounded-full bg-primary/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white mb-3 group-hover:bg-white group-hover:text-black transition-all">
-          <Icon name="play_arrow" size="md" />
-        </div>
-        <span className="text-white font-black uppercase text-sm tracking-widest italic">{title || "Watch Trailer"}</span>
+    <div className={`flex flex-col [gap:var(--space-fluid-s)] ${className || ''}`}>
+      <div 
+        className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group/video bg-black aspect-video cursor-pointer"
+        onClick={!isPlaying ? handleClick : undefined}
+      >
+        {!isPlaying ? (
+          <div className="absolute inset-0 w-full h-full">
+            {imageUrl && (
+              <img 
+                src={imageUrl} 
+                className="w-full h-full object-cover opacity-80 group-hover/video:scale-105 transition-all duration-[2s]" 
+                alt={altText || title || t.components.media.videoThumbnail} 
+              />
+            )}
+            <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 bg-gradient-to-t from-black/50 to-transparent">
+              <div className="size-12 sm:size-14 rounded-full bg-primary/90 backdrop-blur-md border border-white/30 flex items-center justify-center text-white group-hover/video:bg-primary group-hover/video:scale-110 shadow-lg transition-transform">
+                <Icon name="play_arrow" size="md" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <iframe
+            width="100%"
+            height="100%"
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&autohide=1&autoplay=1`}
+            title={title}
+            style={{ border: 'none' }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 z-20 w-full h-full bg-black animate-in fade-in duration-500"
+          />
+        )}
       </div>
+      {title && (
+        <Typography variant="h6" className="text-title text-center font-bold px-4">
+          {title}
+        </Typography>
+      )}
     </div>
   );
 };
 
 export default Video;
-

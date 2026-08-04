@@ -2,9 +2,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { LiveServerMessage, Modality } from '@google/genai';
 import { getLiveGeminiClient } from '../services/geminiClient';
-import { cherryAdmin, buildAdminPrompt, type BookingDaySummary, type GuestAlert } from '../prompts/adminPrompt';
-import { saveMessage, contentService } from '@thaiakha/shared/services';
-import { supabase } from '@thaiakha/shared';
+import { selectAdminAgent, buildAdminAgentPrompt } from '../prompts/adminAgents';
+import { formatScopedDataBlocks } from '../prompts/scopedData';
+import { fetchAdminScopedData } from '../prompts/adminScopedFetch';
+import { saveMessage } from '@thaiakha/shared/services';
+import { GEMINI_LIVE_MODEL } from '@thaiakha/shared/lib/cherry-prompts';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -129,76 +131,21 @@ export const useGeminiLive = (
       const today = new Date().toISOString().split('T')[0];
       const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
 
-      const [classes, bookingsResult] = await Promise.all([
-        contentService.getCookingClasses(),
-        supabase
-          .from('bookings')
-          .select('internal_id, booking_date, session_id, pax_count, visitor_count, status, guest_name, booking_ref, hotel_name, pickup_time, pickup_zone, payment_method, payment_status, total_price, special_requests, customer_note')
-          .gte('booking_date', today)
-          .lte('booking_date', nextWeek)
-          .neq('status', 'cancelled')
-          .order('booking_date'),
-      ]);
-
-      const bookings = bookingsResult.data ?? [];
-      const bookingSnapshot: BookingDaySummary[] = bookings.map(b => ({
-        date: b.booking_date,
-        session: b.session_id ?? 'unknown',
-        pax: b.pax_count ?? 0,
-        visitors: b.visitor_count ?? 0,
-        status: b.status ?? 'unknown',
-        bookingRef: b.booking_ref ?? undefined,
-        hotelName: b.hotel_name ?? undefined,
-        pickupTime: b.pickup_time ?? undefined,
-        pickupZone: b.pickup_zone ?? undefined,
-        paymentMethod: b.payment_method ?? undefined,
-        paymentStatus: b.payment_status ?? undefined,
-        totalPrice: b.total_price ?? undefined,
-        specialRequests: b.special_requests ?? undefined,
-        customerNote: b.customer_note ?? undefined,
-      }));
-
-      let guestAlerts: GuestAlert[] = [];
-      const confirmedIds = bookings
-        .filter(b => b.status === 'confirmed')
-        .map(b => b.internal_id)
-        .filter(Boolean) as string[];
-
-      if (confirmedIds.length > 0) {
-        const { data: selections } = await supabase
-          .from('menu_selections')
-          .select('booking_id, dietary_profile, allergies, curry_id, soup_id, stirfry_id, spiciness_level')
-          .in('booking_id', confirmedIds);
-
-        if (selections?.length) {
-          const bookingMap = new Map(bookings.map(b => [b.internal_id, b]));
-          guestAlerts = selections
-            .filter(s => s.dietary_profile !== 'diet_regular' || (Array.isArray(s.allergies) && s.allergies.length > 0))
-            .map(s => {
-              const booking = bookingMap.get(s.booking_id);
-              return {
-                name: bookingMap.get(s.booking_id)?.guest_name ?? 'Guest',
-                date: booking?.booking_date ?? '',
-                session: booking?.session_id ?? '',
-                dietary: s.dietary_profile ?? 'regular',
-                allergies: Array.isArray(s.allergies) ? s.allergies : [],
-                curryChoice: s.curry_id ?? undefined,
-                soupChoice: s.soup_id ?? undefined,
-                stirfryChoice: s.stirfry_id ?? undefined,
-                spicinessLevel: s.spiciness_level ?? undefined,
-              };
-            });
-        }
-      }
-
-      const resolvedSystemInstruction = overrideInstruction || buildAdminPrompt(
+      // Multi-Cherry per ruolo (voce): stesso agente + DATI scopati per ruolo del
+      // text chat (Fase 3, fetcher condiviso). isVoiceMode=true.
+      const agent = selectAdminAgent(userProfile?.role);
+      const scoped = await fetchAdminScopedData(userProfile?.role, userProfile?.id, today, nextWeek);
+      const resolvedSystemInstruction = overrideInstruction || buildAdminAgentPrompt(
+        agent,
         userProfile || {},
+        formatScopedDataBlocks(scoped),
         true,
-        { cookingClasses: classes, bookingSnapshot, guestAlerts }
       );
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio',
+        // Model id da single source of truth (@thaiakha/shared) → allineato al front.
+        // ⚠️ Deve essere l'id COMPLETO: un alias corto fa fallire connect → voce ko.
+        model: GEMINI_LIVE_MODEL,
         callbacks: {
           onopen: async () => {
             setState(prev => ({ ...prev, status: 'active' }));
@@ -287,7 +234,7 @@ export const useGeminiLive = (
           responseModalities: [Modality.AUDIO],
           speechConfig: {
             voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: cherryAdmin.voiceName },
+              prebuiltVoiceConfig: { voiceName: agent.voiceName },
             },
           },
           systemInstruction: resolvedSystemInstruction,

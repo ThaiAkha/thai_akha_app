@@ -1,0 +1,137 @@
+-- nap-address-canonical.sql
+-- Allineamento NAP indirizzo alla forma CANONICA decisa dall'owner il 2026-08-03.
+--
+-- CANONICA (una riga):
+--   14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District, Chiang Mai 50100, Thailand
+-- Layout postale su due righe:
+--   14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya
+--   Muang District, Chiang Mai 50100, Thailand
+--
+-- ⚠️ LEGGERE PRIMA DI ESEGUIRE
+-- La via corretta e' "Rat Chiang Saen 2 Ko. Alley". NON e' una resa di Google Maps da
+-- normalizzare: e' l'indirizzo giusto, a cui mancava solo la coda amministrativa
+-- (Tambon Hai Ya, Muang District). Due tentativi di normalizzazione l'hanno riscritta:
+--   forma A -> "14/10 Soi 2 Ko, Rat Chiang Saen Road, Hai Ya Sub-district, ..."
+--   forma C -> "14/10 Soi Rat Chiang Saen 2 Ko., Rat Chiang Saen Rd, Hai Ya, ..."
+-- Entrambe sbagliate. Questo script rimette la via giusta e aggiunge la coda.
+--
+-- GO-GATE: non eseguire in blocco. Sezione 0 (backup) e sezione 1 (censimento) prima,
+-- si guardano i numeri, poi si eseguono gli UPDATE.
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 0. BACKUP delle righe interessate (tabella temporanea, resta finche' non la droppi)
+-- ─────────────────────────────────────────────────────────────────────────────
+create table if not exists _nap_backup_20260803 as
+select 'content_categories' as tbl, id::text as row_id, to_jsonb(t.*) as snapshot
+  from content_categories t where to_jsonb(t.*)::text ilike '%Rat Chiang Saen%'
+union all
+select 'site_metadata', id::text, to_jsonb(t.*)
+  from site_metadata t where to_jsonb(t.*)::text ilike '%Rat Chiang Saen%'
+union all
+select 'akha_news', id::text, to_jsonb(t.*)
+  from akha_news t where to_jsonb(t.*)::text ilike '%Rat Chiang Saen%'
+union all
+select 'business_profile', id::text, to_jsonb(t.*)
+  from business_profile t
+union all
+select 'legal_documents', id::text, to_jsonb(t.*)
+  from legal_documents t where to_jsonb(t.*)::text ilike '%Rat Chiang Saen%'
+union all
+select 'legal_documents_translations', id::text, to_jsonb(t.*)
+  from legal_documents_translations t where to_jsonb(t.*)::text ilike '%Rat Chiang Saen%';
+
+select tbl, count(*) as righe_salvate from _nap_backup_20260803 group by tbl order by tbl;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 1. CENSIMENTO: quale forma vive dove, PRIMA di scrivere
+-- ─────────────────────────────────────────────────────────────────────────────
+with scan as (
+  select 'content_categories' t, to_jsonb(x.*)::text d from content_categories x
+  union all select 'site_metadata',    to_jsonb(x.*)::text from site_metadata x
+  union all select 'akha_news',        to_jsonb(x.*)::text from akha_news x
+  union all select 'business_profile', to_jsonb(x.*)::text from business_profile x
+  union all select 'legal_documents',  to_jsonb(x.*)::text from legal_documents x
+  union all select 'legal_documents_translations', to_jsonb(x.*)::text from legal_documents_translations x
+  union all select 'faq_questions',    to_jsonb(x.*)::text from faq_questions x
+)
+select t,
+  count(*) filter (where d ilike '%Ko. Alley%')                 as via_giusta,
+  count(*) filter (where d ilike '%Soi 2 Ko%')                  as forma_A,
+  count(*) filter (where d ilike '%Soi Rat Chiang Saen 2 Ko.%') as forma_C,
+  count(*) filter (where d ilike '%Tambon Hai Ya%')             as coda_completa
+from scan group by t order by t;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 2. UPDATE — testo semplice (business_profile)
+--    street_address tiene la sola via; locality/region/postal stanno in colonne proprie.
+-- ─────────────────────────────────────────────────────────────────────────────
+update business_profile
+set street_address = '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District'
+where street_address is distinct from '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District';
+-- address_locality resta 'Chiang Mai', postal_code resta '50100': gia' corretti.
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 3. UPDATE — sostituzione mirata della sola sottostringa, ovunque compaia
+--    Si passa da entrambe le forme sbagliate alla canonica, in un colpo.
+--    replace() e' letterale: non tocca nient'altro nella riga.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- 3a. content_categories (JSON-LD structured data)
+update content_categories set json_ld = replace(replace(
+    json_ld::text,
+    '14/10 Soi Rat Chiang Saen 2 Ko., Rat Chiang Saen Rd',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District'),
+    '14/10 Soi 2 Ko, Rat Chiang Saen Road',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District')::jsonb
+where json_ld::text ilike '%Soi Rat Chiang Saen 2 Ko.%' or json_ld::text ilike '%Soi 2 Ko%';
+
+-- 3b. akha_news (JSON-LD)
+update akha_news set json_ld = replace(replace(
+    json_ld::text,
+    '14/10 Soi Rat Chiang Saen 2 Ko., Rat Chiang Saen Rd',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District'),
+    '14/10 Soi 2 Ko, Rat Chiang Saen Road',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District')::jsonb
+where json_ld::text ilike '%Soi Rat Chiang Saen 2 Ko.%' or json_ld::text ilike '%Soi 2 Ko%';
+
+-- 3c. site_metadata: json_ld + i campi contatto jsonb (Address/Location .value)
+update site_metadata set json_ld = replace(replace(
+    json_ld::text,
+    '14/10 Soi Rat Chiang Saen 2 Ko., Rat Chiang Saen Rd',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District'),
+    '14/10 Soi 2 Ko, Rat Chiang Saen Road',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District')::jsonb
+where json_ld::text ilike '%Soi Rat Chiang Saen 2 Ko.%' or json_ld::text ilike '%Soi 2 Ko%';
+
+update site_metadata set page_essentials = replace(replace(
+    page_essentials::text,
+    '14/10 Soi Rat Chiang Saen 2 Ko., Rat Chiang Saen Rd, Hai Ya, Mueang Chiang Mai 50100',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District, Chiang Mai 50100'),
+    '14/10 Soi 2 Ko, Rat Chiang Saen Road, Hai Ya Sub-district, Mueang Chiang Mai District, Chiang Mai 50100',
+    '14/10 Rat Chiang Saen 2 Ko. Alley, Tambon Hai Ya, Muang District, Chiang Mai 50100')::jsonb
+where page_essentials::text ilike '%Soi Rat Chiang Saen%' or page_essentials::text ilike '%Soi 2 Ko%';
+
+-- ⚠️ 3d. legal_documents e traduzioni: NON qui.
+-- Toccare testo legale pubblicato e' decisione di /terms, e va valutato se comporta
+-- bump di legal_version. Se la versione sale, le 6 traduzioni diventano stale e le
+-- pagine agency tornano in inglese finche' non sono ritradotte (comportamento voluto
+-- della guardia anti-stale). Se e' una errata corrige senza bump, le traduzioni
+-- restano valide e vanno corrette anche loro con la stessa replace().
+-- Dopo la modifica: `pnpm gen-legal` propaga a tutti e 10 i file .ts.
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 4. VERIFICA FINALE: deve dare 0 su forma_A e forma_C, ovunque
+-- ─────────────────────────────────────────────────────────────────────────────
+with scan as (
+  select 'content_categories' t, to_jsonb(x.*)::text d from content_categories x
+  union all select 'site_metadata',    to_jsonb(x.*)::text from site_metadata x
+  union all select 'akha_news',        to_jsonb(x.*)::text from akha_news x
+  union all select 'business_profile', to_jsonb(x.*)::text from business_profile x
+  union all select 'legal_documents',  to_jsonb(x.*)::text from legal_documents x
+  union all select 'legal_documents_translations', to_jsonb(x.*)::text from legal_documents_translations x
+  union all select 'faq_questions',    to_jsonb(x.*)::text from faq_questions x
+)
+select t,
+  count(*) filter (where d ilike '%Soi 2 Ko%')                  as forma_A_residua,
+  count(*) filter (where d ilike '%Soi Rat Chiang Saen 2 Ko.%') as forma_C_residua
+from scan group by t order by t;

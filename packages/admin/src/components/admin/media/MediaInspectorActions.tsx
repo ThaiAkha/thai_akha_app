@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
     Edit3,
     Check,
@@ -19,7 +20,8 @@ const MediaInspectorActions: React.FC<MediaInspectorActionsProps> = ({
     handleSave,
     isSaving,
 }) => {
-    
+    const { t } = useTranslation('media');
+
     if (isEditing) {
         return (
             <div className="flex items-center gap-3">
@@ -38,12 +40,12 @@ const MediaInspectorActions: React.FC<MediaInspectorActionsProps> = ({
                     {isSaving ? (
                         <>
                             <Loader2 size={14} className="animate-spin" />
-                            Syncing...
+                            {t('actions.syncing')}
                         </>
                     ) : (
                         <>
                             <Check size={14} />
-                            Deploy Changes
+                            {t('actions.deploy')}
                         </>
                     )}
                 </button>
@@ -57,7 +59,7 @@ const MediaInspectorActions: React.FC<MediaInspectorActionsProps> = ({
             className="w-full flex items-center justify-center gap-3 p-3 px-6 rounded-xl bg-surface dark:bg-gray-800 border border-border text-title font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:shadow-primary-500/10 hover:border-primary-500/50 active:scale-[0.98]"
         >
             <Edit3 size={14} className="text-primary-500" />
-            Edit Properties
+            {t('actions.editProperties')}
         </button>
     );
 };

@@ -35,5 +35,13 @@
     "saving": "SAVING...",
     "tooltipEdit": "Edit this record",
     "tooltipSave": "Save modifications"
+  },
+  "alerts": {
+    "loadFailed": "Failed to load {{table}}",
+    "savedSuccess": "Data saved successfully",
+    "saveFailed": "Save failed: {{message}}",
+    "deletedSuccess": "Deleted successfully",
+    "deleteFailed": "Delete failed: {{message}}",
+    "copiedCount": "{{count}} items copied to clipboard"
   }
 }

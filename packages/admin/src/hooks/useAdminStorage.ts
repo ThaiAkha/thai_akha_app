@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 
 export interface Bucket {
@@ -29,6 +30,7 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 };
 
 export const useAdminStorage = () => {
+    const { t } = useTranslation('storage');
     const [buckets, setBuckets] = useState<Bucket[]>([]);
     const [selectedBucket, setSelectedBucket] = useState<string>('assets');
     const [files, setFiles] = useState<FileObject[]>([]);
@@ -57,15 +59,23 @@ export const useAdminStorage = () => {
             if (error) throw error;
 
             const fallbackBuckets: Bucket[] = [
+                { id: 'admin', name: 'Admin', public: true },
+                { id: 'akha-book', name: 'Akha Book', public: true },
+                { id: 'akha-history', name: 'Akha History', public: true },
+                { id: 'akha-quiz', name: 'Akha Quiz', public: true },
+                { id: 'audio-player', name: 'Audio Player', public: true },
+                { id: 'avatars-preset', name: 'Avatars Preset', public: true },
+                { id: 'avatars-user-upload', name: 'User Avatar Uploads', public: true },
+                { id: 'brand-asset', name: 'Brand Asset', public: true },
+                { id: 'categories', name: 'Categories', public: true },
                 { id: 'ingredients', name: 'Ingredients', public: true },
-                { id: 'voice_over', name: 'Voice Over', public: true },
-                { id: 'Recipes', name: 'Recipes', public: true },
-                { id: 'Admin - Shop', name: 'Admin - Shop', public: true },
-                { id: 'Spicy Level', name: 'Spicy Level', public: true },
-                { id: 'song', name: 'Song', public: true },
-                { id: 'avatars', name: 'Avatars', public: true },
-                { id: 'avatars_user', name: 'User Avatars', public: true },
-                { id: 'showcase', name: 'Showcase', public: true }
+                { id: 'kitchen', name: 'Kitchen', public: true },
+                { id: 'manuals', name: 'Manuals', public: false },
+                { id: 'news', name: 'News', public: true },
+                { id: 'payment-proofs', name: 'Payment Proofs', public: false },
+                { id: 'recipes', name: 'Recipes', public: true },
+                { id: 'showcase', name: 'Showcase', public: true },
+                { id: 'song', name: 'Song', public: true }
             ];
 
             const finalBuckets = (data && data.length > 0) ? data : fallbackBuckets;
@@ -77,15 +87,23 @@ export const useAdminStorage = () => {
         } catch (error: any) {
             console.error('Error fetching buckets:', error);
             const fallbackBuckets: Bucket[] = [
+                { id: 'admin', name: 'Admin', public: true },
+                { id: 'akha-book', name: 'Akha Book', public: true },
+                { id: 'akha-history', name: 'Akha History', public: true },
+                { id: 'akha-quiz', name: 'Akha Quiz', public: true },
+                { id: 'audio-player', name: 'Audio Player', public: true },
+                { id: 'avatars-preset', name: 'Avatars Preset', public: true },
+                { id: 'avatars-user-upload', name: 'User Avatar Uploads', public: true },
+                { id: 'brand-asset', name: 'Brand Asset', public: true },
+                { id: 'categories', name: 'Categories', public: true },
                 { id: 'ingredients', name: 'Ingredients', public: true },
-                { id: 'voice_over', name: 'Voice Over', public: true },
-                { id: 'Recipes', name: 'Recipes', public: true },
-                { id: 'Admin - Shop', name: 'Admin - Shop', public: true },
-                { id: 'Spicy Level', name: 'Spicy Level', public: true },
-                { id: 'song', name: 'Song', public: true },
-                { id: 'avatars', name: 'Avatars', public: true },
-                { id: 'avatars_user', name: 'User Avatars', public: true },
-                { id: 'showcase', name: 'Showcase', public: true }
+                { id: 'kitchen', name: 'Kitchen', public: true },
+                { id: 'manuals', name: 'Manuals', public: false },
+                { id: 'news', name: 'News', public: true },
+                { id: 'payment-proofs', name: 'Payment Proofs', public: false },
+                { id: 'recipes', name: 'Recipes', public: true },
+                { id: 'showcase', name: 'Showcase', public: true },
+                { id: 'song', name: 'Song', public: true }
             ];
             setBuckets(fallbackBuckets);
             setSelectedBucket(fallbackBuckets[0].id);
@@ -142,14 +160,14 @@ export const useAdminStorage = () => {
 
     const handleDelete = async () => {
         if (!selectedFile || !selectedBucket) return;
-        if (!window.confirm(`Are you sure you want to delete "${selectedFile.name}"?`)) return;
+        if (!window.confirm(t('alerts.confirmDelete', { name: selectedFile.name }))) return;
         try {
             const { error } = await supabase.storage.from(selectedBucket).remove([selectedFile.name]);
             if (error) throw error;
             fetchFiles(selectedBucket);
             setIsInspectorOpen(false);
         } catch (error: any) {
-            alert('Delete failed: ' + error.message);
+            alert(t('alerts.deleteFailed', { message: error.message }));
         }
     };
 
@@ -168,7 +186,7 @@ export const useAdminStorage = () => {
                 }
                 fetchFiles(selectedBucket);
             } catch (error: any) {
-                alert('Bulk upload failed: ' + error.message);
+                alert(t('alerts.uploadFailed', { message: error.message }));
             } finally {
                 setIsUploading(false);
             }
@@ -194,7 +212,7 @@ export const useAdminStorage = () => {
             fetchFiles(selectedBucket);
             setIsInspectorOpen(false);
         } catch (error: any) {
-            alert('Upload failed: ' + error.message);
+            alert(t('alerts.uploadFailed', { message: error.message }));
         } finally {
             setIsUploading(false);
         }
@@ -217,11 +235,11 @@ export const useAdminStorage = () => {
                 .remove([selectedFile.name]);
             if (deleteError) throw deleteError;
             setIsEditing(false);
-            alert('File renamed successfully kha!');
+            alert(t('alerts.renamedSuccess'));
             fetchFiles(selectedBucket);
             setIsInspectorOpen(false);
         } catch (error: any) {
-            alert('Rename failed: ' + error.message);
+            alert(t('alerts.renameFailed', { message: error.message }));
         } finally {
             setIsUploading(false);
         }

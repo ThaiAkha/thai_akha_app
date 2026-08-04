@@ -6,17 +6,17 @@ import { cn } from '@thaiakha/shared/lib/utils';
 /* -------------------------------------------------------------------------- */
 
 // relative + overflow-hidden + isolate are required for the flash effect
-const BASE_STYLES = "relative overflow-hidden isolate inline-flex items-center justify-center [gap:var(--space-fluid-s)] rounded-3xl font-display font-black uppercase tracking-[0.15em] transition-all duration-500 ease-cinematic cursor-pointer active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+const BASE_STYLES = "relative overflow-hidden isolate inline-flex items-center justify-center rounded-[var(--radius-button)] font-display font-black uppercase tracking-[0.15em] transition-all duration-500 ease-cinematic cursor-pointer active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 const BUTTON_VARIANTS = {
   // PRIMARY: High Contrast (Black/White or Dark/Light)
-  primary: "bg-quiz-p text-white border-t border-white/40 hover:brightness-110",
+  primary: "bg-quiz-p text-white border-t border-white/40 hover:brightness-110 shadow-md active:shadow-inner",
 
   // BRAND: Identity (Pink) - Main CTA [Source 114]
-  brand: "bg-primary text-white border-t border-white/40 hover:brightness-110",
+  brand: "bg-primary text-white border-t border-white/40 hover:brightness-110 shadow-md active:shadow-inner",
 
   // ACTION: Success/Confirm (Green) [Source 114]
-  action: "bg-action text-white border-t border-white/40 hover:brightness-110",
+  action: "bg-action text-white border-t border-white/40 hover:brightness-110 shadow-md active:shadow-inner",
 
   // MINERAL: Glass Effect (Dark Mode Optimized)
   mineral: "bg-white/10 backdrop-blur-2xl border-t border-white/20 text-sub hover:brightness-110 hover:bg-white/10 hover:border-white/30 hover:text-title shadow-action-glow",
@@ -31,26 +31,42 @@ const BUTTON_VARIANTS = {
   nav: "transition-all duration-500 rounded-xl justify-start [padding-inline:var(--space-fluid-m)] hover:bg-white/5 hover:text-title",
 
   // SOCIAL: Blue Glass (English "Share")
-  social: "bg-btn-s/10 border-2 border-btn-s/20 text-btn-s hover:bg-btn-s/20 hover:border-btn-s/40 shadow-glow-blue",
+  social: "bg-btn-s/15 border-2 border-btn-s/30 text-btn-s hover:bg-btn-s/25 hover:border-btn-s/50 shadow-glow-blue",
+
+  // QUIZ-S: Purple (Identity)
+  'quiz-s': "bg-quiz-s text-white border-t border-white/40 hover:brightness-110 shadow-md active:shadow-inner",
+
+  // QUIZ-S GLASS: Purple Glass (English "Share")
+  'quiz-s-glass': "bg-quiz-s/15 border-2 border-quiz-s/30 text-quiz-s hover:bg-quiz-s/25 hover:border-quiz-s/50 shadow-glow-quiz-s",
+
+  // BTN-S: Solid Blue (Normal Standard + Electric Glow)
+  'btn-s': "bg-btn-s text-white border-t border-white/40 hover:brightness-110 shadow-md shadow-glow-blue active:shadow-inner",
+
+  // ALLERGY: High Alert (Orange-Red)
+  allergy: "bg-allergy text-white border-t border-white/40 hover:brightness-110 shadow-md active:shadow-inner",
+
+  // QUIZ-P: Magenta (Identity)
+  'quiz-p': "bg-quiz-p text-white border-t border-white/40 hover:brightness-110 shadow-md active:shadow-inner",
 };
 
 const BUTTON_SIZES = {
-  xs: "[padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)] [font-size:var(--text-fluid-micro)] tracking-[0.1em]",
-  sm: "[padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-xs)] [font-size:var(--text-fluid-micro)] tracking-[0.15em]",
-  md: "[padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-s)] [font-size:var(--text-fluid-caption)] tracking-[0.15em]",
-  lg: "[padding-inline:var(--space-fluid-xl)] [padding-block:var(--space-fluid-m)] [font-size:var(--text-fluid-paragraphS)] tracking-[0.2em]"
+  xs: "[padding-inline:var(--space-fluid-xs)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-2xs)] [font-size:var(--text-fluid-micro)] tracking-[0.1em]",
+  sm: "[padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-xs)] [gap:var(--space-fluid-xs)] [font-size:var(--text-fluid-micro)] tracking-[0.15em]",
+  md: "[padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-s)] [gap:var(--space-fluid-xs)] [font-size:var(--text-fluid-caption)] tracking-[0.15em]",
+  lg: "[padding-inline:var(--space-fluid-xl)] [padding-block:var(--space-fluid-m)] [gap:var(--space-fluid-s)] [font-size:var(--text-fluid-paragraphS)] tracking-[0.2em]"
 };
 
-// Variants where flash is disabled (no solid background or interactive nav)
-const NO_FLASH_VARIANTS = new Set(['ghost', 'nav']);
 
 /* -------------------------------------------------------------------------- */
 /* 2. TIPI & PROPS                                                            */
 /* -------------------------------------------------------------------------- */
 
+export type ButtonVariant = keyof typeof BUTTON_VARIANTS;
+export type ButtonSize = keyof typeof BUTTON_SIZES;
+
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: keyof typeof BUTTON_VARIANTS;
-  size?: keyof typeof BUTTON_SIZES;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   fullWidth?: boolean;
   isActive?: boolean;
   isPast?: boolean; // Utile per Cooking Classes
@@ -60,6 +76,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   iconFilled?: boolean;
   iconColor?: string;
   iconSize?: string;
+  as?: React.ElementType; // <-- AGGIUNTA per polimorfismo
+  href?: string; // Supporto a link semantico in as='a'
+  target?: string;
+  rel?: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -86,12 +106,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     onClick,
     onMouseMove,
     disabled,
+    as: Component = 'button',
+    target,
+    rel,
+    href,
     ...props
   }, ref) => {
 
     const [flashes, setFlashes] = useState<FlashPoint[]>([]);
     const flashIdRef = useRef(0);
-    const isFlashEnabled = !NO_FLASH_VARIANTS.has(variant) && !disabled && !isLoading;
+    const isFlashEnabled = !disabled && !isLoading;
 
     // Track mouse for hover glow
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -103,17 +127,26 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onMouseMove?.(e);
     }, [isFlashEnabled, onMouseMove]);
 
-    // Spawn ripple at click coordinates
-    const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    // Spawn ripple at mouse down for instant feedback (even with Cmd/Ctrl)
+    const handleMouseDown = useCallback((e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
       if (isFlashEnabled) {
         const rect = e.currentTarget.getBoundingClientRect();
         const id = ++flashIdRef.current;
         setFlashes(prev => [...prev, { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
         setTimeout(() => setFlashes(prev => prev.filter(f => f.id !== id)), 600);
       }
-      onClick?.(e);
-    }, [isFlashEnabled, onClick]);
+    }, [isFlashEnabled]);
 
+    const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+      // If Cmd/Ctrl is pressed and we have an href, the browser will open the link in a new tab.
+      // We return here to avoid calling onClick (which might trigger an SPA navigation in the same tab).
+      if ((e.metaKey || e.ctrlKey) && href) {
+        return;
+      }
+      
+      // Regular click behavior
+      onClick?.(e as React.MouseEvent<HTMLButtonElement>);
+    }, [onClick, href]);
     // Logica Navigazione separata per pulizia
     const getNavClasses = () => {
       if (variant !== 'nav') return "";
@@ -123,7 +156,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     return (
-      <button
+      <Component
         ref={ref}
         disabled={disabled}
         className={cn(
@@ -131,23 +164,38 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           BUTTON_VARIANTS[variant],
           BUTTON_SIZES[size],
           getNavClasses(),
+          "brand-btn-animation",
           fullWidth && "w-full",
           className
         )}
         onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
         onClick={handleClick}
+        href={href}
+        target={target}
+        rel={rel}
         style={{
           ...props.style as React.CSSProperties,
-          ...(variant === 'social' ? {
-            '--btn-flash-glow-color': 'rgba(28, 163, 230, 0.4)',
-            '--btn-flash-ripple-color': 'var(--color-btn-s-300)',
+          ...((variant === 'social' || variant === 'btn-s') ? {
+            '--btn-flash-ripple-color': 'rgb(28, 163, 230)',
             '--btn-flash-ripple-soft': 'rgba(28, 163, 230, 0.6)',
+          } : (variant === 'quiz-s' || variant === 'quiz-s-glass') ? {
+            '--btn-flash-ripple-color': 'rgb(var(--quiz-s-ch))',
+            '--btn-flash-ripple-soft': 'rgba(var(--quiz-s-ch) / 0.6)',
+          } : variant === 'quiz-p' ? {
+            '--btn-flash-ripple-color': 'rgb(var(--quiz-p-ch))',
+            '--btn-flash-ripple-soft': 'rgba(var(--quiz-p-ch) / 0.6)',
+          } : variant === 'allergy' ? {
+            '--btn-flash-ripple-color': 'rgb(var(--allergy-ch))',
+            '--btn-flash-ripple-soft': 'rgba(var(--allergy-ch) / 0.6)',
           } : {})
         } as React.CSSProperties}
         {...props}
       >
         {/* Hover glow (follows mouse via CSS vars) */}
+        {/* Standard Luminous Effects */}
         {isFlashEnabled && <span className="btn-flash-glow" aria-hidden="true" />}
+
 
         {/* Click ripples */}
         {flashes.map(f => (
@@ -160,7 +208,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ))}
 
         {/* Content — always above flash (z-10) */}
-        <span className="relative z-10 inline-flex items-center justify-center [gap:var(--space-fluid-s)]">
+        <span className="relative z-10 inline-flex items-center justify-center [gap:inherit]">
           {isLoading ? (
             <span className="size-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : (
@@ -195,7 +243,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </>
           )}
         </span>
-      </button>
+      </Component>
     );
   }
 );

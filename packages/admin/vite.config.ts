@@ -20,4 +20,23 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      // Suppress eval warning from @react-jvectormap/core (third-party, not fixable)
+      onwarn(warning, warn) {
+        if (warning.code === 'EVAL' && warning.id?.includes('jvectormap')) return;
+        warn(warning);
+      },
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) return 'vendor-react';
+          if (id.includes('node_modules/react-router')) return 'vendor-react';
+          if (id.includes('node_modules/@supabase/')) return 'vendor-supabase';
+          if (id.includes('node_modules/lucide-react')) return 'vendor-icons';
+          if (id.includes('jvectormap')) return 'vendor-map';
+        },
+      },
+    },
+  },
 });

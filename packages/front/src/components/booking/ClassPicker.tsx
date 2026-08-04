@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from '../ui/Icon';
+import { Typography } from '../ui/Typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 // --- TIPI ---
@@ -47,11 +48,11 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                     // 👇 MODIFICA QUI: 
                     // 1. md:w-auto invece di w-56 per adattarsi al contenuto
                     // 2. md:min-w-[300px] per garantire spazio sufficiente per il font grosso
-                    "w-full md:w-auto md:min-w-[200] pl-16 pr-6 py-4 rounded-2xl cursor-pointer text-center appearance-none outline-none transition-all duration-300",
-                    "bg-white/80 dark:bg-black/40 border-2 border-transparent",
-                    "text-lg font-mono font-black uppercase tracking-widest text-gray-900 dark:text-gray-100",
-                    "hover:bg-white hover:border-action/50 hover:shadow-md",
-                    "focus:border-action focus:bg-white focus:ring-4 focus:ring-action/20"
+                    "w-full md:w-auto md:min-w-[200px] pl-16 pr-6 py-4 rounded-2xl cursor-pointer text-center appearance-none outline-none transition-all duration-300",
+                    "bg-surface-elevated border-2 border-transparent",
+                    "text-lg font-accent font-black uppercase tracking-widest text-title",
+                    "hover:bg-surface hover:border-action/50 hover:shadow-md",
+                    "focus:border-action focus:bg-surface focus:ring-4 focus:ring-action/20"
                 )}
             />
         </div>
@@ -60,7 +61,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
         <div className="h-10 w-px bg-action/30 hidden md:block mx-2"></div>
 
         {/* B. SESSION SWITCH */}
-        <div className="flex w-full md:w-auto bg-black/5 dark:bg-black/40 p-1.5 rounded-2xl border border-white/5 overflow-hidden">
+        <div className="flex w-full md:w-auto bg-surface p-1.5 rounded-2xl border border-white/5 overflow-hidden">
             {SESSIONS.map((s) => {
                 const isActive = session === s.id;
                 return (
@@ -70,19 +71,19 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                         className={cn(
                             "flex-1 md:flex-none flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 select-none",
                             isActive 
-                                ? "bg-action text-white shadow-action-glow scale-[1.02] font-black" 
-                                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 hover:bg-white/10 font-bold"
+                                ? "bg-action text-black shadow-action-glow scale-[1.02] font-black" 
+                                : "text-muted hover:text-title hover:bg-surface-elevated font-bold"
                         )}
                     >
-                        <Icon name={s.icon} size="md" className={isActive ? "text-white" : ""} />
+                        <Icon name={s.icon} size="md" className={isActive ? "text-black" : ""} />
                         
-                        <span className="text-sm uppercase tracking-wider hidden md:inline">
+                        <Typography variant="microLabel" as="span" color="inherit" className="hidden md:inline">
                             {s.label}
-                        </span>
+                        </Typography>
                         
-                        <span className="md:hidden text-sm font-black uppercase">
+                        <Typography variant="microLabel" as="span" color="inherit" className="md:hidden font-black">
                             {s.label === 'All Day' ? 'All' : s.label.slice(0,1)}
-                        </span>
+                        </Typography>
                     </button>
                 )
             })}

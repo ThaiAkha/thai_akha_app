@@ -54,5 +54,9 @@
   "meta": {
     "title": "Logistics | Thai Akha Kitchen",
     "description": "Coordinate drivers, pickups, and route assignments."
+  },
+  "zone": {
+    "morningPickup": "Morning Pickup",
+    "eveningPickup": "Evening Pickup"
   }
 }

@@ -1,0 +1,142 @@
+{
+  "tabs": {
+    "newGuest": "Nuevo huésped",
+    "existingUser": "Usuario existente",
+    "agency": "Agencia"
+  },
+  "mode": {
+    "newDesc": "Crear un nuevo perfil de usuario y reserva.",
+    "existingDesc": "Buscar en la base de datos clientes recurrentes.",
+    "agencyDesc": "Reservar en nombre de un socio/agencia."
+  },
+  "inspector": {
+    "selectedClass": "Clase seleccionada",
+    "morningClass": "Clase de mañana",
+    "eveningClass": "Clase de tarde",
+    "numGuests": "N.° de huéspedes",
+    "guestDetails": "Detalles del huésped",
+    "fieldName": "Nombre",
+    "fieldEmail": "Correo electrónico",
+    "fieldPhone": "Teléfono",
+    "fieldNationality": "Nacionalidad",
+    "fieldAge": "Edad",
+    "fieldGender": "Género",
+    "fieldWhatsapp": "WhatsApp",
+    "logistics": "Logística",
+    "fieldHotel": "Hotel",
+    "fieldMeetingPoint": "Punto de encuentro",
+    "fieldLuggage": "Equipaje",
+    "fieldNotes": "Notas",
+    "totalAmount": "Monto total",
+    "payment": "Pago",
+    "unpaid": "Sin pagar",
+    "paid": "Pagado",
+    "confirmBtn": "Confirmar"
+  },
+  "logistics": {
+    "sectionTitle": "Logística y notas",
+    "needPickup": "¿Necesita traslado?",
+    "fieldHotel": "Hotel",
+    "hotelPlaceholder": "Buscar hotel (mín. 2 caracteres)...",
+    "noZone": "Sin zona",
+    "meetingPoint": "Punto de encuentro",
+    "selectMeetingPoint": "Seleccionar punto de encuentro...",
+    "luggage": "Equipaje",
+    "yes": "Sí",
+    "no": "No",
+    "extraNotes": "Notas adicionales",
+    "notesPlaceholder": "Solicitudes especiales, restricciones dietéticas o información adicional..."
+  },
+  "newUser": {
+    "fieldFullName": "Nombre completo",
+    "placeholderName": "ej. Juan García",
+    "fieldAge": "Edad",
+    "placeholderAge": "Edad",
+    "fieldGender": "Género",
+    "genderSelect": "Seleccionar",
+    "genderMale": "Masculino",
+    "genderFemale": "Femenino",
+    "genderOther": "Otro",
+    "fieldEmail": "Correo electrónico",
+    "placeholderEmail": "juan@ejemplo.com",
+    "fieldPassword": "Contraseña",
+    "passwordHint": "Mín. 8 caracteres",
+    "fieldNationality": "Nacionalidad",
+    "searchCountry": "Buscar país...",
+    "fieldPhone": "Número de teléfono",
+    "whatsapp": "WhatsApp",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "search": {
+    "labelGuest": "Buscar huésped",
+    "labelAgency": "Buscar socio / agencia",
+    "placeholderGuest": "Escribir nombre...",
+    "placeholderAgency": "Buscar agencia...",
+    "noUsersFound": "No se encontraron usuarios.",
+    "selectBtn": "Seleccionar",
+    "removeBtn": "Quitar"
+  },
+  "session": {
+    "morning": "Mañana",
+    "evening": "Tarde",
+    "booked": "Reservados:",
+    "seatsLeft": "Lugares disponibles:",
+    "empty": "Sesión vacía"
+  },
+  "picker": {
+    "cardTitle": "Fecha y sesión",
+    "selectDate": "Seleccionar fecha",
+    "morning": "Mañana",
+    "evening": "Tarde",
+    "available": "Disponible",
+    "fullyBooked": "Completo",
+    "closed": "Cerrado",
+    "selected": "Seleccionado",
+    "selectDatePrompt": "Selecciona una fecha para reservar",
+    "paxCount": "N.° de personas",
+    "paxAvailable": "{{pax}} de {{max}} disponibles"
+  },
+  "zone": {
+    "morningPickup": "Traslado mañana",
+    "eveningPickup": "Traslado tarde"
+  },
+  "meta": {
+    "manualTitle": "Reserva manual",
+    "manualDesc": "Crear una nueva reserva manualmente.",
+    "agencyTitle": "Nueva reserva | Thai Akha Kitchen",
+    "agencyDesc": "Reservar una clase de cocina en nombre de tu cliente."
+  },
+  "agencyBooking": {
+    "stepGuest": "1. Información del huésped",
+    "fieldFullName": "Nombre completo",
+    "placeholderName": "Ingresa el nombre del huésped",
+    "fieldEmail": "Correo (para detalles de clase)",
+    "placeholderEmail": "huesped@ejemplo.com",
+    "stepClass": "2. Fecha y hora de clase",
+    "stepPickup": "3. Logística de traslado",
+    "fieldHotel": "Nombre del hotel",
+    "placeholderHotel": "Hotel o punto de encuentro",
+    "fieldPickupTime": "Hora de traslado",
+    "fieldZone": "Zona",
+    "fieldNotes": "Notas para la cocina",
+    "placeholderNotes": "Restricciones dietéticas o solicitudes especiales...",
+    "summaryTitle": "Resumen de reserva",
+    "summaryParticipants": "Participantes",
+    "summaryNetRate": "Tarifa neta del socio",
+    "summaryDiscount": "% Desc.",
+    "summaryNetPayable": "Total a pagar",
+    "invoiceNote": "Esta reserva se confirmará de inmediato y se añadirá a tu factura mensual.",
+    "btnSyncing": "Sincronizando...",
+    "btnConfirm": "Confirmar",
+    "errorNameRequired": "El nombre del huésped es obligatorio",
+    "successConfirmed": "¡Reserva confirmada! Tu cliente ha sido registrado."
+  },
+  "alerts": {
+    "missingDateSession": "Fecha/sesión faltante",
+    "priceMissing": "Precio no configurado — verifica la configuración de la sesión antes de reservar.",
+    "namePasswordRequired": "Nombre completo y contraseña requeridos",
+    "bookingCreated": "¡Reserva creada exitosamente!",
+    "errorPrefix": "Error: {{message}}"
+  }
+}

@@ -62,7 +62,7 @@ const TextArea: React.FC<TextareaProps> = ({
 
       {hint && (
         <p className={cn(
-          "mt-1.5 text-[10px] font-black uppercase tracking-widest",
+          "mt-1.5 text-xs font-black uppercase tracking-widest",
           error ? "text-red-500" : success ? "text-emerald-500" : "text-gray-500"
         )}>
           {hint}

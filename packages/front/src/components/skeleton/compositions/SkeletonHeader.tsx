@@ -5,7 +5,7 @@ import { SkeletonText } from '../atoms/SkeletonText';
 import { SkeletonDivider } from '../atoms/SkeletonDivider';
 
 interface SkeletonHeaderProps {
-  variant?: 'hero' | 'section' | 'sub';
+  variant?: 'hero' | 'hero-1' | 'hero2' | 'section' | 'sub';
   align?: 'left' | 'center' | 'right';
   hideTitle?: boolean;
   hideSubtitle?: boolean;
@@ -41,7 +41,7 @@ export const SkeletonHeader: React.FC<SkeletonHeaderProps> = ({
       className={cn(
         'w-full mx-auto flex flex-col animate-pulse opacity-70',
         '[gap:var(--space-fluid-s)]',
-        '[padding-top:var(--space-fluid-s)] [padding-bottom:var(--space-fluid-s)]',
+        '[margin-bottom:var(--space-fluid-s)]',
         alignClass,
         className
       )}

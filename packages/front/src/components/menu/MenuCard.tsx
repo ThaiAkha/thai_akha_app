@@ -1,36 +1,32 @@
 import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { Icon, Badge } from '../ui/index';
+import { Icon, Badge, Typography, RippleLink } from '../ui/index';
 
 interface MenuCardProps {
   dish: any;
   isSelected: boolean;
   onClick: () => void;
-  onAskCherry?: (dish: any) => void;
   onPreview?: (dish: any) => void;
   isDemo?: boolean;
-  actionLabel?: string;
   disableBodyCursor?: boolean;
   dietLabel?: string;
+  actionLabel?: string;
+  onAskCherry?: (dish: any) => void;
+  /** Enables Cmd/Ctrl+click → open in new tab */
+  href?: string;
 }
 
 const MenuCard: React.FC<MenuCardProps> = ({
   dish,
   isSelected,
   onClick,
-  onAskCherry,
   onPreview,
   isDemo = false,
-  actionLabel = "Select",
   disableBodyCursor = false,
-  dietLabel
+  dietLabel,
+  href,
 }) => {
   const [imgError, setImgError] = useState(false);
-
-  const handleAskClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onAskCherry) onAskCherry(dish);
-  };
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -39,7 +35,6 @@ const MenuCard: React.FC<MenuCardProps> = ({
 
   return (
     <div
-      onClick={onClick}
       className={cn(
         "group relative flex flex-col h-full rounded-[2rem] overflow-hidden isolate border-2 transition-all duration-500 ease-cinematic",
         isSelected
@@ -48,14 +43,23 @@ const MenuCard: React.FC<MenuCardProps> = ({
               "bg-surface border-border",
               "hover:border-action hover:shadow-[0_10px_40px_-10px_rgba(152,201,60,0.25)]"
             ),
-        disableBodyCursor ? "cursor-default" : "cursor-pointer"
+        !href && (disableBodyCursor ? "cursor-default" : "cursor-pointer")
       )}
+      onClick={!href ? onClick : undefined}
     >
-      {/* ================= 1. FOTO ================= */}
-      {/* Mobile: Altezza ridotta (h-48). Desktop: Altezza standard (h-56) */}
+      {/* Stretch link — covers full card for Cmd/Ctrl+click → new tab support */}
+      {href && (
+        <RippleLink
+          href={href}
+          onNavigate={onClick}
+          className="absolute inset-0 z-10 rounded-[2rem]"
+          aria-label={dish.name}
+        >{/* stretch link — no content needed */}</RippleLink>
+      )}
+      {/* IMAGE */}
       <div className="relative h-48 md:h-56 w-full overflow-hidden shrink-0 border-b border-border bg-black">
-        
-        {/* DIET BADGE: Sempre visibile */}
+
+        {/* Diet Badge */}
         {dietLabel && (
           <div className="absolute top-3 left-3 z-30 animate-in fade-in slide-in-from-top-2 duration-500">
             <Badge
@@ -72,7 +76,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
           </div>
         )}
 
-        {!imgError ? (
+        {!imgError && dish.image ? (
           <img
             src={dish.image}
             alt={dish.name}
@@ -80,30 +84,25 @@ const MenuCard: React.FC<MenuCardProps> = ({
             className={cn(
               "w-full h-full object-cover transition-transform duration-[2s] ease-out",
               "group-hover:scale-105",
-              isDemo ? "grayscale opacity-50" : "opacity-90 md:opacity-100" // Mobile leggermente più scuro per testo
+              isDemo ? "grayscale opacity-50" : "opacity-90 md:opacity-100"
             )}
           />
         ) : (
           <div className="w-full h-full bg-surface flex items-center justify-center">
-            <Icon name="restaurant" size="xl" className="opacity-20 text-gray-700 dark:text-gray-300" />
+            <Icon name="restaurant" size="xl" className="opacity-20 text-muted" />
           </div>
         )}
 
-        {/* 📱 MOBILE TITLE OVERLAY (Solo Mobile) */}
+        {/* Mobile title overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent md:hidden pointer-events-none" />
-        
-        <div className="absolute bottom-0 left-0 right-0 p-4 md:hidden z-20">
-           <div className="flex items-center justify-between mb-1 opacity-80">
-              <span className={cn("text-[9px] font-black uppercase tracking-widest text-white/70")}>
-                {dish.category?.replace('_', ' ') || 'Classic'}
-              </span>
-           </div>
-           <h3 className="font-display font-black uppercase text-xl leading-[0.9] tracking-tight text-white drop-shadow-md">
-             {dish.name}
-           </h3>
+        <div className="absolute bottom-0 left-0 right-0 [padding:var(--space-fluid-s)] md:hidden z-20">
+          {/* as="p": mobile overlay is purely visual — semantic H3 lives in the desktop block below (fixes D04 duplicate H3). */}
+          <Typography variant="h3" as="p" className="font-display font-black uppercase leading-[0.9] tracking-tight text-white drop-shadow-md">
+            {dish.name}
+          </Typography>
         </div>
 
-        {/* Checkmark (Angolo Destro) */}
+        {/* Checkmark selected */}
         {isSelected && !isDemo && (
           <div className="absolute top-3 right-3 z-30 size-8 md:size-9 rounded-full bg-action text-white flex items-center justify-center shadow-lg animate-in zoom-in spin-in-12 duration-300 border-2 border-white dark:border-surface">
             <Icon name="check" size="sm" className="font-black" />
@@ -111,46 +110,33 @@ const MenuCard: React.FC<MenuCardProps> = ({
         )}
       </div>
 
-      {/* ================= 2. CONTENUTO ================= */}
-      <div className="flex flex-col flex-grow p-4 md:p-6 relative bg-surface">
-        
-        {/* 💻 DESKTOP TITLE (Nascosto su Mobile) */}
-        <div className="hidden md:block mb-3">
-          <div className="flex items-center justify-between mb-2 opacity-60 text-[10px] font-black uppercase tracking-widest">
-            <span className={cn("text-gray-700 dark:text-gray-300", isSelected && "text-action")}>
-              {dish.category?.replace('_', ' ') || 'Classic'}
-            </span>
-          </div>
-          <h3 className={cn(
-            "font-display font-black uppercase text-2xl leading-[0.9] tracking-tight transition-colors duration-300",
-            isSelected ? "text-action" : "text-gray-900 dark:text-gray-100 group-hover:text-action"
+      {/* CONTENT */}
+      <div className="flex flex-col flex-grow [padding:var(--space-fluid-m)] relative bg-surface">
+
+        {/* Desktop title */}
+        <div className="hidden md:block [margin-bottom:var(--space-fluid-xs)]">
+          <Typography variant="h3" className={cn(
+            "font-display font-black uppercase leading-[0.9] tracking-tight transition-colors duration-300",
+            isSelected ? "text-action" : "text-title group-hover:text-action"
           )}>
             {dish.name}
-          </h3>
+          </Typography>
         </div>
 
-        {/* DESCRIZIONE (Compact su mobile) */}
-        <p className="text-xs md:text-base font-medium text-gray-700/80 dark:text-gray-300/80 leading-relaxed line-clamp-2 md:line-clamp-3 mb-4 md:mb-6">
-          {dish.description}
-        </p>
+        {/* Description */}
+        <Typography variant="paragraphS" className="text-desc/80 leading-relaxed line-clamp-2 md:line-clamp-3 [margin-bottom:var(--space-fluid-m)]">
+          {dish.excerpt || dish.description}
+        </Typography>
 
-        <div className="mt-auto grid grid-cols-2 gap-2 md:gap-3 pt-3 md:pt-4 border-t border-white/5">
+        {/* Action: solo "Details" — relative z-20 sits above the stretch link */}
+        <div className="relative z-20 mt-auto [padding-top:var(--space-fluid-xs)] border-t border-border">
           <button
             onClick={handlePreviewClick}
             disabled={isDemo}
-            className="h-10 md:h-12 rounded-xl bg-action/10 border border-white/20 hover:bg-action hover:text-white text-action font-black uppercase text-[10px] md:text-xs tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-action/20 group/btn"
+            className="w-full h-10 md:h-12 rounded-xl bg-action/10 border border-border hover:bg-action hover:text-white text-action font-black uppercase text-[10px] md:text-xs tracking-widest flex items-center justify-center [gap:var(--space-fluid-2xs)] transition-all shadow-sm hover:shadow-action/20"
           >
-            <Icon name="visibility" size="sm"/>
+            <Icon name="visibility" size="sm" />
             Details
-          </button>
-
-          <button
-            onClick={handleAskClick}
-            disabled={isDemo}
-            className="h-10 md:h-12 rounded-xl bg-primary/10 border border-white/20 hover:bg-primary hover:text-white text-primary font-black uppercase text-[10px] md:text-xs tracking-widest flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-primary/20 group/brand"
-          >
-            <Icon name="chat" size="sm" />
-            Ask Cherry
           </button>
         </div>
       </div>

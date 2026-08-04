@@ -19,6 +19,10 @@
 
 export type Fn<P extends Record<string, unknown>> = (params: P) => string;
 
+// ─── Costanti condivise — single-source per label ripetute in più namespace ────
+const ASK_CHERRY = 'Ask Cherry';
+const SAWASDEE = 'Sawasdee kha';
+
 // ─── Strings ───────────────────────────────────────────────────────────────────
 
 const strings = {
@@ -32,6 +36,9 @@ const strings = {
     confirm: 'Confirm',
     edit: 'Edit',
     close: 'Close',
+    closePhoto: 'Close Photo',
+    closeVideo: 'Close Video',
+    closeReward: 'Close Reward',
     retry: 'Try Again',
     modify: 'Modify',
     update: 'Update',
@@ -94,6 +101,46 @@ const strings = {
       readTranscript: 'Read Transcript',
       hideTranscript: 'Hide Transcript',
     },
+    map: {
+      locationTitle: 'Location Map',
+      enableInteraction: 'Click to Enable Map Interaction',
+      lockScroll: 'Lock Map Scroll',
+    },
+    gallery: {
+      viewGallery: 'View Gallery',
+      closeGallery: 'Close Gallery',
+      chip: 'Gallery',
+      openCategoryGallery: ({ name }: { name: string }) => `Open ${name} photo gallery`,
+    },
+    cherryChat: {
+      title: 'Cherry Chef',
+      statusError: 'Error — try again',
+      statusTyping: 'Typing...',
+      statusIdle: 'Ask me anything kha',
+      askCherry: ASK_CHERRY,
+      greeting: SAWASDEE,
+      voiceActive: 'Voice session active',
+      promptFallback: 'Ask Cherry, your Thai Akha culinary guide.',
+    },
+    legalMeta: {
+      version: 'Version',
+      effective: 'Effective:',
+      lastUpdated: 'Last updated:',
+    },
+    sidebarInfo: {
+      menuTitle: 'Information',
+    },
+    media: {
+      photoFallback: 'Photo',
+      videoThumbnail: 'Video Thumbnail',
+    },
+    essentials: {
+      keyFacts: 'Key Facts',
+      references: 'References',
+      aboutAi: 'About AI',
+      published: 'Published',
+      updated: 'Updated',
+    },
   },
 
   // ── NAV — sidebar, header, menu items ──────────────────────────────────────
@@ -154,15 +201,55 @@ const strings = {
     goToStep: ({ n }: { n: number }) => `Go to step ${n}`,
     // Errors
     authFailed: 'Authentication failed.',
+
+    // Featured / Onboarding Content
+    onboarding: {
+      chef: {
+        heroImage: '/avatarCherry/600-Avatar-AuthPage.webp',
+        titleMain: 'Chef',
+        titleHighlight: 'Portal',
+        description: "Let's build your perfect menu. Cook 11 authentic dishes tailored exactly to your dietary needs and spice tolerance kha.",
+        cards: [
+          {
+            title: 'Master 11 Dishes',
+            description: 'Craft eleven authentic recipes at your personal cooking station and receive your free CookBook.',
+            icon: 'UtensilsCrossed',
+            color: 'action'
+          },
+          {
+            title: '100% Tailored to You',
+            description: 'We happily customize every dish for your vegan or allergy needs, to your preferred spice level.',
+            icon: 'ShieldCheck',
+            color: 'secondary'
+          }
+        ]
+      },
+      story: {
+        heroImage: '/avatarCherry/600-Avatar-Storyteller.webp',
+        titleMain: 'Akha',
+        titleHighlight: 'Wisdom',
+        description: 'Discover our highland heritage. Test your knowledge, unlock badges, and earn real rewards at the school kha.',
+        cards: [
+          {
+            title: 'The Akha Wisdom',
+            description: 'Discover our ancestral Akha Zang heritage by exploring the beautiful Spirit Gates.',
+            icon: 'Sparkles',
+            color: 'secondary'
+          },
+          {
+            title: 'Become a Guardian',
+            description: 'Successfully complete our interactive cultural challenges to win real rewards.',
+            icon: 'Trophy',
+            color: 'action'
+          }
+        ]
+      }
+    }
   },
 
   // ── BOOKING — steps 01-04, checkout, pax picker ─────────────────────────────
   booking: {
     // Step 01 — Date
-    step1Number: '01',
-    step1Section: 'Date Selection',
-    step1Title: 'Choose Your Cooking Day',
-    step1Subtitle: 'Select a date to see available seats for our sessions.',
     monthView: 'Month View',
     chooseDate: 'Choose a Date...',
     seatsFull: 'Full',
@@ -250,10 +337,24 @@ const strings = {
     listen: 'Listen',
     pause: 'Pause',
     otherChapters: 'Other Chapters',
+    backToHistory: 'Back to History',
+    moreHeritage: 'More Akha Heritage',
+  },
+
+  // ── FAQ — faq sections ──────────────────────────────────────────────────────
+  faq: {
+    title: 'Questions & Answers',
+    viewAll: 'All Questions',
+    askCherry: ASK_CHERRY,
   },
 
   // ── CLASSES — cooking class info page ───────────────────────────────────────
   classes: {
+    // Hero stat badges
+    perPerson: 'per person',
+    classTime: 'Class Time',
+    hotelPickup: 'Hotel Pickup',
+    pickupIncluded: 'Included*',
     // Tabs
     tabOverview: 'Overview',
     tabMorning: 'Morning',
@@ -278,7 +379,8 @@ const strings = {
     fullMenuDesc: 'Browse our 11 traditional dishes.',
     location: 'Location',
     locationDesc: 'Pickup details and directions.',
-    askCherry: 'Ask Cherry',
+    askCherry: ASK_CHERRY,
+    viewAllNews: 'View All News',
     // About
     aboutLabel: 'About this class',
     // Duration / start time labels
@@ -287,10 +389,19 @@ const strings = {
     priceLabel: 'Price / Person',
     // Gallery / video
     kitchenSpiritVideo: 'The Kitchen Spirit',
-    // Sections
     morningCooking: 'morning',
     eveningCooking: 'evening',
     cookingClass: 'Cooking Class',
+  },
+
+  // ── NEWS — news index and single page ───────────────────────────────────────
+  news: {
+    backToNews: 'Back to News',
+    moreNews: 'Other News',
+    tabAll: 'All News',
+    sortById: 'By ID',
+    sortByLatest: 'Latest',
+    sortByOldest: 'Oldest',
   },
 
   // ── RECIPES — recipes page ──────────────────────────────────────────────────
@@ -311,9 +422,15 @@ const strings = {
     dietAdapted: ({ name }: { name: string }) =>
       `This menu has been adapted to follow ${name} guidelines.`,
     // MegaMenu
+    selectDietLabel: 'Select your Diet',
     personalize: 'Personalize',
     activeProfile: 'Active Profile',
     askCherryDish: (p: { name: string; diet: string; allergies: string }) => `Tell me about ${p.name} for a ${p.diet} diet considering my allergies: ${p.allergies} kha`,
+    // Header description after diet selection — replaces static DB text
+    headerDescReady: ({ diet, allergies }: { diet: string; allergies: string[] }) => {
+      const allergyNote = allergies.length > 0 ? ` Allergen-free: ${allergies.join(', ')}.` : '';
+      return `${diet} menu ready.${allergyNote}`;
+    },
   },
 
   // ── RECIPE SINGLE — detailed recipe view ────────────────────────────────────
@@ -322,9 +439,9 @@ const strings = {
     signature: 'Signature',
     enlarge: 'Enlarge',
     containsAllergen: ({ allergen }: { allergen: string }) => `Contains ${allergen}`,
-    cultureStory: 'Culture Story',
-    askCherry: 'Ask Cherry',
-    keyIngredients: 'Key Ingredients',
+    askCherry: ASK_CHERRY,
+    askCherrySubtitle: 'your AI assistant',
+    curiousAboutDetails: 'Curious about the details?',
     viewDetails: 'View Details',
     secretChef: "Ingredient details are kept as our Chef's secret.",
     closeDetails: 'Close Details',
@@ -336,6 +453,11 @@ const strings = {
     signatureDish: 'Signature Dish',
     historyOf: ({ name, diet }: { name: string; diet: string }) => `Tell me about the history of ${name} for my ${diet} diet kha`,
     defaultWarning: 'We will modify the preparation for your safety.',
+    // Cookbook detail fields
+    garnish: 'Garnish',
+    cooksTip: "Cook's Tip",
+    loginForRecipe: 'Full Recipe for Members',
+    loginForRecipeDesc: "Sign in to access step-by-step directions, garnish notes, and cook's tips.",
     categories: {
       appetizer: 'Appetizers',
       dessert: 'Desserts',
@@ -363,7 +485,7 @@ const strings = {
     zeroXp: '0 XP',
     perfectModule: 'Perfect Module',
     bonus: '+Bonus',
-    askCherry: 'Ask Cherry',
+    askCherry: ASK_CHERRY,
     // Chat topics
     scoringTopic: 'How does the quiz scoring work kha?',
     // Error
@@ -380,6 +502,8 @@ const strings = {
     headerTitle: "Spirit Quiz",
     headerDesc: "Master the Akha traditions to unlock exclusive rewards and honor. Every answer brings you closer to our ancestors' wisdom.",
     statsProgress: "Spirit Progress",
+    globalProgress: "Global Progress",
+    progress: "Progress",
     statsScore: "Wisdom Points",
 
     backHome: "Back to Home",
@@ -387,6 +511,11 @@ const strings = {
     abort: "Abort Mission",
     report: "Report issue",
     requestHint: "Request Hint (-50 XP)",
+    // T8 — reveal explanation (giusto/sbagliato) + Learn more + retry
+    learnMore: "Learn more",
+    retryWithCherry: "Ask Cherry & Retry (-100 XP)",
+    notEnoughXpRetry: "Not enough XP! You need 100 XP to retry with Cherry.",
+    keepGoingLabel: "Keep going",
 
     mastered: "Mastered",
     inProgress: "In Progress",
@@ -409,10 +538,26 @@ const strings = {
     missionFailed: "Mission Failed",
     questionOf: ({ current, total }: { current: number; total: number }) => `Question ${current} of ${total}`,
     correctLabel: "Correct",
+    // ── Explanation reveal (post-answer) ──
+    explanationLabel: "Explanation",
+    explanationOn: "On",
+    explanationOff: "Off",
+    yourAnswer: "Your answer",
+    next: "Next",
+    // ── photo_multi (recipe quiz: select set) ──
+    confirm: "Confirm",
+    selectPrompt: "Tap the ingredients",
+    notQuite: "Not quite",
+    // ── photo_order (sequence) ──
+    orderPrompt: "Tap in order",
+    unlockedLabel: "Unlocked",
+    playAgain: "Play Again",
+    completed: "COMPLETED",
 
     noSubtitle: "Master these modules to unlock the next stage.",
     noTheme: "Knowledge",
     collecting: "Collecting spiritual artifacts...",
+    // Quiz page stat cards → DB (page_sections 'quiz-01'.cards)
   },
 
   // ── USER — dashboard, settings, onboarding ──────────────────────────────────
@@ -423,6 +568,7 @@ const strings = {
     tabMenu: 'My Menu',
     tabQuiz: 'Akha Quiz',
     tabPassport: 'Passport',
+    loginCta: 'Sign In',
 
     // Overview / onboarding
     welcomeChef: 'Welcome Chef',
@@ -504,7 +650,7 @@ const strings = {
     accessDeniedTitle: 'Operations Dashboard',
     accessDeniedBody: 'Booking and reservation management is available in the Admin App.',
     manageInAdmin: 'Manage in Admin App',
-    
+
     // User Menu
     select3Dishes: 'Please select 3 dishes to complete your menu kha!',
     selectionSaving: 'Saving...',
@@ -554,36 +700,141 @@ const strings = {
     },
   },
 
+  // ── CONTACT PAGE ────────────────────────────────────────────────────────────
+  contact: {
+    sectionGeneral: 'General Information',
+    sectionMeetingPoints: 'Meeting Points',
+    sectionPickup: 'Free Pickup Service',
+    sectionSocial: 'Find Us Online',
+    openInMaps: 'Open in Maps',
+    arrivalTime: 'Arrival Time',
+    morningLabel: 'Morning',
+    eveningLabel: 'Evening',
+    labelEmail: 'Email',
+    labelPhone: 'Phone',
+    labelHours: 'Opening Hours',
+    labelAddress: 'Address',
+    directContacts: 'Direct Contacts',
+    // Business & Billing (da business_profile)
+    sectionBilling: 'Business & Billing',
+    labelLegalName: 'Legal name',
+    labelTaxId: 'Tax ID',
+    // Canali (contact_channels)
+    channels: {
+      whatsapp: 'WhatsApp',
+      line: 'LINE Official',
+      instagram: 'Instagram',
+      messenger: 'Messenger',
+      facebook: 'Facebook',
+      youtube: 'YouTube',
+      pinterest: 'Pinterest',
+      x: 'X',
+      tripadvisor: 'Tripadvisor',
+      maps: 'Google Maps',
+      whatsappHint: 'Reply within minutes',
+      lineHint: 'Popular in Thailand',
+    },
+    // Form (contact_messages)
+    form: {
+      writingAs: "I'm writing as",
+      topicTraveller: 'Traveller',
+      topicAgency: 'Agency / B2B',
+      topicPress: 'Press / Blogger',
+      topicOther: 'Other',
+      nameLabel: 'Your name',
+      namePlaceholder: 'Your full name',
+      emailLabel: 'Email',
+      emailPlaceholder: 'you@email.com',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Hello! We are 4 people and two of us are vegan…',
+      send: 'Send Message',
+      sending: 'Sending…',
+      success: 'Message sent! We usually reply within a day kha.',
+      error: 'Something went wrong — please try again or write us on WhatsApp.',
+      required: 'Please fill in name, email and a message (min 10 characters).',
+    },
+  },
+
+  // ── ABOUT PAGE ──────────────────────────────────────────────────────────────
+  about: {
+    // Header/gruppi → DB (page_sections about-role-* + authors.staff_group)
+    aiDigitalGuide: 'AI Digital Guide',
+  },
+
   // ── HOME PAGE ────────────────────────────────────────────────────────────────
   home: {
-    badge: 'Award Winning School',
-    headingPre: 'Master the Art of',
-    headingHighlight: 'Akha',
-    headingSuffix: 'Cooking',
-    tagline: 'A unique culinary journey from the misty mountains of the North to your personal cooking station in Chiang Mai.',
-    // Cherry section
-    cherryBadge: 'AI Expert Assistant',
-    cherryTitle: 'Meet Cherry, Your Digital Host',
-    cherryBody: 'Available 24/7 via text or live voice, Cherry is our official cultural ambassador. She can help you choose recipes, manage dietary restrictions, or tell you the ancestral stories behind every dish.',
-    cherryAlt: 'Cherry Assistant',
-    cherryVersion: 'CHERRY V5.0',
-    cherryPlaying: 'Playing welcome...',
-    cherryTap: 'Tap to hear Cherry',
-    voiceTitle: 'Voice Live',
-    voiceDesc: 'Real-time low-latency voice interaction.',
-    recipeTitle: 'Recipe Expert',
-    recipeDesc: 'Deep knowledge of our 11 signature dishes.',
-    // Explore section
-    exploreTitle: 'Explore the Kitchen',
-    exploreDesc: 'Discover our classes, recipes, and heritage.',
-    // Testimonial
-    testimonialName: 'Sarah Jenkins',
-    testimonialRole: 'Professional Food Traveler',
-    testimonialQuote: '"An unforgettable experience that goes far beyond just cooking. It\'s a deep immersion into a beautiful, resilient culture."',
-    // CTA
-    startJourney: 'Start Your Journey',
+    // Cherry section features → DB (page_sections 'home_01'.cards)
+    // Culture section CTA
     readChapter: 'Read this Chapter',
     discoverHeritage: 'Discover the Heritage',
+  },
+
+  // ── SEO — page meta fallbacks (DB site_metadata is the primary source) ───────
+  seo: {
+    ogDefault: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg',
+    home: {
+      title: 'Thai Akha Kitchen — Authentic Cooking Class in Chiang Mai',
+      description: 'Cook 11 authentic Akha highland dishes at your personal station. Tailored to dietary needs, from hotel pick-up to full-color cookbook.',
+      canonical: 'https://www.thaiakha.com/',
+    },
+    cookingClass: {
+      title: 'Cooking Classes | Thai Akha Kitchen',
+      description: 'Learn authentic Akha highland cooking in Chiang Mai. Morning and evening classes available with hotel pickup included.',
+      canonical: 'https://www.thaiakha.com/thai-cooking-classes-chiang-mai',
+    },
+    morning: {
+      title: 'Morning Cooking Class & Market Tour | Thai Akha Kitchen',
+      description: '6-hour morning cooking class in Chiang Mai (1,400 THB). 1-hour market tour with bamboo baskets, then cook 11 dishes at your own wok. Vegan/allergy safe.',
+      canonical: 'https://www.thaiakha.com/morning-cooking-class-market-tour',
+    },
+    evening: {
+      title: 'Evening Cooking Class in Chiang Mai | Thai Akha Kitchen',
+      description: 'Relaxed 5-hour evening cooking class in Chiang Mai (1,300 THB). 5:00–9:00 PM. Cook and eat 11 dishes for dinner at your own wok. Free hotel pickup.',
+      canonical: 'https://www.thaiakha.com/evening-cooking-class-dinner',
+    },
+  },
+
+  // ── ALT — image/video alt-text fallbacks ────────────────────────────────────
+  alt: {
+    homeHero: 'Thai Akha Kitchen cooking class – Chiang Mai, Thailand',
+    cherry: 'Cherry Assistant',
+    classVideo: 'Akha Cooking & Culture Class in Chiang Mai',
+  },
+
+  // ── CHERRY — AI Assistant ────────────────────────────────────────────────────
+  cherry: {
+    spicinessMap: {
+      '1': 'The Farang (Soft)',
+      '2': 'Thai Smile (Mild)',
+      '3': 'Respect! (Medium)',
+      '4': 'Thai Spicy (Local)',
+      '5': 'Akha Warrior (Extreme)',
+    } as Record<string, string>,
+    dietaryMap: {
+      diet_regular: 'Regular',
+      diet_vegan: 'Vegan',
+      diet_vegetarian: 'Vegetarian',
+      diet_pescatarian: 'Pescatarian',
+      diet_meat_lover: 'Meat Lover',
+      diet_halal: 'Halal Friendly',
+      diet_kosher: 'Kosher Friendly',
+      diet_rastafari: 'Rastafari (Ital)',
+      diet_jain: 'Jain Friendly',
+      diet_hindu: 'Hindu Friendly',
+    } as Record<string, string>,
+    summaryThreshold: 20,
+    typewriterIntervalMs: 80, // cadenza unica per AI streaming e nodi/bottoni
+  },
+
+  // ── BLOG — blog card & single post components ──────────────────────────────
+  blog: {
+    byAuthor: 'By',
+    linkCopied: 'Link Copied!',
+    cultureHistory: 'Culture & History',
+    explore: 'Explore',
+    contents: 'Contents',
+    previous: 'PREVIOUS',
+    next: 'NEXT',
   },
 
 } as const;

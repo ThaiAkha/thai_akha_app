@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Icon, Button } from '../ui';
-import type { FAQItem, FAQLink } from '@thaiakha/shared/data';
+import type { FAQItem, FAQLink } from '@thaiakha/shared/types';
+import { handleFaqAnswerClick } from './faqLinkNav';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -64,13 +65,16 @@ const FAQRichAnswer: React.FC<FAQRichAnswerProps> = ({ item, onNavigate }) => {
         <div className="flex flex-col [gap:var(--space-fluid-s)]">
 
             {/* Answer text — le answer DB contengono HTML inline (<a>, <b>…):
-                stesso rendering di FaqBottomPage, link stilati ocean via [&_a]. */}
-            <Typography
-                variant="paragraphM"
-                color="default"
-                className="[&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_a]:font-bold [&_a]:text-ocean-blue [&_a]:no-underline hover:[&_a]:opacity-75 [&_a]:transition-opacity"
-                dangerouslySetInnerHTML={{ __html: item.answer }}
-            />
+                stesso rendering di FaqBottomPage, link stilati ocean via [&_a].
+                Click delegato sui link interni → SPA navigation (no full reload). */}
+            <div onClick={(e) => handleFaqAnswerClick(e, onNavigate)}>
+                <Typography
+                    variant="paragraphM"
+                    color="default"
+                    className="[&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_a]:font-bold [&_a]:text-ocean-blue [&_a]:no-underline hover:[&_a]:opacity-75 [&_a]:transition-opacity [&_a]:cursor-pointer"
+                    dangerouslySetInnerHTML={{ __html: item.answer }}
+                />
+            </div>
 
             {/* Inline reference links */}
             {hasLinks && (

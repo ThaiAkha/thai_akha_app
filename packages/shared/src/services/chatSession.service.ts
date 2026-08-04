@@ -1,5 +1,6 @@
 // packages/shared/src/services/chatSession.service.ts
 import { supabase } from '../lib/supabase';
+import type { Json } from '../types';
 
 export interface ChatSession {
   id: string;
@@ -20,6 +21,10 @@ export interface DbChatMessage {
   content: string;
   type: 'text' | 'voice';
   created_at: string;
+  /** Id del nodo CHAT_FLOW iniettato (memoria visite/ragnatela). null per AI/voce. */
+  node_id?: string | null;
+  /** Metadati liberi: link/asset cliccati, azione, ecc. (memoria click). */
+  metadata?: Record<string, unknown> | null;
 }
 
 const SESSION_TOKEN_KEY = 'cherry_session_token';
@@ -32,6 +37,10 @@ const getGuestToken = (): string => {
   }
   return token;
 };
+
+/** Returns the current guest session token from localStorage, or null if not yet created. */
+export const getGuestSessionToken = (): string | null =>
+  localStorage.getItem(SESSION_TOKEN_KEY);
 
 export const getOrCreateSession = async (userId?: string): Promise<ChatSession> => {
   try {
@@ -108,12 +117,20 @@ export const saveMessage = (
   sessionId: string,
   role: 'user' | 'assistant' | 'system',
   content: string,
-  type: 'text' | 'voice' = 'text'
+  type: 'text' | 'voice' = 'text',
+  opts?: { nodeId?: string | null; metadata?: Record<string, unknown> | null }
 ): void => {
   if (sessionId.startsWith('ephemeral_')) return;
   supabase
     .from('chat_messages')
-    .insert({ session_id: sessionId, sender_role: role, content, type })
+    .insert({
+      session_id: sessionId,
+      sender_role: role,
+      content,
+      type,
+      node_id: opts?.nodeId ?? null,
+      metadata: (opts?.metadata ?? null) as Json,
+    })
     .then(({ error }) => {
       if (error) console.warn('[ChatSession] saveMessage failed (silent):', error.message);
     });
@@ -126,16 +143,12 @@ export const updateSummary = async (sessionId: string, summary: string): Promise
 
 export const checkRateLimit = async (
   userId?: string,
-  _sessionToken?: string
+  sessionToken?: string
 ): Promise<{ allowed: boolean; reason?: string }> => {
   try {
     const { data, error } = await supabase.rpc('check_chat_rate_limit', {
-      p_user_id: userId ?? null,
-      p_session_token: null,
-      // TODO (quando si riattivano i limiti): passare il sessionToken reale.
-      // I caller (useCherryChat, useGeminiLive) hanno accesso a sessionRef.current?.id
-      // ma non lo passano ancora. Aggiornare la chiamata a:
-      //   checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined)
+      p_user_id: (userId ?? null) as string,
+      p_session_token: (sessionToken ?? null) as string,
     });
 
     if (error) throw error;

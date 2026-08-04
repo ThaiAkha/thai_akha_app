@@ -26,12 +26,12 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
     "relative overflow-hidden isolate flex items-center justify-center transition-all duration-300",
     "active:scale-[0.97] disabled:opacity-30 disabled:pointer-events-none select-none",
     "rounded-full border antialiased",
-    "px-4 py-2",
+    "px-4 py-3",
     "[gap:var(--space-fluid-2xs)]"
   );
 
   const variants = {
-    primary: "bg-primary text-white border-primary/50 hover:bg-primary/80 hover:scale-105 shadow-glow-cherry hover:shadow-glow-cherry-h",
+    primary: "bg-quiz text-white border-quiz/50 hover:bg-quiz/80",
     secondary: "bg-white/5 text-white border-white/20 hover:bg-white/10 hover:border-white/40",
     outline: "bg-transparent text-white border-white/30 hover:border-white hover:bg-white/5",
     ghost: "bg-transparent text-muted hover:text-white hover:bg-white/5 border-transparent",
@@ -76,10 +76,10 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
         />
       ))}
 
-      <span className="relative z-10 inline-flex items-center gap-1.5">
+      <span className="relative z-10 inline-flex items-center gap-5">
         <Icon name={config.icon} size="sm" />
         <Typography
-          variant="microLabel"
+          variant="accent"
           as="span"
           className="font-black uppercase tracking-widest"
         >

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { type MediaAsset } from '@thaiakha/shared';
 
@@ -11,6 +12,7 @@ export interface MediaCategory {
 }
 
 export function useAdminMedia() {
+    const { t } = useTranslation('media');
     const [assets, setAssets] = useState<MediaAsset[]>([]);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
@@ -35,7 +37,7 @@ export function useAdminMedia() {
                 .order('asset_id', { ascending: true });
 
             if (error) throw error;
-            setAssets(data || []);
+            setAssets((data as any[]) || []);
         } catch (err) {
             console.error('Error fetching media:', err);
         } finally {
@@ -108,14 +110,14 @@ export function useAdminMedia() {
             setIsNew(false);
         } catch (err) {
             console.error('Error saving asset:', err);
-            alert('Failed to save asset. Check console for details.');
+            alert(t('alerts.saveFailed'));
         } finally {
             setIsSaving(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!editingAsset || !window.confirm('Are you sure you want to delete this database entry? Storage file will remain.')) return;
+        if (!editingAsset || !window.confirm(t('alerts.confirmDelete'))) return;
         
         try {
             const { error } = await supabase

@@ -5,6 +5,8 @@ import { getIcon, type IconName } from '@thaiakha/shared/lib/icons';
 import { Heading, Paragraph } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Card from '../ui/Card';
+import { useFlash } from '../../hooks/useFlash';
+import { FlashLayer } from '../ui/FlashLayer';
 
 export interface DashboardNavCardProps {
     path: string;
@@ -25,18 +27,23 @@ const DashboardNavCard: React.FC<DashboardNavCardProps> = ({
 }) => {
     // Get icon from registry
     const IconComponent = getIcon(iconName);
+    const { flashes, onMouseMove, onClick } = useFlash();
 
     return (
         <Link
             to={path}
-            className="group"
+            onMouseMove={onMouseMove}
+            onClick={onClick}
+            className="group focus-visible:outline-none rounded-2xl"
         >
             <Card className={cn(
-                "relative flex flex-col transition-all duration-300",
+                "relative isolate flex flex-col transition-all duration-300",
                 "hover:shadow-xl hover:shadow-primary-500/5",
                 "hover:-translate-y-1 overflow-hidden",
+                "group-focus-visible:ring-2 group-focus-visible:ring-primary-500 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-white dark:group-focus-visible:ring-offset-gray-900",
                 className
             )}>
+            <FlashLayer flashes={flashes} />
             {/* Decorative Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -59,7 +66,7 @@ const DashboardNavCard: React.FC<DashboardNavCardProps> = ({
 
                 {/* Link Action */}
                 {linkLabel && (
-                    <div className="mt-auto pt-5 inline-flex items-center text-md font-bold uppercase tracking-wider text-primary-500 group-hover:text-primary-600 transition-colors">
+                    <div className="mt-auto pt-5 inline-flex items-center text-base font-bold uppercase tracking-wider text-primary-500 group-hover:text-primary-600 transition-colors">
                         {linkLabel}
                         <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </div>

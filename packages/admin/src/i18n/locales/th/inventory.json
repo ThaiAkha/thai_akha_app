@@ -53,5 +53,12 @@
     "saving": "กำลังบันทึก...",
     "tooltipEdit": "แก้ไขข้อมูลนี้",
     "tooltipSave": "บันทึกการเปลี่ยนแปลง"
+  },
+  "alerts": {
+    "nameSkuRequired": "กรุณากรอกอย่างน้อยชื่อและ SKU",
+    "savedSuccess": "บันทึกสินค้าสำเร็จ",
+    "saveFailed": "บันทึกล้มเหลว: {{message}}",
+    "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบสินค้านี้?",
+    "copiedCount": "คัดลอก {{count}} รายการแล้ว"
   }
 }

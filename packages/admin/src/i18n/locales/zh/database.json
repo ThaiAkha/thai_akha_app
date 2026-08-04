@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "title": "数据库浏览器 | Thai Akha Kitchen",
+    "description": "在安全约束下管理原始系统表。"
+  },
+  "sidebar": {
+    "title": "数据表",
+    "statusLabel": "状态",
+    "status": "实时编辑"
+  },
+  "content": {
+    "searchPlaceholder": "搜索 {{table}}...",
+    "noData": "{{table}} 中未找到数据"
+  },
+  "inspector": {
+    "readOnly": "只读",
+    "noSchema": "无可用架构数据。",
+    "deleteRecord": "删除记录",
+    "confirm": "确认",
+    "cancel": "取消"
+  },
+  "actions": {
+    "exportFormats": "导出格式",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "标准电子表格格式",
+    "exportJson": "JSON格式",
+    "exportJsonDesc": "原始数据结构",
+    "copyClipboard": "复制到剪贴板",
+    "copyClipboardDesc": "快速以文本形式分享",
+    "insertRecord": "插入新记录",
+    "newRow": "新行",
+    "deleteRestricted": "出于安全考虑，删除受限。",
+    "edit": "编辑",
+    "save": "保存",
+    "saving": "保存中...",
+    "tooltipEdit": "编辑此记录",
+    "tooltipSave": "保存修改"
+  },
+  "alerts": {
+    "loadFailed": "加载 {{table}} 失败",
+    "savedSuccess": "数据保存成功",
+    "saveFailed": "保存失败：{{message}}",
+    "deletedSuccess": "删除成功",
+    "deleteFailed": "删除失败：{{message}}",
+    "copiedCount": "已复制 {{count}} 项到剪贴板"
+  }
+}

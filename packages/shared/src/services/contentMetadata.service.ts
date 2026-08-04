@@ -156,23 +156,32 @@ export const contentMetadataService = {
         });
     },
 
-    /** 🎴 MENU SIDEBAR: Dinamico con livelli di accesso */
+    /**
+     * 🎴 MENU SIDEBAR: dinamico, con livelli di accesso.
+     *
+     * Modello UNICO per front e admin (dal 30 lug 2026):
+     *   base inglese -> colonna `menu_label` sulla riga (sempre presente)
+     *   altre lingue -> sidecar *_translations, che SOVRASCRIVE la base
+     * Prima l'admin teneva l'etichetta solo nel sidecar: bastava creare una pagina senza
+     * riga di traduzione perche' comparisse nel menu senza nome (successo con
+     * agency-privacy). Ora la base sta sulla riga ed e' garantita da un CHECK.
+     */
     async getMenuItems(table: 'site_metadata' | 'site_metadata_admin' = 'site_metadata', lang = 'en') {
         const normalizedLang = normalizeLang(lang);
-        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v31`, async () => {
+        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v32`, async () => {
+            // Le due query restano separate perche' il front distingue menu primario e
+            // footer e non ha sidecar traduzioni. Cio' che conta e' che la REGOLA di
+            // risoluzione dell'etichetta sia una sola (resolveLabel, sotto).
             if (table === 'site_metadata_admin') {
                 const { data, error } = await supabase
-                    .from(table)
+                    .from('site_metadata_admin')
                     .select(`
                         page_slug,
                         header_icon,
                         menu_order,
                         access_level,
-                        translations:site_metadata_admin_translations (
-                            language,
-                            menu_label,
-                            description
-                        )
+                        menu_label,
+                        translations:site_metadata_admin_translations ( language, menu_label, description )
                     `)
                     .eq('show_in_menu', true)
                     .order('menu_order', { ascending: true });
@@ -183,22 +192,21 @@ export const contentMetadataService = {
                 }
 
                 return data.map(item => {
-                    const translations = item.translations ?? [];
-                    const translation =
-                        translations.find(t => t.language === normalizedLang) ||
-                        translations.find(t => t.language === 'en') ||
-                        translations[0];
-
+                    // Nel sidecar vivono SOLO le lingue diverse dall'inglese: per l'inglese
+                    // qui non si trova nulla e resta la base inline, che e' l'esito voluto.
+                    const translation = (item.translations ?? []).find(
+                        t => t.language === normalizedLang,
+                    );
                     return {
                         ...item,
-                        menu_label: translation?.menu_label || item.page_slug,
+                        menu_label: translation?.menu_label || item.menu_label || item.page_slug,
                         page_description: translation?.description || '',
                     };
                 });
             }
 
             const { data, error } = await supabase
-                .from(table)
+                .from('site_metadata')
                 .select('id, page_slug, menu_label, header_icon, menu_order, access_level, page_description, parent_id')
                 .eq('show_in_menu', true)
                 .eq('menu_location', 'primary')

@@ -1,8 +1,6 @@
 import React from 'react';
-import { Edit3, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import Button from '../../ui/button/Button';
-import Tooltip from '../../ui/Tooltip';
+import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector/InspectorActionButtons';
 
 interface StorageInspectorActionsProps {
     pendingFile: any;
@@ -29,38 +27,23 @@ const StorageInspectorActions: React.FC<StorageInspectorActionsProps> = ({
 
     if (!isEditing) {
         return (
-            <Tooltip content={t('actions.editFileMetadata')} position="left">
-                <Button
-                    type="button"
-                    onClick={() => {
-                        setIsEditing(true);
-                        setEditingNameValue(selectedFile.name);
-                    }}
-                    variant="outline"
-                    size="md"
-                    className="h-9 px-4 text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
-                    startIcon={<Edit3 className="w-4 h-4" />}
-                >
-                    {t('actions.edit')}
-                </Button>
-            </Tooltip>
+            <InspectorEditButton
+                onClick={() => { setIsEditing(true); setEditingNameValue(selectedFile.name); }}
+                tooltip={t('actions.editFileMetadata')}
+            >
+                {t('actions.edit')}
+            </InspectorEditButton>
         );
     }
 
     return (
-        <Tooltip content={t('actions.saveChanges')} position="left">
-            <Button
-                type="button"
-                onClick={handleRename}
-                disabled={isUploading}
-                variant="primary"
-                size="md"
-                className="h-9 px-4 text-[10px] font-black uppercase tracking-widest transition-all"
-                startIcon={<Save className="w-4 h-4" />}
-            >
-                {isUploading ? t('actions.saving') : t('actions.save')}
-            </Button>
-        </Tooltip>
+        <InspectorSaveButton
+            onClick={handleRename}
+            disabled={isUploading}
+            tooltip={t('actions.saveChanges')}
+        >
+            {isUploading ? t('actions.saving') : t('actions.save')}
+        </InspectorSaveButton>
     );
 };
 

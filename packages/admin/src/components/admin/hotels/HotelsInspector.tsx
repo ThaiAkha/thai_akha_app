@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Building2, CheckCircle2, XCircle } from 'lucide-react';
+import { Building2, CheckCircle2, XCircle, Image as ImageIcon } from 'lucide-react';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import Switch from '../../../components/form/switch/Switch';
@@ -138,13 +138,24 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldImageUrl')} />
-                    <InputField
-                        placeholder="https://..."
-                        value={selectedMeetingPoint.image_url || ''}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSelectedMeetingPointChange({ ...selectedMeetingPoint, image_url: e.target.value })}
-                        disabled={!isEditing}
-                    />
+                    <SectionHeader title={t('inspector.fieldImageAsset', { defaultValue: 'Photo (media asset)' })} />
+                    <div className="flex items-center gap-3">
+                        <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                            {selectedMeetingPoint.image_url ? (
+                                <img src={selectedMeetingPoint.image_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <ImageIcon className="w-6 h-6 text-gray-300 dark:text-gray-600" />
+                            )}
+                        </div>
+                        <div className="flex-1">
+                            <InputField
+                                placeholder={t('inspector.assetIdPlaceholder', { defaultValue: 'media asset id (uuid)' })}
+                                value={selectedMeetingPoint.image_asset_id || ''}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSelectedMeetingPointChange({ ...selectedMeetingPoint, image_asset_id: e.target.value || null })}
+                                disabled={!isEditing}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -161,8 +172,8 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                     <SectionHeader title={t('inspector.fieldActiveStatus')} className="mb-0" />
                     <Switch
                         label=""
-                        checked={selectedMeetingPoint.is_active || false}
-                        onChange={(checked) => onSelectedMeetingPointChange({ ...selectedMeetingPoint, is_active: checked })}
+                        checked={selectedMeetingPoint.active || false}
+                        onChange={(checked) => onSelectedMeetingPointChange({ ...selectedMeetingPoint, active: checked })}
                         disabled={!isEditing}
                     />
                 </div>
@@ -275,7 +286,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
                     <div>
                         <p className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-200">{t('inspector.fieldActiveStatus')}</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">{t('inspector.showInPickup')}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{t('inspector.showInPickup')}</p>
                     </div>
                     <Switch
                         key={selectedHotel?.id || 'new'}

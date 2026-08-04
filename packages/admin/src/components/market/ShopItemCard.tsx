@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Badge from '../ui/badge/Badge';
 import { Check, CheckCircle2, PlusCircle } from 'lucide-react';
@@ -8,7 +9,7 @@ interface LibraryItem {
   name_en: string;
   name_th: string;
   image_url: string;
-  unit_default: string;
+  default_unit: string;
 }
 
 interface ShopItemCardProps {
@@ -30,6 +31,12 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
   onClick
 }) => {
   const isLogistics = mode === 'logistics';
+  const { t, i18n } = useTranslation('market');
+
+  // Monolingual ingredient name: pick the column for the current UI language,
+  // fall back to English when a translation is missing (translations are WIP).
+  const lang = i18n.language?.split('-')[0];
+  const displayName = (lang === 'th' && item.name_th) ? item.name_th : item.name_en;
 
   return (
     <div
@@ -41,16 +48,19 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
           : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md"
       )}
     >
-      {/* IMAGE LAYER */}
-      <div className="relative h-36 w-full bg-gray-100 dark:bg-gray-900 overflow-hidden border-b border-gray-100 dark:border-gray-800">
+      {/* IMAGE LAYER — 1:1, full color, white 10% veil that clears on hover */}
+      <div className="relative aspect-square w-full bg-gray-100 dark:bg-gray-900 overflow-hidden border-b border-gray-100 dark:border-gray-800">
         <img
           src={item.image_url || 'https://via.placeholder.com/200'}
           className={cn(
-            "w-full h-full object-cover transition-all duration-700",
-            isAdded ? "opacity-100 scale-110 grayscale-0" : "opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110"
+            "w-full h-full object-cover transition-transform duration-700",
+            isAdded && "scale-110"
           )}
           alt={item.name_en}
         />
+
+        {/* White 10% overlay — fades out on hover */}
+        <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none" />
 
         {/* CHECKMARK OVERLAY */}
         {isAdded && (
@@ -63,8 +73,8 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
 
         {/* UNIT BADGE */}
         <div className="absolute top-3 left-3 z-20">
-          <Badge variant="solid" color="dark" size="sm" className="h-5 px-2 text-[9px] font-black border-white/20 backdrop-blur-md uppercase tracking-widest shadow-sm">
-            {item.unit_default || 'unit'}
+          <Badge variant="solid" color="dark" size="sm" className="h-5 px-2 text-xs font-black border-white/20 backdrop-blur-md uppercase tracking-widest shadow-sm">
+            {item.default_unit || 'unit'}
           </Badge>
         </div>
       </div>
@@ -73,20 +83,19 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
       <div className="p-4 space-y-3 flex-1 flex flex-col">
         <div className="flex flex-col min-w-0">
           <h6 className={cn(
-            "text-xs font-black uppercase truncate leading-tight transition-colors mb-1",
+            "text-base font-black uppercase truncate leading-tight transition-colors",
             isAdded ? "text-primary-600 dark:text-primary-400" : "text-gray-900 dark:text-white"
           )}
           >
-            {item.name_en}
+            {displayName}
           </h6>
-          <span className="text-[10px] text-gray-400 truncate font-medium">{item.name_th}</span>
         </div>
 
         {/* PRICE DISPLAY (Teacher Mode) */}
         {!isLogistics && (
           <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
             <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-2 rounded-xl border border-transparent group-hover:border-primary-200 dark:group-hover:border-primary-700 transition-all">
-              <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Reported Cost</span>
+              <span className="text-xs font-black uppercase text-gray-400 tracking-widest">{t('shopItem.reportedCost')}</span>
               <span className={cn(
                 "font-mono font-black text-sm",
                 price > 0 ? "text-primary-600 dark:text-primary-400" : "text-gray-300 dark:text-gray-600"
@@ -101,7 +110,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         {isLogistics && (
           <div className="mt-auto flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity text-primary-600 dark:text-primary-400">
             {isAdded ? <Check className="w-4 h-4" /> : <PlusCircle className="w-4 h-4" />}
-            <span className="text-[9px] font-black uppercase tracking-widest">{isAdded ? 'Added to list' : 'Click to add'}</span>
+            <span className="text-xs font-black uppercase tracking-widest">{isAdded ? t('shopItem.addedToList') : t('shopItem.clickToAdd')}</span>
           </div>
         )}
       </div>

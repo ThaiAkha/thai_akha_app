@@ -7,7 +7,7 @@
  * sui tipi dominio manuali di @thaiakha/shared (FaqCategoryRow & co.).
  */
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import type { FAQLink, FAQCta } from '@thaiakha/shared/data';
+import type { FAQLink, FAQCta } from '@thaiakha/shared/types';
 import type {
   LegalDocument,
   LegalDocumentSection,
@@ -215,7 +215,7 @@ export async function getInfoPage(slug: string): Promise<LegalDocument | null> {
     getInfoPageMeta(slug),
     supabase
       .from('info_page_sections')
-      .select('heading, body, section_order')
+      .select('heading, body, section_order, anchor')
       .eq('page_slug', slug)
       .eq('is_active', true)
       .order('section_order', { ascending: true }),
@@ -225,7 +225,7 @@ export async function getInfoPage(slug: string): Promise<LegalDocument | null> {
     console.error('[infoPages] getInfoPage sections:', sErr);
     return null;
   }
-  const sections = sectionsData as unknown as Pick<InfoPageSectionRow, 'heading' | 'body' | 'section_order'>[];
+  const sections = sectionsData as unknown as Pick<InfoPageSectionRow, 'heading' | 'body' | 'section_order' | 'anchor'>[];
 
   const mapped: LegalDocumentSection[] = sections.map(s => {
     const blocks = (s.body ?? []) as InfoPageBlock[];
@@ -242,6 +242,8 @@ export async function getInfoPage(slug: string): Promise<LegalDocument | null> {
 
     return {
       title: s.heading,
+      // Ancora stabile per deep-link (fallback slugify(title) nel viewer se assente).
+      ...(s.anchor ? { anchor: s.anchor } : {}),
       // Un solo paragrafo → string (come i dati originali); più paragrafi → string[].
       ...(paragraphs.length ? { content: paragraphs.length === 1 ? paragraphs[0] : paragraphs } : {}),
       ...(subsections.length ? { subsections } : {}),

@@ -3,7 +3,9 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  // x-cherry-token: il client Supabase lo inietta globalmente (RLS guest chat) → va
+  // permesso qui altrimenti il preflight blocca la richiesta (voce Cherry via CORS).
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cherry-token',
 };
 
 Deno.serve(async (req: Request) => {

@@ -5,10 +5,10 @@ import {
     DataExplorerLayout,
     DataExplorerInspector,
 } from '../../components/data-explorer';
-import ClassPicker from '../../components/common/ClassPicker';
+import DaysSidebar, { type DaySession } from '../../components/common/DaysSidebar';
+import { useDaysOverview } from '../../hooks/useDaysOverview';
 
 // Modular Components
-import LogisticSidebar from '../../components/manager/logistic/LogisticSidebar';
 import LogisticContent from '../../components/manager/logistic/LogisticContent';
 import LogisticInspector from '../../components/manager/logistic/LogisticInspector';
 import LogisticInspectorActions from '../../components/manager/logistic/LogisticInspectorActions';
@@ -24,7 +24,6 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
     const {
         items,
         drivers,
-        upcomingSessions,
         selectedBooking,
         hotels,
         meetingPoints,
@@ -43,6 +42,8 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
         updateLocalItem,
         closeInspector,
     } = useManagerLogistic();
+    const { days } = useDaysOverview(6); // nav giorni riusabile (oggi → +6)
+    const daySession: DaySession = selectedSessionId === 'evening_class' ? 'evening_class' : 'morning_class';
 
     const [pendingReorder, setPendingReorder] = useState<LogisticsItem[] | null>(null);
     const [isSavingOrder, setIsSavingOrder] = useState(false);
@@ -60,30 +61,6 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
         setPendingReorder(reorderedItems);
         setLogisticsMode(mode);
     }, []);
-
-    const handleToggleDriver = useCallback((driverId: string) => {
-        setSelectedDriverIds(prev => {
-            // Check if driver has assigned items
-            const driverHasItems = items.some(item =>
-                item.pickup_driver_uid === driverId || item.dropoff_driver_uid === driverId
-            );
-
-            // Cannot deselect driver if they have assigned bookings
-            if (driverHasItems && prev.has(driverId)) {
-                console.warn('Cannot deselect driver with assigned bookings');
-                return prev;
-            }
-
-            const next = new Set(prev);
-            if (next.has(driverId)) {
-                next.delete(driverId);
-            } else {
-                next.add(driverId);
-            }
-
-            return next;
-        });
-    }, [items]);
 
     const handleActivateDriver = useCallback((driverId: string) => {
         setSelectedDriverIds(prev => {
@@ -141,82 +118,37 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                 inspectorOpen={!!selectedBooking}
                 onInspectorClose={closeInspector}
                 sidebar={
-                    <LogisticSidebar
-                        upcomingSessions={upcomingSessions}
+                    <DaysSidebar
+                        days={days}
                         selectedDate={selectedDate}
-                        selectedSessionId={selectedSessionId}
-                        onSelectSession={(date, sessionId) => {
-                            setSelectedDate(date);
-                            setSelectedSessionId(sessionId);
-                            setLogisticsMode('pickup');
-                        }}
+                        selectedSession={daySession}
+                        onSelect={(date, session) => { setSelectedDate(date); setSelectedSessionId(session); setLogisticsMode('pickup'); }}
                     />
                 }
                 toolbar={
-                    <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 bg-gray-50/50 dark:bg-gray-900/50 shadow-sm shrink-0 overflow-x-auto no-scrollbar">
-                        {/* Date Picker */}
-                        <ClassPicker
-                            date={selectedDate}
-                            onDateChange={(d) => {
-                                setSelectedDate(d);
-                                setLogisticsMode('pickup');
-                            }}
-                            session="all"
-                            onSessionChange={(s) => {
-                                setSelectedSessionId(s as any);
-                                setLogisticsMode('pickup');
-                            }}
-                            showSessionSelector={false}
-                        />
-
-                        <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
-
-                        {/* Driver Pills */}
-                        <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-                            {drivers.map(driver => (
-                                <button
-                                    key={driver.id}
-                                    onClick={() => handleToggleDriver(driver.id)}
-                                    className={cn(
-                                        "h-9 px-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center whitespace-nowrap border shrink-0",
-                                        selectedDriverIds.has(driver.id)
-                                            ? "bg-primary-500 text-white border-primary-500 shadow-sm"
-                                            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-primary-300 dark:hover:border-primary-500/30"
-                                    )}
-                                    title={driver.full_name}
-                                >
-                                    {driver.full_name}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
-
-                        {/* Pickup/Drop-off Toggle */}
+                    <div className="h-16 px-5 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 bg-gray-50/50 dark:bg-gray-900/50 shadow-sm shrink-0">
+                        {/* Switcher Pickup / Drop-off — a sinistra della data */}
                         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 h-9 shrink-0">
                             <button
                                 onClick={() => handleModeChange('pickup')}
-                                className={cn(
-                                    "flex items-center gap-1.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors",
-                                    logisticsMode === 'pickup'
-                                        ? "bg-orange-500 text-white"
-                                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                )}
+                                className={cn('flex items-center px-3 text-xs font-bold uppercase tracking-wider transition-colors',
+                                    logisticsMode === 'pickup' ? 'bg-orange-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700')}
                             >
                                 {t('inspector.pickup')}
                             </button>
                             <button
                                 onClick={() => handleModeChange('dropoff')}
-                                className={cn(
-                                    "flex items-center gap-1.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors border-l border-gray-200 dark:border-gray-700",
-                                    logisticsMode === 'dropoff'
-                                        ? "bg-orange-500 text-white"
-                                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                )}
+                                className={cn('flex items-center px-3 text-xs font-bold uppercase tracking-wider transition-colors border-l border-gray-200 dark:border-gray-700',
+                                    logisticsMode === 'dropoff' ? 'bg-orange-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700')}
                             >
                                 {t('inspector.dropoff')}
                             </button>
                         </div>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                            {t(daySession === 'evening_class' ? 'sidebar.eveningClass' : 'sidebar.morningClass', { defaultValue: daySession === 'evening_class' ? 'Evening Class' : 'Morning Class' })}
+                            {' - '}
+                            {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
+                        </span>
                     </div>
                 }
                 inspector={

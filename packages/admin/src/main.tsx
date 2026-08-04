@@ -1,3 +1,6 @@
+// MUST be the first import: captures the password-recovery flag from the URL
+// before the Supabase client (created transitively by ./App) consumes the hash.
+import "./recovery-capture";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";

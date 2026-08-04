@@ -44,7 +44,7 @@ export default function AgencyRecentBookings() {
                 .limit(5);
 
             if (error) throw error;
-            setBookings(data || []);
+            setBookings((data as unknown as Booking[]) || []);
         } catch (error) {
             console.error("Error fetching agency bookings:", error);
         } finally {
@@ -83,7 +83,7 @@ export default function AgencyRecentBookings() {
                             <TableRow key={booking.internal_id}>
                                 <TableCell className="py-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-[32px] w-[32px] overflow-hidden rounded-md bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-[10px]">
+                                        <div className="h-[32px] w-[32px] overflow-hidden rounded-md bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-xs">
                                             {booking.guest_name?.substring(0, 2).toUpperCase() || 'AG'}
                                         </div>
                                         <div>

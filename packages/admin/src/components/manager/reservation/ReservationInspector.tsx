@@ -5,6 +5,7 @@ import SelectField from '../../form/input/SelectField';
 import { Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatDateByLanguage } from '../../../lib/dateFormatter';
+import LeaderHeader from '../../common/LeaderHeader';
 
 interface ReservationInspectorProps {
     selectedBooking: any | null;
@@ -40,11 +41,26 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
     }
 
     const b = selectedBooking;
+    const leaderName = b.guest_name || b.profiles?.full_name || b.guest_email || t('inspector.guest', { defaultValue: 'Guest' });
+    const leaderEmail = b.guest_email || b.profiles?.email || '';
 
     return (
         <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500 overflow-hidden">
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+                {/* Header leader gruppo — avatar, nome, contatti (componente unificato) */}
+                <LeaderHeader
+                    label={t('inspector.groupLeader', { defaultValue: 'Group leader' })}
+                    leader={{
+                        name: leaderName,
+                        avatarUrl: b.profiles?.avatar_url,
+                        bookingRef: b.booking_ref,
+                        phone: b.phone_number,
+                        email: leaderEmail,
+                        pax: b.pax_count,
+                        luggage: b.has_luggage,
+                    }}
+                />
                 {isEditing ? (
                     <div className="space-y-4">
                         {/* Participants */}

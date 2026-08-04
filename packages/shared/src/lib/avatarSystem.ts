@@ -1,68 +1,112 @@
-import { supabase } from './supabase';
+import { getPresetAvatars } from '../services/avatar.service';
 
 /**
- * 🎨 SMART AVATAR 4.8 SYSTEM
- * Gestisce l'assegnazione automatica di avatar basati su profilo utente.
+ * 🎨 SMART AVATAR 6.0 SYSTEM
+ * Fonte unica: media_assets (asset_id = avatar-{gender}-{bracket}-{variant}).
+ * Nessun URL o bucket hardcoded nel codice.
+ *
+ * ── Fasce d'età (3 scaglioni) ─────────────────────────────────────────────────
+ *   teen   → 7–18 anni
+ *   adult  → 19–40 anni
+ *   senior → 41+ anni
+ *
+ * ── Generi (3 categorie) ──────────────────────────────────────────────────────
+ *   male | female | other
+ *
+ * ── Varianti per fascia ───────────────────────────────────────────────────────
+ *   4 varianti per combinazione (1–4)
+ *   Totale immagini: 3 × 3 × 4 = 36
  */
 
-export type AgeBracket = 'child' | 'teen' | 'young' | 'adult' | 'senior';
+export type AgeBracket = 'teen' | 'adult' | 'senior';
+export type AvatarGender = 'male' | 'female' | 'other';
+
+/** URL di fallback neutro usato quando il pool non è ancora caricato o è vuoto. */
+const AVATAR_FALLBACK = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/avatars-preset/other_adult_1.webp';
 
 /**
  * Determina la fascia d'età basata sugli anni.
- * Child (0-12), Teen (13-18), Young (19-28), Adult (29-40), Senior (41+)
+ *   Teen   → 7–18
+ *   Adult  → 19–40
+ *   Senior → 41+
  */
 export const getAgeBracket = (age: number): AgeBracket => {
-  if (age <= 12) return 'child';
   if (age <= 18) return 'teen';
-  if (age <= 28) return 'young';
   if (age <= 40) return 'adult';
   return 'senior';
 };
 
 /**
  * Restituisce un URL pubblico per un avatar Akha Spirit randomico.
- * Convenzione naming: [gender]_[bracket]_[variant].png (es. male_child_1.png)
+ * Legge il pool da media_assets (via getPresetAvatars), filtra per gender + bracket,
+ * e sceglie una variante casuale tra i match.
+ *
+ * @returns URL stringa; cade su AVATAR_FALLBACK se il pool è vuoto.
  */
-export const getSmartAvatarUrl = (gender: 'male' | 'female' | 'other', age: number): string => {
+export const getSmartAvatarUrl = async (gender: AvatarGender, age: number): Promise<string> => {
   const bracket = getAgeBracket(age);
-  const variant = Math.floor(Math.random() * 4) + 1; // Varianti 1-4
+  const pool = await getPresetAvatars();
 
-  // Fallback per 'other' - usa 'female' o 'male' randomicamente o un default
-  const safeGender = gender === 'other' ? (Math.random() > 0.5 ? 'female' : 'male') : gender;
+  const matches = pool.filter(a => a.gender === gender && a.bracket === bracket);
+  if (matches.length === 0) return AVATAR_FALLBACK;
 
-  const fileName = `${safeGender}_${bracket}_${variant}.png`;
-
-  const { data: { publicUrl } } = supabase.storage
-    .from('avatars_user')
-    .getPublicUrl(fileName);
-
-  return publicUrl;
+  const pick = matches[Math.floor(Math.random() * matches.length)];
+  return pick.url;
 };
 
 /**
- * Versione "safe" che accetta parametri nullable (usa defaults intelligenti)
+ * Versione "safe" che accetta parametri nullable (usa defaults intelligenti).
+ * Usata in form e hook dove età/genere possono essere null.
+ *
+ * @returns Promise<string> — sempre una stringa (mai null).
  */
-export const getSmartAvatarUrlSafe = (
+export const getSmartAvatarUrlSafe = async (
   gender: string | null | undefined,
   age: number | string | null | undefined,
-): string => {
-  // Normalizza genere
-  const safeGender: 'male' | 'female' | 'other' = !gender || gender === ''
-    ? 'other'
-    : (gender.toLowerCase() as 'male' | 'female' | 'other');
+): Promise<string> => {
+  // Normalizza genere — solo i 3 valori validi, altrimenti 'other'
+  const validGenders: AvatarGender[] = ['male', 'female', 'other'];
+  const normalizedGender = gender?.toLowerCase() as AvatarGender;
+  const safeGender: AvatarGender = validGenders.includes(normalizedGender)
+    ? normalizedGender
+    : 'other';
 
-  // Normalizza età
+  // Normalizza età — default 25 (fascia adult)
   const safeAge = typeof age === 'string'
     ? (Number(age) || 25)
-    : (age || 25);
+    : (age ?? 25);
 
   return getSmartAvatarUrl(safeGender, safeAge);
 };
 
 /**
- * Verifica se un URL appartiene al sistema Smart Avatar (per evitare di sovrascrivere avatar caricati manualmente)
+ * Verifica se un URL è un preset Smart Avatar (bucket avatars-preset).
+ * Serve a non sovrascrivere gli avatar caricati manualmente dall'utente
+ * (che vivono nel bucket separato avatars-user-upload).
  */
 export const isSmartAvatar = (url?: string): boolean => {
   if (!url) return false;
-  return url.includes('avatars_user') && (url.includes('male_') || url.includes('female_'));
+  return url.includes('avatars-preset');
+};
+
+/**
+ * Helper per ottenere tutte le combinazioni valide — utile per validare
+ * che tutti i file siano presenti nel bucket o per pre-caching.
+ * @deprecated Le combinazioni ora vivono in media_assets; usa getPresetAvatars() se hai bisogno dei dati.
+ */
+export const getAllAvatarFileNames = (): string[] => {
+  const genders: AvatarGender[] = ['male', 'female', 'other'];
+  const brackets: AgeBracket[] = ['teen', 'adult', 'senior'];
+  const variants = [1, 2, 3, 4];
+  const files: string[] = [];
+
+  for (const gender of genders) {
+    for (const bracket of brackets) {
+      for (const variant of variants) {
+        files.push(`${gender}_${bracket}_${variant}.webp`);
+      }
+    }
+  }
+
+  return files; // 36 files totali
 };

@@ -1,258 +1,277 @@
 
 import React from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { Button, Icon, Card, InfoCard, Typography, MediaImage } from '../components/ui/index';
-import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
-import { SmartHeaderSection } from '../components/layout/SmartHeaderSection';
-import { HeaderSection } from '../components/layout/HeaderSection';
+import { SmartHomeCard, InfoCard, StatCard, MediaImage, AkhaThemedLine, GlassCardFull, FaqBottomPage, ButtonVariant } from '../components/ui/index';
+import { SiblingInfoSection } from '../components/layout';
+import { SmartHeaderSection, ScrollEntrance, PageSEO } from '../components/layout/index';
+import PageEssentials from '../components/layout/PageEssentials';
 import { useFrontHomeCards } from '../hooks/useFrontHomeCards';
-import { useRandomCultureSection } from '../hooks/useRandomCultureSection';
+import { useHomePageSections, toStatCardColor, HomeSectionId } from '../hooks/useHomePageSections';
 import AudioPlayer from '../components/modal/AudioPlayer';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { GlassCard } from '../components/ui/index';
-import {
-  CHERRY_FEATURES,
-  CHERRY_IMAGE_URL,
-  CHERRY_AUDIO_URL,
-  HOME_FEATURE_CARDS,
-} from '@thaiakha/shared/data';
 import { t } from '@thaiakha/shared/lib/ui-strings';
+import { HomeGridSkeleton } from '../components/skeleton';
 
-const ROW1_PATHS = ['/classes', '/recipes', '/booking'];
+// ─── HomeGlassSection — deduplica pattern home_03/04 e home_05/06 ────────────
+interface HomeGlassSectionProps {
+  headerId: HomeSectionId;
+  cardId: HomeSectionId;
+  imageAssetId?: string;
+  imageAlt?: string;
+  imageHref?: string;
+  buttonText?: string;
+  buttonVariant?: ButtonVariant;
+  glassVariant?: 'action' | 'secondary';
+  imagePosition?: 'left' | 'right';
+  gradientFrom?: string;
+  gradientTo?: string;
+  buttonSize?: 'xs' | 'sm' | 'md' | 'lg';
+  onNavigate: (p: string, t?: string, s?: string) => void;
+}
 
-const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => void }> = ({ onNavigate }) => {
-  const { cards, loading } = useFrontHomeCards();
-  const { section: randomSection } = useRandomCultureSection();
-
-  const row1Cards = cards.filter(c => ROW1_PATHS.includes(c.target_path));
-  const row2Cards = cards.filter(c => !ROW1_PATHS.includes(c.target_path));
+function HomeGlassSection({
+  headerId,
+  cardId,
+  imageAssetId,
+  imageAlt,
+  imageHref,
+  buttonText,
+  buttonVariant = 'brand',
+  glassVariant = 'action',
+  imagePosition = 'left',
+  gradientFrom = 'quiz-s',
+  gradientTo = 'primary',
+  buttonSize = 'sm',
+  onNavigate,
+}: HomeGlassSectionProps) {
+  const { sections: pageSections, loading: sectionsLoading } = useHomePageSections();
 
   return (
-    <PageLayout slug="home" loading={loading} showPatterns={true} hideDefaultHeader={false}>
-      <div className="flex flex-col [gap:var(--space-fluid-section)] [padding-bottom:var(--space-fluid-3xl)]">
+    <section className="flex flex-col [gap:var(--space-fluid-m)]">
+      <div className="hidden md:block">
+        <SmartHeaderSection
+          sectionId={headerId}
+          prefetchedData={pageSections[headerId]}
+          loading={sectionsLoading}
+          variant="hero2"
+          align="center"
+          gradientFrom={gradientFrom}
+          gradientTo={gradientTo}
+          hideSubtitle
+        />
+      </div>
+      <GlassCardFull
+        sectionId={cardId}
+        prefetchedData={pageSections[cardId]}
+        loading={sectionsLoading}
+        imageAssetId={imageAssetId}
+        imageAlt={imageAlt}
+        imageHref={imageHref}
+        buttonText={buttonText}
+        buttonVariant={buttonVariant}
+        buttonSize={buttonSize}
+        onNavigate={onNavigate}
+        imagePosition={imagePosition}
+        glassVariant={glassVariant}
+      />
+    </section>
+  );
+}
+
+// ─── HomePage ─────────────────────────────────────────────────────────────────
+const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => void }> = ({ onNavigate }) => {
+  const { cards, loading: cardsLoading } = useFrontHomeCards(['home-card-01', 'home-card-02', 'home-card-03', 'home-card-04', 'home-card-05']);
+  const { sections: pageSections, metadata: pageMetadata, loading: sectionsLoading } = useHomePageSections();
+
+  return (
+    <PageLayout
+      slug="home"
+      customMetadata={pageMetadata || undefined}
+      loading={sectionsLoading}
+      instantContent
+      showPatterns={true}
+      hideDefaultHeader={false}
+    >
+      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
+          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
+      <PageSEO
+        title={pageMetadata?.seoTitle || t.seo.home.title}
+        description={pageMetadata?.seoDescription || t.seo.home.description}
+        canonical={pageMetadata?.canonicalUrl || t.seo.home.canonical}
+        ogTitle={pageMetadata?.ogTitle || pageMetadata?.seoTitle || undefined}
+        ogDescription={pageMetadata?.ogDescription || pageMetadata?.seoDescription || undefined}
+        ogImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || undefined}
+        ogType={(pageMetadata?.ogType as 'website' | 'article' | 'profile') || 'website'}
+      />
+
+        {/* ── HERO IMAGE ──────────────────────────────────────────────────────
+            Il container è SEMPRE renderizzato: riserva lo spazio (aspect-15/5)
+            così l'arrivo tardivo di pageMetadata.imageUrl non causa layout shift.
+            Il bg-surface-2 fa da skeleton; l'immagine entra in dissolvenza. */}
+        <div className="w-full relative aspect-15/5 rounded-[2rem] overflow-hidden border-2 border-border shadow-2xl group bg-surface-2">
+          {pageMetadata?.imageUrl && (
+            <>
+              <MediaImage
+                url={pageMetadata.imageUrl}
+                showCaption={false}
+                fallbackAlt={t.alt.homeHero}
+                imgClassName="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                fetchPriority="high"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-30 pointer-events-none" />
+            </>
+          )}
+        </div>
+
+        <AkhaThemedLine theme="akha" />
+
+        {/* ── EXPLORE GRID + AUDIO ────────────────────────────────────────── */}
+        <ScrollEntrance delay={0.1}>
+          <div className="flex flex-col [gap:var(--space-fluid-l)]">
+            <section id="home_02" className="flex flex-col [gap:var(--space-fluid-m)]">
+              <SmartHeaderSection
+                sectionId="home_02"
+                prefetchedData={pageSections['home_02']}
+                loading={sectionsLoading}
+                variant="hero2"
+                align="center"
+                gradientFrom="primary"
+                gradientTo="action"
+              />
+
+              {cardsLoading ? (
+                <HomeGridSkeleton />
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-6 [gap:var(--space-fluid-m)]">
+                  {cards.map((card, idx) => {
+                    const isLast = idx === 4;
+                    const colClass = cn(
+                      idx < 3 ? 'md:col-span-2' : 'md:col-span-3',
+                      isLast ? 'col-span-2' : 'col-span-1'
+                    );
+
+                    return (
+                      <div key={card.card_id} className={colClass}>
+                        {/* Single DOM instance for every card — no responsive dual-render.
+                            Cards 0-2: vertical; cards 3-4: horizontal (same on mobile+desktop).
+                            Eliminates T01/T05 pickup-text duplication and D04 duplicate H3. */}
+                        <SmartHomeCard
+                          cardId={card.card_id}
+                          layout={idx < 3 ? 'vertical' : 'horizontal'}
+                          showDivider={true}
+                          onNavigate={onNavigate}
+                          buttonSize="xs"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            {/* Audio Highlight — The Kitchen Vibe */}
+            <div className="w-full max-w-xl mx-auto">
+              <AudioPlayer assetId="01-kitchen-home" />
+            </div>
+          </div>
+        </ScrollEntrance>
+
+        <AkhaThemedLine theme="akha" />
 
         {/* ── MEET CHERRY ─────────────────────────────────────────────────── */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
-
-          {/* Colonna testo */}
-          <div className="order-2 lg:order-1 flex flex-col [gap:var(--space-fluid-m)]">
-            <SmartHeaderSection
-              sectionId="home_01"
-              variant="section"
-              align="left"
-              gradientFrom="primary"
-              gradientTo="action"
-            />
-
-            <div className="grid grid-cols-2 md:grid-cols-2 [gap:var(--space-fluid-s)]">
-              {CHERRY_FEATURES.map(f => (
-                <Card key={f.title} variant="interactive" padding="md" rounded="xl">
-                  <Icon name={f.icon} className={`${f.colorClass} [margin-bottom:var(--space-fluid-xs)]`} />
-                  <Typography variant="h5">{f.title}</Typography>
-                  <Typography variant="paragraphS">{f.description}</Typography>
-                </Card>
-              ))}
+        <ScrollEntrance delay={0.1} viewportMargin="-20px">
+          <section id="home_01" className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
+            {/* Colonna Immagine (Full-width mobile, rounded lg on desktop) */}
+            <div className="order-1 lg:order-2 w-full relative aspect-square rounded-[2rem] lg:rounded-[3rem] overflow-hidden border-2 border-border shadow-2xl group bg-surface-2">
+              <MediaImage
+                assetId="01-home-cherry"
+                className="relative z-20 w-full h-full"
+                imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                fallbackAlt={t.alt.cherry}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-30 pointer-events-none" />
             </div>
-          </div>
 
-          {/* Colonna immagine + AudioPlayer */}
-          <div className="order-1 lg:order-2 relative aspect-square rounded-[3rem] overflow-hidden border-2 border-border shadow-2xl group">
-            <img
-              src={CHERRY_IMAGE_URL}
-              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-              alt="Cherry Assistant"
-            />
-            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-            <div className="absolute bottom-8 left-8 right-8">
-              <AudioPlayer url={CHERRY_AUDIO_URL} hideTranscript />
-            </div>
-          </div>
+            {/* Colonna Testo + StatCards + Audio */}
+            <div className="order-2 lg:order-1 flex flex-col [gap:var(--space-fluid-m)]">
+              <SmartHeaderSection
+                sectionId="home_01"
+                prefetchedData={pageSections['home_01']}
+                loading={sectionsLoading}
+                variant="section"
+                align="left"
+                gradientFrom="action"
+                gradientTo="allergy"
+              />
 
-        </section>
+              <AudioPlayer assetId="01-cherry-home" hideTranscript className="w-full" />
 
-        <div className="[margin-top:var(--space-fluid-m)] opacity-30">
-          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-        </div>
-
-        {/* ── EXPLORE ─────────────────────────────────────────────────────── */}
-        <section className="flex flex-col [gap:var(--space-fluid-m)]">
-          <SmartHeaderSection
-            sectionId="home_02"
-            variant="section"
-            align="center"
-            gradientFrom="btn-s"
-            gradientTo="secondary"
-          />
-
-          {/* ── EXPLORE GRID (Responsive: 2x2+1 on mobile/tablet, 3+2 on desktop) ── */}
-          <div className="grid grid-cols-2 md:grid-cols-6 [gap:var(--space-fluid-m)]">
-            {!loading && [...row1Cards, ...row2Cards.slice(0, 2)].map((card, idx) => {
-              const isLast = idx === 4;
-              return (
-                <div
-                  key={card.id}
-                  className={cn(
-                    // Desktop: le prime 3 occupano 2/6, le altre 3/6
-                    idx < 3 ? 'md:col-span-2' : 'md:col-span-3',
-                    // Mobile/Tablet: le prime 4 occupano 1/2, l'ultima 2/2
-                    isLast ? 'col-span-2' : 'col-span-1'
-                  )}
-                >
-                  {/* 
-                    TRUCCO: Per la quarta card (idx === 3), la vogliamo verticale su mobile (per il 2x2) 
-                    ma orizzontale su desktop (per la riga a 2). Usiamo hidden/block per scambiarle.
-                  */}
-                  {idx === 3 ? (
-                    <>
-                      <div className="md:hidden">
-                        <InfoCard
-                          card={{ ...card, link: card.target_path.replace('/', ''), desc: card.description, image: card.image_url }}
-                          layout="vertical"
-                          onNavigate={onNavigate}
-                        />
-                      </div>
-                      <div className="hidden md:block">
-                        <InfoCard
-                          card={{ ...card, link: card.target_path.replace('/', ''), desc: card.description, image: card.image_url }}
-                          layout="horizontal"
-                          onNavigate={onNavigate}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <InfoCard
-                      card={{ ...card, link: card.target_path.replace('/', ''), desc: card.description, image: card.image_url }}
-                      layout={idx < 3 ? 'vertical' : 'horizontal'}
-                      onNavigate={onNavigate}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <div className="[margin-top:var(--space-fluid-m)] opacity-30">
-          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-        </div>
-
-        {/* ── SECTION 03 (Akha People — random culture article) ───────────── */}
-        <section className="flex flex-col [gap:var(--space-fluid-m)]">
-          <SmartHeaderSection
-            sectionId="home_03"
-            variant="section"
-            align="center"
-            gradientFrom="btn-s"
-            gradientTo="secondary"
-          />
-          <GlassCard variant="action" className="[padding:var(--space-fluid-l)] overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
-
-              {/* Photo Left */}
-              <div className="order-2 lg:order-1 rounded-4xl overflow-hidden border border-white/10 group aspect-video">
-                {randomSection?.primary_image
-                  ? <MediaImage
-                      assetId={randomSection.primary_image}
-                      showCaption={false}
-                      className="w-full h-full"
-                      imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  : <div className="w-full h-full bg-surface-2 animate-pulse" />
-                }
-              </div>
-
-              {/* Text Right */}
-              <div className="order-1 lg:order-2 flex flex-col [gap:var(--space-fluid-s)]">
-                {randomSection
-                  ? <HeaderSection
-                      title={randomSection.title}
-                      subtitle={randomSection.subtitle ?? undefined}
-                      variant="section"
-                      align="left"
-                      gradientFrom="primary"
-                      gradientTo="action"
-                      hideTag={true}
-                    />
-                  : <SmartHeaderSection
-                      sectionId="home_03"
-                      variant="section"
-                      align="left"
-                      gradientFrom="primary"
-                      gradientTo="action"
-                      hideTag={true}
-                    />
-                }
-                <div className="[padding-top:var(--space-fluid-s)]">
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    icon="auto_stories"
-                    onClick={() => randomSection
-                      ? onNavigate('history', undefined, randomSection.slug)
-                      : onNavigate('history')
-                    }
-                  >
-                    {randomSection ? t.home.readChapter : t.home.discoverHeritage}
-                  </Button>
-                </div>
+              <div className="grid grid-cols-2 [gap:var(--space-fluid-m)]">
+                {(pageSections['home_01']?.cards ?? []).map((card) => (
+                  <StatCard
+                    key={card.title}
+                    color={toStatCardColor(card.variant)}
+                    value={card.title}
+                    description={card.description}
+                    size="md"
+                    shadow={false}
+                  />
+                ))}
               </div>
 
             </div>
-          </GlassCard>
-        </section>
+          </section>
+        </ScrollEntrance>
 
-        <div className="[margin-top:var(--space-fluid-m)] opacity-30">
-          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-        </div>
+        <AkhaThemedLine theme="history" />
+
+        {/* ── SECTION 03 (Akha People) ────────────────────────────────────── */}
+        <ScrollEntrance delay={0.1} viewportMargin="-20px">
+          <HomeGlassSection
+            headerId="home_03"
+            cardId="home_04"
+            buttonVariant="primary"
+            buttonSize="sm"
+            glassVariant="action"
+            imagePosition="left"
+            gradientFrom="quiz-s"
+            gradientTo="primary"
+            onNavigate={onNavigate}
+          />
+        </ScrollEntrance>
+
+        <AkhaThemedLine theme="akha" />
 
         {/* ── SECTION 04 (AI Quiz) ────────────────────────────────────────── */}
-        <section className="flex flex-col [gap:var(--space-fluid-m)]">
-          <SmartHeaderSection
-            sectionId="home_04"
-            variant="section"
-            align="center"
-            gradientFrom="btn-s"
-            gradientTo="secondary"
+        <ScrollEntrance delay={0.1} viewportMargin="-20px">
+          <HomeGlassSection
+            headerId="home_05"
+            cardId="home_06"
+            buttonVariant="quiz-p"
+            buttonSize="sm"
+            glassVariant="secondary"
+            imagePosition="right"
+            gradientFrom="quiz-p"
+            gradientTo="allergy"
+            onNavigate={onNavigate}
           />
-          <GlassCard variant="secondary" className="[padding:var(--space-fluid-l)] overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
+        </ScrollEntrance>
 
-              {/* Text Left */}
-              <div className="flex flex-col [gap:var(--space-fluid-s)]">
-                <SmartHeaderSection
-                  sectionId="home_04"
-                  variant="section"
-                  align="right"
-                  gradientFrom="btn-s"
-                  gradientTo="secondary"
-                  hideTag={true}
-                />
-                <div className="[padding-top:var(--space-fluid-s)] flex justify-center lg:justify-end">
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    icon="psychology"
-                    onClick={() => onNavigate('quiz')}
-                  >
-                    {t.quiz.startQuiz}
-                  </Button>
-                </div>
-              </div>
 
-              {/* Photo Right */}
-              <div className="rounded-4xl overflow-hidden border border-white/10 group aspect-video">
-                <img
-                  src={CHERRY_IMAGE_URL}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  alt="AI Quiz"
-                />
-              </div>
+        <PageEssentials
+          slug="home"
+        />
 
-            </div>
-          </GlassCard>
-        </section>
+        <FaqBottomPage slug="home"
+          onNavigate={onNavigate} buttonSize="sm" />
 
-      </div>
+        <SiblingInfoSection
+          currentSlug="home"
+          onNavigate={onNavigate}
+          sectionId="sibiling_home"
+        />
+
     </PageLayout>
   );
 };

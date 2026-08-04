@@ -48,7 +48,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                 <div className="flex justify-between items-center">
                                     <SectionHeader title={col.replace(/_/g, ' ')} />
                                     {isReadOnly && (
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                                        <span className="text-xs font-black text-gray-400 uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                                             READ ONLY
                                         </span>
                                     )}
@@ -95,7 +95,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                     type="button"
                                     variant="olive"
                                     size="md"
-                                    className="w-full justify-center h-11 text-[11px] font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
+                                    className="w-full justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
                                     startIcon={<Trash2 className="w-5 h-5 text-white" />}
                                     onClick={() => onShowDeleteConfirm(true)}
                                 >
@@ -105,7 +105,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                 <div className="flex gap-3">
                                     <Button
                                         type="button"
-                                        className="flex-1 justify-center h-11 text-[11px] font-black border-none uppercase tracking-widest animate-in fade-in slide-in-from-bottom-1 shadow-lg shadow-red-500/20"
+                                        className="flex-1 justify-center h-11 text-xs font-black border-none uppercase tracking-widest animate-in fade-in slide-in-from-bottom-1 shadow-lg shadow-red-500/20"
                                         onClick={onDelete}
                                     >
                                         CONFIRM
@@ -113,7 +113,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="flex-1 justify-center h-11 text-[11px] font-black text-gray-500 uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
+                                        className="flex-1 justify-center h-11 text-xs font-black text-gray-500 uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
                                         onClick={() => onShowDeleteConfirm(false)}
                                     >
                                         CANCEL

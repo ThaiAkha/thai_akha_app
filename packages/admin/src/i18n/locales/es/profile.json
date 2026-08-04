@@ -1,0 +1,53 @@
+{
+  "personal": {
+    "title": "Cuenta de usuario",
+    "roleDefault": "INVITADO",
+    "fieldFullName": "Nombre completo",
+    "fieldPhone": "Teléfono",
+    "fieldNationality": "Nacionalidad",
+    "searchCountry": "Buscar país...",
+    "editLabel": "Editar perfil",
+    "saveLabel": "Guardar datos",
+    "notSpecified": "No especificado"
+  },
+  "avatar": {
+    "uploadFail": "Error al subir: {{message}}"
+  },
+  "agency": {
+    "fieldCompany": "Empresa / Nombre de agencia",
+    "placeholderCompany": "Nombre oficial de la agencia",
+    "fieldAddress": "Dirección de facturación",
+    "placeholderAddress": "Calle, número",
+    "fieldCountry": "País",
+    "searchCountry": "Buscar país...",
+    "fieldCity": "Ciudad",
+    "placeholderCity": "Ciudad oficial",
+    "fieldProvince": "Provincia / Región",
+    "placeholderProvince": "Provincia",
+    "fieldPostalCode": "Código postal",
+    "placeholderPostalCode": "00000",
+    "fieldTaxId": "ID fiscal / IVA",
+    "placeholderTaxId": "Número de registro IVA",
+    "fieldCommission": "Tasa de comisión",
+    "commissionDefault": "Nivel estándar",
+    "editLabel": "Editar datos de agencia",
+    "saveLabel": "Actualizar identidad"
+  },
+  "security": {
+    "fieldNewPassword": "Nueva contraseña",
+    "fieldConfirmPassword": "Confirmar nueva contraseña",
+    "placeholderPassword": "••••••••",
+    "errorMismatch": "Las contraseñas no coinciden",
+    "errorMinLength": "La contraseña debe tener al menos 6 caracteres",
+    "successUpdated": "¡Contraseña actualizada exitosamente!",
+    "errorFailed": "Error al actualizar la contraseña",
+    "btnUpdating": "Actualizando...",
+    "btnUpdate": "Actualizar contraseña",
+    "dangerZoneTitle": "Zona de peligro",
+    "dangerZoneDesc": "La desactivación de la cuenta es permanente. Todas tus preferencias y datos asociados a esta sesión serán bloqueados.",
+    "btnDeactivate": "Desactivar cuenta",
+    "confirmRequired": "Confirmación crítica requerida",
+    "btnCancel": "Cancelar",
+    "btnConfirm": "Confirmar"
+  }
+}

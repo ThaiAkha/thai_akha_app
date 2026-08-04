@@ -19,6 +19,9 @@
     "modify": "Modify",
     "submitReport": "Submit Report",
     "publishPlan": "Publish Plan",
+    "saveDraft": "Save draft",
+    "confirmReport": "Confirm report",
+    "deleteReport": "Delete report",
     "refresh": "Refresh",
     "sendOrder": "Send Order",
     "finishRun": "FINISH RUN"
@@ -53,13 +56,15 @@
     "noHistory": "No history found for this category.",
     "noContent": "No content",
     "noListFound": "No List Found",
-    "noItemsForStall": "No items found for this stall"
+    "noItemsForStall": "No items found for this stall",
+    "noIngredients": "No ingredients match your search."
   },
   "messages": {
     "mustBeLoggedIn": "You must be logged in to save market reports.",
     "selectAtLeastOne": "Please select at least one item.",
     "saveSuccess": "Changes saved successfully!",
     "saveError": "Error saving: {{message}}",
+    "confirmDelete": "Delete this report? This cannot be undone.",
     "kitchenNotPublished": "The Kitchen Manager hasn't published a shopping list for today yet.",
     "finishConfirm": "Mark this run as COMPLETED and save all costs?",
     "unboughtWarning": "Wait! You have {{count}} items left unbought. Finish anyway?",
@@ -67,5 +72,10 @@
     "error": "Error: {{message}}",
     "emergencyItemName": "Emergency Item Name?",
     "loading": "Loading..."
+  },
+  "shopItem": {
+    "reportedCost": "Reported Cost",
+    "addedToList": "Added to list",
+    "clickToAdd": "Click to add"
   }
 }

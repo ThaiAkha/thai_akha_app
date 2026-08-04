@@ -110,7 +110,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                 }}
                                 disabled={isFirst}
                                 className={cn(
-                                    "h-8 w-8 flex items-center justify-center rounded-lg text-xs font-bold transition-colors shrink-0",
+                                    "h-9 w-9 flex items-center justify-center rounded-lg text-sm font-bold transition-colors shrink-0",
                                     isFirst
                                         ? "bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed"
                                         : "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
@@ -126,7 +126,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                 }}
                                 disabled={isLast}
                                 className={cn(
-                                    "h-8 w-8 flex items-center justify-center rounded-lg text-xs font-bold transition-colors shrink-0",
+                                    "h-9 w-9 flex items-center justify-center rounded-lg text-sm font-bold transition-colors shrink-0",
                                     isLast
                                         ? "bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-600 cursor-not-allowed"
                                         : "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
@@ -144,7 +144,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                             onMoveItem(item.id, 'to-driver', e.target.value);
                                         }
                                     }}
-                                    className="flex-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                                    className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
                                 >
                                     <option value="">{t('actions.assign')}</option>
                                     {drivers.map(d => (
@@ -161,7 +161,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
 
             {items.length === 0 && (
                 <div className="h-full flex flex-col items-center justify-center opacity-30 gap-2">
-                    <span className="text-[10px] font-bold uppercase">{t('fallback.empty')}</span>
+                    <span className="text-sm font-bold uppercase">{t('fallback.empty')}</span>
                 </div>
             )}
         </div>

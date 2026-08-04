@@ -6,13 +6,14 @@ import { useTheme } from "../context/ThemeContext";
 import { contentService } from "@thaiakha/shared/services";
 import { LogoIconLight, LogoIconDark } from "@thaiakha/shared";
 import { getIcon } from "@thaiakha/shared/lib/icons";
-import { supabase } from "@thaiakha/shared/lib/supabase";
 import Tooltip from "../components/ui/Tooltip";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, RotateCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const FRONT_APP_URL = import.meta.env.VITE_FRONT_APP_URL || 'https://www.thaiakha.com';
 const SIDEBAR_TRANSITION = '800ms';
+const SIDEBAR_Z_INDEX = 'z-[99]';
+const SKELETON_ITEMS = 6;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LOCAL SUB-COMPONENTS
@@ -21,19 +22,26 @@ const SIDEBAR_TRANSITION = '800ms';
 interface NavItemProps {
   icon: string;
   label: string;
+  href: string;
   isActive: boolean;
   onClick: () => void;
   isOpen: boolean;
 }
 
-function NavItem({ icon, label, isActive, onClick, isOpen }: NavItemProps) {
+function NavItem({ icon, label, href, isActive, onClick, isOpen }: NavItemProps) {
   const IconComponent = getIcon(icon);
   return (
-    <button
-      onClick={onClick}
-      title={label}
+    <a
+      href={href}
+      onClick={(e) => {
+        // Let the browser handle new-tab / middle-click natively (Cmd/Ctrl/middle).
+        if (e.ctrlKey || e.metaKey || e.button !== 0) return;
+        e.preventDefault();
+        onClick();
+      }}
+      aria-current={isActive ? 'page' : undefined}
       className={`
-        relative flex items-center w-full h-12
+        group relative flex items-center w-full h-12 no-underline
         transition-colors duration-200 rounded-xl pl-0 pr-1 cursor-pointer
         ${isActive ? 'bg-primary-500/20 dark:bg-primary-500/20' : 'hover:bg-primary-500/10 dark:hover:bg-primary-500/10'}
       `}
@@ -53,12 +61,27 @@ function NavItem({ icon, label, isActive, onClick, isOpen }: NavItemProps) {
           {label}
         </span>
       </div>
-    </button>
+    </a>
   );
 }
 
 function Divider({ className = 'my-1' }: { className?: string }) {
   return <div className={`h-px bg-gray-100 dark:bg-gray-900 ${className}`} role="separator" />;
+}
+
+function SkeletonNavItem({ isOpen }: { isOpen: boolean }) {
+  return (
+    <li aria-hidden="true" className="flex items-center w-full h-12">
+      <div className="w-[108px] shrink-0 flex items-center justify-center pr-4">
+        <div className="w-6 h-6 rounded-md bg-gray-200 dark:bg-gray-800 animate-pulse" />
+      </div>
+      {isOpen && (
+        <div className="flex-1 pr-4">
+          <div className="h-3.5 w-2/3 rounded bg-gray-200 dark:bg-gray-800 animate-pulse" />
+        </div>
+      )}
+    </li>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -73,30 +96,40 @@ type NavItemData = {
 const AppSidebar: React.FC = () => {
   const { t, i18n } = useTranslation('navigation');
   const { isExpanded, isMobileOpen, toggleMobileSidebar } = useSidebar();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<NavItemData[]>([]);
+  const [menuState, setMenuState] = useState<'loading' | 'ready' | 'error'>('loading');
 
-  useEffect(() => {
-    const loadMenu = async () => {
-      try {
-        const items = await contentService.getMenuItems('site_metadata_admin', i18n.language);
-        if (!items) { console.error('No menu items returned from database'); return; }
-        setMenuItems(items.map((item: any) => ({
-          name: item.menu_label,
-          icon: item.header_icon || 'LayoutDashboard',
-          path: `/${item.page_slug}`,
-          allowedRoles: item.access_level ? [item.access_level] : [],
-        })));
-      } catch (error) { console.error('Failed to load menu items:', error); }
-    };
-    loadMenu();
+  const loadMenu = useCallback(async () => {
+    setMenuState('loading');
+    try {
+      const items = await contentService.getMenuItems('site_metadata_admin', i18n.language);
+      if (!items) { console.error('No menu items returned from database'); setMenuState('error'); return; }
+      setMenuItems(items.map((item: any) => ({
+        name: item.menu_label,
+        icon: item.header_icon || 'LayoutDashboard',
+        path: `/${item.page_slug}`,
+        allowedRoles: item.access_level ? [item.access_level] : [],
+      })));
+      setMenuState('ready');
+    } catch (error) {
+      console.error('Failed to load menu items:', error);
+      setMenuState('error');
+    }
   }, [i18n.language]);
 
+  useEffect(() => { loadMenu(); }, [loadMenu]);
+
   const isSidebarOpen = isExpanded || isMobileOpen;
-  const isActive = (path: string) => location.pathname === path;
+  // Active on the exact route AND its sub-routes (e.g. /admin-news/123 lights up /admin-news).
+  // '/' must stay exact, otherwise it would match every path.
+  const isActive = (path: string) =>
+    path === '/'
+      ? location.pathname === '/'
+      : location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   const filterByRole = (items: NavItemData[]) =>
     items.filter(item => {
@@ -111,6 +144,7 @@ const AppSidebar: React.FC = () => {
       <NavItem
         icon={nav.icon}
         label={nav.name}
+        href={nav.path}
         isActive={active}
         onClick={() => {
           if (location.pathname !== nav.path) navigate(nav.path);
@@ -128,25 +162,21 @@ const AppSidebar: React.FC = () => {
     );
   };
 
-  const handleGoToLiveWeb = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleGoToLiveWeb = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.access_token && session?.refresh_token) {
-        const url = `${FRONT_APP_URL}#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}&token_type=bearer`;
-        window.open(url, '_blank', 'noopener,noreferrer');
-      } else {
-        window.open(FRONT_APP_URL, '_blank', 'noopener,noreferrer');
-      }
-    } catch {
-      window.open(FRONT_APP_URL, '_blank', 'noopener,noreferrer');
-    }
-  }, []);
+    // Build the URL synchronously from the in-context session: opening the tab
+    // after an `await` makes the browser treat window.open as non-user-initiated
+    // and the popup gets blocked. Session is already available via useAuth().
+    const url = session?.access_token && session?.refresh_token
+      ? `${FRONT_APP_URL}#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}&token_type=bearer`
+      : FRONT_APP_URL;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }, [session]);
 
   return (
     <aside
       style={{ transitionDuration: SIDEBAR_TRANSITION }}
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white/20 dark:bg-gray-dark dark:border-gray-900 text-gray-900 h-screen z-[99] border-r border-gray-100
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen ${SIDEBAR_Z_INDEX} border-r border-gray-100
         transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
         ${isSidebarOpen ? "w-80" : "w-[108px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -179,11 +209,31 @@ const AppSidebar: React.FC = () => {
         </div>
 
         {/* MENU LIST */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <nav
+          aria-label={t('sidebar.menuLabel', { defaultValue: 'Main navigation' })}
+          className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
+        >
           <ul className="flex flex-col gap-2">
-            {filterByRole(menuItems).map(renderNavItem)}
+            {menuState === 'loading' ? (
+              Array.from({ length: SKELETON_ITEMS }).map((_, i) => (
+                <SkeletonNavItem key={i} isOpen={isSidebarOpen} />
+              ))
+            ) : menuState === 'error' ? (
+              <li className={`px-2 ${isSidebarOpen ? '' : 'flex justify-center'}`}>
+                <button
+                  onClick={loadMenu}
+                  className="flex items-center gap-2 w-full h-12 px-3 rounded-xl text-sm font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-500/10 transition-colors"
+                  title={t('sidebar.retry', { defaultValue: 'Retry' })}
+                >
+                  <RotateCw className="w-5 h-5 shrink-0" />
+                  {isSidebarOpen && <span>{t('sidebar.retry', { defaultValue: 'Retry' })}</span>}
+                </button>
+              </li>
+            ) : (
+              filterByRole(menuItems).map(renderNavItem)
+            )}
           </ul>
-        </div>
+        </nav>
 
         {/* FOOTER - GO LIVE WEB CARD */}
         <div className={`mt-auto mx-1 pb-6 transition-all duration-500 ${isSidebarOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>

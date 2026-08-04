@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "title": "Calendario | Thai Akha Kitchen",
+    "description": "Gestionar disponibilidad de sesiones y calendario de reservas."
+  },
+  "legend": {
+    "available": "Disponible",
+    "booked": "Reservado",
+    "closed": "Cerrado",
+    "selected": "Seleccionado"
+  },
+  "bulk": {
+    "morning": "Mañana",
+    "evening": "Tarde",
+    "allDay": "Todo el día"
+  },
+  "header": {
+    "bulkEdit": "Edición masiva",
+    "closeBulk": "Cerrar edición masiva",
+    "months": [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ]
+  },
+  "inspector": {
+    "emptyBulk": "Selecciona días para edición masiva",
+    "emptySelect": "Selecciona una fecha para comenzar",
+    "bulkDays_one": "{{count}} día",
+    "bulkDays_other": "{{count}} días",
+    "bulkUpdateAll": "Act. masiva: Todo el día",
+    "bulkUpdateMorning": "Act. masiva: Solo mañana",
+    "bulkUpdateEvening": "Act. masiva: Solo tarde",
+    "editingDay": "Editando día",
+    "quickPreview": "Vista rápida",
+    "morningClass": "Clase de mañana",
+    "eveningClass": "Clase de tarde",
+    "allClasses": "Todas las clases",
+    "session": "Sesión",
+    "booked": "Reservado",
+    "available": "Disponible",
+    "classClose": "Cerrar clase",
+    "forceClose": "Forzar cierre",
+    "closingReason": "Motivo de cierre",
+    "reasonPlaceholder": "Ejemplo: Evento privado",
+    "addRemoveSpots": "Añadir/quitar lugares",
+    "availableSeats": "Asientos disponibles",
+    "bulkModHint": "La modificación añadirá/restará lugares a la capacidad actual",
+    "totalCapacity": "Capacidad total: {{count}}",
+    "saveDays_one": "GUARDAR {{count}} DÍA",
+    "saveDays_other": "GUARDAR {{count}} DÍAS",
+    "saveChanges": "GUARDAR CAMBIOS",
+    "editAvailability": "EDITAR DISP.",
+    "cancel": "CANCELAR"
+  },
+  "sidebar": {
+    "morningClass": "Clase de mañana",
+    "eveningClass": "Clase de tarde",
+    "bulkModeTitle": "Modo edición masiva",
+    "bulkModeInfo": "Los días con reservas están bloqueados por seguridad."
+  },
+  "session": {
+    "booked": "Reservados:",
+    "seatsLeft": "Disponibles:",
+    "empty": "Sesión vacía"
+  }
+}

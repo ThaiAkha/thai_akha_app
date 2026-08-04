@@ -4,7 +4,7 @@ import { getIcon, type IconName } from '@thaiakha/shared/lib/icons';
 
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type IconVariant = 'default' | 'soft' | 'solid' | 'outline';
-export type IconColor = 'default' | 'primary' | 'action' | 'allergy' | 'muted' | 'sub' | 'inverse';
+export type IconColor = 'default' | 'primary' | 'action' | 'allergy' | 'muted' | 'sub' | 'inverse' | 'btn-s' | 'btn-p' | 'quiz-s' | 'ocean-blue';
 
 export interface IconProps {
   name: string | IconName;
@@ -36,6 +36,10 @@ const STYLE_MAP: Record<IconVariant, Record<IconColor, string>> = {
     muted: 'text-muted hover:text-sub',
     sub: 'text-sub hover:text-title',
     inverse: 'text-inverse',
+    'btn-s': 'text-btn-s',
+    'btn-p': 'text-btn-p',
+    'quiz-s': 'text-quiz-s',
+    'ocean-blue': 'text-ocean-blue',
   },
   soft: {
     default: 'bg-surface-2 text-desc hover:bg-border',
@@ -45,6 +49,10 @@ const STYLE_MAP: Record<IconVariant, Record<IconColor, string>> = {
     muted: 'bg-surface-2 text-muted hover:text-sub',
     sub: 'bg-surface-2 text-sub hover:bg-border',
     inverse: 'bg-white/10 text-inverse hover:bg-white/20',
+    'btn-s': 'bg-btn-s/10 text-btn-s hover:bg-btn-s/20',
+    'btn-p': 'bg-btn-p/10 text-btn-p hover:bg-btn-p/20',
+    'quiz-s': 'bg-quiz-s/10 text-quiz-s hover:bg-quiz-s/20',
+    'ocean-blue': 'bg-ocean-blue/10 text-ocean-blue hover:bg-ocean-blue/20',
   },
   solid: {
     default: 'bg-desc text-inverse hover:opacity-90',
@@ -54,6 +62,10 @@ const STYLE_MAP: Record<IconVariant, Record<IconColor, string>> = {
     muted: 'bg-muted text-inverse hover:opacity-90',
     sub: 'bg-sub text-inverse hover:opacity-90',
     inverse: 'bg-inverse text-title hover:opacity-90',
+    'btn-s': 'bg-btn-s text-white hover:brightness-110',
+    'btn-p': 'bg-btn-p text-white hover:brightness-110',
+    'quiz-s': 'bg-quiz-s text-white hover:brightness-110',
+    'ocean-blue': 'bg-ocean-blue text-white hover:brightness-110',
   },
   outline: {
     default: 'border border-border text-desc hover:bg-surface-2',
@@ -63,6 +75,10 @@ const STYLE_MAP: Record<IconVariant, Record<IconColor, string>> = {
     muted: 'border border-border-2 text-muted hover:text-sub',
     sub: 'border border-border-2 text-sub hover:bg-surface-2',
     inverse: 'border border-white/20 text-inverse hover:bg-white/10',
+    'btn-s': 'border border-btn-s/30 text-btn-s hover:bg-btn-s/10',
+    'btn-p': 'border border-btn-p/30 text-btn-p hover:bg-btn-p/10',
+    'quiz-s': 'border border-quiz-s/30 text-quiz-s hover:bg-quiz-s/10',
+    'ocean-blue': 'border border-ocean-blue/30 text-ocean-blue hover:bg-ocean-blue/10',
   }
 };
 

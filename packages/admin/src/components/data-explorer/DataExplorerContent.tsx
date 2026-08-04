@@ -27,7 +27,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                     loop={true}
                     loopDelay={500}
                 />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 animate-pulse">
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 animate-pulse">
                     {t('explorer.loading')}
                 </span>
             </div>

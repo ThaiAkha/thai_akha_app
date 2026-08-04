@@ -1,68 +1,53 @@
-import { useState, useEffect, useMemo } from 'react';
-import { contentService } from '@thaiakha/shared/services';
+import { useMemo } from 'react';
+import { cultureService } from '@thaiakha/shared/services';
 import { CultureSectionDetail, CultureGalleryItem, CultureSection } from '@thaiakha/shared/types';
+import { useContentDetail } from './useContentDetail';
 
-export function useCultureDetail(
-  slug: string, 
-  sections: CultureSection[]
-) {
-  const [section, setSection] = useState<CultureSectionDetail | null>(null);
-  const [galleryItems, setGalleryItems] = useState<CultureGalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  
-  useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(false);
-        
-        // Fetch full detail and gallery in parallel
-        const [detail, gallery] = await Promise.all([
-          contentService.getCultureSectionBySlug(slug),
-          contentService.getCultureGallery(slug)
-        ]);
-        
-        if (!mounted) return;
-        
-        if (!detail) { 
-          setError(true); 
-          return; 
+export function useCultureDetail(slug: string, sections: CultureSection[]) {
+    const fetcher = useMemo(() => (s: string) => cultureService.getCultureSectionBySlug(s), []);
+    const secondaryFetcher = useMemo(() => (s: string) => cultureService.getCultureGallery(s), []);
+
+    const { detail, secondaryData, previous: seqPrev, next: seqNext, loading, error } =
+        useContentDetail<CultureSectionDetail, CultureSection>({
+            slug,
+            listItems: sections,
+            fetcher,
+            secondaryFetcher,
+        });
+
+    const { previous, next } = useMemo(() => {
+        let prev: CultureSection | null = null;
+        let nxt: CultureSection | null = null;
+
+        if (detail?.related_articles && detail.related_articles.length > 0) {
+            prev = sections.find(s => s.slug === detail.related_articles![0] || s.id === detail.related_articles![0]) ?? null;
+            nxt = detail.related_articles!.length > 1
+                ? sections.find(s => s.slug === detail.related_articles![1] || s.id === detail.related_articles![1]) ?? null
+                : null;
+        } else {
+            prev = seqPrev;
+            nxt = seqNext;
         }
-        
-        setSection(detail);
-        setGalleryItems(gallery);
-      } catch (e) {
-        console.error('useCultureDetail load error', e);
-        if (mounted) setError(true);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
 
-    if (slug) {
-      load();
-    }
-    
-    return () => { mounted = false; };
-  }, [slug]);
+        // Always ensure 2 cards: if one or both directions are missing, pick any other section
+        if (!prev && !nxt) {
+            prev = sections.find(s => s.slug !== slug) ?? null;
+            nxt = sections.find(s => s.slug !== slug && s.slug !== prev?.slug) ?? null;
+        } else if (!prev && nxt) {
+            prev = sections.find(s => s.slug !== slug && s.slug !== nxt!.slug) ?? null;
+        } else if (!nxt && prev) {
+            nxt = sections.find(s => s.slug !== slug && s.slug !== prev!.slug) ?? null;
+        }
 
-  const { previous, next } = useMemo(() => {
-    const idx = sections.findIndex(s => s.slug === slug);
-    if (idx === -1 || sections.length === 0) return { previous: null, next: null };
+        return { previous: prev, next: nxt };
+    }, [detail, sections, seqPrev, seqNext, slug]);
+
     return {
-      previous: idx > 0 ? sections[idx - 1] : null,
-      next: idx < sections.length - 1 ? sections[idx + 1] : null,
+        section: detail,
+        galleryItems: (secondaryData as CultureGalleryItem[]) ?? [],
+        previous,
+        next,
+        loading,
+        error,
     };
-  }, [slug, sections]);
-
-  return {
-    section,
-    galleryItems,
-    previous,
-    next,
-    loading,
-    error
-  };
 }

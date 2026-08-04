@@ -25,10 +25,13 @@ const DataExplorerLayout: React.FC<DataExplorerLayoutProps> = ({
     inspectorSize = 'normal',
     children,
 }) => {
-    // normal: center=6, inspector=4, overlay=40%
-    // wide:   center=4, inspector=6, overlay=60%
-    const centerCols = inspectorSize === 'wide' ? 'lg:col-span-4' : 'lg:col-span-6';
-    const inspectorCols = inspectorSize === 'wide' ? 'lg:col-span-6' : 'lg:col-span-4';
+    // Inspector width within the 10-col content area (sidebar takes the other 2/12).
+    // The old inspector was 4/12 ≈ 33% of the page (40% of the content area). Reduced to give
+    // the center more room: tablet (lg, iPad landscape) −10%, desktop (xl) −20%.
+    //   40% × 0.90 = 36% of content → ~30% of page (−10%)
+    //   40% × 0.80 = 32% of content → ~27% of page (−20%)
+    // 'wide' keeps the ~50/50 split unchanged.
+    const inspectorBasis = inspectorSize === 'wide' ? 'lg:basis-[60%]' : 'lg:basis-[36%] xl:basis-[32%]';
     const overlayWidth = inspectorSize === 'wide' ? 'lg:w-[60%]' : 'lg:w-[40%]';
     const overlayMargin = inspectorSize === 'wide' ? 'lg:mr-[60%]' : 'lg:mr-[40%]';
 
@@ -41,28 +44,31 @@ const DataExplorerLayout: React.FC<DataExplorerLayoutProps> = ({
 
                 {/* --- CENTER + RIGHT COLUMNS: Conditional Layout Based on View Mode --- */}
                 {viewMode === 'table' && inspectorOpen ? (
-                    <>
+                    <div className="lg:col-span-10 flex flex-col lg:flex-row min-h-0 overflow-hidden">
                         {/* CENTER COLUMN */}
                         <div
-                            className={`${centerCols} flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-hidden`}
+                            className="flex-1 min-w-0 flex flex-col bg-white dark:bg-gray-900 lg:border-r border-gray-200 dark:border-gray-800 overflow-hidden"
                             onClick={() => onInspectorClose?.()}
                         >
                             <div onClick={(e) => e.stopPropagation()}>
                                 {toolbar}
                             </div>
-                            <div className="flex-1 overflow-auto no-scrollbar">
+                            {/* Content clicks must NOT bubble to the center-column close handler,
+                                otherwise selecting a category/product closes the inspector and
+                                wipes unsaved work (POS cart reset bug). */}
+                            <div className="flex-1 overflow-auto no-scrollbar" onClick={(e) => e.stopPropagation()}>
                                 {children}
                             </div>
                         </div>
 
                         {/* RIGHT COLUMN: Inspector */}
                         <div
-                            className={`${inspectorCols} flex flex-col bg-white dark:bg-gray-900 overflow-hidden`}
+                            className={cn('lg:shrink-0 flex flex-col bg-white dark:bg-gray-900 overflow-hidden', inspectorBasis)}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {inspector}
                         </div>
-                    </>
+                    </div>
                 ) : (
                     /* DEFAULT: Full-width center column (10 colonne) */
                     <div
@@ -73,10 +79,13 @@ const DataExplorerLayout: React.FC<DataExplorerLayoutProps> = ({
                             {toolbar}
                         </div>
 
-                        <div className={cn(
-                            "flex-1 overflow-auto no-scrollbar relative transition-all duration-300",
-                            viewMode === 'grid' && inspectorOpen && overlayMargin
-                        )}>
+                        <div
+                            className={cn(
+                                "flex-1 overflow-auto no-scrollbar relative transition-all duration-300",
+                                viewMode === 'grid' && inspectorOpen && overlayMargin
+                            )}
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             {children}
                         </div>
 

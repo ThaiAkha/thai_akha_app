@@ -1,0 +1,93 @@
+{
+  "statusLabels": {
+    "waiting": "等待中",
+    "enRoute": "途中",
+    "atLobby": "在大厅",
+    "onBoard": "已上车",
+    "completed": "已完成"
+  },
+  "actions": {
+    "startPickup": "开始接客",
+    "imHere": "我到了",
+    "pickupPax": "接乘客",
+    "dropComplete": "已送达",
+    "done": "完成",
+    "confirmAction": "确认操作？",
+    "clickAgainToConfirm": "再次点击确认"
+  },
+  "phase": {
+    "pickup": "接客",
+    "dropoff": "送客",
+    "startPickupRoute": "开始接客路线",
+    "startDropoffRoute": "开始送客路线"
+  },
+  "payout": {
+    "allRidesCompleted": "所有行程已完成！",
+    "dailyEarnings": "今日收入",
+    "returnToHome": "返回首页"
+  },
+  "stopCard": {
+    "pax": "人数",
+    "noNotes": "无备注",
+    "destination": "目的地"
+  },
+  "payoutDashboard": {
+    "loading": "加载付款中...",
+    "errorPrefix": "错误：",
+    "paymentReceived": "已收款：{{amount}}泰铢（{{count}}项服务）。",
+    "ok": "确定",
+    "emptyTitle": "本月无服务记录",
+    "emptyMessage": "选择其他月份或申报服务。",
+    "weekLabel": "周",
+    "pendingStatus": "待付款·待处理",
+    "paidStatus": "已付款",
+    "weekTotal": "本周合计"
+  },
+  "payoutForm": {
+    "successTitle": "服务已记录",
+    "deletedTitle": "服务已删除",
+    "deletedMessage": "该服务已被删除。",
+    "newSubmission": "新申报",
+    "editTitle": "编辑服务",
+    "declareTitle": "申报服务",
+    "formSubtitle": "输入服务详情以生成付款。",
+    "paidBannerTitle": "已付款 — 只读",
+    "paidBannerMessage": "此服务已付款，无法再编辑。",
+    "pendingBannerTitle": "当天该课程已提交",
+    "pendingBannerMessage": "保存将覆盖现有服务（将发送新邮件）。",
+    "dateLabel": "日期",
+    "todayLabel": "今天",
+    "classTypeLabel": "课程类型",
+    "morningClass": "上午课程",
+    "eveningClass": "下午课程",
+    "hotelsLabel": "酒店数量（站点）",
+    "stops12": "1-2家酒店",
+    "stops34": "3-4家酒店",
+    "stops56": "5-6家酒店",
+    "stops7plus": "7+家酒店",
+    "payoutPriceLabel": "付款价格",
+    "baht": "泰铢",
+    "paxLabel": "乘客总数（车内人数）",
+    "person": "人",
+    "people": "人",
+    "emailSent": "确认邮件已发送。",
+    "emailFallback": "已保存（邮件不可用）。",
+    "submitting": "提交中...",
+    "saveEdit": "保存更改",
+    "submit": "提交",
+    "deleting": "删除中...",
+    "deleteService": "删除服务",
+    "errorSubmit": "提交错误，请重试。",
+    "errorDelete": "删除服务时出错。",
+    "summaryDate": "日期",
+    "summaryClass": "课程",
+    "summaryHotels": "酒店数量",
+    "summaryPrice": "价格"
+  },
+  "home": {
+    "tabDeclare": "申报服务",
+    "tabDashboard": "仪表板",
+    "morningSession": "上午",
+    "eveningSession": "下午"
+  }
+}

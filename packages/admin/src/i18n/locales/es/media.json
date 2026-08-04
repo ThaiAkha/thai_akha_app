@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "title": "Galería de medios"
+  },
+  "sidebar": {
+    "title": "Carpetas de medios",
+    "allAssets": "Todos los medios",
+    "footer": "Sistema de biblioteca de medios"
+  },
+  "content": {
+    "emptyMessage": "No se encontraron archivos multimedia",
+    "table": {
+      "colMedia": "Medios 16:9",
+      "colIdentity": "Identidad y jerarquía",
+      "colSpecs": "Especificaciones y meta",
+      "colContext": "Contexto de nodo (+20%)",
+      "untitledReference": "Referencia sin título",
+      "openInNewWindow": "Abrir en nueva ventana",
+      "noUrl": "No hay URL válida para este recurso."
+    }
+  },
+  "inspector": {
+    "sections": {
+      "coreIdentity": "Identidad principal",
+      "accessFormat": "Acceso y formato",
+      "visualMetrics": "Métricas visuales",
+      "contentSeo": "Contenido y SEO",
+      "aiMetadata": "Metadatos de IA",
+      "systemProperties": "Propiedades del sistema"
+    },
+    "labels": {
+      "assetId": "ID de recurso (usuario)",
+      "fileName": "Nombre de archivo",
+      "folderPath": "Ruta organizacional",
+      "publicUrl": "URL de acceso público",
+      "mimeType": "Tipo MIME",
+      "fileSize": "Tamaño de archivo",
+      "width": "Ancho (px)",
+      "height": "Alto (px)",
+      "displayTitle": "Título de visualización",
+      "caption": "Descripción / Pie de foto",
+      "altText": "Texto alternativo (accesibilidad)",
+      "tags": "Etiquetas (separadas por comas)",
+      "copyright": "Copyright / Fuente",
+      "aiGenerated": "Generado por IA",
+      "aiGeneratedHint": "Activar si fue generado por IA",
+      "toolEngine": "Motor de herramienta",
+      "databaseUuid": "UUID de base de datos",
+      "uploadedBy": "Subido por",
+      "created": "Creado",
+      "lastUpdate": "Última actualización"
+    },
+    "buttons": {
+      "deIndex": "Des-indexar"
+    },
+    "hints": {
+      "deIndexWarning": "Elimina el mapeo de base de datos del CDN de Thai Akha. Los archivos físicos en almacenamiento persisten por seguridad.",
+      "urlCopied": "URL copiada al portapapeles."
+    }
+  },
+  "alerts": {
+    "saveFailed": "Error al guardar el recurso. Consulta la consola para más detalles.",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar esta entrada de base de datos? El archivo en almacenamiento permanecerá."
+  },
+  "actions": {
+    "syncing": "Sincronizando...",
+    "deploy": "Publicar cambios",
+    "editProperties": "Editar propiedades"
+  }
+}

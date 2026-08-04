@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Button, Icon, Badge, Typography } from '../ui';
 import { UserProfile } from '../../services/auth.service';
+import { useActiveProfile } from '../../context/ActiveProfileContext';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface DashboardTabProps {
@@ -28,6 +29,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   onOpenSettings,
   onShowCertificate,
 }) => {
+  const { isActiveVisitor } = useActiveProfile();
   const activeBooking = bookings.find(b => b.internal_id === activeId) || bookings[0];
 
   if (!activeBooking) {
@@ -402,6 +404,29 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
           )}
         </div>
       </div>
+
+      {/* ── CERTIFICATE SECTION — nascosta ai visitor (F3: niente certificato) ── */}
+      {!isActiveVisitor && (
+        <div className="bg-surface/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-3xl [padding:var(--space-fluid-m)] mt-6">
+          <div className="flex items-center gap-3 mb-2">
+            <Icon name="workspace_premium" className="text-quiz-p" />
+            <Typography variant="h4" className="uppercase tracking-tight">Your Certificate</Typography>
+          </div>
+          <Typography variant="paragraphS" color="sub" className="mb-5 leading-relaxed">
+            Once your class is complete and your menu is set, download your personalised Thai Akha certificate of participation.
+          </Typography>
+          <Button
+            variant="outline"
+            size="md"
+            onClick={() => onShowCertificate?.()}
+            className="border-quiz-p/40 text-quiz-p hover:bg-quiz-p/10 transition-all active:scale-95"
+          >
+            <Icon name="download" size="sm" />
+            Download Certificate
+          </Button>
+        </div>
+      )}
+
     </div>
   );
 };

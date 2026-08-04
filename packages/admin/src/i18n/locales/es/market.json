@@ -1,0 +1,81 @@
+{
+  "tabs": {
+    "overview": "Resumen",
+    "dashboard": "Panel",
+    "logistics": "Logística",
+    "teacher": "Profesor",
+    "allItems": "Todos"
+  },
+  "buttons": {
+    "newPlanToday": "Plan de hoy",
+    "newPlanSelectDate": "Plan — fecha",
+    "newReportToday": "Informe de hoy",
+    "newReportSelectDate": "Informe — fecha",
+    "viewHistory": "Ver historial",
+    "cancel": "Cancelar",
+    "editReport": "Editar informe",
+    "newReport": "Nuevo informe",
+    "newPlan": "Nuevo plan",
+    "modify": "Modificar",
+    "submitReport": "Enviar informe",
+    "publishPlan": "Publicar plan",
+    "refresh": "Actualizar",
+    "sendOrder": "Enviar pedido",
+    "finishRun": "FINALIZAR",
+    "confirmReport": "Confirmar informe",
+    "saveDraft": "Guardar borrador",
+    "deleteReport": "Eliminar informe"
+  },
+  "labels": {
+    "workDraft": "Borrador",
+    "archiveView": "Ver archivo",
+    "liveEditing": "Edición en vivo",
+    "totalExpenses": "Gastos totales",
+    "itemsRequired": "Artículos requeridos",
+    "itemChecklist": "Lista de artículos",
+    "tapToEdit": "Toca para editar",
+    "vendorContact": "Contacto proveedor",
+    "liveTotal": "Total en vivo",
+    "qty": "CANT: {{quantity}}",
+    "inputThb": "Ingresar THB"
+  },
+  "table": {
+    "date": "Fecha",
+    "status": "Estado",
+    "items": "Artículos",
+    "totalCost": "Costo total",
+    "reportArchives": "Archivos de informes"
+  },
+  "modal": {
+    "selectDate": "Seleccionar fecha"
+  },
+  "placeholders": {
+    "searchIngredients": "Buscar ingredientes..."
+  },
+  "empty": {
+    "noHistory": "Sin historial para esta categoría.",
+    "noContent": "Sin contenido",
+    "noListFound": "Sin lista",
+    "noItemsForStall": "Sin artículos para este puesto",
+    "noIngredients": "No hay ingredientes que coincidan con tu busqueda."
+  },
+  "messages": {
+    "mustBeLoggedIn": "Debes iniciar sesión para guardar informes de mercado.",
+    "selectAtLeastOne": "Selecciona al menos un artículo.",
+    "saveSuccess": "¡Cambios guardados exitosamente!",
+    "saveError": "Error al guardar: {{message}}",
+    "kitchenNotPublished": "El gerente de cocina aún no ha publicado la lista de compras de hoy.",
+    "finishConfirm": "¿Marcar esta compra como COMPLETADA y guardar todos los costos?",
+    "unboughtWarning": "¡Espera! Tienes {{count}} artículos sin comprar. ¿Terminar de todos modos?",
+    "syncSuccess": "¡Compra sincronizada con la cocina! ¡Buen trabajo!",
+    "error": "Error: {{message}}",
+    "emergencyItemName": "¿Nombre del artículo de emergencia?",
+    "loading": "Cargando...",
+    "confirmDelete": "¿Eliminar este informe? Esta accion no se puede deshacer."
+  },
+  "shopItem": {
+    "reportedCost": "Costo reportado",
+    "addedToList": "En la lista",
+    "clickToAdd": "Agregar"
+  }
+}

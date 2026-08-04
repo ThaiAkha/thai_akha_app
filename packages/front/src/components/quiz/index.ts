@@ -6,3 +6,5 @@ export { default as ButtonQuiz } from './ButtonQuiz.tsx';
 export { default as QuizCard } from './QuizCard.tsx';
 export { default as QuizCardCategory } from './QuizCardCategory.tsx';
 export { default as HeaderQuiz } from './HeaderQuiz.tsx';
+export { default as QuizCardLevel } from './QuizCardLevel.tsx';
+export { default as QuizBackButton } from './QuizBackButton.tsx';

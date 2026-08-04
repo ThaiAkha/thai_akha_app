@@ -159,6 +159,19 @@
     }
   }
 }
+/* Glass shine animation effect for premium components */
+@utility glass-shine {
+  @apply relative overflow-hidden;
+
+  &::after {
+    content: '';
+    @apply absolute top-0 left-[-150%] w-full h-full;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg);
+    animation: shine-oblique 8s infinite linear;
+    pointer-events: none;
+  }
+}
 
 /* ============================================================================
    BUTTON RADIAL FLASH EFFECT
@@ -184,7 +197,7 @@
   inset: 0;
   border-radius: inherit;
   background: radial-gradient(circle at var(--flash-x, 50%) var(--flash-y, 50%),
-      var(--btn-flash-glow-color, rgba(255, 255, 255, 0.38)) 0%,
+      var(--btn-flash-glow-color, rgba(255, 255, 255, 0.25)) 0%,
       transparent 55%);
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -192,14 +205,14 @@
   z-index: 0;
 }
 
-button:hover .btn-flash-glow {
+:is(button, a, div):hover > .btn-flash-glow {
   opacity: 1;
 }
 
 /* MegaMenu: pulsing glow ring — thinner and brighter (box-shadow pulse) */
 @keyframes megamenu-glow {
-  0%, 100% { box-shadow: 0 0 10px 1px rgba(152, 201, 60, 0.35); opacity: 0.6; }
-  50%       { box-shadow: 0 0 20px 3px rgba(152, 201, 60, 0.85); opacity: 1; }
+  0%, 100% { box-shadow: 0 0 10px 1px rgb(var(--action-ch) / 0.35); opacity: 0.6; }
+  50%       { box-shadow: 0 0 20px 3px rgb(var(--action-ch) / 0.85); opacity: 1; }
 }
 
 /* Click ripple — top/left set via inline style from React */
@@ -249,6 +262,19 @@ button:hover .btn-flash-glow {
    FONT UTILITIES
    ============================================================================ */
 
+
 .font-numeric {
   font-family: var(--font-numeric);
+}
+
+/* ============================================================================
+   RECIPE PROSE — paragraph spacing for HTML-rendered text blocks
+   ============================================================================ */
+
+.recipe-prose p {
+  margin-bottom: var(--space-fluid-l);
+}
+
+.recipe-prose p:last-child {
+  margin-bottom: 0;
 }

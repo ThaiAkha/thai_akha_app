@@ -1,0 +1,65 @@
+{
+  "metrics": {
+    "customers": "客户",
+    "orders": "订单"
+  },
+  "recentBookings": {
+    "title": "最近预订",
+    "loading": "加载预订中...",
+    "colUser": "用户",
+    "colDate": "日期",
+    "colClass": "课程",
+    "colPax": "人数",
+    "colStatus": "状态",
+    "sessionMorning": "上午游览",
+    "sessionEvening": "下午盛宴",
+    "guestDefault": "访客"
+  },
+  "agencyBookings": {
+    "title": "代理预订",
+    "loading": "加载代理预订中...",
+    "colRef": "代理参考/访客",
+    "colDate": "日期",
+    "colPax": "人数",
+    "colStatus": "状态",
+    "guest": "访客"
+  },
+  "explorer": {
+    "search": "搜索记录...",
+    "filter": "筛选",
+    "noResults": "未找到结果",
+    "loading": "加载中...",
+    "noSelection": "选择记录以检查",
+    "rows": "行",
+    "columns": "列",
+    "addNew": "新增",
+    "refresh": "刷新",
+    "tableView": "切换表格视图",
+    "gridView": "切换网格视图",
+    "refreshing": "刷新中...",
+    "refreshData": "刷新数据",
+    "exportOptions": "导出选项",
+    "filterByText": "按文本筛选",
+    "createNew": "创建新项",
+    "uploadFiles": "上传文件",
+    "emptyTable": "空表格",
+    "emptyTableHint": "添加第一条记录以开始",
+    "closeCancel": "关闭并取消",
+    "close": "关闭",
+    "details": "详情"
+  },
+  "ecommerce": {
+    "demographics": "客户人口统计",
+    "demographicsSubtitle": "按国家统计的客户数量",
+    "monthlySales": "月度销售",
+    "salesSeriesName": "销售",
+    "target": "目标",
+    "revenue": "收入",
+    "today": "今天",
+    "monthlyTarget": "月度目标",
+    "monthlyTargetSubtitle": "您为每月设定的目标",
+    "monthlyTargetMessage": "您今天赚了$3287，高于上个月。继续保持！",
+    "viewMore": "查看更多",
+    "delete": "删除"
+  }
+}

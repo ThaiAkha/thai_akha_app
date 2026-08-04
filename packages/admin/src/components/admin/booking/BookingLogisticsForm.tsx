@@ -64,7 +64,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
               type="button"
               onClick={() => setNeedPickup(true)}
               className={cn(
-                "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
+                "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 needPickup === true
                   ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
@@ -77,7 +77,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
               type="button"
               onClick={() => setNeedPickup(false)}
               className={cn(
-                "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
+                "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 needPickup === false
                   ? "border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400 shadow-lg shadow-red-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
@@ -120,7 +120,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                             </div>
                             <div>
                               <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{h.name}</p>
-                              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{h.pickup_zones?.name || 'No Zone'}</p>
+                              <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{h.pickup_zones?.name || 'No Zone'}</p>
                             </div>
                           </div>
                           <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -158,7 +158,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   type="button"
                   onClick={() => onHasLuggageChange(true)}
                   className={cn(
-                    "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
+                    "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                     hasLuggage === true
                       ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
                       : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
@@ -171,7 +171,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   type="button"
                   onClick={() => onHasLuggageChange(false)}
                   className={cn(
-                    "h-full rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
+                    "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                     hasLuggage === false
                       ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-500/10 scale-[1.02]"
                       : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"

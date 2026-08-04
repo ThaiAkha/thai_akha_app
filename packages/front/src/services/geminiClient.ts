@@ -10,12 +10,9 @@ let liveClient: GoogleGenAI | null = null;
 let liveTokenExpiresAt = 0;
 
 export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
-  const now = Date.now();
-
-  if (liveClient && now < liveTokenExpiresAt) {
-    return liveClient;
-  }
-
+  // ⚠️ Il token effimero è SINGLE-USE (uses:1 nell'edge gemini-token). NON riutilizzare
+  // il client tra sessioni: al 2° avvio voce riuseremmo un token già consumato →
+  // ai.live.connect fallisce. Quindi fetch di un token FRESCO ad ogni sessione.
   const { data: { session } } = await supabase.auth.getSession();
   const accessToken = session?.access_token;
 
@@ -33,7 +30,7 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
       apiKey: data.ephemeralToken,
       httpOptions: { apiVersion: 'v1alpha' },
     });
-    liveTokenExpiresAt = now + 25 * 60 * 1000; // 25-min cache
+    liveTokenExpiresAt = 0; // niente cache: token single-use
 
     return liveClient;
   } catch (err) {

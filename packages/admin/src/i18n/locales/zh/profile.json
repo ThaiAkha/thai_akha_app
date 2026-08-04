@@ -1,0 +1,53 @@
+{
+  "personal": {
+    "title": "用户账户",
+    "roleDefault": "访客",
+    "fieldFullName": "全名",
+    "fieldPhone": "电话",
+    "fieldNationality": "国籍",
+    "searchCountry": "搜索国家...",
+    "editLabel": "编辑资料",
+    "saveLabel": "保存信息",
+    "notSpecified": "未指定"
+  },
+  "avatar": {
+    "uploadFail": "上传失败：{{message}}"
+  },
+  "agency": {
+    "fieldCompany": "公司 / 代理机构名称",
+    "placeholderCompany": "代理机构官方名称",
+    "fieldAddress": "账单地址",
+    "placeholderAddress": "街道名称，门牌号",
+    "fieldCountry": "国家",
+    "searchCountry": "搜索国家...",
+    "fieldCity": "城市",
+    "placeholderCity": "官方城市",
+    "fieldProvince": "省 / 地区",
+    "placeholderProvince": "省份",
+    "fieldPostalCode": "邮政编码",
+    "placeholderPostalCode": "00000",
+    "fieldTaxId": "税号 / 增值税号",
+    "placeholderTaxId": "增值税登记号",
+    "fieldCommission": "佣金率",
+    "commissionDefault": "标准级别",
+    "editLabel": "编辑代理信息",
+    "saveLabel": "更新信息"
+  },
+  "security": {
+    "fieldNewPassword": "新密码",
+    "fieldConfirmPassword": "确认新密码",
+    "placeholderPassword": "••••••••",
+    "errorMismatch": "密码不匹配",
+    "errorMinLength": "密码至少需要6个字符",
+    "successUpdated": "密码更新成功！",
+    "errorFailed": "密码更新失败",
+    "btnUpdating": "更新中...",
+    "btnUpdate": "更新密码",
+    "dangerZoneTitle": "危险区域",
+    "dangerZoneDesc": "账户停用是永久性的。与此会话关联的所有偏好设置和数据将被锁定。",
+    "btnDeactivate": "停用账户",
+    "confirmRequired": "需要关键确认",
+    "btnCancel": "取消",
+    "btnConfirm": "确认"
+  }
+}

@@ -7,7 +7,7 @@
 import { ADMIN_EN_HTML, DRIVER_TH_HTML, renderEmail } from './templates.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM = 'Thai Akha Kitchen <driver@thaiakhakitchen.com>'
+const FROM = 'Thai Akha Kitchen <office@thaiakhakitchen.com>'
 const OFFICE = 'office@thaiakhakitchen.com'
 
 const corsHeaders = {

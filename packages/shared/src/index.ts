@@ -23,3 +23,5 @@ export {
   LogoIconDark,
   LogoAuth
 } from './assets/logo';
+
+export { SocialIcons } from './assets/icons';

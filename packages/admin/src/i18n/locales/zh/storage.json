@@ -1,0 +1,68 @@
+{
+  "sidebar": {
+    "title": "存储桶",
+    "statusLabel": "状态",
+    "status": "实时存储"
+  },
+  "meta": {
+    "title": "存储浏览器 | Thai Akha Kitchen",
+    "description": "管理存储桶文件和媒体资源。"
+  },
+  "content": {
+    "searchPlaceholder": "搜索文件...",
+    "noFiles": "未找到文件",
+    "colFileName": "文件名",
+    "colSize": "大小",
+    "colType": "类型",
+    "colLastModified": "最后修改"
+  },
+  "inspector": {
+    "noFile": "未选择文件",
+    "noFileHint": "点击列表中的文件查看详情",
+    "stagingAsset": "暂存资源",
+    "saving": "保存中...",
+    "confirmUpload": "确认上传",
+    "saveChanges": "保存更改",
+    "downloadOptions": "下载选项",
+    "origQuality": "原始质量",
+    "origQualityDesc": "全分辨率资源",
+    "standardMp3": "标准MP3",
+    "mp3Desc": "兼容格式",
+    "rawDocument": "原始文档",
+    "rawDocDesc": "标准文件下载",
+    "copied": "已复制",
+    "copyLink": "复制链接",
+    "preview": "预览",
+    "setFilename": "设置文件名",
+    "assetName": "资源名称",
+    "filenamePlaceholder": "输入文件名...",
+    "newNamePlaceholder": "输入新名称...",
+    "diskSize": "磁盘大小",
+    "mimeType": "MIME类型",
+    "tooltipSize": "文件在磁盘上的大小",
+    "tooltipMime": "资源的MIME类型",
+    "createdAt": "创建时间",
+    "lastSynced": "最后同步",
+    "deleteAsset": "删除资源",
+    "unknownFile": "未知文件",
+    "audioNotSupported": "您的浏览器不支持音频元素。",
+    "uploadTooltip": "上传资源到存储",
+    "saveTooltip": "保存更改"
+  },
+  "actions": {
+    "upload": "上传",
+    "uploading": "上传中",
+    "edit": "编辑",
+    "save": "保存",
+    "saving": "保存中...",
+    "tooltipEdit": "编辑文件元数据",
+    "tooltipSave": "保存更改"
+  },
+  "alerts": {
+    "confirmDelete": "确定要删除\"{{name}}\"吗？",
+    "deleteFailed": "删除失败：{{message}}",
+    "uploadFailed": "上传失败：{{message}}",
+    "renamedSuccess": "文件重命名成功",
+    "renameFailed": "重命名失败：{{message}}"
+  }
+}

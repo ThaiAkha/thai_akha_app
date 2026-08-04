@@ -1,0 +1,142 @@
+{
+  "tabs": {
+    "newGuest": "新访客",
+    "existingUser": "现有用户",
+    "agency": "代理机构"
+  },
+  "mode": {
+    "newDesc": "创建新用户档案和预订。",
+    "existingDesc": "在数据库中搜索回头客。",
+    "agencyDesc": "代表合作伙伴/代理机构预订。"
+  },
+  "inspector": {
+    "selectedClass": "已选课程",
+    "morningClass": "上午课程",
+    "eveningClass": "下午课程",
+    "numGuests": "访客人数",
+    "guestDetails": "访客详情",
+    "fieldName": "姓名",
+    "fieldEmail": "电子邮件",
+    "fieldPhone": "电话",
+    "fieldNationality": "国籍",
+    "fieldAge": "年龄",
+    "fieldGender": "性别",
+    "fieldWhatsapp": "WhatsApp",
+    "logistics": "后勤信息",
+    "fieldHotel": "酒店",
+    "fieldMeetingPoint": "集合点",
+    "fieldLuggage": "行李",
+    "fieldNotes": "备注",
+    "totalAmount": "总金额",
+    "payment": "付款",
+    "unpaid": "未付款",
+    "paid": "已付款",
+    "confirmBtn": "确认预订"
+  },
+  "logistics": {
+    "sectionTitle": "后勤与备注",
+    "needPickup": "需要接送？",
+    "fieldHotel": "酒店",
+    "hotelPlaceholder": "搜索酒店（至少2个字符）...",
+    "noZone": "无区域",
+    "meetingPoint": "集合点",
+    "selectMeetingPoint": "选择集合点...",
+    "luggage": "行李",
+    "yes": "是",
+    "no": "否",
+    "extraNotes": "额外备注",
+    "notesPlaceholder": "特殊要求、饮食限制或其他信息..."
+  },
+  "newUser": {
+    "fieldFullName": "全名",
+    "placeholderName": "例如 张三",
+    "fieldAge": "年龄",
+    "placeholderAge": "年龄",
+    "fieldGender": "性别",
+    "genderSelect": "请选择",
+    "genderMale": "男",
+    "genderFemale": "女",
+    "genderOther": "其他",
+    "fieldEmail": "电子邮件地址",
+    "placeholderEmail": "zhang@example.com",
+    "fieldPassword": "密码",
+    "passwordHint": "至少8个字符",
+    "fieldNationality": "国籍",
+    "searchCountry": "搜索国家...",
+    "fieldPhone": "电话号码",
+    "whatsapp": "WhatsApp",
+    "yes": "是",
+    "no": "否"
+  },
+  "search": {
+    "labelGuest": "搜索访客",
+    "labelAgency": "搜索合作伙伴/代理",
+    "placeholderGuest": "输入姓名...",
+    "placeholderAgency": "搜索代理机构名称...",
+    "noUsersFound": "未找到用户。",
+    "selectBtn": "选择",
+    "removeBtn": "移除"
+  },
+  "session": {
+    "morning": "上午",
+    "evening": "下午",
+    "booked": "已预订：",
+    "seatsLeft": "剩余席位：",
+    "empty": "空场次"
+  },
+  "picker": {
+    "cardTitle": "日期与场次",
+    "selectDate": "选择日期",
+    "morning": "上午",
+    "evening": "下午",
+    "available": "可用",
+    "fullyBooked": "已满",
+    "closed": "已关闭",
+    "selected": "已选",
+    "selectDatePrompt": "请选择预订日期",
+    "paxCount": "人数",
+    "paxAvailable": "{{max}}人中剩余{{pax}}人"
+  },
+  "zone": {
+    "morningPickup": "上午接送",
+    "eveningPickup": "下午接送"
+  },
+  "meta": {
+    "manualTitle": "手动预订",
+    "manualDesc": "手动创建新预订。",
+    "agencyTitle": "新预订 | Thai Akha Kitchen",
+    "agencyDesc": "代表客户预订烹饪课程。"
+  },
+  "agencyBooking": {
+    "stepGuest": "1. 访客信息",
+    "fieldFullName": "全名",
+    "placeholderName": "输入访客姓名",
+    "fieldEmail": "电子邮件（用于课程详情）",
+    "placeholderEmail": "guest@example.com",
+    "stepClass": "2. 课程日期与时间",
+    "stepPickup": "3. 接送后勤",
+    "fieldHotel": "酒店名称",
+    "placeholderHotel": "输入酒店或集合点",
+    "fieldPickupTime": "接送时间",
+    "fieldZone": "区域",
+    "fieldNotes": "厨房备注",
+    "placeholderNotes": "饮食限制或特殊要求...",
+    "summaryTitle": "预订摘要",
+    "summaryParticipants": "参与人数",
+    "summaryNetRate": "合作伙伴净价",
+    "summaryDiscount": "折扣%",
+    "summaryNetPayable": "应付金额",
+    "invoiceNote": "此预订将立即确认并添加到您的月度发票中。",
+    "btnSyncing": "同步中...",
+    "btnConfirm": "确认预订",
+    "errorNameRequired": "访客姓名为必填项",
+    "successConfirmed": "预订已确认！您的客户已注册。"
+  },
+  "alerts": {
+    "missingDateSession": "缺少日期/场次",
+    "priceMissing": "价格缺失 — 预订前请检查数据库中的场次配置。",
+    "namePasswordRequired": "需要全名和密码",
+    "bookingCreated": "预订创建成功！",
+    "errorPrefix": "错误：{{message}}"
+  }
+}

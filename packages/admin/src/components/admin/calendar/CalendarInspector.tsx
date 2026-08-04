@@ -119,7 +119,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                             <div className="flex justify-between items-center mb-4">
                                                 <span className="font-black text-sm uppercase tracking-widest flex items-center gap-2 text-gray-900 dark:text-white">{s === 'all' ? t('inspector.allClasses') : (s === 'morning_class' ? t('bulk.morning') : t('bulk.evening'))} {t('inspector.session')}</span>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-black uppercase text-gray-600 dark:text-gray-400">{t('inspector.forceClose')}</span>
+                                                    <span className="text-xs font-black uppercase text-gray-600 dark:text-gray-400">{t('inspector.forceClose')}</span>
                                                     <input
                                                         type="checkbox"
                                                         checked={sess.isClosed}

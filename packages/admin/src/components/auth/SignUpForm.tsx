@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { EyeOff, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,28 @@ import PhoneCountryInput from "../common/PhoneCountryInput";
 import LegalModal from "../legal/LegalModal";
 import { useAuth } from "../../context/AuthContext";
 import { useI18n } from "../../context/I18nContext";
-import { TERMS_OF_SERVICE, TERMS_OF_SERVICE_TH, PRIVACY_POLICY, PRIVACY_POLICY_TH } from "@thaiakha/shared/data";
+import { supabase } from "@thaiakha/shared/lib/supabase";
+// Documenti AGENCY: chi si registra qui e' un partner B2B, non un ospite.
+// Una traduzione e' null finche' non e' pubblicata -> fallback esplicito all'inglese.
+import {
+  AGENCY_TERMS, AGENCY_TERMS_TH, AGENCY_TERMS_ZH, AGENCY_TERMS_ES,
+  AGENCY_PRIVACY, AGENCY_PRIVACY_TH, AGENCY_PRIVACY_ZH, AGENCY_PRIVACY_ES,
+} from "@thaiakha/shared/data";
+import type { LegalDocument } from "@thaiakha/shared/types";
+import { mergeLegalTranslation } from "@thaiakha/shared/lib/mergeLegalTranslation";
+
+/**
+ * Traduzioni disponibili nei file .ts, per lingua.
+ * SignUpForm resta sui file e NON legge dal DB: in registrazione l'utente non e' ancora
+ * autenticato e la RLS bloccherebbe la query. Quindi la lingua REALMENTE resa dipende da
+ * quale file esiste, non da quale lingua ha scelto l'utente: la mappa serve a rendere
+ * quella differenza esplicita invece che cablata su una lingua sola.
+ */
+const AGENCY_TRANSLATIONS: Record<string, { terms: LegalDocument | null; privacy: LegalDocument | null }> = {
+  th: { terms: AGENCY_TERMS_TH, privacy: AGENCY_PRIVACY_TH },
+  zh: { terms: AGENCY_TERMS_ZH, privacy: AGENCY_PRIVACY_ZH },
+  es: { terms: AGENCY_TERMS_ES, privacy: AGENCY_PRIVACY_ES },
+};
 
 export default function SignUpForm() {
   const { t } = useTranslation('auth');
@@ -18,6 +39,26 @@ export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [legalModalOpen, setLegalModalOpen] = useState<'terms' | 'privacy' | null>(null);
+
+  // Documenti legali FUSI per sezione, calcolati una volta sola: il modale mostra
+  // esattamente questi, e la registrazione dell'accettazione ne riporta versione e
+  // lingua. Un secondo calcolo separato potrebbe divergere da cio' che l'utente ha letto.
+  // Nessuna lingua cablata: si guarda cosa esiste davvero per la lingua corrente.
+  // 'en' non ha traduzione per definizione (e' l'originale).
+  const activeTranslation = lang === 'en' ? undefined : AGENCY_TRANSLATIONS[lang];
+  const docLang = activeTranslation ? lang : null;
+  const mergedTerms = mergeLegalTranslation(AGENCY_TERMS, activeTranslation?.terms ?? null, docLang);
+  const mergedPrivacy = mergeLegalTranslation(AGENCY_PRIVACY, activeTranslation?.privacy ?? null, docLang);
+
+  // I documenti si ricalcolano a ogni render sulla lingua CORRENTE, ma l'accettazione
+  // avviene al submit: senza congelare, chi legge in inglese, cambia lingua e poi invia
+  // farebbe registrare una lingua che non ha letto. Si fotografa quindi al momento della
+  // spunta, che e' l'atto di accettazione.
+  const acceptedRef = useRef<{ terms: typeof mergedTerms; privacy: typeof mergedPrivacy } | null>(null);
+  const handleAcceptChange = (checked: boolean) => {
+    setIsChecked(checked);
+    acceptedRef.current = checked ? { terms: mergedTerms, privacy: mergedPrivacy } : null;
+  };
 
   // Agency Fields
   const [contactName, setContactName] = useState("");
@@ -48,7 +89,84 @@ export default function SignUpForm() {
     setLoading(true);
 
     try {
-      await signUpAgency(email, password, contactName, companyName, taxId, phone);
+      await signUpAgency(email, password, contactName, companyName, taxId, phone, lineId);
+
+      // Traccia l'accettazione dei due documenti agency (append-only in profiles.legal_accepted).
+      // `lang` = la lingua del testo REALMENTE mostrato: se la traduzione TH non esiste
+      // l'utente ha letto l'inglese, e la prova deve dirlo. Versione, timestamp e IP li
+      // timbra il server nella RPC. Non bloccante: un errore qui non annulla la registrazione.
+      try {
+        // Si registra ESATTAMENTE cio' che e' stato mostrato. La versione e' sempre quella
+        // dell'originale (la traduzione non fa fede e porta source_version, che al primo
+        // bump dell'inglese divergerebbe e farebbe fallire la registrazione). La lingua
+        // distingue 'th-partial' quando alcune sezioni sono rimaste in inglese: dire 'th'
+        // su un contratto letto per 2/13 in inglese sarebbe una prova inesatta.
+        const acceptanceLang = (merged: ReturnType<typeof mergeLegalTranslation>) => {
+          if (!merged.translationLang) return 'en';
+          return merged.isPartialTranslation ? `${merged.translationLang}-partial` : merged.translationLang;
+        };
+
+        // Si usano i documenti FOTOGRAFATI alla spunta, non quelli della lingua corrente.
+        const accepted = acceptedRef.current ?? { terms: mergedTerms, privacy: mergedPrivacy };
+
+        const record = () => Promise.all([
+          supabase.rpc('record_legal_acceptance', {
+            p_doc_key: 'agency_terms',
+            p_lang: acceptanceLang(accepted.terms),
+            p_shown_version: accepted.terms.version,
+          }),
+          supabase.rpc('record_legal_acceptance', {
+            p_doc_key: 'agency_policy',
+            p_lang: acceptanceLang(accepted.privacy),
+            p_shown_version: accepted.privacy.version,
+          }),
+        ]);
+
+        // supabase.rpc() NON lancia: restituisce { data, error }. Senza questo controllo
+        // il catch sarebbe codice morto e un consenso non registrato sparirebbe in silenzio.
+        let results = await record();
+        if (results.some(r => r.error)) {
+          // Un solo ritentativo: copre la finestra in cui la sessione o il profilo non
+          // sono ancora pronti subito dopo la registrazione.
+          await new Promise(res => setTimeout(res, 800));
+          results = await record();
+        }
+        const failed = results.filter(r => r.error);
+        if (failed.length > 0) {
+          failed.forEach(r => console.error("Legal acceptance NOT recorded:", r.error));
+          // NON silenzioso: la prova di consenso e' l'unica cosa che documenta cosa e
+          // in quale lingua il partner ha accettato. Se non si registra, l'account resta
+          // valido ma qualcuno deve saperlo.
+          alert(t('signUp.legalRecordFailed', {
+            defaultValue:
+              'Your account was created, but we could not record your acceptance of the Terms and Privacy Policy. Please contact us so we can complete it.',
+          }));
+        }
+      } catch (legalErr) {
+        console.error("Legal acceptance tracking failed:", legalErr);
+        alert(t('signUp.legalRecordFailed', {
+          defaultValue:
+            'Your account was created, but we could not record your acceptance of the Terms and Privacy Policy. Please contact us so we can complete it.',
+        }));
+      }
+
+      // Welcome email brandizzata (non-blocking: un errore qui non blocca la registrazione).
+      try {
+        await supabase.functions.invoke('send-admin-welcome', {
+          body: {
+            email,
+            user_name: contactName,
+            // Si manda la lingua REALE: la edge function sceglie il template e ricade
+            // su EN per le lingue che non ha ancora (oggi es/zh). Cablare 'en' qui
+            // significherebbe non accorgersi mai di quando i template vengono tradotti.
+            lang,
+            login_url: `${window.location.origin}/signin`,
+          },
+        });
+      } catch (mailErr) {
+        console.error("Welcome email failed (non-blocking):", mailErr);
+      }
+
       navigate("/"); // Redirect or show success message
     } catch (err: any) {
       console.error("Signup failed:", err);
@@ -62,7 +180,7 @@ export default function SignUpForm() {
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
       <div className="flex flex-col justify-center flex-1 w-full max-w-lg mx-auto">
         <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
-          <div className="mb-8 sm:mb-10">
+          <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
               {t('signUp.title')}
             </h1>
@@ -74,7 +192,7 @@ export default function SignUpForm() {
             <form onSubmit={handleSubmit}>
               <div className="space-y-5">
                 {/* <!-- Company Name --> */}
-                <div className="mb-5">
+                <div>
                   <Label htmlFor="companyName">
                     {t('signUp.fields.companyName')}<span className="text-sys-error">*</span>
                   </Label>
@@ -90,7 +208,7 @@ export default function SignUpForm() {
                 </div>
 
                 {/* <!-- Contact Name --> */}
-                <div className="mb-5">
+                <div>
                   <Label htmlFor="contactName">
                     {t('signUp.fields.contactName')}<span className="text-sys-error">*</span>
                   </Label>
@@ -106,7 +224,7 @@ export default function SignUpForm() {
                 </div>
 
                 {/* <!-- Tax ID --> */}
-                <div className="mb-5">
+                <div>
                   <Label htmlFor="taxId">
                     {t('signUp.fields.taxId')}<span className="text-sys-error">*</span>
                   </Label>
@@ -122,7 +240,7 @@ export default function SignUpForm() {
                 </div>
 
                 {/* <!-- Email --> */}
-                <div className="mb-5">
+                <div>
                   <Label htmlFor="email">
                     {t('signUp.fields.email')}<span className="text-sys-error">*</span>
                   </Label>
@@ -138,7 +256,7 @@ export default function SignUpForm() {
                 </div>
 
                 {/* <!-- Password --> */}
-                <div className="mb-5">
+                <div>
                   <Label htmlFor="password">
                     {t('signUp.fields.password')}<span className="text-sys-error">*</span>
                   </Label>
@@ -152,16 +270,18 @@ export default function SignUpForm() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <span
+                    <button
+                      type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                      aria-label={showPassword ? t('common.hidePassword') : t('common.showPassword')}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                     >
                       {showPassword ? (
-                        <Eye className="fill-gray-500 dark:fill-gray-400 size-5" />
-                      ) : (
                         <EyeOff className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      ) : (
+                        <Eye className="fill-gray-500 dark:fill-gray-400 size-5" />
                       )}
-                    </span>
+                    </button>
                   </div>
                 </div>
 
@@ -199,7 +319,7 @@ export default function SignUpForm() {
                   <Checkbox
                     className="w-5 h-5"
                     checked={isChecked}
-                    onChange={setIsChecked}
+                    onChange={handleAcceptChange}
                   />
                   <p className="inline-block text-xs font-medium text-gray-500 dark:text-gray-400 leading-tight">
                     {t('signUp.terms')}{" "}
@@ -222,7 +342,7 @@ export default function SignUpForm() {
                 </div>
                 {/* <!-- Button --> */}
                 <div className="pt-2">
-                  <button className="primary-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-primary-500 shadow-brand hover:bg-primary-600 tracking-wider" disabled={loading}>
+                  <button type="submit" className="primary-btn-animation flex items-center justify-center w-full px-4 py-4 text-sm font-black uppercase text-white rounded-2xl bg-primary-500 shadow-brand hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed tracking-wider" disabled={loading}>
                     {loading ? t('signUp.loading') : t('signUp.button')}
                   </button>
                 </div>
@@ -243,12 +363,17 @@ export default function SignUpForm() {
           </div>
         </div>
 
+        {/* Fusione PER SEZIONE, non fallback sul documento intero: le traduzioni thai
+            sono parziali e un `th ?? en` mostrerebbe un contratto con dei buchi (ai terms
+            mancano proprio pagamenti e cancellazioni). Stessa regola delle pagine agency,
+            qui applicata ai file .ts perche' in registrazione l'utente non e' ancora
+            autenticato e la RLS non lascerebbe leggere il DB. */}
         <LegalModal
           document={
             legalModalOpen === 'terms'
-              ? (lang === 'th' ? TERMS_OF_SERVICE_TH : TERMS_OF_SERVICE)
+              ? mergedTerms
               : legalModalOpen === 'privacy'
-                ? (lang === 'th' ? PRIVACY_POLICY_TH : PRIVACY_POLICY)
+                ? mergedPrivacy
                 : null
           }
           isOpen={legalModalOpen !== null}

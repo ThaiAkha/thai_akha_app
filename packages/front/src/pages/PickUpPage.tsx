@@ -1,446 +1,385 @@
-import React, { useState, useEffect, useMemo } from 'react';
+/**
+ * PickUpPage — Orchestrator (~250 lines)
+ *
+ * All logic lives in hooks under components/pickup/hooks/
+ * All UI lives in components under components/pickup/components/
+ *
+ * This file wires them together:
+ *   - reads bookingId from localStorage (edit mode)
+ *   - computes derived state (selectedZoneData, isOutsideZone, …)
+ *   - handles confirm (new booking → localStorage draft | edit → Supabase update)
+ *   - renders the map background + sidebar
+ */
+
+import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { PageLayout } from '../components/layout/PageLayout';
-import PickupMapBackground from '../components/layout/PickupMapBackground';
-import { Typography, Icon, Button, Badge, Toggle, Card } from '../components/ui';
-import { Input } from '../components/ui/form';
-import { cn } from '@thaiakha/shared/lib/utils';
-import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
 import { GEOJSON_MASTER } from '@thaiakha/shared/data';
+import { contentService } from '@thaiakha/shared/services';
+import { buildLocalBusinessSchema } from '@thaiakha/shared/lib/businessSchema';
+import type { BusinessProfile } from '@thaiakha/shared/types';
+import { PageLayout } from '../components/layout/PageLayout';
+import { PageSEO } from '../components/layout';
+import { Typography, Badge } from '../components/ui';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '@thaiakha/shared/lib/ui-strings';
 
-// --- TIPI & INTERFACCE ---
+import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
+import {
+  PickupMapBackground,
+  SessionSelector,
+  TransportModeSelector,
+  PickupSection,
+  WalkInSection,
+  DropoffSection,
+  ConfirmFooter,
+  useLocationState,
+  useZones,
+  useMeetingPoints,
+  useHotelSearch,
+  useBookingLoader,
+} from '../components/pickup';
 
-interface Zone {
-  id: string;
-  name: string;
-  color_code: string;
-  morning_pickup_time: string;
-  evening_pickup_time: string;
-  coords?: number[][];
-}
+// ─── Component ────────────────────────────────────────────────────────────────
 
-interface LocationState {
-  type: 'db_hotel' | 'meeting_point' | 'custom_pin';
-  name: string;
-  lat: number;
-  lng: number;
-  zoneId?: string;
-  isUnknown?: boolean;
-}
-
-type TransportMode = 'pickup' | 'self';
-type ActiveField = 'pickup' | 'dropoff';
-
-const LocationPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate }) => {
-  // --- STATE: DATI & LOADING ---
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [zones, setZones] = useState<Record<string, Zone>>({});
-  const [hotels, setHotels] = useState<any[]>([]);
-  
-  // --- STATE: LOGICA UI ---
+const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate }) => {
+  // ── Edit mode ──────────────────────────────────────────────────────────────
   const bookingId = localStorage.getItem('current_booking_id');
   const isEditMode = !!bookingId;
-  
-  const [selectedClass, setSelectedClass] = useState<'morning' | 'evening'>('morning');
-  const [transportMode, setTransportMode] = useState<TransportMode>('pickup');
-  
-  // Gestione Doppia Location (Start & End)
-  const [pickupLoc, setPickupLoc] = useState<LocationState | null>(null);
-  const [dropoffLoc, setDropoffLoc] = useState<LocationState | null>(null);
-  const [isDropoffSame, setIsDropoffSame] = useState(true);
-  
-  // Focus Mappa (Cosa sto pinnando?)
-  const [activeField, setActiveField] = useState<ActiveField>('pickup');
+
+  // ── Core location state ────────────────────────────────────────────────────
+  const loc = useLocationState();
+
+  // ── Pickup type chip (Hotel | Airport | Train) ─────────────────────────────
+  const [pickupType, setPickupType] = useState<'hotel' | 'airport' | 'train'>('hotel');
+
+  // ── Map interaction ────────────────────────────────────────────────────────
   const [isPinningMode, setIsPinningMode] = useState(false);
-  
-  // Ricerca
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // --- 1. INIT: CARICAMENTO DATI ---
+  // ── Save state ─────────────────────────────────────────────────────────────
+  const [saving, setSaving] = useState(false);
+
+  // ── Business profile (LocalBusiness JSON-LD source of truth) ────────────────
+  const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
   useEffect(() => {
-    const init = async () => {
-      setLoading(true);
-      try {
-        const [zRes, hRes] = await Promise.all([
-          supabase.from('pickup_zones').select('*'),
-          supabase.from('hotel_locations').select('*').eq('is_active', true)
-        ]);
+    contentService.getBusinessProfile().then(setBusinessProfile).catch(() => {});
+  }, []);
+  const localBusinessSchema = useMemo(
+    () => (businessProfile ? buildLocalBusinessSchema(businessProfile) : undefined),
+    [businessProfile],
+  );
 
-        // Mappatura Zone (Merge DB + GeoJSON Local)
-        const zoneMap: Record<string, Zone> = {};
-        if (zRes.data) zRes.data.forEach((z: any) => zoneMap[z.id] = z);
+  // ── Hotel search (pickup) ──────────────────────────────────────────────────
+  const pickupSearch = useHotelSearch(loc.transportMode === 'pickup' && pickupType === 'hotel');
+  // ── Hotel search (dropoff) ─────────────────────────────────────────────────
+  const dropoffSearch = useHotelSearch(!loc.isDropoffSame && loc.dropoffType === 'hotel');
 
-        if (GEOJSON_MASTER?.features) {
-          GEOJSON_MASTER.features.forEach((f: any) => {
-            if (f.geometry.type === 'Polygon') {
-              const zId = f.properties.id === 'AREA_AZURE_001' ? 'azure' :
-                          f.properties.id === 'AREA_PINK_001' ? 'pink' :
-                          f.properties.id === 'AREA_GREEN_001' ? 'green' :
-                          f.properties.id === 'AREA_YELLOW_001' ? 'yellow' : null;
-              
-              if (zId) {
-                // Fallback se zona nuova (es. Azure) non è nel DB
-                if (!zoneMap[zId] && zId === 'azure') {
-                   zoneMap[zId] = { id: 'azure', name: 'Azure Area', color_code: '#1af0ff', morning_pickup_time: '08:40:00', evening_pickup_time: '16:40:00' } as any;
-                }
-                if (zoneMap[zId]) zoneMap[zId].coords = f.geometry.coordinates;
-              }
-            }
-          });
-        }
-        setZones(zoneMap);
-        setHotels(hRes.data || []);
+  // ── Zone + meeting-point data ──────────────────────────────────────────────
+  const { zones, loading: zonesLoading } = useZones();
+  const meetingData = useMeetingPoints({
+    selectedClass: loc.selectedClass,
+    outsideHotelCoords: loc.outsideHotelCoords,
+  });
 
-        // Ripristino Prenotazione Esistente (Edit Mode)
-        if (bookingId) {
-          const { data: booking } = await supabase.from('bookings').select('*').eq('internal_id', bookingId).single();
-          if (booking) {
-            setSelectedClass(booking.session_id?.includes('evening') ? 'evening' : 'morning');
-            
-            // Set Transport Mode
-            if (booking.pickup_zone === 'walk-in') {
-                setTransportMode('self');
-                // Set Meeting Point (Scuola o Tempio)
-                setPickupLoc({ type: 'meeting_point', name: booking.hotel_name, lat: 0, lng: 0, zoneId: 'meeting_point' });
-            } else {
-                setTransportMode('pickup');
-                // Set Pickup
-                if (booking.hotel_name) {
-                    setPickupLoc({ type: 'db_hotel', name: booking.hotel_name, lat: booking.pickup_lat, lng: booking.pickup_lng, zoneId: booking.pickup_zone });
-                    setSearchQuery(booking.hotel_name);
-                }
-                // Set Dropoff logic
-                if (booking.requires_dropoff && booking.dropoff_hotel && booking.dropoff_hotel !== booking.hotel_name) {
-                    setIsDropoffSame(false);
-                    setDropoffLoc({ type: 'db_hotel', name: booking.dropoff_hotel, lat: booking.dropoff_lat, lng: booking.dropoff_lng, zoneId: booking.dropoff_zone });
-                }
-            }
-          }
-        }
-      } finally { setLoading(false); }
-    };
-    init();
-  }, [bookingId]);
+  const loading = zonesLoading || meetingData.loading;
 
-  // --- 2. LOGICA HELPER ---
+  // ── Restore existing booking (edit mode) ──────────────────────────────────
+  const [bookingLoaded, setBookingLoaded] = useState(!isEditMode);
+  useBookingLoader({
+    bookingId,
+    state: loc,
+    setPickupSearchQuery: pickupSearch.setQuery,
+    onLoaded: () => setBookingLoaded(true),
+  });
 
-  // Detect Zone from Lat/Lng
-  const detectZone = (lat: number, lng: number): string | undefined => {
-    const priority = ['azure', 'pink', 'green', 'yellow']; // Ordine controllo
-    for (const pid of priority) {
-      const zone = zones[pid];
-      if (zone?.coords && isPointInPolygon({ lat, lng }, zone.coords)) return pid;
-    }
-    return undefined;
+  // ── Derived: zone for selected hotel ──────────────────────────────────────
+  const selectedZoneData = useMemo(() => {
+    if (!loc.pickupLoc?.zoneId || loc.isOutsideZone) return null;
+    return zones[loc.pickupLoc.zoneId] ?? null;
+  }, [loc.pickupLoc, zones, loc.isOutsideZone]);
+
+  // ── Handler: hotel selected from pickup dropdown ───────────────────────────
+  const handlePickupHotelSelect = (h: { id: string; name: string; zone_id: string | null; latitude: number; longitude: number }) => {
+    const isOutside = !h.zone_id || h.zone_id === 'outside' || h.zone_id === 'walk-in';
+    loc.setPickupLoc({
+      type: 'db_hotel',
+      name: h.name,
+      lat: h.latitude,
+      lng: h.longitude,
+      zoneId: h.zone_id ?? undefined,
+    });
+    loc.setOutsideZoneMode(isOutside);
+    loc.setOutsideHotelCoords(isOutside ? { lat: h.latitude, lng: h.longitude } : null);
   };
 
-  // Filter Hotels
-  const filteredHotels = useMemo(() => {
-    if (!searchQuery || searchQuery.length < 2) return [];
-    return hotels.filter(h => h.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
-  }, [searchQuery, hotels]);
-
-  // Meeting Points Disponibili (Filtrati per orario)
-  const availableMeetingPoints = useMemo(() => {
-    return GEOJSON_MASTER.features.filter((f: any) => {
-        if (f.geometry.type !== 'Point') return false;
-        const props = f.properties;
-        // Se è sera, nascondi punti che non hanno orario serale (es. Wat Pan Whaen)
-        if (selectedClass === 'evening' && !props.evening_pickup_time) return false;
-        return true;
+  // ── Handler: hotel selected from dropoff dropdown ──────────────────────────
+  const handleDropoffHotelSelect = (h: { id: string; name: string; zone_id: string | null; latitude: number; longitude: number }) => {
+    const isOutside = !h.zone_id || h.zone_id === 'outside' || h.zone_id === 'walk-in';
+    loc.setDropoffLoc({
+      type: 'db_hotel',
+      name: h.name,
+      lat: h.latitude,
+      lng: h.longitude,
+      zoneId: h.zone_id ?? undefined,
     });
-  }, [selectedClass]);
+    loc.setIsDropoffOutsideZone(isOutside);
+  };
 
-  // --- 3. HANDLERS ---
+  // ── Cherry deep-link: pagina aperta dalla chat con un hotel da auto-cercare ─
+  // Cherry rimanda qui (azione nav_pickup_hotel) lanciando 'cherry-pickup-search'.
+  // Auto-riempiamo la ricerca e, all'arrivo dei risultati, auto-selezioniamo
+  // l'hotel (l'ambiguità è già risolta a monte da Cherry). L'utente vede l'hotel
+  // selezionato sulla mappa con zona/orario.
+  const [pendingCherryHotel, setPendingCherryHotel] = useState<string | null>(null);
 
-  const handleMapClick = (coords: { lat: number, lng: number }) => {
-    if (!isPinningMode) return;
-    
-    const foundZoneId = detectZone(coords.lat, coords.lng);
-    const newLoc: LocationState = {
-        type: 'custom_pin',
-        name: '', // Utente inserirà nome dopo
-        lat: coords.lat,
-        lng: coords.lng,
-        zoneId: foundZoneId,
-        isUnknown: true
+  useEffect(() => {
+    const triggerHotel = (hotel?: string) => {
+      if (!hotel) return;
+      setPickupType('hotel');
+      setPendingCherryHotel(String(hotel).toLowerCase());
+      pickupSearch.setQuery(String(hotel));
     };
+    // 1) Aperta dalla chat: l'hotel è in sessionStorage (sopravvive al lazy-mount).
+    try {
+      const stored = sessionStorage.getItem('cherry_pickup_hotel');
+      if (stored) { sessionStorage.removeItem('cherry_pickup_hotel'); triggerHotel(stored); }
+    } catch { /* noop */ }
+    // 2) Pagina già montata: evento diretto.
+    const onCherrySearch = (e: Event) => triggerHotel((e as CustomEvent).detail?.hotel);
+    window.addEventListener('cherry-pickup-search', onCherrySearch);
+    return () => window.removeEventListener('cherry-pickup-search', onCherrySearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    if (activeField === 'pickup') {
-        setPickupLoc(newLoc);
-        setSearchQuery(''); // Reset search text to force manual input
-    } else {
-        setDropoffLoc(newLoc);
-        setIsDropoffSame(false);
-    }
-    
+  useEffect(() => {
+    if (!pendingCherryHotel || pickupSearch.results.length === 0) return;
+    const exact = pickupSearch.results.find((h) => h.name.toLowerCase() === pendingCherryHotel);
+    handlePickupHotelSelect(exact ?? pickupSearch.results[0]);
+    setPendingCherryHotel(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pickupSearch.results, pendingCherryHotel]);
+
+  // ── Handler: map click (manual pin) ───────────────────────────────────────
+  const handleMapClick = (coords: { lat: number; lng: number }) => {
+    if (!isPinningMode) return;
+    const zoneId = Object.keys(zones).find(id => {
+      const z = zones[id];
+      if (!z.coords) return false;
+      return isPointInPolygon(coords, z.coords);
+    });
+    const newLoc = { type: 'custom_pin' as const, name: '', lat: coords.lat, lng: coords.lng, zoneId, isUnknown: true };
+    if (loc.activeField === 'pickup') loc.setPickupLoc(newLoc);
+    else { loc.setDropoffLoc(newLoc); loc.setIsDropoffSame(false); }
     setIsPinningMode(false);
   };
 
-  const handlePointSelect = (point: any) => {
-    // Se clicco un punto sulla mappa
-    const loc: LocationState = {
-        type: 'meeting_point',
-        name: point.name,
-        lat: point.lat,
-        lng: point.lng,
-        zoneId: 'meeting_point'
-    };
-
-    if (transportMode === 'self') {
-        setPickupLoc(loc);
-    } else {
-        // In pickup mode, posso selezionare un MP come dropoff
-        if (activeField === 'pickup') setPickupLoc(loc);
-        else setDropoffLoc(loc);
-    }
-  };
-
+  // ── Handler: confirm / update ──────────────────────────────────────────────
   const handleConfirm = async () => {
-    if (!pickupLoc) return;
-    
-    // Validazione Pickup
-    if (transportMode === 'pickup' && pickupLoc.type === 'custom_pin' && !pickupLoc.name.trim()) {
-        alert(t.location.enterPickupName);
-        return;
+    if (!loc.pickupLoc) return;
+    if (loc.transportMode === 'pickup' && loc.pickupLoc.type === 'custom_pin' && !loc.pickupLoc.name.trim()) {
+      alert(t.location.enterPickupName);
+      return;
     }
-    // Validazione Dropoff
-    const finalDropoff = isDropoffSame ? pickupLoc : dropoffLoc;
-    if (transportMode === 'pickup' && !isDropoffSame && !finalDropoff) {
-        alert(t.location.selectDropoff);
-        return;
+    const finalDropoff = loc.isDropoffSame ? loc.pickupLoc : loc.dropoffLoc;
+    if (!loc.isDropoffSame && !finalDropoff) {
+      alert(t.location.selectDropoff);
+      return;
     }
 
     setSaving(true);
     try {
-        // Calcolo Orario Pickup
-        let time = "08:50:00"; // Default Walk-in
-        if (transportMode === 'pickup' && pickupLoc.zoneId && zones[pickupLoc.zoneId]) {
-            const z = zones[pickupLoc.zoneId];
-            time = selectedClass === 'morning' ? z.morning_pickup_time : z.evening_pickup_time;
-        } else if (transportMode === 'self') {
-            // Cerca orario dal GeoJSON per il punto selezionato
-            const pt = GEOJSON_MASTER.features.find((f:any) => f.properties.name === pickupLoc.name);
-            if (pt?.properties) {
-                time = selectedClass === 'morning' 
-                    ? (pt.properties.morning_pickup_time || "08:50:00") 
-                    : (pt.properties.evening_pickup_time || "16:50:00");
-            }
+      // Compute pickup time
+      let pickupTime = '08:50:00';
+      if (loc.transportMode === 'pickup' && loc.pickupLoc.zoneId && zones[loc.pickupLoc.zoneId]) {
+        const z = zones[loc.pickupLoc.zoneId];
+        pickupTime = loc.selectedClass === 'morning' ? z.morning_pickup_time : (z.evening_pickup_time ?? '16:50:00');
+      } else if (loc.transportMode === 'self') {
+        const mp = meetingData.meetingPoints.find(m => m.id === loc.pickupLoc!.zoneId || m.name === loc.pickupLoc!.name);
+        if (mp) {
+          pickupTime = loc.selectedClass === 'morning'
+            ? (mp.morning_pickup_time ?? '08:50:00')
+            : (mp.evening_pickup_time ?? '16:50:00');
         }
+      }
 
-        const payload = {
-            // Pickup
-            hotel_name: pickupLoc.name,
-            pickup_zone: transportMode === 'self' ? 'walk-in' : (pickupLoc.zoneId || 'outside'),
-            pickup_lat: pickupLoc.lat,
-            pickup_lng: pickupLoc.lng,
-            pickup_time: time,
-            
-            // Dropoff (Solo se non Self)
-            requires_dropoff: transportMode === 'pickup',
-            dropoff_hotel: transportMode === 'pickup' ? finalDropoff?.name : null,
-            dropoff_zone: transportMode === 'pickup' ? finalDropoff?.zoneId : null,
-            dropoff_lat: transportMode === 'pickup' ? finalDropoff?.lat : null,
-            dropoff_lng: transportMode === 'pickup' ? finalDropoff?.lng : null,
+      const payload = {
+        hotel_name:      loc.pickupLoc.name,
+        pickup_zone:     loc.transportMode === 'self' ? 'walk-in' : (loc.pickupLoc.zoneId ?? 'outside'),
+        pickup_lat:      loc.pickupLoc.lat,
+        pickup_lng:      loc.pickupLoc.lng,
+        pickup_time:     pickupTime,
+        requires_dropoff: !loc.isDropoffSame && !!loc.dropoffLoc,
+        dropoff_hotel:   !loc.isDropoffSame ? finalDropoff?.name : null,
+        dropoff_zone:    !loc.isDropoffSame ? finalDropoff?.zoneId : null,
+        dropoff_lat:     !loc.isDropoffSame ? finalDropoff?.lat : null,
+        dropoff_lng:     !loc.isDropoffSame ? finalDropoff?.lng : null,
+        customer_note:   loc.pickupLoc.isUnknown ? `Manual Pin: ${loc.pickupLoc.name}` : undefined,
+      };
 
-            customer_note: pickupLoc.isUnknown ? `Manual Pin: ${pickupLoc.name}` : undefined
-        };
-
-        if (isEditMode) {
-            await supabase.from('bookings').update(payload).eq('internal_id', bookingId);
-            localStorage.removeItem('current_booking_id');
-            onNavigate('user');
-        } else {
-            localStorage.setItem('pickup_draft_data', JSON.stringify(payload));
-            onNavigate('booking');
-        }
-
+      if (isEditMode) {
+        await supabase.from('bookings').update(payload).eq('internal_id', bookingId);
+        localStorage.removeItem('current_booking_id');
+        onNavigate('user');
+      } else {
+        localStorage.setItem('pickup_draft_data', JSON.stringify(payload));
+        onNavigate('booking');
+      }
     } catch (e) {
-        console.error(e);
-        alert(t.errors.generic);
+      console.error(e);
+      alert(t.errors.generic);
     } finally {
-        setSaving(false);
+      setSaving(false);
     }
   };
 
+  // ── Pickup type change: reset location + search ────────────────────────────
+  const handlePickupTypeChange = (type: 'hotel' | 'airport' | 'train') => {
+    setPickupType(type);
+    loc.resetPickupType(type);
+    pickupSearch.clear();
+    // #8 — chi arriva in aereo/treno poi va in hotel: apri il drop-off di default.
+    // Passando tra airport↔train resta aperto (ogni selezione lo riapre); resta
+    // richiudibile a mano. Il drop-off NON viene resettato da resetPickupType.
+    if (type === 'airport' || type === 'train') loc.setIsDropoffSame(false);
+  };
+
+  // ── Transport mode change: reset everything ────────────────────────────────
+  const handleTransportModeChange = (mode: 'pickup' | 'self') => {
+    setPickupType('hotel');
+    pickupSearch.clear();
+    dropoffSearch.clear();
+    loc.resetForTransportMode(mode);
+  };
+
+  // ── Dropoff toggle ─────────────────────────────────────────────────────────
+  const handleDropoffToggle = (needsDifferent: boolean) => {
+    loc.setIsDropoffSame(!needsDifferent);
+    if (!needsDifferent) {
+      dropoffSearch.clear();
+      loc.resetDropoff();
+    }
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
   return (
-    <PageLayout slug="location" hideDefaultHeader={true} loading={loading} isFullScreen={true}>
+    <PageLayout slug="free-pickup-location-chiang-mai" hideDefaultHeader={true} loading={loading || !bookingLoaded} isFullScreen={true}>
+      <PageSEO
+        title="Free Pickup | Thai Akha Kitchen"
+        description="Free hotel pickup service for Thai Akha Kitchen cooking classes. Check if your hotel is in our pickup zone in Chiang Mai, Thailand."
+        canonical="https://www.thaiakha.com/free-pickup-location-chiang-mai"
+        ogImage="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/kitchen/2026-kitchen/Kitchen-2026-00.webp"
+        jsonLd={localBusinessSchema}
+      />
+      <h1 className="sr-only">Free Hotel Pickup – Chiang Mai Cooking Classes</h1>
+
       <div className="relative w-full h-[100dvh] flex flex-col lg:block bg-black overflow-hidden">
-        
-        {/* ================= MAPPA (Z-0) ================= */}
+
+        {/* ── Map (z-0) ──────────────────────────────────────────────────────── */}
         <div className="absolute inset-0 z-0">
-          <PickupMapBackground 
+          <PickupMapBackground
             geoJsonData={GEOJSON_MASTER}
-            selectedLocation={activeField === 'pickup' ? pickupLoc : dropoffLoc}
+            selectedLocation={loc.pickupLoc}
+            secondaryLocation={!loc.isDropoffSame && loc.dropoffLoc
+              ? { lat: loc.dropoffLoc.lat, lng: loc.dropoffLoc.lng }
+              : null}
             onMapClick={handleMapClick}
-            onPointSelect={handlePointSelect}
-            selectionMode={true} // Sempre attiva per interazione fluida
+            selectionMode={true}
+            meetingPointsOverlay={loc.isOutsideZone ? meetingData.outsideZonePoints : undefined}
+            selectedMeetingPointId={loc.isOutsideZone ? (loc.pickupLoc?.zoneId ?? null) : null}
           />
         </div>
 
-        {/* ================= SIDEBAR UI (Z-10) ================= */}
+        {/* ── Sidebar (z-10) ─────────────────────────────────────────────────── */}
         <div className={cn(
-            "relative z-10 flex flex-col shadow-2xl transition-all duration-700 ease-cinematic",
-            "bg-surface-overlay/95 backdrop-blur-xl border-t lg:border border-white/10",
-            "w-full h-[75vh] mt-auto rounded-t-[3rem]",
-            "lg:absolute lg:left-8 lg:top-8 lg:bottom-8 lg:w-[480px] lg:h-auto lg:rounded-[3rem] lg:mt-0"
+          'relative z-10 flex flex-col shadow-2xl transition-all duration-700 ease-cinematic',
+          'bg-surface-overlay/95 backdrop-blur-xl border-t lg:border border-white/10',
+          'w-full h-[75vh] mt-auto rounded-t-[3rem]',
+          'lg:absolute lg:left-8 lg:top-8 lg:bottom-8 lg:w-[480px] lg:h-auto lg:rounded-[3rem] lg:mt-0',
         )}>
-            
-            {/* HEADER SIDEBAR */}
-            <div className="p-6 md:p-8 shrink-0 space-y-5">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <Typography variant="h4" className="italic uppercase text-white leading-none">
-                            Pickup <span className="text-primary">Location</span>
-                        </Typography>
-                        {isEditMode && <Badge variant="mineral" className="mt-2 text-yellow-500 border-yellow-500/30">{t.location.editMode}</Badge>}
-                    </div>
-                    {/* Session Toggle */}
-                    <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
-                        <button onClick={() => setSelectedClass('morning')} className={cn("px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", selectedClass === 'morning' ? "bg-white text-black" : "text-white/40")}>{t.location.amLabel}</button>
-                        <button onClick={() => setSelectedClass('evening')} className={cn("px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", selectedClass === 'evening' ? "bg-secondary text-black" : "text-white/40")}>{t.location.pmLabel}</button>
-                    </div>
-                </div>
 
-                {/* TRANSPORT MODE TOGGLE */}
-                <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => setTransportMode('pickup')} className={cn("p-4 rounded-2xl border text-left transition-all", transportMode === 'pickup' ? "bg-action/10 border-action text-white" : "bg-white/5 border-white/5 text-white/40")}>
-                        <div className="flex justify-between mb-1"><Icon name="local_taxi" className={transportMode === 'pickup' ? "text-action" : ""} /> {transportMode === 'pickup' && <Icon name="check_circle" size="xs" className="text-action" />}</div>
-                        <div className="text-xs font-black uppercase">{t.location.needPickup}</div>
-                        <div className="text-[10px] opacity-60">{t.location.fromHotel}</div>
-                    </button>
-                    <button onClick={() => setTransportMode('self')} className={cn("p-4 rounded-2xl border text-left transition-all", transportMode === 'self' ? "bg-blue-500/10 border-blue-500 text-white" : "bg-white/5 border-white/5 text-white/40")}>
-                        <div className="flex justify-between mb-1"><Icon name="directions_walk" className={transportMode === 'self' ? "text-blue-500" : ""} /> {transportMode === 'self' && <Icon name="check_circle" size="xs" className="text-blue-500" />}</div>
-                        <div className="text-xs font-black uppercase">{t.location.goMyself}</div>
-                        <div className="text-[10px] opacity-60">{t.location.meetAtSchool}</div>
-                    </button>
-                </div>
+          {/* Header */}
+          <div className="px-6 pt-5 pb-4 md:px-8 md:pt-6 shrink-0 space-y-4">
+            <div className="text-center space-y-1">
+              <Typography variant="h4" className="italic uppercase text-white leading-none">
+                Pickup <span className="text-primary">Location</span>
+              </Typography>
+              {isEditMode && (
+                <Badge variant="mineral" className="text-yellow-500 border-yellow-500/30">
+                  {t.location.editMode}
+                </Badge>
+              )}
             </div>
 
-            {/* SCROLLABLE CONTENT */}
-            <div className="flex-1 overflow-y-auto px-6 md:px-8 space-y-6 custom-scrollbar pb-6">
-                
-                {/* --- MODE 1: PICKUP LOGIC --- */}
-                {transportMode === 'pickup' && (
-                    <div className="space-y-6">
-                        
-                        {/* A. PICKUP FIELD */}
-                        <div onClick={() => setActiveField('pickup')} className={cn("transition-opacity", activeField === 'dropoff' && "opacity-50")}>
-                            <Typography variant="caption" className="text-action mb-2 block uppercase tracking-widest font-bold">{t.location.startLocation}</Typography>
-                            <div className="relative group">
-                                <Input 
-                                    placeholder={t.location.searchHotel}
-                                    value={activeField === 'pickup' ? searchQuery : pickupLoc?.name || ''}
-                                    onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
-                                    onFocus={() => { setActiveField('pickup'); setShowSuggestions(true); }}
-                                    className="pl-10 bg-white/5 border-white/10 text-white font-bold"
-                                />
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-action"><Icon name="search" size="sm"/></div>
-                                
-                                {/* Suggestions Dropdown */}
-                                {activeField === 'pickup' && showSuggestions && filteredHotels.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-white/10 rounded-2xl z-50 shadow-2xl">
-                                        {filteredHotels.map(h => (
-                                            <div key={h.id} onClick={() => { 
-                                                setPickupLoc({ type: 'db_hotel', name: h.name, lat: h.latitude, lng: h.longitude, zoneId: h.zone_id }); 
-                                                setSearchQuery(h.name); setShowSuggestions(false); 
-                                            }} className="p-3 hover:bg-white/10 cursor-pointer text-sm text-white border-b border-white/5 last:border-0">
-                                                {h.name}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* Manual Pin Trigger */}
-                            <button onClick={() => { setActiveField('pickup'); setIsPinningMode(true); }} className="flex items-center gap-2 mt-2 text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-wider">
-                                <Icon name="add_location_alt" size="xs" /> {t.location.pinOnMap}
-                            </button>
-                        </div>
+            <SessionSelector value={loc.selectedClass} onChange={loc.setSelectedClass} />
+            <TransportModeSelector value={loc.transportMode} onChange={handleTransportModeChange} />
+          </div>
 
-                        {/* CONNECTOR LINE */}
-                        <div className="relative flex items-center justify-center py-2">
-                            <div className="w-px h-8 bg-white/10 absolute top-0"></div>
-                            <div className="w-px h-8 bg-white/10 absolute bottom-0"></div>
-                            <div onClick={() => setIsDropoffSame(!isDropoffSame)} className="relative z-10 bg-surface border border-white/20 px-4 py-2 rounded-full cursor-pointer flex items-center gap-3 hover:border-white/40 transition-all">
-                                <span className="text-[10px] font-bold uppercase text-white/60">{t.location.sameDropoff}</span>
-                                <Toggle checked={isDropoffSame} onChange={setIsDropoffSame} className="scale-75" />
-                            </div>
-                        </div>
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto px-6 md:px-8 space-y-6 custom-scrollbar pb-6">
 
-                        {/* B. DROPOFF FIELD */}
-                        <div className={cn("transition-all duration-500", isDropoffSame ? "opacity-40 grayscale pointer-events-none" : "opacity-100")}>
-                            <Typography variant="caption" className="text-yellow-500 mb-2 block uppercase tracking-widest font-bold">{t.location.endLocation}</Typography>
-                            <div className="relative" onClick={() => setActiveField('dropoff')}>
-                                <Input 
-                                    placeholder={t.location.sameAsPickup}
-                                    value={isDropoffSame ? (pickupLoc?.name || '') : (dropoffLoc?.name || '')}
-                                    onChange={(e) => setDropoffLoc({...dropoffLoc!, name: e.target.value, type: 'custom_pin', lat: 0, lng: 0})} // Basic text edit
-                                    disabled={isDropoffSame}
-                                    className="pl-10 bg-white/5 border-white/10 text-white font-bold"
-                                />
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500"><Icon name="flag" size="sm"/></div>
-                            </div>
-                            {!isDropoffSame && (
-                                <button onClick={() => { setActiveField('dropoff'); setIsPinningMode(true); }} className="flex items-center gap-2 mt-2 text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-wider">
-                                    <Icon name="add_location_alt" size="xs" /> {t.location.pinDropoff}
-                                </button>
-                            )}
-                        </div>
+            {/* Pickup mode */}
+            {loc.transportMode === 'pickup' && (
+              <PickupSection
+                selectedClass={loc.selectedClass}
+                pickupType={pickupType}
+                onPickupTypeChange={handlePickupTypeChange}
+                hotelSearch={pickupSearch}
+                onHotelSelect={handlePickupHotelSelect}
+                onPinMap={() => { loc.setActiveField('pickup'); setIsPinningMode(true); }}
+                meetingData={meetingData}
+                pickupLoc={loc.pickupLoc}
+                onPickupLocChange={loc.setPickupLoc}
+                selectedZoneData={selectedZoneData}
+                isOutsideZone={loc.isOutsideZone}
+                outsideHotelCoords={loc.outsideHotelCoords}
+              />
+            )}
 
-                    </div>
-                )}
+            {/* Walk-in mode */}
+            {loc.transportMode === 'self' && (
+              <WalkInSection
+                points={meetingData.walkInPoints}
+                selectedClass={loc.selectedClass}
+                pickupLoc={loc.pickupLoc}
+                onSelect={loc.setPickupLoc}
+              />
+            )}
 
-                {/* --- MODE 2: SELF TRANSPORT --- */}
-                {transportMode === 'self' && (
-                    <div className="space-y-4">
-                        <Typography variant="caption" className="text-blue-400 block uppercase tracking-widest font-bold mb-2">{t.location.selectMeetingPoint}</Typography>
-                        {availableMeetingPoints.map((pt: any) => {
-                            const isSelected = pickupLoc?.name === pt.properties.name;
-                            return (
-                                <div key={pt.properties.name} onClick={() => setPickupLoc({ type: 'meeting_point', name: pt.properties.name, lat: pt.geometry.coordinates[1], lng: pt.geometry.coordinates, zoneId: 'meeting_point' })}
-                                    className={cn("p-4 rounded-2xl border cursor-pointer flex items-center gap-4 transition-all", isSelected ? "bg-blue-500/20 border-blue-500" : "bg-white/5 border-white/10 hover:bg-white/10")}
-                                >
-                                    <div className="size-10 rounded-full bg-white flex items-center justify-center shrink-0">
-                                        {pt.properties.icon ? <img src={pt.properties.icon} className="w-6 h-6"/> : <Icon name="place" className="text-black"/>}
-                                    </div>
-                                    <div>
-                                        <div className="font-bold text-white text-sm">{pt.properties.name}</div>
-                                        <div className="text-[10px] text-white/60 mt-1">
-                                            {selectedClass === 'morning' ? pt.properties.morning_pickup_time : pt.properties.evening_pickup_time}
-                                        </div>
-                                    </div>
-                                    {isSelected && <Icon name="check_circle" className="ml-auto text-blue-500" />}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
+            {/* Drop-off section — shown once a pickup/walk-in is chosen */}
+            {loc.pickupLoc && (
+              <DropoffSection
+                transportMode={loc.transportMode}
+                selectedClass={loc.selectedClass}
+                isDropoffSame={loc.isDropoffSame}
+                onToggleDropoff={handleDropoffToggle}
+                dropoffType={loc.dropoffType}
+                onDropoffTypeChange={(type) => {
+                  loc.setDropoffType(type);
+                  loc.setDropoffLoc(null);
+                  dropoffSearch.clear();
+                  loc.setIsDropoffOutsideZone(false);
+                }}
+                dropoffSearch={dropoffSearch}
+                onDropoffHotelSelect={handleDropoffHotelSelect}
+                onPinDropoff={() => { loc.setActiveField('dropoff'); setIsPinningMode(true); }}
+                dropoffPoints={meetingData.dropoffPoints}
+                dropoffLoc={loc.dropoffLoc}
+                onDropoffLocChange={loc.setDropoffLoc}
+                isDropoffOutsideZone={loc.isDropoffOutsideZone}
+              />
+            )}
+          </div>
 
-            </div>
-
-            {/* FOOTER ACTIONS */}
-            <div className="p-6 md:p-8 bg-black/40 border-t border-white/10">
-                <Button 
-                    variant={isEditMode ? "mineral" : "action"} 
-                    fullWidth size="lg" 
-                    onClick={handleConfirm}
-                    isLoading={saving}
-                    disabled={!pickupLoc}
-                    className="shadow-xl"
-                    icon={isEditMode ? "save" : "check_circle"}
-                >
-                    {isEditMode ? t.location.updateBooking : t.location.confirmLocation}
-                </Button>
-            </div>
-
+          {/* Footer */}
+          <ConfirmFooter
+            isEditMode={isEditMode}
+            disabled={!loc.pickupLoc}
+            isLoading={saving}
+            onConfirm={handleConfirm}
+          />
         </div>
       </div>
     </PageLayout>
   );
 };
 
-export default LocationPage;
+export default PickUpPage;

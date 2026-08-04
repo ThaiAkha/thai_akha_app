@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ChevronLeft, ChevronRight, Ban } from 'lucide-react';
@@ -32,6 +33,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     onClose,
     allowSelectionOnFullDays = false
 }) => {
+    const { t } = useTranslation();
 
     const [viewDate, setViewDate] = useState(new Date(currentDate));
     const [availability, setAvailability] = useState<Record<string, DayData>>({});
@@ -138,7 +140,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             {/* HEADER */}
             <div className="flex items-center justify-between p-6 md:p-8 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 backdrop-blur-xl shrink-0">
                 <div>
-                    <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Select Date</span>
+                    <span className="block text-xs font-black uppercase tracking-[0.3em] text-gray-400">Select Date</span>
                     <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white italic uppercase leading-none mt-2">
                         {MONTHS[viewDate.getMonth()]} <span className="text-primary-600 dark:text-primary-400">{viewDate.getFullYear()}</span>
                     </h3>
@@ -153,7 +155,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <div className="grid grid-cols-7 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 shrink-0">
                 {DAYS_HEADER.map(d => (
                     <div key={d} className="py-3 text-center">
-                        <span className="font-black text-gray-400 uppercase tracking-widest text-[10px]">{d}</span>
+                        <span className="font-black text-gray-400 uppercase tracking-widest text-xs">{d}</span>
                     </div>
                 ))}
             </div>
@@ -234,8 +236,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </div>
 
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 flex justify-center shrink-0">
-                <button onClick={onClose} className="px-6 py-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold uppercase tracking-widest text-[10px] transition-colors border border-gray-200 dark:border-gray-700">
-                    Cancel
+                <button onClick={onClose} className="px-6 py-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold uppercase tracking-widest text-xs transition-colors border border-gray-200 dark:border-gray-700">
+                    {t('common:buttons.cancel')}
                 </button>
             </div>
         </div>

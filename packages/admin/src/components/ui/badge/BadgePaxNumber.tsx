@@ -4,16 +4,29 @@ import Tooltip from '../Tooltip';
 
 interface BadgePaxNumberProps {
     paxCount: number;
-    size?: 'sm' | 'md';
+    size?: 'sm' | 'md' | 'lg';
 }
 
-const BadgePaxNumber: React.FC<BadgePaxNumberProps> = ({ paxCount, size = 'md' }) => {
-    const sizeClasses = size === 'sm'
-        ? 'h-5 px-1.5 gap-1'
-        : 'h-6 px-2 gap-1.5';
+const SIZE_BOX: Record<'sm' | 'md' | 'lg', string> = {
+    sm: 'h-5 px-1.5 gap-1',
+    md: 'h-6 px-2 gap-1.5',
+    lg: 'h-7 px-2.5 gap-2',
+};
+const SIZE_ICON: Record<'sm' | 'md' | 'lg', string> = {
+    sm: 'w-3 h-3',
+    md: 'w-4 h-4',
+    lg: 'w-5 h-5',
+};
+const SIZE_TEXT: Record<'sm' | 'md' | 'lg', string> = {
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base',
+};
 
-    const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
-    const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
+const BadgePaxNumber: React.FC<BadgePaxNumberProps> = ({ paxCount, size = 'md' }) => {
+    const sizeClasses = SIZE_BOX[size];
+    const iconSize = SIZE_ICON[size];
+    const textSize = SIZE_TEXT[size];
 
     const tooltipText = `${paxCount} ${paxCount === 1 ? 'person' : 'persons'} booked`;
 

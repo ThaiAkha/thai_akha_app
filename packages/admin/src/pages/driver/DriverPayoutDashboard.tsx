@@ -4,6 +4,7 @@
 // filtro per mese, modifica da card, realtime + popup quando l'admin segna "pagato".
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { authService } from '../../services/auth.service';
 import { Heading, Paragraph } from '../../components/typography';
@@ -38,7 +39,7 @@ interface Props {
   refreshKey?: number; // cambia per forzare il refetch dopo submit/delete dal form
 }
 
-const SESSION_LABEL: Record<string, string> = { morning_class: 'Morning', evening_class: 'Evening' };
+// Session labels resolved at render time via t() — see home.morningSession / home.eveningSession
 const LS_SEEN_PAID = 'driver_payout_last_seen_paid';
 
 function mondayOf(d: Date): Date {
@@ -48,29 +49,34 @@ function mondayOf(d: Date): Date {
   monday.setHours(0, 0, 0, 0);
   return monday;
 }
-function fmtDay(dateStr: string): string {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'short' });
+function getLocale(lang: string): string {
+  return lang === 'th' ? 'th-TH' : 'en-GB';
 }
-function fmtRange(start: Date, end: Date): string {
-  const s = start.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
-  const e = end.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
+function fmtDay(dateStr: string, lang = 'en'): string {
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString(getLocale(lang), { weekday: 'short', day: '2-digit', month: 'short' });
+}
+function fmtRange(start: Date, end: Date, lang = 'en'): string {
+  const locale = getLocale(lang);
+  const s = start.toLocaleDateString(locale, { day: '2-digit', month: 'short' });
+  const e = end.toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
   return `${s} – ${e}`;
 }
 // Ultimi 6 mesi (anno in corso): opzioni filtro {value: 'YYYY-MM', label}
-function lastMonths(n: number): { value: string; label: string }[] {
+function lastMonths(n: number, lang = 'en'): { value: string; label: string }[] {
   const out: { value: string; label: string }[] = [];
   const now = new Date();
   for (let i = 0; i < n; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     out.push({
       value: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
-      label: d.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }),
+      label: d.toLocaleDateString(getLocale(lang), { month: 'long', year: 'numeric' }),
     });
   }
   return out;
 }
 
 const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
+  const { t, i18n } = useTranslation('driver');
   const [rows, setRows] = useState<PayoutRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [driverId, setDriverId] = useState<string | null>(null);
@@ -96,7 +102,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
       if (fetchedOnce.current) {
         const justPaid = paid.filter((r) => r.paid_at! > lastSeen);
         const total = justPaid.reduce((s, r) => s + r.payout_amount, 0);
-        setPaidPopup(`Pagamento ricevuto: ${total} Baht (${justPaid.length} servizi).`);
+        setPaidPopup(t('payoutDashboard.paymentReceived', { amount: total, count: justPaid.length }));
       }
       localStorage.setItem(LS_SEEN_PAID, newestPaid);
     }
@@ -150,8 +156,8 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
     [weeks, monthKey]
   );
 
-  if (error) return <Paragraph size="sm" className="text-red-600 dark:text-red-400">Errore: {error}</Paragraph>;
-  if (rows === null) return <Paragraph size="sm" color="muted">Caricamento payout…</Paragraph>;
+  if (error) return <Paragraph size="sm" className="text-red-600 dark:text-red-400">{t('payoutDashboard.errorPrefix')} {error}</Paragraph>;
+  if (rows === null) return <Paragraph size="sm" color="muted">{t('payoutDashboard.loading')}</Paragraph>;
 
   return (
     <div className="flex flex-col [gap:var(--space-fluid-m,1.5rem)] w-full max-w-[640px]">
@@ -161,14 +167,14 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
           <div>
             <Paragraph size="sm" className="text-green-700 dark:text-green-400 font-bold">💸 {paidPopup}</Paragraph>
           </div>
-          <button type="button" onClick={() => setPaidPopup(null)} className="text-green-700 dark:text-green-400 text-sm font-bold">OK</button>
+          <button type="button" onClick={() => setPaidPopup(null)} className="text-green-700 dark:text-green-400 text-sm font-bold">{t('payoutDashboard.ok')}</button>
         </div>
       )}
 
       {/* Filtro mese */}
       <div className="w-full max-w-[220px]">
         <SelectField value={monthKey} onChange={(e) => setMonthKey(e.target.value)}>
-          {lastMonths(6).map((m) => (
+          {lastMonths(6, i18n.language).map((m) => (
             <option key={m.value} value={m.value} className="capitalize">{m.label}</option>
           ))}
         </SelectField>
@@ -176,8 +182,8 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
 
       {monthWeeks.length === 0 && (
         <Card size="lg">
-          <Heading level="h4">Nessun servizio nel mese</Heading>
-          <Paragraph size="sm" color="muted" className="mt-1">Scegli un altro mese o dichiara un servizio.</Paragraph>
+          <Heading level="h4">{t('payoutDashboard.emptyTitle')}</Heading>
+          <Paragraph size="sm" color="muted" className="mt-1">{t('payoutDashboard.emptyMessage')}</Paragraph>
         </Card>
       )}
 
@@ -189,8 +195,8 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
             <Card key={w.key} size="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">{fmtRange(w.start, w.end)}</span>
-                  <span className="ml-2 text-[10px] font-black uppercase tracking-widest text-green-600 dark:text-green-400">Pagato</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">{fmtRange(w.start, w.end, i18n.language)}</span>
+                  <span className="ml-2 text-xs font-black uppercase tracking-widest text-green-600 dark:text-green-400">{t('payoutDashboard.paidStatus')}</span>
                 </div>
                 <span className="text-base font-bold text-gray-900 dark:text-white">{w.totalAll} Baht</span>
               </div>
@@ -201,14 +207,14 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
           <Card key={w.key} size="lg">
             <div className="flex items-start justify-between gap-4 mb-[var(--space-fluid-s,1rem)]">
               <div>
-                <Heading level="h4">Settimana</Heading>
-                <Paragraph size="sm" color="muted">{fmtRange(w.start, w.end)}</Paragraph>
+                <Heading level="h4">{t('payoutDashboard.weekLabel')}</Heading>
+                <Paragraph size="sm" color="muted">{fmtRange(w.start, w.end, i18n.language)}</Paragraph>
               </div>
               <div className="text-right">
                 <span className="block text-2xl font-bold text-gray-900 dark:text-white">
                   {w.totalPending} <span className="text-sm font-medium opacity-70">Baht</span>
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-600">Da pagare · Pending</span>
+                <span className="text-xs font-black uppercase tracking-widest text-amber-600">{t('payoutDashboard.pendingStatus')}</span>
               </div>
             </div>
 
@@ -227,9 +233,9 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
                     )}
                   >
                     <div className="min-w-0">
-                      <span className="block text-sm font-bold text-gray-900 dark:text-white capitalize">{fmtDay(r.run_date)}</span>
+                      <span className="block text-sm font-bold text-gray-900 dark:text-white capitalize">{fmtDay(r.run_date, i18n.language)}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {SESSION_LABEL[r.session_id] ?? r.session_id} · {r.total_stops} stop · {r.total_pax} pax
+                        {r.session_id === 'morning_class' ? t('home.morningSession') : t('home.eveningSession')} · {r.total_stops} stop · {r.total_pax} {t('stopCard.pax')}
                       </span>
                     </div>
                     <span className="text-sm font-bold text-gray-900 dark:text-white shrink-0">{r.payout_amount} ฿</span>
@@ -239,7 +245,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
             </div>
 
             <div className="flex items-center justify-between mt-[var(--space-fluid-s,1rem)] pt-3 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Totale settimana</span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">{t('payoutDashboard.weekTotal')}</span>
               <span className="text-base font-bold text-gray-900 dark:text-white">{w.totalAll} Baht</span>
             </div>
           </Card>

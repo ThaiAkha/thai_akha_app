@@ -1,2 +1,8 @@
 packages:
   - 'packages/*'
+allowBuilds:
+  esbuild: true
+  protobufjs: true
+overrides:
+  lucide-react: '0.474.0'
+

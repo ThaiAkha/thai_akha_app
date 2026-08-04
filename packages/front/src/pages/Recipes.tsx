@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import React, { useState, useMemo, useRef } from 'react';
 import { t } from '@thaiakha/shared/lib/ui-strings';
-import { contentService } from '@thaiakha/shared/services';
-import { PageLayout, HeaderMenu, SmartHeaderSection } from '../components/layout/index';
-import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
-import { Typography, Chip, MediaImage, Alert, AkhaPixelLine, AudioPlayer } from '../components/ui/index';
-import { MenuCard, RecipeData } from '../components/menu/index';
+
+import { useSEO } from '../hooks/useSEO';
+import { useRecipesListData } from '../hooks/useRecipesListData';
+import { PageLayout, HeaderMenu, SmartHeaderSection, SiblingInfoSection, PageEssentials, PageSEO } from '../components/layout';
+import { MegaMenu, MegaMenuCard, RecipeCategory } from '../components/recipes';
+import { Typography, Alert, AkhaThemedLine, FaqBottomPage } from '../components/ui';
+import { MenuCard } from '../components/menu/index';
 import { mapToRecipeData } from '../lib/recipeHelpers';
-import { adaptRecipeToDiet } from '../lib/recipeAdapter';
+import { adaptRecipeToDiet, RawKeyIngredient } from '../lib/recipeAdapter';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { ContentCategoryDB } from '@thaiakha/shared';
-import { UserProfile, authService } from '../services/auth.service';
+import { UserProfile } from '../services/auth.service';
 import { useDietaryKnowledge } from '../hooks/useDietaryKnowledge';
+import { useUserPassport } from '../hooks/useUserPassport';
 
 
 
@@ -21,60 +22,29 @@ interface RecipesPageProps {
   onProfileUpdate?: () => void;
 }
 
+const OG_DEFAULT = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg';
+
 const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onProfileUpdate }) => {
-  const [loading, setLoading] = useState(true);
-  const [spicinessLevels, setSpicinessLevels] = useState<any[]>([]);
+  const { metadata: seoMetadata } = useSEO('authentic-thai-akha-recipes');
+  const { categories, recipes, spicinessLevels, loading } = useRecipesListData();
+  const { profiles: dietProfiles, getAllergyProfiles, loading: knowledgeLoading } = useDietaryKnowledge();
+  const { passport, updatePassport, hasExplicitPassport } = useUserPassport(userProfile, onProfileUpdate);
 
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [recipes, setRecipes] = useState<any[]>([]);
-  const { profiles: dietProfiles, allergies: allergyKnowledge, loading: knowledgeLoading } = useDietaryKnowledge();
-
-  const [activeDiet, setActiveDiet] = useState('');
-  const [activeAllergies, setActiveAllergies] = useState<string[]>([]);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isDietDirty, setIsDietDirty] = useState(false);
   const closeMegaMenuRef = useRef<(() => void) | null>(null);
+  const openMegaMenuRef = useRef<(() => void) | null>(null);
 
 
   const allergyOptions = useMemo(() => {
-    return allergyKnowledge.map(ak =>
-      ak.allergy_key.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-    );
-  }, [allergyKnowledge]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [cats, recipesRes, spiceData] = await Promise.all([
-          contentService.getContentCategories('recipe'),
-          contentService.getAllRecipesFull(),
-          contentService.getSpicinessLevels(),
-        ]);
-
-        setCategories(cats);
-        if (recipesRes) setRecipes(recipesRes);
-        setSpicinessLevels(spiceData);
-      } catch (e) {
-        console.error("Error fetching recipes:", e);
-      } finally {
-        setTimeout(() => setLoading(false), 600);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (userProfile?.dietary_profile) {
-      setActiveDiet(userProfile.dietary_profile);
-      setHasInteracted(true);
-    }
-    if (userProfile?.allergies && userProfile.allergies.length > 0) {
-      setActiveAllergies(userProfile.allergies);
-    }
-  }, [userProfile]);
+    return getAllergyProfiles().map(ak => {
+      // id is now 'allergy_peanuts' (underscore, canonical DB id)
+      const key = ak.id.replace('allergy_', '').replace(/_/g, ' ');
+      return key.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    });
+  }, [dietProfiles]);
 
   const activeProfileData = useMemo(() => {
-    if (!activeDiet) return {
+    if (!passport.dietary_profile) return {
       id: '',
       name: t.recipes.defaultDietName,
       icon: 'restaurant',
@@ -82,14 +52,14 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
       substitutions: []
     } as any;
 
-    return dietProfiles.find(p => p.id === activeDiet) || {
+    return dietProfiles.find(p => p.id === passport.dietary_profile) || {
       id: 'diet_regular',
       name: t.recipes.regularDietName,
       icon: 'restaurant',
       description: t.recipes.regularDietDesc,
       substitutions: []
     } as any;
-  }, [activeDiet, dietProfiles]);
+  }, [passport.dietary_profile, dietProfiles]);
 
   const groupedDiets = useMemo(() => ({
     lifestyle: dietProfiles.filter(p => p.type !== 'religious'),
@@ -97,34 +67,13 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
   }), [dietProfiles]);
 
   const handleConfirm = async (diet: string, allergies: string[], spiciness?: string | number) => {
-    setActiveDiet(diet);
-    setActiveAllergies(allergies);
-    setHasInteracted(true);
     closeMegaMenuRef.current?.();
 
-    // Persist to user profile if logged in
-    if (userProfile?.id && userProfile.id !== 'guest') {
-      try {
-        await authService.updateProfile(userProfile.id, {
-          dietary_profile: diet,
-          allergies: allergies,
-          preferred_spiciness_id: typeof spiciness === 'string' ? parseInt(spiciness) : spiciness
-        });
-        
-        // Notify parent (App.tsx) to refresh global state
-        onProfileUpdate?.();
-      } catch (err) {
-        console.error("Error persisting profile updates:", err);
-      }
-    } else {
-      // GUEST: Save to localStorage
-      localStorage.setItem('guest_diet', diet);
-      localStorage.setItem('guest_allergies', JSON.stringify(allergies));
-      if (spiciness) localStorage.setItem('guest_spiciness', spiciness.toString());
-      
-      // Notify parent to refresh "Virtual Profile"
-      onProfileUpdate?.();
-    }
+    await updatePassport({
+      dietary_profile: diet,
+      allergies,
+      preferred_spiciness_id: typeof spiciness === 'string' ? parseInt(spiciness) : spiciness
+    });
   };
 
   const handleSelectRecipe = (rawRecipe: any) => {
@@ -133,52 +82,59 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
     }
   };
 
-  const handleAskCherryDish = (dish: RecipeData) => {
-    const topic = t.recipes.askCherryDish({
-      name: dish.name,
-      diet: activeDiet.replace('diet_', ''),
-      allergies: activeAllergies.join(', ')
-    });
-    window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));
-  };
-
   const getGridConfig = (count: number) => {
     if (count === 2) return { container: "flex flex-wrap justify-center gap-6 lg:gap-12", item: "w-full md:w-[calc(50%-2rem)] lg:w-[calc(33.33%-3rem)]" };
-    if (count === 4) return { container: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-12 max-w-4xl mx-auto", item: "" };
-    return { container: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12", item: "" };
+    if (count === 3) return { container: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 lg:gap-12", item: "" };
+    if (count === 4) return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-12 max-w-4xl mx-auto", item: "" };
+    return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12", item: "" };
   };
 
 
 
   const dietContent = (
     <MegaMenuCard
-      initialDiet={activeDiet}
-      initialAllergies={activeAllergies}
-      initialSpiciness={userProfile?.preferred_spiciness_id}
+      initialDiet={passport.dietary_profile}
+      initialAllergies={passport.allergies}
+      initialSpiciness={passport.preferred_spiciness_id}
       allergyOptions={allergyOptions}
       groupedDiets={groupedDiets}
       spicinessOptions={spicinessLevels}
       onConfirm={handleConfirm}
+      onDirtyChange={setIsDietDirty}
+      onClose={() => closeMegaMenuRef.current?.()}
     />
   );
 
-  const hasAlerts = hasInteracted && (!!activeDiet || activeAllergies.length > 0);
+  const hasAlerts = hasExplicitPassport && (!!passport.dietary_profile || passport.allergies.length > 0);
+
+  const headerDescription = hasExplicitPassport
+    ? t.recipes.headerDescReady({ diet: activeProfileData.name, allergies: passport.allergies })
+    : undefined;
 
   return (
-    <PageLayout slug="recipes" loading={loading || knowledgeLoading} showPatterns={true} hideDefaultHeader={true} customHeader={<HeaderMenu customSlug="recipes" />}>
+    <PageLayout slug="authentic-thai-akha-recipes" loading={loading || knowledgeLoading} showPatterns={true} hideDefaultHeader={true} customHeader={<HeaderMenu customSlug="authentic-thai-akha-recipes" descriptionOverride={headerDescription} />}>
+      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
+          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
+      <PageSEO
+        title="Authentic Thai Akha Recipes — Chiang Mai | Thai Akha Kitchen"
+        description="Authentic Akha & Thai recipes from Chiang Mai’s top cooking school. Step‑by‑step for Pad Thai, Green Curry, Sapi Thong, Mango Sticky Rice. Vegan adaptations included."
+        canonical="https://www.thaiakha.com/authentic-thai-akha-recipes"
+        ogImage={seoMetadata?.og_image || OG_DEFAULT}
+        ogType="website"
+      />
 
       {/* MEGA MENU: PERSONALIZZAZIONE */}
-      <div className="h-[var(--space-fluid-s)]" />
       <MegaMenu
         variant="diet"
-        title={activeProfileData.name}
-        subtitle={hasInteracted ? t.recipes.activeProfile : t.recipes.personalize}
+        title={hasExplicitPassport ? activeProfileData.name : t.recipes.selectDietLabel}
+        subtitle={hasExplicitPassport ? t.recipes.activeProfile : t.recipes.personalize}
         icon={activeProfileData.icon}
         activeLabel={activeProfileData.name}
-        activeCount={activeAllergies.length}
+        activeCount={passport.allergies.length}
         customContent={dietContent}
-        highlight={!hasInteracted}
+        highlight={!hasExplicitPassport}
         onRegisterClose={(fn) => { closeMegaMenuRef.current = fn; }}
+        onRegisterOpen={(fn) => { openMegaMenuRef.current = fn; }}
         onDietClick={(isNewOpening: boolean) => {
           if (isNewOpening) {
             setTimeout(() => {
@@ -187,22 +143,15 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
             }, 100);
           }
         }}
-        onAllergyClick={(isNewOpening: boolean) => {
-          if (isNewOpening) {
-            setTimeout(() => {
-              const el = document.getElementById('dietary-summary');
-              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-          }
-        }}
+        disableOutsideClick={isDietDirty}
       />
 
       {/* DIETARY & ALLERGY SUMMARY (Anchor always present for MegaMenu scroll) */}
-      <div id="dietary-summary" className="w-full max-w-2xl mx-auto [margin-top:var(--space-fluid-xs)] [padding-inline:var(--space-fluid-s)] md:[padding-inline:0] scroll-mt-44 font-black">
+      <div id="dietary-summary" className="w-full max-w-2xl mx-auto [padding-inline:var(--space-fluid-s)] md:[padding-inline:0] scroll-mt-44 font-black">
         {hasAlerts && (
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 flex flex-col [gap:var(--space-fluid-s)] [margin-bottom:var(--space-fluid-m)]">
+          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 flex flex-col [gap:var(--space-fluid-s)]">
             {/* Diet Alert */}
-            {activeDiet && (
+            {passport.dietary_profile && (
               <Alert
                 variant="warning"
                 title={activeProfileData.name}
@@ -213,12 +162,12 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
             )}
 
             {/* Allergy Alert */}
-            {activeAllergies.length > 0 && (
+            {passport.allergies.length > 0 && (
               <Alert
                 variant="error"
                 icon="health_and_safety"
                 title={t.recipes.allergyAlertTitle}
-                subtitle={activeAllergies.join(' / ')}
+                subtitle={passport.allergies.join(' / ')}
                 message={t.recipes.allergyAlertBody}
               />
             )}
@@ -226,31 +175,10 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
         )}
       </div>
 
-      {/* STUDENT PROMISE -> Dynamic Header 00/01 */}
-      <div className={cn(
-        "[margin-bottom:var(--space-fluid-m)]",
-        hasAlerts ? "[margin-top:var(--space-fluid-m)]" : "[margin-top:var(--space-fluid-s)]"
-      )}>
-        <SmartHeaderSection
-          sectionId={hasInteracted ? "recipe-01" : "recipe-00"}
-          variant="hero"
-          align="center"
-          hideTitle={false}
-          hideSubtitle={false}
-          hideDivider={false}
-          hideDescription={false}
-        />
-      </div>
-
-      <AkhaPixelLine />
-
-      {!activeDiet && (
-        <div className="[margin-top:var(--space-fluid-xl)] min-h-[35vh] flex items-center justify-center">
-          <div className="text-center [padding-inline:var(--space-fluid-m)] select-none pointer-events-none">
-            <Typography
-              variant="display2"
-              className="opacity-20 uppercase leading-tight"
-            >
+      {!hasExplicitPassport && (
+        <div className="[margin-top:var(--space-fluid-xl)] [margin-bottom:var(--space-fluid-xl)] min-h-[35vh] flex items-center justify-center">
+          <div className="text-center [padding-inline:var(--space-fluid-m)] flex flex-col items-center [gap:var(--space-fluid-m)]">
+            <Typography variant="display2" className="text-title uppercase leading-tight">
               {t.recipes.selectPrompt.split('\n').map((line, i) => (
                 <React.Fragment key={i}>
                   {line}
@@ -258,16 +186,35 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
                 </React.Fragment>
               ))}
             </Typography>
+            <Typography variant="body" className="text-desc max-w-sm">
+              {t.recipes.defaultDietDesc}
+            </Typography>
+            <button
+              onClick={() => openMegaMenuRef.current?.()}
+              className="[margin-top:var(--space-fluid-xs)] inline-flex items-center [gap:var(--space-fluid-2xs)] [padding-block:var(--space-fluid-xs)] [padding-inline:var(--space-fluid-m)] rounded-full bg-title text-inverse font-semibold transition-opacity hover:opacity-80 active:opacity-70"
+            >
+              <span className="material-symbols-rounded text-[1.1em]">tune</span>
+              {t.recipes.personalize}
+            </button>
           </div>
         </div>
       )}
 
       {/* LISTA RICETTE */}
       <div className="w-full min-h-[50vh] flex flex-col [gap:var(--space-fluid-xl)]">
-        {activeDiet && categories.map((cat, idx) => {
+        {hasExplicitPassport && passport.dietary_profile && categories.map((cat, idx) => {
           const catRecipes = recipes.filter(r => r.category === cat.id);
           if (catRecipes.length === 0) return null;
           const gridConfig = getGridConfig(catRecipes.length);
+
+          // Immagini del modal gallery categoria: cover di ogni ricetta (join cover:media_assets).
+          const catGalleryItems = catRecipes
+            .map((r: any) => ({
+              asset_id: r.cover?.asset_id as string | undefined,
+              image_url: (r.cover?.image_url || '') as string,
+              title: (r.name || '') as string,
+            }))
+            .filter(g => g.image_url);
 
           return (
             <React.Fragment key={cat.id}>
@@ -278,69 +225,79 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
                   align="center"
                 />
 
-                <div className={cn(gridConfig.container, "[margin-bottom:var(--space-fluid-xl)]")}>
+                {/* Blocco categoria — prima delle schede ricette */}
+                <RecipeCategory cat={cat} activeDiet={passport.dietary_profile} galleryItems={catGalleryItems} />
+
+                {/* Schede ricette */}
+                <div className={cn(gridConfig.container)}>
                   {catRecipes.map((rawRecipe) => {
                     const r = mapToRecipeData(rawRecipe);
-                    const displayLabel = activeDiet === 'diet_regular' ? 'ORIGINAL' : activeDiet.replace('diet_', '').toUpperCase();
-                    const preview = adaptRecipeToDiet(r, activeDiet, activeAllergies);
+                    const displayLabel = passport.dietary_profile === 'diet_regular' ? 'ORIGINAL' : passport.dietary_profile.replace('diet_', '').toUpperCase();
+                    const rki = (rawRecipe.recipe_key_ingredients as RawKeyIngredient[]) || [];
+                    const preview = adaptRecipeToDiet(r, passport.dietary_profile, passport.allergies, dietProfiles, rki);
 
                     return (
                       <div className={gridConfig.item || ""} key={r.id}>
                         <MenuCard
-                          dish={{ ...preview, colorTheme: r.colorTheme || '#ED5565', image: r.image }}
+                          dish={preview}
                           isSelected={false}
                           dietLabel={displayLabel}
                           disableBodyCursor={true}
+                          href={`/authentic-thai-akha-recipes/${rawRecipe.slug || rawRecipe.id}`}
                           onClick={() => handleSelectRecipe(rawRecipe)}
                           onPreview={() => handleSelectRecipe(rawRecipe)}
-                          onAskCherry={() => handleAskCherryDish(r)}
                         />
                       </div>
                     );
                   })}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] lg:[gap:var(--space-fluid-xl)] items-start">
-                  <div className="lg:col-span-5 flex flex-col [gap:var(--space-fluid-m)] relative lg:sticky lg:top-32">
-                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-border shadow-2xl group">
-                      <MediaImage
-                        url={cat.image_url || ""}
-                        fallbackAlt={cat.title}
-                        showCaption={false}
-                        imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                {/* Chef's Secrets — card sotto la griglia ricette */}
+                {cat.chef_secrets && cat.chef_secrets.length > 0 && (
+                  <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border/60">
+                    <div className="flex items-center [gap:var(--space-fluid-xs)]">
+                      <span className="material-symbols-rounded text-primary/60 text-xl">restaurant</span>
+                      <Typography variant="caption" color="muted" className="uppercase tracking-widest font-bold">Chef's Secrets</Typography>
                     </div>
-                    <AudioPlayer categoryId={cat.id} className="w-full" />
+                    <ul className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-xs)]">
+                      {(cat.chef_secrets as string[]).map((secret, idx) => (
+                        <li key={idx} className="flex items-start [gap:var(--space-fluid-xs)]">
+                          <span className="material-symbols-rounded text-primary/30 text-sm mt-0.5 flex-shrink-0">chevron_right</span>
+                          <Typography variant="paragraphS" color="muted" className="leading-relaxed">{secret}</Typography>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div className="lg:col-span-7">
-                    <div className="h-full [padding:var(--space-fluid-l)] md:[padding:var(--space-fluid-xl)] rounded-[3rem] bg-surface border border-border flex flex-col [gap:var(--space-fluid-xl)] shadow-inner">
-                      {cat.ui_quote && (
-                        <Typography variant="quote" className="text-2xl md:text-3xl text-title/90 border-primary [padding-left:var(--space-fluid-m)] [padding-block:var(--space-fluid-s)]">
-                          "{cat.ui_quote}"
-                        </Typography>
-                      )}
-                      <div className="flex flex-col [gap:var(--space-fluid-m)]">
-                        <Typography variant="paragraphM" className="text-desc/90 whitespace-pre-wrap leading-relaxed text-lg font-light text-left">
-                          {cat.content_body || cat.description}
-                        </Typography>
-                      </div>
-                      {cat.seo_keywords && cat.seo_keywords.length > 0 && (
-                        <div className="flex flex-wrap [gap:var(--space-fluid-2xs)] [padding-top:var(--space-fluid-m)] border-t border-border">
-                          {cat.seo_keywords.map((kw, kIdx) => (
-                            <Chip key={kIdx} label={kw} className="text-xs py-2 px-4 bg-background border-border hover:bg-surface" />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                )}
               </section>
-              {idx < categories.length - 1 && <AkhaPixelLine />}
+
+              {/* Divider tra sezioni */}
+              {idx < categories.length - 1 && (
+                <div className="opacity-80">
+                  <AkhaThemedLine theme="kitchen" />
+                </div>
+              )}
             </React.Fragment>
           );
         })}
       </div>
+
+      {/* PageEssentials: facts, references, author note — always rendered for SEO crawlers */}
+      <PageEssentials
+        slug="authentic-thai-akha-recipes"
+      />
+
+      {/* FaqBottomPage: always rendered (not gated on dietary_profile) — visible to crawlers */}
+      <FaqBottomPage
+        slug="authentic-thai-akha-recipes"
+        onNavigate={onNavigate as any}
+      />
+
+      <SiblingInfoSection
+        currentSlug="authentic-thai-akha-recipes"
+        onNavigate={onNavigate as any}
+        sectionId="sibiling_info"
+      />
     </PageLayout>
   );
 };

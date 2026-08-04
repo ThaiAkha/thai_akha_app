@@ -149,7 +149,7 @@ Deno.serve(async (req: Request) => {
     const description = rows
       .map((r) => {
         const items = Array.isArray(r.items_snapshot) ? r.items_snapshot.length : 0
-        const note = r.notes ? ` — ${r.notes}` : ''
+        const note = r.notes ? ` - ${r.notes}` : ''
         return `${cfg.shop} ${r.run_date} · ฿${Number(r.total_cost ?? 0)}${items ? ` · ${items} items` : ''}${note}`
       })
       .join('\n')

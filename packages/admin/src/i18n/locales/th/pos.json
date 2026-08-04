@@ -20,7 +20,11 @@
     "totalAmount": "ยอดรวม",
     "payOnArrival": "ชำระเงินเมื่อถึงที่",
     "saveTab": "บันทึกรายการ",
-    "payCash": "ชำระด้วยเงินสด"
+    "payCash": "ชำระด้วยเงินสด",
+    "removeItemTitle": "ลบรายการ?",
+    "removeItemMsg": "ลบ \"{{name}}\" ออกจากออเดอร์นี้?",
+    "remove": "ลบ",
+    "payCard": "บัตร"
   },
   "alerts": {
     "selectGuestFirst": "กรุณาเลือกแขกก่อน",

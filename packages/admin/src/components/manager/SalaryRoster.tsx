@@ -149,7 +149,7 @@ const SalaryRoster: React.FC = () => {
                             <div key={r.employee_id} className={`rounded-xl border p-3 ${locked ? 'border-green-200 dark:border-green-500/30 bg-green-50/40 dark:bg-green-500/5' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'}`}>
                                 <div className="flex items-center gap-3 flex-wrap">
                                     <div className="min-w-[140px] flex-1">
-                                        <div className="text-sm font-bold text-gray-900 dark:text-white">{r.full_name || '—'}</div>
+                                        <div className="text-sm font-bold text-gray-900 dark:text-white">{r.full_name || '-'}</div>
                                         <div className="text-[10px] font-black uppercase tracking-wider text-gray-400">{r.role}</div>
                                     </div>
                                     <div className="flex items-center gap-1">

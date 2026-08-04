@@ -2,7 +2,8 @@
   "sidebar": {
     "title": "Huéspedes",
     "guest": "Huésped",
-    "selectGuest": "Select a guest to start billing"
+    "selectGuest": "Select a guest to start billing",
+    "noClass": "No hay clases para cobrar."
   },
   "content": {
     "loading": "Cargando..."
@@ -19,11 +20,22 @@
     "totalAmount": "Monto total",
     "payOnArrival": "Pago al llegar",
     "saveTab": "Guardar cuenta",
-    "payCash": "Pagar efectivo"
+    "payCash": "Pagar efectivo",
+    "removeItemTitle": "¿Eliminar artículo?",
+    "removeItemMsg": "¿Eliminar \"{{name}}\" de este pedido?",
+    "remove": "Eliminar",
+    "payCard": "Tarjeta"
   },
   "alerts": {
     "selectGuestFirst": "Selecciona un huésped primero",
     "outOfStock": "¡Sin existencias!",
     "confirmCharge": "¿Cobrar {{amount}} THB en efectivo?"
+  },
+  "split": {
+    "button": "Dividir → nuevo grupo",
+    "create": "Crear grupo",
+    "cancel": "Cancelar",
+    "merge": "Volver a unir",
+    "paxToMove": "Pax a mover"
   }
 }

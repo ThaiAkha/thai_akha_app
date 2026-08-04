@@ -2,7 +2,8 @@
   "sidebar": {
     "title": "访客",
     "guest": "访客",
-    "selectGuest": "Select a guest to start billing"
+    "selectGuest": "Select a guest to start billing",
+    "noClass": "没有需要结算的课程。"
   },
   "content": {
     "loading": "加载中..."
@@ -19,11 +20,22 @@
     "totalAmount": "总金额",
     "payOnArrival": "到付",
     "saveTab": "保存账单",
-    "payCash": "现金支付"
+    "payCash": "现金支付",
+    "removeItemTitle": "移除商品？",
+    "removeItemMsg": "从此订单中移除 \"{{name}}\"？",
+    "remove": "移除",
+    "payCard": "刷卡"
   },
   "alerts": {
     "selectGuestFirst": "请先选择访客",
     "outOfStock": "缺货！",
     "confirmCharge": "向现金收取{{amount}}泰铢？"
+  },
+  "split": {
+    "button": "拆分 → 新群组",
+    "create": "创建群组",
+    "cancel": "取消",
+    "merge": "合并回去",
+    "paxToMove": "要移动的人数"
   }
 }

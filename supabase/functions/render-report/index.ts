@@ -191,7 +191,7 @@ Deno.serve(async (req: Request) => {
         period: periodLabel,
         rows: list.map((r) => ({
           date: r.booking_date,
-          guest: r.guest_name || r.booking_ref || '—',
+          guest: r.guest_name || r.booking_ref || '-',
           class: SESSION_LABEL[r.session_id ?? ''] ?? r.session_id ?? '',
           pax: r.pax_count,
           price: Math.round((Number(r.total_price) || 0) + (Number(r.commission_amount) || 0)), // gross retail per riga
@@ -250,7 +250,7 @@ Deno.serve(async (req: Request) => {
         const pos = posByBooking.get(b.internal_id) ?? 0
         return {
           date: b.booking_date,
-          guest: b.guest_name || '—',
+          guest: b.guest_name || '-',
           class: SESSION_LABEL[b.session_id ?? ''] ?? b.session_id ?? '',
           pax: Number(b.pax_count) || 0,
           paid: isPaid(b.payment_status) ? 'Paid' : 'Unpaid',
@@ -297,7 +297,7 @@ Deno.serve(async (req: Request) => {
         workers: list.map((s) => {
           const amt = Math.round(Number(s.total_amount) || 0)
           return {
-            employee_name: s.profiles?.full_name ?? '—',
+            employee_name: s.profiles?.full_name ?? '-',
             position: cap(s.profiles?.role ?? ''),
             period: periodLabel(s.period),
             pay_date: payDate,

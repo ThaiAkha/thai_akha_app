@@ -403,3 +403,11 @@ verify_jwt = false
 # Welcome email is triggered right at signup, before a session is guaranteed.
 [functions.send-admin-welcome]
 verify_jwt = false
+
+# Market expense has TWO auth channels: staff JWT, or the cron channel that sends
+# x-market-cron-secret (no JWT at all). It was deployed by hand with --no-verify-jwt
+# and the setting lived only on the server: a plain redeploy would have flipped it
+# back to true and killed the cron channel silently. Recorded here so it survives.
+# The in-function guard still requires staff role when the cron secret is absent.
+[functions.zoho-create-market-expense]
+verify_jwt = false

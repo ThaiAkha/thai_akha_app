@@ -20,7 +20,11 @@
     "totalAmount": "Total Amount",
     "payOnArrival": "Pay on Arrival",
     "saveTab": "Save Tab",
-    "payCash": "Pay Cash"
+    "payCash": "Pay Cash",
+    "removeItemTitle": "Remove item?",
+    "removeItemMsg": "Remove \"{{name}}\" from this order?",
+    "remove": "Remove",
+    "payCard": "Card"
   },
   "alerts": {
     "selectGuestFirst": "Select a guest first",

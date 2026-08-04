@@ -126,7 +126,7 @@ Deno.serve(async (req: Request) => {
         const nm = prof?.full_name ?? 'Employee'
         return `- ${nm}: ฿${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : '')
       }).join('\n')
-      const description = `Salaries ${per} — ${method.toUpperCase()} (${g.length})\n${lines}`
+      const description = `Salaries ${per} - ${method.toUpperCase()} (${g.length})\n${lines}`
 
       const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${org}`, {
         method: 'POST',

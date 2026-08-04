@@ -99,7 +99,7 @@
 ## 🟢 3. Stitch MCP (Google)
 
 **Comando**: `npx -y mcp-remote https://stitch.googleapis.com/mcp`  
-**API Key**: `<SUPABASE_API_KEY_RIMOSSA_20260804>`  
+**API Key**: rimossa da questo file il 2026-08-04 — la chiave in chiaro qui bloccava il push (GitHub secret scanning la classifica *GCP API Key Bound to a Service Account*). La chiave **è ancora valida**: non è mai uscita da questa macchina. Vive nella config MCP locale, non in repo. Se serve rigenerarla: Google Cloud Console del progetto Stitch.  
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (5)

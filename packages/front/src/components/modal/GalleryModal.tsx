@@ -5,6 +5,7 @@ import ModalMediaHeader from './ModalMediaHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Typography } from '../ui/index';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -15,7 +16,10 @@ export interface GalleryItem {
   image_url: string;
   asset_id?: string;
   title?: string;
+  title_highlight?: string;
+  subtitle?: string;
   description?: string;
+  caption?: string;
   quote?: string;
   icons?: string[];
   photo_id?: number;
@@ -37,10 +41,16 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
   const [index, setIndex] = useState(startIndex);
   const [direction, setDirection] = useState(0);
   const touchStartX = useRef<number | null>(null);
+  const activeThumbRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (isOpen) setIndex(startIndex);
   }, [isOpen, startIndex]);
+
+  // Keep the active thumbnail visible in the strip (horizontal scroll only).
+  useEffect(() => {
+    activeThumbRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [index, isOpen]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -90,16 +100,18 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
       {/* ATMOSPHERIC BACKGROUND — true crossfade + cinematic overlay */}
       <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-black">
         <AnimatePresence mode="sync">
-          <motion.img
-            key={index}
-            src={currentItem.image_url}
-            alt="Atmosphere"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          {currentItem.image_url && (
+            <motion.img
+              key={index}
+              src={currentItem.image_url}
+              alt="Atmosphere"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
         </AnimatePresence>
         {/* Layer 1: Multiplying darkner */}
         <div className="absolute inset-0 bg-black/90 mix-blend-multiply" />
@@ -116,6 +128,8 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
         <div className="pointer-events-none w-full">
           <ModalMediaHeader
             title={currentItem.title}
+            highlight={currentItem.title_highlight}
+            subtitle={currentItem.subtitle}
             description={currentItem.description}
           />
         </div>
@@ -201,6 +215,42 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
           </div>
         </div>
 
+        {/* THUMBNAIL STRIP — direct navigation, horizontal scroll (swipe-friendly).
+            Dark-glass modal aesthetic (white/X allowed: cinema variant is always dark). */}
+        {items.length > 1 && (
+          <div
+            className="pointer-events-auto w-full max-w-full overflow-x-auto no-scrollbar [margin-top:var(--space-fluid-m)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex [gap:var(--space-fluid-xs)] w-max mx-auto [padding-inline:var(--space-fluid-m)]">
+              {items.map((item, i) => (
+                <button
+                  key={item.asset_id ?? `${item.image_url}-${i}`}
+                  ref={i === index ? activeThumbRef : undefined}
+                  onClick={() => goTo(i)}
+                  aria-label={item.title || `Photo ${i + 1}`}
+                  aria-current={i === index}
+                  className={cn(
+                    'relative shrink-0 size-14 md:size-20 rounded-xl overflow-hidden border-2 transition-all duration-300',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                    i === index
+                      ? 'border-primary opacity-100'
+                      : 'border-white/15 opacity-60 hover:opacity-100 hover:border-white/40',
+                  )}
+                >
+                  <img
+                    src={item.image_url}
+                    alt={item.title || ''}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* CLOSE BUTTON — same style as PhotoModal */}
         <div className="pointer-events-auto [margin-top:var(--space-fluid-l)]">
           <Button
@@ -210,7 +260,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
             onClick={onClose}
             className="text-action border-action/20"
           >
-            Close Gallery
+            {t.components.gallery.closeGallery}
           </Button>
         </div>
       </div>

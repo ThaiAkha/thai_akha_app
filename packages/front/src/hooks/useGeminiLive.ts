@@ -1,8 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLiveGeminiClient } from '../services/geminiClient';
-import { LiveServerMessage, Modality, Type } from '@google/genai';
+import { LiveServerMessage, Modality } from '@google/genai';
 import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
-import { saveMessage, checkRateLimit } from '@thaiakha/shared/services';
+import { checkRateLimit, getGuestSessionToken, getUserBookingState } from '@thaiakha/shared/services';
+import { t } from '@thaiakha/shared/lib/ui-strings';
+import { getAllStaticKnowledge } from '@thaiakha/shared/data/cherryKnowledge';
+import type { UserProfile } from '@thaiakha/shared/types';
+import { encodeAudio, decodeAudio, decodeAudioDataToBuffer } from '../lib/audioUtils';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -14,8 +18,8 @@ interface SessionState {
 }
 
 export const useGeminiLive = (
-  userProfile?: any,
-  sessionId?: string | null,
+  userProfile?: UserProfile,
+  _sessionId?: string | null,
   onTurnComplete?: (userText: string, assistantText: string) => void
 ) => {
     const [state, setState] = useState<SessionState>({
@@ -39,29 +43,6 @@ export const useGeminiLive = (
     const outputTranscriptRef = useRef<string>(''); // accumulates Cherry's response transcription
     const analyserRef = useRef<AnalyserNode | null>(null); // for waveform visualization
 
-    const encode = (bytes: Uint8Array): string => {
-        let binary = '';
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) { binary += String.fromCharCode(bytes[i]); }
-        return btoa(binary);
-    };
-
-    const decode = (base64: string): Uint8Array => {
-        const binaryString = atob(base64);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
-        return bytes;
-    };
-
-    const decodeAudioData = async (data: Uint8Array, ctx: AudioContext, sampleRate: number): Promise<AudioBuffer> => {
-        const dataInt16 = new Int16Array(data.buffer);
-        const frameCount = dataInt16.length;
-        const buffer = ctx.createBuffer(1, frameCount, sampleRate);
-        const channelData = buffer.getChannelData(0);
-        for (let i = 0; i < frameCount; i++) { channelData[i] = dataInt16[i] / 32768.0; }
-        return buffer;
-    };
 
     const stopSession = useCallback(() => {
         // Mark session inactive immediately — prevents worklet onmessage from calling sendRealtimeInput
@@ -135,7 +116,7 @@ export const useGeminiLive = (
         if (state.status !== 'idle') stopSession();
 
         // Rate limit check before connecting
-        const rateLimit = await checkRateLimit(userProfile?.id, undefined);
+        const rateLimit = await checkRateLimit(userProfile?.id, getGuestSessionToken() ?? undefined);
         if (!rateLimit.allowed) {
             setState(prev => ({ ...prev, status: 'error', error: rateLimit.reason ?? 'Voice limit reached.' }));
             return;
@@ -155,16 +136,26 @@ export const useGeminiLive = (
             });
             streamRef.current = stream;
 
+            // Stessa conoscenza del testo: booking_state + diete/spice mappate leggibili.
+            const booking = await getUserBookingState(userProfile?.id);
             const resolvedSystemInstruction = overrideInstruction || buildCherryPrompt({
               isLogged: !!userProfile,
+              role: userProfile?.role, // #17 Chameleon: modula persona anche in voce
               name: userProfile?.full_name,
-              dietary_profile: userProfile?.dietary_profile,
+              dietary_profile: userProfile?.dietary_profile
+                ? (t.cherry.dietaryMap[userProfile.dietary_profile] ?? userProfile.dietary_profile)
+                : undefined,
               allergies: userProfile?.allergies,
-              preferred_spiciness: userProfile?.preferred_spiciness_id ? String(userProfile.preferred_spiciness_id) : undefined,
+              preferred_spiciness: userProfile?.preferred_spiciness_id
+                ? t.cherry.spicinessMap[String(userProfile.preferred_spiciness_id)]
+                : undefined,
+              booking_state: booking.state,
+              days_until_class: booking.daysUntil,
+              session_type: booking.sessionType ?? undefined,
             });
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+                model: cherryFront.liveModel,
                 callbacks: {
                     onopen: async () => {
                         isSessionActiveRef.current = true;
@@ -202,7 +193,7 @@ export const useGeminiLive = (
                             try {
                                 sessionRef.current.sendRealtimeInput({
                                     media: {
-                                        data: encode(new Uint8Array(int16.buffer)),
+                                        data: encodeAudio(new Uint8Array(int16.buffer)),
                                         mimeType: 'audio/pcm;rate=16000',
                                     }
                                 });
@@ -253,7 +244,7 @@ export const useGeminiLive = (
                         const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
                         if (base64Audio && audioCtxRef.current) {
                             nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioCtxRef.current.currentTime);
-                            const audioBuffer = await decodeAudioData(decode(base64Audio), audioCtxRef.current, 24000);
+                            const audioBuffer = await decodeAudioDataToBuffer(decodeAudio(base64Audio), audioCtxRef.current, 24000);
                             const sourceNode = audioCtxRef.current.createBufferSource();
                             sourceNode.buffer = audioBuffer;
                             sourceNode.connect(audioCtxRef.current.destination);
@@ -270,15 +261,26 @@ export const useGeminiLive = (
                             nextStartTimeRef.current = 0;
                         }
                     },
-                    onerror: (e) => {
-                        console.error("Live API Error:", e);
+                    onerror: (e: any) => {
+                        // Surface the REAL reason (non solo "network") → diagnosi immediata.
+                        const reason = e?.message || e?.error?.message || e?.reason || 'unknown';
+                        console.error("Live API Error:", reason, e);
                         isSessionActiveRef.current = false;
-                        setState(prev => ({ ...prev, status: 'error', error: 'Connection failed kha. Check your network.' }));
+                        setState(prev => ({ ...prev, status: 'error', error: `Voice error: ${reason} kha` }));
                         stopSession();
                     },
-                    onclose: () => {
-                        console.log("Live API Closed");
+                    onclose: (e: any) => {
+                        // Chiusura ANOMALA durante connecting/active (code ≠ 1000) → mostra la ragione.
+                        const abnormal = e && typeof e.code === 'number' && e.code !== 1000;
+                        console.log("Live API Closed", e?.code, e?.reason);
                         isSessionActiveRef.current = false;
+                        if (abnormal) {
+                            setState(prev =>
+                                prev.status === 'error'
+                                    ? prev // errore già impostato da onerror
+                                    : { ...prev, status: 'error', error: `Voice closed (${e.code})${e.reason ? `: ${e.reason}` : ''} kha` },
+                            );
+                        }
                         stopSession();
                     }
                 },
@@ -289,7 +291,7 @@ export const useGeminiLive = (
                             prebuiltVoiceConfig: { voiceName: cherryFront.voiceName }
                         }
                     },
-                    systemInstruction: resolvedSystemInstruction,
+                    systemInstruction: `${resolvedSystemInstruction}\n${getAllStaticKnowledge()}`,
                     outputAudioTranscription: {},
                     inputAudioTranscription: {},
                 }
@@ -301,7 +303,19 @@ export const useGeminiLive = (
 
         } catch (err: any) {
             console.error("Failed to start session:", err);
-            setState(prev => ({ ...prev, status: 'error', error: err.message || 'Microphone permission denied kha.' }));
+            // Distingui la causa reale invece del generico "mic denied":
+            // permesso microfono negato/assente vs token/edge vs altro.
+            const name = err?.name;
+            let msg: string;
+            if (name === 'NotAllowedError' || name === 'SecurityError') {
+                msg = 'Microphone permission denied kha — allow the mic and retry.';
+            } else if (name === 'NotFoundError' || name === 'NotReadableError') {
+                msg = 'No microphone found kha.';
+            } else {
+                // Token/edge (getLiveGeminiClient) o altro → mostra il messaggio reale.
+                msg = err instanceof Error ? `Voice start failed: ${err.message} kha` : 'Voice start failed kha.';
+            }
+            setState(prev => ({ ...prev, status: 'error', error: msg }));
             stopSession();
         }
     };

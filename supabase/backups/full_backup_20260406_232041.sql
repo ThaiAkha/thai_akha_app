@@ -551,7 +551,7 @@ DECLARE
   v_curry_name text;
   v_soup_name text;
   v_stirfry_name text;
-  v_resend_api_key text := 're_H83CPWv4_BcGnUGz5S4Fd4z9XrDpNdNpX'; -- <--- METTI LA CHIAVE QUI
+  v_resend_api_key text := '<RESEND_API_KEY_RIMOSSA_20260804>'; -- <--- METTI LA CHIAVE QUI
   v_email_body jsonb;
 BEGIN
   -- Recupera Email e Nome dello studente
@@ -609,7 +609,7 @@ CREATE OR REPLACE FUNCTION "public"."send_menu_email"() RETURNS "trigger"
     AS $$
 DECLARE
   -- 🔴 INCOLLA QUI LA TUA API KEY DI RESEND (Mantieni gli apici)
-  v_resend_key text := 're_H83CPWv4_BcGnUGz5S4Fd4z9XrDpNdNpX'; 
+  v_resend_key text := '<RESEND_API_KEY_RIMOSSA_20260804>'; 
   
   -- Variabili per contenere i dati
   v_user_email text;
@@ -2174,12 +2174,12 @@ ALTER TABLE ONLY "public"."cooking_classes"
 
 
 ALTER TABLE ONLY "public"."culture_sections"
-    ADD CONSTRAINT "culture_sections_pkey" PRIMARY KEY ("id");
+    ADD CONSTRAINT "cultu<RESEND_API_KEY_RIMOSSA_20260804>" PRIMARY KEY ("id");
 
 
 
 ALTER TABLE ONLY "public"."culture_sections"
-    ADD CONSTRAINT "culture_sections_slug_key" UNIQUE ("slug");
+    ADD CONSTRAINT "cultu<RESEND_API_KEY_RIMOSSA_20260804>" UNIQUE ("slug");
 
 
 
@@ -2475,7 +2475,7 @@ CREATE INDEX "idx_content_categories_active_order" ON "public"."content_categori
 
 
 
-CREATE INDEX "idx_culture_sections_slug" ON "public"."culture_sections" USING "btree" ("slug");
+CREATE INDEX "idx_cultu<RESEND_API_KEY_RIMOSSA_20260804>" ON "public"."culture_sections" USING "btree" ("slug");
 
 
 
@@ -2683,7 +2683,7 @@ ALTER TABLE ONLY "public"."content_categories"
 
 
 ALTER TABLE ONLY "public"."culture_sections"
-    ADD CONSTRAINT "culture_sections_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."content_categories"("id");
+    ADD CONSTRAINT "cultu<RESEND_API_KEY_RIMOSSA_20260804>" FOREIGN KEY ("category_id") REFERENCES "public"."content_categories"("id");
 
 
 

@@ -99,7 +99,7 @@
 ## 🟢 3. Stitch MCP (Google)
 
 **Comando**: `npx -y mcp-remote https://stitch.googleapis.com/mcp`  
-**API Key**: `AQ.Ab8RN6KD1i3VMlQ1s5c8iRKUuiz-g_9Jvpmqfr4_tSqNdnGM5A`  
+**API Key**: `<SUPABASE_API_KEY_RIMOSSA_20260804>`  
 **Stato**: 🟢 ATTIVO
 
 ### Tool disabilitati (5)

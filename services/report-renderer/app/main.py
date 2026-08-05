@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from weasyprint import HTML
 
 from .renderer import APP_DIR
-from .templates import driver_report, market_report, agency_report, salary_payslip
+from .templates import driver_report, market_report, agency_report, salary_payslip, kitchen_report
 
 app = FastAPI(title="Thai Akha Report Renderer")
 
@@ -18,6 +18,7 @@ REGISTRY = {
     "market_report": market_report.build,
     "agency_report": agency_report.build,
     "salary_payslip": salary_payslip.build,
+    "kitchen_report": kitchen_report.build,
 }
 
 RENDER_TOKEN = os.environ.get("RENDER_TOKEN", "")

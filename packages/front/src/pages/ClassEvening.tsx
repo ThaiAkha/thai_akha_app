@@ -6,6 +6,7 @@ import ClassScheduleTimeline from '../components/classes/ClassScheduleTimeline';
 import type { ScheduleStep } from '../components/classes/ClassScheduleTimeline';
 import ClassGallery from '../components/classes/ClassGallery';
 import ClassInclusions from '../components/classes/ClassInclusions';
+import ClassDetails from '../components/classes/ClassDetails';
 import AkhaButtonLine from '../components/divider/AkhaButtonLine';
 import { useClassPageData } from '../hooks/useClassPageData';
 import { t } from '@thaiakha/shared/lib/ui-strings';
@@ -21,6 +22,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
     gallery2,
     pickupSection,
     exclusionsSection,
+    classSections,
     seoMetadata,
     loading,
   } = useClassPageData('evening');
@@ -104,6 +106,16 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
             <div className="flex flex-col [gap:var(--space-fluid-l)]">
               <SmartHeaderSection sectionId="evening-05" variant="section" align="center" />
               <ClassInclusions items={inclusions} />
+            </div>
+          </>
+        )}
+
+        {/* ── 5b. Class Flow — class_sections (flusso classe, pagamenti, diete, walk-in) ── */}
+        {classSections.length > 0 && (
+          <>
+            <AkhaThemedLine theme="akha" />
+            <div className="flex flex-col w-full max-w-3xl mx-auto [padding-inline:var(--space-fluid-m)]">
+              <ClassDetails color="secondary" classSections={classSections} />
             </div>
           </>
         )}

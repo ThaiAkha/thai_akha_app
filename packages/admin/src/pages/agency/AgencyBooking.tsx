@@ -10,11 +10,7 @@ import AdminClassPicker from '../../components/common/AdminClassPicker';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import PageMeta from '../../components/common/PageMeta';
-
-const PRICES: Record<string, number> = {
-    morning_class: 1400,
-    evening_class: 1300
-};
+import { getSessionPrice } from '@thaiakha/shared/lib/sessionUtils';
 
 const ZONES = ['green', 'pink', 'yellow', 'outside', 'walk-in'];
 
@@ -38,7 +34,10 @@ const AgencyBooking: React.FC = () => {
 
     // --- 3. BOOKING  DETAILS ---
     const [pax, setPax] = useState(1);
-    const [amount, setAmount] = useState(1400);
+    const [amount, setAmount] = useState(0);
+    // #37 - Prezzo: fonte unica class_sessions.price_thb (niente listino hardcoded).
+    // null = prezzo assente in DB -> la UI avvisa e blocca, non inventa un numero.
+    const [sessionPrices, setSessionPrices] = useState<Record<string, number | null>>({});
     // Commissione agenzia (per-pax, tiered) — single source: RPC calculate_agency_commission.
     const [commission, setCommission] = useState<{ amount: number; ratePerPax: number; tier: string | null }>({
         amount: 0, ratePerPax: 0, tier: null,
@@ -50,10 +49,28 @@ const AgencyBooking: React.FC = () => {
     const [pickupTime, setPickupTime] = useState('08:30');
     const [notes, setNotes] = useState('');
 
+    // #37 - Listino dal DB (class_sessions.price_thb), unica fonte del prezzo booking.
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            const { data, error } = await supabase.from('class_sessions').select('id, price_thb');
+            if (cancelled) return;
+            if (error) { console.warn('[AgencyBooking] class prices fetch failed:', error.message); return; }
+            const prices: Record<string, number | null> = {};
+            (data ?? []).forEach(s => { prices[s.id] = getSessionPrice(s.price_thb); });
+            setSessionPrices(prices);
+        })();
+        return () => { cancelled = true; };
+    }, []);
+
+    const basePrice = getSessionPrice(sessionPrices[session]);
+    const priceMissing = basePrice === null;
+
     // Auto-calc Price (Net for Agency) — commissione per-pax tiered via RPC single-source.
     // Solo classi per-persona (morning/evening). Fallback safe: nessuno sconto, non blocca.
     useEffect(() => {
-        const gross = (PRICES[session] || 1400) * pax;
+        if (basePrice === null) { setAmount(0); setCommission({ amount: 0, ratePerPax: 0, tier: null }); return; }
+        const gross = basePrice * pax;
         if (!user?.id) {
             setAmount(gross);
             setCommission({ amount: 0, ratePerPax: 0, tier: null });
@@ -81,7 +98,7 @@ const AgencyBooking: React.FC = () => {
             setAmount(gross - (res.commission_amount ?? 0));
         })();
         return () => { cancelled = true; };
-    }, [pax, session, user]);
+    }, [pax, session, user, basePrice]);
 
     // Auto-set Pickup Time
     useEffect(() => {
@@ -92,6 +109,8 @@ const AgencyBooking: React.FC = () => {
     const handleCreate = async () => {
         if (!guest.fullName) return alert(t('agencyBooking.errorNameRequired'));
         if (!user) return;
+        // #37 - senza prezzo in class_sessions non si prenota: mai inventare un totale.
+        if (basePrice === null) return alert('Class price is missing in the database. Please contact the manager.');
 
         setLoading(true);
 
@@ -247,7 +266,7 @@ const AgencyBooking: React.FC = () => {
                                     <span>{commission.ratePerPax.toLocaleString()} THB/pax{commission.tier ? ` · ${commission.tier}` : ''}</span>
                                 </div>
                                 <div className="flex justify-between items-end">
-                                    <span className="text-xs text-gray-400 line-through mb-1">{(PRICES[session] * pax).toLocaleString()} THB</span>
+                                    <span className="text-xs text-gray-400 line-through mb-1">{basePrice !== null ? `${(basePrice * pax).toLocaleString()} THB` : '-'}</span>
                                     <div className="text-right">
                                         <span className="block text-xs uppercase font-black text-gray-400 mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
                                         <h3 className="text-4xl font-black text-primary-600 dark:text-primary-400 italic">
@@ -262,10 +281,18 @@ const AgencyBooking: React.FC = () => {
                                 <span>{t('agencyBooking.invoiceNote')}</span>
                             </div>
 
+                            {/* #37 - prezzo assente in class_sessions: avvisa e blocca, mai indovinare */}
+                            {priceMissing && (
+                                <div className="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400">
+                                    <Info className="size-4 shrink-0" />
+                                    <span>Class price missing in the database - booking disabled.</span>
+                                </div>
+                            )}
+
                             <Button
                                 size="md"
                                 onClick={handleCreate}
-                                disabled={loading}
+                                disabled={loading || priceMissing}
                                 className="h-16 w-full rounded-2xl text-lg font-black uppercase italic shadow-lg animate-in zoom-in-95 duration-300"
                                 startIcon={!loading && <Send className="w-5 h-5" />}
                             >

@@ -1,3 +1,6 @@
+// AUTO-GENERATED from Supabase (project mtqullobcsypkqgdkaob) — DO NOT EDIT BY HAND.
+// Regenerate via Supabase MCP generate_typescript_types. Single source of truth for DB types.
+
 export type Json =
   | string
   | number
@@ -14,6 +17,117 @@ export type Database = {
   }
   public: {
     Tables: {
+      _info_page_backup_20260802: {
+        Row: {
+          anchor: string | null
+          body: Json | null
+          created_at: string | null
+          heading: string | null
+          id: string | null
+          is_active: boolean | null
+          page_slug: string | null
+          section_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          anchor?: string | null
+          body?: Json | null
+          created_at?: string | null
+          heading?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          page_slug?: string | null
+          section_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          anchor?: string | null
+          body?: Json | null
+          created_at?: string | null
+          heading?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          page_slug?: string | null
+          section_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      _info_page_backup_privacy_20260802: {
+        Row: {
+          anchor: string | null
+          body: Json | null
+          created_at: string | null
+          heading: string | null
+          id: string | null
+          is_active: boolean | null
+          page_slug: string | null
+          section_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          anchor?: string | null
+          body?: Json | null
+          created_at?: string | null
+          heading?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          page_slug?: string | null
+          section_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          anchor?: string | null
+          body?: Json | null
+          created_at?: string | null
+          heading?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          page_slug?: string | null
+          section_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      _nap_backup_20260803: {
+        Row: {
+          row_id: string | null
+          snapshot: Json | null
+          tbl: string | null
+        }
+        Insert: {
+          row_id?: string | null
+          snapshot?: Json | null
+          tbl?: string | null
+        }
+        Update: {
+          row_id?: string | null
+          snapshot?: Json | null
+          tbl?: string | null
+        }
+        Relationships: []
+      }
+      _rls_backup_20260803: {
+        Row: {
+          polname: string | null
+          qual_prima: string | null
+          salvata_il: string | null
+          tabella: string | null
+        }
+        Insert: {
+          polname?: string | null
+          qual_prima?: string | null
+          salvata_il?: string | null
+          tabella?: string | null
+        }
+        Update: {
+          polname?: string | null
+          qual_prima?: string | null
+          salvata_il?: string | null
+          tabella?: string | null
+        }
+        Relationships: []
+      }
       agency_invoices: {
         Row: {
           agency_id: string
@@ -1341,7 +1455,6 @@ export type Database = {
           inclusions: string[] | null
           is_active: boolean | null
           key_entities: Json | null
-          price: number
           schedule_items: Json | null
           semantic_vector: string | null
           summary_ai: string | null
@@ -1367,7 +1480,6 @@ export type Database = {
           inclusions?: string[] | null
           is_active?: boolean | null
           key_entities?: Json | null
-          price: number
           schedule_items?: Json | null
           semantic_vector?: string | null
           summary_ai?: string | null
@@ -1393,7 +1505,6 @@ export type Database = {
           inclusions?: string[] | null
           is_active?: boolean | null
           key_entities?: Json | null
-          price?: number
           schedule_items?: Json | null
           semantic_vector?: string | null
           summary_ai?: string | null
@@ -1801,6 +1912,120 @@ export type Database = {
           min_stops?: number
           price_thb?: number
           session_type?: string
+        }
+        Relationships: []
+      }
+      faq_backup_20260731_promptg: {
+        Row: {
+          answer: string | null
+          audience: string[] | null
+          avatar_asset_id: string | null
+          backed_up_at: string | null
+          category_id: string | null
+          created_at: string | null
+          cta: Json | null
+          display_order: number | null
+          entity_slug: string | null
+          entity_type: string | null
+          faq_key: string | null
+          faq_style: string | null
+          id: string | null
+          is_active: boolean | null
+          question: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          backed_up_at?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          backed_up_at?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      faq_backup_20260731_teacher: {
+        Row: {
+          answer: string | null
+          audience: string[] | null
+          avatar_asset_id: string | null
+          backed_up_at: string | null
+          category_id: string | null
+          created_at: string | null
+          cta: Json | null
+          display_order: number | null
+          entity_slug: string | null
+          entity_type: string | null
+          faq_key: string | null
+          faq_style: string | null
+          id: string | null
+          is_active: boolean | null
+          question: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          backed_up_at?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          backed_up_at?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -3101,6 +3326,7 @@ export type Database = {
         Row: {
           active: boolean | null
           description: string | null
+          dropoff_description: string | null
           evening_pickup_end: string | null
           evening_pickup_time: string | null
           google_maps_link: string | null
@@ -3119,6 +3345,7 @@ export type Database = {
         Insert: {
           active?: boolean | null
           description?: string | null
+          dropoff_description?: string | null
           evening_pickup_end?: string | null
           evening_pickup_time?: string | null
           google_maps_link?: string | null
@@ -3137,6 +3364,7 @@ export type Database = {
         Update: {
           active?: boolean | null
           description?: string | null
+          dropoff_description?: string | null
           evening_pickup_end?: string | null
           evening_pickup_time?: string | null
           google_maps_link?: string | null

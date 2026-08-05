@@ -4,6 +4,7 @@ import { CookingClassDB } from '@thaiakha/shared';
 import { useSEO } from './useSEO';
 import type { PageSectionData } from './useHomePageSections';
 import type { GalleryItem } from '../components/modal';
+import type { ClassSection } from '../components/classes/ClassSectionBlock';
 
 /**
  * Shared data loader for the two cooking-class detail pages (Morning / Evening).
@@ -48,6 +49,8 @@ export interface ClassPageData {
   gallery2: GalleryItem[];
   pickupSection: PageSectionData | null;
   exclusionsSection: PageSectionData | null;
+  /** Blocchi flusso classe (class_sections) assegnati a questa classe, per display_order. */
+  classSections: ClassSection[];
   seoMetadata: ReturnType<typeof useSEO>['metadata'];
   /** Combined loading: data fetch OR SEO metadata still in flight. */
   loading: boolean;
@@ -63,17 +66,19 @@ export const useClassPageData = (variant: ClassVariant): ClassPageData => {
   const [gallery2, setGallery2] = useState<GalleryItem[]>([]);
   const [pickupSection, setPickupSection] = useState<PageSectionData | null>(null);
   const [exclusionsSection, setExclusionsSection] = useState<PageSectionData | null>(null);
+  const [classSections, setClassSections] = useState<ClassSection[]>([]);
 
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
       setLoading(true);
       try {
-        const [classes, gal1, gal2, pageSections] = await Promise.all([
+        const [classes, gal1, gal2, pageSections, sections] = await Promise.all([
           contentService.getCookingClasses(),
           contentService.getGallery(cfg.galleryKeys[0]),
           contentService.getGallery(cfg.galleryKeys[1]),
           newsService.getPageSections<PageSectionData>([cfg.pickupSectionId, 'universal_exclusions']),
+          contentService.getClassSections(cfg.classId),
         ]);
         if (!isMounted) return;
 
@@ -82,6 +87,7 @@ export const useClassPageData = (variant: ClassVariant): ClassPageData => {
         setGallery2(gal2.map(toItem));
         setPickupSection(pageSections.find(s => s.section_id === cfg.pickupSectionId) ?? null);
         setExclusionsSection(pageSections.find(s => s.section_id === 'universal_exclusions') ?? null);
+        setClassSections(sections as unknown as ClassSection[]);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -96,6 +102,7 @@ export const useClassPageData = (variant: ClassVariant): ClassPageData => {
     gallery2,
     pickupSection,
     exclusionsSection,
+    classSections,
     seoMetadata,
     loading: loading || seoLoading,
   };

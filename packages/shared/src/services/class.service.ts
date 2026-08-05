@@ -4,24 +4,39 @@ import { fetchWithCache } from './_cache';
 
 export const classService = {
 
-    /** 🍲 COOKING CLASSES: Prezzi e info corsi */
+    /** 🍲 COOKING CLASSES: info corsi (marketing). Prezzo dalla FONTE UNICA class_sessions. */
     async getCookingClasses(): Promise<CookingClassDB[]> {
-        const data = await fetchWithCache<CookingClassDB[]>('cooking_classes_v2', async () => {
+        const data = await fetchWithCache<CookingClassDB[]>('cooking_classes_v4', async () => {
             // Solo colonne UI realmente renderizzate. Esclusi i campi server-only
             // (semantic_vector, key_entities, summary_ai) e i cherry_* (Cherry usa il
             // modulo statico cherryKnowledge/classes.ts, non questa query).
             // image_url = immagine hero della pagina classe (HeroContent).
-            const { data, error } = await supabase
-                .from('cooking_classes')
-                .select('id, title, badge, tags, price, currency, unit, theme_color, duration_text, tagline, capacity_text, cover:media_assets!cover_asset_id(image_url, alt_text), description, highlights, schedule_items, inclusions, is_active, created_at')
-                .order('price', { ascending: true });
+            // #37 - il PREZZO viene SOLO da class_sessions.price_thb (fonte unica),
+            // arricchito per id (cooking_classes.id === class_sessions.id). La colonna
+            // cooking_classes.price è stata droppata: non va più selezionata.
+            const [ccRes, csRes] = await Promise.all([
+                supabase
+                    .from('cooking_classes')
+                    .select('id, title, badge, tags, currency, unit, theme_color, duration_text, tagline, capacity_text, cover:media_assets!cover_asset_id(image_url, alt_text), description, highlights, schedule_items, inclusions, is_active, created_at'),
+                supabase.from('class_sessions').select('id, price_thb'),
+            ]);
 
-            if (error) return [];
+            if (ccRes.error) return [];
+
+            const priceById = new Map<string, number>();
+            (csRes.data ?? []).forEach((s) => { if (s.price_thb != null) priceById.set(s.id, s.price_thb); });
+
             // Resolve cover_asset_id → media_assets; keep the `image_url` alias used by the UI.
-            return (data || []).map((row) => {
-                const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;
-                return { ...row, image_url: cover?.image_url ?? null } as unknown as CookingClassDB;
-            });
+            return (ccRes.data || [])
+                .map((row) => {
+                    const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;
+                    return {
+                        ...row,
+                        price: priceById.get(row.id) ?? null,
+                        image_url: cover?.image_url ?? null,
+                    } as unknown as CookingClassDB;
+                })
+                .sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
         });
         return data || [];
     },

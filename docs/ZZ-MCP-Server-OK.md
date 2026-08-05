@@ -96,11 +96,20 @@
 
 ---
 
-## 🟢 3. Stitch MCP (Google)
+## ⚪ 3. Stitch MCP (Google)
 
-**Comando**: `npx -y mcp-remote https://stitch.googleapis.com/mcp`  
-**API Key**: rimossa da questo file il 2026-08-04 — la chiave in chiaro qui bloccava il push (GitHub secret scanning la classifica *GCP API Key Bound to a Service Account*). La chiave **è ancora valida**: non è mai uscita da questa macchina. Vive nella config MCP locale, non in repo. Se serve rigenerarla: Google Cloud Console del progetto Stitch.  
-**Stato**: 🟢 ATTIVO
+**Comando**: `npx -y mcp-remote https://stitch.googleapis.com/mcp`
+
+**Stato (verificato 2026-08-05)**: ⚪ **NON CONFIGURATO**. La riga diceva 🟢 ATTIVO, ma non lo era: nessuna config MCP di questa macchina referenzia Stitch (controllati `~/.claude.json`, `~/.claude/settings.json`, la config di Claude Desktop e il `.mcp.json` del repo), e il server non compare tra quelli attivi in sessione. L'elenco di tool qui sotto descrive com'era configurato, non com'e' adesso.
+
+**API Key**: tolta da questo file il 2026-08-04, perche' in chiaro bloccava il push (GitHub secret scanning la classifica *GCP API Key Bound to a Service Account*). La chiave di allora e' stata **cancellata il 2026-08-05** ed e' morta.
+
+Le chiavi Stitch **non si creano a mano**: Stitch se le genera da solo quando ci si collega, nel progetto Google `effortless-snowfall-tb7dx` (numero `1032008173202`), col nome `Auto-generated Stitch API Key`. Per questo stanno in un progetto dal nome autogenerato e non tra i progetti Thai Akha.
+
+Dove guardare: `https://console.cloud.google.com/apis/credentials?project=effortless-snowfall-tb7dx`
+Da riga di comando: `gcloud services api-keys list --project=effortless-snowfall-tb7dx`
+
+Se un domani si riattiva questo MCP, la chiave nuova va nella config MCP locale e **mai** in repo.
 
 ### Tool disabilitati (5)
 - `generate_variants`

@@ -60,8 +60,23 @@ const supabaseAnonKey = resolveEnv(
   '',
 );
 
+// Senza chiave `createClient` muore comunque, ma con "supabaseKey is required":
+// un messaggio che non dice ne' quale variabile manca ne' dove cercarla. Alziamo
+// noi l'errore, dicendo entrambe le cose. (2026-08-05: un bundle admin senza
+// VITE_SUPABASE_ANON_KEY e' finito in produzione perche' buildato da un git
+// worktree, dove gli .env gitignorati non ci sono. Il guard di build vive in
+// scripts/viteRequireEnv.ts; questo qui e' la seconda rete, a runtime.)
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase environment variables are missing! Check your .env files.');
+  const missing = [
+    !supabaseUrl ? 'VITE_SUPABASE_URL' : null,
+    !supabaseAnonKey ? 'VITE_SUPABASE_ANON_KEY' : null,
+  ].filter(Boolean).join(', ');
+  throw new Error(
+    `Supabase non configurato: manca ${missing}. ` +
+      'Nel browser arriva da .env / .env.production del package (gitignorati: ' +
+      'da copiare a mano se builds da un worktree o da un clone fresco); ' +
+      'in Node/Edge da process.env.',
+  );
 }
 
 export { supabaseUrl, supabaseAnonKey };

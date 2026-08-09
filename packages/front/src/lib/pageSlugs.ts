@@ -24,4 +24,7 @@ export const LEGACY_TOP_SLUGS: Record<string, string> = {
   ...PAGE_SLUGS,
   'terms-and-conditions': 'booking-terms-conditions',
   'policy-and-privacy': 'privacy-policy',
+  'privacy': 'privacy-policy',
+  'contact-us': 'contact-cooking-school-chiang-mai',
+  'cooking-class': 'thai-cooking-classes-chiang-mai',
 };

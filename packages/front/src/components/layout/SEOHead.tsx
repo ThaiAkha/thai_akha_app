@@ -203,6 +203,16 @@ export const SEOHead: React.FC = () => {
 
   }, [metadata, loading]);
 
+  // Entrando in una sub-page (SPA nav lista → articolo) l'effetto principale NON
+  // ri-esegue (stesso slug ⇒ stessa `metadata`), quindi la sua pulizia non parte:
+  // i JSON-LD e gli hreflang della pagina-madre resterebbero in <head> accanto a
+  // quelli dell'articolo (doppio ld+json). Qui li rimuoviamo esplicitamente.
+  useEffect(() => {
+    if (!pathInfo.hasSubPage) return;
+    document.querySelectorAll('script[data-seo-json-ld="true"]').forEach(el => el.remove());
+    document.querySelectorAll('link[rel="alternate"][data-seo-hreflang]').forEach(el => el.remove());
+  }, [pathInfo.hasSubPage, pathInfo.slug]);
+
   // This component doesn't render anything in the UI
   return null;
 };

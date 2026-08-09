@@ -312,7 +312,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       </div>
 
       {/* --- CONTENT GRID --- */}
-      <div className="max-w-[85rem] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12 mt-4 relative z-10">
+      <div className="max-w-[var(--container-page)] mx-auto [padding-inline:var(--space-fluid-m)] grid grid-cols-1 md:grid-cols-12 gap-12 mt-4 relative z-10">
         
         {/* MEDIA SIDE (Left) */}
         <div className="md:col-span-5 flex flex-col gap-4">

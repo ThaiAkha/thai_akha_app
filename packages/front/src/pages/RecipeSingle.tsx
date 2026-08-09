@@ -357,7 +357,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
 
         {/* FAQ + divider + sibling — gap:xl matches main's flex gap (mirrors News/History pattern) */}
         <div className="w-full flex flex-col [gap:var(--space-fluid-xl)]">
-          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+          <div className="w-full">
             <FaqBottomPage
               entityType="recipe"
               slug={slug}
@@ -366,10 +366,10 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
 
           {(previous || next) && (
             <>
-              <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+              <div className="w-full max-w-[var(--container-section)] mx-auto">
                 <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
               </div>
-              <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+              <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
                 <SiblingSection sectionId="sibiling_recipes">
                   {previous && (
                     <SiblingCardPost

@@ -456,7 +456,8 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
           }}
         />
       </div>
-      <main className={`flex flex-col [gap:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-section)] ${view !== 'HOME' ? 'items-center justify-center' : ''}`}>
+      {/* div, non <main>: il landmark main lo fornisce già PageLayout (#main-content) */}
+      <div className={`flex flex-col [gap:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-section)] ${view !== 'HOME' ? 'items-center justify-center' : ''}`}>
 
         {/* HOME — level list */}
         {view === 'HOME' && (
@@ -468,7 +469,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
             gradientFrom="quiz-p"
             gradientTo="quiz-s"
           />
-          <div className="w-full max-w-[85rem] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             {/* Left column — levels */}
             <div className="lg:col-span-7 flex flex-col [gap:var(--space-fluid-m)]">
@@ -639,7 +640,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
           </div>
 
           {/* FAQ + Sibling — bottom of HOME view, inside main to use gap:xl correctly */}
-          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+          <div className="w-full">
             <FaqBottomPage slug="akha-wisdom-path-quiz" onNavigate={onNavigate} />
           </div>
           <SiblingInfoSection
@@ -701,7 +702,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
           />
         )}
 
-      </main>
+      </div>
 
     </PageLayout>
   );

@@ -8,7 +8,7 @@ import {
   TableOfContents,
 } from '../components/ui/index';
 import { IngredientListItem } from '@thaiakha/shared/types';
-import { AuthorBlock, HeaderSinglePost, AkhaThemedLine } from '../components/blog';
+import { AuthorBlock, HeaderSinglePost, AkhaThemedLine, ArticleBody } from '../components/blog';
 import { TheEssentialBox, IngredientUsageNote, UsedInRecipes, IngredientCard } from '../components/ingredients';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
@@ -125,7 +125,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
           <StickyTabNav items={tabItems} value={activeCategory} onChange={onCategoryChange} />
         )}
 
-        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+        <div className="w-full max-w-6xl mx-auto">
           {dataLoading && <ArticleDetailSkeleton />}
 
           {!dataLoading && (error || !ingredient) && (
@@ -150,9 +150,23 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
                 theme="ingredients"
               />
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] items-start pt-8 pb-6">
-                {/* Main column — 9 cols */}
-                <div className="col-span-1 lg:col-span-9 w-full flex flex-col [gap:var(--space-fluid-l)]">
+              <ArticleBody
+                className="pt-8 pb-6"
+                asideClassName="[gap:var(--space-fluid-m)]"
+                aside={
+                  <>
+                    <IngredientCard ingredient={ingredient} interactive={false} showNativeNames={false} />
+                    {tocItems.length > 0 && (
+                      <TableOfContents
+                        items={tocItems}
+                        title={t.blog.contents}
+                        dividerTheme="ingredients"
+                        accent="ingredients"
+                      />
+                    )}
+                  </>
+                }
+              >
                   {/* Context callout (market_tour / support) — text verbatim from usage_note */}
                   <IngredientUsageNote
                     usageNote={ingredient.usage_note}
@@ -178,31 +192,14 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
                     theme="ingredients"
                     className="[margin-top:var(--space-fluid-m)]"
                   />
-                </div>
-
-                {/* Sticky sidebar — 3 cols, desktop only.
-                    1. Ingredient identity card (same 1:1 card as the category grids)
-                    2. Table of contents (key section titles), when present. */}
-                <aside className="hidden lg:flex lg:col-span-3 flex-col [gap:var(--space-fluid-m)] sticky top-[100px] pt-4">
-                  <IngredientCard ingredient={ingredient} interactive={false} showNativeNames={false} />
-
-                  {tocItems.length > 0 && (
-                    <TableOfContents
-                      items={tocItems}
-                      title={t.blog.contents}
-                      dividerTheme="ingredients"
-                      accent="ingredients"
-                    />
-                  )}
-                </aside>
-              </div>
+              </ArticleBody>
             </article>
           )}
         </div>
 
         {/* Ask Cherry */}
         {!dataLoading && ingredient && (ingredient.cherry_prompt || ingredient.cherry_response) && (
-          <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [margin-bottom:var(--space-fluid-l)]">
+          <div className="w-full max-w-6xl mx-auto [margin-bottom:var(--space-fluid-l)]">
             <CherryEntryCard
               cherry_prompt={ingredient.cherry_prompt}
               cherry_response={ingredient.cherry_response}
@@ -213,7 +210,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
 
         {/* FAQ — entity mode, reads faq_questions (entity_type='ingredient') */}
         {!dataLoading && ingredient && (
-          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+          <div className="w-full">
             <FaqBottomPage
               entityType="ingredient"
               slug={ingredient.slug}
@@ -225,10 +222,10 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
         {/* Sibling nav */}
         {!dataLoading && ingredient && (previous || next) && (
           <>
-            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+            <div className="w-full max-w-[var(--container-section)] mx-auto">
               <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
             </div>
-            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+            <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
               <SiblingSection sectionId="sibiling_ingredients">
                 {previous && (
                   <SiblingCardPost

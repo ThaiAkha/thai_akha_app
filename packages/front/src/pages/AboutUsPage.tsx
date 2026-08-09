@@ -103,7 +103,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
       {/* SEO: driven entirely by SEOHead via site_metadata slug "about-thai-akha-kitchen".
           No PageSEO — avoids duplicate JSON-LD injection and canonical overwrite (fixes J01). */}
 
-      <div className="flex flex-col [gap:inherit] w-full max-w-5xl mx-auto">
+      <div className="flex flex-col [gap:inherit] w-full max-w-6xl mx-auto">
 
         {/* ── PAGE HERO ── */}
         <InfoPageHero

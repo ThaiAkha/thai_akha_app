@@ -67,9 +67,6 @@
   --color-surface-overlay:  #0a0b0d;
   --color-map-bg:           #1d1d1d;
 
-  /* Layout width tokens */
-  --width-8xl: 88rem; /* 1408px — used for full-width sections (FAQ, sibling nav) */
-
 }
 
 /* Dark mode overrides for layout semantic colors

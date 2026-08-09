@@ -53,7 +53,7 @@ const IngredientCategoryPage: React.FC<IngredientCategoryPageProps> = ({
       )}
 
       <div className="contents">
-        <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)] flex flex-col [gap:var(--space-fluid-l)]">
+        <div className="w-full flex flex-col [gap:var(--space-fluid-l)]">
           {/* Back to hub */}
           <div>
             <Button variant="ghost" size="sm" icon="arrow_back" onClick={onBack}>
@@ -95,7 +95,7 @@ const IngredientCategoryPage: React.FC<IngredientCategoryPageProps> = ({
         </div>
 
         {category?.slug && (
-          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+          <div className="w-full">
             <FaqBottomPage
               entityType="category"
               slug={category.slug}

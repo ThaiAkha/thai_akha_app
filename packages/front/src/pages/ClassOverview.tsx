@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { contentService } from '@thaiakha/shared/services';
-import { PageLayout, PageEssentials, SmartHeaderSection, HeaderMenu, ScrollEntrance, PageSEO, SiblingInfoSection } from '../components/layout';
+import React, { useState } from 'react';
+import { PageLayout, PageEssentials, SmartHeaderSection, HeaderMenu, ScrollEntrance, SiblingInfoSection } from '../components/layout';
 import {
   Typography, AkhaThemedLine, AkhaPixelPattern, AkhaQuote, Card, MediaImage, GlassCardFull, SmartHomeCard, FaqBottomPage, ShareButton
 } from '../components/ui';
@@ -10,6 +9,7 @@ import AudioPlayer from '../components/modal/AudioPlayer';
 import VideoPlayer from '../components/modal/VideoPlayer';
 import PhotoModal from '../components/modal/PhotoModal';
 import { useClassesPageSections } from '../hooks/useClassesPageSections';
+import { useClassOverviewExtras } from '../hooks/useClassOverviewExtras';
 import { useMediaAsset } from '../hooks/useMediaAsset';
 import { useShareLink } from '../hooks/useShareLink';
 import { t } from '@thaiakha/shared/lib/ui-strings';
@@ -20,32 +20,11 @@ interface InfoClassesProps {
 
 const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
   const { sections: pageSections, metadata: classesMetadata, loading: sectionsLoading } = useClassesPageSections();
-  const [featuredNews, setFeaturedNews] = useState<any[]>([]);
-  const [reasons, setReasons] = useState<any[]>([]);
+  const { featuredNews, reasons, loading } = useClassOverviewExtras();
   // Blocco confronto Morning vs Evening — dati dalla media asset
   const { asset: compareAsset } = useMediaAsset({ assetId: 'classes-compare-cover-01' });
   const [comparePhotoOpen, setComparePhotoOpen] = useState(false);
   const { handleShare, copied } = useShareLink();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const [news, reasonsData] = await Promise.all([
-          contentService.getNewsByNewsIds(['news-00', 'news-01', 'news-02']),
-          contentService.getMediaAssetsByIds(['why-chose-us-01', 'why-chose-us-02', 'why-chose-us-03', 'why-chose-us-04', 'why-chose-us-05', 'why-chose-us-06'])
-        ]);
-        setFeaturedNews(news);
-        setReasons(reasonsData);
-      } catch (error) {
-        console.error('Error loading page data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, []);
 
   const pageLoading = sectionsLoading || loading;
   const pageMetadata = classesMetadata;
@@ -59,17 +38,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="thai-cooking-classes-chiang-mai" />}
     >
-      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
-          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
-      <PageSEO
-        title={pageMetadata?.seoTitle || t.seo.cookingClass.title}
-        description={pageMetadata?.seoDescription || t.seo.cookingClass.description}
-        canonical={pageMetadata?.canonicalUrl || t.seo.cookingClass.canonical}
-        ogImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || t.seo.ogDefault}
-        ogTitle={pageMetadata?.ogTitle || pageMetadata?.seoTitle || undefined}
-        ogDescription={pageMetadata?.ogDescription || pageMetadata?.seoDescription || undefined}
-        ogType={(pageMetadata?.ogType as 'website' | 'article' | 'profile') || 'website'}
-      />
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
 
 
       <div className="contents">

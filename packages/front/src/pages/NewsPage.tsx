@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '@thaiakha/shared/lib/ui-strings';
-import { StickyTabNav, PageSEO, SiblingInfoSection } from '../components/layout';
+import { StickyTabNav, SiblingInfoSection } from '../components/layout';
 import { Typography, Icon, FaqBottomPage } from '../components/ui';
 import { Input } from '../components/ui/form';
 import { BlogGridSkeleton } from '../components/skeleton';
@@ -89,15 +89,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
 
   return (
     <>
-      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
-          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
-      <PageSEO
-        title={metadata?.seo_title || "Thai Cooking Tips & Akha Stories | Thai Akha Kitchen Chiang Mai"}
-        description={metadata?.seo_description || metadata?.page_description || 'Chef secrets, cooking tips, and Akha cultural stories from Thai Akha Kitchen Chiang Mai. Master mortar & pestle, spice levels, vegan adaptations, and more.'}
-        canonical="https://www.thaiakha.com/thai-cooking-tips-news"
-        ogImage={metadata?.og_image || metadata?.hero_image_url || 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg'}
-        ogType="website"
-      />
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
       <PageLayout
         slug="thai-cooking-tips-news"
         showPatterns={true}
@@ -126,7 +118,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
           />
 
           {/* Controls: Search & Sort */}
-          <div className="w-full flex flex-col md:flex-row items-center justify-between [gap:var(--space-fluid-s)] max-w-7xl mx-auto px-4 md:px-6">
+          <div className="w-full flex flex-col md:flex-row items-center justify-between [gap:var(--space-fluid-s)]">
             <div className="w-full md:w-80 relative group">
               <Input
                 placeholder="Search articles..."

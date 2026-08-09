@@ -7,5 +7,6 @@ export { default as HeaderSinglePost } from './HeaderSinglePost';
 export { default as HeroCard } from './HeroCard';
 export { default as BlogGrid } from './BlogGrid';
 export { default as ContentRenderer, parseContent, slugify } from './ContentRenderer';
+export { default as ArticleBody } from './ArticleBody';
 export { default as AkhaThemedLine } from '../divider/AkhaThemedLine';
 export { default as AkhaPixelPattern } from '../divider/AkhaPixelPattern';

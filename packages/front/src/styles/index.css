@@ -206,9 +206,13 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
   }
 
-  /* App header layout: Centered max-width container for page headers */
+  /* App header layout: Centered max-width container for page headers.
+     Same width AND same horizontal padding as PageLayout <main>, so the
+     header edge lines up with the page body at every viewport. */
   .app-header-layout {
-    @apply w-full max-w-[85rem] mx-auto flex flex-col items-start pb-6;
+    @apply w-full mx-auto flex flex-col items-start pb-6;
+    max-width: var(--container-page);
+    padding-inline: var(--space-fluid-m);
   }
 }
 

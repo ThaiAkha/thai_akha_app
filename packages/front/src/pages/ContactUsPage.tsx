@@ -43,7 +43,7 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
     <PageLayout slug="contact-cooking-school-chiang-mai" showPatterns={false}>
       {/* SEO: driven entirely by SEOHead via site_metadata slug. */}
 
-      <div className="flex flex-col [gap:var(--space-fluid-xl)] w-full max-w-5xl mx-auto">
+      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-6xl mx-auto">
         {/* ── PAGE HERO ── */}
         <InfoPageHero
           slug="contact-cooking-school-chiang-mai"

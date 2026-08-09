@@ -10,7 +10,7 @@ import {
 
 import { CultureSection } from '@thaiakha/shared/types';
 import { useAudioAsset } from '../hooks/useAudioAsset';
-import { AuthorBlock, HeaderSinglePost, ContentRenderer, parseContent, slugify, AkhaThemedLine } from '../components/blog';
+import { AuthorBlock, HeaderSinglePost, ContentRenderer, parseContent, slugify, AkhaThemedLine, ArticleBody } from '../components/blog';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
 import { SiblingSection } from '../components/layout/SiblingSection';
@@ -114,7 +114,7 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
           />
         )}
 
-        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+        <div className="w-full max-w-6xl mx-auto">
           {dataLoading && <ArticleDetailSkeleton />}
 
           {!dataLoading && (error || !section) && (
@@ -145,36 +145,28 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
               {section.content && (() => {
                 const tocItems = parseContent(section.content).filter((b: any) => b.type === 'heading' && b.level === 2) as any[];
                 return (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] items-start pt-8 pb-6">
-                    {/* Main content — 9 cols */}
-                    <div className="col-span-1 lg:col-span-9 w-full flex flex-col [gap:var(--space-fluid-l)]">
-                      <ContentRenderer content={section.content} theme="history" />
-
-                      {/* --- AUTHOR & VERIFICATION BOX --- */}
-                      <AuthorBlock
-                        author={section.author}
-                        auditDate={section.last_content_audit_ai}
-                        theme="history"
-                        className="[margin-top:var(--space-fluid-m)]"
+                  <ArticleBody
+                    className="pt-8 pb-6"
+                    aside={tocItems.length > 0 ? (
+                      <TableOfContents
+                        items={tocItems.map((block: any) => ({
+                          id: block.anchorId || slugify(block.text),
+                          label: block.text,
+                        }))}
+                        title={t.blog.contents}
+                        dividerTheme="history"
+                        accent="sunset"
                       />
-                    </div>
-
-                    {/* Sticky ToC sidebar — 3 cols, desktop only. Componente unico
-                        (TableOfContents), tema History: divider Akha 'history' + accent sunset. */}
-                    {tocItems.length > 0 && (
-                      <aside className="hidden lg:flex lg:col-span-3 flex-col sticky top-[100px] pt-4">
-                        <TableOfContents
-                          items={tocItems.map((block: any) => ({
-                            id: block.anchorId || slugify(block.text),
-                            label: block.text,
-                          }))}
-                          title={t.blog.contents}
-                          dividerTheme="history"
-                          accent="sunset"
-                        />
-                      </aside>
-                    )}
-                  </div>
+                    ) : undefined}
+                  >
+                    <ContentRenderer content={section.content} theme="history" />
+                    <AuthorBlock
+                      author={section.author}
+                      auditDate={section.last_content_audit_ai}
+                      theme="history"
+                      className="[margin-top:var(--space-fluid-m)]"
+                    />
+                  </ArticleBody>
                 );
               })()}
 
@@ -184,7 +176,7 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
 
         {/* Ask Cherry entry card — standard, subito prima del blocco FAQ */}
         {!dataLoading && section && (section.cherry_prompt || section.cherry_response) && (
-          <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [margin-bottom:var(--space-fluid-l)]">
+          <div className="w-full max-w-6xl mx-auto [margin-bottom:var(--space-fluid-l)]">
             <CherryEntryCard
               cherry_prompt={section.cherry_prompt}
               cherry_response={section.cherry_response}
@@ -193,9 +185,9 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
           </div>
         )}
 
-        {/* FAQ — full width, outside max-w-6xl */}
+        {/* FAQ — full page width (main provides container + gutter) */}
         {!dataLoading && section && (
-          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+          <div className="w-full">
             <FaqBottomPage
               entityType="culture"
               slug={section.slug}
@@ -204,13 +196,13 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
           </div>
         )}
 
-        {/* Sibling nav — full width, outside max-w-6xl */}
+        {/* Sibling nav — tier di chiusura --container-section (più stretto del corpo 6xl) */}
         {!dataLoading && section && (previous || next) && (
           <>
-            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+            <div className="w-full max-w-[var(--container-section)] mx-auto">
               <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
             </div>
-            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+            <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
               <SiblingSection sectionId="sibiling_history">
                 {previous && (
                   <SiblingCardPost

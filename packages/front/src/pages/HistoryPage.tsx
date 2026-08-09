@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { StickyTabNav, HeaderMenu, PageSEO, SiblingInfoSection } from '../components/layout';
+import { StickyTabNav, HeaderMenu, SiblingInfoSection } from '../components/layout';
 import { HeaderSection } from '../components/layout/HeaderSection';
 import PageEssentials from '../components/layout/PageEssentials';
 import { Typography, Icon, AkhaThemedLine, Button, FaqBottomPage } from '../components/ui/index';
@@ -37,7 +37,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
     handleBack,
     handleCategoryChange,
     isInitialLoading,
-    pageMetadata
   } = useHistoryFeed(targetSection);
 
   // SCROLL BEHAVIOR: Smooth scroll to content top when category changes
@@ -85,18 +84,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="akha-culture-highland-heritage" />}
     >
-      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
-          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
-      <PageSEO
-        title={pageMetadata?.seoTitle || "Akha Culture & Highland Heritage | Thai Akha Kitchen"}
-        description={pageMetadata?.seoDescription || "Discover Akha hill tribe culture: migration from Tibet, spirit gates, silver headdresses, language, and jungle-foraged food."}
-        canonical={pageMetadata?.canonicalUrl || "https://www.thaiakha.com/akha-culture-highland-heritage"}
-        ogTitle={pageMetadata?.ogTitle || undefined}
-        ogDescription={pageMetadata?.ogDescription || undefined}
-        ogImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || "https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg"}
-        ogType={(pageMetadata?.ogType as 'website' | 'article' | 'profile') || 'article'}
-        twitterImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || undefined}
-      />
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
       <div
         ref={historyContentRef as any}
         className="contents"
@@ -141,7 +129,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
                   categories={categories}
                   onCategoryClick={(catId) => handleCategoryChange(catId)}
                 />
-                <div className="px-[10%] flex flex-col sm:flex-row items-stretch sm:items-center [gap:var(--space-fluid-xs)]">
+                <div className="w-full max-w-[var(--container-section)] mx-auto flex flex-col sm:flex-row items-stretch sm:items-center [gap:var(--space-fluid-xs)]">
                   {featuredSection.audio_asset_id && (
                     <div className="flex-1 min-w-0">
                       <AudioPlayer assetId={featuredSection.audio_asset_id} hideTranscript />

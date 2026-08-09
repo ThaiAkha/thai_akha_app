@@ -14,7 +14,6 @@ const SPACE_TOKEN: Record<string, string> = {
 };
 
 type SpaceSize = keyof typeof SPACE_TOKEN;
-type PaddingSize = 'none' | SpaceSize;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Spacer
@@ -61,68 +60,3 @@ export function Spacer({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SectionContainer
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface SectionContainerProps {
-  /** Uniform padding size. Default: 'l' */
-  padding?: PaddingSize;
-  /** Apply padding only to top */
-  paddingTop?: boolean;
-  /** Apply padding only to bottom */
-  paddingBottom?: boolean;
-  className?: string;
-  children: React.ReactNode;
-  /** Root element tag. Default: 'div' */
-  as?: keyof React.JSX.IntrinsicElements;
-  /** When false (default), centers content with max-width. When true, removes constraints. */
-  fullWidth?: boolean;
-}
-
-/**
- * Wrapper that applies consistent vertical (or directional) padding
- * using fluid space tokens.
- *
- * @example
- * <SectionContainer padding="xl">…</SectionContainer>
- * <SectionContainer paddingTop padding="l">…</SectionContainer>
- * <SectionContainer fullWidth>…</SectionContainer> // spans entire viewport width
- */
-export function SectionContainer({
-  padding = 'l',
-  paddingTop,
-  paddingBottom,
-  className,
-  children,
-  as: Tag = 'div',
-  fullWidth = false,
-}: SectionContainerProps) {
-  const style: React.CSSProperties = {};
-
-  if (padding !== 'none') {
-    const token = `var(${SPACE_TOKEN[padding]})`;
-    if (paddingTop && paddingBottom) {
-      style.paddingTop = token;
-      style.paddingBottom = token;
-    } else if (paddingTop) {
-      style.paddingTop = token;
-    } else if (paddingBottom) {
-      style.paddingBottom = token;
-    } else {
-      style.padding = token;
-    }
-  }
-
-  return (
-    <Tag
-      style={style}
-      className={cn(
-        !fullWidth && 'max-w-screen-xl mx-auto w-full',
-        className
-      )}
-    >
-      {children}
-    </Tag>
-  );
-}

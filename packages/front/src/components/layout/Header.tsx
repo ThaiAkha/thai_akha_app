@@ -34,7 +34,8 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     // ✅ Container centrato su tutti i breakpoint
-    <header className="w-full max-w-[85rem] mx-auto flex flex-col items-center text-center [padding-top:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-s)]">
+    // max-width + gutter li dà il wrapper in PageLayout (stesso nodo → bordo allineato al main)
+    <header className="w-full flex flex-col items-center text-center [padding-top:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-s)]">
 
       {/* BADGE SECTION - centrato */}
       <div className="[margin-bottom:var(--space-fluid-m)]">

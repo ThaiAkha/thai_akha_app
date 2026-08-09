@@ -33,7 +33,11 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({
 }) => {
   return (
     <div className={cn(
-      "app-header-layout w-full",
+      // NON usa .app-header-layout: quella classe porta il gutter della header zone
+      // (padding-inline:m), ma questo header vive DENTRO <main>, che il gutter ce l'ha già.
+      // Sommandoli, su 375px la barra si stringeva a 311px e usciva dall'allineamento
+      // con le card sotto. Qui restano solo larghezza + flow, senza padding orizzontale.
+      "w-full mx-auto max-w-[var(--container-page)] flex flex-col items-start",
       "[padding-top:var(--space-fluid-xs)] [padding-bottom:var(--space-fluid-xs)]",
       "transition-all duration-700"
     )}>

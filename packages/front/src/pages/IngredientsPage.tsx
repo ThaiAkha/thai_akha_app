@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { HeaderMenu, PageSEO, SiblingInfoSection } from '../components/layout';
+import { HeaderMenu, SiblingInfoSection } from '../components/layout';
 import PageEssentials from '../components/layout/PageEssentials';
 import { Typography, Icon, FaqBottomPage } from '../components/ui/index';
 import { CategoryCard } from '../components/ingredients';
@@ -23,7 +23,6 @@ const IngredientsPage: React.FC<IngredientsPageProps> = ({ onNavigate, targetSec
     activeSlug,
     activeCategory,
     categoryIngredients,
-    pageMetadata,
     loading,
     error,
   } = useIngredientsFeed(targetSection);
@@ -73,14 +72,7 @@ const IngredientsPage: React.FC<IngredientsPageProps> = ({ onNavigate, targetSec
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug={INGREDIENTS_HUB_SLUG} />}
     >
-      <PageSEO
-        title={pageMetadata?.seoTitle || 'Thai Cooking Ingredients | Thai Akha Kitchen'}
-        description={pageMetadata?.seoDescription || 'Explore the herbs, spices, roots and pantry staples at the heart of Akha and Northern Thai cooking — where each ingredient comes from and how it is used.'}
-        canonical={pageMetadata?.canonicalUrl || `https://www.thaiakha.com/${INGREDIENTS_HUB_SLUG}`}
-        ogImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || undefined}
-        ogType={(pageMetadata?.ogType as 'website' | 'article' | 'profile') || 'website'}
-        twitterImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || undefined}
-      />
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
 
       <div className="contents">
         {loading && <BlogGridSkeleton />}
@@ -101,7 +93,7 @@ const IngredientsPage: React.FC<IngredientsPageProps> = ({ onNavigate, targetSec
         )}
 
         {!loading && !error && categories.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)] [padding-top:var(--space-fluid-s)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)] [padding-top:var(--space-fluid-s)]">
             {categories.map((cat) => (
               <CategoryCard
                 key={cat.id}

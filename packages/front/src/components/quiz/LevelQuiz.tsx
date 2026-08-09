@@ -63,7 +63,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
 
   return (
     <div className={cn(
-      "flex-grow w-full max-w-[85rem] mx-auto animate-in fade-in duration-700 relative",
+      "flex-grow w-full max-w-[var(--container-page)] mx-auto animate-in fade-in duration-700 relative",
       "[padding:var(--space-fluid-m)] [padding-top:var(--space-fluid-2xs)]"
     )}>
       {/* ── BACKGROUND CINEMATOGRAFICO (PhotoModal Style) ── */}

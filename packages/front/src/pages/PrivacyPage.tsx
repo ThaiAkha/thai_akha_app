@@ -23,7 +23,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
   return (
     <PageLayout slug="privacy-policy" showPatterns={false}>
       {/* SEO: driven by SEOHead via site_metadata slug "privacy-policy". No PageSEO. */}
-      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-5xl mx-auto">
+      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-6xl mx-auto">
         <InfoPageHero
           slug="privacy-policy"
           fallbackIcon="privacy_tip"

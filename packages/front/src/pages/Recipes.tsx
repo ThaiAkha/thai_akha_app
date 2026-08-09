@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { t } from '@thaiakha/shared/lib/ui-strings';
 
-import { useSEO } from '../hooks/useSEO';
 import { useRecipesListData } from '../hooks/useRecipesListData';
-import { PageLayout, HeaderMenu, SmartHeaderSection, SiblingInfoSection, PageEssentials, PageSEO } from '../components/layout';
+import { PageLayout, HeaderMenu, SmartHeaderSection, SiblingInfoSection, PageEssentials } from '../components/layout';
 import { MegaMenu, MegaMenuCard, RecipeCategory } from '../components/recipes';
 import { Typography, Alert, AkhaThemedLine, FaqBottomPage } from '../components/ui';
 import { MenuCard } from '../components/menu/index';
@@ -22,10 +21,8 @@ interface RecipesPageProps {
   onProfileUpdate?: () => void;
 }
 
-const OG_DEFAULT = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg';
 
 const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onProfileUpdate }) => {
-  const { metadata: seoMetadata } = useSEO('authentic-thai-akha-recipes');
   const { categories, recipes, spicinessLevels, loading } = useRecipesListData();
   const { profiles: dietProfiles, getAllergyProfiles, loading: knowledgeLoading } = useDietaryKnowledge();
   const { passport, updatePassport, hasExplicitPassport } = useUserPassport(userProfile, onProfileUpdate);
@@ -83,10 +80,10 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
   };
 
   const getGridConfig = (count: number) => {
-    if (count === 2) return { container: "flex flex-wrap justify-center gap-6 lg:gap-12", item: "w-full md:w-[calc(50%-2rem)] lg:w-[calc(33.33%-3rem)]" };
-    if (count === 3) return { container: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 lg:gap-12", item: "" };
-    if (count === 4) return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-12 max-w-4xl mx-auto", item: "" };
-    return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12", item: "" };
+    if (count === 2) return { container: "flex flex-wrap justify-center [gap:var(--space-fluid-l)]", item: "w-full md:w-[calc(50%-2rem)] lg:w-[calc(33.33%-3rem)]" };
+    if (count === 3) return { container: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 [gap:var(--space-fluid-l)]", item: "" };
+    if (count === 4) return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 [gap:var(--space-fluid-l)] max-w-4xl mx-auto", item: "" };
+    return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-l)]", item: "" };
   };
 
 
@@ -113,15 +110,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
 
   return (
     <PageLayout slug="authentic-thai-akha-recipes" loading={loading || knowledgeLoading} showPatterns={true} hideDefaultHeader={true} customHeader={<HeaderMenu customSlug="authentic-thai-akha-recipes" descriptionOverride={headerDescription} />}>
-      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
-          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
-      <PageSEO
-        title="Authentic Thai Akha Recipes — Chiang Mai | Thai Akha Kitchen"
-        description="Authentic Akha & Thai recipes from Chiang Mai’s top cooking school. Step‑by‑step for Pad Thai, Green Curry, Sapi Thong, Mango Sticky Rice. Vegan adaptations included."
-        canonical="https://www.thaiakha.com/authentic-thai-akha-recipes"
-        ogImage={seoMetadata?.og_image || OG_DEFAULT}
-        ogType="website"
-      />
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
 
       {/* MEGA MENU: PERSONALIZZAZIONE */}
       <MegaMenu

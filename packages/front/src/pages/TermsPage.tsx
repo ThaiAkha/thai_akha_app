@@ -44,7 +44,7 @@ const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
   return (
     <PageLayout slug="booking-terms-conditions" showPatterns={false}>
       {/* SEO: driven by SEOHead via site_metadata slug "booking-terms-conditions". No PageSEO. */}
-      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-5xl mx-auto">
+      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-6xl mx-auto">
         <InfoPageHero
           slug="booking-terms-conditions"
           fallbackIcon="gavel"

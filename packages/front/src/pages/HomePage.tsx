@@ -3,7 +3,7 @@ import React from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import { SmartHomeCard, InfoCard, StatCard, MediaImage, AkhaThemedLine, GlassCardFull, FaqBottomPage, ButtonVariant } from '../components/ui/index';
 import { SiblingInfoSection } from '../components/layout';
-import { SmartHeaderSection, ScrollEntrance, PageSEO } from '../components/layout/index';
+import { SmartHeaderSection, ScrollEntrance } from '../components/layout/index';
 import PageEssentials from '../components/layout/PageEssentials';
 import { useFrontHomeCards } from '../hooks/useFrontHomeCards';
 import { useHomePageSections, toStatCardColor, HomeSectionId } from '../hooks/useHomePageSections';
@@ -92,17 +92,8 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
       showPatterns={true}
       hideDefaultHeader={false}
     >
-      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
-          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
-      <PageSEO
-        title={pageMetadata?.seoTitle || t.seo.home.title}
-        description={pageMetadata?.seoDescription || t.seo.home.description}
-        canonical={pageMetadata?.canonicalUrl || t.seo.home.canonical}
-        ogTitle={pageMetadata?.ogTitle || pageMetadata?.seoTitle || undefined}
-        ogDescription={pageMetadata?.ogDescription || pageMetadata?.seoDescription || undefined}
-        ogImage={pageMetadata?.ogImage || pageMetadata?.imageUrl || undefined}
-        ogType={(pageMetadata?.ogType as 'website' | 'article' | 'profile') || 'website'}
-      />
+      {/* SEO (title/meta/og/json-ld): interamente di SEOHead, globale via slug "home".
+          Niente PageSEO qui — doppia scrittura degli stessi tag. */}
 
         {/* ── HERO IMAGE ──────────────────────────────────────────────────────
             Il container è SEMPRE renderizzato: riserva lo spazio (aspect-15/5)

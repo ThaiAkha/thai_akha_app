@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSEO } from '../../hooks/useSEO';
+import { LEGACY_TOP_SLUGS } from '../../lib/pageSlugs';
 
 // ─── JSON-LD sanitization ─────────────────────────────────────────────────────
 
@@ -56,16 +57,15 @@ const OG_DEFAULT_IMAGE = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/ob
  * This is used as a lightweight alternative to react-helmet-async.
  */
 export const SEOHead: React.FC = () => {
-  const [pathInfo, setPathInfo] = useState<{ slug: string; hasSubPage: boolean }>(() => {
-    const segments = window.location.pathname.split('/').filter(Boolean);
-    return { slug: segments[0] || 'home', hasSubPage: segments.length > 1 };
-  });
-
-  // Deriviamo lo slug e se siamo su una sotto-pagina (article, ricetta, ecc.)
+  // Deriviamo lo slug (normalizzato via LEGACY_TOP_SLUGS: /recipes → authentic-thai-akha-recipes,
+  // stessa mappa del routing in App.tsx) e se siamo su una sotto-pagina (article, ricetta, ecc.)
   const getPathInfo = () => {
     const segments = window.location.pathname.split('/').filter(Boolean);
-    return { slug: segments[0] || 'home', hasSubPage: segments.length > 1 };
+    const raw = segments[0] || 'home';
+    return { slug: LEGACY_TOP_SLUGS[raw] ?? raw, hasSubPage: segments.length > 1 };
   };
+
+  const [pathInfo, setPathInfo] = useState<{ slug: string; hasSubPage: boolean }>(getPathInfo);
 
   useEffect(() => {
     setPathInfo(getPathInfo());

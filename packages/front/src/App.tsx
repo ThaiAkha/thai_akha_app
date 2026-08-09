@@ -49,23 +49,8 @@ const ADMIN_ROLES = new Set(['agency', 'admin', 'manager']);
 const NO_BOOKING_ROLES = new Set(['kitchen', 'logistics', 'driver']);
 const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'https://admin.thaiakha.com';
 
-// Canonical SEO slugs for the public top-level pages — single source shared by
-// inbound URL normalization (LEGACY_SLUG_MAP) and outbound link building (slugMap).
-const PAGE_SLUGS: Record<string, string> = {
-  news: 'thai-cooking-tips-news',
-  quiz: 'akha-wisdom-path-quiz',
-  history: 'akha-culture-highland-heritage',
-  ingredients: 'thai-cooking-ingredients',
-  recipes: 'authentic-thai-akha-recipes',
-  classes: 'thai-cooking-classes-chiang-mai',
-  'morning-class': 'morning-cooking-class-market-tour',
-  'evening-class': 'evening-cooking-class-dinner',
-  'about-us': 'about-thai-akha-kitchen',
-  contact: 'contact-cooking-school-chiang-mai',
-  booking: 'book-cooking-class-chiang-mai',
-  location: 'free-pickup-location-chiang-mai',
-  faq: 'cooking-class-faq-chiang-mai',
-};
+// Canonical SEO slugs — single source in lib/pageSlugs.ts, condivisa con SEOHead.
+import { PAGE_SLUGS } from './lib/pageSlugs';
 
 // Loader unico dell'app: identico come fallback <Suspense> (download chunk lazy)
 // e come gate dei flussi che aspettano il profilo. Stesso elemento ⇒ nessuno

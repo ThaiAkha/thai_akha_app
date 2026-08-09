@@ -8,6 +8,7 @@ import { AkhaPixelPattern, AkhaPixelLine } from '../divider';
 import { SmartHeaderSection } from '../layout/SmartHeaderSection';
 import { CherryEntryCard } from '../chat/CherryEntryCard';
 import { handleFaqAnswerClick } from './faqLinkNav';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -182,7 +183,8 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
   if (!loading && cards.length === 0 && !hasCherry) return null;
 
   return (
-    <div className={className}>
+    // Self-sizing: closing-block tier, one step narrower than page content (--container-section)
+    <div className={cn('w-full max-w-[var(--container-section)] mx-auto', className)}>
 
       {/* ── Ask Cherry entry card — subito prima del blocco FAQ ── */}
       {hasCherry && (

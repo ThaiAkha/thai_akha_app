@@ -68,10 +68,10 @@ export const SiblingInfoSection: React.FC<SiblingInfoSectionProps> = ({
   if (loading) {
     return (
       <div className={`w-full flex flex-col [gap:var(--space-fluid-xl)] ${oceanVars}`}>
-        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+        <div className="w-full max-w-[var(--container-section)] mx-auto">
           <AkhaThemedLine theme={dividerTheme} className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
         </div>
-        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+        <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
           <div className="grid grid-cols-1 sm:grid-cols-2 [gap:var(--space-fluid-s)]">
             <SkeletonBase className="w-full h-32 rounded-3xl" />
             <SkeletonBase className="w-full h-32 rounded-3xl" />
@@ -85,10 +85,10 @@ export const SiblingInfoSection: React.FC<SiblingInfoSectionProps> = ({
 
   return (
     <div className={`w-full flex flex-col [gap:var(--space-fluid-xl)] ${oceanVars}`}>
-      <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+      <div className="w-full max-w-[var(--container-section)] mx-auto">
         <AkhaThemedLine theme={dividerTheme} className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
       </div>
-      <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+      <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
         <SiblingSection sectionId={sectionId}>
           {siblings.map((sibling, index) => (
             <SiblingCardPage

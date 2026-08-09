@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageLayout, PageEssentials, SmartHeaderSection, HeaderMenu, PageSEO, SiblingInfoSection } from '../components/layout';
+import { PageLayout, PageEssentials, SmartHeaderSection, HeaderMenu, SiblingInfoSection } from '../components/layout';
 import { AkhaThemedLine, AkhaQuote, FaqBottomPage, GlassCardFull } from '../components/ui';
 import { HeroContent } from '../components/classes/HeroContent';
 import ClassScheduleTimeline from '../components/classes/ClassScheduleTimeline';
@@ -23,7 +23,6 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
     pickupSection,
     exclusionsSection,
     classSections,
-    seoMetadata,
     loading,
   } = useClassPageData('evening');
 
@@ -37,17 +36,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="evening-cooking-class-dinner" />}
     >
-      {/* JSON-LD is handled exclusively by SEOHead (global, slug-based).
-          PageSEO manages only meta/og/twitter tags here to avoid duplicate structured data. */}
-      <PageSEO
-        title={seoMetadata?.seo_title || t.seo.evening.title}
-        description={seoMetadata?.seo_description || t.seo.evening.description}
-        canonical={seoMetadata?.canonical_url || t.seo.evening.canonical}
-        ogTitle={seoMetadata?.og_title || seoMetadata?.seo_title || undefined}
-        ogDescription={seoMetadata?.og_description || seoMetadata?.seo_description || undefined}
-        ogImage={seoMetadata?.og_image || t.seo.ogDefault}
-        ogType={(seoMetadata?.og_type as 'website' | 'article' | 'profile') || 'website'}
-      />
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
 
       <div className="w-full flex flex-col [gap:var(--space-fluid-xl)]">
 

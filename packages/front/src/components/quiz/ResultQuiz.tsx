@@ -38,7 +38,8 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
     <div className="fixed inset-0 z-[1] flex items-center justify-center [padding:var(--space-fluid-m)] animate-in fade-in duration-500 overflow-y-auto">
       <div className="fixed inset-0 bg-black/90 backdrop-blur-3xl"></div>
 
-      <main className="relative z-10 w-full max-w-[48rem] animate-in zoom-in-95 duration-700 my-auto">
+      {/* div, non <main>: il landmark main è di PageLayout (#main-content) */}
+      <div className="relative z-10 w-full max-w-3xl animate-in zoom-in-95 duration-700 my-auto">
         <div className={cn(
           "bg-surface border border-white/10 rounded-[3rem] flex flex-col items-center text-center shadow-2xl relative overflow-hidden",
           "[padding:var(--space-fluid-xl)]"
@@ -117,7 +118,7 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
           </div>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 };

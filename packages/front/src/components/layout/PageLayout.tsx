@@ -126,11 +126,11 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               {hideDefaultHeader ? (
                 customHeader
               ) : isLoading ? (
-                <div className="[padding:var(--space-fluid-s)]">
+                <div className="w-full max-w-[var(--container-page)] mx-auto [padding-block:var(--space-fluid-s)] [padding-inline:var(--space-fluid-m)]">
                   <SkeletonHeader variant="hero" align="center" />
                 </div>
               ) : (
-                <div className="[padding:var(--space-fluid-s)]">
+                <div className="w-full max-w-[var(--container-page)] mx-auto [padding-block:var(--space-fluid-s)] [padding-inline:var(--space-fluid-m)]">
                   <Header
                     data={safeMetadata}
                     gradientFrom={gradientFrom}
@@ -152,7 +152,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
               tabIndex={-1}
               className={cn(
                 "relative z-30 flex-grow w-full mx-auto animate-in fade-in duration-700 delay-100 flex flex-col [gap:var(--space-fluid-xl)]",
-                isFullScreen ? "p-0 max-w-none" : "max-w-[85rem] [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-section)]"
+                isFullScreen ? "p-0 max-w-none" : "max-w-[var(--container-page)] [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-section)]"
               )}
             >
               {children}

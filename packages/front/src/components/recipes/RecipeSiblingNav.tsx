@@ -1,6 +1,7 @@
 import React from 'react';
 import { SiblingCardPost, SiblingPost } from '../ui/card/SiblingCardPost';
 import { SiblingSection } from '../layout/SiblingSection';
+import { cn } from '@thaiakha/shared/lib/utils';
 
 interface RecipeSiblingNavProps {
   previous: Record<string, unknown> | null;
@@ -13,7 +14,7 @@ const RecipeSiblingNav: React.FC<RecipeSiblingNavProps> = ({ previous, next, onN
   if (!previous && !next) return null;
 
   return (
-    <div className={['w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]', className].filter(Boolean).join(' ')}>
+    <div className={cn('w-full max-w-[var(--container-section)] mx-auto', className)}>
       <SiblingSection sectionId="sibiling_recipes">
           {previous && (
             <SiblingCardPost

@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { PageLayout, StickyTabNav, PageSEO } from '../components/layout';
-import { Typography, Button, Icon, FaqBottomPage, Card } from '../components/ui/index';
+import { Typography, Button, Icon, FaqBottomPage, TableOfContents } from '../components/ui/index';
 
-import { AuthorBlock, ContentRenderer, parseContent, slugify, AkhaPixelPattern, AkhaThemedLine } from '../components/blog';
+import { AuthorBlock, ContentRenderer, parseContent, slugify, AkhaThemedLine, ArticleBody } from '../components/blog';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useNewsDetail } from '../hooks/useNewsDetail';
@@ -138,7 +138,7 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
           />
         )}
 
-        <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+        <div className="w-full max-w-6xl mx-auto">
           {dataLoading && <ArticleDetailSkeleton />}
 
           {!dataLoading && (error || !detail) && (
@@ -171,58 +171,36 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
                   theme="news"
                 />
 
-                {/* 2. BODY BLOCK (GRID 9/12 + 3/12) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-start">
-                  <article className="col-span-1 lg:col-span-9 flex flex-col [gap:var(--space-fluid-m)] min-w-0 w-full">
-                    {detail.content && (
-                      <div className="w-full flex flex-col [gap:var(--space-fluid-m)]">
-                        <ContentRenderer content={detail.content} theme="news" />
+                {/* 2. BODY BLOCK — layout condiviso ArticleBody (9/12 + ToC sticky 3/12) */}
+                <ArticleBody
+                  mainAs="article"
+                  mainGap="m"
+                  aside={tocItems.length > 0 ? (
+                    <TableOfContents
+                      items={tocItems.map((block: any) => ({
+                        id: block.anchorId || slugify(block.text),
+                        label: block.text,
+                      }))}
+                      title={t.blog.contents}
+                      dividerTheme="news"
+                      accent="brand"
+                    />
+                  ) : undefined}
+                >
+                  {detail.content && (
+                    <div className="w-full flex flex-col [gap:var(--space-fluid-m)]">
+                      <ContentRenderer content={detail.content} theme="news" />
 
-                        {/* --- AUTHOR & VERIFICATION BOX --- */}
-                        <AuthorBlock
-                          author={detail.author}
-                          auditDate={detail.last_content_audit_ai}
-                          theme="news"
-                          className="[margin-top:var(--space-fluid-m)]"
-                        />
-                      </div>
-                    )}
-                  </article>
-
-                  {/* Sidebar Sticky TOC (Desktop only) */}
-                  {tocItems.length > 0 && (
-                    <aside className="hidden lg:flex lg:col-span-3 flex-col sticky top-[100px] pt-4">
-                      <Card variant="default" padding="none" rounded="2xl" className="flex flex-col">
-                        <div className="flex flex-col items-start [padding-inline:var(--space-fluid-m)] [padding-top:var(--space-fluid-s)] gap-1">
-                          <Typography variant="h4" color="title" className="font-bold">
-                            {t.blog.contents}
-                          </Typography>
-                          <div className="w-full [margin-bottom:var(--space-fluid-m)]">
-                            <AkhaPixelPattern variant="line_simple_medium" size={5} opacity={0.6} theme="news" />
-                          </div>
-                        </div>
-
-                        <nav className="flex flex-col [gap:var(--space-fluid-2xs)] [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)]">
-                          {tocItems.map((block: any, i: number) => {
-                            const id = block.anchorId || slugify(block.text);
-                            return (
-                              <a
-                                key={i}
-                                href={`#${id}`}
-                                className="group flex items-center gap-3 font-sans leading-snug text-[14px] font-medium text-muted hover:text-action transition-all duration-300"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-40 group-hover:opacity-100 group-hover:scale-125 transition-all duration-300" />
-                                <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                  {block.text}
-                                </span>
-                              </a>
-                            );
-                          })}
-                        </nav>
-                      </Card>
-                    </aside>
+                      {/* --- AUTHOR & VERIFICATION BOX --- */}
+                      <AuthorBlock
+                        author={detail.author}
+                        auditDate={detail.last_content_audit_ai}
+                        theme="news"
+                        className="[margin-top:var(--space-fluid-m)]"
+                      />
+                    </div>
                   )}
-                </div>
+                </ArticleBody>
 
               </div>
             );
@@ -231,7 +209,7 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
 
         {/* Ask Cherry entry card — standard, subito prima del blocco FAQ */}
         {!dataLoading && detail && (detail.cherry_prompt || detail.cherry_response) && (
-          <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [margin-bottom:var(--space-fluid-l)]">
+          <div className="w-full max-w-6xl mx-auto [margin-bottom:var(--space-fluid-l)]">
             <CherryEntryCard
               cherry_prompt={detail.cherry_prompt}
               cherry_response={detail.cherry_response}
@@ -240,9 +218,9 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
           </div>
         )}
 
-        {/* FAQ — full width, outside max-w-6xl */}
+        {/* FAQ — full page width (main provides container + gutter) */}
         {!dataLoading && detail && (
-          <div className="w-full max-w-8xl mx-auto [padding-inline:var(--space-fluid-m)]">
+          <div className="w-full">
             <FaqBottomPage
               entityType="news"
               slug={detail.slug}
@@ -251,13 +229,13 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
           </div>
         )}
 
-        {/* Sibling nav — full width, outside max-w-6xl */}
+        {/* Sibling nav — tier di chiusura --container-section (più stretto del corpo 6xl) */}
         {!dataLoading && detail && (previous || next) && (
           <>
-            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)]">
+            <div className="w-full max-w-[var(--container-section)] mx-auto">
               <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
             </div>
-            <div className="w-full max-w-6xl mx-auto [padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-xl)]">
+            <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
               <SiblingSection sectionId="sibiling_news">
                 {previous && (
                   <SiblingCardPost

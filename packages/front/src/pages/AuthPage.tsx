@@ -95,11 +95,11 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
       <PageSEO title="Join the Family | Thai Akha Kitchen" description="Access your Akha Chef portal." canonical="https://www.thaiakha.com/auth" />
       <CinematicBackground isLoaded={!!imageUrl} imageUrl={imageUrl} />
 
-      <div className="relative z-10 w-full flex-grow flex flex-col items-center justify-center p-4 [padding-block:var(--space-fluid-l)] [gap:var(--space-fluid-m)]">
+      <div className="relative z-10 w-full flex-grow flex flex-col items-center justify-center [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-l)] [gap:var(--space-fluid-m)]">
 
         <AkhaCard
           variant="glass"
-          className="w-full max-w-[480px] md:max-w-[560px] h-[min(740px,calc(100dvh-8rem))] flex flex-col relative overflow-hidden shadow-2xl"
+          className="w-full max-w-[var(--container-form)] md:max-w-[560px] h-[min(740px,calc(100dvh-8rem))] flex flex-col relative overflow-hidden shadow-2xl"
           padding="none"
         >
           {/* ── Slider: solo contenuto, zero pulsanti ── */}

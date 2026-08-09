@@ -47,7 +47,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
       <div className="fixed inset-0 z-40 cursor-pointer" onClick={onClose} />
 
       {/* CONTENT — centrato, non intercetta i click tranne gli elementi interattivi */}
-      <div className="relative z-50 w-full max-w-7xl mx-auto flex flex-col items-center pointer-events-none [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-l)]">
+      <div className="relative z-50 w-full max-w-[var(--container-page)] mx-auto flex flex-col items-center pointer-events-none [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-l)]">
 
         {/* TITLE + DESCRIPTION */}
         <div className="pointer-events-none w-full">

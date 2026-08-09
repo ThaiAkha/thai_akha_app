@@ -58,7 +58,7 @@ const JoinGroupPage: React.FC<JoinGroupPageProps> = ({ onNavigate, userProfile, 
         description="You've been invited to join a Thai Akha Kitchen cooking class group."
         canonical="https://www.thaiakha.com/join-group"
       />
-      <AkhaCard variant="glass" className="w-full max-w-[480px]" padding="l">
+      <AkhaCard variant="glass" className="w-full max-w-[var(--container-form)]" padding="l">
         {children}
       </AkhaCard>
     </div>

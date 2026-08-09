@@ -112,7 +112,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
 
   return (
     <div className={cn(
-      "relative z-10 w-full max-w-[85rem] mx-auto flex flex-col animate-in fade-in zoom-in-95 duration-500",
+      "relative z-10 w-full max-w-[var(--container-page)] mx-auto flex flex-col animate-in fade-in zoom-in-95 duration-500",
       "[padding:var(--space-fluid-m)]"
     )}>
 

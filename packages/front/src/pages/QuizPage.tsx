@@ -140,7 +140,7 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
             {categories.length === 0 ? (
               <Typography variant="paragraphM" color="muted">{t.quiz.noCategories}</Typography>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-l)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-m)]">
                 {categories.map(cat => (
                   <QuizCardCategory
                     key={cat.id}

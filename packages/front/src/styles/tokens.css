@@ -59,9 +59,12 @@
   --space-fluid-m-xl:    clamp(1.00rem, calc(-0.10rem + 4.68vw), 3.00rem);
   --space-fluid-l-3xl:   clamp(1.50rem, calc(-0.35rem + 7.89vw), 6.00rem);
 
-  /* Grid utilities */
-  --grid-max-width:      85rem;
-  --grid-gutter:         clamp(1.00rem, calc(0.40rem + 2.50vw), 2.50rem);
+  /* Container scale — larghezze canoniche di pagina (MUST be in :root, not @theme).
+     Uso: max-w-[var(--container-page)]. I tier content (72rem) e prose (48rem)
+     restano le classi Tailwind canoniche max-w-6xl / max-w-3xl — niente doppio nome. */
+  --container-page:    85rem;  /* 1360px — shell di pagina (PageLayout, header) */
+  --container-section: 64rem;  /* 1024px — blocchi di chiusura FAQ + sibling, uno step sotto content */
+  --container-form:    30rem;  /*  480px — card auth/join, pannelli form */
 
   /* Auth hero image — page-specific */
   --auth-hero-img:       clamp(9rem, calc(9rem + 4vw), 14rem);

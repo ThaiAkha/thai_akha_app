@@ -1,6 +1,3 @@
-// AUTO-GENERATED from Supabase (project mtqullobcsypkqgdkaob) — DO NOT EDIT BY HAND.
-// Regenerate via Supabase MCP generate_typescript_types. Single source of truth for DB types.
-
 export type Json =
   | string
   | number
@@ -17,117 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      _info_page_backup_20260802: {
-        Row: {
-          anchor: string | null
-          body: Json | null
-          created_at: string | null
-          heading: string | null
-          id: string | null
-          is_active: boolean | null
-          page_slug: string | null
-          section_order: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          anchor?: string | null
-          body?: Json | null
-          created_at?: string | null
-          heading?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          page_slug?: string | null
-          section_order?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          anchor?: string | null
-          body?: Json | null
-          created_at?: string | null
-          heading?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          page_slug?: string | null
-          section_order?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      _info_page_backup_privacy_20260802: {
-        Row: {
-          anchor: string | null
-          body: Json | null
-          created_at: string | null
-          heading: string | null
-          id: string | null
-          is_active: boolean | null
-          page_slug: string | null
-          section_order: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          anchor?: string | null
-          body?: Json | null
-          created_at?: string | null
-          heading?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          page_slug?: string | null
-          section_order?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          anchor?: string | null
-          body?: Json | null
-          created_at?: string | null
-          heading?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          page_slug?: string | null
-          section_order?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      _nap_backup_20260803: {
-        Row: {
-          row_id: string | null
-          snapshot: Json | null
-          tbl: string | null
-        }
-        Insert: {
-          row_id?: string | null
-          snapshot?: Json | null
-          tbl?: string | null
-        }
-        Update: {
-          row_id?: string | null
-          snapshot?: Json | null
-          tbl?: string | null
-        }
-        Relationships: []
-      }
-      _rls_backup_20260803: {
-        Row: {
-          polname: string | null
-          qual_prima: string | null
-          salvata_il: string | null
-          tabella: string | null
-        }
-        Insert: {
-          polname?: string | null
-          qual_prima?: string | null
-          salvata_il?: string | null
-          tabella?: string | null
-        }
-        Update: {
-          polname?: string | null
-          qual_prima?: string | null
-          salvata_il?: string | null
-          tabella?: string | null
-        }
-        Relationships: []
-      }
       agency_invoices: {
         Row: {
           agency_id: string
@@ -360,38 +246,79 @@ export type Database = {
           },
         ]
       }
-      akha_news_faq_bak_20260720: {
+      akha_news_translations: {
         Row: {
-          faq: Json | null
-          id: string | null
+          content: string | null
+          created_at: string | null
+          excerpt: string | null
+          human_reviewed: boolean
+          id: string
+          key_entities: Json | null
+          lang: string
+          news_id: string
+          og_description: string | null
+          og_title: string | null
+          related_queries_geo: Json | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
           slug: string | null
+          subtitle: string | null
+          summary_ai: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
-          faq?: Json | null
-          id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang: string
+          news_id: string
+          og_description?: string | null
+          og_title?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
-          faq?: Json | null
-          id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang?: string
+          news_id?: string
+          og_description?: string | null
+          og_title?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
-      }
-      akha_news_jsonld_bak_20260720: {
-        Row: {
-          json_ld: Json | null
-          slug: string | null
-        }
-        Insert: {
-          json_ld?: Json | null
-          slug?: string | null
-        }
-        Update: {
-          json_ld?: Json | null
-          slug?: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "akha_news_translations_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "akha_news"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       app_manuals: {
         Row: {
@@ -1171,6 +1098,53 @@ export type Database = {
         }
         Relationships: []
       }
+      class_sections_translations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          human_reviewed: boolean
+          id: string
+          lang: string
+          section_id: string
+          subtitle: string | null
+          tag_badge: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang: string
+          section_id: string
+          subtitle?: string | null
+          tag_badge?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang?: string
+          section_id?: string
+          subtitle?: string | null
+          tag_badge?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_sections_translations_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "class_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_sessions: {
         Row: {
           active: boolean | null
@@ -1420,23 +1394,88 @@ export type Database = {
           },
         ]
       }
-      content_categories_faq_bak_20260720: {
+      content_categories_translations: {
         Row: {
-          faq: Json | null
-          id: string | null
+          category_id: string
+          content_body: string | null
+          created_at: string | null
+          description: string | null
+          human_reviewed: boolean
+          id: string
+          key_entities: Json | null
+          lang: string
+          og_description: string | null
+          og_title: string | null
+          related_queries_geo: Json | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
           slug: string | null
+          subtitle: string | null
+          summary_ai: string | null
+          tab_label: string | null
+          title: string | null
+          title_highlight: string | null
+          ui_quote: string | null
+          updated_at: string | null
         }
         Insert: {
-          faq?: Json | null
-          id?: string | null
+          category_id: string
+          content_body?: string | null
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang: string
+          og_description?: string | null
+          og_title?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          tab_label?: string | null
+          title?: string | null
+          title_highlight?: string | null
+          ui_quote?: string | null
+          updated_at?: string | null
         }
         Update: {
-          faq?: Json | null
-          id?: string | null
+          category_id?: string
+          content_body?: string | null
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang?: string
+          og_description?: string | null
+          og_title?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          tab_label?: string | null
+          title?: string | null
+          title_highlight?: string | null
+          ui_quote?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "content_categories_translations_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "content_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cooking_classes: {
         Row: {
@@ -1524,23 +1563,73 @@ export type Database = {
           },
         ]
       }
-      culture_jsonld_bak_20260720: {
+      cooking_classes_translations: {
         Row: {
-          id: string | null
-          json_ld: Json | null
-          slug: string | null
+          badge: string | null
+          capacity_text: string | null
+          class_id: string
+          created_at: string | null
+          description: string | null
+          duration_text: string | null
+          highlights: Json | null
+          human_reviewed: boolean
+          id: string
+          inclusions: Json | null
+          key_entities: Json | null
+          lang: string
+          schedule_items: Json | null
+          summary_ai: string | null
+          tagline: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
-          id?: string | null
-          json_ld?: Json | null
-          slug?: string | null
+          badge?: string | null
+          capacity_text?: string | null
+          class_id: string
+          created_at?: string | null
+          description?: string | null
+          duration_text?: string | null
+          highlights?: Json | null
+          human_reviewed?: boolean
+          id?: string
+          inclusions?: Json | null
+          key_entities?: Json | null
+          lang: string
+          schedule_items?: Json | null
+          summary_ai?: string | null
+          tagline?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
-          id?: string | null
-          json_ld?: Json | null
-          slug?: string | null
+          badge?: string | null
+          capacity_text?: string | null
+          class_id?: string
+          created_at?: string | null
+          description?: string | null
+          duration_text?: string | null
+          highlights?: Json | null
+          human_reviewed?: boolean
+          id?: string
+          inclusions?: Json | null
+          key_entities?: Json | null
+          lang?: string
+          schedule_items?: Json | null
+          summary_ai?: string | null
+          tagline?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "cooking_classes_translations_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "cooking_classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       culture_sections: {
         Row: {
@@ -1702,23 +1791,79 @@ export type Database = {
           },
         ]
       }
-      culture_sections_faq_bak_20260720: {
+      culture_sections_translations: {
         Row: {
-          faq: Json | null
-          id: string | null
+          content: string | null
+          created_at: string | null
+          human_reviewed: boolean
+          id: string
+          key_entities: Json | null
+          lang: string
+          og_description: string | null
+          og_title: string | null
+          quote: string | null
+          related_queries_geo: Json | null
+          section_id: string
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
           slug: string | null
+          subtitle: string | null
+          summary_ai: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
-          faq?: Json | null
-          id?: string | null
+          content?: string | null
+          created_at?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang: string
+          og_description?: string | null
+          og_title?: string | null
+          quote?: string | null
+          related_queries_geo?: Json | null
+          section_id: string
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
-          faq?: Json | null
-          id?: string | null
+          content?: string | null
+          created_at?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang?: string
+          og_description?: string | null
+          og_title?: string | null
+          quote?: string | null
+          related_queries_geo?: Json | null
+          section_id?: string
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "culture_sections_translations_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "culture_sections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dietary_profiles: {
         Row: {
@@ -1767,6 +1912,53 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["asset_id"]
+          },
+        ]
+      }
+      dietary_profiles_translations: {
+        Row: {
+          created_at: string | null
+          description_long: string | null
+          experience: string | null
+          human_reviewed: boolean
+          id: string
+          introduction: string | null
+          lang: string
+          name: string | null
+          profile_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_long?: string | null
+          experience?: string | null
+          human_reviewed?: boolean
+          id?: string
+          introduction?: string | null
+          lang: string
+          name?: string | null
+          profile_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description_long?: string | null
+          experience?: string | null
+          human_reviewed?: boolean
+          id?: string
+          introduction?: string | null
+          lang?: string
+          name?: string | null
+          profile_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dietary_profiles_translations_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "dietary_profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1915,120 +2107,6 @@ export type Database = {
         }
         Relationships: []
       }
-      faq_backup_20260731_promptg: {
-        Row: {
-          answer: string | null
-          audience: string[] | null
-          avatar_asset_id: string | null
-          backed_up_at: string | null
-          category_id: string | null
-          created_at: string | null
-          cta: Json | null
-          display_order: number | null
-          entity_slug: string | null
-          entity_type: string | null
-          faq_key: string | null
-          faq_style: string | null
-          id: string | null
-          is_active: boolean | null
-          question: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          backed_up_at?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          backed_up_at?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      faq_backup_20260731_teacher: {
-        Row: {
-          answer: string | null
-          audience: string[] | null
-          avatar_asset_id: string | null
-          backed_up_at: string | null
-          category_id: string | null
-          created_at: string | null
-          cta: Json | null
-          display_order: number | null
-          entity_slug: string | null
-          entity_type: string | null
-          faq_key: string | null
-          faq_style: string | null
-          id: string | null
-          is_active: boolean | null
-          question: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          backed_up_at?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          backed_up_at?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       faq_categories: {
         Row: {
           audience: string[]
@@ -2039,6 +2117,7 @@ export type Database = {
           id: string
           image_asset_id: string | null
           is_active: boolean
+          parent_id: string | null
           section_id: string | null
           title: string
           updated_at: string
@@ -2052,6 +2131,7 @@ export type Database = {
           id?: string
           image_asset_id?: string | null
           is_active?: boolean
+          parent_id?: string | null
           section_id?: string | null
           title: string
           updated_at?: string
@@ -2065,6 +2145,7 @@ export type Database = {
           id?: string
           image_asset_id?: string | null
           is_active?: boolean
+          parent_id?: string | null
           section_id?: string | null
           title?: string
           updated_at?: string
@@ -2083,6 +2164,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "faq_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "faq_categories"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2137,6 +2225,7 @@ export type Database = {
           id: string
           is_active: boolean
           question: string
+          tags: string[]
           updated_at: string
         }
         Insert: {
@@ -2154,6 +2243,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           question: string
+          tags?: string[]
           updated_at?: string
         }
         Update: {
@@ -2171,6 +2261,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           question?: string
+          tags?: string[]
           updated_at?: string
         }
         Relationships: [
@@ -2189,120 +2280,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      faq_questions_bak_20260717: {
-        Row: {
-          answer: string | null
-          audience: string[] | null
-          avatar_asset_id: string | null
-          category_id: string | null
-          created_at: string | null
-          cta: Json | null
-          display_order: number | null
-          entity_slug: string | null
-          entity_type: string | null
-          faq_key: string | null
-          faq_style: string | null
-          id: string | null
-          is_active: boolean | null
-          links: Json | null
-          question: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          links?: Json | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          links?: Json | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      faq_questions_bak_20260720: {
-        Row: {
-          answer: string | null
-          audience: string[] | null
-          avatar_asset_id: string | null
-          category_id: string | null
-          created_at: string | null
-          cta: Json | null
-          display_order: number | null
-          entity_slug: string | null
-          entity_type: string | null
-          faq_key: string | null
-          faq_style: string | null
-          id: string | null
-          is_active: boolean | null
-          links: Json | null
-          question: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          links?: Json | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          answer?: string | null
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          category_id?: string | null
-          created_at?: string | null
-          cta?: Json | null
-          display_order?: number | null
-          entity_slug?: string | null
-          entity_type?: string | null
-          faq_key?: string | null
-          faq_style?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          links?: Json | null
-          question?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
       }
       faq_questions_translations: {
         Row: {
@@ -2348,6 +2325,30 @@ export type Database = {
           },
         ]
       }
+      faq_tags: {
+        Row: {
+          axis: string
+          created_at: string
+          is_active: boolean
+          label: string
+          tag: string
+        }
+        Insert: {
+          axis: string
+          created_at?: string
+          is_active?: boolean
+          label: string
+          tag: string
+        }
+        Update: {
+          axis?: string
+          created_at?: string
+          is_active?: boolean
+          label?: string
+          tag?: string
+        }
+        Relationships: []
+      }
       gallery_items: {
         Row: {
           asset_id: string
@@ -2380,6 +2381,44 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["asset_id"]
+          },
+        ]
+      }
+      gallery_items_translations: {
+        Row: {
+          created_at: string | null
+          human_reviewed: boolean
+          id: string
+          item_id: string
+          lang: string
+          quote: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          human_reviewed?: boolean
+          id?: string
+          item_id: string
+          lang: string
+          quote?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          human_reviewed?: boolean
+          id?: string
+          item_id?: string
+          lang?: string
+          quote?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_items_translations_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_items"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2444,7 +2483,7 @@ export type Database = {
           herb_tea_id: string
           id: string
           ingredient_sheet: Json | null
-          language: string
+          lang: string
           name: string | null
           seo_description: string | null
           seo_keywords: string[] | null
@@ -2464,7 +2503,7 @@ export type Database = {
           herb_tea_id: string
           id?: string
           ingredient_sheet?: Json | null
-          language: string
+          lang: string
           name?: string | null
           seo_description?: string | null
           seo_keywords?: string[] | null
@@ -2484,7 +2523,7 @@ export type Database = {
           herb_tea_id?: string
           id?: string
           ingredient_sheet?: Json | null
-          language?: string
+          lang?: string
           name?: string | null
           seo_description?: string | null
           seo_keywords?: string[] | null
@@ -2608,13 +2647,70 @@ export type Database = {
           },
         ]
       }
+      home_cards_front_translations: {
+        Row: {
+          card_id: string
+          created_at: string | null
+          description: string | null
+          extra_1: string | null
+          extra_2: string | null
+          human_reviewed: boolean
+          id: string
+          lang: string
+          link_label: string | null
+          suffix_extra_1: string | null
+          suffix_extra_2: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          card_id: string
+          created_at?: string | null
+          description?: string | null
+          extra_1?: string | null
+          extra_2?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang: string
+          link_label?: string | null
+          suffix_extra_1?: string | null
+          suffix_extra_2?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          card_id?: string
+          created_at?: string | null
+          description?: string | null
+          extra_1?: string | null
+          extra_2?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang?: string
+          link_label?: string | null
+          suffix_extra_1?: string | null
+          suffix_extra_2?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_cards_front_translations_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "home_cards_front"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       home_cards_translations: {
         Row: {
           card_id: number
           created_at: string | null
           description: string
           id: string
-          language: string
+          lang: string
+          language: string | null
           link_label: string | null
           title: string
           updated_at: string | null
@@ -2624,7 +2720,8 @@ export type Database = {
           created_at?: string | null
           description: string
           id?: string
-          language: string
+          lang: string
+          language?: string | null
           link_label?: string | null
           title: string
           updated_at?: string | null
@@ -2634,7 +2731,8 @@ export type Database = {
           created_at?: string | null
           description?: string
           id?: string
-          language?: string
+          lang?: string
+          language?: string | null
           link_label?: string | null
           title?: string
           updated_at?: string | null
@@ -3025,23 +3123,91 @@ export type Database = {
           },
         ]
       }
-      ingredients_library_faq_bak_20260720: {
+      ingredients_library_translations: {
         Row: {
-          faq: Json | null
-          id: string | null
+          conclusion: string | null
+          created_at: string | null
+          culinary_uses: string | null
+          description: string | null
+          health_benefits: string | null
+          human_reviewed: boolean
+          id: string
+          ingredient_id: string
+          key_entities: Json | null
+          kitchen_usage: string | null
+          lang: string
+          name: string | null
+          og_description: string | null
+          og_title: string | null
+          related_queries_geo: Json | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
           slug: string | null
+          summary_ai: string | null
+          the_essential: Json | null
+          updated_at: string | null
+          usage_note: Json | null
         }
         Insert: {
-          faq?: Json | null
-          id?: string | null
+          conclusion?: string | null
+          created_at?: string | null
+          culinary_uses?: string | null
+          description?: string | null
+          health_benefits?: string | null
+          human_reviewed?: boolean
+          id?: string
+          ingredient_id: string
+          key_entities?: Json | null
+          kitchen_usage?: string | null
+          lang: string
+          name?: string | null
+          og_description?: string | null
+          og_title?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          summary_ai?: string | null
+          the_essential?: Json | null
+          updated_at?: string | null
+          usage_note?: Json | null
         }
         Update: {
-          faq?: Json | null
-          id?: string | null
+          conclusion?: string | null
+          created_at?: string | null
+          culinary_uses?: string | null
+          description?: string | null
+          health_benefits?: string | null
+          human_reviewed?: boolean
+          id?: string
+          ingredient_id?: string
+          key_entities?: Json | null
+          kitchen_usage?: string | null
+          lang?: string
+          name?: string | null
+          og_description?: string | null
+          og_title?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           slug?: string | null
+          summary_ai?: string | null
+          the_essential?: Json | null
+          updated_at?: string | null
+          usage_note?: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ingredients_library_translations_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients_library"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       legal_documents: {
         Row: {
@@ -3390,6 +3556,50 @@ export type Database = {
           },
         ]
       }
+      meeting_points_translations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          dropoff_description: string | null
+          human_reviewed: boolean
+          id: string
+          lang: string
+          name: string | null
+          point_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          dropoff_description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang: string
+          name?: string | null
+          point_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          dropoff_description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang?: string
+          name?: string | null
+          point_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_points_translations_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "meeting_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_selections: {
         Row: {
           booking_id: string | null
@@ -3559,6 +3769,71 @@ export type Database = {
           },
         ]
       }
+      page_sections_translations: {
+        Row: {
+          bullets: Json | null
+          button_text: string | null
+          cards: Json | null
+          created_at: string | null
+          description: string | null
+          highlight: string | null
+          human_reviewed: boolean
+          id: string
+          key_entities: Json | null
+          lang: string
+          section_id: string
+          subtitle: string | null
+          summary_ai: string | null
+          tag_badge: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bullets?: Json | null
+          button_text?: string | null
+          cards?: Json | null
+          created_at?: string | null
+          description?: string | null
+          highlight?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang: string
+          section_id: string
+          subtitle?: string | null
+          summary_ai?: string | null
+          tag_badge?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bullets?: Json | null
+          button_text?: string | null
+          cards?: Json | null
+          created_at?: string | null
+          description?: string | null
+          highlight?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang?: string
+          section_id?: string
+          subtitle?: string | null
+          summary_ai?: string | null
+          tag_badge?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_sections_translations_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "page_sections"
+            referencedColumns: ["section_id"]
+          },
+        ]
+      }
       pickup_zones: {
         Row: {
           color_code: string | null
@@ -3597,6 +3872,47 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      pickup_zones_translations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          human_reviewed: boolean
+          id: string
+          lang: string
+          name: string | null
+          updated_at: string | null
+          zone_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang: string
+          name?: string | null
+          updated_at?: string | null
+          zone_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang?: string
+          name?: string | null
+          updated_at?: string | null
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pickup_zones_translations_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "pickup_zones"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -3907,6 +4223,59 @@ export type Database = {
             columns: ["module_id"]
             isOneToOne: false
             referencedRelation: "quiz_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions_translations: {
+        Row: {
+          created_at: string | null
+          explanation: string | null
+          explanation_wrong: string | null
+          hint_blocks: Json | null
+          hint_response: string | null
+          human_reviewed: boolean
+          id: string
+          lang: string
+          options: Json | null
+          question_id: string
+          text: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          explanation?: string | null
+          explanation_wrong?: string | null
+          hint_blocks?: Json | null
+          hint_response?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang: string
+          options?: Json | null
+          question_id: string
+          text?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          explanation?: string | null
+          explanation_wrong?: string | null
+          hint_blocks?: Json | null
+          hint_response?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang?: string
+          options?: Json | null
+          question_id?: string
+          text?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_translations_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
             referencedColumns: ["id"]
           },
         ]
@@ -4341,38 +4710,106 @@ export type Database = {
           },
         ]
       }
-      recipes_faq_bak_20260720: {
+      recipes_translations: {
         Row: {
-          faq: Json | null
-          id: string | null
+          author_note: string | null
+          cooks_tip: string | null
+          created_at: string | null
+          description: string | null
+          dietary_variants: Json | null
+          directions: Json | null
+          essentials: Json | null
+          excerpt: string | null
+          garnish: string | null
+          health_benefits: string | null
+          human_reviewed: boolean
+          id: string
+          key_entities: Json | null
+          lang: string
+          name: string | null
+          notes: string | null
+          og_description: string | null
+          og_title: string | null
+          recipe_id: string
+          related_queries_geo: Json | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
+          servings: string | null
           slug: string | null
+          subtitle: string | null
+          summary_ai: string | null
+          updated_at: string | null
         }
         Insert: {
-          faq?: Json | null
-          id?: string | null
+          author_note?: string | null
+          cooks_tip?: string | null
+          created_at?: string | null
+          description?: string | null
+          dietary_variants?: Json | null
+          directions?: Json | null
+          essentials?: Json | null
+          excerpt?: string | null
+          garnish?: string | null
+          health_benefits?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang: string
+          name?: string | null
+          notes?: string | null
+          og_description?: string | null
+          og_title?: string | null
+          recipe_id: string
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          servings?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          updated_at?: string | null
         }
         Update: {
-          faq?: Json | null
-          id?: string | null
+          author_note?: string | null
+          cooks_tip?: string | null
+          created_at?: string | null
+          description?: string | null
+          dietary_variants?: Json | null
+          directions?: Json | null
+          essentials?: Json | null
+          excerpt?: string | null
+          garnish?: string | null
+          health_benefits?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang?: string
+          name?: string | null
+          notes?: string | null
+          og_description?: string | null
+          og_title?: string | null
+          recipe_id?: string
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          servings?: string | null
           slug?: string | null
+          subtitle?: string | null
+          summary_ai?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
-      }
-      recipes_jsonld_bak_20260720: {
-        Row: {
-          json_ld: Json | null
-          slug: string | null
-        }
-        Insert: {
-          json_ld?: Json | null
-          slug?: string | null
-        }
-        Update: {
-          json_ld?: Json | null
-          slug?: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "recipes_translations_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shop_akha: {
         Row: {
@@ -4658,6 +5095,50 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_shop_products"
             referencedColumns: ["sku"]
+          },
+        ]
+      }
+      shop_storefront_translations: {
+        Row: {
+          badge_label: string | null
+          created_at: string | null
+          cultural_story: string | null
+          display_name: string | null
+          human_reviewed: boolean
+          id: string
+          lang: string
+          storefront_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          badge_label?: string | null
+          created_at?: string | null
+          cultural_story?: string | null
+          display_name?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang: string
+          storefront_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          badge_label?: string | null
+          created_at?: string | null
+          cultural_story?: string | null
+          display_name?: string | null
+          human_reviewed?: boolean
+          id?: string
+          lang?: string
+          storefront_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_storefront_translations_storefront_id_fkey"
+            columns: ["storefront_id"]
+            isOneToOne: false
+            referencedRelation: "shop_storefront"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -4953,7 +5434,8 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
-          language: string
+          lang: string
+          language: string | null
           menu_label: string | null
           page_id: string
           subtitle: string | null
@@ -4964,7 +5446,8 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
-          language: string
+          lang: string
+          language?: string | null
           menu_label?: string | null
           page_id: string
           subtitle?: string | null
@@ -4975,7 +5458,8 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
-          language?: string
+          lang?: string
+          language?: string | null
           menu_label?: string | null
           page_id?: string
           subtitle?: string | null
@@ -4992,26 +5476,85 @@ export type Database = {
           },
         ]
       }
-      site_metadata_faq_bak_20260720: {
+      site_metadata_translations: {
         Row: {
-          faq: Json | null
-          faq_refs: Json | null
-          json_ld: Json | null
+          created_at: string | null
+          header_badge: string | null
+          header_title_highlight: string | null
+          header_title_main: string | null
+          human_reviewed: boolean
+          id: string
+          key_entities: Json | null
+          lang: string
+          menu_label: string | null
+          og_description: string | null
+          og_title: string | null
+          page_description: string | null
+          page_essentials: Json | null
+          page_id: string
           page_slug: string | null
+          related_queries_geo: Json | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
+          summary_ai: string | null
+          updated_at: string | null
         }
         Insert: {
-          faq?: Json | null
-          faq_refs?: Json | null
-          json_ld?: Json | null
+          created_at?: string | null
+          header_badge?: string | null
+          header_title_highlight?: string | null
+          header_title_main?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang: string
+          menu_label?: string | null
+          og_description?: string | null
+          og_title?: string | null
+          page_description?: string | null
+          page_essentials?: Json | null
+          page_id: string
           page_slug?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          summary_ai?: string | null
+          updated_at?: string | null
         }
         Update: {
-          faq?: Json | null
-          faq_refs?: Json | null
-          json_ld?: Json | null
+          created_at?: string | null
+          header_badge?: string | null
+          header_title_highlight?: string | null
+          header_title_main?: string | null
+          human_reviewed?: boolean
+          id?: string
+          key_entities?: Json | null
+          lang?: string
+          menu_label?: string | null
+          og_description?: string | null
+          og_title?: string | null
+          page_description?: string | null
+          page_essentials?: Json | null
+          page_id?: string
           page_slug?: string | null
+          related_queries_geo?: Json | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
+          summary_ai?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "site_metadata_translations_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "site_metadata"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       spiciness_levels: {
         Row: {
@@ -5066,6 +5609,65 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["asset_id"]
+          },
+        ]
+      }
+      spiciness_levels_translations: {
+        Row: {
+          akha_connection: string | null
+          chef_note: string | null
+          created_at: string | null
+          description: string | null
+          human_reviewed: boolean
+          id: string
+          label: string | null
+          lang: string
+          level_id: number
+          philosophy_quote: string | null
+          photo_description: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          akha_connection?: string | null
+          chef_note?: string | null
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          label?: string | null
+          lang: string
+          level_id: number
+          philosophy_quote?: string | null
+          photo_description?: string | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          akha_connection?: string | null
+          chef_note?: string | null
+          created_at?: string | null
+          description?: string | null
+          human_reviewed?: boolean
+          id?: string
+          label?: string | null
+          lang?: string
+          level_id?: number
+          philosophy_quote?: string | null
+          photo_description?: string | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spiciness_levels_translations_level_id_fkey"
+            columns: ["level_id"]
+            isOneToOne: false
+            referencedRelation: "spiciness_levels"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -5196,6 +5798,15 @@ export type Database = {
           product_type?: string | null
           sku?: string | null
           sub_category?: string | null
+        }
+        Relationships: []
+      }
+      v_translated_slugs: {
+        Row: {
+          entity_type: string | null
+          lang: string | null
+          slug_en: string | null
+          slug_translated: string | null
         }
         Relationships: []
       }

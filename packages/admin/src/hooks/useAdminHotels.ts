@@ -65,7 +65,8 @@ export function useAdminHotels() {
             const geoId = Object.keys(geoIdToZoneId).find(k => geoIdToZoneId[k] === zoneId);
             const feature = GEOJSON_MASTER.features.find((f: any) => f.properties.id === geoId);
             if (feature && feature.geometry.type === 'Polygon') {
-                const polygonRing = feature.geometry.coordinates[0];
+                // GeoJSON union type: dopo il narrow su 'Polygon' coordinates[0] è il ring esterno
+                const polygonRing = feature.geometry.coordinates[0] as number[][];
                 if (isPointInPolygon({ lat, lng }, polygonRing)) {
                     return zoneId;
                 }

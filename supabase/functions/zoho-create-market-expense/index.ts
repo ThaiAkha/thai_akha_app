@@ -54,6 +54,23 @@ const PAID_THROUGH_DEFAULT = '1215788000000000361' // Cash - Red Box
 
 const envOr = (key: string, fallback: string) => Deno.env.get(key) ?? fallback
 
+// Zoho rifiuta una "description" oltre 500 caratteri: teniamo l'header (totale) e
+// quante righe ci stanno, chiudendo con "+N more". Mai superare il limite.
+function fitDescription(header: string, lines: string[], max = 500): string {
+  let out = header
+  for (let i = 0; i < lines.length; i++) {
+    const rest = lines.length - i
+    const next = `${out}\n${lines[i]}`
+    const tailAfterAdd = rest > 1 ? `\n+${rest - 1} more` : ''
+    if (next.length + tailAfterAdd.length > max) {
+      const stopped = `${out}\n+${rest} more`
+      return (stopped.length <= max ? stopped : out).slice(0, max)
+    }
+    out = next
+  }
+  return out.slice(0, max)
+}
+
 async function zohoAccessToken(): Promise<string> {
   const dc = Deno.env.get('ZOHO_DC') ?? 'com'
   const res = await fetch(`https://accounts.zoho.${dc}/oauth/v2/token`, {
@@ -146,13 +163,15 @@ Deno.serve(async (req: Request) => {
       stream === 'teacher'
         ? `${cfg.refPrefix}-${lastDate.slice(0, 7)}`        // mensile
         : `${cfg.refPrefix}-${rows[0].run_date}`            // per-run
-    const description = rows
-      .map((r) => {
+    // Zoho taglia a 500 caratteri: header col totale + le righe che ci stanno (il mese teacher ne ha ~30).
+    const description = fitDescription(
+      `${cfg.shop} · ${rows.length} run(s) · THB ${amount.toLocaleString('en-US')}`,
+      rows.map((r) => {
         const items = Array.isArray(r.items_snapshot) ? r.items_snapshot.length : 0
         const note = r.notes ? ` - ${r.notes}` : ''
-        return `${cfg.shop} ${r.run_date} · ฿${Number(r.total_cost ?? 0)}${items ? ` · ${items} items` : ''}${note}`
-      })
-      .join('\n')
+        return `${r.run_date} THB ${Number(r.total_cost ?? 0).toLocaleString('en-US')}${items ? ` (${items} items)` : ''}${note}`
+      }),
+    )
 
     // 7) Crea l'Expense in Zoho
     const dc = Deno.env.get('ZOHO_DC') ?? 'com'

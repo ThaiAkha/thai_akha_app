@@ -51,7 +51,7 @@
     "editTitle": "Edit service",
     "declareTitle": "Declare service",
     "formSubtitle": "Enter service details to generate the payout.",
-    "paidBannerTitle": "Already paid — read only",
+    "paidBannerTitle": "Already paid - read only",
     "paidBannerMessage": "This service has been paid and can no longer be edited.",
     "pendingBannerTitle": "Already submitted for this day and class",
     "pendingBannerMessage": "Saving will overwrite the existing service (a new email will be sent).",

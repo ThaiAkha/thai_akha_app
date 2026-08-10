@@ -7,7 +7,11 @@ import { LogoIconLight, LogoIconDark } from '@thaiakha/shared';
 import { ChevronLeft, ChevronDown, Menu, Sun, Moon } from 'lucide-react';
 import Typography from '../ui/Typography';
 
-const CLOSED_WIDTH = 'w-[88px]';
+// Step per DISPOSITIVO, non per larghezza finestra: pointer-coarse (touch: iPad landscape)
+// = contenuta; mouse = piena a qualunque larghezza. Monta solo da lg in su (App.tsx).
+const CLOSED_WIDTH = 'w-[88px] pointer-coarse:w-[76px]';
+const ROW_H = 'h-12 pointer-coarse:h-11';
+const ROW_ICON = 'w-6 h-6 pointer-coarse:w-5 pointer-coarse:h-5';
 const SIDEBAR_TRANSITION = '800ms';
 const EASE_CUBIC = 'ease-[cubic-bezier(0.25,1,0.5,1)]';
 
@@ -40,7 +44,8 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = tr
       }}
       title={label}
       className={cn(
-        'relative flex items-center w-full h-12 rounded-xl pl-0 pr-1 cursor-pointer outline-none',
+        ROW_H,
+        'relative flex items-center w-full rounded-xl pl-0 pr-1 cursor-pointer outline-none',
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none',
         isActive
           ? 'bg-action-500/20'
@@ -50,9 +55,10 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = tr
         transition: `background-color 80ms ease, opacity 500ms ease ${isVisible ? index * 50 : 0}ms, transform 500ms ease ${isVisible ? index * 50 : 0}ms`,
       }}
     >
-      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] relative z-10`}>
+      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] relative z-10`}>
         <IconComponent className={cn(
-          'w-6 h-6 transition-transform duration-300 group-active:scale-95',
+          ROW_ICON,
+          'transition-transform duration-300 group-active:scale-95',
           isActive ? 'text-action-700' : 'text-muted'
         )} />
       </div>
@@ -64,7 +70,7 @@ function NavItem({ icon, label, isActive, onClick, isOpen, badge, isVisible = tr
         <Typography
           variant="body"
           color={isActive ? 'action' : 'sub'}
-          className="font-display font-bold tracking-wide text-sm"
+          className="font-display font-bold tracking-wide text-sm pointer-coarse:text-xs"
         >
           {label}
         </Typography>
@@ -103,7 +109,8 @@ function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 
   const iconClass = "text-muted group-hover:text-action-600";
 
   const className = cn(
-    "relative flex items-center w-full h-12 group cursor-pointer rounded-xl outline-none",
+    ROW_H,
+    "relative flex items-center w-full group cursor-pointer rounded-xl outline-none",
     "transition-[background-color,border-color,box-shadow,opacity,transform] duration-200",
     bgClasses,
     isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
@@ -112,8 +119,8 @@ function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 
 
   const inner = (
     <>
-      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] z-10`}>
-        <IconComponent className={cn("w-6 h-6 transition-colors duration-75", iconClass)} />
+      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] z-10`}>
+        <IconComponent className={cn(ROW_ICON, "transition-colors duration-75", iconClass)} />
       </div>
       <div className={cn(
         'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10',
@@ -125,7 +132,7 @@ function ActionButton({ icon, label, onClick, isOpen, isVisible = true, index = 
           color="sub"
           className={cn(
             "font-display font-bold tracking-wide group-hover:text-action-700",
-            isMainFooterButton ? "text-[15px]" : "text-sm"
+            isMainFooterButton ? "text-[15px] pointer-coarse:text-sm" : "text-sm pointer-coarse:text-xs"
           )}
         >
           {label}
@@ -200,13 +207,14 @@ function SubNavItem({ icon, label, isActive, onClick, isOpen, color = 'action', 
       }}
       title={label}
       className={cn(
-        'relative flex items-center w-full h-12 transition-all duration-300 rounded-xl pl-0 pr-1 cursor-pointer outline-none',
+        ROW_H,
+        'relative flex items-center w-full transition-all duration-300 rounded-xl pl-0 pr-1 cursor-pointer outline-none',
         isActive ? c.bg : c.bgHover
       )}
     >
       {/* Indent: small vertical line indicator on the left */}
-      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px]`}>
-        <IconComponent className={cn('w-6 h-6 transition-colors duration-75', isActive ? c.icon : 'text-muted')} />
+      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px]`}>
+        <IconComponent className={cn(ROW_ICON, 'transition-colors duration-75', isActive ? c.icon : 'text-muted')} />
       </div>
       <div className={cn(
         'flex items-center flex-1 overflow-hidden whitespace-nowrap',
@@ -216,7 +224,7 @@ function SubNavItem({ icon, label, isActive, onClick, isOpen, color = 'action', 
         <Typography
           variant="body"
           color={isActive ? color : 'sub'}
-          className="font-display font-bold tracking-wide text-sm"
+          className="font-display font-bold tracking-wide text-sm pointer-coarse:text-xs"
         >
           {label}
         </Typography>
@@ -269,15 +277,16 @@ function ThemeSwitcher({ isDarkMode, onToggle, isOpen, isVisible = true, index =
       onClick={onToggle}
       title={isDarkMode ? 'Light' : 'Dark'}
       className={cn(
-        "relative flex items-center w-full h-12 rounded-xl group cursor-pointer",
+        ROW_H,
+        "relative flex items-center w-full rounded-xl group cursor-pointer",
         "transition-[background-color,border-color,box-shadow,opacity,transform] duration-200",
         bgClasses,
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
       )}
       style={{ transitionDelay: isVisible ? `${index * 50}ms` : '0ms' }}
     >
-      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] z-10`}>
-        <ThemeIcon className="w-6 h-6 text-muted group-hover:text-action-600 transition-colors duration-75" />
+      <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] z-10`}>
+        <ThemeIcon className={cn(ROW_ICON, "text-muted group-hover:text-action-600 transition-colors duration-75")} />
       </div>
       <div className={cn(
         'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10',
@@ -287,7 +296,7 @@ function ThemeSwitcher({ isDarkMode, onToggle, isOpen, isVisible = true, index =
         <Typography
           variant="body"
           color="sub"
-          className="font-display font-bold tracking-wide text-sm"
+          className="font-display font-bold tracking-wide text-sm pointer-coarse:text-xs"
         >
           {isDarkMode ? 'Light' : 'Dark'}
         </Typography>
@@ -333,12 +342,13 @@ function FooterGroup({ icon, label, isOpen, isExpanded, onToggle, children }: Fo
         onClick={onToggle}
         title={label}
         className={cn(
-          'relative flex items-center w-full h-12 rounded-xl transition-all duration-200 group cursor-pointer',
+          ROW_H,
+          'relative flex items-center w-full rounded-xl transition-all duration-200 group cursor-pointer',
           !isExpanded ? headerBase : headerExpanded
         )}
       >
-        <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] z-10`}>
-          <IconComponent className="w-6 h-6 text-muted group-hover:text-action-600 transition-colors duration-75" />
+        <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] z-10`}>
+          <IconComponent className={cn(ROW_ICON, "text-muted group-hover:text-action-600 transition-colors duration-75")} />
         </div>
         <div className={cn(
           'flex items-center flex-1 overflow-hidden whitespace-nowrap z-10',
@@ -348,7 +358,7 @@ function FooterGroup({ icon, label, isOpen, isExpanded, onToggle, children }: Fo
           <Typography
             variant="body"
             color="sub"
-            className="font-display font-bold text-[15px] uppercase tracking-[0.14em]"
+            className="font-display font-bold text-[15px] pointer-coarse:text-sm uppercase tracking-[0.14em]"
           >
             {label}
           </Typography>
@@ -517,7 +527,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         'relative h-full shrink-0 z-50 flex flex-col border-r border-border',
         'transition-all ease-[cubic-bezier(0.32,0.72,0,1)]',
         'bg-surface/90 backdrop-blur-md',
-        isOpen ? 'w-80' : CLOSED_WIDTH
+        isOpen ? 'w-80 pointer-coarse:w-72' : CLOSED_WIDTH
       )}
     >
       <div className="flex flex-col h-full py-6 pt-[20px] px-2">
@@ -530,7 +540,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="relative flex items-center w-full h-14 transition-all duration-200 group cursor-pointer"
           >
             <div className="absolute inset-1 rounded-xl transition-colors duration-300" />
-            <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] z-10`}>
+            <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] z-10`}>
               <ToggleIcon className="w-6 h-6 transition-transform duration-500 text-muted" />
             </div>
             <div className={cn(
@@ -545,7 +555,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* LOGO */}
         <div className="flex items-center mt-4 mb-4 h-12">
-          <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] -ml-2`}>
+          <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] -ml-2`}>
             <img src={isDarkMode ? LogoIconDark : LogoIconLight} alt="Logo" className="size-10 object-contain" />
           </div>
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
@@ -576,7 +586,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 title="User Profile"
               >
                 <div className="absolute inset-1 rounded-xl transition-colors duration-300" />
-                <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] -ml-2 z-10`}>
+                <div className={`${CLOSED_WIDTH} shrink-0 flex items-center justify-start pl-[24px] pointer-coarse:pl-[20px] -ml-2 z-10`}>
                   <Avatar name={userProfile.full_name || userProfile.email} src={userProfile.avatar_url} size="md" />
                 </div>
                 <div className={cn(

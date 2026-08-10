@@ -7,6 +7,8 @@ interface Options {
   state: UseLocationStateResult;
   setPickupSearchQuery: (q: string) => void;
   onLoaded: () => void;
+  /** Espone la booking_date del booking caricato (serve al filtro drop-off per giorno) */
+  onBookingDate?: (date: string | null) => void;
 }
 
 /**
@@ -19,6 +21,7 @@ export function useBookingLoader({
   state,
   setPickupSearchQuery,
   onLoaded,
+  onBookingDate,
 }: Options): void {
   useEffect(() => {
     if (!bookingId) {
@@ -35,6 +38,8 @@ export function useBookingLoader({
           .single();
 
         if (!booking) return;
+
+        onBookingDate?.(booking.booking_date ?? null);
 
         // Session
         state.setSelectedClass(

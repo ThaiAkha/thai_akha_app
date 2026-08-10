@@ -66,7 +66,9 @@ const MenuPage: React.FC<{
         const [cats, recRes, spiceRes] = await Promise.all([
           contentService.getContentCategories('recipe'),
           supabase.from('recipes').select(`*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`).eq('recipe_type', 'class').order('category').order('name'),
-          supabase.from('spiciness_levels').select('*').order('id')
+          // Fonte unica: il service (cached + join photo_asset_id). Era una query
+          // diretta `select('*')`, che bypassava cache e foto. Vedi #70.
+          contentService.getSpicinessLevels()
         ]);
 
         if (cats) {
@@ -87,7 +89,7 @@ const MenuPage: React.FC<{
             keyIngredients: r.recipe_key_ingredients?.map((i:any) => i.ingredient) || []
           })));
         }
-        if (spiceRes.data) setSpicinessLevels(spiceRes.data);
+        if (spiceRes.length > 0) setSpicinessLevels(spiceRes);
 
         const currentUser = userProfile || await authService.getCurrentUserProfile();
 
@@ -238,12 +240,12 @@ const MenuPage: React.FC<{
       <div className="contents">
         <div className="flex flex-col [gap:var(--space-fluid-xl)] animate-in fade-in slide-in-from-bottom-8 duration-700">
           {/* F2 — chi sta compilando il menu (host o gestito) */}
-          <div className="px-4 md:px-8 max-w-[85rem] mx-auto w-full">
+          <div className="w-full">
             <ProfileSwitcher />
           </div>
           {isActiveVisitor ? (
             /* F3 — i visitor non scelgono piatti; dieta/allergie nel Passport */
-            <div className="px-4 md:px-8 max-w-[85rem] mx-auto w-full">
+            <div className="w-full">
               <div className="rounded-3xl bg-surface border border-border [padding:var(--space-fluid-l)] flex flex-col items-center text-center [gap:var(--space-fluid-s)]">
                 <Icon name="visibility" size="xl" className="text-sub" />
                 <Typography variant="h4" color="title">Visitors don't pick dishes</Typography>
@@ -255,7 +257,7 @@ const MenuPage: React.FC<{
             </div>
           ) : !targetBookingId ? (
             /* Senza booking non si seleziona il menu: stato vuoto + banner verso il booking. */
-            <div className="px-4 md:px-8 max-w-[85rem] mx-auto w-full">
+            <div className="w-full">
               <NoBookingBanner onNavigate={onNavigate} />
             </div>
           ) : (
@@ -289,7 +291,7 @@ const MenuPage: React.FC<{
             // cat.id = exact slug used to pull that category's own recipes.
             const catKey = normalizeCat(cat.id);
             return (
-            <section key={cat.id} className="flex flex-col [gap:var(--space-fluid-m)] scroll-mt-48 px-4 md:px-8 max-w-[85rem] mx-auto w-full" id={catKey}>
+            <section key={cat.id} className="flex flex-col [gap:var(--space-fluid-m)] scroll-mt-48 w-full" id={catKey}>
               <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
                 <Typography variant="h2" className="italic uppercase text-gray-900 dark:text-gray-100">{cat.title} <span className="text-primary">{t.user.selectionLabel}</span></Typography>
                 <Badge variant="mineral" className="bg-white/5">{getRecipes(cat.id).length} {t.user.optionsLabel}</Badge>

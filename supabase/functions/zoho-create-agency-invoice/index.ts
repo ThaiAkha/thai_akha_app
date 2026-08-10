@@ -128,7 +128,7 @@ Deno.serve(async (req: Request) => {
         item_id: envOr(SESSION_ITEM[r.session_id!].env, SESSION_ITEM[r.session_id!].def),
         quantity: r.pax_count,
         rate,
-        description: `${r.booking_date} · ${r.guest_name || r.booking_ref || '—'} · ${SESSION_LABEL[r.session_id ?? ''] ?? r.session_id}`,
+        description: `${r.booking_date} · ${r.guest_name || r.booking_ref || '-'} · ${SESSION_LABEL[r.session_id ?? ''] ?? r.session_id}`,
       }
     })
     const amount = line_items.reduce((s, l) => s + l.rate * (l.quantity as number), 0)

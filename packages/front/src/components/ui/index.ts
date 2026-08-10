@@ -52,3 +52,5 @@ export { default as Table } from './Table';
 export * from '../divider';
 export { default as FaqBottomPage } from '../faq/FaqBottomPage';
 export { default as FAQRichAnswer } from '../faq/FAQRichAnswer';
+export { default as FaqSearch } from '../faq/FaqSearch';
+export type { FaqSearchProps, FaqSearchCategory } from '../faq/FaqSearch';

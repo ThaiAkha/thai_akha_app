@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { FaqCategoryUI } from '@thaiakha/shared';
 import { getFaqData, getInfoPageMeta } from '../services/infoPages.service';
 import { PageLayout, PageEssentials, InfoPageHero, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
-import { Typography, Icon, FaqBottomPage, AkhaPixelLine, AkhaPixelPattern, FAQRichAnswer, GlassCard, MediaImage } from '../components/ui';
+import { Typography, Icon, FaqBottomPage, AkhaPixelLine, AkhaPixelPattern, FAQRichAnswer, GlassCard, MediaImage, FaqSearch } from '../components/ui';
 import { CherryInlineChat, CherryIntroCard } from '../components/chat';
 import { InfoPageSidebar } from '../components/layout/sidebar-info';
 import LegalMetaBanner from '../components/legal/LegalMetaBanner';
@@ -17,6 +17,13 @@ import { t } from '@thaiakha/shared/lib/ui-strings';
 
 // Header categoria: page_sections.section_id da faq_categories.section_id (DB-driven,
 // nessuna mappa hardcoded — le categorie nuove si agganciano da sole).
+
+/** Testo cercabile da una risposta HTML (i tag non devono entrare nel match). */
+const stripHtml = (html: string): string => html.replace(/<[^>]*>/g, ' ');
+
+/** Confronto tollerante: minuscole + accenti rimossi (NFD). */
+const normalizeText = (value: string): string =>
+  value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
 interface FAQPageProps {
   onNavigate: (page: string, topic?: string, section?: string) => void;
@@ -41,12 +48,82 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
     return () => { cancelled = true; };
   }, []);
 
+  // ── Ricerca & filtri (client-side sui ~65 hub già in memoria) ───────────────
+  const [query, setQuery] = useState('');
+  const [activeCats, setActiveCats] = useState<string[]>([]);
+  // In ricerca le risposte sono aperte di default: qui teniamo quelle richiuse a mano.
+  const [closedIds, setClosedIds] = useState<string[]>([]);
+
+  const q = normalizeText(query);
+  const searching = q.length > 0;
+
+  // Numerazione STABILE: catNo/itemNo calcolati sui dati integrali, così "2.3"
+  // resta "2.3" anche quando il filtro nasconde le voci intorno.
+  const indexed = useMemo(
+    () => faqData.map((cat, ci) => ({
+      cat,
+      catNo: ci + 1,
+      items: cat.items.map((item, ii) => ({ item, itemNo: ii + 1, id: `${cat.id}-${ii}` })),
+    })),
+    [faqData],
+  );
+
+  // 1° passo: filtro per parola chiave (domanda + risposta, HTML strippato).
+  const byQuery = useMemo(
+    () => indexed.map(g => ({
+      ...g,
+      items: q
+        ? g.items.filter(x => normalizeText(`${x.item.question} ${stripHtml(x.item.answer)}`).includes(q))
+        : g.items,
+    })),
+    [indexed, q],
+  );
+
+  // Chip: mostrano quante FAQ restano per categoria con la ricerca corrente.
+  const chipCategories = useMemo(
+    () => byQuery
+      .filter(g => g.items.length > 0 || activeCats.includes(g.cat.id))
+      .map(g => ({ id: g.cat.id, label: g.cat.categoryTitle, count: g.items.length })),
+    [byQuery, activeCats],
+  );
+
+  // 2° passo: filtro per categoria attiva (vuoto = tutte).
+  const filtered = useMemo(
+    () => byQuery.filter(g =>
+      (activeCats.length === 0 || activeCats.includes(g.cat.id)) && g.items.length > 0,
+    ),
+    [byQuery, activeCats],
+  );
+
+  const totalCount = useMemo(() => faqData.reduce((n, c) => n + c.items.length, 0), [faqData]);
+  const shownCount = useMemo(() => filtered.reduce((n, g) => n + g.items.length, 0), [filtered]);
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    setClosedIds([]);
+  };
+  const toggleCategory = (id: string) => {
+    setActiveCats(prev => (prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]));
+  };
+  const resetFilters = () => {
+    setQuery('');
+    setActiveCats([]);
+    setClosedIds([]);
+  };
+
+  // In ricerca: aperte di default (il match può stare nella risposta) → il click richiude.
+  // Navigazione normale: accordion classico a singola apertura.
+  const isItemOpen = (id: string) => (searching ? !closedIds.includes(id) : expandedId === id);
   const toggle = (id: string) => {
+    if (searching) {
+      setClosedIds(prev => (prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]));
+      return;
+    }
     setExpandedId(prev => (prev === id ? null : id));
   };
 
-  // Table of Contents = categorie FAQ (anchor = section_id DB, fallback category key)
-  const toc = faqData.map(c => ({ id: c.sectionId ?? c.id, label: c.categoryTitle }));
+  // Table of Contents = categorie visibili (anchor = section_id DB, fallback category key)
+  const toc = filtered.map(g => ({ id: g.cat.sectionId ?? g.cat.id, label: g.cat.categoryTitle }));
 
   // Gallery = foto delle categorie che ne hanno una (image_asset_id). Il click su
   // una foto apre la modal esistente su TUTTE le foto, partendo da quella cliccata.
@@ -68,7 +145,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
       {/* SEO: driven entirely by SEOHead via site_metadata slug "cooking-class-faq-chiang-mai".
           No PageSEO — avoids duplicate JSON-LD injection. */}
 
-      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-5xl mx-auto">
+      <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-6xl mx-auto">
         {/* ── PAGE HERO (divider tematizzato block_faq) ── */}
         <InfoPageHero
           slug="cooking-class-faq-chiang-mai"
@@ -114,6 +191,20 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
           />
         )}
 
+        {/* ── Ricerca + filtri categoria — comanda la colonna FAQ qui sotto ── */}
+        {!loading && totalCount > 0 && (
+          <FaqSearch
+            query={query}
+            onQueryChange={handleQueryChange}
+            categories={chipCategories}
+            activeCategories={activeCats}
+            onToggleCategory={toggleCategory}
+            onReset={resetFilters}
+            shown={shownCount}
+            total={totalCount}
+          />
+        )}
+
         {/* ── FAQ CATEGORIES — 2 colonne: sidenav sticky (lg) + accordion ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,18rem)_1fr] [gap:var(--space-fluid-l)] items-start">
           {/* Sinistra: sidebar info-page modulare (Menu + TOC + CTA classi) — desktop-only, sticky */}
@@ -127,12 +218,13 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
             className="hidden lg:flex lg:sticky lg:top-[var(--space-fluid-l)]"
           />
 
-          {/* Destra: accordion categorie */}
-          <div className="flex flex-col [gap:var(--space-fluid-xl)] min-w-0">
+          {/* Destra: accordion categorie — measure di lettura 72ch, come i documenti legali del trio */}
+          <div className="flex flex-col [gap:var(--space-fluid-xl)] min-w-0 max-w-[72ch]">
           {loading ? (
             <InfoContentSkeleton blocks={6} />
           ) : (
-          faqData.map((category, catIndex) => {
+          filtered.map((group, gIdx) => {
+            const category = group.cat;
             const sectionId = category.sectionId ?? category.id;
             return (
               <React.Fragment key={category.id}>
@@ -174,9 +266,8 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
 
                   {/* ── Accordion items ── */}
                   <div className="flex flex-col [gap:var(--space-fluid-xs)]">
-                    {category.items.map((item, index) => {
-                      const itemId = `${category.id}-${index}`;
-                      const isOpen = expandedId === itemId;
+                    {group.items.map(({ item, itemNo, id: itemId }) => {
+                      const isOpen = isItemOpen(itemId);
                       const hasExtras = (item.links && item.links.length > 0) || Boolean(item.cta);
 
                       return (
@@ -187,7 +278,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                           {/* ── Number rail (come policy) — flush, sfumatura ocean, Roboto ── */}
                           {/* Numerazione gerarchica categoria.domanda (es. 1.1, 1.2, 2.1) */}
                           <div className="shrink-0 w-10 flex items-center justify-center bg-gradient-to-b from-ocean-blue/15 to-transparent">
-                            <span className="font-accent font-bold text-base leading-none text-ocean-blue tabular-nums">{catIndex + 1}.{index + 1}</span>
+                            <span className="font-accent font-bold text-base leading-none text-ocean-blue tabular-nums">{group.catNo}.{itemNo}</span>
                           </div>
 
                           {/* ── Colonna contenuto: header (button) + risposta ── */}
@@ -228,7 +319,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                   </div>
 
                 </section>
-                {catIndex < faqData.length - 1 && (
+                {gIdx < filtered.length - 1 && (
                   <div className="w-full overflow-hidden">
                     <AkhaPixelLine
                       geometry="flower"
@@ -243,6 +334,29 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
               </React.Fragment>
             );
           }))}
+
+          {/* ── Nessun risultato — rimanda a Cherry, che è nel blocco qui sopra ── */}
+          {!loading && filtered.length === 0 && totalCount > 0 && (
+            <GlassCard variant="subtle" padding="l" radius="2rem" className="text-center flex flex-col items-center [gap:var(--space-fluid-s)]">
+              <Icon name="search_off" size="lg" className="text-ocean-blue" />
+              <Typography variant="h4" as="p" color="title" className="font-bold">
+                {t.faq.noResultsTitle}
+              </Typography>
+              <Typography variant="paragraphM" color="sub" className="leading-relaxed">
+                {t.faq.noResultsBody}
+              </Typography>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="flex items-center [gap:var(--space-fluid-2xs)] min-h-11 text-ocean-blue hover:opacity-75 transition-opacity"
+              >
+                <Icon name="restart_alt" size="sm" />
+                <Typography as="span" variant="caption" className="font-semibold">
+                  {t.faq.filterReset}
+                </Typography>
+              </button>
+            </GlassCard>
+          )}
 
           {/* Footer — entità legale + copyright, a lato della sidebar (larghezza contenuto, non full-w) */}
           {!loading && <LegalFooterCard accent="ocean" />}

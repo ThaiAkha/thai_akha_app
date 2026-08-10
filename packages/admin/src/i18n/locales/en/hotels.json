@@ -54,7 +54,7 @@
     "fieldHotelName": "Hotel Name *",
     "placeholderHotelName": "e.g. Shangri-La Chiang Mai",
     "fieldZone": "Pickup Zone",
-    "noZone": "— No zone —",
+    "noZone": "- No zone -",
     "fieldMapLink": "Google Map Link",
     "placeholderMapLink": "Paste Google Maps URL (auto-extracts GPS)",
     "fieldAddress": "Address",

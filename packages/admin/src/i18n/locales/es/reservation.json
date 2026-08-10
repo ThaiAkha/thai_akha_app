@@ -3,6 +3,26 @@
     "title": "Reservas | Thai Akha Kitchen",
     "description": "Gestionar reservas diarias y detalles de clientes."
   },
+  "kitchen": {
+    "days": "Days & classes",
+    "participants": "Participants",
+    "groupInfo": "Group info",
+    "pickParticipant": "Pick a participant to see their group.",
+    "notRegistered": "Seat not registered yet",
+    "bookingDetails": "Booking details",
+    "contacts": "Contacts",
+    "noContacts": "No contacts on file.",
+    "printReport": "Print report",
+    "print": "Print",
+    "downloadPdf": "Download PDF"
+  },
+  "messages": {
+    "loading": "Loading…"
+  },
+  "empty": {
+    "noParticipants": "Select a day & class.",
+    "noBookings": "No upcoming bookings."
+  },
   "sidebar": {
     "title": "Clientes",
     "cancelledTitle": "Reservas canceladas",
@@ -97,25 +117,5 @@
     "cancelError": "Error al cancelar: {{message}}",
     "restoreError": "Error al restaurar: {{message}}",
     "deleteError": "Error al eliminar: {{message}}"
-  },
-  "kitchen": {
-    "days": "Days & classes",
-    "participants": "Participants",
-    "groupInfo": "Group info",
-    "pickParticipant": "Pick a participant to see their group.",
-    "notRegistered": "Seat not registered yet",
-    "bookingDetails": "Booking details",
-    "contacts": "Contacts",
-    "noContacts": "No contacts on file.",
-    "printReport": "Print report",
-    "print": "Print",
-    "downloadPdf": "Download PDF"
-  },
-  "messages": {
-    "loading": "Loading…"
-  },
-  "empty": {
-    "noParticipants": "Select a day & class.",
-    "noBookings": "No upcoming bookings."
   }
 }

@@ -41,7 +41,15 @@ Il cuore pulsante della piattaforma è basato su una moderna architettura **Mono
 - **Shared Core**: Logica di business e tipi condivisi per la massima coerenza.
 - **Backend**: Supabase (Database, Auth, Storage) + Google Cloud (AI & Maps).
 
-> 📖 **Per istruzioni dettagliate su installazione, variabili d'ambiente e architettura, consulta [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)**
+> 📖 **Architettura, flussi utente e ruoli vivono nel Thai Akha Brain, non in questo repo.** Fonte unica:
+> **Tecnici** - `thai_akha_brain/000_Core_Agents/060_Manuals/061_Manuals_AI/0616_Architecture/`
+> · `06161_Architecture_EN.md` - architettura, installazione, variabili d'ambiente
+> · `06162_User_Flow_EN.md` - flusso utenti, ruoli e permessi
+>
+> **Per le persone** - `.../062_Manuals_Human/0626_Architecture/`
+> · `06261_User_Flow_Manual_EN.md` - gli stessi flussi raccontati per ruolo
+>
+> Le vecchie copie in `docs/` sono state eliminate il 2026-08-04: divergevano in silenzio.
 
 ---
 

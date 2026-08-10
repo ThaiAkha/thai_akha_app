@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { contentService } from '@thaiakha/shared/services';
 import { PageLayout, HeaderMenu, StickyTabNav } from '../components/layout';
 import { UserProfile } from '../services/auth.service';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
@@ -117,8 +118,10 @@ const UserPage: React.FC<UserPageProps> = ({
 
     try {
       if (spicinessLevels.length === 0) {
-        const { data: levels } = await supabase.from('spiciness_levels').select('*').order('id');
-        if (levels) setSpicinessLevels(levels);
+        // Fonte unica: il service (cached + join photo_asset_id). Era una query
+        // diretta `select('*')`, che bypassava cache e foto. Vedi #70.
+        const levels = await contentService.getSpicinessLevels();
+        if (levels.length > 0) setSpicinessLevels(levels);
       }
 
       const { data: bookings } = await supabase

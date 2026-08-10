@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { meetingPointIconDataUri } from '@thaiakha/shared/data';
 import type { MeetingPoint } from '@thaiakha/shared/types';
 
 declare global {
@@ -315,7 +316,14 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
           transform: ${isSelected ? 'scale(1.2)' : 'scale(1)'};
         `;
 
-        if (mp.icon_url) {
+        // Icona: kit standard in codice (glifo bianco) → icon_url DB → fallback
+        const kitIconUri = meetingPointIconDataUri(mp.id, { color: '#FFFFFF' });
+        if (kitIconUri) {
+          const img = document.createElement('img');
+          img.src = kitIconUri;
+          img.style.cssText = 'width: 20px; height: 20px; object-fit: contain;';
+          pin.appendChild(img);
+        } else if (mp.icon_url) {
           const img = document.createElement('img');
           img.src = mp.icon_url;
           img.style.cssText = 'width: 20px; height: 20px; object-fit: contain; filter: brightness(10);';

@@ -14,11 +14,15 @@
 import React from 'react';
 import { Typography, Icon } from '../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { meetingPointIconPath } from '@thaiakha/shared/data';
 import { fmtTime } from './utils/locationHelpers';
 import type { MeetingPoint } from '@thaiakha/shared/types';
 import type { MeetingPointWithDist } from './hooks/useMeetingPoints';
 
 // ─── Theme definitions ────────────────────────────────────────────────────────
+// Palette a token: blue → btn-s (scala blu del DS), yellow → dropoff (flat
+// token front). Il bianco/nero del tema blue (cerchio icona walk-in) resta
+// nell'idioma overlay scuro della pagina.
 
 type Theme = 'action' | 'blue' | 'yellow';
 
@@ -35,24 +39,24 @@ const THEME = {
     nameSelected: 'text-white',
   },
   blue: {
-    selected:   'bg-blue-500/15 border-blue-500 shadow-lg shadow-blue-500/10',
+    selected:   'bg-btn-s-500/15 border-btn-s-500 shadow-lg shadow-btn-s-500/10',
     unselected: 'bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20',
-    iconBg:     { selected: 'bg-blue-500',  unselected: 'bg-white' },
+    iconBg:     { selected: 'bg-btn-s-500', unselected: 'bg-white' },
     iconColor:  { selected: 'text-white',   unselected: 'text-black' },
-    check:      'text-blue-400',
-    time:       'text-blue-300',
-    map:        'text-blue-400 hover:text-blue-300',
+    check:      'text-btn-s-400',
+    time:       'text-btn-s-300',
+    map:        'text-btn-s-400 hover:text-btn-s-300',
     divider:    'border-white/10',
     nameSelected: 'text-white',
   },
   yellow: {
-    selected:   'bg-yellow-500/20 border-yellow-500',
+    selected:   'bg-dropoff/20 border-dropoff',
     unselected: 'bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20',
-    iconBg:     { selected: 'bg-yellow-500/20', unselected: 'bg-white/10' },
-    iconColor:  { selected: 'text-yellow-300',  unselected: 'text-white/60' },
-    check:      'text-yellow-400',
-    time:       'text-yellow-300',
-    map:        'text-yellow-400 hover:text-yellow-300',
+    iconBg:     { selected: 'bg-dropoff/20', unselected: 'bg-white/10' },
+    iconColor:  { selected: 'text-dropoff-light', unselected: 'text-white/60' },
+    check:      'text-dropoff',
+    time:       'text-dropoff-light',
+    map:        'text-dropoff hover:text-dropoff-light',
     divider:    'border-white/10',
     nameSelected: 'text-white',
   },
@@ -94,6 +98,8 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
   const isWalkIn = mp.point_type === 'walk_in';
   const timeLabel = isWalkIn ? 'Arrive by' : 'Pickup at';
   const description = descriptionOverride ?? mp.description;
+  // Precedenza icona: kit standard in codice → icon_url DB → Material fallback
+  const kitIconPath = meetingPointIconPath(mp.id);
   const resolvedIcon = iconName
     ?? (mp.id.includes('airport') ? 'flight'
       : mp.id.includes('train')   ? 'train'
@@ -115,7 +121,18 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
           'size-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden transition-all duration-200',
           isSelected ? t.iconBg.selected : t.iconBg.unselected,
         )}>
-          {mp.icon_url ? (
+          {kitIconPath ? (
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className={cn(
+                'w-5 h-5 fill-current transition-colors',
+                isSelected ? t.iconColor.selected : t.iconColor.unselected,
+              )}
+            >
+              <path d={kitIconPath} />
+            </svg>
+          ) : mp.icon_url ? (
             <img
               src={mp.icon_url}
               alt={mp.name}
@@ -137,7 +154,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
               {mp.name}
             </Typography>
             {isNearest && (
-              <Typography variant="microLabel" as="span" className="text-emerald-400/80 bg-emerald-500/10 px-1.5 py-0.5 rounded-full shrink-0">
+              <Typography variant="microLabel" as="span" className="text-action/80 bg-action/10 px-1.5 py-0.5 rounded-full shrink-0">
                 Nearest
               </Typography>
             )}

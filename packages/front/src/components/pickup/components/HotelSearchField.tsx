@@ -43,7 +43,7 @@ const HotelSearchField: React.FC<HotelSearchFieldProps> = ({
   onSelect,
   onPinMap,
 }) => {
-  const accentColor = accent === 'action' ? 'text-action' : 'text-yellow-500';
+  const accentColor = accent === 'action' ? 'text-action' : 'text-dropoff';
 
   return (
     <div className="relative group">
@@ -52,19 +52,47 @@ const HotelSearchField: React.FC<HotelSearchFieldProps> = ({
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
         onFocus={onFocus}
-        className="pl-10 bg-white/5 border-white/10 text-white font-bold"
+        className={cn('pl-10 bg-white/5 border-white/10 text-white font-bold', query && 'pr-10')}
       />
       <div className={cn('absolute left-3 top-1/2 -translate-y-1/2', accentColor)}>
         <Icon name={leftIcon} size="sm" />
       </div>
 
+      {/* Clear button — visible only when there is text */}
+      {query && (
+        <button
+          type="button"
+          aria-label="Clear search"
+          onClick={() => onQueryChange('')}
+          className="absolute right-1 top-1/2 -translate-y-1/2 size-10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
+        >
+          <Icon name="close" size="sm" />
+        </button>
+      )}
+
       {/* Suggestions dropdown */}
-      {showSuggestions && (loading || results.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-white/10 rounded-2xl z-50 shadow-2xl overflow-hidden">
+      {showSuggestions && query.length >= 2 && (loading || results.length > 0 || query.length >= 3) && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-white/10 rounded-2xl z-50 shadow-2xl overflow-hidden max-h-64 overflow-y-auto custom-scrollbar">
           {loading ? (
             <div className="p-4 text-center text-white/40 text-xs flex items-center justify-center gap-2">
               <Icon name="autorenew" size="xs" className="animate-spin" />
               Searching...
+            </div>
+          ) : results.length === 0 ? (
+            <div className="p-4 text-center space-y-1">
+              <Typography variant="body" as="div" className="text-white/60 text-sm">
+                No hotel found for “{query}”
+              </Typography>
+              {showMapPin && onPinMap && (
+                <button
+                  type="button"
+                  onClick={onPinMap}
+                  className={cn('inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider', accentColor)}
+                >
+                  <Icon name="add_location_alt" size="xs" />
+                  Pin it on the map instead
+                </button>
+              )}
             </div>
           ) : (
             results.map((h) => {
@@ -79,12 +107,12 @@ const HotelSearchField: React.FC<HotelSearchFieldProps> = ({
                     {h.name}
                   </Typography>
                   {isOutside && accent === 'action' && (
-                    <span className="text-[9px] font-black uppercase text-red-400/80 bg-red-500/10 px-2 py-0.5 rounded-full shrink-0">
+                    <span className="text-[9px] font-black uppercase text-primary-400/80 bg-primary-500/10 px-2 py-0.5 rounded-full shrink-0">
                       Outside
                     </span>
                   )}
                   {isOutside && accent === 'yellow' && (
-                    <span className="text-[9px] font-black uppercase text-orange-400/80 bg-orange-500/10 px-2 py-0.5 rounded-full shrink-0">
+                    <span className="text-[9px] font-black uppercase text-btn-p-400/80 bg-btn-p-500/10 px-2 py-0.5 rounded-full shrink-0">
                       Extra cost
                     </span>
                   )}

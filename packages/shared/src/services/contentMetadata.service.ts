@@ -57,7 +57,7 @@ export const contentMetadataService = {
                         og_type,
                         twitter_card,
                         translations:site_metadata_admin_translations (
-                            language,
+                            lang,
                             title,
                             subtitle,
                             description
@@ -77,8 +77,8 @@ export const contentMetadataService = {
 
                 const translations = data.translations ?? [];
                 const translation =
-                    translations.find(t => t.language === normalizedLang) ||
-                    translations.find(t => t.language === 'en') ||
+                    translations.find(t => t.lang === normalizedLang) ||
+                    translations.find(t => t.lang === 'en') ||
                     translations[0];
 
                 // Cover risolta da cover_asset_id → media_assets (fonte unica, come front/home_cards).
@@ -181,7 +181,7 @@ export const contentMetadataService = {
                         menu_order,
                         access_level,
                         menu_label,
-                        translations:site_metadata_admin_translations ( language, menu_label, description )
+                        translations:site_metadata_admin_translations ( lang, menu_label, description )
                     `)
                     .eq('show_in_menu', true)
                     .order('menu_order', { ascending: true });
@@ -195,7 +195,7 @@ export const contentMetadataService = {
                     // Nel sidecar vivono SOLO le lingue diverse dall'inglese: per l'inglese
                     // qui non si trova nulla e resta la base inline, che e' l'esito voluto.
                     const translation = (item.translations ?? []).find(
-                        t => t.language === normalizedLang,
+                        t => t.lang === normalizedLang,
                     );
                     return {
                         ...item,
@@ -256,8 +256,8 @@ export const contentMetadataService = {
             return (data || []).map(item => {
                 const translations = (item as unknown as Record<string, unknown[]>).translations ?? [];
                 const translation =
-                    (translations as Array<Record<string, string>>).find(t => t.language === normalizedLang) ||
-                    (translations as Array<Record<string, string>>).find(t => t.language === 'en') ||
+                    (translations as Array<Record<string, string>>).find(t => t.lang === normalizedLang) ||
+                    (translations as Array<Record<string, string>>).find(t => t.lang === 'en') ||
                     (translations as Array<Record<string, string>>)[0];
 
                 // Cover risolta da image_asset_id → media_assets (convenzione asset, fonte unica).

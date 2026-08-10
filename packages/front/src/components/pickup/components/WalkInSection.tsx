@@ -20,14 +20,21 @@ interface WalkInSectionProps {
 
 /**
  * Builds the context-aware description for walk-in cards:
- * "Go directly to school. Please arrive by 8:50 am."
+ * session-aware timing line + the point's own description from the DB.
+ * Descriptions that just repeat "Go directly…" are skipped to avoid duplicates.
  */
 function buildWalkInDescription(mp: MeetingPoint, selectedClass: 'morning' | 'evening'): string {
   const time = selectedClass === 'morning' ? mp.morning_pickup_time : mp.evening_pickup_time;
   const dest = mp.id === 'mp_school' ? 'our school' : 'the temple';
 
   if (!time) return mp.description ?? '';
-  return `Go directly to ${dest}. Please arrive by ${fmtTime(time)}.`;
+
+  const detail = mp.description && !mp.description.toLowerCase().startsWith('go directly')
+    ? mp.description
+    : '';
+  return [`Go directly to ${dest}. Please arrive by ${fmtTime(time)}.`, detail]
+    .filter(Boolean)
+    .join(' ');
 }
 
 const WalkInSection: React.FC<WalkInSectionProps> = ({
@@ -39,7 +46,7 @@ const WalkInSection: React.FC<WalkInSectionProps> = ({
   <div className="space-y-3">
     <Typography
       variant="caption"
-      className="text-blue-400 block uppercase tracking-widest font-bold mb-2"
+      className="text-btn-s-400 block uppercase tracking-widest font-bold mb-2"
     >
       Select Meeting Point
     </Typography>

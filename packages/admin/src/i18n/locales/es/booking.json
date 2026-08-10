@@ -134,7 +134,7 @@
   },
   "alerts": {
     "missingDateSession": "Fecha/sesión faltante",
-    "priceMissing": "Precio no configurado — verifica la configuración de la sesión antes de reservar.",
+    "priceMissing": "Precio no configurado - verifica la configuración de la sesión antes de reservar.",
     "namePasswordRequired": "Nombre completo y contraseña requeridos",
     "bookingCreated": "¡Reserva creada exitosamente!",
     "errorPrefix": "Error: {{message}}"

@@ -51,7 +51,7 @@
     "editTitle": "编辑服务",
     "declareTitle": "申报服务",
     "formSubtitle": "输入服务详情以生成付款。",
-    "paidBannerTitle": "已付款 — 只读",
+    "paidBannerTitle": "已付款 - 只读",
     "paidBannerMessage": "此服务已付款，无法再编辑。",
     "pendingBannerTitle": "当天该课程已提交",
     "pendingBannerMessage": "保存将覆盖现有服务（将发送新邮件）。",

@@ -20,6 +20,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '@thaiakha/shared/lib/ui-strings';
 
 import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
+import { useBottomSheet, type SnapState } from '../hooks/useBottomSheet';
 import {
   PickupMapBackground,
   SessionSelector,
@@ -53,6 +54,9 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
 
   // ── Save state ─────────────────────────────────────────────────────────────
   const [saving, setSaving] = useState(false);
+
+  // ── Bottom sheet mobile (drag + snap) — su desktop resta sidebar fissa ────
+  const sheet = useBottomSheet('half');
 
   // ── Hotel search (pickup) ──────────────────────────────────────────────────
   const pickupSearch = useHotelSearch(loc.transportMode === 'pickup' && pickupType === 'hotel');
@@ -274,22 +278,44 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
           />
         </div>
 
-        {/* ── Sidebar (z-10) ─────────────────────────────────────────────────── */}
-        <div className={cn(
-          'relative z-10 flex flex-col shadow-2xl transition-all duration-700 ease-cinematic',
-          'bg-surface-overlay/95 backdrop-blur-xl border-t lg:border border-white/10',
-          'w-full h-[75vh] mt-auto rounded-t-[3rem]',
-          'lg:absolute lg:left-8 lg:top-8 lg:bottom-8 lg:w-[480px] lg:h-auto lg:rounded-[3rem] lg:mt-0',
-        )}>
+        {/* ── Sheet mobile / Sidebar desktop (z-10) ──────────────────────────── */}
+        <div
+          className={cn(
+            'relative z-10 flex flex-col shadow-2xl overflow-hidden',
+            !sheet.dragging && 'transition-[height] duration-300 ease-out',
+            'bg-surface-overlay/95 backdrop-blur-xl border-t lg:border border-white/10',
+            'w-full mt-auto rounded-t-[3rem] h-[var(--sheet-h)]',
+            'lg:absolute lg:left-8 lg:top-8 lg:bottom-8 lg:w-[480px] lg:h-auto lg:rounded-[3rem] lg:mt-0',
+          )}
+          style={{ '--sheet-h': sheet.liveHeightPx } as React.CSSProperties}
+        >
+
+          {/* Saponetta drag + indicatore snap — solo mobile */}
+          <div className="lg:hidden shrink-0 flex flex-col items-center pt-3 pb-1" {...sheet.handleProps}>
+            <div className="w-10 h-1.5 bg-white/25 rounded-full" />
+            <div className="flex justify-center gap-1.5 pt-2">
+              {(['collapsed', 'half', 'full'] as SnapState[]).map((s) => (
+                <button
+                  key={s}
+                  aria-label={`Sheet ${s}`}
+                  onClick={() => sheet.setSnap(s)}
+                  className={cn(
+                    'rounded-full transition-all duration-200',
+                    sheet.snap === s ? 'w-5 h-1.5 bg-white/60' : 'w-1.5 h-1.5 bg-white/20',
+                  )}
+                />
+              ))}
+            </div>
+          </div>
 
           {/* Header */}
-          <div className="px-6 pt-5 pb-4 md:px-8 md:pt-6 shrink-0 space-y-4">
+          <div className="px-6 pt-2 pb-4 md:px-8 lg:pt-6 shrink-0 space-y-4">
             <div className="text-center space-y-1">
               <Typography variant="h4" className="italic uppercase text-white leading-none">
                 Pickup <span className="text-primary">Location</span>
               </Typography>
               {isEditMode && (
-                <Badge variant="mineral" className="text-yellow-500 border-yellow-500/30">
+                <Badge variant="mineral" className="text-dropoff border-dropoff/30">
                   {t.location.editMode}
                 </Badge>
               )}

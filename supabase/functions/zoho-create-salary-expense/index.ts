@@ -28,6 +28,22 @@ const json = (b: unknown, s = 200) =>
 const STAFF = ['admin', 'manager']
 const envOr = (k: string, d: string) => Deno.env.get(k) ?? d
 
+// Zoho rifiuta una "description" oltre 500 caratteri: header + le righe che ci stanno, poi "+N more".
+function fitDescription(header: string, lines: string[], max = 500): string {
+  let out = header
+  for (let i = 0; i < lines.length; i++) {
+    const rest = lines.length - i
+    const next = `${out}\n${lines[i]}`
+    const tailAfterAdd = rest > 1 ? `\n+${rest - 1} more` : ''
+    if (next.length + tailAfterAdd.length > max) {
+      const stopped = `${out}\n+${rest} more`
+      return (stopped.length <= max ? stopped : out).slice(0, max)
+    }
+    out = next
+  }
+  return out.slice(0, max)
+}
+
 // Config per metodo (default = ID verificati org 663160082, 2026-06-24)
 const METHOD_CFG: Record<string, { accountEnv: string; accountDef: string; paidEnv: string; paidDef: string }> = {
   bank: {
@@ -121,12 +137,15 @@ Deno.serve(async (req: Request) => {
       const amount = g.reduce((s, r) => s + Number(r.total_amount || 0), 0)
       if (amount <= 0) continue
 
-      const lines = g.map((r) => {
-        const prof = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles
-        const nm = prof?.full_name ?? 'Employee'
-        return `- ${nm}: ฿${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : '')
-      }).join('\n')
-      const description = `Salaries ${per} - ${method.toUpperCase()} (${g.length})\n${lines}`
+      // Zoho: description max 500 caratteri (9 lavoratori + note OT possono sforare).
+      const description = fitDescription(
+        `Salaries ${per} - ${method.toUpperCase()} (${g.length}) THB ${amount.toLocaleString('en-US')}`,
+        g.map((r) => {
+          const prof = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles
+          const nm = prof?.full_name ?? 'Employee'
+          return `- ${nm}: THB ${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : '')
+        }),
+      )
 
       const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${org}`, {
         method: 'POST',

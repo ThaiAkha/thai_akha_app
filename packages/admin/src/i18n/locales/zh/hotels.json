@@ -54,7 +54,7 @@
     "fieldHotelName": "酒店名称 *",
     "placeholderHotelName": "例如 清迈香格里拉",
     "fieldZone": "接送区域",
-    "noZone": "— 无区域 —",
+    "noZone": "- 无区域 -",
     "fieldMapLink": "Google地图链接",
     "placeholderMapLink": "粘贴Google Maps链接（自动提取GPS）",
     "fieldAddress": "地址",

@@ -29,10 +29,10 @@ const OutsideZonePanel: React.FC<OutsideZonePanelProps> = ({
   <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
 
     {/* Warning banner */}
-    <div className="rounded-2xl p-4 bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-3">
-      <Icon name="info" className="text-yellow-400 shrink-0 mt-0.5" size="sm" />
+    <div className="rounded-2xl p-4 bg-dropoff/10 border border-dropoff/30 flex items-start gap-3">
+      <Icon name="info" className="text-dropoff shrink-0 mt-0.5" size="sm" />
       <div>
-        <Typography variant="microLabel" as="div" className="text-yellow-300">
+        <Typography variant="microLabel" as="div" className="text-dropoff-light">
           Outside Free Pickup Area
         </Typography>
         <Typography variant="paragraphS" as="p" className="text-white/60 leading-relaxed mt-1">

@@ -8,9 +8,9 @@
   },
   "buttons": {
     "newPlanToday": "Plan de hoy",
-    "newPlanSelectDate": "Plan — fecha",
+    "newPlanSelectDate": "Plan - fecha",
     "newReportToday": "Informe de hoy",
-    "newReportSelectDate": "Informe — fecha",
+    "newReportSelectDate": "Informe - fecha",
     "viewHistory": "Ver historial",
     "cancel": "Cancelar",
     "editReport": "Editar informe",
@@ -19,12 +19,12 @@
     "modify": "Modificar",
     "submitReport": "Enviar informe",
     "publishPlan": "Publicar plan",
+    "saveDraft": "Guardar borrador",
+    "confirmReport": "Confirmar informe",
+    "deleteReport": "Eliminar informe",
     "refresh": "Actualizar",
     "sendOrder": "Enviar pedido",
-    "finishRun": "FINALIZAR",
-    "confirmReport": "Confirmar informe",
-    "saveDraft": "Guardar borrador",
-    "deleteReport": "Eliminar informe"
+    "finishRun": "FINALIZAR"
   },
   "labels": {
     "workDraft": "Borrador",
@@ -64,14 +64,14 @@
     "selectAtLeastOne": "Selecciona al menos un artículo.",
     "saveSuccess": "¡Cambios guardados exitosamente!",
     "saveError": "Error al guardar: {{message}}",
+    "confirmDelete": "¿Eliminar este informe? Esta accion no se puede deshacer.",
     "kitchenNotPublished": "El gerente de cocina aún no ha publicado la lista de compras de hoy.",
     "finishConfirm": "¿Marcar esta compra como COMPLETADA y guardar todos los costos?",
     "unboughtWarning": "¡Espera! Tienes {{count}} artículos sin comprar. ¿Terminar de todos modos?",
     "syncSuccess": "¡Compra sincronizada con la cocina! ¡Buen trabajo!",
     "error": "Error: {{message}}",
     "emergencyItemName": "¿Nombre del artículo de emergencia?",
-    "loading": "Cargando...",
-    "confirmDelete": "¿Eliminar este informe? Esta accion no se puede deshacer."
+    "loading": "Cargando..."
   },
   "shopItem": {
     "reportedCost": "Costo reportado",

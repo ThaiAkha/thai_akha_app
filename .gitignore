@@ -81,3 +81,8 @@ Icon[\r]
 # Note di lavoro temporanee (non codice)
 _multi_kitchen/
 docs/audit-gemini-mobile-ux/
+
+# Backup database: stanno nel brain, non nel repo.
+# Contengono dati clienti (email) e non devono entrare nella cronologia git.
+# Fonte: thai_akha_brain/000_Core_Agents/050_Infrastructure/054_Supabase/backups/
+supabase/backups/

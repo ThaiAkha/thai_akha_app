@@ -3,6 +3,26 @@
     "title": "预订管理 | Thai Akha Kitchen",
     "description": "管理每日预订和客户详情。"
   },
+  "kitchen": {
+    "days": "Days & classes",
+    "participants": "Participants",
+    "groupInfo": "Group info",
+    "pickParticipant": "Pick a participant to see their group.",
+    "notRegistered": "Seat not registered yet",
+    "bookingDetails": "Booking details",
+    "contacts": "Contacts",
+    "noContacts": "No contacts on file.",
+    "printReport": "Print report",
+    "print": "Print",
+    "downloadPdf": "Download PDF"
+  },
+  "messages": {
+    "loading": "Loading…"
+  },
+  "empty": {
+    "noParticipants": "Select a day & class.",
+    "noBookings": "No upcoming bookings."
+  },
   "sidebar": {
     "title": "客户",
     "cancelledTitle": "已取消预订",
@@ -97,25 +117,5 @@
     "cancelError": "取消错误：{{message}}",
     "restoreError": "恢复错误：{{message}}",
     "deleteError": "删除错误：{{message}}"
-  },
-  "kitchen": {
-    "days": "Days & classes",
-    "participants": "Participants",
-    "groupInfo": "Group info",
-    "pickParticipant": "Pick a participant to see their group.",
-    "notRegistered": "Seat not registered yet",
-    "bookingDetails": "Booking details",
-    "contacts": "Contacts",
-    "noContacts": "No contacts on file.",
-    "printReport": "Print report",
-    "print": "Print",
-    "downloadPdf": "Download PDF"
-  },
-  "messages": {
-    "loading": "Loading…"
-  },
-  "empty": {
-    "noParticipants": "Select a day & class.",
-    "noBookings": "No upcoming bookings."
   }
 }

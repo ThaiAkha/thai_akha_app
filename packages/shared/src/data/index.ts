@@ -3,5 +3,6 @@ export * from './cherry/cherryDashboardHelp';
 export * from './pixelPatterns';
 export * from './countries';
 export * from './mapZones';
+export * from './meetingPointIcons';
 
 export * from './legal';

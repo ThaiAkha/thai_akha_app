@@ -100,7 +100,7 @@ export const COLUMN_ORDER_CONFIG: Record<string, string[]> = {
         'show_in_menu', 'menu_order', 'menu_label', 'access_level'
     ],
     site_metadata_admin_translations: [
-        'id', 'page_id', 'language', 'title', 'subtitle', 'description', 'menu_label', 'created_at'
+        'id', 'page_id', 'lang', 'title', 'subtitle', 'description', 'menu_label', 'created_at'
     ],
     shop_akha: [
         'id', 'sku', 'item_name', 'description_internal', 'price_thb', 'cost_thb',
@@ -127,7 +127,7 @@ export const GRID_PRIMARY_FIELDS: Record<string, { title: string; subtitle?: str
     shop_akha: { title: 'item_name', subtitle: 'sku', badge: 'product_type' },
     site_metadata: { title: 'page_slug', subtitle: 'header_title_main', badge: 'access_level' },
     site_metadata_admin: { title: 'page_slug', subtitle: 'header_title_main', badge: 'access_level' },
-    site_metadata_admin_translations: { title: 'page_id', subtitle: 'language', badge: 'title' },
+    site_metadata_admin_translations: { title: 'page_id', subtitle: 'lang', badge: 'title' },
     akha_news: { title: 'title', subtitle: 'created_at', badge: 'category' },
     audio_assets: { title: 'title', subtitle: 'asset_id', badge: 'mime_type' },
     page_sections: { title: 'title', subtitle: 'page_slug', badge: 'section_id' },

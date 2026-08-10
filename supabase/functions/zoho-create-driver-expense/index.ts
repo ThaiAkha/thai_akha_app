@@ -24,6 +24,22 @@ const SESSION_LABEL: Record<string, string> = {
 }
 const STAFF = ['admin', 'manager', 'kitchen', 'driver', 'logistics']
 
+// Zoho rifiuta una "description" oltre 500 caratteri: header + le righe che ci stanno, poi "+N more".
+function fitDescription(header: string, lines: string[], max = 500): string {
+  let out = header
+  for (let i = 0; i < lines.length; i++) {
+    const rest = lines.length - i
+    const next = `${out}\n${lines[i]}`
+    const tailAfterAdd = rest > 1 ? `\n+${rest - 1} more` : ''
+    if (next.length + tailAfterAdd.length > max) {
+      const stopped = `${out}\n+${rest} more`
+      return (stopped.length <= max ? stopped : out).slice(0, max)
+    }
+    out = next
+  }
+  return out.slice(0, max)
+}
+
 async function zohoAccessToken(): Promise<string> {
   const dc = Deno.env.get('ZOHO_DC') ?? 'com'
   const res = await fetch(`https://accounts.zoho.${dc}/oauth/v2/token`, {
@@ -95,9 +111,11 @@ Deno.serve(async (req: Request) => {
 
     const expenseDate = (rows[rows.length - 1].paid_at ?? new Date().toISOString()).slice(0, 10)
     const driverShort = (driver.full_name ?? 'driver').replace(/\s+/g, '').slice(0, 12)
-    const description = rows
-      .map((r) => `Pickup ${SESSION_LABEL[r.session_id ?? ''] ?? r.session_id} ${r.run_date} — ${r.total_stops ?? 0} stops · ${r.total_pax ?? 0} pax`)
-      .join('\n')
+    // Zoho: description max 500 caratteri (una settimana puo' avere molte corse).
+    const description = fitDescription(
+      `Pickup service ${driver.full_name ?? ''} · ${rows.length} run(s)`.replace(/\s+·/, ' ·'),
+      rows.map((r) => `${r.run_date} ${SESSION_LABEL[r.session_id ?? ''] ?? r.session_id} - ${r.total_stops ?? 0} stops · ${r.total_pax ?? 0} pax`),
+    )
 
     // 6) Crea l'Expense in Zoho
     const dc = Deno.env.get('ZOHO_DC') ?? 'com'

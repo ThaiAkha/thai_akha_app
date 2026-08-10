@@ -39,7 +39,7 @@ docs/               → architettura, design system
 6. **Fluid Space Palette** — spaziature usano `--space-fluid-2xs` → `--space-fluid-section` (in `:root` di `tokens.css`). Applicarli come arbitrary CSS properties: `[gap:var(--space-fluid-m)]`, `[padding:var(--space-fluid-s)]`. Mai coppie breakpoint separate (`gap-2 md:gap-6`) per spaziature gestibili con un token fluid.
 7. **Skeleton System** — loading states usano `components/skeleton/`. Atoms: `SkeletonBase` (card/img, `bg-gray-200`), `SkeletonText`/`SkeletonTitle`/`SkeletonDivider` (testo, `bg-surface-2`). Compositions: `BlogGridSkeleton`, `ArticleDetailSkeleton`, `SkeletonHeader`. Mai skeleton inline — usare/estendere il sistema esistente.
 8. **Cross-package** — import solo da `@thaiakha/shared/...`. Mai path relativi tra packages.
-9. **Database** — `supabase/backups/full_backup_*.md` (DDL autorevole, 53+ tabelle). Nessuna nuova tabella senza analisi con `/database`.
+9. **Database** - lo schema autorevole vive nel brain: `thai_akha_brain/000_Core_Agents/050_Infrastructure/054_Supabase/backups/_SCHEMA/full_backup__*.md`. **`supabase/backups/` non esiste piu'** (2026-08-05): conteneva dati clienti tracciati da git. Backup e dump stanno nel brain, che non e' versionato; `supabase/migrations/` e `supabase/functions/` restano qui, perche' sono codice e la CLI legge da questi percorsi. Nessuna nuova tabella senza analisi con `/database`.
 10. **Agenti** — usare lo specialista giusto (tabella sotto). Per task multi-dominio usare `/deepseek`.
 11. **Mobile-first** — ogni nuovo componente front deve essere progettato mobile-first. Usare `--space-fluid-*` e `clamp()` per spaziature responsive. Verificare su viewport 375px prima del desktop.
 12. **Cherry prompts master** — i file prompt vivono in `thai_akha_brain/000_Core_Agents/030_Cherry/033_App_Prompts/800_Admin/` (admin) e `801_Front/` (front). I file in `packages/*/src/prompts/` sono symlink o copie — modificare sempre il master nel brain. Il prompt ha UNA sorgente: il `.ts`. Mai duplicarlo in `.md` "per documentazione" (le copie divergono in silenzio).
@@ -83,7 +83,8 @@ docs/               → architettura, design system
 
 | Modulo | File da Leggere Prima |
 |---|---|
-| Booking | `docs/ARCHITECTURE.md`, `supabase/backups/full_backup_*.md` |
+| Architettura & Booking | `thai_akha_brain/000_Core_Agents/060_Manuals/061_Manuals_AI/0616_Architecture/06161_Architecture_EN.md`, `supabase/backups/full_backup_*.md` |
+| Flusso utenti & ruoli | `thai_akha_brain/000_Core_Agents/060_Manuals/061_Manuals_AI/0616_Architecture/06162_User_Flow_EN.md` (tecnico) · `.../062_Manuals_Human/0626_Architecture/06261_User_Flow_Manual_EN.md` (narrativo per ruolo) |
 | Cherry AI (Front) | `.claude/agents/cherry.md`, `packages/front/src/prompts/` |
 | Cherry AI (Admin) | `.claude/agents/cherry.md`, `thai_akha_brain/000_Core_Agents/030_Cherry/033_App_Prompts/800_Admin/adminPrompt.ts` |
 | Cherry identità/tono | `thai_akha_brain/000_Core_Agents/030_Cherry/031_Foundations/00_identity.md`, `.../02_tone.md` |
@@ -91,7 +92,7 @@ docs/               → architettura, design system
 | Design System | `packages/front/src/styles/theme.css`, `packages/front/src/styles/tokens.css` |
 | Typography | `packages/front/src/components/ui/Typography.tsx` |
 | Skeleton | `packages/front/src/components/skeleton/` |
-| Database | `supabase/backups/full_backup_*.md` (DDL autorevole) |
+| Database | `thai_akha_brain/000_Core_Agents/050_Infrastructure/054_Supabase/backups/_SCHEMA/full_backup__*.md` (nel brain) · struttura: [[011_Supabase_Backend_Index]] |
 | i18n Admin | `packages/admin/src/i18n/` |
 | Brand voice | `thai_akha_brain/800_Manuals/810_Manuals_EN_2026/811_Brand_Brochure/8111_Brand_Guidelines_EN.md` |
 | Cherry backlog tecnico | `thai_akha_brain/010_ThaiAkha_com/claude/agent-memory/cherry/MEMORY.md` |

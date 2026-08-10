@@ -346,6 +346,16 @@ const strings = {
     title: 'Questions & Answers',
     viewAll: 'All Questions',
     askCherry: ASK_CHERRY,
+    // ── Search & filters (FAQ hub page) ──
+    searchLabel: 'Find an answer',
+    searchPlaceholder: 'Search the questions...',
+    searchClear: 'Clear search',
+    filterAll: 'All topics',
+    filterReset: 'Reset filters',
+    resultsCount: ({ shown, total }: { shown: number; total: number }) =>
+      `${shown} of ${total} questions`,
+    noResultsTitle: 'No question matches your search',
+    noResultsBody: 'Try another word or clear the filters. Cherry is right above if you would rather just ask.',
   },
 
   // ── CLASSES — cooking class info page ───────────────────────────────────────

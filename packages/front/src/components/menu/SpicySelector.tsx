@@ -3,12 +3,19 @@ import { Typography } from '../ui/Typography';
 import { Icon } from '../ui';
 import type { SpicinessLevel } from '@thaiakha/shared/types';
 
+/**
+ * Fallback di EMERGENZA — usato solo se il fetch di `spiciness_levels` fallisce.
+ * ⚠️ Non è una seconda fonte: titoli e `color_code` sono allineati alla riga DB
+ * (verificato 2026-08-04, task #70). Prima divergevano su tutti e 5 i colori
+ * (#22C55E/#84CC16/#F59E0B/#EF4444/#DC2626) e sul titolo del livello 1.
+ * Se cambi i colori nel DB, cambia anche qui — o il selettore mente quando il DB è giù.
+ */
 const FALLBACK_LEVELS: SpicinessLevel[] = [
-  { id: 1, title: 'Farang', description: '', icon: '', color_code: '#22C55E' },
-  { id: 2, title: 'Thai Smile', description: '', icon: '', color_code: '#84CC16' },
-  { id: 3, title: 'Respect!', description: '', icon: '', color_code: '#F59E0B' },
-  { id: 4, title: 'Thai Spicy', description: '', icon: '', color_code: '#EF4444' },
-  { id: 5, title: 'Akha Warrior', description: '', icon: '', color_code: '#DC2626' },
+  { id: 1, title: 'The Farang',   description: '', icon: '', color_code: '#81C784' },
+  { id: 2, title: 'Thai Smile',   description: '', icon: '', color_code: '#FFD54F' },
+  { id: 3, title: 'Respect!',     description: '', icon: '', color_code: '#FF9800' },
+  { id: 4, title: 'Thai Spicy',   description: '', icon: '', color_code: '#E53935' },
+  { id: 5, title: 'Akha Warrior', description: '', icon: '', color_code: '#880E4F' },
 ];
 
 interface SpicySelectorProps {

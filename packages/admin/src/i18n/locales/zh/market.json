@@ -19,12 +19,12 @@
     "modify": "修改",
     "submitReport": "提交报告",
     "publishPlan": "发布计划",
+    "saveDraft": "保存草稿",
+    "confirmReport": "确认报告",
+    "deleteReport": "删除报告",
     "refresh": "刷新",
     "sendOrder": "发送订单",
-    "finishRun": "完成采购",
-    "confirmReport": "确认报告",
-    "saveDraft": "保存草稿",
-    "deleteReport": "删除报告"
+    "finishRun": "完成采购"
   },
   "labels": {
     "workDraft": "工作草稿",
@@ -64,14 +64,14 @@
     "selectAtLeastOne": "请至少选择一项。",
     "saveSuccess": "更改保存成功！",
     "saveError": "保存错误：{{message}}",
+    "confirmDelete": "删除此报告？此操作不可撤销。",
     "kitchenNotPublished": "厨房经理尚未发布今日购物清单。",
     "finishConfirm": "将此次采购标记为已完成并保存所有费用？",
     "unboughtWarning": "等等！您还有{{count}}件商品未购买。仍要完成？",
     "syncSuccess": "采购已与厨房同步！干得好！",
     "error": "错误：{{message}}",
     "emergencyItemName": "紧急商品名称？",
-    "loading": "加载中...",
-    "confirmDelete": "删除此报告？此操作不可撤销。"
+    "loading": "加载中..."
   },
   "shopItem": {
     "reportedCost": "报告成本",

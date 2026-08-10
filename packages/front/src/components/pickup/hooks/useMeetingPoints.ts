@@ -18,9 +18,19 @@ export interface UseMeetingPointsResult {
 interface Options {
   selectedClass: 'morning' | 'evening';
   outsideHotelCoords: { lat: number; lng: number } | null;
+  /** booking_date 'YYYY-MM-DD' — nota solo in edit mode; null = data non ancora scelta */
+  bookingDate?: string | null;
 }
 
-export function useMeetingPoints({ selectedClass, outsideHotelCoords }: Options): UseMeetingPointsResult {
+/** Weekday locale da 'YYYY-MM-DD' (0=domenica … 6=sabato); null se data assente/malformata. */
+function parseWeekday(dateStr: string | null | undefined): number | null {
+  if (!dateStr) return null;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d).getDay();
+}
+
+export function useMeetingPoints({ selectedClass, outsideHotelCoords, bookingDate }: Options): UseMeetingPointsResult {
   const [meetingPoints, setMeetingPoints] = useState<MeetingPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,9 +77,18 @@ export function useMeetingPoints({ selectedClass, outsideHotelCoords }: Options)
     meetingPoints.filter(mp => mp.id === 'mp_train_station'),
   [meetingPoints]);
 
-  const dropoffPoints = useMemo(() =>
-    meetingPoints.filter(mp => mp.is_dropoff_point === true),
-  [meetingPoints]);
+  // I due night market sono attivi solo il loro giorno: se conosciamo la data
+  // della classe li filtriamo; se la data non è nota mostriamo entrambi
+  // (la description contiene il giorno di apertura).
+  const dropoffPoints = useMemo(() => {
+    const day = parseWeekday(bookingDate);
+    return meetingPoints.filter(mp => {
+      if (mp.is_dropoff_point !== true) return false;
+      if (mp.id === 'mp_saturday_market') return day === null || day === 6;
+      if (mp.id === 'mp_sunday_market')   return day === null || day === 0;
+      return true;
+    });
+  }, [meetingPoints, bookingDate]);
 
   // Outside-zone fallback list: pickup-capable points only, sorted by distance
   const outsideZonePoints = useMemo((): MeetingPointWithDist[] => {

@@ -47,6 +47,12 @@
   /* Dietary secondary (front only — allergy warning background) */
   --color-allergy-secondary: #FEE2E2;
 
+  /* Pickup page — accento drop-off / warning giallo (front only).
+     Sostituisce le classi raw yellow-* nella pagina pickup; light = variante
+     chiara per testo su superfici scure. */
+  --color-dropoff: #EAB308;
+  --color-dropoff-light: #FDE047;
+
   /* ============================================================================
      SEMANTIC LAYOUT — generates bg-background, text-title, etc.
      Light mode defaults — overridden in dark mode below.

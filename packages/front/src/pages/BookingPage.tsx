@@ -18,8 +18,9 @@
 import React, { useState, useEffect } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
-import { Modal } from '../components/ui/index';
+import { Modal, Typography, Button, Icon } from '../components/ui/index';
 import type { UserProfile } from '../services/auth.service';
+import { BOOKING_ONLINE_PAUSED, BOOKING_PAUSED_REDIRECT_URL } from '../config/booking';
 
 import {
   useSessionConfig,
@@ -107,6 +108,31 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="book-cooking-class-chiang-mai" />}
     >
+      {BOOKING_ONLINE_PAUSED ? (
+        /* Nuova pagina booking in costruzione: niente selezione/checkout, rimando al sito attivo */
+        <div className="w-full max-w-xl mx-auto flex flex-col items-center text-center [padding-block:var(--space-fluid-2xl)] [padding-inline:var(--space-fluid-m)] [gap:var(--space-fluid-m)]">
+          <div className="w-16 h-16 rounded-2xl bg-surface-2 flex items-center justify-center">
+            <Icon name="construction" size="lg" className="text-muted" />
+          </div>
+          <Typography variant="h3" color="title">This page is under construction</Typography>
+          <Typography variant="paragraphM" color="muted" className="max-w-md leading-relaxed">
+            We're building a brand-new booking experience. In the meantime, you can book your cooking
+            class in Chiang Mai on our active site - it only takes a minute.
+          </Typography>
+          <Button
+            as="a"
+            href={BOOKING_PAUSED_REDIRECT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="brand"
+            size="lg"
+            className="[margin-top:var(--space-fluid-s)]"
+          >
+            Go to booking
+          </Button>
+        </div>
+      ) : (
+      <>
       <div className="w-full max-w-5xl mx-auto flex flex-col [padding-bottom:12rem]">
         <div className="w-full flex flex-col [gap:var(--space-fluid-2xl)] [padding-bottom:var(--space-fluid-xl)] md:[padding-top:var(--space-fluid-s)] [padding-inline:var(--space-fluid-m)] md:[padding-inline:0]">
 
@@ -186,6 +212,8 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
           onClose={() => setShowCalendarModal(false)}
         />
       </Modal>
+      </>
+      )}
     </PageLayout>
   );
 };

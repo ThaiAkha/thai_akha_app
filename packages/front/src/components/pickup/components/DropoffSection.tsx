@@ -91,8 +91,8 @@ const DropoffSection: React.FC<DropoffSectionProps> = ({
 
           {/* Info banner — only in self mode */}
           {transportMode === 'self' && (
-            <div className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
-              <Icon name="directions_car" size="xs" className="text-blue-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2.5 bg-btn-s-500/10 border border-btn-s-500/20 rounded-xl p-3">
+              <Icon name="directions_car" size="xs" className="text-btn-s-400 shrink-0 mt-0.5" />
               <Typography variant="paragraphS" as="p" className="text-white/60 leading-relaxed">
                 After class we'll drop you at your hotel or preferred location — free within the city area.
               </Typography>
@@ -101,7 +101,7 @@ const DropoffSection: React.FC<DropoffSectionProps> = ({
 
           <Typography
             variant="caption"
-            className="text-yellow-500 mb-2 block uppercase tracking-widest font-bold"
+            className="text-dropoff mb-2 block uppercase tracking-widest font-bold"
           >
             End Location
           </Typography>
@@ -118,7 +118,7 @@ const DropoffSection: React.FC<DropoffSectionProps> = ({
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all',
                   dropoffType === key
-                    ? 'bg-yellow-500/15 border-yellow-500 text-yellow-300'
+                    ? 'bg-dropoff/15 border-dropoff text-dropoff-light'
                     : 'bg-white/5 border-white/10 text-white/40 hover:border-white/20',
                 )}
               >
@@ -156,10 +156,10 @@ const DropoffSection: React.FC<DropoffSectionProps> = ({
 
               {/* Extra cost warning */}
               {isDropoffOutsideZone && dropoffLoc && (
-                <div className="flex items-start gap-2.5 bg-orange-500/10 border border-orange-500/30 rounded-xl p-3 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <Icon name="payments" size="xs" className="text-orange-400 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2.5 bg-btn-p-500/10 border border-btn-p-500/30 rounded-xl p-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <Icon name="payments" size="xs" className="text-btn-p-400 shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <Typography variant="microLabel" as="div" className="text-orange-300 uppercase tracking-widest">
+                    <Typography variant="microLabel" as="div" className="text-btn-p-300 uppercase tracking-widest">
                       Extra cost — outside free area
                     </Typography>
                     <Typography variant="paragraphS" as="p" className="text-white/60 leading-relaxed">
@@ -179,9 +179,6 @@ const DropoffSection: React.FC<DropoffSectionProps> = ({
                 const icon = mp.id.includes('airport') ? 'flight'
                            : mp.id.includes('train')   ? 'train'
                            : 'storefront';
-                const scheduleNote = mp.id.includes('saturday') ? 'Saturday evenings'
-                                   : mp.id.includes('sunday')   ? 'Sunday evenings'
-                                   : undefined;
 
                 return (
                   <MeetingCard
@@ -191,7 +188,7 @@ const DropoffSection: React.FC<DropoffSectionProps> = ({
                     selectedClass={selectedClass}
                     theme="yellow"
                     iconName={icon}
-                    descriptionOverride={scheduleNote ?? mp.dropoff_description ?? mp.description}
+                    descriptionOverride={mp.dropoff_description ?? mp.description}
                     onSelect={() =>
                       onDropoffLocChange({
                         type: 'meeting_point',

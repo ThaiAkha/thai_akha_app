@@ -21,7 +21,7 @@ const ConfirmFooter: React.FC<ConfirmFooterProps> = ({
   isLoading,
   onConfirm,
 }) => (
-  <div className="p-6 md:p-8 bg-black/40 border-t border-white/10 shrink-0">
+  <div className="p-6 md:p-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:pb-8 bg-black/40 border-t border-white/10 shrink-0">
     <Button
       variant={isEditMode ? 'mineral' : 'action'}
       fullWidth

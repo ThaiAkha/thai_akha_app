@@ -51,7 +51,7 @@
     "editTitle": "Editar servicio",
     "declareTitle": "Declarar servicio",
     "formSubtitle": "Ingresa los detalles del servicio para generar el pago.",
-    "paidBannerTitle": "Ya pagado — solo lectura",
+    "paidBannerTitle": "Ya pagado - solo lectura",
     "paidBannerMessage": "Este servicio ha sido pagado y no puede editarse.",
     "pendingBannerTitle": "Ya enviado para este día y clase",
     "pendingBannerMessage": "Guardar sobreescribirá el servicio existente (se enviará un nuevo correo).",

@@ -134,7 +134,7 @@
   },
   "alerts": {
     "missingDateSession": "缺少日期/场次",
-    "priceMissing": "价格缺失 — 预订前请检查数据库中的场次配置。",
+    "priceMissing": "价格缺失 - 预订前请检查数据库中的场次配置。",
     "namePasswordRequired": "需要全名和密码",
     "bookingCreated": "预订创建成功！",
     "errorPrefix": "错误：{{message}}"

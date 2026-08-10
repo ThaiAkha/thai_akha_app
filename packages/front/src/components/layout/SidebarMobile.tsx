@@ -229,7 +229,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         id="mobile-nav-drawer"
         aria-label="Mobile navigation"
         className={cn(
-          'fixed inset-y-0 left-0 z-[3] w-[min(320px,85vw)] flex flex-col',
+          'fixed inset-y-0 left-0 z-[3] w-[min(320px,85vw)] pointer-coarse:md:w-[min(288px,80vw)] flex flex-col',
           'transition-transform duration-500 ease-cinematic border-r',
           'bg-surface border-border shadow-[20px_0_60px_rgba(0,0,0,0.5)]',
           (stage === 'opening' || stage === 'open') ? 'translate-x-0' : '-translate-x-full'
@@ -286,7 +286,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                     handleItemClick(item.page_slug);
                   }}
                   className={cn(
-                    'relative w-full h-14 rounded-2xl flex items-center px-5 transition-colors duration-75 overflow-hidden group outline-none',
+                    'relative w-full h-14 pointer-coarse:md:h-12 rounded-2xl flex items-center px-5 transition-colors duration-75 overflow-hidden group outline-none',
                     isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8',
                     isActive
                       ? 'bg-action-500/20 text-action-700 shadow-[inset_4px_0_0_0_var(--color-action-500)]'
@@ -295,9 +295,9 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
                 >
                   <Icon
                     name={item.header_icon || 'Circle'}
-                    className={cn('text-2xl mr-5 transition-colors', isActive ? 'text-action-700' : 'text-muted group-hover:text-sub')}
+                    className={cn('text-2xl pointer-coarse:md:text-xl mr-5 transition-colors', isActive ? 'text-action-700' : 'text-muted group-hover:text-sub')}
                   />
-                  <Typography variant="h6" as="span" className={cn('font-bold tracking-tight text-base', isActive ? 'text-action-700' : 'text-current')}>
+                  <Typography variant="h6" as="span" className={cn('font-bold tracking-tight text-base pointer-coarse:md:text-sm', isActive ? 'text-action-700' : 'text-current')}>
                     {item.menu_label}
                   </Typography>
                   <Icon

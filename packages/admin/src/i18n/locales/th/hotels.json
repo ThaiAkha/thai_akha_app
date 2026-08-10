@@ -54,7 +54,7 @@
     "fieldHotelName": "ชื่อโรงแรม *",
     "placeholderHotelName": "เช่น แชงกรี-ลา เชียงใหม่",
     "fieldZone": "โซนรับส่ง",
-    "noZone": "— ไม่มีโซน —",
+    "noZone": "- ไม่มีโซน -",
     "fieldMapLink": "ลิงก์ Google Maps",
     "placeholderMapLink": "วาง URL Google Maps (ดึง GPS อัตโนมัติ)",
     "fieldAddress": "ที่อยู่",

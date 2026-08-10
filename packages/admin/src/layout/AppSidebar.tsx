@@ -14,6 +14,11 @@ const FRONT_APP_URL = import.meta.env.VITE_FRONT_APP_URL || 'https://www.thaiakh
 const SIDEBAR_TRANSITION = '800ms';
 const SIDEBAR_Z_INDEX = 'z-[99]';
 const SKELETON_ITEMS = 6;
+// Step per DISPOSITIVO, non per larghezza finestra: pointer-coarse (touch: iPad/telefono)
+// = contenuta; mouse = piena a qualunque larghezza. Una finestra desktop stretta resta piena.
+const RAIL = 'w-[108px] pointer-coarse:w-[92px]';
+const ROW_H = 'h-12 pointer-coarse:h-11';
+const ROW_ICON = 'w-6 h-6 pointer-coarse:w-5 pointer-coarse:h-5';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LOCAL SUB-COMPONENTS
@@ -41,14 +46,14 @@ function NavItem({ icon, label, href, isActive, onClick, isOpen }: NavItemProps)
       }}
       aria-current={isActive ? 'page' : undefined}
       className={`
-        group relative flex items-center w-full h-12 no-underline
+        group relative flex items-center w-full ${ROW_H} no-underline
         transition-colors duration-200 rounded-xl pl-0 pr-1 cursor-pointer
         ${isActive ? 'bg-primary-500/20 dark:bg-primary-500/20' : 'hover:bg-primary-500/10 dark:hover:bg-primary-500/10'}
       `}
     >
-      <div className="w-[108px] shrink-0 flex items-center justify-center pr-4 z-10">
+      <div className={`${RAIL} shrink-0 flex items-center justify-center pr-4 z-10`}>
         <IconComponent className={`
-          w-6 h-6 transition-transform duration-300 group-active:scale-95
+          ${ROW_ICON} transition-transform duration-300 group-active:scale-95
           ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}
         `} />
       </div>
@@ -57,7 +62,7 @@ function NavItem({ icon, label, href, isActive, onClick, isOpen }: NavItemProps)
         transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left
         ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
       `}>
-        <span className={`font-display font-bold tracking-wide ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
+        <span className={`font-display font-bold tracking-wide text-base pointer-coarse:text-sm ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
           {label}
         </span>
       </div>
@@ -71,9 +76,9 @@ function Divider({ className = 'my-1' }: { className?: string }) {
 
 function SkeletonNavItem({ isOpen }: { isOpen: boolean }) {
   return (
-    <li aria-hidden="true" className="flex items-center w-full h-12">
-      <div className="w-[108px] shrink-0 flex items-center justify-center pr-4">
-        <div className="w-6 h-6 rounded-md bg-gray-200 dark:bg-gray-800 animate-pulse" />
+    <li aria-hidden="true" className={`flex items-center w-full ${ROW_H}`}>
+      <div className={`${RAIL} shrink-0 flex items-center justify-center pr-4`}>
+        <div className={`${ROW_ICON} rounded-md bg-gray-200 dark:bg-gray-800 animate-pulse`} />
       </div>
       {isOpen && (
         <div className="flex-1 pr-4">
@@ -178,21 +183,22 @@ const AppSidebar: React.FC = () => {
       style={{ transitionDuration: SIDEBAR_TRANSITION }}
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen ${SIDEBAR_Z_INDEX} border-r border-gray-100
         transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
-        ${isSidebarOpen ? "w-80" : "w-[108px]"}
+        ${isSidebarOpen ? "w-80 pointer-coarse:w-72" : RAIL}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0 overflow-visible`}
     >
       <div className="flex flex-col h-full py-6 pt-[40px] px-2">
 
         {/* HEADER: LOGO */}
-        <div className="flex items-center mb-8 h-12">
-          <div className="w-[108px] shrink-0 flex items-center justify-center pr-4">
+        <div className={`flex items-center mb-8 ${ROW_H}`}>
+          <div className={`${RAIL} shrink-0 flex items-center justify-center pr-4`}>
             <Link to="/">
               <img
                 src={theme === "dark" ? LogoIconDark : LogoIconLight}
                 alt={t('sidebar.logoAlt')}
                 width={60}
                 height={60}
+                className="size-[60px] pointer-coarse:size-12 object-contain"
               />
             </Link>
           </div>
@@ -213,7 +219,7 @@ const AppSidebar: React.FC = () => {
           aria-label={t('sidebar.menuLabel', { defaultValue: 'Main navigation' })}
           className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
         >
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2 pointer-coarse:gap-1.5">
             {menuState === 'loading' ? (
               Array.from({ length: SKELETON_ITEMS }).map((_, i) => (
                 <SkeletonNavItem key={i} isOpen={isSidebarOpen} />
@@ -222,7 +228,7 @@ const AppSidebar: React.FC = () => {
               <li className={`px-2 ${isSidebarOpen ? '' : 'flex justify-center'}`}>
                 <button
                   onClick={loadMenu}
-                  className="flex items-center gap-2 w-full h-12 px-3 rounded-xl text-sm font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-500/10 transition-colors"
+                  className={`flex items-center gap-2 w-full ${ROW_H} px-3 rounded-xl text-sm font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-500/10 transition-colors`}
                   title={t('sidebar.retry', { defaultValue: 'Retry' })}
                 >
                   <RotateCw className="w-5 h-5 shrink-0" />

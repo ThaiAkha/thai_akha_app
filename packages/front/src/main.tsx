@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
+import { LanguageProvider } from './context/LanguageContext';
 import './styles/index.css';
 
 // Verifica caricamento in console
@@ -21,7 +22,11 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <App />
+      {/* La lingua è la prima cosa che si decide: sta sopra a tutto, perché
+          App, SEOHead e ogni pagina leggono da qui quale lingua servire. */}
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
     </React.StrictMode>
   );
 }

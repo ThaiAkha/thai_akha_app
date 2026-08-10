@@ -123,6 +123,24 @@ export async function fetchWithCache<T>(
     return promise;
 }
 
+/**
+ * Synchronous read of an already-cached value — no fetch, no revalidation.
+ *
+ * Needed where a decision must be made BEFORE the first paint and an async
+ * round-trip would show a loader for something we already know (the language
+ * slug map: the router must pick the page synchronously). Returns null on a
+ * cache miss; the caller then falls back and re-resolves once the async load
+ * lands. Never throws.
+ */
+export function peekCache<T>(key: string): T | null {
+    try {
+        const entry = getCache()[key];
+        return entry ? (entry.value as T) : null;
+    } catch {
+        return null;
+    }
+}
+
 /** Normalize language tag: 'th-TH' → 'th' */
 export const normalizeLang = (lang: string): string =>
     lang?.split('-')[0].toLowerCase() || 'en';

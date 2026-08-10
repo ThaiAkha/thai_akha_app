@@ -396,6 +396,15 @@ verify_jwt = false
 [functions.og-meta-tags]
 verify_jwt = false
 
+# Le sitemap le leggono i crawler, che non hanno JWT: senza questa voce il
+# default (verify_jwt = true) faceva rispondere 401 a Googlebot — sitemap
+# di fatto invisibile a Google (trovato 2026-08-10, era così in prod).
+[functions.sitemap]
+verify_jwt = false
+
+[functions.sitemap-images]
+verify_jwt = false
+
 # Password reset is triggered by an UNauthenticated user (reset page) → no JWT.
 [functions.send-password-reset]
 verify_jwt = false

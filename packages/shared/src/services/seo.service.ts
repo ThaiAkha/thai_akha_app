@@ -3,6 +3,15 @@ import { PageMetadata, SitePage } from '../types/content.types';
 import { fetchWithCache } from './_cache';
 import { buildLocalBusinessSchema } from '../lib/businessSchema';
 import { contentMetadataService } from './contentMetadata.service';
+import { mergeTranslation, pickTranslation } from '../lib/mergeTranslation';
+import { translatedSlugService } from './translatedSlug.service';
+import {
+  ACTIVE_LANGS,
+  DEFAULT_LANG,
+  I18N_ROUTES_ENABLED,
+  OG_LOCALES,
+  type SupportedLang,
+} from '../lib/i18n';
 
 /**
  * Se il json_ld ha un @graph con un nodo LocalBusiness e la pagina è agganciata
@@ -63,32 +72,90 @@ function isSitePage(data: unknown): data is SitePage {
   );
 }
 
+/**
+ * 🌍 hreflang GENERATO, mai memorizzato.
+ *
+ * Regola traduci-vs-genera: gli slug stanno nel registro, gli hreflang si
+ * calcolano da quello a ogni render. Emette una alternate per ogni lingua ATTIVA
+ * più x-default sull'inglese. Le lingue senza slug tradotto (th/zh/ko/ja, o una
+ * entità non ancora tradotta) puntano a prefisso + slug inglese: URL valido,
+ * mai un 404, mai percent-encoding.
+ *
+ * A flag SPENTO non viene mai chiamata: emettere 11 alternate verso URL che
+ * rispondono 302 sarebbe dare a Google una mappa di link morti.
+ */
+function buildHreflang(
+  enSlug: string,
+  alternates: Record<string, string>,
+): Record<string, string> {
+  const pathFor = (lang: SupportedLang): string => {
+    const slug = lang === DEFAULT_LANG ? enSlug : (alternates[lang] ?? enSlug);
+    // La home ha slug NULL nel registro: vive alla radice della sua lingua.
+    const isHome = enSlug === 'home' || enSlug === '';
+    if (lang === DEFAULT_LANG) return isHome ? `${SITE_URL}/` : `${SITE_URL}/${slug}`;
+    return isHome ? `${SITE_URL}/${lang}/` : `${SITE_URL}/${lang}/${slug}`;
+  };
+
+  const out: Record<string, string> = {};
+  for (const lang of ACTIVE_LANGS) out[lang] = pathFor(lang);
+  // x-default = inglese: la versione che serve chi non matcha nessuna lingua.
+  out['x-default'] = pathFor(DEFAULT_LANG);
+  return out;
+}
+
 export const seoService = {
   /**
    * Recupera i metadati SEO per uno slug specifico con logica di sicurezza e fallback.
    * Risolve cover_asset_id → media_assets.image_url via join.
    * Fallback a og_image (legacy) se cover_asset_id non ancora popolato.
+   *
+   * @param slug SEMPRE lo slug INGLESE (identità DB). La traduzione dell'URL la
+   *             fa il router prima di chiamare qui: un solo posto che conosce gli slug.
+   * @param lang lingua richiesta; 'en' legge solo la base, le altre fondono il
+   *             sidecar campo per campo.
    */
-  async getMetadataForSlug(slug: string, table: 'site_metadata' = 'site_metadata'): Promise<PageMetadata> {
+  async getMetadataForSlug(
+    slug: string,
+    table: 'site_metadata' = 'site_metadata',
+    lang: string = DEFAULT_LANG,
+  ): Promise<PageMetadata> {
     // Cached + in-flight-deduped: SEOHead (global) and the page both read the same
     // slug — without this they fire two identical round-trips per page load.
     // Only real DB data is cached; misses/errors return null and fall back to
     // defaults below (so a transient failure never poisons the cache).
     // v2: json_ld LocalBusiness rigenerato da business_profile (bump cache)
+    // v3: sidecar site_metadata_translations + hreflang generato (la chiave porta
+    //     la lingua: due lingue non possono più servirsi la cache a vicenda)
     const cached = await fetchWithCache<PageMetadata>(
-      `seo_meta_${slug}_${table}_v2`,
-      () => this.fetchMetadataForSlug(slug, table),
+      `seo_meta_${slug}_${table}_${lang}_v3`,
+      () => this.fetchMetadataForSlug(slug, table, lang),
     );
     return cached ?? this.getDefaultMetadata();
   },
 
   /** Raw fetch+build of page metadata. Returns null on miss/error (never cached). */
-  async fetchMetadataForSlug(slug: string, table: 'site_metadata' = 'site_metadata'): Promise<PageMetadata | null> {
+  async fetchMetadataForSlug(
+    slug: string,
+    table: 'site_metadata' = 'site_metadata',
+    lang: string = DEFAULT_LANG,
+  ): Promise<PageMetadata | null> {
+    // Il sidecar arriva nella stessa query: una sola round-trip per pagina.
+    // In inglese non serve — la base È l'inglese.
+    const needsTranslation = lang !== DEFAULT_LANG;
+    const translationJoin = needsTranslation
+      ? `, translations:site_metadata_translations(
+            lang, header_badge, header_title_main, header_title_highlight,
+            page_description, menu_label, seo_title, seo_description, seo_keywords,
+            og_title, og_description, summary_ai, key_entities, page_essentials,
+            related_queries_geo
+         )`
+      : '';
+
     const { data, error } = await supabase
       .from(table)
       .select(`
         *,
-        cover_media:media_assets!site_metadata_cover_asset_id_fkey(image_url, alt_text, title)
+        cover_media:media_assets!site_metadata_cover_asset_id_fkey(image_url, alt_text, title)${translationJoin}
       `)
       .eq('page_slug', slug)
       .maybeSingle();
@@ -98,7 +165,15 @@ export const seoService = {
       return null;
     }
 
-    const page = data;
+    // FALLBACK PER CAMPO: ogni campo tradotto vince, ogni campo vuoto ricade
+    // sull'inglese. Mai per riga — vedi lib/mergeTranslation.ts.
+    const translations = (data as unknown as { translations?: Array<{ lang?: string | null }> }).translations;
+    const page = needsTranslation
+      ? mergeTranslation(
+          data as unknown as Record<string, unknown>,
+          pickTranslation(translations, lang) as Record<string, unknown> | null,
+        ) as unknown as SitePage
+      : data;
 
     // 1. Access Level Guard: Sicurezza assoluta
     const robots = page.access_level === 'public'
@@ -116,7 +191,29 @@ export const seoService = {
       jsonLd = await withDynamicLocalBusiness(jsonLd);
     }
 
-    // 3. Metadata Construction
+    // 3. URL della pagina in questa lingua.
+    // `page.page_slug` resta SEMPRE l'inglese: mergeTranslation non tocca gli
+    // slug, la loro fonte unica è il registro (v_translated_slugs).
+    const enSlug = page.page_slug;
+    const isHome = enSlug === 'home';
+
+    // A flag spento nessuna delle due query di registro parte: il sito è quello
+    // di oggi, e route/hreflang/sitemap si accendono insieme o non si accendono.
+    const alternates = I18N_ROUTES_ENABLED
+      ? await translatedSlugService.getAlternatesForSlug(enSlug)
+      : {};
+    const localizedSlug = lang === DEFAULT_LANG ? enSlug : (alternates[lang] ?? enSlug);
+
+    // Il canonical deve puntare a un URL che RISOLVE davvero. A flag spento le
+    // route a prefisso non esistono: un canonical `/es/…` manderebbe Google su
+    // un 302. Quindi finché l'interruttore è giù il canonical è sempre quello
+    // inglese, anche se i contenuti serviti sono tradotti.
+    const usePrefix = I18N_ROUTES_ENABLED && lang !== DEFAULT_LANG;
+    const canonicalPath = usePrefix
+      ? (isHome ? `${lang}/` : `${lang}/${localizedSlug}`)
+      : (isHome ? '' : enSlug);
+
+    // 4. Metadata Construction
     return {
       seo_title: page.seo_title || `${page.header_title_main} ${page.header_title_highlight} | Thai Akha Kitchen`,
       seo_description: page.seo_description || page.page_description || '',
@@ -129,8 +226,26 @@ export const seoService = {
       twitter_card: page.twitter_card || undefined,
       json_ld: jsonLd,
       seo_health_score: page.seo_health_score || 0,
-      canonical_url: `${SITE_URL}/${page.page_slug === 'home' ? '' : page.page_slug}`,
-      hreflang: page.hreflang ?? null
+      canonical_url: `${SITE_URL}/${canonicalPath}`,
+      // GENERATO dal registro a flag acceso; a flag spento resta il valore DB,
+      // che oggi è la sola self-reference inglese.
+      hreflang: I18N_ROUTES_ENABLED
+        ? buildHreflang(enSlug, alternates)
+        : (page.hreflang ?? null),
+
+      // Multilingua
+      lang,
+      page_slug: enSlug,
+      localized_slug: localizedSlug,
+      og_locale: OG_LOCALES[lang as SupportedLang] ?? OG_LOCALES.en,
+
+      // GEO / AI-search — già tradotti dal merge per campo.
+      // page_essentials è ancora vuota lato dati: qui passa comunque, così quando
+      // /translate-db la riempie non serve toccare il lettore.
+      summary_ai: (page as unknown as Record<string, unknown>).summary_ai as string | null ?? null,
+      key_entities: (page as unknown as Record<string, unknown>).key_entities ?? null,
+      page_essentials: (page as unknown as Record<string, unknown>).page_essentials ?? null,
+      related_queries_geo: (page as unknown as Record<string, unknown>).related_queries_geo ?? null,
     };
   },
 

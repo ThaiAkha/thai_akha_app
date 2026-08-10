@@ -18,6 +18,30 @@ const SITE_URL = "https://www.thaiakha.com";
 const OG_DEFAULT_IMAGE = "https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg";
 const OG_CULTURE_IMAGE = OG_DEFAULT_IMAGE;
 
+// ─── Perimetro lingue ───────────────────────────────────────────────────────
+// ⚠️ QUESTA È LA SUPERFICIE SEO CHE VEDE GOOGLE.
+// Il Cloudflare Worker dirotta qui ogni richiesta con user-agent bot (googlebot
+// incluso): quello che il browser costruisce in SEOHead, i crawler NON lo vedono
+// mai. Se hreflang, <html lang> e og:locale non sono corretti QUI, non sono
+// corretti per Google, punto. Copia Deno di packages/shared/src/lib/i18n.ts —
+// da tenere allineata a mano, come già LEGACY_SLUG_MAP.
+
+const DEFAULT_LANG = "en";
+const SUPPORTED_LANGS = [
+  "en", "es", "fr", "de", "pt", "it", "ca", "nl", "th", "zh", "ko", "ja",
+] as const;
+
+const OG_LOCALES: Record<string, string> = {
+  en: "en_US", es: "es_ES", fr: "fr_FR", de: "de_DE", pt: "pt_PT", it: "it_IT",
+  ca: "ca_ES", nl: "nl_NL", th: "th_TH", zh: "zh_CN", ko: "ko_KR", ja: "ja_JP",
+};
+
+/** 🔴 Stesso interruttore di front e sitemap. Spento = comportamento di oggi. */
+const I18N_ENABLED = Deno.env.get("I18N_ROUTES_ENABLED") === "true";
+const ACTIVE_LANGS: readonly string[] = I18N_ENABLED ? SUPPORTED_LANGS : [DEFAULT_LANG];
+
+const TWO_LETTER = /^[a-z]{2}$/i;
+
 // ─── Bot Detection ──────────────────────────────────────────────────────────
 
 const BOT_PATTERN =
@@ -37,6 +61,8 @@ interface OGData {
 }
 
 interface SiteMetadataRow {
+  /** FK verso il sidecar site_metadata_translations.page_id */
+  id: string;
   seo_title: string | null;
   seo_description: string | null;
   og_title: string | null;
@@ -204,10 +230,15 @@ Deno.serve(async (req: Request) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     let ogData = getDefaultOGData(path);
 
+    // Lingua dal prefisso, poi slug tradotti → slug INGLESI: da qui in giù il
+    // routing è identico a prima e ragiona solo in inglese.
+    const { lang, path: langlessPath } = splitLangPath(path);
+    const englishPath = await toEnglishPath(supabase, langlessPath, lang);
+
     // Note: /recipe/category/... routes do NOT exist in the frontend.
     // Categories are state-filters inside Recipes.tsx, not standalone pages.
     // Resolve legacy slugs before routing — e.g. /cooking-class → /thai-cooking-classes-chiang-mai
-    const resolvedPath = resolvePath(path);
+    const resolvedPath = resolvePath(englishPath);
 
     if (resolvedPath.startsWith("/akha-culture-highland-heritage/") && resolvedPath.length > "/akha-culture-highland-heritage/".length) {
       const slug = resolveSlug(extractSlug(resolvedPath, "/akha-culture-highland-heritage/"));
@@ -231,17 +262,25 @@ Deno.serve(async (req: Request) => {
     } else {
       const rawSlug = resolvedPath === "/" || resolvedPath === "" ? "home" : extractPageName(resolvedPath);
       const pageSlug = resolveSlug(rawSlug);
-      const siteData = await fetchSiteMetadata(supabase, pageSlug);
+      const siteData = await fetchSiteMetadata(supabase, pageSlug, lang);
       if (siteData) {
         ogData = siteData;
       } else {
         // Try home as ultimate fallback
-        const homeFallback = await fetchSiteMetadata(supabase, "home");
+        const homeFallback = await fetchSiteMetadata(supabase, "home", lang);
         if (homeFallback) ogData = homeFallback;
       }
     }
 
-    const html = generateOGHTML(ogData);
+    // hreflang generati a partire dal path INGLESE (l'identità), non da quello
+    // in arrivo: così le alternate sono identiche per tutte le 12 lingue e il
+    // gruppo hreflang è reciproco, condizione perché Google lo consideri valido.
+    const alternates = await buildAlternates(supabase, resolvedPath);
+    // Canonical = l'URL di QUESTA lingua, preso dalla stessa fonte che genera gli
+    // hreflang: canonical e alternate non possono divergere se nascono insieme.
+    if (alternates[lang]) ogData = { ...ogData, url: alternates[lang] };
+
+    const html = generateOGHTML(ogData, lang, alternates);
 
     return new Response(html, {
       headers: {
@@ -277,6 +316,113 @@ function getDefaultOGData(path: string): OGData {
 
 function extractSlug(pathname: string, prefix: string): string {
   return pathname.substring(prefix.length).split("/")[0];
+}
+
+// ─── Lingua & slug tradotti ─────────────────────────────────────────────────
+
+/**
+ * Vista minima del client: solo `.from()`, che è tutto ciò che serve alle due
+ * funzioni qui sotto. Le altre helper del file dichiarano il parametro come
+ * `ReturnType<typeof createClient>` e per questo producono 10 errori TS2345 di
+ * varianza sui generici (baseline noto del file, le Edge Function si
+ * deployano lo stesso). Tipare solo ciò che si usa evita di aggiungerne altri.
+ */
+// deno-lint-ignore no-explicit-any
+type SlugReader = { from: (table: string) => any };
+
+/**
+ * Stacca il prefisso lingua dal path.
+ * Un primo segmento di 2 lettere è SEMPRE una lingua (nessuno slug reale è di 2
+ * lettere in nessuna delle 12 lingue): se è una lingua attiva diventa `lang`,
+ * altrimenti si scarta conservando il resto del path — stessa regola del front
+ * (packages/front/src/lib/langRouting.ts) e del Worker. Le tre devono coincidere.
+ */
+function splitLangPath(pathname: string): { lang: string; path: string } {
+  const parts = pathname.split("/").filter(Boolean);
+  const first = parts[0];
+
+  if (first && TWO_LETTER.test(first)) {
+    const candidate = first.toLowerCase();
+    const rest = parts.slice(1);
+    const isActive = candidate !== DEFAULT_LANG && ACTIVE_LANGS.includes(candidate);
+    return {
+      lang: isActive ? candidate : DEFAULT_LANG,
+      path: `/${rest.join("/")}`,
+    };
+  }
+  return { lang: DEFAULT_LANG, path: pathname };
+}
+
+/**
+ * Traduce i segmenti di un path dallo slug della lingua a quello INGLESE, che è
+ * l'identità con cui si leggono le tabelle. Registro unico: v_translated_slugs.
+ * Uno slug assente resta com'è (th/zh/ko/ja navigano già su slug inglesi).
+ */
+async function toEnglishPath(
+  supabase: SlugReader,
+  path: string,
+  lang: string,
+): Promise<string> {
+  if (!I18N_ENABLED || lang === DEFAULT_LANG) return path;
+
+  const segments = path.split("/").filter(Boolean);
+  if (segments.length === 0) return path;
+
+  try {
+    const { data } = await supabase
+      .from("v_translated_slugs")
+      .select("slug_en, slug_translated")
+      .eq("lang", lang)
+      .in("slug_translated", segments);
+
+    const toEn: Record<string, string> = {};
+    for (const row of (data ?? []) as Array<{ slug_en: string; slug_translated: string }>) {
+      if (row.slug_translated && row.slug_en) toEn[row.slug_translated] = row.slug_en;
+    }
+    return `/${segments.map((s) => toEn[s] ?? s).join("/")}`;
+  } catch {
+    // Registro irraggiungibile → si prosegue con gli slug così come sono:
+    // meglio una pagina con meta inglesi che un 500 servito a un crawler.
+    return path;
+  }
+}
+
+/**
+ * hreflang per il path corrente, GENERATI dal registro (mai memorizzati).
+ * Riceve il path in slug INGLESI e restituisce lingua → URL assoluto.
+ */
+async function buildAlternates(
+  supabase: SlugReader,
+  enPath: string,
+): Promise<Record<string, string>> {
+  const segments = enPath.split("/").filter(Boolean);
+
+  // lingua → (slug inglese → slug tradotto), solo per i segmenti di QUESTO path.
+  const byLang: Record<string, Record<string, string>> = {};
+  if (I18N_ENABLED && segments.length > 0) {
+    try {
+      const { data } = await supabase
+        .from("v_translated_slugs")
+        .select("lang, slug_en, slug_translated")
+        .in("slug_en", segments);
+
+      for (const row of (data ?? []) as Array<{ lang: string; slug_en: string; slug_translated: string }>) {
+        if (!row.lang || !row.slug_en || !row.slug_translated) continue;
+        (byLang[row.lang] ??= {})[row.slug_en] = row.slug_translated;
+      }
+    } catch {
+      /* nessuna traduzione disponibile → tutte le lingue useranno lo slug inglese */
+    }
+  }
+
+  const out: Record<string, string> = {};
+  for (const lang of ACTIVE_LANGS) {
+    const map = byLang[lang] ?? {};
+    const localized = segments.map((s) => map[s] ?? s);
+    const prefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
+    out[lang] = `${SITE_URL}${localized.length ? `${prefix}/${localized.join("/")}` : `${prefix}/`}`;
+  }
+  return out;
 }
 
 /**
@@ -474,16 +620,34 @@ async function fetchIngredientCategoryData(
 
 async function fetchSiteMetadata(
   supabase: ReturnType<typeof createClient>,
-  pageSlug: string
+  pageSlug: string,
+  lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
     const { data, error } = await supabase
       .from("site_metadata")
-      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, json_ld")
+      // `id` serve a raggiungere il sidecar (FK page_id).
+      .select("id, seo_title, seo_description, og_title, og_description, cover_asset_id, json_ld")
       .eq("page_slug", pageSlug)
       .single<SiteMetadataRow>();
 
     if (error || !data) return null;
+
+    // FALLBACK PER CAMPO sul sidecar: ogni campo tradotto vince, ogni campo
+    // vuoto resta inglese. Mai per riga — una traduzione parziale non deve
+    // riportare l'intera pagina in inglese (vedi lib/mergeTranslation.ts).
+    let translated: Partial<SiteMetadataRow> = {};
+    if (lang !== DEFAULT_LANG) {
+      const { data: t } = await supabase
+        .from("site_metadata_translations")
+        .select("seo_title, seo_description, og_title, og_description")
+        .eq("page_id", data.id)
+        .eq("lang", lang)
+        .maybeSingle();
+      if (t) translated = t as Partial<SiteMetadataRow>;
+    }
+    const pick = (tr: string | null | undefined, base: string | null | undefined) =>
+      tr && tr.trim() !== "" ? tr : base;
 
     // Resolve cover image via cover_asset_id → media_assets (same pattern as recipes/culture/news)
     let imageUrl = OG_DEFAULT_IMAGE;
@@ -504,10 +668,12 @@ async function fetchSiteMetadata(
 
     return {
       // seo_title/seo_description are the canonical fields; og_* as fallback
-      title: data.seo_title || data.og_title || "Thai Akha Kitchen",
-      description: data.seo_description || data.og_description || "",
+      title: pick(translated.seo_title, data.seo_title) || pick(translated.og_title, data.og_title) || "Thai Akha Kitchen",
+      description: pick(translated.seo_description, data.seo_description) || pick(translated.og_description, data.og_description) || "",
       image: imageUrl,
       imageType,
+      // URL provvisorio: il canonical definitivo (con prefisso lingua e slug
+      // tradotto) lo mette il handler da `alternates`, che è l'unica fonte.
       url: `${SITE_URL}/${pageSlug === "home" ? "" : pageSlug}`,
       type: "website",
       jsonLd,
@@ -664,21 +830,34 @@ async function fetchNewsData(
   }
 }
 
-function generateOGHTML(ogData: OGData): string {
+function generateOGHTML(
+  ogData: OGData,
+  lang: string = DEFAULT_LANG,
+  alternates: Record<string, string> = {},
+): string {
   const title = escapeHtml(ogData.title);
   const description = escapeHtml(ogData.description);
   const image = escapeHtml(ogData.image);
   const url = escapeHtml(ogData.url);
   const bodyText = ogData.bodyContent ? escapeHtml(ogData.bodyContent) : "";
 
+  // A flag spento `alternates` ha la sola voce inglese e questo blocco non
+  // emette nulla: nessun hreflang verso URL che risponderebbero 302.
+  const hreflangTags = Object.keys(alternates).length > 1
+    ? Object.entries(alternates)
+        .map(([code, href]) => `\n  <link rel="alternate" hreflang="${code}" href="${escapeHtml(href)}">`)
+        .join("") +
+      `\n  <link rel="alternate" hreflang="x-default" href="${escapeHtml(alternates[DEFAULT_LANG] ?? url)}">`
+    : "";
+
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${escapeHtml(lang)}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <meta name="description" content="${description}">
-  <link rel="canonical" href="${url}">
+  <link rel="canonical" href="${url}">${hreflangTags}
 
   <!-- Crawl directives -->
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -694,7 +873,7 @@ function generateOGHTML(ogData: OGData): string {
   <meta property="og:url" content="${url}">
   <meta property="og:type" content="${ogData.type}">
   <meta property="og:site_name" content="Thai Akha Kitchen">
-  <meta property="og:locale" content="en_US">
+  <meta property="og:locale" content="${OG_LOCALES[lang] ?? OG_LOCALES.en}">
   <meta property="fb:app_id" content="1885423361488207">
 
   <!-- Twitter Card -->

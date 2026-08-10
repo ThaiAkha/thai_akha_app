@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { getIcon } from '@thaiakha/shared/lib/icons';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { LogoIconLight, LogoIconDark } from '@thaiakha/shared';
+import { LanguageFlagPanel } from './LanguageSwitcher';
+import { useLanguage } from '../../context/LanguageContext';
 import { ChevronLeft, ChevronDown, Menu, Sun, Moon } from 'lucide-react';
 import Typography from '../ui/Typography';
 
@@ -420,6 +422,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [footerExpanded, setFooterExpanded] = useState<'info' | 'settings' | null>(null);
 
+  // Switcher lingua: il bottone "Languages" apre il pannello bandierine FUORI
+  // dalla sidebar (portal), ancorato al bottone stesso. A flag i18n spento
+  // availableLangs = ['en'] → né bottone né pannello (oggi: tutto com'era).
+  const { availableLangs } = useLanguage();
+  const [langPanelOpen, setLangPanelOpen] = useState(false);
+  const langBtnRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     let cancelled = false;
     let attempts = 0;
@@ -721,12 +730,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                 setFooterExpanded(prev => prev === 'settings' ? null : 'settings');
               }}
             >
-              <ActionButton
-                icon="Globe"
-                label="Languages"
-                onClick={() => { setFooterExpanded(null); }}
-                isOpen={isOpen}
-              />
+              {/* Languages → pannello bandierine fuori dalla sidebar, ancorato
+                  qui. Il div fa da ancora (ActionButton non espone ref).
+                  A flag i18n spento la voce sparisce del tutto: prima era un
+                  bottone con onClick vuoto, una voce che non faceva nulla. */}
+              {availableLangs.length > 1 && (
+                <div ref={langBtnRef}>
+                  <ActionButton
+                    icon="Globe"
+                    label="Languages"
+                    onClick={() => setLangPanelOpen((v) => !v)}
+                    isOpen={isOpen}
+                  />
+                </div>
+              )}
               <ThemeSwitcher
                 isDarkMode={isDarkMode}
                 onToggle={() => { setFooterExpanded(null); onToggleTheme?.(); }}
@@ -749,6 +766,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Pannello bandierine — portal su body, quindi il punto in cui sta nel
+          JSX è irrilevante per il layout: conta solo l'ancora (langBtnRef). */}
+      <LanguageFlagPanel
+        open={langPanelOpen}
+        onClose={() => setLangPanelOpen(false)}
+        anchorRef={langBtnRef}
+      />
     </nav>
   );
 };

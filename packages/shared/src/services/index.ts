@@ -8,6 +8,7 @@ export * from './class.service';
 export * from './game.service';
 export * from './auth.core';
 export * from './seo.service';
+export * from './translatedSlug.service';
 export * from './media.service';
 export * from './audio.service';
 export * from './chatSession.service';

@@ -14,8 +14,30 @@ export interface PageMetadata {
   json_ld?: Record<string, unknown>;
   seo_health_score?: number;
   canonical_url?: string;
-  /** hreflang map — e.g. { "en": "https://...", "th": "https://..." } */
+  /**
+   * hreflang map — e.g. { "en": "https://...", "es": "https://..." }.
+   * A flag i18n ACCESO è GENERATA a render dal registro slug (mai memorizzata);
+   * a flag spento resta il valore del DB, cioè il sito monolingua di oggi.
+   */
   hreflang?: Record<string, string> | null;
+
+  // ── Multilingua ────────────────────────────────────────────────────────────
+  /** Lingua servita. 'en' = riga base, le altre vengono dal sidecar. */
+  lang?: string;
+  /** Slug INGLESE: l'identità con cui si rileggono DB e cache. */
+  page_slug?: string;
+  /** Slug da mostrare in URL per `lang` (= page_slug se non tradotto). */
+  localized_slug?: string;
+  /** og:locale della lingua servita (es. 'es_ES'). */
+  og_locale?: string;
+
+  // ── GEO / AI-search ────────────────────────────────────────────────────────
+  // Tradotti nel sidecar, con fallback per campo sull'inglese come tutto il resto.
+  summary_ai?: string | null;
+  key_entities?: unknown;
+  /** Ancora vuota lato dati (la porta /translate-db): il lettore la prevede già. */
+  page_essentials?: unknown;
+  related_queries_geo?: unknown;
 }
 
 /**

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSEO } from '../../hooks/useSEO';
 import { LEGACY_TOP_SLUGS } from '../../lib/pageSlugs';
+import { useLanguage } from '../../context/LanguageContext';
 
 // ─── JSON-LD sanitization ─────────────────────────────────────────────────────
 
@@ -57,37 +58,18 @@ const OG_DEFAULT_IMAGE = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/ob
  * This is used as a lightweight alternative to react-helmet-async.
  */
 export const SEOHead: React.FC = () => {
-  // Deriviamo lo slug (normalizzato via LEGACY_TOP_SLUGS: /recipes → authentic-thai-akha-recipes,
-  // stessa mappa del routing in App.tsx) e se siamo su una sotto-pagina (article, ricetta, ecc.)
-  const getPathInfo = () => {
-    const segments = window.location.pathname.split('/').filter(Boolean);
-    const raw = segments[0] || 'home';
-    return { slug: LEGACY_TOP_SLUGS[raw] ?? raw, hasSubPage: segments.length > 1 };
-  };
+  // Lingua e segmenti arrivano dal LanguageProvider: già senza prefisso lingua e
+  // già in slug INGLESI. Prima questo componente ri-parsava il pathname per conto
+  // suo (e patchava history.pushState per accorgersi della navigazione): con una
+  // fonte sola non serve più, e soprattutto non può più divergere dal router.
+  const { lang, enSegments } = useLanguage();
 
-  const [pathInfo, setPathInfo] = useState<{ slug: string; hasSubPage: boolean }>(getPathInfo);
+  const pathInfo = useMemo(() => {
+    const raw = enSegments[0] || 'home';
+    return { slug: LEGACY_TOP_SLUGS[raw] ?? raw, hasSubPage: enSegments.length > 1 };
+  }, [enSegments]);
 
-  useEffect(() => {
-    setPathInfo(getPathInfo());
-
-    const handleNavigation = () => setPathInfo(getPathInfo());
-
-    window.addEventListener('popstate', handleNavigation);
-
-    // Patch per intercettare pushState (perché pushState non scatena popstate)
-    const originalPushState = window.history.pushState;
-    window.history.pushState = function(...args) {
-      originalPushState.apply(this, args);
-      handleNavigation();
-    };
-
-    return () => {
-      window.removeEventListener('popstate', handleNavigation);
-      window.history.pushState = originalPushState;
-    };
-  }, []);
-
-  const { metadata, loading } = useSEO(pathInfo.slug);
+  const { metadata, loading } = useSEO(pathInfo.slug, lang);
 
   useEffect(() => {
     if (loading || !metadata) return;
@@ -149,7 +131,9 @@ export const SEOHead: React.FC = () => {
     updateOrCreateMeta('og:type', metadata.og_type || 'website', true);
     updateOrCreateMeta('og:url', canonicalUrl, true);
     updateOrCreateMeta('og:site_name', 'Thai Akha Kitchen', true);
-    updateOrCreateMeta('og:locale', 'en_US', true);
+    // og:locale segue la lingua servita: era inchiodato a en_US, e su una pagina
+    // spagnola diceva a Facebook che il contenuto era inglese.
+    updateOrCreateMeta('og:locale', metadata.og_locale || 'en_US', true);
     updateOrCreateMeta('fb:app_id', '1885423361488207', true);
 
     // 5b. Twitter Card

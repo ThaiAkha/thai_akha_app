@@ -51,6 +51,8 @@ const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'https://admin.tha
 
 // Canonical SEO slugs — single source in lib/pageSlugs.ts, condivisa con SEOHead.
 import { PAGE_SLUGS } from './lib/pageSlugs';
+import { useLanguage } from './context/LanguageContext';
+import { buildLangPath } from './lib/langRouting';
 
 // Loader unico dell'app: identico come fallback <Suspense> (download chunk lazy)
 // e come gate dei flussi che aspettano il profilo. Stesso elemento ⇒ nessuno
@@ -141,9 +143,15 @@ const App: React.FC = () => {
     'cookbook-and-certificate': 'thai-cooking-class-certificate-cookbook'
   };
 
-  // Deriviamo 'page' e 'slug' dall'URL o dallo stato iniziale
-  const getUrlState = () => {
-    const parts = window.location.pathname.split('/').filter(Boolean);
+  // ── ROUTING ──────────────────────────────────────────────────────────────
+  // I segmenti arrivano dal LanguageProvider GIÀ senza prefisso lingua e GIÀ
+  // tradotti in inglese: da qui in giù l'app ragiona solo in slug inglesi, che
+  // sono l'identità con cui si legge il DB. Chi naviga in spagnolo vede URL
+  // spagnoli, ma `page` resta 'authentic-thai-akha-recipes' come sempre.
+  const { lang, enSegments, slugMap } = useLanguage();
+
+  const urlState = React.useMemo(() => {
+    const parts = enSegments;
     const rawPage = parts[0] || 'home';
     const rawSlug = (parts[0] === 'home' || !parts[0] || parts[0] === 'history' || parts[0] === 'akha-culture-highland-heritage' || parts[0] === 'menu' || parts[0] === 'user' || parts[0] === 'quiz' || parts[0] === 'akha-wisdom-path-quiz' || parts[0] === 'recipes' || parts[0] === 'authentic-thai-akha-recipes' || parts[0] === 'news' || parts[0] === 'thai-cooking-tips-news' || parts[0] === 'ingredients' || parts[0] === 'thai-cooking-ingredients')
       ? (parts[0] === 'history' || parts[0] === 'akha-culture-highland-heritage' ? (parts[1] === 'category' ? null : parts[1] || null) : parts[1] || null)
@@ -153,24 +161,13 @@ const App: React.FC = () => {
       page: LEGACY_SLUG_MAP[rawPage] || rawPage,
       slug: rawSlug ? (LEGACY_SLUG_MAP[rawSlug] || rawSlug) : null,
     };
-  };
+    // LEGACY_SLUG_MAP è una costante letterale ricreata a ogni render: dipendere
+    // da `enSegments` è sufficiente e corretto.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enSegments]);
 
-  const [urlState, setUrlState] = useState(getUrlState());
   const page = urlState.page;
   const targetSection = urlState.slug;
-
-  const setPageAndSlug = (newPage: string, newSlug: string | null = null) => {
-    setUrlState({ page: newPage, slug: newSlug });
-  };
-
-  // Ascoltiamo i tasti Avanti/Indietro del browser
-  useEffect(() => {
-    const handlePopState = () => {
-      setUrlState(getUrlState());
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
 
   // targetSection è ora derivato da urlState.slug
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -285,19 +282,29 @@ const App: React.FC = () => {
       }
     }
 
-    const slugMap: Record<string, string> = {
+    // Alias interni → slug canonico inglese. Nome esteso per non confondersi con
+    // `slugMap` del LanguageProvider, che è tutt'altro: il registro delle traduzioni.
+    const slugMapPages: Record<string, string> = {
       ...PAGE_SLUGS,
       'terms': 'booking-terms-conditions',
       'privacy': 'privacy-policy'
     };
 
-    const urlPage = slugMap[targetPage] || targetPage;
-    const path = targetPage === 'home' ? '/' : (sectionId ? `/${urlPage}/${sectionId}` : `/${urlPage}`);
+    const urlPage = slugMapPages[targetPage] || targetPage;
+    // I link nascono SEMPRE in slug inglesi; buildLangPath li localizza e mette
+    // il prefisso lingua. In inglese (o a flag spento) restituisce esattamente il
+    // path di prima — nessuna differenza rispetto a oggi.
+    const enSegs = targetPage === 'home'
+      ? []
+      : (sectionId ? [urlPage, sectionId] : [urlPage]);
+    const path = buildLangPath(lang, enSegs, slugMap);
+
     window.history.pushState({}, '', path);
     // Notify sub-page listeners (e.g. HistoryPage) that a root navigation occurred.
     // pushState does NOT fire popstate, so we dispatch it manually.
+    // Il LanguageProvider ascolta lo stesso evento e ricalcola `enSegments`:
+    // da lì `urlState` si aggiorna da solo (non c'è più uno stato duplicato).
     window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
-    setPageAndSlug(targetPage, sectionId || null);
 
     if (topic) {
       window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));

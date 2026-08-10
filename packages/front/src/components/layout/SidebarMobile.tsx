@@ -5,6 +5,7 @@ import { Sun, Moon, ChevronDown } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 type Page = string;
 
@@ -354,17 +355,12 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
             onToggle={() => setFooterExpanded(prev => prev === 'settings' ? null : 'settings')}
             bgClass="bg-surface-2"
           >
-            {/* Language */}
-            <button className={cn(
-              'group w-full h-12 flex items-center px-5 rounded-2xl',
-              'bg-surface-2 border border-border',
-              'transition-[background-color,border-color,box-shadow] duration-75',
-              'hover:bg-action-500/[0.12] hover:border-action-500/25',
-              'hover:shadow-[inset_0_1px_0_rgba(152,201,60,0.25),0_4px_14px_rgba(152,201,60,0.08)]',
-            )}>
-              <Icon name="Globe" className="text-xl mr-5 text-muted group-hover:text-action-600 transition-colors duration-75" />
-              <Typography variant="h6" as="span" className="font-bold text-sm text-sub group-hover:text-action-700 transition-colors duration-75">Languages</Typography>
-            </button>
+            {/* Language — righe piene, non un dropdown: dentro un pannello che
+                già scorre, un secondo scroll annidato è la cosa più scomoda da
+                usare col pollice. A flag i18n spento non renderizza nulla, quindi
+                oggi il pannello resta identico a prima (prima qui c'era un
+                pulsante "Languages" senza alcun onClick). */}
+            <LanguageSwitcher />
 
             {/* Theme Toggle */}
             <div

@@ -6,8 +6,7 @@ import IngredientModal from '../components/modal/IngredientModal';
 import { AuthorBlock, HeaderSinglePost, AkhaThemedLine } from '../components/blog';
 import { AkhaQuote } from '../components/divider';
 import { RecipeNav, RecipeSection, RecipeMetaBar, AllergyAlerts, IngredientsGrid, DirectionsSteps, GarnishAndTip, RecipeEssentials } from '../components/recipes';
-import { SiblingSection } from '../components/layout/SiblingSection';
-import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
+import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { Photo } from '../components/modal';
 import { FaqBottomPage } from '../components/ui';
 import RecipeCherryChat from '../components/chat/RecipeCherryChat';
@@ -366,39 +365,24 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
 
           {(previous || next) && (
             <>
-              <div className="w-full max-w-[var(--container-section)] mx-auto">
-                <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
-              </div>
-              <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
-                <SiblingSection sectionId="sibiling_recipes">
-                  {previous && (
-                    <SiblingCardPost
-                      item={{
-                        title: previous.name as string,
-                        subtitle: (previous.excerpt as string | null) || null,
-                        imageUrl: ((previous.cover as Record<string, unknown>)?.image_url as string | null) ?? null,
-                        href: `/recipes/${(previous.slug as string) || (previous.id as string)}`,
-                        slug: (previous.slug as string) || (previous.id as string),
-                      } satisfies SiblingPost}
-                      direction="prev"
-                      onClick={() => onNavigate?.('recipes', undefined, (previous.slug as string) || (previous.id as string))}
-                    />
-                  )}
-                  {next && (
-                    <SiblingCardPost
-                      item={{
-                        title: next.name as string,
-                        subtitle: (next.excerpt as string | null) || null,
-                        imageUrl: ((next.cover as Record<string, unknown>)?.image_url as string | null) ?? null,
-                        href: `/recipes/${(next.slug as string) || (next.id as string)}`,
-                        slug: (next.slug as string) || (next.id as string),
-                      } satisfies SiblingPost}
-                      direction="next"
-                      onClick={() => onNavigate?.('recipes', undefined, (next.slug as string) || (next.id as string))}
-                    />
-                  )}
-                </SiblingSection>
-              </div>
+              <SiblingPostNav
+                sectionId="sibiling_recipes"
+                onOpen={(s) => onNavigate?.('recipes', undefined, s)}
+                previous={previous ? {
+                  title: previous.name as string,
+                  subtitle: (previous.excerpt as string | null) || null,
+                  imageUrl: ((previous.cover as Record<string, unknown>)?.image_url as string | null) ?? null,
+                  href: `/recipes/${(previous.slug as string) || (previous.id as string)}`,
+                  slug: (previous.slug as string) || (previous.id as string),
+                } : null}
+                next={next ? {
+                  title: next.name as string,
+                  subtitle: (next.excerpt as string | null) || null,
+                  imageUrl: ((next.cover as Record<string, unknown>)?.image_url as string | null) ?? null,
+                  href: `/recipes/${(next.slug as string) || (next.id as string)}`,
+                  slug: (next.slug as string) || (next.id as string),
+                } : null}
+              />
             </>
           )}
         </div>

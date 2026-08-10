@@ -10,10 +10,9 @@ import {
 
 import { CultureSection } from '@thaiakha/shared/types';
 import { useAudioAsset } from '../hooks/useAudioAsset';
-import { AuthorBlock, HeaderSinglePost, ContentRenderer, parseContent, slugify, AkhaThemedLine, ArticleBody } from '../components/blog';
+import { AuthorBlock, HeaderSinglePost, ContentRenderer, parseContent, slugify, ArticleBody } from '../components/blog';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
-import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
-import { SiblingSection } from '../components/layout/SiblingSection';
+import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useCultureDetail } from '../hooks/useCultureDetail';
 import { t } from '@thaiakha/shared/lib/ui-strings';
@@ -199,39 +198,24 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
         {/* Sibling nav — tier di chiusura --container-section (più stretto del corpo 6xl) */}
         {!dataLoading && section && (previous || next) && (
           <>
-            <div className="w-full max-w-[var(--container-section)] mx-auto">
-              <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
-            </div>
-            <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
-              <SiblingSection sectionId="sibiling_history">
-                {previous && (
-                  <SiblingCardPost
-                    item={{
-                      title: previous.title,
-                      subtitle: previous.subtitle,
-                      imageUrl: previous.cover_data?.image_url ?? null,
-                      href: `/akha-culture-highland-heritage/${previous.slug}`,
-                      slug: previous.slug,
-                    } satisfies SiblingPost}
-                    direction="prev"
-                    onClick={() => handleSiblingOpen(previous.slug)}
-                  />
-                )}
-                {next && (
-                  <SiblingCardPost
-                    item={{
-                      title: next.title,
-                      subtitle: next.subtitle,
-                      imageUrl: next.cover_data?.image_url ?? null,
-                      href: `/akha-culture-highland-heritage/${next.slug}`,
-                      slug: next.slug,
-                    } satisfies SiblingPost}
-                    direction="next"
-                    onClick={() => handleSiblingOpen(next.slug)}
-                  />
-                )}
-              </SiblingSection>
-            </div>
+            <SiblingPostNav
+              sectionId="sibiling_history"
+              onOpen={handleSiblingOpen}
+              previous={previous ? {
+                title: previous.title,
+                subtitle: previous.subtitle,
+                imageUrl: previous.cover_data?.image_url ?? null,
+                href: `/akha-culture-highland-heritage/${previous.slug}`,
+                slug: previous.slug,
+              } : null}
+              next={next ? {
+                title: next.title,
+                subtitle: next.subtitle,
+                imageUrl: next.cover_data?.image_url ?? null,
+                href: `/akha-culture-highland-heritage/${next.slug}`,
+                slug: next.slug,
+              } : null}
+            />
           </>
         )}
 

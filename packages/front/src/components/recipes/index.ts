@@ -10,6 +10,5 @@ export { default as AllergyAlerts } from './AllergyAlerts';
 export { default as IngredientsGrid } from './IngredientsGrid';
 export { default as DirectionsSteps } from './DirectionsSteps';
 export { default as GarnishAndTip } from './GarnishAndTip';
-export { default as RecipeSiblingNav } from './RecipeSiblingNav';
 export { default as RecipeEssentials } from './RecipeEssentials';
 export type { RecipeEssentialsProps } from './RecipeEssentials';

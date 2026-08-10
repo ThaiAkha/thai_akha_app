@@ -311,7 +311,7 @@ const MenuPage: React.FC<{
             );
           })}
 
-          <div className="fixed bottom-0 left-0 right-0 z-50 p-6 flex justify-center pointer-events-none bg-gradient-to-t from-background via-background/80 to-transparent pb-8 pt-12">
+          <div className="fixed bottom-0 left-0 right-0 z-50 p-6 flex justify-center pointer-events-none bg-gradient-to-t from-background via-background/80 to-transparent pt-12 [padding-bottom:max(2rem,env(safe-area-inset-bottom))]">
             <div className="pointer-events-auto flex items-center gap-3 w-full max-w-md bg-surface/80 dark:bg-surface/90 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
               <button onClick={() => onNavigate('user')} className="size-14 rounded-[1.5rem] flex items-center justify-center text-red-400 hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-95"><Icon name="close" size="lg" /></button>
               <Button variant="brand" fullWidth size="lg" disabled={!selections.curry || !selections.soup || !selections.stirfry || saving} onClick={handleConfirm} isLoading={saving} icon={saving ? 'sync' : 'check'} className={cn("rounded-[1.5rem] h-14 text-sm font-black tracking-widest", (!selections.curry || !selections.soup || !selections.stirfry) && "opacity-50 grayscale")}>

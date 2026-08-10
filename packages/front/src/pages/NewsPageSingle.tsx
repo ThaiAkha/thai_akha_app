@@ -2,14 +2,13 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { PageLayout, StickyTabNav, PageSEO } from '../components/layout';
 import { Typography, Button, Icon, FaqBottomPage, TableOfContents } from '../components/ui/index';
 
-import { AuthorBlock, ContentRenderer, parseContent, slugify, AkhaThemedLine, ArticleBody } from '../components/blog';
+import { AuthorBlock, ContentRenderer, parseContent, slugify, ArticleBody } from '../components/blog';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useNewsDetail } from '../hooks/useNewsDetail';
 import { NewsArticle } from '../hooks/useNewsFeed';
 import { NewsHeaderSinglePost } from '../components/news/NewsHeaderSinglePost';
-import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
-import { SiblingSection } from '../components/layout/SiblingSection';
+import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { useAudioAsset } from '../hooks/useAudioAsset';
 import { t } from '@thaiakha/shared/lib/ui-strings';
 
@@ -232,39 +231,24 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
         {/* Sibling nav — tier di chiusura --container-section (più stretto del corpo 6xl) */}
         {!dataLoading && detail && (previous || next) && (
           <>
-            <div className="w-full max-w-[var(--container-section)] mx-auto">
-              <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
-            </div>
-            <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
-              <SiblingSection sectionId="sibiling_news">
-                {previous && (
-                  <SiblingCardPost
-                    item={{
-                      title: previous.title,
-                      subtitle: previous.excerpt ?? null,
-                      imageUrl: previous.cover_data?.image_url ?? null,
-                      href: `/news/${previous.slug}`,
-                      slug: previous.slug,
-                    } satisfies SiblingPost}
-                    direction="prev"
-                    onClick={() => handleSiblingOpen(previous.slug)}
-                  />
-                )}
-                {next && (
-                  <SiblingCardPost
-                    item={{
-                      title: next.title,
-                      subtitle: next.excerpt ?? null,
-                      imageUrl: next.cover_data?.image_url ?? null,
-                      href: `/news/${next.slug}`,
-                      slug: next.slug,
-                    } satisfies SiblingPost}
-                    direction="next"
-                    onClick={() => handleSiblingOpen(next.slug)}
-                  />
-                )}
-              </SiblingSection>
-            </div>
+            <SiblingPostNav
+              sectionId="sibiling_news"
+              onOpen={handleSiblingOpen}
+              previous={previous ? {
+                title: previous.title,
+                subtitle: previous.excerpt ?? null,
+                imageUrl: previous.cover_data?.image_url ?? null,
+                href: `/news/${previous.slug}`,
+                slug: previous.slug,
+              } : null}
+              next={next ? {
+                title: next.title,
+                subtitle: next.excerpt ?? null,
+                imageUrl: next.cover_data?.image_url ?? null,
+                href: `/news/${next.slug}`,
+                slug: next.slug,
+              } : null}
+            />
           </>
         )}
 

@@ -11,8 +11,7 @@ import { IngredientListItem } from '@thaiakha/shared/types';
 import { AuthorBlock, HeaderSinglePost, AkhaThemedLine, ArticleBody } from '../components/blog';
 import { TheEssentialBox, IngredientUsageNote, UsedInRecipes, IngredientCard } from '../components/ingredients';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
-import { SiblingCardPost, SiblingPost } from '../components/ui/card/SiblingCardPost';
-import { SiblingSection } from '../components/layout/SiblingSection';
+import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useIngredientDetail } from '../hooks/useIngredientDetail';
 import { INGREDIENTS_HUB_SLUG } from '../hooks/useIngredientsFeed';
@@ -222,39 +221,24 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
         {/* Sibling nav */}
         {!dataLoading && ingredient && (previous || next) && (
           <>
-            <div className="w-full max-w-[var(--container-section)] mx-auto">
-              <AkhaThemedLine theme="akha" className="[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-xs)]" />
-            </div>
-            <div className="w-full max-w-[var(--container-section)] mx-auto [padding-bottom:var(--space-fluid-xl)]">
-              <SiblingSection sectionId="sibiling_ingredients">
-                {previous && (
-                  <SiblingCardPost
-                    item={{
-                      title: previous.name_en,
-                      subtitle: previous.phonetic ?? previous.name_th ?? null,
-                      imageUrl: previous.cover_data?.image_url ?? null,
-                      href: `/${INGREDIENTS_HUB_SLUG}/${previous.slug}`,
-                      slug: previous.slug,
-                    } satisfies SiblingPost}
-                    direction="prev"
-                    onClick={() => handleSiblingOpen(previous.slug)}
-                  />
-                )}
-                {next && (
-                  <SiblingCardPost
-                    item={{
-                      title: next.name_en,
-                      subtitle: next.phonetic ?? next.name_th ?? null,
-                      imageUrl: next.cover_data?.image_url ?? null,
-                      href: `/${INGREDIENTS_HUB_SLUG}/${next.slug}`,
-                      slug: next.slug,
-                    } satisfies SiblingPost}
-                    direction="next"
-                    onClick={() => handleSiblingOpen(next.slug)}
-                  />
-                )}
-              </SiblingSection>
-            </div>
+            <SiblingPostNav
+              sectionId="sibiling_ingredients"
+              onOpen={handleSiblingOpen}
+              previous={previous ? {
+                title: previous.name_en,
+                subtitle: previous.phonetic ?? previous.name_th ?? null,
+                imageUrl: previous.cover_data?.image_url ?? null,
+                href: `/${INGREDIENTS_HUB_SLUG}/${previous.slug}`,
+                slug: previous.slug,
+              } : null}
+              next={next ? {
+                title: next.name_en,
+                subtitle: next.phonetic ?? next.name_th ?? null,
+                imageUrl: next.cover_data?.image_url ?? null,
+                href: `/${INGREDIENTS_HUB_SLUG}/${next.slug}`,
+                slug: next.slug,
+              } : null}
+            />
           </>
         )}
       </div>

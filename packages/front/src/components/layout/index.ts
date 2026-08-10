@@ -7,6 +7,7 @@ export { default as PageMeta } from './PageMeta';
 
 // Navigation & Sidebars
 export { default as Sidebar } from './Sidebar';
+export { default as LanguageSwitcher } from './LanguageSwitcher';
 export { default as SidebarMobile } from './SidebarMobile';
 
 // Headers
@@ -20,6 +21,7 @@ export { default as PageSEO } from './PageSEO';
 export { default as StickyTabNav } from './StickyTabNav';
 export { default as SiblingInfoSection } from './SiblingInfoSection';
 export { default as SiblingSection } from './SiblingSection';
+export { default as SiblingPostNav } from './SiblingPostNav';
 
 // Types
 export type { HeaderMetadata } from './Header';

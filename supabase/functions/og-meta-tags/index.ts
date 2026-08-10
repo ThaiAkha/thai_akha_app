@@ -100,6 +100,7 @@ const LEGACY_SLUG_MAP: Record<string, string> = {
   'news':                     'thai-cooking-tips-news',
   'quiz':                     'akha-wisdom-path-quiz',
   'history':                  'akha-culture-highland-heritage',
+  'ingredients':              'thai-cooking-ingredients',
   'recipes':                  'authentic-thai-akha-recipes',
   'classes':                  'thai-cooking-classes-chiang-mai',
   'cooking-class':            'thai-cooking-classes-chiang-mai',
@@ -107,11 +108,13 @@ const LEGACY_SLUG_MAP: Record<string, string> = {
   'evening-class':            'evening-cooking-class-dinner',
   'about-us':                 'about-thai-akha-kitchen',
   'contact':                  'contact-cooking-school-chiang-mai',
+  'contact-us':               'contact-cooking-school-chiang-mai',
   'booking':                  'book-cooking-class-chiang-mai',
   'location':                 'free-pickup-location-chiang-mai',
   'faq':                      'cooking-class-faq-chiang-mai',
   'terms-and-conditions':     'booking-terms-conditions',
   'policy-and-privacy':       'privacy-policy',
+  'privacy':                  'privacy-policy',
   // News Articles (legacy)
   'the-art-of-thai-akha-spice-soft-to-warrior': 'thai-spice-levels-guide',
   'how-to-prepare-cooking-class-chiang-mai':    'prepare-thai-cooking-class-chiang-mai',
@@ -528,7 +531,7 @@ async function resolveAssetImage(
     if (error || !data?.image_url) {
       return { url: OG_CULTURE_IMAGE, mimeType: "image/jpeg" };
     }
-    return { url: data.image_url, mimeType: data.mime_type || "image/jpeg" };
+    return { url: data.image_url, mimeType: data.mime_type || detectImageType(data.image_url) };
   } catch {
     return { url: OG_DEFAULT_IMAGE, mimeType: "image/jpeg" };
   }

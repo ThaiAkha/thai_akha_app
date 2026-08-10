@@ -14,11 +14,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { GEOJSON_MASTER } from '@thaiakha/shared/data';
-import { contentService } from '@thaiakha/shared/services';
-import { buildLocalBusinessSchema } from '@thaiakha/shared/lib/businessSchema';
-import type { BusinessProfile } from '@thaiakha/shared/types';
 import { PageLayout } from '../components/layout/PageLayout';
-import { PageSEO } from '../components/layout';
 import { Typography, Badge } from '../components/ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '@thaiakha/shared/lib/ui-strings';
@@ -58,26 +54,20 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
   // ── Save state ─────────────────────────────────────────────────────────────
   const [saving, setSaving] = useState(false);
 
-  // ── Business profile (LocalBusiness JSON-LD source of truth) ────────────────
-  const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
-  useEffect(() => {
-    contentService.getBusinessProfile().then(setBusinessProfile).catch(() => {});
-  }, []);
-  const localBusinessSchema = useMemo(
-    () => (businessProfile ? buildLocalBusinessSchema(businessProfile) : undefined),
-    [businessProfile],
-  );
-
   // ── Hotel search (pickup) ──────────────────────────────────────────────────
   const pickupSearch = useHotelSearch(loc.transportMode === 'pickup' && pickupType === 'hotel');
   // ── Hotel search (dropoff) ─────────────────────────────────────────────────
   const dropoffSearch = useHotelSearch(!loc.isDropoffSame && loc.dropoffType === 'hotel');
+
+  // ── Booking date (nota solo in edit mode) — filtra i drop-off per giorno ──
+  const [bookingDate, setBookingDate] = useState<string | null>(null);
 
   // ── Zone + meeting-point data ──────────────────────────────────────────────
   const { zones, loading: zonesLoading } = useZones();
   const meetingData = useMeetingPoints({
     selectedClass: loc.selectedClass,
     outsideHotelCoords: loc.outsideHotelCoords,
+    bookingDate,
   });
 
   const loading = zonesLoading || meetingData.loading;
@@ -89,6 +79,7 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
     state: loc,
     setPickupSearchQuery: pickupSearch.setQuery,
     onLoaded: () => setBookingLoaded(true),
+    onBookingDate: setBookingDate,
   });
 
   // ── Derived: zone for selected hotel ──────────────────────────────────────
@@ -262,13 +253,8 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <PageLayout slug="free-pickup-location-chiang-mai" hideDefaultHeader={true} loading={loading || !bookingLoaded} isFullScreen={true}>
-      <PageSEO
-        title="Free Pickup | Thai Akha Kitchen"
-        description="Free hotel pickup service for Thai Akha Kitchen cooking classes. Check if your hotel is in our pickup zone in Chiang Mai, Thailand."
-        canonical="https://www.thaiakha.com/free-pickup-location-chiang-mai"
-        ogImage="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/kitchen/2026-kitchen/Kitchen-2026-00.webp"
-        jsonLd={localBusinessSchema}
-      />
+      {/* SEO (title/meta/og/json-ld): interamente di SEOHead via site_metadata —
+          il nodo LocalBusiness è già rigenerato da business_profile nel seo.service. */}
       <h1 className="sr-only">Free Hotel Pickup – Chiang Mai Cooking Classes</h1>
 
       <div className="relative w-full h-[100dvh] flex flex-col lg:block bg-black overflow-hidden">

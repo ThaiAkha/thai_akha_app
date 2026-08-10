@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { Typography, Icon, Button, AkhaCard, Modal, FaqBottomPage } from '../components/ui/index';
-import { CinematicBackground, SmartHeaderSection, PageSEO } from '../components/layout/index';
+import { CinematicBackground, SmartHeaderSection } from '../components/layout/index';
 import AuthForm from '../components/auth/AuthForm';
 import { contentService } from '@thaiakha/shared/services';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -92,7 +92,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
       {...swipeHandlers}
       className="relative min-h-[100dvh] w-full overflow-y-auto font-sans selection:bg-primary/30 flex flex-col"
     >
-      <PageSEO title="Join the Family | Thai Akha Kitchen" description="Access your Akha Chef portal." canonical="https://www.thaiakha.com/auth" />
+      {/* SEO: SEOHead via site_metadata 'auth' (access_level=user → noindex) */}
       <CinematicBackground isLoaded={!!imageUrl} imageUrl={imageUrl} />
 
       <div className="relative z-10 w-full flex-grow flex flex-col items-center justify-center [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-l)] [gap:var(--space-fluid-m)]">

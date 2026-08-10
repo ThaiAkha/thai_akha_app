@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { Typography, Button, Icon, AkhaCard } from '../components/ui/index';
-import { PageSEO } from '../components/layout/index';
 import AuthForm from '../components/auth/AuthForm';
 import { joinGroup } from '@thaiakha/shared/services';
 import type { UserProfile } from '@thaiakha/shared/types';
@@ -53,11 +52,7 @@ const JoinGroupPage: React.FC<JoinGroupPageProps> = ({ onNavigate, userProfile, 
 
   const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center bg-background [padding:var(--space-fluid-m)]">
-      <PageSEO
-        title="Join Your Cooking Class Group | Thai Akha Kitchen"
-        description="You've been invited to join a Thai Akha Kitchen cooking class group."
-        canonical="https://www.thaiakha.com/join-group"
-      />
+      {/* SEO: SEOHead via site_metadata 'join-group' (access_level=user → noindex) */}
       <AkhaCard variant="glass" className="w-full max-w-[var(--container-form)]" padding="l">
         {children}
       </AkhaCard>

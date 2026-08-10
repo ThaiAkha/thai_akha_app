@@ -166,7 +166,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
 
       {!hasExplicitPassport && (
         <div className="[margin-top:var(--space-fluid-xl)] [margin-bottom:var(--space-fluid-xl)] min-h-[35vh] flex items-center justify-center">
-          <div className="text-center [padding-inline:var(--space-fluid-m)] flex flex-col items-center [gap:var(--space-fluid-m)]">
+          <div className="text-center flex flex-col items-center [gap:var(--space-fluid-m)]">
             <Typography variant="display2" className="text-title uppercase leading-tight">
               {t.recipes.selectPrompt.split('\n').map((line, i) => (
                 <React.Fragment key={i}>

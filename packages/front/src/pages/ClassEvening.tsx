@@ -103,7 +103,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
         {classSections.length > 0 && (
           <>
             <AkhaThemedLine theme="akha" />
-            <div className="flex flex-col w-full max-w-3xl mx-auto [padding-inline:var(--space-fluid-m)]">
+            <div className="flex flex-col w-full max-w-3xl mx-auto">
               <ClassDetails color="secondary" classSections={classSections} />
             </div>
           </>

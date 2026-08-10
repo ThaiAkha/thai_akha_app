@@ -93,7 +93,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
         {/* COMPARE — Morning vs Evening (media asset: classes-compare-cover-01) */}
         <AkhaThemedLine theme="akha" />
         <ScrollEntrance delay={0.1}>
-          <section className="flex flex-col items-center text-center [gap:var(--space-fluid-l)] [padding-inline:var(--space-fluid-m)]">
+          <section className="flex flex-col items-center text-center [gap:var(--space-fluid-l)]">
             <Typography variant="h2" className="text-title max-w-3xl">
               {compareAsset?.title}
             </Typography>
@@ -199,7 +199,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
         </ScrollEntrance>
 
         {/* AUDIO STORIES 03 - 6 REASONS / CHOOSE US */}
-        <div className="max-w-xl mx-auto w-full [padding-inline:var(--space-fluid-m)] relative z-20">
+        <div className="max-w-xl mx-auto w-full relative z-20">
           <AudioPlayer assetId="class-03" hideTranscript />
         </div>
 

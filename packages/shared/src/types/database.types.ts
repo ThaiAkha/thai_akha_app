@@ -6034,22 +6034,6 @@ export type Database = {
           tender: string
         }[]
       }
-      get_salary_run: {
-        Args: { p_period: string }
-        Returns: {
-          base_salary: number
-          employee_id: string
-          full_name: string
-          overtime_note: string
-          pay_method: string
-          role: string
-          salary_id: string
-          status: string
-          total_amount: number
-          zoho_contact_id: string
-          zoho_expense_id: string
-        }[]
-      }
       inject_driver_payout_manual: {
         Args: {
           p_driver_id?: string

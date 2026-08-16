@@ -1,7 +1,9 @@
 // packages/admin/src/hooks/useCherryChat.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { orchestrator } from '@thaiakha/shared/prompts';
+import { sendChatMessageProxy } from '@thaiakha/shared/services';
+import { selectAdminAgent, buildAdminAgentPrompt } from '../prompts/adminAgents';
+import { formatScopedDataBlocks } from '../prompts/scopedData';
+import { fetchAdminScopedData, type AdminScopedData } from '../prompts/adminScopedFetch';
 import {
   getOrCreateSession,
   loadRecentMessages,
@@ -16,27 +18,25 @@ import type { UserProfile } from '../services/auth.service';
 
 const HISTORY_WINDOW = 5;
 const SUMMARY_THRESHOLD = 20;
+const TYPEWRITER_MS = 80; // cadenza reveal — allineata al front (Cherry v6)
 
 export const useCherryChat = (userProfile?: UserProfile | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const chatRef = useRef<any>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
+  const scopedDataRef = useRef<AdminScopedData | null>(null);
 
   const buildSystemPrompt = useCallback(
     (history: DbChatMessage[], summary: string | null): string => {
-      const activeAgent = orchestrator.getAgent('admin', userProfile?.role);
-      const base = orchestrator.buildPrompt(
-        activeAgent,
-        userProfile || {},
-        userProfile?.dietary_profile || 'diet_regular',
-        userProfile?.allergies || [],
-        false,
-        'admin'
-      );
+      // Multi-Cherry per ruolo (Fase 3): agente + DATI scopati per ruolo.
+      const agent = selectAdminAgent(userProfile?.role);
+      const scopedDataBlocks = scopedDataRef.current
+        ? formatScopedDataBlocks(scopedDataRef.current)
+        : 'No live data loaded kha.';
+      const base = buildAdminAgentPrompt(agent, userProfile || {}, scopedDataBlocks, false);
 
       let historyBlock = '';
       if (summary) {
@@ -54,26 +54,20 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     [userProfile]
   );
 
-  const initGeminiChat = useCallback(
-    (history: DbChatMessage[], summary: string | null) => {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-      chatRef.current = ai.chats.create({
-        model: 'gemini-3-flash-preview',
-        config: {
-          systemInstruction: buildSystemPrompt(history, summary),
-          temperature: 0.5,
-        },
-      });
-    },
-    [buildSystemPrompt]
-  );
-
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
     const init = async () => {
-      const session = await getOrCreateSession(userProfile?.id);
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
+      // Fase 3: dati SCOPATI per ruolo (un solo punto di scoping, condiviso con la voce).
+      const [scoped, session] = await Promise.all([
+        fetchAdminScopedData(userProfile?.role, userProfile?.id, today, nextWeek),
+        getOrCreateSession(userProfile?.id),
+      ]);
+      scopedDataRef.current = scoped;
       sessionRef.current = session;
       setSessionId(session.id);
 
@@ -87,27 +81,29 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
       );
 
       if (initialMessages.length === 0) {
-        const greeting = userProfile?.full_name
-          ? `Sawasdee kha ${userProfile.full_name.split(' ')[0]}! Admin panel active. How can I assist you today? kha`
-          : "Sawasdee kha! I'm Cherry, your kitchen AI. How can I help the team today? kha";
+        // Greeting con il nome della Cherry-ruolo (così l'utente sa quale assistente è attivo).
+        const agent = selectAdminAgent(userProfile?.role);
+        const firstName = userProfile?.full_name?.split(' ')[0];
+        const greeting = firstName
+          ? `Sawasdee kha ${firstName}! I'm ${agent.name}. How can I help you today? kha`
+          : `Sawasdee kha! I'm ${agent.name}. How can I help the team today? kha`;
         initialMessages.push({ id: 'greeting', role: 'model', text: greeting });
+
       }
 
       setMessages(initialMessages);
-      initGeminiChat(history, session.summary);
     };
 
     init();
   }, [userProfile?.id]);
 
   const triggerAutoSummary = async (sid: string) => {
-    if (!chatRef.current) return;
     try {
-      const result = await chatRef.current.sendMessage({
+      const summary = await sendChatMessageProxy({
         message:
           'Please summarize this conversation in max 2 sentences, focusing on: operational requests, booking summaries, and any staff notes. Be concise.',
+        systemInstruction: 'You are a concise conversation summarizer. Output plain text only.',
       });
-      const summary: string = result.text?.trim() || '';
       if (summary) await updateSummary(sid, summary);
     } catch {
       // silent fail
@@ -115,12 +111,12 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
   };
 
   const sendMessage = async (userText: string) => {
-    if (!chatRef.current || !userText.trim() || isLoading) return;
+    if (!userText.trim() || isLoading) return;
 
     const sid = sessionRef.current?.id ?? null;
 
     if (sid) {
-      const rateLimit = await checkRateLimit(userProfile?.id, undefined);
+      const rateLimit = await checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined);
       if (!rateLimit.allowed) {
         setError(rateLimit.reason ?? 'Limit reached.');
         return;
@@ -141,24 +137,38 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     if (sid) saveMessage(sid, 'user', userText, 'text');
 
     try {
-      const streamResponse = await chatRef.current.sendMessageStream({ message: userText });
-      let fullResponse = '';
+      // Build system prompt with full context (booking data, alerts, etc.)
+      const recentHistory = await loadRecentMessages(sid || '', HISTORY_WINDOW * 2);
+      const systemInstruction = buildSystemPrompt(recentHistory, sessionRef.current?.summary || null);
 
-      for await (const chunk of streamResponse) {
-        const text = (chunk as any).text;
-        if (text) {
-          fullResponse += text;
-          setMessages(prev =>
-            prev.map(m => (m.id === modelMsgId ? { ...m, text: fullResponse } : m))
-          );
-        }
-      }
+      // Call proxy with full system instruction
+      const response = await sendChatMessageProxy({
+        message: userText,
+        systemInstruction,
+      });
 
-      setMessages(prev =>
-        prev.map(m => (m.id === modelMsgId ? { ...m, isStreaming: false } : m))
-      );
+      // Persist subito (la persistenza non aspetta l'animazione).
+      if (sid) saveMessage(sid, 'assistant', response, 'text');
 
-      if (sid) saveMessage(sid, 'assistant', fullResponse, 'text');
+      // Typewriter: rivela la risposta progressivamente (parità UX col front).
+      await new Promise<void>((resolve) => {
+        const tokens = response.match(/\S+[ \t]*|\n+/g) ?? [response];
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < tokens.length) {
+            const chunk = tokens[i++];
+            setMessages(prev =>
+              prev.map(m => (m.id === modelMsgId ? { ...m, text: m.text + chunk } : m))
+            );
+          } else {
+            clearInterval(interval);
+            setMessages(prev =>
+              prev.map(m => (m.id === modelMsgId ? { ...m, isStreaming: false } : m))
+            );
+            resolve();
+          }
+        }, TYPEWRITER_MS);
+      });
 
       if (sid && sessionRef.current && sessionRef.current.message_count >= SUMMARY_THRESHOLD) {
         sessionRef.current.message_count = 0;

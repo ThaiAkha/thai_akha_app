@@ -8,6 +8,79 @@
  * Note: brand/action/quiz color SCALES are in base-theme.css @theme
  */
 
+/* ── FLUID TYPOGRAPHY — clamp(min@375px, fluid, max@1280px) ─────────────────
+   MUST be in :root, NOT in @theme — Tailwind v4 @theme strips dynamic expressions
+   like 100vw at build time, making all clamp() values resolve to the minimum.
+   ──────────────────────────────────────────────────────────────────────────── */
+:root {
+  --text-fluid-display1:     clamp(2.7rem, calc(2.7rem + 2.7 * ((100vw - 23.4375rem) / 56.5625)), 5.4rem);
+  --text-fluid-display2:     clamp(2.025rem, calc(2.025rem + 2.025 * ((100vw - 23.4375rem) / 56.5625)), 4.05rem);
+  --text-fluid-h1:           clamp(1.875rem, calc(1.875rem + 1.125 * ((100vw - 23.4375rem) / 56.5625)), 3rem);
+  --text-fluid-h2:           clamp(1.5rem, calc(1.5rem + 0.75 * ((100vw - 23.4375rem) / 56.5625)), 2.25rem);
+  --text-fluid-h3:           clamp(1.25rem, calc(1.25rem + 0.625 * ((100vw - 23.4375rem) / 56.5625)), 1.875rem);
+  --text-fluid-h4:           clamp(1.125rem, calc(1.125rem + 0.375 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  --text-fluid-h5:           clamp(1rem, calc(1rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.25rem);
+  --text-fluid-h6:           clamp(0.875rem, calc(0.875rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.125rem);
+  --text-fluid-hero:         clamp(1.5rem, calc(1.5rem + 1.5 * ((100vw - 23.4375rem) / 56.5625)), 3rem);
+  --text-fluid-paragraphL:   clamp(1.125rem, calc(1.125rem + 0.375 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  --text-fluid-paragraphM:   clamp(1rem, calc(1rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.25rem);
+  --text-fluid-paragraphS:   clamp(0.875rem, calc(0.875rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 1rem);
+  --text-fluid-body:         clamp(1rem, calc(1rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 1.125rem);
+  --text-fluid-accent:       clamp(0.875rem, calc(0.875rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 1rem);
+  --text-fluid-quote:        clamp(1.25rem, calc(1.25rem + 0.25 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  --text-fluid-caption:      clamp(0.75rem, calc(0.75rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 0.875rem);
+  --text-fluid-micro:        clamp(0.625rem, calc(0.625rem + 0.125 * ((100vw - 23.4375rem) / 56.5625)), 0.75rem);
+  --text-fluid-numericPrice: clamp(1.5rem, calc(1.5rem + 0.75 * ((100vw - 23.4375rem) / 56.5625)), 2.25rem);
+  --text-fluid-numericStat:  clamp(1.25rem, calc(1.25rem + 0.625 * ((100vw - 23.4375rem) / 56.5625)), 1.875rem);
+  --text-fluid-numericMedium: clamp(1.125rem, calc(1.125rem + 0.375 * ((100vw - 23.4375rem) / 56.5625)), 1.5rem);
+  /* Chip: mobile -10% (0.787rem) → desktop same as text-sm (0.875rem) */
+  --text-fluid-chip:         clamp(0.787rem, calc(0.787rem + 0.088 * ((100vw - 23.4375rem) / 56.5625)), 0.875rem);
+  /* Chip-lg: one step up — mobile -10% (0.9rem) → desktop text-base (1rem) */
+  --text-fluid-chip-lg:      clamp(0.9rem, calc(0.9rem + 0.1 * ((100vw - 23.4375rem) / 56.5625)), 1rem);
+}
+
+/* ── FLUID SPACE PALETTE (Utopia) — globale, riutilizzabile ovunque ─────────
+   MUST be in :root, NOT in @theme — stessa ragione dei text-fluid tokens.
+   ──────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Fixed steps */
+  --space-fluid-2xs:     clamp(0.25rem, calc(0.20rem + 0.21vw), 0.38rem);
+  --space-fluid-xs:      clamp(0.50rem, calc(0.40rem + 0.43vw), 0.75rem);
+  --space-fluid-s:       clamp(0.75rem, calc(0.65rem + 0.43vw), 1.00rem);
+  --space-fluid-m:       clamp(1.00rem, calc(0.80rem + 0.85vw), 1.50rem);
+  --space-fluid-l:       clamp(1.50rem, calc(1.30rem + 0.85vw), 2.00rem);
+  --space-fluid-xl:      clamp(2.00rem, calc(1.60rem + 1.71vw), 3.00rem);
+  --space-fluid-2xl:     clamp(3.00rem, calc(2.60rem + 1.71vw), 4.00rem);
+  --space-fluid-3xl:     clamp(4.00rem, calc(3.20rem + 3.41vw), 6.00rem);
+  --space-fluid-section: clamp(4.00rem, calc(2.40rem + 6.83vw), 8.00rem);
+
+  /* One-off pairs */
+  --space-fluid-s-l:     clamp(0.75rem, calc(0.20rem + 2.34vw), 2.00rem);
+  --space-fluid-m-xl:    clamp(1.00rem, calc(-0.10rem + 4.68vw), 3.00rem);
+  --space-fluid-l-3xl:   clamp(1.50rem, calc(-0.35rem + 7.89vw), 6.00rem);
+
+  /* Container scale — larghezze canoniche di pagina (MUST be in :root, not @theme).
+     Uso: max-w-[var(--container-page)]. I tier content (72rem) e prose (48rem)
+     restano le classi Tailwind canoniche max-w-6xl / max-w-3xl — niente doppio nome. */
+  --container-page:    85rem;  /* 1360px — shell di pagina (PageLayout, header) */
+  --container-section: 64rem;  /* 1024px — blocchi di chiusura FAQ + sibling, uno step sotto content */
+  --container-form:    30rem;  /*  480px — card auth/join, pannelli form */
+
+  /* Auth hero image — page-specific */
+  --auth-hero-img:       clamp(9rem, calc(9rem + 4vw), 14rem);
+
+  /* Border Radius System — Concentric Harmony */
+  /* Outer cards: fluid radius so the 3rem corner isn't over-pronounced on small phones (≤375px → ~24px). */
+  --radius-card-full:    clamp(1.5rem, 4vw, 3rem);  /* 24px → 48px — Primary outer cards */
+  --radius-card:         2.5rem;  /* 40px — Standard cards, inner auth faces */
+  --radius-card-md:      2rem;    /* 32px — Balanced middle ground for featured cards */
+  --radius-card-sm:      1.25rem; /* 20px — Small items, feature cards */
+
+  /* UI Primitives Radii */
+  --radius-button:       1.5rem;  /* 24px — Standard pill button */
+  --radius-input:        0.75rem; /* 12px — Standard input corner */
+}
+
 :root {
   /* ========================================================================
      ☀️ LIGHT MODE — Structural semantic tokens
@@ -34,6 +107,7 @@
   --color-sub:     #2D3231;  /* gray-900w — labels/secondary contrast: 13.9:1 ✅ AAA */
   --color-muted:   #5E6464;  /* gray-700 — captions/hints  contrast:  4.6:1 ✅ AA  */
   --color-inverse: #ffffff;  /* white   — text on dark backgrounds */
+  --text-quiz-p:   var(--color-quiz-p-700);
 
   /* ========================================================================
      🌫️ GLASS TOKENS — Front premium glass effect
@@ -46,14 +120,23 @@
   /* ========================================================================
      🖤 DARK SURFACE TOKENS — Replaces hardcoded #1a1a1a / #121212 in components
      ======================================================================== */
-  --surface-elevated: #1a1a1a;   /* card overlay on dark bg */
+  --surface-elevated: #FFFFFF;   /* card overlay — light mode; dark mode override in html.dark */
   --surface-overlay:  #0a0b0d;   /* chat, auth overlay */
   --map-bg:           #1d1d1d;   /* map background (PickupMapBackground) */
+
+  /* 🧾 FORM FIELD STANDARD — mineral fill/border that adapts via html.dark (no `dark:` needed).
+     Used by Input/Textarea/Select so every field shares one consistent, token-driven look. */
+  --field-fill:         rgb(0 0 0 / 0.05);
+  --field-fill-strong:  rgb(0 0 0 / 0.10);
+  --field-border:       rgb(0 0 0 / 0.10);
+  --field-border-hover: rgb(0 0 0 / 0.30);
 
   /* ========================================================================
      🖌️ PRINT / CERTIFICATE COLORS — Used in Certificate.tsx
      Intentionally different from brand-500 for print rendering
      ======================================================================== */
+  --color-diet-cultural: #8D1A31; /* secondary-600 — light mode */
+  --color-spicy-level:   #c11c2e; /* primary-600 — light mode */
   --color-brand-print:  #E31F33;  /* cherry red for print/PDF */
   --color-action-print: #98C93C;  /* lime for print/PDF */
   --color-silver:       #C0C0C0;  /* certificate corner borders */
@@ -65,13 +148,62 @@
      ======================================================================== */
   --primary-ch:    227  31  51;  /* #E31F33 */
   --action-ch:     152 201  60;  /* #98C93C */
-  --quiz-p-ch:     154   0  80;  /* #9A0050 */
-  --quiz-s-ch:      59  34 122;  /* #3B227A */
+  /* Quiz Color Set (6) — quiz world */
+  --quiz-1-ch:     125 178  62;  /* #7db23e green */
+  --quiz-2-ch:     243 224 133;  /* #f3e085 pale yellow */
+  --quiz-3-ch:     247 203  27;  /* #f7cb1b gold */
+  --quiz-4-ch:     231 139  46;  /* #e78b2e orange */
+  --quiz-p-ch:     155  51  87;  /* #9b3357 magenta (era #9A0050) */
+  --quiz-s-ch:      85  58  91;  /* #553a5b violet (era #3B227A) */
   --btn-p-ch:      255 109   0;  /* #FF6D00 */
-  --btn-s-ch:       28 163 230;  /* #1CA3E6 */
+  --btn-s-ch:       28 163 230;  /* #1CA3E6 — Blue Light (Shared Set: social/contatti) */
   --gray-ch:       134 140 140;  /* #868C8C */
   --secondary-ch:  141  26  49;  /* #8D1A31 */
   --allergy-ch:    255 109   0;  /* #FF6D00 */
+
+  /* FAQ — Ocean family (per trasparenze: rgb(var(--sky-blue-ch) / 0.2)) */
+  --deep-ocean-ch:   1  53 109;  /* #01356d */
+  --deep-blue-ch:    1 108 165;  /* #016ca5 */
+  --ocean-blue-ch:   3 150 199;  /* #0396c7 */
+  --sky-blue-ch:     4 176 223;  /* #04b0df */
+  --light-blue-ch: 144 224 239;  /* #90e0ef */
+  --pale-ice-ch:   190 237 244;  /* #beedf4 */
+
+  /* Cherry AI world — channels per trasparenze (rgb(var(--cherry-2-ch) / 0.12)) */
+  --cherry-1-ch: 160  18  42;  /* #A0122A */
+  --cherry-2-ch: 225  27  60;  /* #E11B3C */
+  --cherry-3-ch: 239  78 113;  /* #EF4E71 */
+  --teal-1-ch:    69 195 205;  /* #45C3CD */
+  --teal-2-ch:    30 126 140;  /* #1E7E8C */
+  --teal-3-ch:    16  63  71;  /* #103F47 */
+  /* Cherry AI — testo accento adattivo (light; dark override in html.dark) */
+  --text-cherry-ai:      var(--color-cherry-2-700);
+  --text-cherry-ai-deep: var(--color-teal-3-700);
+
+  /* Cherry AI — testo accento turquoise↔cherry, ADATTIVO (solo per il testo-gradiente
+     del titolo card "Meet Cherry": light 600 / dark 300). */
+  --cherry-grad-from: var(--color-teal-1-600);   /* turquoise (testo/accenti) */
+  --cherry-grad-to:   var(--color-cherry-2-600);  /* cherry */
+  /* Gradiente turquoise→cherry a 500, FISSO (uguale in light e dark) — usato da
+     TUTTI i pulsanti cherry E dall'header della chat inline. Turquoise solo
+     sull'angolo, cherry dominante → testo leggibile. */
+  /* Invertito: cherry a SINISTRA, turchese (scuro) a DESTRA */
+  --cherry-btn-grad: linear-gradient(115deg, var(--color-cherry-1-500) -18%, var(--color-cherry-2-500) 46%, var(--color-teal-1-700) 116%);
+  /* Titolo su superficie cherry — cherry chiarissimo (fisso) */
+  --cherry-title: var(--color-cherry-2-50);
+
+  /* Recipe Akha Set */
+  --recipe-1-ch:    83 194 150; --recipe-2-ch: 153 217 115; --recipe-3-ch: 250 229  13;
+  --recipe-4-ch:   241 186   5; --recipe-5-ch: 221  96   0; --recipe-6-ch: 202  31  52;
+  /* News Ice Set */
+  --ice-1-ch:      164 229 234; --ice-2-ch:    110 214 221; --ice-3-ch:     57 198 208;
+  --ice-4-ch:       38 153 161; --ice-5-ch:     25 102 107; --ice-6-ch:     14  68  72;
+  /* History Sunset Set */
+  --sunset-1-ch:   242 194  75; --sunset-2-ch: 232 135  46; --sunset-3-ch: 216  57  42;
+  --sunset-4-ch:   184  58 110; --sunset-5-ch:  58  79 160; --sunset-6-ch:  74  42  94;
+  /* Ingredients Pantry Set */
+  --pantry-1-ch:   143 160  90; --pantry-2-ch: 199 169  74; --pantry-3-ch: 217 142  60;
+  --pantry-4-ch:   194  90  46; --pantry-5-ch: 138  74  44; --pantry-6-ch:  62  42  30;
 
   /* RGB CHANNELS — System UI */
   --sys-success-ch:  34 197  94;  /* #22C55E */
@@ -81,7 +213,7 @@
   --sys-notice-ch:  234 179   8;  /* #EAB308 */
 
   /* RGB CHANNELS — Semantic (cambiano in dark mode) */
-  --title-ch:  18  19  17;  /* gray-950 #121311 */
+  --title-ch:  18  18  18;  /* gray-950 #121212 */
   --desc-ch:   34  40  39;  /* gray-900 #222827 */
   --border-ch: 226 232 240; /* #E2E8F0 */
 
@@ -96,24 +228,45 @@
    html.dark = class-based toggle | @media = system preference
    ======================================================================== */
 html.dark {
-  --bg:        #121311;  /* gray-950 — page background */
+  --color-diet-cultural: #CC4D67; /* secondary-400 — dark mode */
+  --color-spicy-level:   #e3515f; /* primary-400 — dark mode */
+
+  /* Cherry AI — testo accento più luminoso in dark (leggibilità su superfici scure) */
+  --text-cherry-ai:      var(--color-cherry-2-300);
+  --text-cherry-ai-deep: var(--color-teal-1-300);
+
+  /* Cherry AI — testo-gradiente titolo card più tenue in dark (turquoise/cherry pastello).
+     NB: --cherry-btn-grad e --cherry-title restano FISSI (nessun override qui). */
+  --cherry-grad-from: var(--color-teal-1-300);
+  --cherry-grad-to:   var(--color-cherry-2-300);
+
+  --bg:        #121212;  /* gray-950 — page background */
   --surface:   #222827;  /* gray-900 — cards, modals, inputs */
   --surface-2: #1a1f1e;  /* derived — secondary surface */
   --border:    #4A504F;  /* gray-800 — light borders */
   --border-2:  #5E6464;  /* gray-700 — standard borders */
 
+  /* Form field standard — light mineral flips to white in dark mode */
+  --field-fill:         rgb(255 255 255 / 0.05);
+  --field-fill-strong:  rgb(255 255 255 / 0.10);
+  --field-border:       rgb(255 255 255 / 0.10);
+  --field-border-hover: rgb(255 255 255 / 0.30);
+
 
   /* Dark mode semantic layers */
-  --color-background: #0A0A0A;    /* Dark background */
-  --color-surface:    #121212;    /* Dark surface */
-  --color-border:     #2D2D2D;    /* Dark border */
+  --color-background:     #0A0A0A;    /* Dark background */
+  --color-surface:        #121212;    /* Dark surface */
+  --color-surface-elevated: #1a1a1a;  /* Dark elevated surface */
+  --color-border:         #2D2D2D;    /* Dark border */
+  --surface-elevated:     #1a1a1a;    /* Mirror for var(--surface-elevated) usage */
 
   /* TEXT COLORS — Dark mode v4 */
   --color-title:   #E6ECEC;  /* gray-50  — H1/H2/H3 */
   --color-desc:    #D6DCDC;  /* gray-100 — paragraphs */
   --color-sub:     #D6DCDC;  /* gray-100 — general text */
   --color-muted:   #D6DCDC;  /* gray-100 — other text */
-  --color-inverse: #121311;  /* gray-950 — text on dark backgrounds */
+  --color-inverse: #121212;  /* gray-950 — text on dark backgrounds */
+  --text-quiz-p:   var(--color-quiz-p-300);
 
   /* Dark mode RGB channels (semantic) */
   --title-ch:  230 236 236;  /* gray-50  #E6ECEC */
@@ -127,9 +280,10 @@ html.dark {
 
 @media (prefers-color-scheme: dark) {
   html:not(.light) {
-    --bg:        #121311;
+    --bg:        #121212;
     --surface:   #222827;
     --surface-2: #1a1f1e;
+    --surface-elevated: #1a1a1a;
     --border:    #4A504F;
     --border-2:  #5E6464;
 
@@ -145,7 +299,7 @@ html.dark {
     --color-desc:    #D6DCDC;
     --color-sub:     #D6DCDC;
     --color-muted:   #D6DCDC;
-    --color-inverse: #121311;
+    --color-inverse: #121212;
 
     --glass-bg:     rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
@@ -158,7 +312,7 @@ html.dark {
 html:lang(th) {
   line-height: 1.6;
   letter-spacing: 0.01em;
-  font-family: 'Noto Sans Thai', 'Sarabun', sans-serif;
+  font-family: 'Noto Sans Thai', 'Noto Sans', sans-serif;
 }
 
 html:lang(th) body,

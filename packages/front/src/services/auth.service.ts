@@ -1,6 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { authCoreService } from '@thaiakha/shared/services';
 import type { UserProfile } from '@thaiakha/shared/types';
+import { invalidateGeminiClients } from './geminiClient';
 
 export const authService = {
     ...authCoreService, // Eredita signIn, signOut, getCurrentUserProfile, ecc.
@@ -36,7 +37,7 @@ export const authService = {
                     id: authData.user.id,
                     email,
                     full_name: fullName,
-                    role: 'user',
+                    role: 'guest',
                     dietary_profile: 'diet_regular',
                     ...(age != null && { age }),
                     ...(gender && { gender }),
@@ -50,65 +51,19 @@ export const authService = {
         return authData;
     },
 
-    /**
-     * 🏢 SIGN UP AGENCY (PARTNER B2B)
-     * Registrazione specifica per Partner: forza il ruolo 'agency' e salva i dati fiscali.
-     */
-    async signUpAgency(
-        email: string,
-        password: string,
-        companyName: string,
-        taxId: string,
-        phone: string
-    ) {
-        // 1. Crea Auth User
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: { full_name: companyName } // Usa il nome azienda come nome utente
-            }
-        });
-
-        if (authError) throw authError;
-
-        // 2. Scrivi Profilo Agenzia Esteso
-        if (authData.user) {
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .upsert({
-                    id: authData.user.id,
-                    email: email,
-                    full_name: companyName,     // Nome visualizzato
-                    role: 'agency',             // 👈 FORZA IL RUOLO B2B
-
-                    // Dati Specifici Agenzia
-                    agency_company_name: companyName,
-                    agency_tax_id: taxId,
-                    agency_phone: phone,
-                    agency_commission_rate: 20, // Default 20% (Modificabile solo da Admin)
-
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'id' });
-
-            if (profileError) console.warn("Agency profile warning:", profileError.message);
-        }
-
-        return authData;
-    },
-
-    /** 
-     * 👤 GET CURRENT USER PROFILE (Override per front cache)
-     */
+    /** 👤 GET CURRENT USER PROFILE (Override per front cache) */
     async getCurrentUserProfile(): Promise<UserProfile | null> {
         return authCoreService.getCurrentUserProfile('guest');
     },
 
     /** 🚪 LOGOUT (Override per front cache) */
     async signOut() {
-        // Usa un remove brute-force come nell'originale front authService
-        localStorage.clear();
+        // 1. Prima facciamo il logout ufficiale da Supabase (serve che i token siano ancora nel localStorage)
         await supabase.auth.signOut();
+        // 2. Invalida il client Gemini cached (token vocale legato all'utente)
+        invalidateGeminiClients();
+        // 3. Poi puliamo tutto il resto in modo brute-force
+        localStorage.clear();
     }
 };
 

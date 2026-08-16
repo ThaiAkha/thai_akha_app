@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "title": "Explorador de base de datos | Thai Akha Kitchen",
+    "description": "Gestionar tablas del sistema con restricciones de seguridad."
+  },
+  "sidebar": {
+    "title": "Tablas",
+    "statusLabel": "Estado",
+    "status": "Ediciones en vivo"
+  },
+  "content": {
+    "searchPlaceholder": "Buscar {{table}}...",
+    "noData": "No se encontraron datos en {{table}}"
+  },
+  "inspector": {
+    "readOnly": "SOLO LECTURA",
+    "noSchema": "No hay datos de esquema disponibles.",
+    "deleteRecord": "ELIMINAR",
+    "confirm": "CONFIRMAR",
+    "cancel": "CANCELAR"
+  },
+  "actions": {
+    "exportFormats": "Formatos de exportación",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "Formato de hoja de cálculo estándar",
+    "exportJson": "Formato JSON",
+    "exportJsonDesc": "Estructura de datos sin procesar",
+    "copyClipboard": "Copiar al portapapeles",
+    "copyClipboardDesc": "Compartir rápidamente como texto",
+    "insertRecord": "Insertar nuevo registro",
+    "newRow": "Nueva fila",
+    "deleteRestricted": "Eliminación restringida por seguridad.",
+    "edit": "EDITAR",
+    "save": "GUARDAR",
+    "saving": "GUARDANDO...",
+    "tooltipEdit": "Editar este registro",
+    "tooltipSave": "Guardar modificaciones"
+  },
+  "alerts": {
+    "loadFailed": "Error al cargar {{table}}",
+    "savedSuccess": "Datos guardados exitosamente",
+    "saveFailed": "Error al guardar: {{message}}",
+    "deletedSuccess": "Eliminado exitosamente",
+    "deleteFailed": "Error al eliminar: {{message}}",
+    "copiedCount": "{{count}} elementos copiados al portapapeles"
+  }
+}

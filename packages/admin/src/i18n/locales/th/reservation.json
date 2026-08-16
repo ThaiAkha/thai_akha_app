@@ -3,6 +3,26 @@
     "title": "การจอง | ไทยอาข่าคิทเชน",
     "description": "จัดการการจองรายวันและรายละเอียดลูกค้า"
   },
+  "kitchen": {
+    "days": "วัน & คลาส",
+    "participants": "ผู้เข้าร่วม",
+    "groupInfo": "ข้อมูลกลุ่ม",
+    "pickParticipant": "เลือกผู้เข้าร่วมเพื่อดูกลุ่มของเขา",
+    "notRegistered": "ที่นั่งยังไม่ได้ลงทะเบียน",
+    "bookingDetails": "รายละเอียดการจอง",
+    "contacts": "ผู้ติดต่อ",
+    "noContacts": "ไม่มีข้อมูลติดต่อ",
+    "printReport": "พิมพ์รายงาน",
+    "print": "พิมพ์",
+    "downloadPdf": "ดาวน์โหลด PDF"
+  },
+  "messages": {
+    "loading": "กำลังโหลด…"
+  },
+  "empty": {
+    "noParticipants": "เลือกวันและคลาส",
+    "noBookings": "ไม่มีการจองที่กำลังจะมาถึง"
+  },
   "sidebar": {
     "title": "ลูกค้า",
     "cancelledTitle": "การจองที่ยกเลิก",
@@ -33,8 +53,8 @@
     "guest": "แขก"
   },
   "inspector": {
-    "noSelection": "ยังไม่ได้เลือก",
-    "noSelHint": "เลือกการจองจากรายการเพื่อดูและจัดการรายละเอียด",
+    "noSelection": "ยังไม่ได้เลือกกลุ่ม",
+    "noSelHint": "เลือกกลุ่มเพื่อดูรายละเอียด",
     "fieldPax": "จำนวนผู้เข้าร่วม",
     "fieldDate": "วันที่จอง",
     "fieldClass": "ชั้นเรียน",
@@ -46,7 +66,9 @@
     "payPaid": "ชำระแล้ว",
     "payPartial": "ชำระบางส่วน",
     "payRefunded": "คืนเงินแล้ว",
-    "fieldNotes": "หมายเหตุ"
+    "fieldNotes": "หมายเหตุ",
+    "groupLeader": "หัวหน้ากลุ่ม",
+    "guest": "ผู้เข้าร่วม"
   },
   "actions": {
     "tooltipEdit": "แก้ไขการจองนี้",
@@ -89,5 +111,11 @@
     "noPhone": "ไม่มีเบอร์โทรศัพท์",
     "lifecycleStatus": "สถานะการดำเนินการ",
     "inspectorIdleMsg": "ไม่มีรายการที่เลือก"
+  },
+  "alerts": {
+    "saveError": "ข้อผิดพลาดในการบันทึก: {{message}}",
+    "cancelError": "ข้อผิดพลาดในการยกเลิก: {{message}}",
+    "restoreError": "ข้อผิดพลาดในการกู้คืน: {{message}}",
+    "deleteError": "ข้อผิดพลาดในการลบ: {{message}}"
   }
 }

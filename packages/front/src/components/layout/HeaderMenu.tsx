@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import Typography from '../ui/Typography';
 import { contentService } from '@thaiakha/shared/services'; // ✅ Usa il Service (Cache)
 import { HeaderMetadata } from './Header';
-import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { LogoFullLight, LogoFullDark } from '@thaiakha/shared';
 
 interface HeaderMenuProps {
   currentStep?: 1 | 2;
   customSlug?: string;
+  descriptionOverride?: string;
 }
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug, descriptionOverride }) => {
   const [data, setData] = useState<HeaderMetadata | null>(null);
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 
@@ -37,27 +38,22 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ FIX: Rimosso il loader/skeleton.
-  // Se i dati non ci sono ancora (raro con la cache), rendiamo null per non occupare spazio
-  // o un div trasparente con l'altezza esatta per evitare layout shift.
+  // Se i dati non ci sono ancora, un div trasparente con l'altezza esatta per evitare layout shift.
   if (!data) return <div className="min-h-[200px] w-full opacity-0" />;
 
   return (
     <header className={cn(
       "app-header-layout flex flex-col items-center text-center w-full justify-start",
-
-      // 1. Spaziatura Verticale (Il tuo codice, perfetto)
-      "pt-10 md:pt-12 lg:pt-14 pb-12",
-
-      // 2. Transizioni Colore (Per Light/Dark mode)
+      // Spaziatura Verticale
+      "[padding-top:var(--space-fluid-l)] [padding-bottom:var(--space-fluid-l)]",
+      // Transizioni Colore (Per Light/Dark mode)
       "transition-all duration-700",
-
-      // 3. ✨ Altezza Minima (Evita scatti se il titolo è breve)
+      // Altezza Minima (Evita scatti se il titolo è breve)
       "min-h-[200px]"
     )}>
 
       {/* 1. BRAND LOGO */}
-      <div className="mb-4 mx-auto opacity-90 hover:opacity-100 transition-opacity cursor-pointer">
+      <div className="[margin-bottom:var(--space-fluid-2xs)] mx-auto opacity-90 hover:opacity-100 transition-opacity cursor-pointer">
         <img
           src={isDark ? LogoFullDark : LogoFullLight}
           alt="Thai Akha Kitchen"
@@ -66,7 +62,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
       </div>
 
       {/* 2. TITOLO CENTRATO */}
-      <h1 className="flex flex-wrap justify-center gap-x-3 mb-2">
+      {/* Aggiustato il margine base (mb-0) per mobile e ripristinato (md:mb-2) su desktop */}
+      <h1 className="flex flex-wrap justify-center [column-gap:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-2xs)]">
         <Typography
           variant="titleMain"
           color="title"
@@ -77,23 +74,34 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug }) => {
         <Typography
           variant="titleHighlight"
           as="span"
-          className="pb-1"
+          className="pe-[0.25em] pb-1"
         >
           {data.titleHighlight}
         </Typography>
       </h1>
 
-      <div className="mt-3 mb-5 mx-auto opacity-90 hover:opacity-100 transition-opacity">
-        <AkhaPixelPattern variant="line_simple" size={5} speed={40} />
+      {/* COMPATTATO SU MOBILE: mt-1 e mb-2 su mobile, mt-3 e mb-5 da tablet in su */}
+      <div className="[margin-top:0] [margin-bottom:var(--space-fluid-s)] mx-auto opacity-90 hover:opacity-100 transition-opacity">
+
+        {/* Mostrato SOLO su Mobile (fino a 768px): size 5 */}
+        <div className="block md:hidden">
+          <AkhaPixelPattern variant="line_simple" size={5} speed={40} />
+        </div>
+
+        {/* Mostrato SOLO su Desktop (da 768px in su): size 8 */}
+        <div className="hidden md:block">
+          <AkhaPixelPattern variant="line_simple" size={8} speed={40} />
+        </div>
+
       </div>
 
-      {/* 3. DESCRIZIONE */}
+      {/* 3. DESCRIZIONE — override dinamico se passato (es. dieta attiva), altrimenti DB */}
       <Typography
-        variant="paragraphL"
+        variant="paragraphM"
         color="sub"
-        className="max-w-2xl whitespace-pre-wrap"
+        className="max-w-2xl whitespace-pre-line transition-all duration-500"
       >
-        {data.description}
+        {descriptionOverride ?? data.description}
       </Typography>
 
     </header>

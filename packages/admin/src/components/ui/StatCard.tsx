@@ -2,6 +2,7 @@ import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import * as LucideIcons from 'lucide-react';
 import Card from './Card';
+import { Numeric } from '../typography';
 
 interface StatCardProps {
     title: string;
@@ -73,11 +74,8 @@ const StatCard: React.FC<StatCardProps> = ({
                 </div>
             </div>
             <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">{title}</p>
-                <p className={cn(
-                    "text-2xl font-black tracking-tighter font-mono",
-                    "text-gray-900 dark:text-white"
-                )}>{value}</p>
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">{title}</p>
+                <Numeric variant="stat" className="block tracking-tighter text-gray-900 dark:text-white">{value}</Numeric>
             </div>
         </Card>
     );

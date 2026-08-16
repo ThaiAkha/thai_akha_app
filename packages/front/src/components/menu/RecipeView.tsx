@@ -3,39 +3,53 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Badge, Icon, Button, Divider, Modal, MediaImage } from '../ui/index';
 import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { DIETARY_KNOWLEDGE_BASE } from '@thaiakha/shared/data';
+import { contentService } from '@thaiakha/shared/services';
+import { ContentCategoryDB } from '@thaiakha/shared';
 
 // --- INTERFACCE ---
 
 export interface RecipeData {
   id: string;
+  slug?: string;
   name: string;
   thai_name?: string;
+  subtitle?: string;
+  excerpt?: string;
   description: string;
   category: string;
   image: string;
-  spiciness: number;
   // Diete & Allergeni
-  isVegan: boolean;
-  isVegetarian: boolean;
   hasPeanuts: boolean;
   hasGluten: boolean;
   hasShellfish: boolean;
   hasSoy: boolean;
-  hasEggs?: boolean;
-  hasDairy?: boolean;
+  hasEggs: boolean;
+  hasFish: boolean;
+  hasFishSauce: boolean;
+  hasSeafood: boolean;
+  hasSesame: boolean;
+  hasSoySauce: boolean;
+  hasTreeNuts: boolean;
   // Metadata
   isSignature: boolean;
   isFixedDish: boolean;
   healthBenefits: string;
   keyIngredients: string[];
-  colorTheme?: string;
   // Media
+  coverAltText?: string;
   audio_story_url?: string;
   audio_cooking_url?: string;
   galleryImages: string[];
   dietary_variants?: Record<string, any>;
   activeDietLabel?: string;
+  // Cookbook / Recipe Detail
+  servings?: string;
+  prep_time_min?: number;
+  cook_time_min?: number;
+  directions?: Array<{ step: number; text: string }>;
+  garnish?: string;
+  cooks_tip?: string;
+  notes?: string;
 }
 
 export interface CategoryData {
@@ -67,17 +81,7 @@ interface RecipeViewProps {
   isSelected?: boolean;
 }
 
-const CATEGORY_ORDER = ['appetizer', 'dessert', 'akha_specialty', 'curry', 'soup', 'stirfry'];
-
-const CATEGORY_LABELS: Record<string, string> = {
-  appetizer: 'Appetizers',
-  dessert: 'Desserts',
-  akha_specialty: 'Akha Traditional',
-  curry: 'Curry',
-  soup: 'Soup',
-  stirfry: 'Stir-Fry'
-};
-
+// Fallback colors for categories if not specified in DB
 const CAT_COLORS: Record<string, string> = {
   curry: 'bg-red-500/80 text-white border-red-400/50',
   soup: 'bg-btn-p-500/80 text-white border-btn-p-400/50',
@@ -103,26 +107,55 @@ const RecipeView: React.FC<RecipeViewProps> = ({
   const [galleryStartIndex, setGalleryStartIndex] = useState(0);
   const [activeAudio, setActiveAudio] = useState<'story' | 'cooking' | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
   const [richIngredients, setRichIngredients] = useState<IngredientDetail[]>([]);
   const [activeIngredient, setActiveIngredient] = useState<IngredientDetail | null>(null);
   const [loadingIng, setLoadingIng] = useState(false);
+  const [allergyMap, setAllergyMap]   = useState<Record<string, string>>({});
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // --- 1. FETCH INGREDIENTI CON PRIVACY CHECK ---
+  // --- 1. FETCH INGREDIENTI & ALLERGY MAP ---
   useEffect(() => {
     const fetchRichIngredients = async () => {
         if (!recipe.keyIngredients || recipe.keyIngredients.length === 0) return;
         setLoadingIng(true);
         const { data } = await supabase
             .from('ingredients_library')
-            .select('id, name_en, name_th, phonetic, description, image_url, is_visible_public')
+            .select('id, name_en, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
             .in('name_en', recipe.keyIngredients);
-        if (data) setRichIngredients(data);
+        // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
+        if (data) setRichIngredients(
+            (data as Array<Record<string, unknown>>).map((item) => {
+                const cover = item.cover as { image_url?: string } | null;
+                return {
+                    id: item.id as string,
+                    name_en: item.name_en as string,
+                    name_th: item.name_th as string,
+                    phonetic: item.phonetic as string | undefined,
+                    description: item.description as string,
+                    is_visible_public: item.is_visible_public as boolean,
+                    image_url: cover?.image_url ?? '',
+                };
+            })
+        );
         setLoadingIng(false);
     };
+
+    const fetchAllergies = async () => {
+        const map = await contentService.getAllergyMap();
+        setAllergyMap(map);
+    };
+
+    const fetchCategories = async () => {
+        const cats = await contentService.getContentCategories('recipe');
+        setCategories(cats);
+    };
+
     fetchRichIngredients();
+    fetchAllergies();
+    fetchCategories();
     
     const mainContainer = document.getElementById('main-scroll-container');
     if (mainContainer) mainContainer.scrollTo({ top: 0, behavior: 'instant' });
@@ -134,7 +167,6 @@ const RecipeView: React.FC<RecipeViewProps> = ({
   const visibleIngredientsNames = useMemo(() => {
     return recipe.keyIngredients.filter(name => {
       const rich = richIngredients.find(ri => ri.name_en === name);
-      // Se non ancora caricato o flag false, nascondiamo per sicurezza
       return rich ? rich.is_visible_public : false;
     });
   }, [recipe.keyIngredients, richIngredients]);
@@ -147,20 +179,25 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       'Shellfish': recipe.hasShellfish,
       'Gluten': recipe.hasGluten,
       'Soy': recipe.hasSoy,
-      'Eggs': recipe.hasEggs || false,
-      'Dairy': recipe.hasDairy || false
+      'Eggs': recipe.hasEggs,
+      'Fish': recipe.hasFish,
+      'Fish Sauce': recipe.hasFishSauce,
+      'Seafood': recipe.hasSeafood,
+      'Sesame': recipe.hasSesame,
+      'Soy Sauce': recipe.hasSoySauce,
+      'Tree Nuts': recipe.hasTreeNuts
     };
 
     userAllergies.forEach(allergen => {
       const key = Object.keys(checkMap).find(k => k.toLowerCase() === allergen.toLowerCase());
       if (key && checkMap[key]) {
-        const kbKey = allergen.toLowerCase() as keyof typeof DIETARY_KNOWLEDGE_BASE.allergyWarnings;
-        const warning = DIETARY_KNOWLEDGE_BASE.allergyWarnings[kbKey] || "We will modify the preparation for your safety.";
+        const kbKey = allergen.toLowerCase();
+        const warning = allergyMap[kbKey] || "We will modify the preparation for your safety.";
         conflicts.push({ allergen, warning });
       }
     });
     return conflicts;
-  }, [recipe, userAllergies]);
+  }, [recipe, userAllergies, allergyMap]);
 
   // --- 4. MEDIA & DROPDOWN DATA ---
   const galleryItems: GalleryItem[] = useMemo(() => {
@@ -171,21 +208,29 @@ const RecipeView: React.FC<RecipeViewProps> = ({
 
   const groupedRecipes = useMemo(() => {
     const groups: Record<string, RecipeData[]> = {};
-    CATEGORY_ORDER.forEach(cat => groups[cat] = []);
+    categories.forEach(cat => groups[cat.id] = []);
     allRecipes.forEach(r => {
-      let key = r.category;
-      if (!groups[key]) {
-         if (key.includes('curry')) key = 'curry';
-         else if (key.includes('soup')) key = 'soup';
-         else if (key.includes('stir')) key = 'stirfry';
-         else if (key.includes('akha')) key = 'akha_specialty';
-         else if (key.includes('appetizer')) key = 'appetizer';
-         else if (key.includes('dessert')) key = 'dessert';
+      const catId = r.category;
+      if (!groups[catId]) {
+         // Try finding matching category by prefix or ID
+         const found = categories.find(c => catId.includes(c.id.toLowerCase()) || c.id.toLowerCase().includes(catId.toLowerCase()));
+         if (found) {
+            if (!groups[found.id]) groups[found.id] = [];
+            groups[found.id].push(r);
+         }
+      } else {
+         groups[catId].push(r);
       }
-      if (groups[key]) groups[key].push(r);
     });
     return groups;
-  }, [allRecipes]);
+  }, [allRecipes, categories]);
+
+  const categoryOrder = useMemo(() => categories.map(c => c.id), [categories]);
+
+  const getCategoryLabel = (catId: string) => {
+      const cat = categories.find(c => c.id === catId);
+      return cat?.title || catId.toUpperCase();
+  };
 
   // --- HANDLERS ---
   const handleAskCherry = () => {
@@ -240,11 +285,11 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                      <Badge variant="mineral" className="bg-primary/10 text-primary">{allRecipes.length} Options</Badge>
                   </div>
                   <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-10">
-                     {CATEGORY_ORDER.map(catKey => groupedRecipes[catKey]?.length > 0 && (
-                        <div key={catKey} className="space-y-4">
-                           <Badge variant="outline" className="border-white/20 text-white/40 px-3">{CATEGORY_LABELS[catKey]}</Badge>
+                     {categoryOrder.map(catId => groupedRecipes[catId]?.length > 0 && (
+                        <div key={catId} className="space-y-4">
+                           <Badge variant="outline" className="border-white/20 text-white/40 px-3">{getCategoryLabel(catId)}</Badge>
                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                              {groupedRecipes[catKey].map((item) => (
+                              {groupedRecipes[catId].map((item) => (
                                  <button key={item.id} onClick={() => { onSelectDish(item); setIsMenuOpen(false); }} className={cn("relative group w-full h-20 rounded-2xl overflow-hidden border transition-all duration-300 flex items-center text-left", item.id === recipe.id ? "bg-secondary/20 border-secondary/50 text-secondary shadow-lg" : "bg-surface-elevated border-white/5 text-white/60 hover:bg-white/5")}>
                                     <div className="w-1/4 h-full border-r border-white/5 overflow-hidden">
                                        <MediaImage
@@ -267,7 +312,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       </div>
 
       {/* --- CONTENT GRID --- */}
-      <div className="max-w-[85rem] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12 mt-4 relative z-10">
+      <div className="max-w-[var(--container-page)] mx-auto [padding-inline:var(--space-fluid-m)] grid grid-cols-1 md:grid-cols-12 gap-12 mt-4 relative z-10">
         
         {/* MEDIA SIDE (Left) */}
         <div className="md:col-span-5 flex flex-col gap-4">
@@ -280,7 +325,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               {/* Mobile Labels */}
-              <div className="absolute top-4 left-4 md:hidden z-20"><Badge variant="mineral" className={CAT_COLORS[recipe.category]}>{recipe.category.toUpperCase()}</Badge></div>
+              <div className="absolute top-4 left-4 md:hidden z-20"><Badge variant="mineral" className={CAT_COLORS[recipe.category] || 'bg-surface/80'}>{getCategoryLabel(recipe.category).toUpperCase()}</Badge></div>
               <div className="absolute bottom-6 left-6 right-6 md:hidden z-20">
                  <h1 className="text-4xl font-display font-black uppercase text-white leading-[0.9] drop-shadow-xl">{recipe.name}</h1>
               </div>
@@ -310,7 +355,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
         {/* INFO SIDE (Right) */}
         <div className="md:col-span-7 space-y-10 lg:pt-2">
            <div className="space-y-4 hidden md:block">
-              <div className="flex gap-3"><Badge variant="mineral">{recipe.category.toUpperCase()}</Badge></div>
+              <div className="flex gap-3"><Badge variant="mineral">{getCategoryLabel(recipe.category).toUpperCase()}</Badge></div>
               <h1 className="text-4xl md:text-5xl font-display font-black uppercase text-gray-900 dark:text-gray-100 leading-[0.9]">{recipe.name}</h1>
               {recipe.thai_name && <Typography variant="h4" className="text-primary italic opacity-90">{recipe.thai_name}</Typography>}
            </div>
@@ -372,7 +417,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
       {onConfirmSelection && (
          <div className="fixed bottom-0 left-0 right-0 z-[60] p-6 bg-gradient-to-t from-black via-black/80 to-transparent flex justify-center animate-in slide-in-from-bottom-8">
             <div className="w-full max-w-lg">
-               <Button variant={isSelected ? "mineral" : "action"} size="xl" fullWidth onClick={() => onConfirmSelection(recipe)} disabled={isSelected} className="shadow-2xl h-16 rounded-[1.5rem] font-black tracking-widest text-lg">
+               <Button variant={isSelected ? "mineral" : "action"} size="lg" fullWidth onClick={() => onConfirmSelection(recipe)} disabled={isSelected} className="shadow-2xl h-16 rounded-[1.5rem] font-black tracking-widest text-lg">
                   {isSelected ? "Already in Menu" : "Add to Menu"}
                </Button>
             </div>
@@ -402,7 +447,14 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                  </div>
               </div>
               <div className="p-8 pt-4 space-y-6">
-                 <Typography variant="body" className="text-white/70 leading-relaxed text-sm font-light">{activeIngredient.description}</Typography>
+                 {/* description dal DB è HTML (192 righe con <p>/<strong>) → render con prose
+                     come IngredientModal/IngredientPageSingle, non testo grezzo. */}
+                 <Typography
+                    as="div"
+                    variant="body"
+                    className="text-white/70 leading-relaxed text-sm font-light [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
+                    dangerouslySetInnerHTML={{ __html: activeIngredient.description ?? '' }}
+                 />
                  <Button variant="mineral" fullWidth onClick={() => setActiveIngredient(null)} className="h-12">Close Details</Button>
               </div>
            </div>

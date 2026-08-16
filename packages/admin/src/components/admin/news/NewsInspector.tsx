@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2, Image as ImageIcon, Volume2, LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
@@ -69,7 +70,7 @@ function FieldLabel({ label, isReadOnly = false }: { label: string; isReadOnly?:
         <div className="flex justify-between items-center mb-1.5">
             <SectionHeader title={label.replace(/_/g, ' ')} />
             {isReadOnly && (
-                <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                <span className="text-xs font-black text-gray-400 uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                     READ ONLY
                 </span>
             )}
@@ -80,6 +81,7 @@ function FieldLabel({ label, isReadOnly = false }: { label: string; isReadOnly?:
 function CoverImageField({ fieldKey, value, isEditing, onChange }: {
     fieldKey: string; value: any; isEditing: boolean; onChange: (v: string) => void;
 }) {
+    const { t } = useTranslation('pages');
     const rawValue = typeof value === 'string' ? value : '';
     const { urls: resolvedUrl, loading } = useMediaResolver(rawValue);
     const [imgError, setImgError] = useState(false);
@@ -92,8 +94,8 @@ function CoverImageField({ fieldKey, value, isEditing, onChange }: {
             <div className="flex items-center gap-2 mb-2">
                 <ImageIcon className="w-4 h-4 text-gray-400" />
                 <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
-                {loading && <span className="text-[8px] text-gray-400">resolving...</span>}
-                {displayUrl && <span className="text-[8px] text-gray-400 font-mono truncate">{displayUrl.substring(0, 30)}...</span>}
+                {loading && <span className="text-xs text-gray-400">resolving...</span>}
+                {displayUrl && <span className="text-xs text-gray-400 font-mono truncate">{displayUrl.substring(0, 30)}...</span>}
             </div>
             {displayUrl && !imgError && !loading ? (
                 <div className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 aspect-video">
@@ -111,12 +113,12 @@ function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                 <div className="rounded-xl bg-gray-100 dark:bg-gray-800 aspect-video flex items-center justify-center flex-col gap-2">
                     <ImageIcon className="w-10 h-10 text-gray-300" />
                     {!loading && displayUrl && imgError && (
-                        <p className="text-[9px] text-gray-400 font-mono text-center px-2">
+                        <p className="text-xs text-gray-400 font-mono text-center px-2">
                             Failed to load
                         </p>
                     )}
                     {loading && (
-                        <p className="text-[9px] text-gray-400">Loading...</p>
+                        <p className="text-xs text-gray-400">Loading...</p>
                     )}
                 </div>
             )}
@@ -125,7 +127,7 @@ function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                     type="text"
                     value={rawValue}
                     onChange={e => { setImgError(false); onChange(e.target.value); }}
-                    placeholder="Media ID or URL"
+                    placeholder={t('news.placeholderMediaId')}
                     className="text-xs font-mono bg-white dark:bg-gray-800 h-9 px-3 rounded-lg shadow-sm"
                 />
             )}
@@ -136,6 +138,7 @@ function CoverImageField({ fieldKey, value, isEditing, onChange }: {
 function AudioField({ fieldKey, value, isEditing, onChange }: {
     fieldKey: string; value: any; isEditing: boolean; onChange: (v: string) => void;
 }) {
+    const { t } = useTranslation('pages');
     const rawValue = typeof value === 'string' ? value : '';
     const { urls: resolvedUrl, loading } = useMediaResolver(rawValue);
     const displayUrl = (typeof resolvedUrl === 'string' ? resolvedUrl : null) || rawValue;
@@ -145,7 +148,7 @@ function AudioField({ fieldKey, value, isEditing, onChange }: {
             <div className="flex items-center gap-2 mb-2">
                 <Volume2 className="w-4 h-4 text-purple-400" />
                 <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
-                {loading && <span className="text-[8px] text-purple-400">resolving...</span>}
+                {loading && <span className="text-xs text-purple-400">resolving...</span>}
             </div>
             {displayUrl && !loading ? (
                 <div className="rounded-xl bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/20 p-3">
@@ -174,7 +177,7 @@ function AudioField({ fieldKey, value, isEditing, onChange }: {
                     type="text"
                     value={rawValue}
                     onChange={e => onChange(e.target.value)}
-                    placeholder="Media ID or URL"
+                    placeholder={t('news.placeholderMediaId')}
                     className="text-xs font-mono bg-white dark:bg-gray-800 h-9 px-3 rounded-lg shadow-sm"
                 />
             )}
@@ -197,9 +200,9 @@ function GalleryField({ fieldKey, value, isEditing, onChange }: {
             <div className="flex items-center gap-2 mb-2">
                 <LayoutGrid className="w-4 h-4 text-blue-400" />
                 <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
-                {loading && <span className="text-[8px] text-blue-400">resolving...</span>}
+                {loading && <span className="text-xs text-blue-400">resolving...</span>}
                 {displayUrls.length > 0 && (
-                    <span className="text-[9px] font-black text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    <span className="text-xs font-black text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-wider">
                         {displayUrls.length} items
                     </span>
                 )}
@@ -467,7 +470,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => setSystemExpanded(!systemExpanded)}
-                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors w-full mb-3"
+                            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors w-full mb-3"
                         >
                             {systemExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                             System Fields ({grouped.system.length})
@@ -491,7 +494,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                                 type="button"
                                 variant="olive"
                                 size="md"
-                                className="w-full justify-center h-11 text-[11px] font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
+                                className="w-full justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
                                 startIcon={<Trash2 className="w-5 h-5 text-white" />}
                                 onClick={() => onShowDeleteConfirm(true)}
                             >
@@ -501,7 +504,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                             <div className="flex gap-3">
                                 <Button
                                     type="button"
-                                    className="flex-1 justify-center h-11 text-[11px] font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
+                                    className="flex-1 justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
                                     onClick={onDelete}
                                 >
                                     CONFIRM
@@ -509,7 +512,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="flex-1 justify-center h-11 text-[11px] font-black text-gray-500 uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
+                                    className="flex-1 justify-center h-11 text-xs font-black text-gray-500 uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
                                     onClick={() => onShowDeleteConfirm(false)}
                                 >
                                     CANCEL

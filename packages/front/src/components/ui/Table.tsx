@@ -40,7 +40,7 @@ export function Table<T extends Record<string, any>>({
     return (
       <div className={cn("w-full overflow-hidden rounded-xl bg-surface border border-border", className)}>
         {/* Fake Header */}
-        <div className="h-12 bg-black/5 dark:bg-white/5 animate-pulse mb-1" />
+        <div className="h-12 bg-[var(--field-fill)] animate-pulse mb-1" />
         {/* Fake Rows */}
         {[...Array(5)].map((_, i) => (
            <div key={i} className="h-16 border-b border-border/50 animate-pulse bg-white/5 opacity-50" style={{ animationDelay: `${i * 100}ms` }} />
@@ -52,7 +52,7 @@ export function Table<T extends Record<string, any>>({
   // B. EMPTY STATE
   if (!data || data.length === 0) {
     return (
-      <div className={cn("flex flex-col items-center justify-center p-12 text-gray-700 dark:text-gray-300 border border-dashed border-border rounded-2xl bg-black/5 dark:bg-white/5", className)}>
+      <div className={cn("flex flex-col items-center justify-center p-12 text-sub border border-dashed border-border rounded-2xl bg-[var(--field-fill)]", className)}>
         <Icon name="table_rows" size="xl" className="opacity-20 mb-4" />
         <Typography variant="caption" className="opacity-50">{emptyMessage}</Typography>
       </div>
@@ -66,12 +66,12 @@ export function Table<T extends Record<string, any>>({
         
         {/* HEADER */}
         <thead>
-          <tr className="bg-black/5 dark:bg-white/5 border-b border-border">
+          <tr className="bg-[var(--field-fill)] border-b border-border">
             {columns.map((col) => (
               <th 
                 key={col.key} 
                 className={cn(
-                  "px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 select-none",
+                  "px-6 py-4 text-xs font-black uppercase tracking-widest text-sub select-none",
                   col.align === 'center' && "text-center",
                   col.align === 'right' && "text-right",
                   col.width && `w-[${col.width}]`
@@ -91,7 +91,7 @@ export function Table<T extends Record<string, any>>({
               onClick={() => onRowClick?.(row)}
               className={cn(
                 "transition-colors duration-200",
-                onRowClick && hoverable ? "cursor-pointer hover:bg-black/5 dark:hover:bg-white/5" : ""
+                onRowClick && hoverable ? "cursor-pointer hover:bg-[var(--field-fill)]" : ""
               )}
             >
               {columns.map((col) => {
@@ -100,7 +100,7 @@ export function Table<T extends Record<string, any>>({
                   <td 
                     key={`${String(row[keyField])}-${col.key}`}
                     className={cn(
-                      "px-6 py-4 text-sm text-gray-900 dark:text-gray-100 font-medium",
+                      "px-6 py-4 text-sm text-title font-medium",
                       col.align === 'center' && "text-center",
                       col.align === 'right' && "text-right"
                     )}

@@ -58,9 +58,9 @@ import CTABanner from '../../components/dashboard/CTABanner';
                 )}
 
                 {/* ROW 2: MAIN CONTENT + SIDEBAR (inverted columns) */}
-                <div className="grid grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* MAIN CONTENT (9 col) - Features + CTA */}
-                    <div className="col-span-12 md:col-span-8 lg:col-span-9">
+                    <div className="lg:col-span-9 min-w-0">
                         {/* Features Grid */}
                         <FeatureCardsGrid cards={featureCards} />
 
@@ -74,15 +74,15 @@ import CTABanner from '../../components/dashboard/CTABanner';
                                     ctaLabel={card.cta_label || card.link_label || t('actions.viewMore')}
                                     ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
                                     variant={card.variant || 'dark'}
-                                    className="flex items-center justify-between gap-6 p-13"
+                                    className="flex items-center justify-between gap-6"
                                 />
                             ))}
                         </div>
                     </div>
 
                     {/* SIDEBAR (3 col) - Nav cards */}
-                    <div className="col-span-12 md:col-span-4 lg:col-span-3">
-                        <div className="flex flex-col gap-8">
+                    <div className="lg:col-span-3 min-w-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8">
                             {navCards.map((card: any) => (
                                 <div key={card.id}>
                                     <DashboardNavCard

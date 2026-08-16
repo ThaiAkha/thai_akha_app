@@ -23,8 +23,8 @@ const AccordionBlock: React.FC<ClassSection> = ({ title, subtitle, description, 
 
   return (
     <div className={cn(
-      'rounded-2xl border border-white/10 overflow-hidden transition-colors duration-300',
-      open ? 'border-white/20 bg-white/5' : 'hover:border-white/15'
+      'rounded-2xl border overflow-hidden transition-colors duration-300',
+      open ? 'border-border bg-surface-2' : 'border-border/60 hover:border-border'
     )}>
       <button
         type="button"
@@ -33,25 +33,25 @@ const AccordionBlock: React.FC<ClassSection> = ({ title, subtitle, description, 
       >
         <div className="flex flex-wrap items-center gap-2">
           {tag_badge && <Badge variant="outline" className="text-[10px] shrink-0">{tag_badge}</Badge>}
-          <Typography variant="h6" className="text-white/90">{title}</Typography>
+          <Typography variant="h6" color="title">{title}</Typography>
           {subtitle && (
-            <Typography variant="caption" className="text-white/45 hidden sm:inline">· {subtitle}</Typography>
+            <Typography variant="caption" color="muted" className="hidden sm:inline">· {subtitle}</Typography>
           )}
         </div>
         <Icon
           name={open ? 'expand_less' : 'expand_more'}
           size="sm"
-          className="text-white/35 shrink-0 transition-transform duration-300"
+          className="text-muted shrink-0 transition-transform duration-300"
         />
       </button>
 
       {open && (
-        <div className="px-5 pb-5 border-t border-white/8 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="px-5 pb-5 border-t border-border animate-in fade-in slide-in-from-top-1 duration-200">
           {subtitle && (
-            <Typography variant="monoLabel" className="text-xs text-white/50 mt-3 mb-1 block">{subtitle}</Typography>
+            <Typography variant="accent" color="muted" className="text-xs mt-3 mb-1 block">{subtitle}</Typography>
           )}
           {description && (
-            <Typography variant="paragraphS" className="text-white/65 leading-relaxed mt-3">
+            <Typography variant="paragraphS" color="sub" className="leading-relaxed mt-3">
               {description}
             </Typography>
           )}
@@ -68,7 +68,7 @@ const TimelineBlock: React.FC<ClassSection & { isLast?: boolean; accentClass?: s
 }) => (
   <div className="relative pl-7">
     {!isLast && (
-      <div className="absolute left-[5px] top-4 bottom-0 w-px border-l-2 border-dashed border-white/15" />
+      <div className="absolute left-[5px] top-4 bottom-0 w-px border-l-2 border-dashed border-border" />
     )}
     <div className={cn('absolute left-0 top-[6px] w-2.5 h-2.5 rounded-full ring-2 ring-surface', dotClass)} />
 
@@ -77,13 +77,13 @@ const TimelineBlock: React.FC<ClassSection & { isLast?: boolean; accentClass?: s
         {tag_badge && (
           <Badge variant="outline" className="text-[10px]">{tag_badge}</Badge>
         )}
-        <Typography variant="h6" className="text-white/90">{title}</Typography>
+        <Typography variant="h6" color="title">{title}</Typography>
       </div>
       {subtitle && (
-        <Typography variant="monoLabel" className={cn('text-xs', accentClass)}>{subtitle}</Typography>
+        <Typography variant="accent" className={cn('text-xs', accentClass)}>{subtitle}</Typography>
       )}
       {description && (
-        <Typography variant="paragraphS" className="text-white/60 leading-relaxed">
+        <Typography variant="paragraphS" color="sub" className="leading-relaxed">
           {description}
         </Typography>
       )}
@@ -96,7 +96,7 @@ const TimelineBlock: React.FC<ClassSection & { isLast?: boolean; accentClass?: s
 const AlertBoxBlock: React.FC<ClassSection> = ({ title, subtitle, description, tag_badge }) => {
   const icon = tag_badge === 'Location' ? 'location_on'
     : tag_badge === 'Booking' ? 'credit_card'
-    : 'info';
+      : 'info';
 
   return (
     <Alert
@@ -143,11 +143,11 @@ const ClassSectionBlock: React.FC<ClassSectionBlockProps> = ({ section, color = 
     default:
       // Fallback: simple card for unknown ui_style
       return (
-        <div className="rounded-2xl border border-white/10 bg-white/4 p-4 space-y-1">
+        <div className="rounded-2xl border border-border bg-surface-2 p-4 space-y-1">
           {section.tag_badge && <Badge variant="outline" className="text-[10px]">{section.tag_badge}</Badge>}
-          <Typography variant="h6" className="text-white/90">{section.title}</Typography>
+          <Typography variant="h6" color="title">{section.title}</Typography>
           {section.description && (
-            <Typography variant="paragraphS" className="text-white/60 leading-relaxed">
+            <Typography variant="paragraphS" color="sub" className="leading-relaxed">
               {section.description}
             </Typography>
           )}

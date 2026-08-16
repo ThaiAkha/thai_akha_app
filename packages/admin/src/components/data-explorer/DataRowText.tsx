@@ -53,7 +53,7 @@ const DataRowText: React.FC<DataRowTextProps> = ({
             )}
             {extra && (
                 <p className={cn(
-                    layout === 'vertical' ? "text-theme-xs" : "text-[10px]",
+                    layout === 'vertical' ? "text-theme-xs" : "text-xs",
                     "font-semibold uppercase tracking-wider",
                     "text-gray-600 dark:text-gray-500",
                     "leading-none line-clamp-1",

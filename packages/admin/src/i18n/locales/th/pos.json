@@ -1,7 +1,9 @@
 {
   "sidebar": {
     "title": "แขก",
-    "guest": "แขก"
+    "guest": "แขก",
+    "selectGuest": "เลือกลูกค้าเพื่อเริ่มคิดเงิน",
+    "noClass": "ไม่มีคลาสให้คิดเงิน"
   },
   "content": {
     "loading": "กำลังโหลด..."
@@ -16,7 +18,24 @@
     "emptySelectHint": "เลือกแขกก่อน",
     "emptyTab": "ไม่มีรายการ",
     "totalAmount": "ยอดรวม",
+    "payOnArrival": "ชำระเงินเมื่อถึงที่",
     "saveTab": "บันทึกรายการ",
-    "payCash": "ชำระด้วยเงินสด"
+    "payCash": "ชำระด้วยเงินสด",
+    "removeItemTitle": "ลบรายการ?",
+    "removeItemMsg": "ลบ \"{{name}}\" ออกจากออเดอร์นี้?",
+    "remove": "ลบ",
+    "payCard": "บัตร"
+  },
+  "alerts": {
+    "selectGuestFirst": "กรุณาเลือกแขกก่อน",
+    "outOfStock": "สินค้าหมด!",
+    "confirmCharge": "เรียกเก็บ {{amount}} บาท ด้วยเงินสด?"
+  },
+  "split": {
+    "button": "แยก → กลุ่มใหม่",
+    "create": "สร้างกลุ่ม",
+    "cancel": "ยกเลิก",
+    "merge": "รวมกลับ",
+    "paxToMove": "จำนวนที่ย้าย"
   }
 }

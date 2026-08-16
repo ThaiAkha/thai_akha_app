@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import DateSessionPaxPicker from '../../booking/DateSessionPaxPicker';
 import SessionBookingCard from '../calendar/SessionBookingCard';
 
@@ -28,6 +29,8 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
     currentSessionData,
     availability
 }) => {
+    const { t } = useTranslation('booking');
+
     return (
         <div className="lg:col-span-3 space-y-4">
             <DateSessionPaxPicker
@@ -42,7 +45,7 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
             />
 
             <SessionBookingCard
-                title={session === 'morning_class' ? 'Morning' : 'Evening'}
+                title={session === 'morning_class' ? t('session.morning') : t('session.evening')}
                 status={currentSessionData.status as any}
                 seats={currentSessionData.total - currentSessionData.booked}
                 capacity={currentSessionData.total}

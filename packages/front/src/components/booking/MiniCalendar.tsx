@@ -50,15 +50,15 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className 
           key={d}
           onClick={() => handleDateSelect(d)}
           className={cn(
-            "h-10 w-full rounded-xl flex items-center justify-center text-xs font-black transition-all active:scale-90",
+            "h-10 w-full rounded-xl flex items-center justify-center transition-all active:scale-90",
             isSelected 
-              ? "bg-action text-white shadow-action-glow" 
+              ? "bg-action text-black shadow-action-glow" 
               : isToday
                 ? "bg-action/10 text-action border border-action/20"
-                : "text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5"
+                : "hover:bg-surface-elevated"
           )}
         >
-          {d}
+          <Typography variant="numericMedium" as="span" className={isSelected ? "text-black" : (isToday ? "text-action" : "text-title")}>{d}</Typography>
         </button>
       );
     }
@@ -67,24 +67,26 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className 
   };
 
   return (
-    <div className={cn("p-4 bg-surface dark:bg-surface-elevated rounded-[2rem] border border-border shadow-xl", className)}>
-      <div className="flex items-center justify-between mb-4 px-2">
-        <Typography variant="h6" className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-500">
+    <div className={cn("p-4 bg-surface-elevated rounded-[2rem] border border-border shadow-xl", className)}>
+      <div className="flex items-center justify-between [margin-bottom:var(--space-fluid-s)] px-2">
+        <Typography variant="microLabel" color="muted">
           {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </Typography>
         <div className="flex gap-1">
-          <button onClick={handlePrevMonth} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+          <button onClick={handlePrevMonth} className="p-2 hover:bg-surface rounded-lg transition-colors text-title">
             <Icon name="chevron_left" size="xs" />
           </button>
-          <button onClick={handleNextMonth} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+          <button onClick={handleNextMonth} className="p-2 hover:bg-surface rounded-lg transition-colors text-title">
             <Icon name="chevron_right" size="xs" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center mb-2">
+      <div className="grid grid-cols-7 gap-1 text-center [margin-bottom:var(--space-fluid-2xs)]">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-          <div key={i} className="text-[8px] font-black text-gray-500 dark:text-gray-500 uppercase">{day}</div>
+          <div key={i}>
+            <Typography variant="microLabel" color="muted">{day}</Typography>
+          </div>
         ))}
       </div>
 

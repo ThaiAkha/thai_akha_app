@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { authService, UserProfile } from '../services/auth.service';
+import type { UserRole } from '@thaiakha/shared/types';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 
@@ -15,7 +16,8 @@ interface AuthContextType {
         contactName: string,
         companyName: string,
         taxId: string,
-        phone: string
+        phone: string,
+        lineId?: string
     ) => Promise<any>;
     signOut: typeof authService.signOut;
     updateProfile: typeof authService.updateProfile;
@@ -77,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     .select(`
                         id, full_name, email, role, avatar_url, whatsapp,
                         dietary_profile, allergies, preferred_spiciness_id,
-                        agency_company_name, agency_commission_rate,
+                        agency_company_name,
                         agency_tax_id, agency_phone, commission_config,
                         agency_address, agency_city, agency_province, agency_country, agency_postal_code,
                         gender, age, nationality, is_active
@@ -98,30 +100,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             console.log("[Auth] Profile data received for role:", data.role);
 
+            // DB Row columns are nullable; UserProfile is stricter. Cast at the
+            // source (stale database.types pattern) to preserve runtime values.
+            const d = data as any;
+
+            // Security: never grant a default role. A missing/invalid role must
+            // deny access (return null → user routed to /signin), not silently
+            // elevate to 'agency'. Real users always have a valid role.
+            const VALID_ROLES: UserRole[] = [
+                'admin', 'manager', 'agency', 'kitchen', 'logistics',
+                'driver', 'alumni', 'guest', 'guest_virtual',
+            ];
+            if (!d.role || !VALID_ROLES.includes(d.role)) {
+                console.error("[Auth] Profile has missing/invalid role:", d.role, "— denying access");
+                localStorage.removeItem(PROFILE_CACHE_KEY);
+                return null;
+            }
+
             const profile: UserProfile = {
-                id: data.id,
-                full_name: data.full_name || 'User',
-                email: data.email,
-                role: (data.role as UserProfile['role']) || 'agency',
-                avatar_url: data.avatar_url,
-                whatsapp: data.whatsapp,
-                dietary_profile: data.dietary_profile || 'diet_regular',
-                allergies: data.allergies || [],
-                preferred_spiciness_id: data.preferred_spiciness_id || 2,
-                agency_company_name: data.agency_company_name,
-                agency_commission_rate: data.agency_commission_rate,
-                agency_tax_id: data.agency_tax_id,
-                agency_phone: data.agency_phone,
-                commission_config: data.commission_config,
-                agency_address: data.agency_address,
-                agency_city: data.agency_city,
-                agency_province: data.agency_province,
-                agency_country: data.agency_country,
-                agency_postal_code: data.agency_postal_code,
-                gender: data.gender,
-                age: data.age,
-                nationality: data.nationality,
-                is_active: data.is_active
+                id: d.id,
+                full_name: d.full_name || 'User',
+                email: d.email,
+                role: d.role as UserRole,
+                avatar_url: d.avatar_url,
+                whatsapp: d.whatsapp,
+                dietary_profile: d.dietary_profile || 'diet_regular',
+                allergies: d.allergies || [],
+                preferred_spiciness_id: d.preferred_spiciness_id || 2,
+                agency_company_name: d.agency_company_name,
+                agency_tax_id: d.agency_tax_id,
+                agency_phone: d.agency_phone,
+                commission_config: d.commission_config,
+                agency_address: d.agency_address,
+                agency_city: d.agency_city,
+                agency_province: d.agency_province,
+                agency_country: d.agency_country,
+                agency_postal_code: d.agency_postal_code,
+                gender: d.gender,
+                age: d.age,
+                nationality: d.nationality,
+                is_active: d.is_active
             };
 
             localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
@@ -312,9 +330,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         contactName: string,
         companyName: string,
         taxId: string,
-        phone: string
+        phone: string,
+        lineId?: string
     ) => {
-        const response = await authService.signUpAgency(email, password, contactName, companyName, taxId, phone);
+        const response = await authService.signUpAgency(email, password, contactName, companyName, taxId, phone, lineId);
         return response;
     }, []);
 

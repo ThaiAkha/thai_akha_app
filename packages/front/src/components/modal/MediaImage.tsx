@@ -1,6 +1,8 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { useMediaAsset } from '../../hooks/useMediaAsset';
+import { Typography } from '../ui/index';
+import AkhaLoader from '../divider/AkhaLoader';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -29,10 +31,12 @@ function ImageSkeleton({ className }: { className?: string }) {
     <div
       aria-hidden="true"
       className={cn(
-        'animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800',
+        'rounded-xl bg-surface-2 flex items-center justify-center overflow-hidden',
         className
       )}
-    />
+    >
+      <AkhaLoader variant="bloom" size={8} />
+    </div>
   );
 }
 
@@ -54,15 +58,20 @@ export const MediaImage: React.FC<MediaImageProps> = ({
   const { asset, loading } = useMediaAsset({ assetId });
 
   // Resolve the src: fetched asset takes priority, url is fallback
-  const src = asset?.image_url ?? url ?? '';
+  const src = asset?.image_url || url || null;
 
-  if (!assetId && !url) return null;
+  if (!assetId && !src) return null;
+
+  // Se abbiamo già un url diretto (da gallery_assets / culture_assets già risolti
+  // lato servizio), usiamolo subito senza aspettare il secondo fetch di useMediaAsset.
+  // Il secondo fetch serve solo per arricchire alt_text/caption.
+  const showSkeleton = loading && !url;
 
   return (
     <figure className={cn('block', className)}>
-      {loading ? (
+      {showSkeleton ? (
         <ImageSkeleton className={cn('w-full aspect-video', imgClassName)} />
-      ) : (
+      ) : src ? (
         <img
           src={src}
           alt={asset?.alt_text ?? fallbackAlt}
@@ -70,14 +79,16 @@ export const MediaImage: React.FC<MediaImageProps> = ({
           height={asset?.height ?? undefined}
           loading="lazy"
           decoding="async"
-          className={cn('block w-full rounded-xl object-cover', imgClassName)}
+          className={cn('block w-full object-cover', imgClassName)}
           {...imgProps}
         />
+      ) : (
+        <ImageSkeleton className={cn('w-full aspect-video', imgClassName)} />
       )}
 
       {showCaption && asset?.caption && !loading && (
-        <figcaption className="mt-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 font-medium italic">
-          {asset.caption}
+        <figcaption className="[margin-top:var(--space-fluid-2xs)]">
+          <Typography variant="caption">{asset.caption}</Typography>
         </figcaption>
       )}
     </figure>

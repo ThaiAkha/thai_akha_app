@@ -134,7 +134,7 @@ export function useManagerLogistic() {
                 upcomingData.forEach(b => {
                     const key = `${b.booking_date}_${b.session_id}`;
                     if (!summaries[key]) {
-                        summaries[key] = { date: b.booking_date, session_id: b.session_id, unassigned_count: 0 };
+                        summaries[key] = { date: b.booking_date || '', session_id: b.session_id || '', unassigned_count: 0 };
                     }
                     if (!b.pickup_driver_uid) summaries[key].unassigned_count++;
                 });
@@ -147,7 +147,7 @@ export function useManagerLogistic() {
                 .select('id, full_name, avatar_url')
                 .eq('role', 'driver')
                 .order('full_name');
-            setDrivers(driverData || []);
+            setDrivers(driverData?.map(d => ({ ...d, full_name: d.full_name || '', avatar_url: d.avatar_url || undefined })) || []);
 
             // C. Fetch Selected Session Items (all transport-related fields)
             const { data: bookingData } = await supabase

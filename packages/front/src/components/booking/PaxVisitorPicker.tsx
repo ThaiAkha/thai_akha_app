@@ -1,9 +1,9 @@
 import React from 'react';
-import { Icon } from '../ui/index';
+import { Icon, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface PaxVisitorPickerProps {
-  // Cooks
+  // Chefs
   pax: number;
   setPax: (p: number) => void;
   maxSelectable: number;
@@ -56,7 +56,7 @@ const StepperRow: React.FC<StepperRowProps> = ({
 
   // Label / icon active color
   const labelActive = isAction ? 'text-action' : 'text-btn-s-500';
-  const labelInactive = 'text-gray-500 dark:text-gray-500';
+  const labelInactive = 'text-muted';
 
   // Add button bg
   const addBtnActive = isAction
@@ -64,15 +64,15 @@ const StepperRow: React.FC<StepperRowProps> = ({
     : 'bg-btn-s-500 shadow-[0_4px_16px_rgba(28,163,230,0.4)]';
 
   // Compact (~10% smaller) sizing tokens
-  const px      = compact ? 'px-9'          : 'px-10';
-  const py      = compact ? 'py-[18px]'     : 'py-5';
-  const gap     = compact ? 'gap-5'         : 'gap-6';
+  const px      = compact ? '[padding-inline:var(--space-fluid-m)]' : '[padding-inline:var(--space-fluid-l)]';
+  const py      = compact ? '[padding-block:var(--space-fluid-s)]'  : '[padding-block:var(--space-fluid-m)]';
+  const gap     = compact ? '[gap:var(--space-fluid-s)]'            : '[gap:var(--space-fluid-m)]';
   const btnSize = compact ? 'size-11'       : 'size-12';
   const numSize = compact ? 'text-3xl w-10' : 'text-4xl w-12';
   const lblSize = compact ? 'text-lg'       : 'text-xl';
   const prSize  = compact ? 'pr-6'          : 'pr-8';
   const minW    = compact ? 'min-w-[108px]' : 'min-w-[120px]';
-  const gapStp  = compact ? 'gap-6'         : 'gap-8';
+  const gapStp  = compact ? '[gap:var(--space-fluid-m)]'            : '[gap:var(--space-fluid-l)]';
 
   return (
     <div className={cn('flex flex-col items-center gap-3', isDisabled && 'opacity-30 pointer-events-none')}>
@@ -86,9 +86,9 @@ const StepperRow: React.FC<StepperRowProps> = ({
         {/* Label */}
         <div className={cn('flex items-center gap-3 border-r border-border', prSize, minW)}>
           <Icon name={icon} size={compact ? 'md' : 'lg'} className={isActive ? labelActive : labelInactive} />
-          <span className={cn('font-black uppercase tracking-widest', lblSize, isActive ? labelActive : labelInactive)}>
+          <Typography variant="h5" as="span" className={cn('uppercase tracking-widest font-black', lblSize, isActive ? labelActive : labelInactive)}>
             {label}
-          </span>
+          </Typography>
         </div>
 
         {/* Stepper */}
@@ -96,18 +96,26 @@ const StepperRow: React.FC<StepperRowProps> = ({
           <button
             onClick={onDecrement}
             disabled={!canDecrement}
-            className={cn('rounded-full border border-border flex items-center justify-center hover:border-action transition-colors text-gray-900 dark:text-gray-100 bg-background shadow-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed', btnSize)}
+            className={cn(
+              'rounded-full border border-border flex items-center justify-center transition-colors shadow-sm cursor-pointer',
+              btnSize,
+              canDecrement 
+                ? 'text-title bg-surface hover:bg-black/5 dark:hover:bg-white/5 hover:border-action' 
+                : 'bg-black/5 dark:bg-white/5 text-muted opacity-50 cursor-not-allowed'
+            )}
           >
             <Icon name="remove" size="sm" />
           </button>
-          <span className={cn('font-mono font-black text-gray-900 dark:text-gray-100 text-center', numSize)}>{value}</span>
+          <Typography variant="numericMedium" as="span" className={cn('text-center text-title', numSize)}>{value}</Typography>
           <button
             onClick={onIncrement}
             disabled={!canIncrement}
             className={cn(
-              'rounded-full flex items-center justify-center text-background hover:scale-110 transition-transform border-none cursor-pointer',
+              'rounded-full flex items-center justify-center hover:scale-110 transition-transform border-none cursor-pointer',
               btnSize,
-              canIncrement ? addBtnActive : 'bg-black/10 dark:bg-white/10 cursor-not-allowed hover:scale-100',
+              canIncrement 
+                ? cn(addBtnActive, 'text-white') 
+                : 'bg-black/5 dark:bg-white/5 text-muted opacity-50 cursor-not-allowed hover:scale-100'
             )}
           >
             <Icon name="add" size="sm" />
@@ -116,7 +124,7 @@ const StepperRow: React.FC<StepperRowProps> = ({
       </div>
 
       {/* Optional hint row */}
-      {hint && <div className="text-sm text-gray-600 dark:text-gray-400 text-center font-medium px-2">{hint}</div>}
+      {hint && <Typography variant="paragraphS" color="muted" className="text-center font-medium px-2">{hint}</Typography>}
     </div>
   );
 };
@@ -137,9 +145,9 @@ export const PaxVisitorPicker: React.FC<PaxVisitorPickerProps> = ({
     <>
       Visitors do not cook.&nbsp;Max&nbsp;1&nbsp;per&nbsp;cook,&nbsp;up&nbsp;to&nbsp;2&nbsp;per&nbsp;booking.
       {isPaxSelected && maxVisitorsAllowed === 0 && (
-        <span className="block text-btn-s-500/80 mt-1 font-bold">
+        <Typography variant="paragraphS" as="span" className="block text-btn-s-500/80 mt-1 font-bold">
           No visitor spots left for this class.
-        </span>
+        </Typography>
       )}
     </>
   );
@@ -150,7 +158,7 @@ export const PaxVisitorPicker: React.FC<PaxVisitorPickerProps> = ({
       {/* COOKS */}
       <StepperRow
         icon="groups"
-        label="Cooks"
+        label="Chefs"
         value={pax}
         onDecrement={() => setPax(Math.max(0, pax - 1))}
         onIncrement={() => setPax(Math.min(maxSelectable > 0 ? maxSelectable : 12, pax + 1))}
@@ -161,10 +169,9 @@ export const PaxVisitorPicker: React.FC<PaxVisitorPickerProps> = ({
         colorScheme="action"
       />
 
-      {/* DIVIDER */}
       <div className="flex items-center gap-5 w-full px-4">
         <div className="flex-1 h-px bg-border/40" />
-        <span className="text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-500">+ Optional</span>
+        <Typography variant="microLabel" color="muted">+ Optional</Typography>
         <div className="flex-1 h-px bg-border/40" />
       </div>
 

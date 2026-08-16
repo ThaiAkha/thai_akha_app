@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { contentService } from '@thaiakha/shared/services';
 import { PageLayout, HeaderMenu, StickyTabNav } from '../components/layout';
-import { Tabs } from '../components/ui';
 import { UserProfile } from '../services/auth.service';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
 import {
@@ -11,27 +11,38 @@ import {
   QuizWidget,
   UserSettings,
   OverviewView,
+  NoBookingBanner,
 } from '../components/user-dashboard';
 import UserProfileCard from '../components/user-dashboard/UserProfileCard';
+import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
+import InviteGroupBlock from '../components/user-dashboard/InviteGroupBlock';
+import VisitorClassBlock from '../components/user-dashboard/VisitorClassBlock';
+import { ActiveProfileProvider } from '../context/ActiveProfileContext';
 import ContextualStatsView from '../components/user-dashboard/ContextualStatsView';
 import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
+import TopWarriorsCard from '../components/user-dashboard/TopWarriorsCard';
+import { CherryHelp } from '../components/chat/CherryHelp';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 /* ── CONSTANTS ── */
 // Synced with DB profiles.role constraint — agency uses Admin App, logistics doesn't exist in schema
+// Ruoli operativi che non hanno booking personali (no fetch bookings, no certificato).
+// NB: Menu e My Reservation NON sono gated dal ruolo ma dalla presenza di un booking
+// ATTIVO (vedi hasActiveBooking): anche un'agency con un suo booking li vede.
 const STAFF_ROLES = new Set(['admin', 'manager', 'kitchen', 'driver']);
 
 const HEADER_SLUGS: Record<string, string> = {
-  overview:     'user-dashboard',
-  reservation:  'user-dashboard',
-  menu:         'user-menu',
-  quiz:         'user-quiz',
-  passport:     'user-passport',
+  overview: 'user-dashboard',
+  reservation: 'user-dashboard',
+  menu: 'user-menu',
+  quiz: 'user-quiz',
+  passport: 'user-passport',
 };
 
 const TAB_ANIMATION = {
-  initial:  { opacity: 0, y: 14 },
-  animate:  { opacity: 1, y: 0 },
-  exit:     { opacity: 0, y: -8 },
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
   transition: { duration: 0.22, ease: 'easeOut' as const },
 };
 
@@ -48,33 +59,48 @@ const UserPage: React.FC<UserPageProps> = ({
   onProfileRefresh,
   sectionId,
 }) => {
-  const [loading, setLoading]           = useState(true);
-  const [activeTab, setActiveTab]       = useState<string>('overview');
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>('overview');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Data
-  const [bookingsList, setBookingsList]         = useState<any[]>([]);
-  const [activeBookingId, setActiveBookingId]   = useState<string | null>(null);
-  const [menuSelection, setMenuSelection]       = useState<any | null>(null);
-  const [spicinessLevels, setSpicinessLevels]   = useState<any[]>([]);
-  const [routeStops, setRouteStops]             = useState<any[]>([]);
-  const [showCertificate, setShowCertificate]   = useState(false);
+  const [bookingsList, setBookingsList] = useState<any[]>([]);
+  const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
+  const [menuSelection, setMenuSelection] = useState<any | null>(null);
+  const [spicinessLevels, setSpicinessLevels] = useState<any[]>([]);
+  const [routeStops, setRouteStops] = useState<any[]>([]);
+  const [showCertificate, setShowCertificate] = useState(false);
 
   /* ── ROLE LOGIC ── */
   const isStaff = STAFF_ROLES.has(userProfile?.role as string ?? '');
 
-  /* ── TABS — filtered by role ── */
+  /* ── ACTIVE BOOKING ── (futuro/oggi, non cancellato). Gate UNICO di Menu + My
+     Reservation per QUALSIASI ruolo: senza booking attivo non si vedono. */
+  const hasActiveBooking = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return bookingsList.some(b => new Date(b.booking_date) >= today);
+  }, [bookingsList]);
+
+  /* ── TABS — Menu + Reservation solo con un booking attivo (qualsiasi ruolo) ── */
   const ALL_TABS = [
-    { value: 'overview',    label: 'Overview',        icon: 'home' },
-    { value: 'reservation', label: 'My Reservation',  icon: 'event_available' },
-    { value: 'menu',        label: 'My Menu',         icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
-    { value: 'quiz',        label: 'Akha Quiz',       icon: 'psychology' },
-    { value: 'passport',    label: 'Passport',        icon: 'account_box', activeColor: 'secondary' as const },
+    { value: 'overview', label: t.user.tabOverview, icon: 'home' },
+    { value: 'reservation', label: t.user.tabReservation, icon: 'event_available' },
+    { value: 'menu', label: t.user.tabMenu, icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
+    { value: 'quiz', label: t.user.tabQuiz, icon: 'psychology' },
+    { value: 'passport', label: t.user.tabPassport, icon: 'account_box', activeColor: 'secondary' as const },
   ];
 
-  const TABS = isStaff
-    ? ALL_TABS.filter(t => ['overview', 'quiz', 'passport'].includes(t.value))
-    : ALL_TABS;
+  const TABS = ALL_TABS.filter(tab =>
+    (tab.value === 'reservation' || tab.value === 'menu') ? hasActiveBooking : true
+  );
+
+  /* ── Senza booking attivo non si resta su Menu/Reservation: torna a Overview ── */
+  useEffect(() => {
+    if (!hasActiveBooking && (activeTab === 'menu' || activeTab === 'reservation')) {
+      setActiveTab('overview');
+    }
+  }, [hasActiveBooking, activeTab]);
 
   /* ── sectionId sync ── */
   useEffect(() => {
@@ -92,8 +118,10 @@ const UserPage: React.FC<UserPageProps> = ({
 
     try {
       if (spicinessLevels.length === 0) {
-        const { data: levels } = await supabase.from('spiciness_levels').select('*').order('id');
-        if (levels) setSpicinessLevels(levels);
+        // Fonte unica: il service (cached + join photo_asset_id). Era una query
+        // diretta `select('*')`, che bypassava cache e foto. Vedi #70.
+        const levels = await contentService.getSpicinessLevels();
+        if (levels.length > 0) setSpicinessLevels(levels);
       }
 
       const { data: bookings } = await supabase
@@ -168,29 +196,30 @@ const UserPage: React.FC<UserPageProps> = ({
       if (current) fetchRouteData(current);
     };
     loadDetails();
-  }, [activeBookingId, bookingsList, isStaff]);
+  }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to prevent menu re-fetching during polling
 
   /* ── SMART POLLING (today only) ── */
   useEffect(() => {
-    if (isStaff) return;
-    const current = bookingsList.find(b => b.internal_id === activeBookingId);
-    if (!current) return;
+    if (isStaff || !activeBookingId) return;
 
-    const now = new Date();
-    const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-    const isToday  = current.booking_date === todayStr;
-    const isPending = current.transport_status !== 'dropped_off';
+    // Use an interval that doesn't trigger effect re-runs
+    const interval = setInterval(() => {
+      const current = bookingsList.find(b => b.internal_id === activeBookingId);
+      if (!current) return;
 
-    if (isToday && isPending) {
-      fetchBookings(true);
-      fetchRouteData(current);
-      const interval = setInterval(() => {
+      const now = new Date();
+      const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+      const isToday = current.booking_date === todayStr;
+      const isPending = current.transport_status !== 'dropped_off';
+
+      if (isToday && isPending) {
         fetchBookings(true);
         fetchRouteData(current);
-      }, 15000);
-      return () => clearInterval(interval);
-    }
-  }, [activeBookingId, bookingsList, isStaff]);
+      }
+    }, 20000); // 20s is enough for background sync
+
+    return () => clearInterval(interval);
+  }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to stop the loop
 
   /* ── CERTIFICATE HELPER ── */
   const getCertificateDishes = (): CertificateDish[] => {
@@ -207,41 +236,46 @@ const UserPage: React.FC<UserPageProps> = ({
   };
 
   const activeBooking = bookingsList.find(b => b.internal_id === activeBookingId);
-  const currentSlug   = HEADER_SLUGS[activeTab] || 'user-dashboard';
+  const currentSlug = HEADER_SLUGS[activeTab] || 'user-dashboard';
 
   return (
+    <ActiveProfileProvider host={userProfile}>
     <PageLayout
       slug="user"
       loading={loading}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug={currentSlug} />}
     >
-      <div className="w-full">
+      <div className="contents">
 
         {/* ── STICKY TABS ── */}
         <StickyTabNav
           items={TABS}
           value={activeTab}
           onChange={setActiveTab}
-          topOffset="top-20"
-          bottomMargin="mb-8 md:mb-10"
         />
 
         {/* ── GRID LAYOUT ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] items-start">
 
-          {/* ── ASIDE — 4 cols (below tabs on mobile, left on desktop) ── */}
-          <aside className="lg:col-span-4 flex flex-col gap-5 lg:sticky lg:top-36">
-            <UserProfileCard userProfile={userProfile} />
+          {/* ── ASIDE — 3 cols (below tabs on mobile, left on desktop) ── */}
+          <aside className="lg:col-span-3 flex flex-col [gap:var(--space-fluid-l)] lg:sticky lg:top-[112px]">
+            <ProfileSwitcher />
+            <UserProfileCard userProfile={userProfile} activeTab={activeTab} />
             <ContextualStatsView
               activeTab={activeTab}
               activeBooking={activeBooking ?? null}
               menuSelection={menuSelection}
             />
+            {activeTab === 'quiz' && (
+              <TopWarriorsCard />
+            )}
           </aside>
 
-          {/* ── MAIN CONTENT — 8 cols ── */}
-          <main className="lg:col-span-8 min-w-0">
+          {/* ── MAIN CONTENT — 9 cols ── */}
+          <div className="lg:col-span-9 min-w-0">
+            {/* Cherry how-to per la pagina corrente (preset zero-latency; render nullo se nessuna voce) */}
+            <CherryHelp pageSlug={currentSlug} />
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} {...TAB_ANIMATION}>
 
@@ -249,7 +283,7 @@ const UserPage: React.FC<UserPageProps> = ({
                 {activeTab === 'overview' && (
                   <OverviewView
                     userProfile={userProfile}
-                    activeBooking={activeBooking ?? null}
+                    bookings={bookingsList}
                     menuSelection={menuSelection}
                     onChangeTab={setActiveTab}
                     onNavigate={onNavigate}
@@ -262,48 +296,42 @@ const UserPage: React.FC<UserPageProps> = ({
                   isStaff ? (
                     <AccessDeniedView />
                   ) : bookingsList.length === 0 ? (
-                    /* No booking state */
-                    <div className="flex flex-col items-center justify-center py-20 bg-surface border border-border rounded-3xl text-center px-6">
-                      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
-                        <span className="material-symbols-rounded text-primary text-3xl">event_busy</span>
-                      </div>
-                      <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">No Active Booking</p>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">
-                        Book a cooking class to manage your reservation here.
-                      </p>
-                      <button
-                        onClick={() => onNavigate('booking')}
-                        className="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-2xl hover:bg-primary/90 transition-colors"
-                      >
-                        <span className="material-symbols-rounded text-xl">calendar_add_on</span>
-                        Book a Class
-                      </button>
-                    </div>
+                    <NoBookingBanner onNavigate={onNavigate} />
                   ) : (
-                    <DashboardTab
-                      userProfile={userProfile}
-                      bookings={bookingsList}
-                      activeId={activeBookingId}
-                      routeStops={routeStops}
-                      onSelectBooking={setActiveBookingId}
-                      menuStatus={!!menuSelection}
-                      onNavigate={onNavigate}
-                      onChangeTab={setActiveTab}
-                      onOpenSettings={() => setActiveTab('passport')}
-                      onShowCertificate={() => setShowCertificate(true)}
-                    />
+                    <div className="flex flex-col [gap:var(--space-fluid-l)]">
+                      <DashboardTab
+                        userProfile={userProfile}
+                        bookings={bookingsList}
+                        activeId={activeBookingId}
+                        routeStops={routeStops}
+                        onSelectBooking={setActiveBookingId}
+                        menuStatus={!!menuSelection}
+                        onNavigate={onNavigate}
+                        onChangeTab={setActiveTab}
+                        onOpenSettings={() => setActiveTab('passport')}
+                        onShowCertificate={() => setShowCertificate(true)}
+                      />
+                      {/* F1 — il leader (owner del booking) condivide il link gruppo */}
+                      <InviteGroupBlock bookingRef={activeBooking?.booking_ref ?? null} />
+                      {/* F3.c — porta un visitor a questa classe (limiti via RPC) */}
+                      <VisitorClassBlock bookingId={activeBooking?.internal_id ?? null} />
+                    </div>
                   )
                 )}
 
-                {/* MY MENU — hidden for staff */}
+                {/* MY MENU — hidden for staff; requires a booking (same empty state as reservation) */}
                 {activeTab === 'menu' && !isStaff && (
-                  <MenuManager
-                    bookingId={activeBookingId}
-                    bookings={bookingsList}
-                    onSelectBooking={setActiveBookingId}
-                    menuSelection={menuSelection}
-                    onNavigate={onNavigate}
-                  />
+                  bookingsList.length === 0 ? (
+                    <NoBookingBanner onNavigate={onNavigate} />
+                  ) : (
+                    <MenuManager
+                      bookingId={activeBookingId}
+                      bookings={bookingsList}
+                      onSelectBooking={setActiveBookingId}
+                      menuSelection={menuSelection}
+                      onNavigate={onNavigate}
+                    />
+                  )
                 )}
 
                 {/* AKHA QUIZ — all roles */}
@@ -316,12 +344,12 @@ const UserPage: React.FC<UserPageProps> = ({
                   <UserSettings
                     userProfile={userProfile}
                     spicinessLevels={spicinessLevels}
-                    onBack={() => setActiveTab(isStaff ? 'overview' : 'reservation')}
+                    onBack={() => setActiveTab(hasActiveBooking ? 'reservation' : 'overview')}
                     onUpdate={() => {
                       setRefreshTrigger(prev => prev + 1);
                       onProfileRefresh();
                       setTimeout(() => {
-                        setActiveTab(isStaff ? 'overview' : 'reservation');
+                        setActiveTab(hasActiveBooking ? 'reservation' : 'overview');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }, 1500);
                     }}
@@ -332,7 +360,7 @@ const UserPage: React.FC<UserPageProps> = ({
 
               </motion.div>
             </AnimatePresence>
-          </main>
+          </div>
 
         </div>
       </div>
@@ -345,8 +373,8 @@ const UserPage: React.FC<UserPageProps> = ({
             day: 'numeric', month: 'short', year: 'numeric'
           })}
           classType={activeBooking.session_id?.includes('morning')
-            ? 'Morning Market Course'
-            : 'Evening Feast Course'
+            ? t.user.morningClass
+            : t.user.eveningClass
           }
           dietLabel={userProfile.dietary_profile?.replace('diet_', '').toUpperCase()}
           dishes={getCertificateDishes()}
@@ -354,6 +382,7 @@ const UserPage: React.FC<UserPageProps> = ({
         />
       )}
     </PageLayout>
+    </ActiveProfileProvider>
   );
 };
 

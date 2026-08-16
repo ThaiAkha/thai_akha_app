@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PhoneInput from 'react-phone-input-2';
 import ReactCountryFlag from 'react-country-flag';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export default function PhoneCountryInput({ value, onChange, onCountryChange, label, selectedCountry }: Props) {
+  const { t } = useTranslation('common');
   const [country, setCountry] = useState<CountryInfo | null>(null);
 
   // Update country when selectedCountry prop changes (e.g., from nationality field)
@@ -80,7 +82,7 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
           }}
           containerClass="w-full"
           buttonClass="!hidden"
-          placeholder="e.g. +66 81 234 5678"
+          placeholder={t('form.phonePlaceholder')}
         />
       </div>
     </div>

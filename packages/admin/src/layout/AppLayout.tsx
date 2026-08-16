@@ -15,7 +15,7 @@ const LayoutContent: React.FC = () => {
       <AppSidebar />
       <Backdrop />
       <div
-        className={`flex-1 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`flex-1 min-w-0 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           isExpanded ? "lg:ml-80" : "lg:ml-[108px]"
         }`}
       >

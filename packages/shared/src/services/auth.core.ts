@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { UserProfile } from '../types/auth.types';
+import type { TablesUpdate } from '../types';
 
 export const authCoreService = {
     /** 🔑 LOGIN (Comune per tutti) */
@@ -12,12 +13,20 @@ export const authCoreService = {
         return data;
     },
 
-    /** 🔄 RESET PASSWORD (Recovery Flow) */
-    async resetPassword(email: string, resetUrl: string) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: resetUrl,
+    /**
+     * 🔄 RESET PASSWORD (Recovery Flow)
+     * Invia l'email brandizzata (EN/TH) via Edge Function `send-password-reset`,
+     * che genera il recovery link con generateLink (NO email di default Supabase)
+     * e spedisce con Resend. `lang` opzionale (default 'en').
+     */
+    async resetPassword(email: string, resetUrl: string, lang: 'en' | 'th' = 'en') {
+        const { data, error } = await supabase.functions.invoke('send-password-reset', {
+            body: { email, lang, redirectTo: resetUrl },
         });
         if (error) throw error;
+        if (data && (data as { ok?: boolean }).ok === false) {
+            throw new Error((data as { error?: string }).error || 'Password reset email failed');
+        }
     },
 
     /** 🚪 LOGOUT */
@@ -39,7 +48,7 @@ export const authCoreService = {
                 .select(`
           id, full_name, email, role, avatar_url, whatsapp,
           dietary_profile, allergies, preferred_spiciness_id,
-          agency_company_name, agency_commission_rate,
+          agency_company_name,
           agency_tax_id, agency_phone, commission_config,
           agency_address, agency_city, agency_province, agency_country, agency_postal_code,
           gender, age, nationality, is_active
@@ -60,7 +69,6 @@ export const authCoreService = {
                 allergies: data.allergies || [],
                 preferred_spiciness_id: data.preferred_spiciness_id || 2,
                 agency_company_name: data.agency_company_name,
-                agency_commission_rate: data.agency_commission_rate,
                 agency_tax_id: data.agency_tax_id,
                 agency_phone: data.agency_phone,
                 commission_config: data.commission_config,
@@ -87,7 +95,7 @@ export const authCoreService = {
             .update({
                 ...updates,
                 updated_at: new Date().toISOString()
-            })
+            } as TablesUpdate<'profiles'>)
             .eq('id', userId);
 
         if (error) throw error;
@@ -99,20 +107,26 @@ export const authCoreService = {
         if (error) throw error;
     },
 
-    /** 🖼️ UPLOAD AVATAR */
+    /** 🖼️ UPLOAD AVATAR — bucket avatars-user-upload, cartella per-utente (RLS path-ownership) */
     async uploadAvatar(userId: string, file: File) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${userId}-${Math.random()}.${fileExt}`;
-        const filePath = `avatars/${fileName}`;
+        const BUCKET = 'avatars-user-upload';
+        const fileExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const filePath = `${userId}/${Date.now()}.${fileExt}`;
+
+        // Cleanup dei vecchi upload dell'utente (una sola foto per utente)
+        const { data: old } = await supabase.storage.from(BUCKET).list(userId);
+        if (old?.length) {
+            await supabase.storage.from(BUCKET).remove(old.map(f => `${userId}/${f.name}`));
+        }
 
         const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, file);
+            .from(BUCKET)
+            .upload(filePath, file, { upsert: true });
 
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
+            .from(BUCKET)
             .getPublicUrl(filePath);
 
         await this.updateProfile(userId, { avatar_url: publicUrl });

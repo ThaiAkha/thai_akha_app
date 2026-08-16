@@ -26,7 +26,7 @@ const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
   const show = isLoaded && imgReady;
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-white dark:bg-[#0a0a0a] transition-colors duration-1000">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-white dark:bg-[#121212] transition-colors duration-1000">
 
       {/* 2. TEXTURE FOTOGRAFICA (STATICA)
           - Rimossa ogni logica di parallasse per una stabilità visiva totale.
@@ -36,9 +36,9 @@ const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
       <div
         className={cn(
           "absolute inset-0 bg-cover bg-center transition-all duration-[1.5s] ease-out",
-          "mix-blend-luminosity dark:mix-blend-overlay",
+          "dark:mix-blend-overlay",
           show
-            ? "opacity-[0.08] dark:opacity-[0.12] scale-100 blur-0"
+            ? "opacity-[0] dark:opacity-[0] scale-100 blur-0"
             : "opacity-0 scale-105 blur-xl"
         )}
         style={{ backgroundImage: `url('${imageUrl}')` }}
@@ -72,10 +72,6 @@ const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
         style={{ transitionDelay: '300ms' }}
       />
 
-      {/* 5. VIGNETTE DI PROTEZIONE
-          Garantisce che il centro della pagina sia sempre Bianco/Dark puro per la leggibilità.
-      */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,white_95%,white_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_30%,#0a0a0a_95%,#0a0a0a_100%)] opacity-40" />
 
     </div>
   );

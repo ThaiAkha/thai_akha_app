@@ -10,6 +10,7 @@ interface GridCardProps {
     imageOverlay?: React.ReactNode;
     renderFields: (item: Record<string, any>) => React.ReactNode;
     className?: string;
+    aspectClassName?: string;
 }
 
 const GridCard: React.FC<GridCardProps> = ({
@@ -21,6 +22,7 @@ const GridCard: React.FC<GridCardProps> = ({
     imageOverlay,
     renderFields,
     className,
+    aspectClassName = 'aspect-square',
 }) => {
     return (
         <div
@@ -33,8 +35,8 @@ const GridCard: React.FC<GridCardProps> = ({
                 className
             )}
         >
-            {/* Thumbnail - Fixed 1:1 Aspect Ratio */}
-            <div className="aspect-square flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800/50 relative">
+            {/* Thumbnail */}
+            <div className={cn("flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800/50 relative", aspectClassName)}>
                 {imageUrl ? (
                     <img
                         src={imageUrl}

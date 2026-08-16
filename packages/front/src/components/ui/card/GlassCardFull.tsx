@@ -1,0 +1,202 @@
+import React from 'react';
+import GlassCard from './GlassCard';
+import Button from '../navigation/Button';
+import MediaImage from '../../modal/MediaImage';
+import { RippleLink } from '../RippleLink';
+import { SmartHeaderSection } from '../../layout';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { supabase } from '@thaiakha/shared/lib/supabase';
+import { PageSectionData } from '../../../hooks/useHomePageSections';
+import { ButtonVariant } from '../navigation/Button';
+import { SkeletonBase } from '../../skeleton/atoms';
+
+interface GlassCardFullProps {
+  sectionId: string;
+  prefetchedData?: PageSectionData | null;
+  /** Controlled loading flag from a parent batch hook (e.g. useHomePageSections). */
+  loading?: boolean;
+  imageAssetId?: string;
+  imageAlt?: string;
+  imageHref?: string;
+  buttonText?: string;
+  buttonVariant?: ButtonVariant;
+  onNavigate: (path: string) => void;
+  imagePosition?: 'left' | 'right';
+  glassVariant?: 'primary' | 'action' | 'secondary' | 'subtle';
+  buttonSize?: 'xs' | 'sm' | "md" | 'lg';
+  gradientFrom?: string;
+  gradientTo?: string;
+  hideImage?: boolean;
+  hideSubtitle?: boolean;
+  radius?: string;
+}
+
+export const GlassCardFull: React.FC<GlassCardFullProps> = ({
+  sectionId,
+  prefetchedData,
+  loading: loadingProp,
+  imageAssetId: propImageAssetId,
+  imageAlt: propImageAlt,
+  imageHref: propImageHref,
+  buttonText: propButtonText,
+  buttonVariant = 'brand',
+  onNavigate,
+  imagePosition = 'left',
+  glassVariant = 'subtle',
+  buttonSize = 'md',
+  gradientFrom,
+  gradientTo,
+  hideImage = false,
+  hideSubtitle = false,
+  radius,
+}) => {
+  // Controlled mode: parent batch hook owns loading + data — stay in skeleton while
+  // true, never self-fetch, never flash on a transient `null` prefetchedData.
+  const controlled = loadingProp !== undefined;
+  const [data, setData] = React.useState<PageSectionData | null>(prefetchedData ?? null);
+  const [loading, setLoading] = React.useState(controlled ? loadingProp : !prefetchedData);
+
+  React.useEffect(() => {
+    if (controlled) {
+      setData(prefetchedData ?? null);
+      setLoading(loadingProp);
+      return;
+    }
+    if (prefetchedData !== undefined) {
+      setData(prefetchedData);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const fetchContent = async () => {
+      try {
+        setLoading(true);
+        const { data: sectionData, error } = await supabase
+          .from('page_sections')
+          .select('*')
+          .eq('section_id', sectionId)
+          .single();
+
+        if (error) throw error;
+        // jsonb (cards/bullets) → tipi dominio: narrowing al confine DB→UI
+        if (!cancelled && sectionData) setData(sectionData as unknown as PageSectionData);
+      } catch (err) {
+        console.error(`GlassCardFull fetch error [${sectionId}]:`, err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchContent();
+    return () => { cancelled = true; };
+  }, [sectionId, prefetchedData, controlled, loadingProp]);
+
+  // Use CMS data if available, fallback to props
+  const imageAssetId = data?.image_asset_id || propImageAssetId || '';
+  const rawHref = data?.button_link_url || propImageHref || '';
+  const buttonText = data?.button_text || propButtonText || '';
+  const imageAlt = propImageAlt || data?.title || 'Section Image';
+  const openInNewTab = data?.open_in_new_tab || false;
+  const imageOrder = imagePosition === 'left' ? 'order-1 lg:order-1' : 'order-2 lg:order-2';
+  const textOrder = imagePosition === 'left' ? 'order-2 lg:order-2' : 'order-1 lg:order-1';
+
+  // DB convention: no leading slash (e.g. 'recipes', 'location')
+  // Strip slash as safety fallback during DB migration
+  const hasLink = rawHref && rawHref !== '#';
+  const isExternal = rawHref.startsWith('http');
+  const navigatePath = (!isExternal && rawHref.startsWith('/')) ? rawHref.substring(1) : rawHref;
+  const imageHref = isExternal ? rawHref : `/${navigatePath}`;
+
+  if (loading) {
+    return <SkeletonBase className="w-full h-48 rounded-[2.5rem]" />;
+  }
+
+  const imageContent = (
+    <>
+      <MediaImage
+        assetId={imageAssetId}
+        className="relative z-20 w-full h-full"
+        imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        fallbackAlt={imageAlt}
+      />
+      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors duration-500 pointer-events-none z-30" />
+    </>
+  );
+
+  return (
+    <GlassCard variant={glassVariant} className="group overflow-hidden" padding="l" innerClassName="relative" radius={radius}>
+      {/* Background Image Overlay (10% transparency) */}
+      <div className="absolute inset-0 z-0 opacity-10 bg-black pointer-events-none">
+        <MediaImage
+          assetId={imageAssetId}
+          className="w-full h-full"
+          imgClassName="w-full h-full object-cover"
+          fallbackAlt=""
+        />
+      </div>
+
+      <div className={cn(
+        "relative z-10",
+        hideImage ? "flex flex-col" : "grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center"
+      )}>
+        {/* Immagine */}
+        {!hideImage && (
+          hasLink ? (
+            <RippleLink
+              href={imageHref}
+              onNavigate={openInNewTab ? undefined : () => onNavigate(navigatePath)}
+              target={openInNewTab ? '_blank' : undefined}
+              rel={openInNewTab ? 'noopener noreferrer' : undefined}
+              className={cn(imageOrder, 'relative rounded-[calc(var(--radius)-var(--glass-padding))] border border-white/10 group-hover:border-white/20 transition-all duration-500 aspect-video bg-surface-2 shadow-sm overflow-hidden')}
+            >
+              {imageContent}
+            </RippleLink>
+          ) : (
+            <div className={cn(imageOrder, 'relative rounded-[calc(var(--radius)-var(--glass-padding))] border border-white/10 transition-all duration-500 aspect-video bg-surface-2 shadow-sm overflow-hidden')}>
+              {imageContent}
+            </div>
+          )
+        )}
+
+        {/* Testo e bottone */}
+        <div className={cn(!hideImage && textOrder, 'flex flex-col [gap:var(--space-fluid-s)]')}>
+          <SmartHeaderSection
+            sectionId={sectionId}
+            prefetchedData={data}
+            variant="section"
+            align="left"
+            gradientFrom={gradientFrom || (glassVariant === 'action' ? 'quiz-s' : glassVariant === 'secondary' ? 'allergy' : undefined)}
+            gradientTo={gradientTo || (glassVariant === 'action' ? 'primary' : glassVariant === 'secondary' ? 'quiz-p' : undefined)}
+            hideTag={true}
+            hideSubtitle={hideSubtitle}
+          />
+          {buttonText && (
+            <div className="[padding-top:var(--space-fluid-s)] flex justify-center lg:justify-start">
+              <Button
+                variant={buttonVariant}
+                size={buttonSize}
+                icon="arrow_forward"
+                iconPosition="right"
+                as="a"
+                href={imageHref}
+                target={openInNewTab ? '_blank' : undefined}
+                rel={openInNewTab ? 'noopener noreferrer' : undefined}
+                onClick={(e: React.MouseEvent<any>) => {
+                  if (openInNewTab) return;
+                  if (e.metaKey || e.ctrlKey) return; // new tab — let browser handle
+                  e.preventDefault();
+                  onNavigate(navigatePath);
+                }}
+              >
+                {buttonText}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
+
+export default GlassCardFull;

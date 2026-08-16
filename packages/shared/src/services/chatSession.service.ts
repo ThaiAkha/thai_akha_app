@@ -1,5 +1,6 @@
 // packages/shared/src/services/chatSession.service.ts
 import { supabase } from '../lib/supabase';
+import type { Json } from '../types';
 
 export interface ChatSession {
   id: string;
@@ -20,6 +21,10 @@ export interface DbChatMessage {
   content: string;
   type: 'text' | 'voice';
   created_at: string;
+  /** Id del nodo CHAT_FLOW iniettato (memoria visite/ragnatela). null per AI/voce. */
+  node_id?: string | null;
+  /** Metadati liberi: link/asset cliccati, azione, ecc. (memoria click). */
+  metadata?: Record<string, unknown> | null;
 }
 
 const SESSION_TOKEN_KEY = 'cherry_session_token';
@@ -32,6 +37,10 @@ const getGuestToken = (): string => {
   }
   return token;
 };
+
+/** Returns the current guest session token from localStorage, or null if not yet created. */
+export const getGuestSessionToken = (): string | null =>
+  localStorage.getItem(SESSION_TOKEN_KEY);
 
 export const getOrCreateSession = async (userId?: string): Promise<ChatSession> => {
   try {
@@ -108,12 +117,20 @@ export const saveMessage = (
   sessionId: string,
   role: 'user' | 'assistant' | 'system',
   content: string,
-  type: 'text' | 'voice' = 'text'
+  type: 'text' | 'voice' = 'text',
+  opts?: { nodeId?: string | null; metadata?: Record<string, unknown> | null }
 ): void => {
   if (sessionId.startsWith('ephemeral_')) return;
   supabase
     .from('chat_messages')
-    .insert({ session_id: sessionId, sender_role: role, content, type })
+    .insert({
+      session_id: sessionId,
+      sender_role: role,
+      content,
+      type,
+      node_id: opts?.nodeId ?? null,
+      metadata: (opts?.metadata ?? null) as Json,
+    })
     .then(({ error }) => {
       if (error) console.warn('[ChatSession] saveMessage failed (silent):', error.message);
     });
@@ -126,45 +143,24 @@ export const updateSummary = async (sessionId: string, summary: string): Promise
 
 export const checkRateLimit = async (
   userId?: string,
-  _sessionToken?: string
+  sessionToken?: string
 ): Promise<{ allowed: boolean; reason?: string }> => {
-  if (userId) {
-    // VIP: utente con prenotazione confermata — nessun limite
-    const { data: hasBooking } = await supabase
-      .from('bookings')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('status', 'confirmed')
-      .gte('booking_date', new Date().toISOString().split('T')[0])
-      .limit(1)
-      .maybeSingle();
-    if (hasBooking) return { allowed: true };
+  try {
+    const { data, error } = await supabase.rpc('check_chat_rate_limit', {
+      p_user_id: (userId ?? null) as string,
+      p_session_token: (sessionToken ?? null) as string,
+    });
 
-    // Utente loggato normale: max 30 messaggi/giorno
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const session = await getOrCreateSession(userId);
-    const { count } = await supabase
-      .from('chat_messages')
-      .select('*', { count: 'exact', head: true })
-      .eq('sender_role', 'user')
-      .gte('created_at', oneDayAgo)
-      .eq('session_id', session.id);
-    if (count && count >= 30) {
-      return {
-        allowed: false,
-        reason: 'Daily limit reached. Come back tomorrow or book a class!',
-      };
-    }
+    if (error) throw error;
+
+    const row = Array.isArray(data) ? data[0] : data;
+    return {
+      allowed: row.allowed,
+      reason: row.reason ?? undefined,
+    };
+  } catch (err) {
+    // Fallback silenzioso: non bloccare l'utente se la RPC fallisce
+    console.warn('[checkRateLimit] RPC failed, allowing by default:', err);
     return { allowed: true };
   }
-
-  // Guest: max 10 messaggi per sessione
-  const session = await getOrCreateSession();
-  if (session.message_count >= 10) {
-    return {
-      allowed: false,
-      reason: 'Guest limit reached. Create a free account to continue chatting!',
-    };
-  }
-  return { allowed: true };
 };

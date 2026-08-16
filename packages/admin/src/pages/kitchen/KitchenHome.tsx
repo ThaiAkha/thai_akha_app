@@ -17,7 +17,7 @@ import BasicCard from '../../components/dashboard/BasicCard';
 import CTABanner from '../../components/dashboard/CTABanner';
 
 const KitchenHome: React.FC = () => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation('common');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('kitchen-home');
     const [homeCards, setHomeCards] = useState<any[]>([]);
@@ -65,9 +65,9 @@ const KitchenHome: React.FC = () => {
                 )}
 
                 {/* ROW 2: MAIN CONTENT (Features + CTA) then SIDEBAR (Nav + Basic) */}
-                <div className="grid grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* MAIN CONTENT (9 col) - Features + CTA */}
-                    <div className="col-span-12 md:col-span-8 lg:col-span-9">
+                    <div className="lg:col-span-9 min-w-0">
                         {/* Features Grid */}
                         <FeatureCardsGrid cards={featureCards} />
 
@@ -78,18 +78,18 @@ const KitchenHome: React.FC = () => {
                                     key={card.id}
                                     title={card.title || card.card_title}
                                     description={card.description || card.card_description}
-                                    ctaLabel={card.link_label || 'View More'}
+                                    ctaLabel={card.link_label || t('fallback.viewMore')}
                                     ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
                                     variant={card.variant || 'dark'}
-                                    className="flex items-center justify-between gap-6 p-13"
+                                    className="flex items-center justify-between gap-6"
                                 />
                             ))}
                         </div>
                     </div>
 
                     {/* SIDEBAR (3 col) - Nav cards and Basic cards */}
-                    <div className="col-span-12 md:col-span-4 lg:col-span-3">
-                        <div className="flex flex-col gap-6">
+                    <div className="lg:col-span-3 min-w-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
                             {leftCards.map((card: any) => {
                                 const path = card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#';
                                 if (card.card_type === 'nav') {

@@ -39,7 +39,9 @@
     "switch": "เปลี่ยนภาษา",
     "current": "ภาษาปัจจุบัน",
     "en": "อังกฤษ",
-    "th": "ไทย"
+    "th": "ไทย",
+    "es": "สเปน",
+    "zh": "จีน"
   },
   "user": {
     "menu": "เมนูผู้ใช้",
@@ -57,11 +59,24 @@
   "theme": {
     "light": "สว่าง",
     "dark": "มืด",
-    "toggle": "สลับธีม"
+    "toggle": "สลับธีม",
+    "lightMode": "โหมดสว่าง",
+    "darkMode": "โหมดมืด"
   },
   "aria": {
     "menuToggle": "เปิด/ปิดแถบด้านข้าง",
-    "userAvatar": "รูปโปรไฟล์ผู้ใช้"
+    "userAvatar": "รูปโปรไฟล์ผู้ใช้",
+    "prevDay": "วันที่ก่อนหน้า",
+    "selectDate": "เลือกวันที่",
+    "nextDay": "วันที่ถัดไป",
+    "toggleTheme": "สลับโหมด",
+    "clearSearch": "ล้างการค้นหา",
+    "openCherry": "เปิดใช้งาน Cherry AI",
+    "expandChat": "ขยายหน้าต่างแชท",
+    "closeChat": "ปิดหน้าต่างแชท",
+    "toggleVoice": "เปิด/ปิดเสียง",
+    "minimizeChat": "ย่อขนาด",
+    "close": "ปิด"
   },
   "yesNo": {
     "yes": "ใช่",
@@ -75,10 +90,47 @@
     "confirm": "ยืนยัน",
     "deleteRecord": "ลบข้อมูล",
     "editAvailability": "แก้ไขความพร้อม",
+    "viewMore": "ดูเพิ่มเติม",
+    "editRecord": "แก้ไขข้อมูลนี้",
+    "saveModifications": "บันทึกการเปลี่ยนแปลง",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "editFileMetadata": "แก้ไขข้อมูลไฟล์",
+    "editHotel": "แก้ไขโรงแรมนี้",
+    "editMeetingPoint": "แก้ไขจุดนัดหมายนี้",
+    "assign": "มอบหมาย"
+  },
+  "form": {
+    "phonePlaceholder": "เช่น +66 81 234 5678"
+  },
+  "fallback": {
+    "guest": "แขก",
+    "empty": "ว่าง",
     "viewMore": "ดูเพิ่มเติม"
   },
   "notifications": {
     "title": "การแจ้งเตือน",
-    "viewAll": "ดูการแจ้งเตือนทั้งหมด"
+    "viewAll": "ดูการแจ้งเตือนทั้งหมด",
+    "empty": "ยังไม่มีการแจ้งเตือน",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด"
+  },
+  "badges": {
+    "hasLuggage": "มีกระเป๋า"
+  },
+  "worker": {
+    "whoAreYou": "คุณคือใคร?",
+    "select": "เลือกชื่อของคุณ",
+    "change": "เปลี่ยน",
+    "loading": "กำลังโหลด…",
+    "none": "ไม่มีพนักงานสำหรับงานนี้",
+    "roles": {
+      "teacher": "ครูสอน",
+      "helper": "ผู้ช่วย",
+      "extra": "เสริม",
+      "setup": "จัดเตรียม",
+      "logistics": "โลจิสติกส์",
+      "driver": "คนขับ",
+      "manager": "ผู้จัดการ",
+      "admin": "แอดมิน"
+    }
   }
 }

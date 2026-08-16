@@ -25,6 +25,7 @@
     "fieldProvince": "จังหวัด / ภูมิภาค",
     "placeholderProvince": "จังหวัด",
     "fieldPostalCode": "รหัสไปรษณีย์",
+    "placeholderPostalCode": "00000",
     "fieldTaxId": "เลขประจำตัวผู้เสียภาษี / เลข VAT",
     "placeholderTaxId": "หมายเลขจดทะเบียน VAT",
     "fieldCommission": "อัตราค่าคอมมิชชัน",
@@ -35,6 +36,7 @@
   "security": {
     "fieldNewPassword": "รหัสผ่านใหม่",
     "fieldConfirmPassword": "ยืนยันรหัสผ่านใหม่",
+    "placeholderPassword": "••••••••",
     "errorMismatch": "รหัสผ่านไม่ตรงกัน",
     "errorMinLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
     "successUpdated": "อัปเดตรหัสผ่านสำเร็จ!",

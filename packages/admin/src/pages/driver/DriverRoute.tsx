@@ -12,40 +12,31 @@ import PageContainer from '../../components/layout/PageContainer';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import AdminClassPicker from '../../components/common/AdminClassPicker';
 import TransportStopCard, { Stop, TransportStatus } from '../../components/driver/TransportStopCard';
+import { useTranslation } from 'react-i18next';
 
 // --- TYPES ---
 type Phase = 'PICKUP' | 'DROPOFF';
 type SessionFilter = 'morning_class' | 'evening_class';
 
-// --- CONFIGURAZIONE STATI ---
-const STATUS_CONFIG: Record<TransportStatus, { label: string; actionLabel: string; color: string; next: TransportStatus | null }> = {
+// --- STATIC CONFIG (colors and next status only — labels come from t()) ---
+const STATUS_STATIC: Record<TransportStatus, { color: string; next: TransportStatus | null }> = {
     waiting: {
-        label: 'WAITING',
-        actionLabel: 'START PICKUP',
         color: 'bg-white text-black hover:bg-white/90',
         next: 'driver_en_route'
     },
     driver_en_route: {
-        label: 'EN ROUTE',
-        actionLabel: 'I AM HERE',
         color: 'bg-primary-600 text-white hover:bg-primary-700',
         next: 'driver_arrived'
     },
     driver_arrived: {
-        label: 'AT LOBBY',
-        actionLabel: 'PICK UP PAX',
         color: 'bg-yellow-500 text-black hover:bg-yellow-400',
         next: 'on_board'
     },
     on_board: {
-        label: 'ON BOARD',
-        actionLabel: 'DROP COMPLETE',
         color: 'bg-green-600 text-white hover:bg-green-700',
         next: 'dropped_off'
     },
     dropped_off: {
-        label: 'COMPLETED',
-        actionLabel: 'DONE',
         color: 'bg-gray-700 text-gray-400 cursor-not-allowed',
         next: null
     }
@@ -53,6 +44,7 @@ const STATUS_CONFIG: Record<TransportStatus, { label: string; actionLabel: strin
 
 const DriverRoute: React.FC = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('driver');
     usePageMetadata('driver');
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [stops, setStops] = useState<Stop[]>([]);
@@ -66,6 +58,35 @@ const DriverRoute: React.FC = () => {
     const [activeDate, setActiveDate] = useState(new Date().toISOString().split('T')[0]);
     const [sessionFilter, setSessionFilter] = useState<SessionFilter>('morning_class');
 
+    // Computed STATUS_CONFIG with translated labels
+    const STATUS_CONFIG = useMemo(() => ({
+        waiting: {
+            ...STATUS_STATIC.waiting,
+            label: t('statusLabels.waiting'),
+            actionLabel: t('actions.startPickup'),
+        },
+        driver_en_route: {
+            ...STATUS_STATIC.driver_en_route,
+            label: t('statusLabels.enRoute'),
+            actionLabel: t('actions.imHere'),
+        },
+        driver_arrived: {
+            ...STATUS_STATIC.driver_arrived,
+            label: t('statusLabels.atLobby'),
+            actionLabel: t('actions.pickupPax'),
+        },
+        on_board: {
+            ...STATUS_STATIC.on_board,
+            label: t('statusLabels.onBoard'),
+            actionLabel: t('actions.dropComplete'),
+        },
+        dropped_off: {
+            ...STATUS_STATIC.dropped_off,
+            label: t('statusLabels.completed'),
+            actionLabel: t('actions.done'),
+        },
+    }), [t]);
+
     // 2. AUTH INITIALIZATION
     useEffect(() => {
         authService.getCurrentUserProfile().then(profile => {
@@ -77,12 +98,17 @@ const DriverRoute: React.FC = () => {
     const fetchRoute = useCallback(async () => {
         if (!userProfile) return;
         try {
+            // Legge da driver_route_v, non da bookings: la vista espone i campi di
+            // trasporto + guest_name/avatar_url e NON le colonne sanitarie del profilo
+            // (allergies, dietary_profile). Vedi Privacy 2142 e la migration
+            // 20260728000200_profiles_privilege_guard. La vista si auto-scopa come
+            // bookings_select_scoped, quindi i filtri qui sotto restano identici.
             const { data, error } = await supabase
-                .from('bookings')
+                .from('driver_route_v')
                 .select(`
                     internal_id, status, pax_count, hotel_name, pickup_zone, pickup_time, phone_number, customer_note, session_id, route_order,
                     pickup_driver_uid, transport_status, dropoff_hotel, requires_dropoff,
-                    profiles: user_id(full_name, avatar_url)
+                    guest_name, avatar_url
                 `)
                 .eq('booking_date', activeDate)
                 .neq('status', 'cancelled')
@@ -92,14 +118,7 @@ const DriverRoute: React.FC = () => {
             if (error) throw error;
 
             if (data) {
-                setStops(data.map((b: any) => {
-                    const profile = b.profiles;
-                    return {
-                        ...b,
-                        guest_name: profile?.full_name || 'Guest',
-                        avatar_url: profile?.avatar_url,
-                    } as Stop;
-                }));
+                setStops(data.map((b) => ({ ...b }) as Stop));
             }
         } catch (error) {
             console.error("Supabase Fetch Error:", error);
@@ -277,7 +296,7 @@ const DriverRoute: React.FC = () => {
             console.error("Status update failed:", error);
             setStops(previousStops);
         }
-    }, [userProfile, stops, phase, sessionFilter, visibleStops, calculatePayout, fetchRoute]);
+    }, [userProfile, stops, phase, sessionFilter, visibleStops, calculatePayout, fetchRoute, STATUS_CONFIG]);
 
     // 8. ACTION HANDLERS
     const handleClickAction = useCallback((stop: Stop) => {
@@ -335,30 +354,30 @@ const DriverRoute: React.FC = () => {
                             <button
                                 onClick={() => setPhase('PICKUP')}
                                 className={cn(
-                                    "flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    "flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'PICKUP'
                                         ? "bg-primary-600 text-white shadow-lg"
                                         : "text-gray-400 dark:text-white/40 hover:text-white/60"
                                 )}
                             >
-                                <Truck className="w-3.5 h-3.5" /> Pickup
+                                <Truck className="w-3.5 h-3.5" /> {t('phase.pickup')}
                             </button>
                             <button
                                 onClick={() => setPhase('DROPOFF')}
                                 className={cn(
-                                    "flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    "flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'DROPOFF'
                                         ? "bg-green-600 text-white shadow-lg"
                                         : "text-gray-400 dark:text-white/40 hover:text-white/60"
                                 )}
                             >
-                                <Home className="w-3.5 h-3.5" /> Drop-off
+                                <Home className="w-3.5 h-3.5" /> {t('phase.dropoff')}
                             </button>
                         </div>
 
                         <div className="bg-primary-50 dark:bg-primary-500/10 px-4 py-2 rounded-xl border border-primary-100 dark:border-primary-500/20 flex items-center gap-3">
                             <span className="text-xl font-mono font-black text-primary-600 dark:text-primary-400 leading-none">{completedPax}</span>
-                            <span className="text-[10px] font-bold text-primary-400 dark:text-white/40 uppercase tracking-widest">/ {totalPax} PAX</span>
+                            <span className="text-xs font-bold text-primary-400 dark:text-white/40 uppercase tracking-widest">/ {totalPax} {t('stopCard.pax')}</span>
                         </div>
                     </div>
                 </div>
@@ -382,8 +401,8 @@ const DriverRoute: React.FC = () => {
                             )}
                         >
                             {phase === 'PICKUP'
-                                ? <><Bus className="w-5 h-5 mr-2" />{startRouteClicks === 0 ? 'Start Pickup Route' : 'CLICK AGAIN TO CONFIRM'}</>
-                                : <><Home className="w-5 h-5 mr-2" />{startRouteClicks === 0 ? 'Start Drop-off Route' : 'CLICK AGAIN TO CONFIRM'}</>
+                                ? <><Bus className="w-5 h-5 mr-2" />{startRouteClicks === 0 ? t('phase.startPickupRoute') : t('actions.clickAgainToConfirm')}</>
+                                : <><Home className="w-5 h-5 mr-2" />{startRouteClicks === 0 ? t('phase.startDropoffRoute') : t('actions.clickAgainToConfirm')}</>
                             }
                         </Button>
                     )}
@@ -415,10 +434,10 @@ const DriverRoute: React.FC = () => {
                                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 dark:text-white">
-                                All Rides Completed!
+                                {t('payout.allRidesCompleted')}
                             </h3>
                             <div className="bg-primary-50 dark:bg-primary-500/10 p-6 rounded-xl border border-primary-100 dark:border-primary-500/20">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Daily Earnings</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('payout.dailyEarnings')}</p>
                                 <p className="text-4xl font-black text-primary-600 dark:text-primary-400">
                                     {payoutAmount || 0} <span className="text-2xl">THB</span>
                                 </p>
@@ -431,7 +450,7 @@ const DriverRoute: React.FC = () => {
                                 }}
                                 className="w-full h-12 text-lg font-bold"
                             >
-                                Return to Home
+                                {t('payout.returnToHome')}
                             </Button>
                         </div>
                     </div>

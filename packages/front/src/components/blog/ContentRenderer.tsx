@@ -1,13 +1,40 @@
-import React from 'react';
-import { Typography, Icon } from '../ui';
+import React, { useState, useCallback } from 'react';
+import { Typography, Icon, MediaImage, Card, AkhaPixelLine } from '../ui';
+import AkhaThemedLine from '../divider/AkhaThemedLine';
+import AkhaQuote from '../divider/AkhaQuote';
+import AkhaPixelPattern, { AkhaTheme } from '../divider/AkhaPixelPattern';
+import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
+import { useMediaAsset } from '../../hooks/useMediaAsset';
+import MapBlock from '../modal/MapBlock';
 
-// ─── Content parser ───────────────────────────────────────────────────────────
+// ─── Block types ──────────────────────────────────────────────────────────────
+
+// ─── Reward card item (used by reward_cards block) ───────────────────────────
+interface RewardCardItem {
+  image_url?: string;
+  label: string;
+  description?: string;
+  required_points: number;
+  icon?: string;
+  badge_type?: 'physical' | 'digital';
+}
 
 type ContentBlock =
-  | { type: 'paragraph'; text: string }
-  | { type: 'bullets'; items: string[] };
+  | { type: 'paragraph'; text: string; bold?: boolean }
+  | { type: 'bullets'; items: string[] }
+  | { type: 'heading'; level: 2 | 3; text: string; subtitle?: string; anchorId?: string }
+  | { type: 'quote'; text: string; author?: string }
+  | { type: 'photo'; assetId: string; fullWidth?: boolean }
+  | { type: 'photo_grid'; assetIds: string[] }
+  | { type: 'divider'; theme?: AkhaTheme | 'cooking' }  // 'cooking' kept for DB backward-compat, mapped to 'kitchen' at render
+  | { type: 'map'; url: string; title?: string; height?: number }
+  | { type: 'info_box'; title?: string; subtitle?: string; text?: string; items?: string[]; icon?: string }
+  | { type: 'reward_cards'; items: RewardCardItem[] };
 
-function parseContent(raw: string): ContentBlock[] {
+// ─── Plain-text parser (backward compat) ─────────────────────────────────────
+// ... (rest of the parser remains unchanged)
+
+function parsePlainText(raw: string): ContentBlock[] {
   const lines = raw.split('\n');
   const blocks: ContentBlock[] = [];
   let para: string[] = [];
@@ -39,44 +66,384 @@ function parseContent(raw: string): ContentBlock[] {
   return blocks;
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
+
+// ─── JSON parser ──────────────────────────────────────────────────────────────
+
+export function parseContent(raw: string): ContentBlock[] {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('[')) {
+    try {
+      return JSON.parse(trimmed) as ContentBlock[];
+    } catch {
+      // fall through to plain text
+    }
+  }
+  return parsePlainText(raw);
+}
+
+// ─── GalleryPhoto — resolves asset and registers it in parent ─────────────────
+
+interface GalleryPhotoProps {
+  assetId: string;
+  onOpen: (assetId: string) => void;
+  onLoaded: (assetId: string, item: GalleryItem) => void;
+  theme?: AkhaTheme;
+}
+
+const GalleryPhoto: React.FC<GalleryPhotoProps> = ({ assetId, onOpen, onLoaded, theme }) => {
+  const { asset } = useMediaAsset({ assetId });
+
+  // Register asset in parent once resolved
+  React.useEffect(() => {
+    if (asset?.image_url) {
+      onLoaded(assetId, {
+        image_url: asset.image_url,
+        asset_id: assetId,
+        title: asset.title ?? undefined,
+        description: asset.caption ?? undefined,
+      });
+    }
+  }, [asset, assetId, onLoaded]);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <button
+        onClick={() => onOpen(assetId)}
+        className="w-full aspect-video rounded-[2rem] overflow-hidden cursor-zoom-in group relative shadow-lg"
+        aria-label={asset?.alt_text ?? 'Open photo'}
+      >
+        <MediaImage
+          assetId={assetId}
+          className="w-full h-full"
+          imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          fallbackAlt=""
+        />
+      </button>
+
+      {asset?.alt_text && (
+        <div className="mt-1">
+          <AkhaQuote
+            variant="base"
+            className="opacity-90"
+            author={`© Thai Akha Kitchen ${new Date().getFullYear()}`}
+            theme={theme}
+          >
+            {asset.alt_text}
+          </AkhaQuote>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Block renderer context ───────────────────────────────────────────────────
+
+interface BlockContext {
+  onPhotoClick: (assetId: string) => void;
+  onPhotoLoaded: (assetId: string, item: GalleryItem) => void;
+  isFirstParagraph: (i: number) => boolean;
+  theme?: AkhaTheme;
+}
+
+
+
+function renderBlock(block: ContentBlock, i: number, ctx: BlockContext): React.ReactNode {
+  switch (block.type) {
+
+    case 'paragraph': {
+      const isBold = block.bold || ctx.isFirstParagraph(i);
+      return (
+        <Typography
+          key={i}
+          variant="paragraphL"
+          color="default"
+          className={`leading-loose${isBold ? ' font-bold' : ''} [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all`}
+          dangerouslySetInnerHTML={{ __html: block.text }}
+        />
+      );
+    }
+
+    case 'bullets':
+      return (
+        <ul key={i} className="space-y-3 pl-1">
+          {block.items.map((item, j) => (
+            <li key={j} className="flex items-start gap-3">
+              <Icon name="chevron_right" size="sm" className="text-action shrink-0 mt-1 opacity-70" />
+              <Typography variant="paragraphM" color="default" className="leading-relaxed [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all" dangerouslySetInnerHTML={{ __html: item }} />
+            </li>
+          ))}
+        </ul>
+      );
+
+    case 'heading': {
+      const id = block.anchorId || slugify(block.text);
+      const isLevel2 = block.level === 2;
+      return (
+        <div key={i} id={id} className="flex flex-col [gap:var(--space-fluid-2xs)] scroll-mt-24">
+          <Typography
+            variant={isLevel2 ? 'h2' : 'h3'}
+            as={isLevel2 ? 'h2' : 'h3'}
+            className="text-title leading-[1.15] tracking-tight [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all"
+            dangerouslySetInnerHTML={{ __html: block.text }}
+          />
+
+          {isLevel2 && (
+            <div className="w-full [padding-top:var(--space-fluid-3xs)] [padding-bottom:var(--space-fluid-2xs)]">
+              <AkhaPixelPattern
+                variant="line"
+                size={6}
+                theme={ctx.theme ?? 'kitchen'}
+                opacity={0.9}
+                animateInView
+              />
+            </div>
+          )}
+
+          {block.subtitle && (
+            <Typography variant="paragraphS" color="muted" className="uppercase tracking-widest font-medium">
+              {block.subtitle}
+            </Typography>
+          )}
+        </div>
+      );
+    }
+
+    case 'quote':
+      return (
+        <AkhaQuote key={i} variant="base" author={block.author} theme={ctx.theme}>
+          {block.text}
+        </AkhaQuote>
+      );
+
+    case 'photo':
+      return (
+        <GalleryPhoto
+          key={`photo-${block.assetId}-${i}`}
+          assetId={block.assetId}
+          onOpen={ctx.onPhotoClick}
+          onLoaded={ctx.onPhotoLoaded}
+          theme={ctx.theme}
+        />
+      );
+
+    case 'photo_grid':
+      return (
+        <div key={`photo-grid-${i}`} className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-m)]">
+          {block.assetIds.map((assetId, j) => (
+            <GalleryPhoto
+              key={`photo-grid-item-${assetId}-${i}-${j}`}
+              assetId={assetId}
+              onOpen={ctx.onPhotoClick}
+              onLoaded={ctx.onPhotoLoaded}
+              theme={ctx.theme}
+            />
+          ))}
+        </div>
+      );
+
+    case 'divider':
+      return (
+        <div key={i} className="opacity-80">
+          <AkhaThemedLine 
+            size={10} 
+            opacity={0.9} 
+            theme={(ctx.theme ?? (block.theme === 'cooking' ? 'kitchen' : (block.theme ?? 'kitchen'))) as AkhaTheme} 
+          />
+        </div>
+      );
+
+    case 'map':
+      return <div key={i}><MapBlock url={block.url} title={block.title} height={block.height} /></div>;
+
+    case 'info_box': {
+      const items = block.items || (block.text ? [block.text] : []);
+      return (
+        <div key={i} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <Card
+            variant="glass"
+            padding="none"
+            rounded="2xl"
+            className="flex flex-col"
+          >
+            {/* ── Header — Centered Title ────────────────────────────── */}
+            <div
+              className="flex flex-col items-center text-center"
+              style={{ padding: 'var(--space-fluid-l) var(--space-fluid-l) 0', gap: 'var(--space-fluid-xs)' }}
+            >
+              {block.title && (
+                <Typography variant="h3" as="h3" color="title" className="font-bold leading-tight">
+                  {block.title}
+                </Typography>
+              )}
+              {block.subtitle && (
+                <Typography variant="paragraphM" color="sub" className="font-medium opacity-80">
+                  {block.subtitle}
+                </Typography>
+              )}
+            </div>
+
+            {/* ── Inner divider — matching FAQ card ───────────────────── */}
+            <div style={{ margin: 'var(--space-fluid-l) var(--space-fluid-xl)' }}>
+              <AkhaPixelPattern variant="line_divider" theme={ctx.theme} size={5} opacity={0.6} fill animateInView />
+            </div>
+
+            {/* ── Body ────────────────────────────────────────────────── */}
+            <div className="flex-1" style={{ padding: '0 var(--space-fluid-l) var(--space-fluid-l)' }}>
+              {items.length > 0 && (
+                <ul className="flex flex-col gap-3">
+                  {items.map((item, j) => (
+                    <li key={j} className="flex items-start gap-3">
+                      <Icon name="chevron_right" size="xs" className="text-action shrink-0 mt-1.5 opacity-60" />
+                      <Typography variant="paragraphM" color="muted" className="leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    case 'reward_cards':
+      return (
+        <div key={i} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 [gap:var(--space-fluid-m)]">
+          {block.items.map((item, j) => (
+            <div
+              key={j}
+              className="flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-surface/5 dark:bg-black/20 transition-all duration-300 hover:border-action/30 hover:shadow-lg"
+            >
+              {/* Image */}
+              <div className="relative aspect-square overflow-hidden shrink-0">
+                {item.image_url ? (
+                  <img
+                    src={item.image_url}
+                    alt={item.label}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-surface-2/10">
+                    <Icon name={item.icon ?? 'emoji_events'} size="xl" className="text-action/40" />
+                  </div>
+                )}
+                {/* XP badge */}
+                <div className="absolute top-2.5 right-2.5 z-10">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-black/70 backdrop-blur-sm text-white border border-white/10 rounded-full px-2 py-0.5 leading-tight">
+                    {item.required_points} XP
+                  </span>
+                </div>
+                {/* Physical/Digital badge */}
+                {item.badge_type && (
+                  <div className="absolute bottom-2.5 left-2.5 z-10">
+                    <span className={`text-[9px] font-black uppercase tracking-wider backdrop-blur-sm rounded-full px-2 py-0.5 leading-tight border ${
+                      item.badge_type === 'digital'
+                        ? 'bg-action/20 text-action border-action/30'
+                        : 'bg-quiz-p/20 text-quiz-text border-quiz-p/30'
+                    }`}>
+                      {item.badge_type}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Body */}
+              <div className="flex flex-col [gap:var(--space-fluid-3xs)] [padding:var(--space-fluid-s)]">
+                <Typography variant="paragraphM" color="title" className="font-black leading-tight">
+                  {item.label}
+                </Typography>
+                {item.description && (
+                  <Typography variant="paragraphS" color="muted" className="leading-relaxed opacity-80">
+                    {item.description}
+                  </Typography>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+
+    default:
+      return null;
+  }
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 interface ContentRendererProps {
   content: string;
   className?: string;
+  theme?: AkhaTheme;
 }
 
-/**
- * Recursive content renderer for database-stored post content.
- * Handles paragraphs and bullet points with consistent styling.
- */
-export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, className }) => {
+export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, className, theme }) => {
   const blocks = parseContent(content);
+
+  // Collect all photo assetIds in order
+  const photoAssetIds = blocks.flatMap(b => {
+    if (b.type === 'photo') return [b.assetId];
+    if (b.type === 'photo_grid') return b.assetIds;
+    return [];
+  });
+
+  // Resolved gallery items, keyed by assetId
+  const [resolvedAssets, setResolvedAssets] = useState<Record<string, GalleryItem>>({});
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryStartIndex, setGalleryStartIndex] = useState(0);
+
+  const handlePhotoLoaded = useCallback((assetId: string, item: GalleryItem) => {
+    setResolvedAssets(prev => prev[assetId] ? prev : { ...prev, [assetId]: item });
+  }, []);
+
+  const handlePhotoClick = useCallback((assetId: string) => {
+    const idx = photoAssetIds.indexOf(assetId);
+    setGalleryStartIndex(Math.max(0, idx));
+    setGalleryOpen(true);
+  }, [photoAssetIds]);
+
+  // Gallery items in block order
+  const galleryItems = photoAssetIds
+    .map(id => resolvedAssets[id])
+    .filter((item): item is GalleryItem => !!item);
+
+  // Find the first paragraph block index for bold styling
+  const firstParaIndex = blocks.findIndex(b => b.type === 'paragraph');
+  const isFirstParagraph = (i: number) => i === firstParaIndex;
+
+  const ctx: BlockContext = {
+    onPhotoClick: handlePhotoClick,
+    onPhotoLoaded: handlePhotoLoaded,
+    isFirstParagraph,
+    theme,
+  };
+
   return (
     <div className={className}>
-      <div className="space-y-5">
-        {blocks.map((block, i) => {
-          if (block.type === 'paragraph') {
-            return (
-              <Typography key={i} variant="paragraphL" color="default" className="leading-loose">
-                {block.text}
-              </Typography>
-            );
-          }
-          return (
-            <ul key={i} className="space-y-3 pl-1">
-              {block.items.map((item, j) => (
-                <li key={j} className="flex items-start gap-3">
-                  <Icon name="chevron_right" size="sm" className="text-action shrink-0 mt-1 opacity-70" />
-                  <Typography variant="paragraphM" color="default" className="leading-relaxed">
-                    {item}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
-          );
-        })}
+      <div className="flex flex-col [gap:var(--space-fluid-l)]">
+        {blocks.map((block, i) => renderBlock(block, i, ctx))}
       </div>
+
+      {/* Shared GalleryModal for all photo blocks */}
+      {galleryItems.length > 0 && (
+        <GalleryModal
+          isOpen={galleryOpen}
+          onClose={() => setGalleryOpen(false)}
+          items={galleryItems}
+          startIndex={galleryStartIndex}
+        />
+      )}
     </div>
   );
 };

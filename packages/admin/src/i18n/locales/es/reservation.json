@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "title": "Reservas | Thai Akha Kitchen",
+    "description": "Gestionar reservas diarias y detalles de clientes."
+  },
+  "kitchen": {
+    "days": "Days & classes",
+    "participants": "Participants",
+    "groupInfo": "Group info",
+    "pickParticipant": "Pick a participant to see their group.",
+    "notRegistered": "Seat not registered yet",
+    "bookingDetails": "Booking details",
+    "contacts": "Contacts",
+    "noContacts": "No contacts on file.",
+    "printReport": "Print report",
+    "print": "Print",
+    "downloadPdf": "Download PDF"
+  },
+  "messages": {
+    "loading": "Loading…"
+  },
+  "empty": {
+    "noParticipants": "Select a day & class.",
+    "noBookings": "No upcoming bookings."
+  },
+  "sidebar": {
+    "title": "Clientes",
+    "cancelledTitle": "Reservas canceladas",
+    "guest": "Huésped"
+  },
+  "content": {
+    "loading": "Cargando...",
+    "emptySelect": "Selecciona un cliente para ver detalles",
+    "bookingsAvailable": "{{count}} reservas disponibles",
+    "noBookings": "No se encontraron reservas para la fecha seleccionada",
+    "bookingNumber": "N.° de reserva: {{ref}}",
+    "walkIn": "Walk In",
+    "pickupRequired": "Traslado requerido",
+    "fieldPhone": "Teléfono",
+    "fieldEmail": "Correo electrónico",
+    "fieldHotel": "Hotel",
+    "fieldZone": "Zona",
+    "fieldMeetingPoint": "Punto de encuentro",
+    "notesTitle": "Notas",
+    "fieldNote": "Nota del cliente",
+    "statusCancelled": "Reserva cancelada",
+    "statusActive": "Reserva activa",
+    "btnCancelBooking": "Cancelar",
+    "btnConfirm": "Confirmar",
+    "btnDiscard": "Descartar",
+    "btnRestore": "Restaurar",
+    "btnDeletePerm": "Eliminar",
+    "guest": "Huésped"
+  },
+  "inspector": {
+    "noSelection": "Sin selección",
+    "noSelHint": "Selecciona una reserva de la lista para ver y gestionar los detalles.",
+    "fieldPax": "Participantes",
+    "fieldDate": "Día de reserva",
+    "fieldClass": "Clase",
+    "morning": "Mañana",
+    "evening": "Tarde",
+    "fieldPhone": "Número de teléfono",
+    "fieldPayment": "Estado de pago",
+    "payPending": "Pendiente",
+    "payPaid": "Pagado",
+    "payPartial": "Parcial",
+    "payRefunded": "Reembolsado",
+    "fieldNotes": "Notas",
+    "groupLeader": "Group leader",
+    "guest": "Guest"
+  },
+  "actions": {
+    "tooltipEdit": "Editar esta reserva",
+    "tooltipSave": "Guardar cambios",
+    "edit": "EDITAR",
+    "save": "GUARDAR",
+    "saving": "GUARDANDO..."
+  },
+  "agency": {
+    "pageTitle": "Reservas",
+    "searchPlaceholder": "Buscar ref. o huésped...",
+    "loading": "Cargando reservas...",
+    "noBookings": "No se encontraron reservas",
+    "invoiceTitle": "Vista previa de factura",
+    "invoiceLabel": "FACTURA",
+    "billedTo": "Facturado a",
+    "partnerAddress": "Dirección del socio",
+    "guestInfo": "Info del huésped",
+    "participants": "Participantes",
+    "colDescription": "Descripción",
+    "colDate": "Fecha",
+    "colAmount": "Monto",
+    "grossSubtotal": "Subtotal bruto",
+    "agencyDiscount": "Descuento de agencia ({{rate}}%)",
+    "netPayable": "Total a pagar",
+    "selectBooking": "Selecciona una reserva para previsualizar",
+    "inspectorTitle": "Inspector",
+    "inspectorIdle": "Inactivo",
+    "btnPrint": "Imprimir",
+    "btnSaving": "Guardando...",
+    "btnSave": "Guardar",
+    "btnEdit": "Editar",
+    "guestLogistics": "Logística del huésped",
+    "hotelPickup": "Hotel / Traslado",
+    "fieldTime": "Hora",
+    "fieldPax": "Pax",
+    "internalDetails": "Detalles internos",
+    "agencyNote": "Nota de agencia",
+    "guestContact": "Contacto del huésped",
+    "noPhone": "Sin teléfono registrado",
+    "lifecycleStatus": "Estado del ciclo",
+    "inspectorIdleMsg": "Inspector inactivo"
+  },
+  "alerts": {
+    "saveError": "Error al guardar: {{message}}",
+    "cancelError": "Error al cancelar: {{message}}",
+    "restoreError": "Error al restaurar: {{message}}",
+    "deleteError": "Error al eliminar: {{message}}"
+  }
+}

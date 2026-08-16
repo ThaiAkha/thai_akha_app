@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import Badge from '../../ui/badge/Badge';
+import LeaderHeader from '../../common/LeaderHeader';
 import SelectField from '../../form/input/SelectField';
 import InputField from '../../form/input/InputField';
 import {
@@ -60,7 +60,7 @@ const SearchableHotelSelect: React.FC<SearchableHotelSelectProps> = ({
 
     return (
         <div className="space-y-1" ref={ref}>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">{label}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
             <div className="relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
                     <Building2 className="w-4 h-4" />
@@ -188,17 +188,23 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
     return (
         <form onSubmit={onSubmit} className="flex-1 flex flex-col animate-in slide-in-from-right-4 duration-300">
-            {/* Header */}
-            <div className="p-6 border-b border-gray-100 dark:border-gray-800 space-y-3 bg-gray-50/30 dark:bg-gray-800/20">
-                <div className="space-y-1">
-                    <Badge variant="light" color="primary">{selectedBooking.pax} PAX</Badge>
-                    <h3 className="text-xl font-black uppercase tracking-tight leading-none text-gray-900 dark:text-white mt-2">
-                        {selectedBooking.guest_name}
-                    </h3>
-                </div>
-                {/* Zone Badge */}
+            {/* Header unificato (LeaderHeader) — coerente con kitchen/reservation */}
+            <div className="p-6 pb-3 bg-gray-50/30 dark:bg-gray-800/20">
+                <LeaderHeader
+                    label={t('inspector.pickupGuest', { defaultValue: 'Pickup guest' })}
+                    leader={{
+                        name: selectedBooking.guest_name,
+                        avatarUrl: selectedBooking.avatar_url,
+                        phone: selectedBooking.phone_number,
+                        pax: selectedBooking.pax,
+                        luggage: selectedBooking.has_luggage,
+                    }}
+                    onWhatsApp={selectedBooking.phone_number ? (ph) => window.open(`https://wa.me/${ph.replace(/[^0-9]/g, '')}`, '_blank') : undefined}
+                />
                 {currentZone && (
-                    <ZoneTimeBadge zone={currentZone} sessionId={selectedBooking.session_id} />
+                    <div className="pt-3">
+                        <ZoneTimeBadge zone={currentZone} sessionId={selectedBooking.session_id} />
+                    </div>
                 )}
             </div>
 
@@ -206,7 +212,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Route Assignment ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
-                    <h6 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
+                    <h6 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
                         <User className="w-3.5 h-3.5" /> {t('inspector.routeAssignment')}
                     </h6>
                     <SelectField
@@ -221,7 +227,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Pickup Details ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
-                    <h6 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
+                    <h6 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
                         <MapPin className="w-3.5 h-3.5" /> {t('inspector.pickupDetails')}
                     </h6>
 
@@ -230,7 +236,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => onUpdateLocal(selectedBooking.id, { meeting_point: null })}
-                            className={`flex-1 py-2 text-xs font-bold transition-colors ${!selectedBooking.meeting_point
+                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.meeting_point
                                 ? 'bg-primary-500 text-white'
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
@@ -249,7 +255,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 onUpdateLocal(selectedBooking.id, updates);
                             }}
 
-                            className={`flex-1 py-2 text-xs font-bold transition-colors ${selectedBooking.meeting_point
+                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${selectedBooking.meeting_point
                                 ? 'bg-primary-500 text-white'
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
@@ -322,7 +328,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Drop-off Management ── */}
                 <div className="p-6 space-y-4">
-                    <h6 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest flex items-center gap-2">
+                    <h6 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
                         <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
                     </h6>
 
@@ -331,7 +337,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: null, dropoff_zone: null, dropoff_driver_uid: null })}
-                            className={`flex-1 py-2 text-xs font-bold transition-colors ${!selectedBooking.dropoff_hotel
+                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.dropoff_hotel
                                 ? 'bg-primary-500 text-white'
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
@@ -341,7 +347,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: selectedBooking.hotel_name || '' })}
-                            className={`flex-1 py-2 text-xs font-bold transition-colors ${selectedBooking.dropoff_hotel
+                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${selectedBooking.dropoff_hotel
                                 ? 'bg-primary-500 text-white'
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}

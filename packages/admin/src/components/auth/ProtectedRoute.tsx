@@ -1,10 +1,11 @@
 import { Navigate, Outlet } from 'react-router';
+import type { UserRole } from '@thaiakha/shared/types';
 import { useAuth } from '../../context/AuthContext';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
 
 interface ProtectedRouteProps {
     children?: React.ReactNode;
-    allowedRoles?: string[];
+    allowedRoles?: UserRole[];
 }
 
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {

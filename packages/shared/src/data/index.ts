@@ -1,8 +1,8 @@
-export * from './authFeatured';
-export * from './classData';
+export * from './cherry/chatFlowData';
+export * from './cherry/cherryDashboardHelp';
 export * from './pixelPatterns';
-export * from './dietaryKnowledge';
 export * from './countries';
 export * from './mapZones';
-export * from './legalDocuments';
-export * from './tooltips';
+export * from './meetingPointIcons';
+
+export * from './legal';

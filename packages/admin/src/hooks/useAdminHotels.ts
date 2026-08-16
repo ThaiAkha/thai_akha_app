@@ -1,57 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { GEOJSON_MASTER } from '@thaiakha/shared/data';
 import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
-
-// ─── TYPES ──────────────────────────────────────────────────────────────────────
-
-export interface HotelLocation {
-    id: string;
-    name: string;
-    zone_id: string | null;
-    latitude: number | null;
-    longitude: number | null;
-    address: string | null;
-    phone_number: string | null;
-    map_link: string | null;
-    website: string | null;
-    google_place_id: string | null;
-    is_active: boolean;
-    created_at?: string;
-    // Client-side enriched
-    zone_name?: string;
-    zone_color?: string;
-}
-
-export interface PickupZone {
-    id: string;
-    name: string;
-    color_code: string | null;
-    description: string | null;
-    morning_pickup_time: string | null;
-    morning_pickup_end: string | null;
-    evening_pickup_time: string | null;
-    evening_pickup_end: string | null;
-}
-
-export interface MeetingPoint {
-    id: string;
-    name: string;
-    latitude: number;
-    longitude: number;
-    zone_id?: string;
-    description?: string;
-    image_url?: string;
-    icon_url?: string;
-    google_maps_link?: string;
-    morning_pickup_time?: string | null;
-    morning_pickup_end?: string | null;
-    evening_pickup_time?: string | null;
-    evening_pickup_end?: string | null;
-    is_active?: boolean;
-}
-
-export type HotelFormData = Omit<HotelLocation, 'id' | 'created_at' | 'zone_name' | 'zone_color'>;
+import type { HotelLocation, HotelFormData, MeetingPoint, PickupZone } from '@thaiakha/shared/types';
+export type { HotelLocation, HotelFormData, MeetingPoint, PickupZone };
 
 const emptyForm: HotelFormData = {
     name: '',
@@ -75,6 +28,7 @@ function extractGPS(url: string): { lat: number; lng: number } | null {
 }
 
 export function useAdminHotels() {
+    const { t } = useTranslation('hotels');
     // ✅ AppHeader handles metadata loading automatically
 
     // Data State
@@ -99,11 +53,20 @@ export function useAdminHotels() {
 
     // ── Auto-Zoning Logic ─────────────────────────────────────────────────────
     const detectZone = useCallback((lat: number, lng: number): string | null => {
+        // Map GEOJSON feature IDs (e.g. 'AREA_AZURE_001') to DB zone IDs ('azure')
+        const geoIdToZoneId: Record<string, string> = {
+            'AREA_AZURE_001':  'azure',
+            'AREA_PINK_001':   'pink',
+            'AREA_GREEN_001':  'green',
+            'AREA_YELLOW_001': 'yellow',
+        };
         const priority = ['azure', 'pink', 'green', 'yellow'];
         for (const zoneId of priority) {
-            const feature = GEOJSON_MASTER.features.find((f: any) => f.properties.id === zoneId);
+            const geoId = Object.keys(geoIdToZoneId).find(k => geoIdToZoneId[k] === zoneId);
+            const feature = GEOJSON_MASTER.features.find((f: any) => f.properties.id === geoId);
             if (feature && feature.geometry.type === 'Polygon') {
-                const polygonRing = feature.geometry.coordinates[0];
+                // GeoJSON union type: dopo il narrow su 'Polygon' coordinates[0] è il ring esterno
+                const polygonRing = feature.geometry.coordinates[0] as number[][];
                 if (isPointInPolygon({ lat, lng }, polygonRing)) {
                     return zoneId;
                 }
@@ -140,15 +103,19 @@ export function useAdminHotels() {
             const [hotelsData, zonesRes, meetingPointsRes] = await Promise.all([
                 fetchAllHotels(),
                 supabase.from('pickup_zones').select('*').order('display_order', { ascending: true }),
-                supabase.from('meeting_points').select('*').order('name'),
+                supabase.from('meeting_points').select('*, cover:media_assets!image_asset_id(image_url, alt_text)').order('name'),
             ]);
 
-            if (zonesRes.data) setZones(zonesRes.data);
-            if (meetingPointsRes.data) setMeetingPoints(meetingPointsRes.data);
+            if (zonesRes.data) setZones(zonesRes.data as unknown as PickupZone[]);
+            // Resolve image_asset_id → media_assets; keep image_url alias for display.
+            if (meetingPointsRes.data) setMeetingPoints(meetingPointsRes.data.map(mp => {
+                const cover = (mp as Record<string, unknown>).cover as { image_url?: string } | null;
+                return { ...mp, image_url: cover?.image_url ?? null };
+            }) as unknown as MeetingPoint[]);
 
             if (hotelsData && zonesRes.data) {
                 const enriched = hotelsData.map((h: any) => {
-                    const zone = zonesRes.data!.find((z: PickupZone) => z.id === h.zone_id);
+                    const zone = (zonesRes.data as any[]).find((z: any) => z.id === h.zone_id);
                     return {
                         ...h,
                         zone_name: zone?.name || 'No Zone',
@@ -251,9 +218,9 @@ export function useAdminHotels() {
             longitude: 98.9853,
             description: '',
             google_maps_link: '',
-            image_url: '',
+            image_asset_id: null,
             icon_url: '',
-            is_active: true,
+            active: true,
             morning_pickup_time: '08:00',
             morning_pickup_end: '08:30',
             evening_pickup_time: '16:00',
@@ -265,7 +232,7 @@ export function useAdminHotels() {
 
     const handleSave = async () => {
         if (!form.name.trim()) {
-            alert('Hotel name is required.');
+            alert(t('alerts.nameRequired'));
             return;
         }
         setSaving(true);
@@ -288,7 +255,7 @@ export function useAdminHotels() {
 
         if (error) {
             console.error('Save error:', error);
-            alert('Failed to save hotel.');
+            alert(t('alerts.saveFailed'));
         } else {
             setIsEditing(false);
             setIsCreating(false);
@@ -306,9 +273,9 @@ export function useAdminHotels() {
             longitude: selectedMeetingPoint.longitude,
             google_maps_link: selectedMeetingPoint.google_maps_link,
             description: selectedMeetingPoint.description,
-            image_url: selectedMeetingPoint.image_url,
+            image_asset_id: selectedMeetingPoint.image_asset_id ?? null,
             icon_url: selectedMeetingPoint.icon_url,
-            active: selectedMeetingPoint.is_active,
+            active: selectedMeetingPoint.active,
             morning_pickup_time: selectedMeetingPoint.morning_pickup_time,
             morning_pickup_end: selectedMeetingPoint.morning_pickup_end,
             evening_pickup_time: selectedMeetingPoint.evening_pickup_time,
@@ -316,12 +283,12 @@ export function useAdminHotels() {
         };
 
         const { error } = selectedMeetingPoint.id.startsWith('new-')
-            ? await supabase.from('meeting_points').insert([payload])
-            : await supabase.from('meeting_points').update(payload).eq('id', selectedMeetingPoint.id);
+            ? await supabase.from('meeting_points').insert([payload as any])
+            : await supabase.from('meeting_points').update(payload as any).eq('id', selectedMeetingPoint.id);
 
         if (error) {
             console.error('Save MP error:', error);
-            alert('Failed to save meeting point.');
+            alert(t('alerts.saveMPFailed'));
         } else {
             setSelectedMeetingPoint(null);
             setIsEditing(false);

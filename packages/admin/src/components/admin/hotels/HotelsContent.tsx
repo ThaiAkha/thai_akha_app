@@ -50,7 +50,7 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                         item={mp}
                                         selected={selectedMeetingPoint?.id === mp.id}
                                         onClick={() => onSelectMeetingPoint(mp)}
-                                        imageUrl={mp.image_url}
+                                        imageUrl={mp.image_url || undefined}
                                         imageIcon={<MapPin className="w-8 h-8" />}
                                         renderFields={(item) => (
                                             <DataCardContent
@@ -59,14 +59,14 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                                 badges={null}
                                                 footerLeft={
                                                     <div className="flex flex-col gap-0.5">
-                                                        <p className="text-[9px] font-black tracking-tight text-gray-400 uppercase">{t('content.cardMorning')}</p>
-                                                        <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300">{item.morning_pickup_time || '--:--'}</p>
+                                                        <p className="text-xs font-black tracking-tight text-gray-400 uppercase">{t('content.cardMorning')}</p>
+                                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.morning_pickup_time || '--:--'}</p>
                                                     </div>
                                                 }
                                                 footerRight={
                                                     <div className="flex flex-col gap-0.5 items-end">
-                                                        <p className="text-[9px] font-black tracking-tight text-gray-400 uppercase">{t('content.cardEvening')}</p>
-                                                        <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300">{item.evening_pickup_time || '--:--'}</p>
+                                                        <p className="text-xs font-black tracking-tight text-gray-400 uppercase">{t('content.cardEvening')}</p>
+                                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.evening_pickup_time || '--:--'}</p>
                                                     </div>
                                                 }
                                             />
@@ -88,22 +88,22 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                             subtitle={item.address}
                                             badges={
                                                 <span
-                                                    className="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
+                                                    className="px-2 py-0.5 rounded text-xs font-bold uppercase"
                                                     style={{ backgroundColor: (item.zone_color || '#9CA3AF') + '20', color: item.zone_color || '#9CA3AF' }}
                                                 >
                                                     {item.zone_name}
                                                 </span>
                                             }
                                             footerLeft={
-                                                <p className="text-[10px] font-bold text-gray-400 truncate">
+                                                <p className="text-xs font-bold text-gray-400 truncate">
                                                     {item.phone_number || t('content.noPhone')}
                                                 </p>
                                             }
                                             footerRight={
                                                 item.is_active ? (
-                                                    <Badge color="success" size="sm" className="text-[9px]">{t('content.active')}</Badge>
+                                                    <Badge color="success" size="sm" className="text-xs">{t('content.active')}</Badge>
                                                 ) : (
-                                                    <Badge color="light" size="sm" className="text-[9px]">{t('content.inactive')}</Badge>
+                                                    <Badge color="light" size="sm" className="text-xs">{t('content.inactive')}</Badge>
                                                 )
                                             }
                                         />
@@ -118,12 +118,12 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                     <Table className="text-xs">
                         <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
                             <TableRow>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colMeetingPoint')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colDetails')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colPickupMorning')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colPickupEvening')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colStatus')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colLinks')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colMeetingPoint')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colDetails')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colPickupMorning')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colPickupEvening')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colStatus')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colLinks')}</TableCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -161,7 +161,7 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                             />
                                         </TableCell>
                                         <TableCell className="p-4">
-                                            {mp.is_active ? (
+                                            {mp.active ? (
                                                 <Badge color="success" size="sm">{t('content.active')}</Badge>
                                             ) : (
                                                 <Badge color="error" size="sm">{t('content.inactive')}</Badge>
@@ -191,10 +191,10 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                         <Table className="text-xs">
                             <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
                                 <TableRow>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colName')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colZone')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colPhone')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">{t('content.colStatus')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colName')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colZone')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colPhone')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colStatus')}</TableCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -223,9 +223,9 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                         </TableCell>
                                         <TableCell className="px-4 py-3">
                                             {hotel.is_active ? (
-                                                <Badge color="success" size="sm" className="text-[9px]">{t('content.active')}</Badge>
+                                                <Badge color="success" size="sm" className="text-xs">{t('content.active')}</Badge>
                                             ) : (
-                                                <Badge color="light" size="sm" className="text-[9px]">{t('content.inactive')}</Badge>
+                                                <Badge color="light" size="sm" className="text-xs">{t('content.inactive')}</Badge>
                                             )}
                                         </TableCell>
                                     </DataExplorerRow>

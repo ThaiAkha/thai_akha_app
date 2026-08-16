@@ -76,7 +76,7 @@ export default function UserSecurityCard() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             isEditing={true}
-                            placeholder="••••••••"
+                            placeholder={t("security.placeholderPassword")}
                         />
 
                         <ProfileRow
@@ -86,7 +86,7 @@ export default function UserSecurityCard() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             isEditing={true}
-                            placeholder="••••••••"
+                            placeholder={t("security.placeholderPassword")}
                         />
                     </div>
 
@@ -127,7 +127,7 @@ export default function UserSecurityCard() {
                     </h4>
                 </div>
 
-                <p className="text-[10px] text-gray-600 dark:text-gray-400 uppercase tracking-widest font-black mb-8 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-widest font-black mb-8 leading-relaxed">
                     {t("security.dangerZoneDesc")}
                 </p>
 
@@ -135,13 +135,13 @@ export default function UserSecurityCard() {
                     {deactivateStep === 0 ? (
                         <button
                             onClick={() => setDeactivateStep(1)}
-                            className="w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] text-red-500 border-2 border-red-500/10 bg-white/50 dark:bg-red-900/5 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-all active:scale-95"
+                            className="w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-red-500 border-2 border-red-500/10 bg-white/50 dark:bg-red-900/5 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-all active:scale-95"
                         >
                             {t("security.btnDeactivate")}
                         </button>
                     ) : (
                         <div className="flex flex-col gap-4 bg-white/80 dark:bg-red-950/20 p-5 rounded-2xl border border-red-100 dark:border-red-900/30 animate-in zoom-in-95">
-                            <div className="flex items-center gap-3 text-red-600 font-black text-[10px] uppercase tracking-widest">
+                            <div className="flex items-center gap-3 text-red-600 font-black text-xs uppercase tracking-widest">
                                 <AlertTriangle className="w-5 h-5 animate-bounce" />
                                 <span>{t("security.confirmRequired")}</span>
                             </div>
@@ -150,7 +150,7 @@ export default function UserSecurityCard() {
                                     size="sm"
                                     variant="outline"
                                     onClick={() => setDeactivateStep(0)}
-                                    className="flex-1 py-3 rounded-xl text-[10px] font-black border-gray-200"
+                                    className="flex-1 py-3 rounded-xl text-xs font-black border-gray-200"
                                 >
                                     {t("security.btnCancel", { defaultValue: "Cancel" })}
                                 </Button>
@@ -158,7 +158,7 @@ export default function UserSecurityCard() {
                                     size="sm"
                                     onClick={handleDeactivate}
                                     disabled={isLoading}
-                                    className="flex-1 py-3 rounded-xl text-[10px] font-black bg-red-600 hover:bg-red-700 text-white border-none shadow-lg shadow-red-500/20"
+                                    className="flex-1 py-3 rounded-xl text-xs font-black bg-red-600 hover:bg-red-700 text-white border-none shadow-lg shadow-red-500/20"
                                 >
                                     {isLoading ? "..." : t("security.btnConfirm", { defaultValue: "Confirm" })}
                                 </Button>

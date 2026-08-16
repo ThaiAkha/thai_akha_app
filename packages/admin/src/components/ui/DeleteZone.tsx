@@ -14,7 +14,7 @@ const DeleteZone = ({ label, onDelete }: DeleteZoneProps) => {
                     type="button"
                     variant="olive"
                     size="sm"
-                    className="w-full justify-center h-11 text-[11px] font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
+                    className="w-full justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
                     startIcon={<Trash2 className="w-5 h-5 text-white" />}
                     onClick={onDelete}
                 >

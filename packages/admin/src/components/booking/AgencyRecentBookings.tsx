@@ -9,6 +9,7 @@ import {
 import Badge from "../ui/badge/Badge"; // Default import assuming Badge.tsx has export default
 import { supabase } from "@thaiakha/shared/lib/supabase";
 import { useTranslation } from "react-i18next";
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 interface Booking {
     internal_id: string;
@@ -22,7 +23,7 @@ interface Booking {
 }
 
 export default function AgencyRecentBookings() {
-    const { t } = useTranslation('dashboard');
+    const { t, i18n } = useTranslation('dashboard');
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -43,7 +44,7 @@ export default function AgencyRecentBookings() {
                 .limit(5);
 
             if (error) throw error;
-            setBookings(data || []);
+            setBookings((data as unknown as Booking[]) || []);
         } catch (error) {
             console.error("Error fetching agency bookings:", error);
         } finally {
@@ -82,7 +83,7 @@ export default function AgencyRecentBookings() {
                             <TableRow key={booking.internal_id}>
                                 <TableCell className="py-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-[32px] w-[32px] overflow-hidden rounded-md bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-[10px]">
+                                        <div className="h-[32px] w-[32px] overflow-hidden rounded-md bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-xs">
                                             {booking.guest_name?.substring(0, 2).toUpperCase() || 'AG'}
                                         </div>
                                         <div>
@@ -93,7 +94,7 @@ export default function AgencyRecentBookings() {
                                     </div>
                                 </TableCell>
                                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                                    {new Date(booking.booking_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                    {formatDateByLanguage(booking.booking_date, i18n.language, { day: 'numeric', month: 'short' })}
                                 </TableCell>
                                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400 font-bold">
                                     {booking.pax_count}

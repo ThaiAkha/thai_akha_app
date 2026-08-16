@@ -16,7 +16,11 @@
   },
   "header": {
     "bulkEdit": "Bulk Edit",
-    "closeBulk": "Close Bulk"
+    "closeBulk": "Close Bulk",
+    "months": [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ]
   },
   "inspector": {
     "emptyBulk": "Select days for Bulk Edit",
@@ -44,7 +48,9 @@
     "totalCapacity": "Total Capacity: {{count}}",
     "saveDays_one": "SAVE {{count}} DAY",
     "saveDays_other": "SAVE {{count}} DAYS",
-    "saveChanges": "SAVE CHANGES"
+    "saveChanges": "SAVE CHANGES",
+    "editAvailability": "EDIT AVAILABILITY",
+    "cancel": "CANCEL"
   },
   "sidebar": {
     "morningClass": "Morning Class",

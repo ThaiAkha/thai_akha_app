@@ -47,7 +47,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                     <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
                         UI <span className="text-primary-500">Showcase</span>
                     </h1>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Component Library</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mt-1">Component Library</p>
                 </div>
 
                 <div className="p-4">
@@ -77,7 +77,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
 
                         {categories.map(cat => (
                             <div key={cat.name}>
-                                <h3 className="px-3 text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2">{cat.name}</h3>
+                                <h3 className="px-3 text-xs font-black uppercase text-gray-400 tracking-widest mb-2">{cat.name}</h3>
                                 <div className="space-y-1">
                                     {cat.components.map(comp => (
                                         <button
@@ -149,7 +149,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="hidden md:block px-3 py-1 bg-gray-100 dark:bg-gray-900 rounded-full text-[10px] font-bold text-gray-500 uppercase">
+                        <div className="hidden md:block px-3 py-1 bg-gray-100 dark:bg-gray-900 rounded-full text-xs font-bold text-gray-500 uppercase">
                             {categories.reduce((acc, cat) => acc + cat.components.length, 0)} Components
                         </div>
                         <div className="w-px h-6 bg-gray-200 dark:bg-gray-800" />

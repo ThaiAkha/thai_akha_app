@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { Icon } from '../ui';
+import { Icon, Typography } from '../ui';
 
 export interface QuizButtonConfig {
   label: string;
@@ -22,13 +22,19 @@ const NO_FLASH_VARIANTS = new Set(['ghost', 'outline']);
 
 const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, className = "", fullWidth = false }) => {
 
-  const baseStyles = "relative overflow-hidden isolate flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none";
+  const baseStyles = cn(
+    "relative overflow-hidden isolate flex items-center justify-center transition-all duration-300",
+    "active:scale-[0.97] disabled:opacity-30 disabled:pointer-events-none select-none",
+    "rounded-full border antialiased",
+    "px-4 py-3",
+    "[gap:var(--space-fluid-2xs)]"
+  );
 
   const variants = {
-    primary: "bg-white text-black hover:bg-quiz hover:scale-105 shadow-lg shadow-white/10",
-    secondary: "bg-white/10 text-white border border-white/10 hover:bg-white/20",
-    outline: "bg-transparent text-white border border-white/20 hover:border-white hover:text-white",
-    ghost: "bg-transparent text-white/40 hover:text-white hover:bg-white/5",
+    primary: "bg-quiz text-white border-quiz/50 hover:bg-quiz/80",
+    secondary: "bg-white/5 text-white border-white/20 hover:bg-white/10 hover:border-white/40",
+    outline: "bg-transparent text-white border-white/30 hover:border-white hover:bg-white/5",
+    ghost: "bg-transparent text-muted hover:text-white hover:bg-white/5 border-transparent",
   };
 
   const [flashes, setFlashes] = useState<FlashPoint[]>([]);
@@ -70,9 +76,15 @@ const ButtonQuiz: React.FC<ButtonQuizProps> = ({ config, onClick, disabled, clas
         />
       ))}
 
-      <span className="relative z-10 inline-flex items-center gap-2">
-        <Icon name={config.icon} className="text-lg" />
-        {config.label}
+      <span className="relative z-10 inline-flex items-center gap-5">
+        <Icon name={config.icon} size="sm" />
+        <Typography
+          variant="accent"
+          as="span"
+          className="font-black uppercase tracking-widest"
+        >
+          {config.label}
+        </Typography>
       </span>
     </button>
   );

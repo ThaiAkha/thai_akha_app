@@ -16,7 +16,7 @@ interface UseAudioAssetResult {
 }
 
 /**
- * Hook to fetch an audio asset from the `audio_assets` table or `recipe_categories`.
+ * Hook to fetch an audio asset from the `audio_assets` table or `content_categories`.
  * Supports `assetId` (string) and `categoryId` (string).
  */
 export function useAudioAsset({ assetId, categoryId, url }: UseAudioAssetOptions): UseAudioAssetResult {

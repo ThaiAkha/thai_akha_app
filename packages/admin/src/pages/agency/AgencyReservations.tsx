@@ -14,6 +14,10 @@ import {
 import PageContainer from '../../components/layout/PageContainer';
 import PageGrid from '../../components/layout/PageGrid';
 import PageMeta from '../../components/common/PageMeta';
+import { getLocaleCode } from '../../lib/dateFormatter';
+
+// Locale da sorgente unica: copre tutte e 4 le lingue (en/th/es/zh).
+const getLocale = getLocaleCode;
 
 interface AgencyBooking {
     internal_id: string;
@@ -37,7 +41,7 @@ interface AgencyBooking {
 const getDisplayId = (b: AgencyBooking) => b.booking_ref || b.internal_id.slice(0, 8).toUpperCase();
 
 export default function AgencyReservations() {
-    const { t } = useTranslation('reservation');
+    const { t, i18n } = useTranslation('reservation');
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [bookings, setBookings] = useState<AgencyBooking[]>([]);
@@ -56,6 +60,7 @@ export default function AgencyReservations() {
                 .from('bookings')
                 .select(`
           internal_id, booking_ref, booking_date, session_id, pax_count, total_price, status,
+          commission_amount,
           customer_note, agency_note, hotel_name, pickup_time, pickup_zone, phone_number,
           guest_name, guest_email,
           profiles:user_id(full_name, email)
@@ -74,7 +79,7 @@ export default function AgencyReservations() {
                 session_type: b.session_id?.includes('morning') ? 'Morning Class' : 'Evening Class',
                 pax: b.pax_count,
                 total_price: b.total_price,
-                commission: Math.round(b.total_price * ((user.agency_commission_rate || 0) / 100)),
+                commission: b.commission_amount ?? 0,
                 status: b.status,
                 hotel_name: b.hotel_name || '',
                 pickup_time: b.pickup_time ? b.pickup_time.slice(0, 5) : '--:--',
@@ -202,7 +207,7 @@ export default function AgencyReservations() {
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                             <Calendar className="w-3 h-3" />
-                                            <span>{new Date(b.booking_date).toLocaleDateString()}</span>
+                                            <span>{new Date(b.booking_date).toLocaleDateString(getLocale(i18n.language))}</span>
                                             <span>•</span>
                                             <span className="font-mono">{getDisplayId(b)}</span>
                                         </div>
@@ -245,7 +250,7 @@ export default function AgencyReservations() {
                                     {/* Addresses */}
                                     <div className="grid grid-cols-2 gap-8">
                                         <div>
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{t('agency.billedTo')}</h3>
+                                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">{t('agency.billedTo')}</h3>
                                             <p className="font-bold text-gray-900 dark:text-white">{user?.agency_company_name || user?.full_name}</p>
                                             <p className="text-sm text-gray-500 mt-1 leading-relaxed">
                                                 {user?.agency_address || t('agency.partnerAddress')}<br />
@@ -253,7 +258,7 @@ export default function AgencyReservations() {
                                             </p>
                                         </div>
                                         <div>
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{t('agency.guestInfo')}</h3>
+                                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">{t('agency.guestInfo')}</h3>
                                             <p className="font-bold text-gray-900 dark:text-white">{activeBooking.guest_name}</p>
                                             <p className="text-sm text-gray-500 mt-1 leading-relaxed">
                                                 {activeBooking.session_type}<br />
@@ -266,7 +271,7 @@ export default function AgencyReservations() {
                                     <div className="border-t border-b border-gray-100 dark:border-gray-700 py-6">
                                         <table className="w-full text-sm">
                                             <thead>
-                                                <tr className="text-gray-400 text-[10px] font-black uppercase tracking-widest text-left">
+                                                <tr className="text-gray-400 text-xs font-black uppercase tracking-widest text-left">
                                                     <th className="pb-4">{t('agency.colDescription')}</th>
                                                     <th className="pb-4 text-center">{t('agency.colDate')}</th>
                                                     <th className="pb-4 text-right">{t('agency.colAmount')}</th>
@@ -275,7 +280,7 @@ export default function AgencyReservations() {
                                             <tbody className="text-gray-700 dark:text-gray-300">
                                                 <tr>
                                                     <td className="py-2 font-bold">{activeBooking.session_type} for {activeBooking.pax} pax</td>
-                                                    <td className="py-2 text-center text-xs">{new Date(activeBooking.booking_date).toLocaleDateString()}</td>
+                                                    <td className="py-2 text-center text-xs">{new Date(activeBooking.booking_date).toLocaleDateString(getLocale(i18n.language))}</td>
                                                     <td className="py-2 text-right font-mono font-bold">{activeBooking.total_price.toLocaleString()} THB</td>
                                                 </tr>
                                             </tbody>
@@ -290,7 +295,7 @@ export default function AgencyReservations() {
                                                 <span className="font-mono">{activeBooking.total_price.toLocaleString()} THB</span>
                                             </div>
                                             <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
-                                                <span className="font-medium">{t('agency.agencyDiscount', { rate: user?.agency_commission_rate })}</span>
+                                                <span className="font-medium">{t('agency.fieldCommission')}{user?.commission_config?.tiers?.[0] ? ` · ${user.commission_config.tiers[0].tier} ${user.commission_config.tiers[0].rate} ${user.commission_config.currency ?? 'THB'}/pax` : ''}</span>
                                                 <span className="font-mono">-{activeBooking.commission.toLocaleString()} THB</span>
                                             </div>
                                             <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between items-baseline">
@@ -318,7 +323,7 @@ export default function AgencyReservations() {
                     <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center h-[73px] bg-gray-50/50 dark:bg-gray-800/50">
                         <div>
                             <h2 className="text-lg font-bold text-gray-800 dark:text-white uppercase tracking-tighter">{t('agency.inspectorTitle')}</h2>
-                            <p className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</p>
+                            <p className="text-xs text-gray-500 font-mono uppercase tracking-widest">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</p>
                         </div>
                         {activeBooking && (
                             <Button variant="outline" size="sm" onClick={() => setSelectedBookingId(null)} className="rounded-lg h-9 w-9 p-0 flex items-center justify-center">
@@ -348,10 +353,10 @@ export default function AgencyReservations() {
 
                                 {/* Guest Logistics */}
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('agency.guestLogistics')}</h3>
+                                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('agency.guestLogistics')}</h3>
 
                                     <div>
-                                        <Label className="text-[10px] font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.hotelPickup')}</Label>
+                                        <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.hotelPickup')}</Label>
                                         <div className="relative">
                                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                             <input
@@ -366,7 +371,7 @@ export default function AgencyReservations() {
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <Label className="text-[10px] font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.fieldTime')}</Label>
+                                            <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.fieldTime')}</Label>
                                             <div className="relative">
                                                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                                 <input
@@ -380,7 +385,7 @@ export default function AgencyReservations() {
                                             </div>
                                         </div>
                                         <div>
-                                            <Label className="text-[10px] font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.fieldPax')}</Label>
+                                            <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.fieldPax')}</Label>
                                             <input
                                                 type="text"
                                                 disabled={true}
@@ -395,10 +400,10 @@ export default function AgencyReservations() {
 
                                 {/* Internal Details */}
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('agency.internalDetails')}</h3>
+                                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('agency.internalDetails')}</h3>
 
                                     <div>
-                                        <Label className="text-[10px] font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.agencyNote')}</Label>
+                                        <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.agencyNote')}</Label>
                                         <textarea
                                             rows={4}
                                             disabled={!isEditing}
@@ -411,7 +416,7 @@ export default function AgencyReservations() {
                                     <div className="bg-primary-50/30 dark:bg-primary-500/5 p-4 rounded-xl border border-primary-100/50 dark:border-primary-500/10">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Phone className="w-3 h-3 text-primary-400" />
-                                            <span className="text-[10px] font-black text-primary-400 uppercase tracking-widest">{t('agency.guestContact')}</span>
+                                            <span className="text-xs font-black text-primary-400 uppercase tracking-widest">{t('agency.guestContact')}</span>
                                         </div>
                                         <div className="text-sm font-bold text-gray-900 dark:text-primary-400 pl-5">
                                             {activeBooking.phone_number || t('agency.noPhone')}
@@ -422,7 +427,7 @@ export default function AgencyReservations() {
                                 {/* Status Actions (Only when editing) */}
                                 {isEditing && (
                                     <div className="space-y-3 pt-4 animate-in fade-in">
-                                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('agency.lifecycleStatus')}</h3>
+                                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('agency.lifecycleStatus')}</h3>
                                         <div className="flex gap-2">
                                             {['confirmed', 'pending', 'cancelled'].map(s => (
                                                 <button
@@ -430,7 +435,7 @@ export default function AgencyReservations() {
                                                     type="button"
                                                     onClick={() => setEditForm({ ...editForm, status: s as any })}
                                                     className={cn(
-                                                        "flex-1 py-3 rounded-xl text-[10px] font-black uppercase border transition-all tracking-widest",
+                                                        "flex-1 py-3 rounded-xl text-xs font-black uppercase border transition-all tracking-widest",
                                                         editForm.status === s
                                                             ? "bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-600/20"
                                                             : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500 hover:bg-gray-50"
@@ -447,7 +452,7 @@ export default function AgencyReservations() {
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-300 opacity-50">
                                 <Edit className="w-12 h-12 mb-3" />
-                                <p className="text-[10px] font-black uppercase tracking-widest">{t('agency.inspectorIdleMsg')}</p>
+                                <p className="text-xs font-black uppercase tracking-widest">{t('agency.inspectorIdleMsg')}</p>
                             </div>
                         )}
                     </div>

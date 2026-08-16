@@ -4,6 +4,7 @@ import Button from '../../ui/button/Button';
 import Avatar from '../../ui/avatar/Avatar';
 import { Users } from 'lucide-react';
 import InputField from '../../form/input/InputField';
+import { useTranslation } from 'react-i18next';
 
 interface ReservationContentProps {
     loading: boolean;
@@ -22,6 +23,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
     onRestoreBooking,
     onDeleteBooking,
 }) => {
+    const { t } = useTranslation('reservation');
     const [confirmCancel, setConfirmCancel] = React.useState(false);
     const selectedBooking = bookings.find(b => b.internal_id === selectedBookingId);
 
@@ -47,7 +49,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
     if (loading && bookings.length === 0) {
         return (
             <div className="flex items-center justify-center h-full">
-                <span className="text-sm font-bold text-gray-400 animate-pulse uppercase tracking-widest">Loading...</span>
+                <span className="text-sm font-bold text-gray-400 animate-pulse uppercase tracking-widest">{t('content.loading')}</span>
             </div>
         );
     }
@@ -56,12 +58,12 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
         return (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
                 <Users className="w-12 h-12 opacity-50" />
-                <span className="text-sm font-bold uppercase tracking-widest">Select a client to view details</span>
+                <span className="text-sm font-bold uppercase tracking-widest">{t('content.emptySelect')}</span>
                 {bookings.length > 0 && (
-                    <span className="text-xs text-gray-500 mt-2">({bookings.length} bookings available)</span>
+                    <span className="text-xs text-gray-500 mt-2">{t('content.bookingsAvailable', { count: bookings.length })}</span>
                 )}
                 {bookings.length === 0 && (
-                    <span className="text-xs text-gray-500 mt-2">No bookings found for selected date</span>
+                    <span className="text-xs text-gray-500 mt-2">{t('content.noBookings')}</span>
                 )}
             </div>
         );
@@ -85,7 +87,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                                 {selectedBooking.guest_name || profile.full_name || 'Guest'}
                             </h3>
                             <p className="text-md text-gray-500 dark:text-gray-400 mt-2 tracking-widest font-bold">
-                                Booking Number: {selectedBooking.booking_ref || selectedBooking.internal_id.slice(0, 8).toUpperCase()}
+                                {t('content.bookingNumber', { ref: selectedBooking.booking_ref || selectedBooking.internal_id.slice(0, 8).toUpperCase() })}
                             </p>
                         </div>
                     </div>
@@ -94,7 +96,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                             {selectedBooking.status?.toUpperCase()}
                         </Badge>
                         <Badge variant="light" color={selectedBooking.pickup_zone === 'walk-in' ? 'success' : 'info'}>
-                            {selectedBooking.pickup_zone === 'walk-in' ? 'Walk In' : 'Pickup Required'}
+                            {selectedBooking.pickup_zone === 'walk-in' ? t('content.walkIn') : t('content.pickupRequired')}
                         </Badge>
                     </div>
                 </div>
@@ -107,7 +109,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                 <div className="space-y-4 grid grid-cols-3 gap-4">
                     {selectedBooking.phone_number && (
                         <InputField
-                            label="Phone"
+                            label={t('content.fieldPhone')}
                             value={selectedBooking.phone_number}
                             disabled
                         />
@@ -115,7 +117,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
 
                     {selectedBooking.guest_email && (
                         <InputField
-                            label="Email"
+                            label={t('content.fieldEmail')}
                             value={selectedBooking.guest_email}
                             disabled
                         />
@@ -128,7 +130,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                     <div className="space-y-4 grid grid-cols-3 gap-4">
                         {selectedBooking.hotel_name && (
                             <InputField
-                                label="Hotel"
+                                label={t('content.fieldHotel')}
                                 value={selectedBooking.hotel_name}
                                 disabled
                             />
@@ -136,7 +138,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
 
                         {selectedBooking.pickup_zone && (
                             <InputField
-                                label="Zone"
+                                label={t('content.fieldZone')}
                                 value={selectedBooking.pickup_zone}
                                 disabled
                             />
@@ -146,7 +148,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                     <div className="space-y-4">
                         {selectedBooking.meeting_point && (
                             <InputField
-                                label="Meeting Point"
+                                label={t('content.fieldMeetingPoint')}
                                 value={selectedBooking.meeting_point}
                                 disabled
                             />
@@ -157,9 +159,9 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                 {/* Notes */}
                 {selectedBooking.customer_note && (
                     <div className="bg-white dark:bg-white/[0.05] rounded-lg p-4 border border-gray-100 dark:border-white/10">
-                        <h4 className="font-bold text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">Notes</h4>
+                        <h4 className="font-bold text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">{t('content.notesTitle')}</h4>
                         <InputField
-                            label="Customer Note"
+                            label={t('content.fieldNote')}
                             value={selectedBooking.customer_note}
                             disabled
                         />
@@ -170,7 +172,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
             {/* Footer */}
             <div className="border-t border-gray-100 dark:border-gray-800 p-4 bg-gray-50/30 dark:bg-gray-800/20 shrink-0 flex items-center justify-between">
                 <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                    {selectedBooking.status === 'cancelled' ? 'Booking Cancelled' : 'Active Booking'}
+                    {selectedBooking.status === 'cancelled' ? t('content.statusCancelled') : t('content.statusActive')}
                 </div>
 
                 {selectedBooking.status !== 'cancelled' ? (
@@ -181,7 +183,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                             variant="outline"
                             size="sm"
                         >
-                            Cancel Booking
+                            {t('content.btnCancelBooking')}
                         </Button>
                     ) : (
                         // Confirmation state - show confirm and discard buttons
@@ -194,14 +196,14 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                                 variant="outline"
                                 size="sm"
                             >
-                                Confirm
+                                {t('content.btnConfirm')}
                             </Button>
                             <Button
                                 onClick={() => setConfirmCancel(false)}
                                 variant="outline"
                                 size="sm"
                             >
-                                Discard
+                                {t('content.btnDiscard')}
                             </Button>
                         </div>
                     )
@@ -213,14 +215,14 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                             variant="outline"
                             size="sm"
                         >
-                            Restore Booking
+                            {t('content.btnRestore')}
                         </Button>
                         <Button
                             onClick={() => onDeleteBooking?.(selectedBookingId!)}
                             variant="outline"
                             size="sm"
                         >
-                            Delete Permanently
+                            {t('content.btnDeletePerm')}
                         </Button>
                     </div>
                 )}

@@ -38,78 +38,40 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ? String(defaultValue).length > 0
         : false;
 
-    // Size styles
+    // Size styles — fluid padding (Regola #6) + 48px+ touch target on md/lg
     const sizeStyles = {
-      sm: 'px-3 py-2 text-sm rounded-lg',
-      md: 'px-4 py-3 text-base rounded-xl',
-      lg: 'px-5 py-4 text-lg rounded-2xl',
+      sm: '[padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)] min-h-[2.5rem] text-sm rounded-[calc(var(--radius-input)*0.75)]',
+      md: '[padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-xs)] min-h-[3rem] text-base rounded-[var(--radius-input)]',
+      lg: '[padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-s)] min-h-[3.25rem] text-lg rounded-[calc(var(--radius-input)*1.5)]',
     };
 
-    // BACKGROUND: basato su stato e contenuto
+    // BACKGROUND: mineral fill via field tokens (adapts in dark via html.dark — no `dark:`)
     const bgStyle = cn(
-      // Default mineral (nessun errore/successo)
       !error && !success && cn(
         'transition-colors duration-300',
-        !hasContent && 'bg-black/5 dark:bg-white/5',
-        hasContent && 'bg-black/10 dark:bg-white/10',
-        'hover:bg-black/10 dark:hover:bg-white/10',
-        'focus:bg-black/10 dark:focus:bg-white/10',
+        hasContent ? 'bg-[var(--field-fill-strong)]' : 'bg-[var(--field-fill)]',
+        'hover:bg-[var(--field-fill-strong)] focus:bg-[var(--field-fill-strong)]',
       ),
-
-      // SUCCESS: verde action trasparente
-      success && cn(
-        'bg-action/5 dark:bg-action/10',
-        'hover:bg-action/10 dark:hover:bg-action/15',
-        'focus:bg-action/15 dark:focus:bg-action/20',
-      ),
-
-      // ERROR: rosso trasparente
-      error && cn(
-        'bg-red-500/5 dark:bg-red-500/10',
-        'hover:bg-red-500/10 dark:hover:bg-red-500/15',
-        'focus:bg-red-500/15 dark:focus:bg-red-500/20',
-      ),
+      success && 'bg-action/5 hover:bg-action/10 focus:bg-action/15',
+      error && 'bg-red-500/5 hover:bg-red-500/10 focus:bg-red-500/15',
     );
 
-    // BORDO: colorato in base allo stato
+    // BORDER: state-driven, default uses field-border tokens
     const borderColor = cn(
       'border transition-colors duration-300',
-
-      // Default (nessun errore/successo)
-      !error && !success && cn(
-        'border-black/10 dark:border-white/10',
-        'hover:border-black/30 dark:hover:border-white/30',
-        'focus:border-action/50',
-      ),
-
-      // SUCCESS: bordo action
-      success && cn(
-        'border-action/30 dark:border-action/40',
-        'hover:border-action/60 dark:hover:border-action/70',
-        'focus:border-action',
-      ),
-
-      // ERROR: bordo rosso
-      error && cn(
-        'border-red-500/30 dark:border-red-500/40',
-        'hover:border-red-500/60 dark:hover:border-red-500/70',
-        'focus:border-red-500',
-      ),
+      !error && !success && 'border-[var(--field-border)] hover:border-[var(--field-border-hover)] focus:border-action/50',
+      success && 'border-action/30 hover:border-action/60 focus:border-action',
+      error && 'border-red-500/30 hover:border-red-500/60 focus:border-red-500',
     );
 
     // FOCUS RING: coerente con lo stato
     const focusRing = cn(
       'focus:outline-none focus:ring-2 focus:ring-offset-0',
-      !error && !success && 'focus:ring-action/50',
-      success && 'focus:ring-action/50',
-      error && 'focus:ring-red-500/50',
+      error ? 'focus:ring-red-500/50' : 'focus:ring-action/50',
     );
 
-    // Testi - sempre leggibili (identici alla typography)
-    const textStyle = cn(
-      'text-gray-900 dark:text-gray-100',
-      'placeholder:text-gray-700/40 dark:placeholder:text-gray-300/40',
-    );
+    // Testo input + placeholder — token semantici
+    const textStyle = 'text-title placeholder:text-muted';
 
     // Disabled
     const disabledStyle = disabled && 'opacity-50 cursor-not-allowed grayscale';
@@ -121,9 +83,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label className={cn(
             'ml-1 font-sans text-xs font-semibold uppercase tracking-wider transition-colors duration-300',
-            error ? 'text-red-600 dark:text-red-400' :
-              success ? 'text-action dark:text-action' :
-                'text-gray-700/80 dark:text-gray-300/80'
+            error ? 'text-red-600' :
+              success ? 'text-action' :
+                'text-sub'
           )}>
             {label}
           </label>
@@ -136,7 +98,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300 flex items-center leading-none',
               error ? 'text-red-500/70 group-focus-within:text-red-500' :
                 success ? 'text-action/70 group-focus-within:text-action' :
-                  'text-gray-700/50 dark:text-gray-300/50 group-focus-within:text-action'
+                  'text-muted group-focus-within:text-action'
             )}>
               <span className="material-symbols-outlined text-[1.2em]">
                 {leftIcon}
@@ -171,7 +133,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300 flex items-center leading-none',
               error ? 'text-red-500/70' :
                 success ? 'text-action/70' :
-                  'text-gray-700/50 dark:text-gray-300/50'
+                  'text-muted'
             )}>
               <span className="material-symbols-outlined text-[1.2em]">
                 {rightIcon}
@@ -186,7 +148,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'text-xs ml-1 font-normal italic transition-colors duration-300',
             error ? 'text-red-500' :
               success ? 'text-action' :
-                'text-gray-500 dark:text-gray-500'
+                'text-muted'
           )}>
             {helperText}
           </p>

@@ -1,0 +1,83 @@
+{
+  "tabs": {
+    "overview": "概览",
+    "dashboard": "仪表板",
+    "logistics": "后勤",
+    "teacher": "教师",
+    "allItems": "全部商品"
+  },
+  "buttons": {
+    "newPlanToday": "今日计划",
+    "newPlanSelectDate": "选日期创计划",
+    "newReportToday": "今日报告",
+    "newReportSelectDate": "选日期创报告",
+    "viewHistory": "查看历史",
+    "cancel": "取消",
+    "editReport": "编辑报告",
+    "newReport": "新报告",
+    "newPlan": "新计划",
+    "modify": "修改",
+    "submitReport": "提交报告",
+    "publishPlan": "发布计划",
+    "saveDraft": "保存草稿",
+    "confirmReport": "确认报告",
+    "deleteReport": "删除报告",
+    "refresh": "刷新",
+    "sendOrder": "发送订单",
+    "finishRun": "完成采购"
+  },
+  "labels": {
+    "workDraft": "工作草稿",
+    "archiveView": "存档视图",
+    "liveEditing": "实时编辑",
+    "totalExpenses": "总支出",
+    "itemsRequired": "所需商品",
+    "itemChecklist": "商品清单",
+    "tapToEdit": "点击编辑",
+    "vendorContact": "供应商联系方式",
+    "liveTotal": "实时合计",
+    "qty": "数量：{{quantity}}",
+    "inputThb": "输入泰铢"
+  },
+  "table": {
+    "date": "日期",
+    "status": "状态",
+    "items": "商品",
+    "totalCost": "总成本",
+    "reportArchives": "报告存档"
+  },
+  "modal": {
+    "selectDate": "选择日期"
+  },
+  "placeholders": {
+    "searchIngredients": "搜索食材..."
+  },
+  "empty": {
+    "noHistory": "该类别无历史记录。",
+    "noContent": "无内容",
+    "noListFound": "未找到清单",
+    "noItemsForStall": "该摊位无商品",
+    "noIngredients": "没有符合搜索条件的食材。"
+  },
+  "messages": {
+    "mustBeLoggedIn": "您必须登录才能保存市场报告。",
+    "selectAtLeastOne": "请至少选择一项。",
+    "saveSuccess": "更改保存成功！",
+    "saveError": "保存错误：{{message}}",
+    "confirmDelete": "删除此报告？此操作不可撤销。",
+    "kitchenNotPublished": "厨房经理尚未发布今日购物清单。",
+    "finishConfirm": "将此次采购标记为已完成并保存所有费用？",
+    "unboughtWarning": "等等！您还有{{count}}件商品未购买。仍要完成？",
+    "syncSuccess": "采购已与厨房同步！干得好！",
+    "error": "错误：{{message}}",
+    "emergencyItemName": "紧急商品名称？",
+    "loading": "加载中...",
+    "selectWorker": "请选择由谁负责采购。"
+  },
+  "shopItem": {
+    "reportedCost": "报告成本",
+    "addedToList": "已加入清单",
+    "clickToAdd": "点击添加",
+    "tapToAdd": "点按添加"
+  }
+}

@@ -47,12 +47,14 @@
     "fieldEveningStart": "Evening Start",
     "fieldEveningEnd": "Evening End",
     "fieldImageUrl": "Image URL",
+    "fieldImageAsset": "Photo (media asset)",
+    "assetIdPlaceholder": "media asset id (uuid)",
     "fieldIconUrl": "Icon URL",
     "fieldActiveStatus": "Active Status",
     "fieldHotelName": "Hotel Name *",
     "placeholderHotelName": "e.g. Shangri-La Chiang Mai",
     "fieldZone": "Pickup Zone",
-    "noZone": "— No zone —",
+    "noZone": "- No zone -",
     "fieldMapLink": "Google Map Link",
     "placeholderMapLink": "Paste Google Maps URL (auto-extracts GPS)",
     "fieldAddress": "Address",
@@ -79,5 +81,10 @@
     "tooltipEditHotel": "Edit this hotel",
     "tooltipEditMP": "Edit this meeting point",
     "tooltipSave": "Save modifications"
+  },
+  "alerts": {
+    "nameRequired": "Hotel name is required.",
+    "saveFailed": "Failed to save hotel.",
+    "saveMPFailed": "Failed to save meeting point."
   }
 }

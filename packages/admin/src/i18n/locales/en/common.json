@@ -39,7 +39,9 @@
     "switch": "Switch language",
     "current": "Current language",
     "en": "English",
-    "th": "Thai"
+    "th": "Thai",
+    "es": "Spanish",
+    "zh": "Chinese"
   },
   "user": {
     "menu": "User Menu",
@@ -57,11 +59,24 @@
   "theme": {
     "light": "Light",
     "dark": "Dark",
-    "toggle": "Toggle theme"
+    "toggle": "Toggle theme",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
   },
   "aria": {
     "menuToggle": "Toggle Sidebar",
-    "userAvatar": "User avatar"
+    "userAvatar": "User avatar",
+    "prevDay": "Previous day",
+    "selectDate": "Select date",
+    "nextDay": "Next day",
+    "toggleTheme": "Toggle theme",
+    "clearSearch": "Clear search",
+    "openCherry": "Open Cherry AI",
+    "expandChat": "Expand chat",
+    "closeChat": "Close chat",
+    "toggleVoice": "Toggle voice",
+    "minimizeChat": "Minimize",
+    "close": "Close"
   },
   "yesNo": {
     "yes": "Yes",
@@ -75,10 +90,47 @@
     "confirm": "CONFIRM",
     "deleteRecord": "DELETE RECORD",
     "editAvailability": "EDIT AVAILABILITY",
+    "viewMore": "View More",
+    "editRecord": "Edit this record",
+    "saveModifications": "Save modifications",
+    "saveChanges": "Save changes",
+    "editFileMetadata": "Edit file metadata",
+    "editHotel": "Edit this hotel",
+    "editMeetingPoint": "Edit this meeting point",
+    "assign": "Assign"
+  },
+  "form": {
+    "phonePlaceholder": "e.g. +66 81 234 5678"
+  },
+  "fallback": {
+    "guest": "Guest",
+    "empty": "Empty",
     "viewMore": "View More"
   },
   "notifications": {
     "title": "Notification",
-    "viewAll": "View All Notifications"
+    "viewAll": "View All Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all as read"
+  },
+  "badges": {
+    "hasLuggage": "Has luggage"
+  },
+  "worker": {
+    "whoAreYou": "Who are you?",
+    "select": "Select your name",
+    "change": "Change",
+    "loading": "Loading…",
+    "none": "No staff for this task",
+    "roles": {
+      "teacher": "Teacher",
+      "helper": "Helper",
+      "extra": "Extra",
+      "setup": "Setup",
+      "logistics": "Logistics",
+      "driver": "Driver",
+      "manager": "Manager",
+      "admin": "Admin"
+    }
   }
 }

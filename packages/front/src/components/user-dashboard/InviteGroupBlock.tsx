@@ -4,14 +4,15 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { Button, Typography } from '../ui';
 
 interface InviteGroupBlockProps {
-  bookingInternalId: string | null;
+  /** bookings.booking_ref — codice TAK risolto lato DB dalla RPC join_booking_by_ref. */
+  bookingRef: string | null;
 }
 
-const InviteGroupBlock: React.FC<InviteGroupBlockProps> = ({ bookingInternalId }) => {
+const InviteGroupBlock: React.FC<InviteGroupBlockProps> = ({ bookingRef }) => {
   const [copied, setCopied] = useState(false);
 
-  const inviteLink = bookingInternalId
-    ? `${window.location.origin}/join-group?ref=${bookingInternalId}`
+  const inviteLink = bookingRef
+    ? `${window.location.origin}/join-group?ref=${encodeURIComponent(bookingRef)}`
     : '';
 
   const handleCopy = () => {
@@ -21,7 +22,7 @@ const InviteGroupBlock: React.FC<InviteGroupBlockProps> = ({ bookingInternalId }
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const isDisabled = !bookingInternalId;
+  const isDisabled = !bookingRef;
 
   return (
     <div className={cn(

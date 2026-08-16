@@ -1,9 +1,16 @@
-# Allow all search engines to crawl and index the site
-User-agent: *
+User-agent: facebookexternalhit
 Allow: /
 
-# Sitemap location (optional, add when you have a sitemap)
-# Sitemap: https://thaiakha.com/sitemap.xml
+User-agent: meta-externalagent
+Allow: /
 
-# Specify crawl delay (optional, helps reduce server load)
-# Crawl-delay: 1
+User-agent: *
+Allow: /
+Disallow: /user
+Disallow: /auth
+Disallow: /user-dashboard
+Disallow: /user-menu
+Disallow: /user-quiz
+Disallow: /user-passport
+Sitemap: https://www.thaiakha.com/sitemap.xml
+Sitemap: https://www.thaiakha.com/sitemap-images.xml

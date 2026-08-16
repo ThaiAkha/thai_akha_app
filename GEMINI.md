@@ -1,0 +1,1 @@
+../thai_akha_brain/010_ThaiAkha_com/GEMINI.md

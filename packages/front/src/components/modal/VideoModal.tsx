@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '../ui/index';
 import Modal from './Modal';
 import ModalMediaHeader from './ModalMediaHeader';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
   videoId,
   title,
   description,
-  buttonText = "Close Video",
+  buttonText = t.common.closeVideo,
   backgroundImage = '',
 }) => {
   return (
@@ -32,28 +33,30 @@ const VideoModal: React.FC<VideoModalProps> = ({
       className="bg-transparent shadow-none border-none p-0 w-full h-full flex flex-col items-center justify-center"
     >
       {/* ATMOSPHERIC BACKGROUND */}
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <img
-          src={backgroundImage}
-          alt="Atmosphere"
-          className="w-full h-full object-cover opacity-40 blur-3xl scale-125"
-        />
-        <div className="absolute inset-0 bg-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/80" />
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-black">
+        {backgroundImage && (
+          <img
+            src={backgroundImage}
+            alt="Atmosphere"
+            className="w-full h-full object-cover opacity-80 mix-blend-multiply"
+          />
+        )}
       </div>
 
-      {/* CLICK-OUTSIDE WRAPPER — clicking the dark area around the video closes */}
-      <div
-        className="w-full max-w-7xl mx-auto flex flex-col items-center relative z-50 px-4 py-10 cursor-pointer"
-        onClick={onClose}
-      >
-        {/* TITLE + DESCRIPTION outside the video, above */}
-        <ModalMediaHeader title={title} description={description} />
+      {/* CLICK-TO-CLOSE — tutto schermo */}
+      <div className="fixed inset-0 z-40 cursor-pointer" onClick={onClose} />
 
-        {/* VIDEO BOX — 16:9 */}
+      {/* CONTENT — centrato, non intercetta i click tranne gli elementi interattivi */}
+      <div className="relative z-50 w-full max-w-[var(--container-page)] mx-auto flex flex-col items-center pointer-events-none [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-l)]">
+
+        {/* TITLE + DESCRIPTION */}
+        <div className="pointer-events-none w-full">
+          <ModalMediaHeader title={title} description={description} />
+        </div>
+
+        {/* VIDEO BOX — sempre aspect-video */}
         <div
-          className="relative w-full aspect-video rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.9)] border border-white/10 bg-black ring-1 ring-white/10 animate-in zoom-in-95 duration-500 cursor-default"
-          onClick={(e) => e.stopPropagation()}
+          className="pointer-events-auto relative w-[90%] aspect-video rounded-[3rem] overflow-hidden border border-white/10 bg-black animate-in zoom-in-95 duration-500"
         >
           <iframe
             width="100%"
@@ -68,16 +71,13 @@ const VideoModal: React.FC<VideoModalProps> = ({
         </div>
 
         {/* CLOSE BUTTON */}
-        <div
-          className="mt-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="pointer-events-auto [margin-top:var(--space-fluid-l)]">
           <Button
-            variant="mineral"
-            size="xl"
+            variant="outline"
+            size="sm"
             icon="close"
             onClick={onClose}
-            className="rounded-full text-action border-action/20 hover:bg-action/10 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(0,0,0,0.6)]"
+            className="text-action border-action/20"
           >
             {buttonText}
           </Button>

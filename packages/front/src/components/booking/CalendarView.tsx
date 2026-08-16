@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
-import { Icon, Button, Tooltip } from '../ui/index';
+import { Icon, Button, Tooltip, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { TOOLTIPS } from '@thaiakha/shared/data';
+import { TOOLTIPS } from '@thaiakha/shared/lib/ui-tooltips';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 
 interface CalendarViewProps {
@@ -153,17 +153,17 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     // CONTAINER: Trasparente per adattarsi al Modal, ma con testo base corretto
-    <div className="w-full h-full flex flex-col font-sans select-none text-gray-900 dark:text-gray-100">
+    <div className="w-full h-full flex flex-col font-sans select-none text-title bg-surface rounded-[2rem]">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between pb-4 border-b border-border shrink-0">
+      <div className="flex items-center justify-between [padding-bottom:var(--space-fluid-s)] border-b border-border shrink-0">
         <div>
-          <h3 className="text-3xl md:text-4xl font-display font-black text-gray-900 dark:text-gray-100 uppercase leading-none mb-2">
+          <Typography variant="h3" color="title" className="uppercase leading-none [margin-bottom:var(--space-fluid-2xs)]">
             {MONTHS[viewDate.getMonth()]} <span className="text-action">{viewDate.getFullYear()}</span>
-          </h3>
-          <span className="block text-sm font-accent font-black uppercase tracking-[0.3em] text-gray-700 dark:text-gray-300">
-            Choose Your Cooking Day - <span className="text-orange-500">Morning</span> and <span className="text-action">Evening</span> availability
-          </span>
+          </Typography>
+          <Typography variant="microLabel" color="muted" className="block">
+            <span className="text-allergy">Morning</span> & <span className="text-action">Evening</span> availability
+          </Typography>
 
         </div>
 
@@ -210,8 +210,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       {/* GIORNI SETTIMANA */}
       <div className="grid grid-cols-7 border-b border-border bg-surface/90 shrink-0">
         {DAYS_HEADER.map(d => (
-          <div key={d} className="py-4 text-center">
-            <span className="font-accent font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest text-md">{d}</span>
+          <div key={d} className="[padding-block:var(--space-fluid-s)] text-center">
+            <Typography variant="microLabel" color="muted">{d}</Typography>
           </div>
         ))}
       </div>
@@ -257,7 +257,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 disabled={isPast || loading || !isCurrentMonth || (isFullDay && !allowSelectionOnFullDays)}
                 onClick={() => { onSelectDate(date); onClose(); }}
                 className={cn(
-                  "w-full h-full relative flex flex-col justify-between p-2 min-h-[120px] group transition-all text-left bg-surface dark:bg-black",
+                  "w-full h-full relative flex flex-col justify-between p-2 min-h-[120px] group transition-all text-left bg-surface",
                   "hover:z-10 hover:ring-2 hover:ring-action",
                   // BACKGROUND COLOR LOGIC
                   !isCurrentMonth
@@ -266,8 +266,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       ? "cursor-not-allowed"
                       : isFullDay
                         ? allowSelectionOnFullDays
-                          ? "bg-red-50 dark:bg-red-950/20 ring-1 ring-red-300 dark:ring-red-500/20 cursor-pointer"
-                          : "bg-red-50 dark:bg-red-950/10 ring-1 ring-red-200 dark:ring-red-500/10 cursor-not-allowed"
+                          ? "bg-primary/10 ring-1 ring-primary/20 cursor-pointer"
+                          : "bg-primary/5 ring-1 ring-primary/10 cursor-not-allowed"
                         : "hover:bg-black/5 dark:hover:bg-white/5",
 
                   isSelected && "bg-action/10 ring-2 ring-action/60 z-10"
@@ -275,14 +275,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               >
                 <div className={cn("flex justify-between items-start", (isPast || !isCurrentMonth) && "opacity-50")}>
                   <div className={cn(
-                    "size-8 flex items-center justify-center rounded-xl border text-md font-accent font-black transition-all mb-4",
+                    "size-8 flex items-center justify-center rounded-xl border transition-all mb-4",
                     isToday
                       ? "bg-action border-action text-black shadow-lg shadow-action/20"
                       : (isPast || !isCurrentMonth)
-                        ? "bg-transparent border-transparent text-gray-500 dark:text-gray-500"
-                        : "bg-background dark:bg-black/30 border-border text-gray-900 dark:text-gray-100 group-hover:border-primary/50 shadow-sm"
+                        ? "bg-transparent border-transparent text-muted"
+                        : "bg-black/5 dark:bg-white/5 border-border text-title group-hover:border-action/50 shadow-sm"
                   )}>
-                    {date.getDate()}
+                    <Typography variant="numericMedium" as="span" color="inherit">{date.getDate()}</Typography>
                   </div>
                 </div>
 
@@ -300,26 +300,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   <div className={cn("space-y-1.5 w-full mt-auto", (isFullDay && !allowSelectionOnFullDays) && "opacity-40 grayscale", !isCurrentMonth && "opacity-50")}>
 
                     {/* Morning Section */}
-                    <div className={cn("flex items-center justify-between px-1 text-sm font-black transition-colors",
-                      data.morning.status === 'OPEN'
-                        ? "text-orange-500"
-                        : "text-red-500"
-                    )}>
-                      <span className="hidden md:inline">Morning Class</span>
-                      <span>{data.morning.status === 'OPEN' ? data.morning.seats : '0'}</span>
+                    <div className="flex items-center justify-between px-1">
+                      <Typography variant="microLabel" as="span" className={cn("hidden md:inline", data.morning.status === 'OPEN' ? "text-allergy" : "text-primary")}>Morning Class</Typography>
+                      <Typography variant="numericMedium" as="span" className={data.morning.status === 'OPEN' ? "text-allergy" : "text-primary"}>{data.morning.status === 'OPEN' ? data.morning.seats : '0'}</Typography>
                     </div>
 
                     {/* Divider */}
                     <div className="h-px bg-border mx-2" />
 
                     {/* Evening Section */}
-                    <div className={cn("flex items-center justify-between px-1 text-sm font-black transition-colors",
-                      data.evening.status === 'OPEN'
-                        ? "text-action"
-                        : "text-sys-error"
-                    )}>
-                      <span className="hidden md:inline">Evening Class</span>
-                      <span>{data.evening.status === 'OPEN' ? data.evening.seats : '0'}</span>
+                    <div className="flex items-center justify-between px-1">
+                      <Typography variant="microLabel" as="span" className={cn("hidden md:inline", data.evening.status === 'OPEN' ? "text-action" : "text-primary")}>Evening Class</Typography>
+                      <Typography variant="numericMedium" as="span" className={data.evening.status === 'OPEN' ? "text-action" : "text-primary"}>{data.evening.status === 'OPEN' ? data.evening.seats : '0'}</Typography>
                     </div>
 
                   </div>

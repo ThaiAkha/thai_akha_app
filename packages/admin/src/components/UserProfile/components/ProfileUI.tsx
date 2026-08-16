@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@thaiakha/shared/lib/utils";
 import Button from "../../ui/button/Button";
 import InputField from "../../form/input/InputField";
@@ -51,21 +52,22 @@ export const ProfileRow = ({
     type?: string;
     placeholder?: string;
     className?: string;
-}) => (
-    <div className={cn("group/row w-full", className)}>
-        <InputField
-            label={label}
-            name={name}
-            type={type}
-            value={value || ""}
-            onChange={onChange}
-            disabled={!isEditing}
-            placeholder={placeholder || (value ? "" : "Not specified")}
-        />
-    </div>
-);
-
-
+}) => {
+    const { t } = useTranslation('profile');
+    return (
+        <div className={cn("group/row w-full", className)}>
+            <InputField
+                label={label}
+                name={name}
+                type={type}
+                value={value || ""}
+                onChange={onChange}
+                disabled={!isEditing}
+                placeholder={placeholder || (value ? "" : t('personal.notSpecified'))}
+            />
+        </div>
+    );
+};
 
 /**
  * ProfileFooter - Standardized action buttons area.
@@ -86,38 +88,41 @@ export const ProfileFooter = ({
     onEdit: () => void;
     editLabel?: string;
     saveLabel?: string;
-}) => (
-    <div className="mt-10 pt-6 border-t border-gray-100 dark:border-white/5">
-        <div className="flex flex-col sm:flex-row gap-3">
-            {isEditing ? (
-                <>
+}) => {
+    const { t } = useTranslation(['profile', 'common']);
+    return (
+        <div className="mt-10 pt-6 border-t border-gray-100 dark:border-white/5">
+            <div className="flex flex-col sm:flex-row gap-3">
+                {isEditing ? (
+                    <>
+                        <Button
+                            onClick={onCancel}
+                            variant="outline"
+                            className="flex-1 sm:flex-none px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
+                        >
+                            {t('common:buttons.cancel')}
+                        </Button>
+                        <Button
+                            onClick={onSave}
+                            disabled={isLoading}
+                            className={cn(
+                                "flex-1 sm:flex-none px-10 py-3 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary-500/20 transition-all active:scale-95",
+                                isLoading && "opacity-70 cursor-not-allowed"
+                            )}
+                        >
+                            {isLoading ? t('common:feedback.saving') : saveLabel}
+                        </Button>
+                    </>
+                ) : (
                     <Button
-                        onClick={onCancel}
+                        onClick={onEdit}
                         variant="outline"
-                        className="flex-1 sm:flex-none px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
+                        className="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-sm hover:shadow-md hover:bg-primary-500 hover:text-white hover:border-primary-500 dark:hover:bg-primary-500 transition-all active:scale-95"
                     >
-                        Cancel
+                        {editLabel}
                     </Button>
-                    <Button
-                        onClick={onSave}
-                        disabled={isLoading}
-                        className={cn(
-                            "flex-1 sm:flex-none px-10 py-3 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary-500/20 transition-all active:scale-95",
-                            isLoading && "opacity-70 cursor-not-allowed"
-                        )}
-                    >
-                        {isLoading ? "Saving..." : saveLabel}
-                    </Button>
-                </>
-            ) : (
-                <Button
-                    onClick={onEdit}
-                    variant="outline"
-                    className="w-full sm:w-auto px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-sm hover:shadow-md hover:bg-primary-500 hover:text-white hover:border-primary-500 dark:hover:bg-primary-500 transition-all active:scale-95"
-                >
-                    {editLabel}
-                </Button>
-            )}
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};

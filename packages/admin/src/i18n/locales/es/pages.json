@@ -1,0 +1,171 @@
+{
+  "notFound": {
+    "error": "ERROR",
+    "errorLabel": "ERROR",
+    "code": "404",
+    "message": "No podemos encontrar la página que buscas.",
+    "backHome": "Volver al inicio",
+    "copyright": "{{year}} - Thai Akha Kitchen",
+    "pageTitle": "404 - Página no encontrada | Thai Akha Kitchen Admin",
+    "pageDesc": "La página que buscas no pudo encontrarse."
+  },
+  "profile": {
+    "metaTitle": "Panel de perfil | Cherry Admin",
+    "metaDesc": "Gestiona tus datos personales, identidad de agencia y configuración de seguridad."
+  },
+  "agencyDashboard": {
+    "metaTitle": "Panel de agencia | Thai Akha Kitchen",
+    "metaDesc": "Resumen de ventas, ingresos y demografía de huéspedes."
+  },
+  "userProfiles": {
+    "metaTitle": "Panel de perfil | Cherry Admin",
+    "metaDesc": "Gestiona tus datos personales, identidad de agencia y configuración de seguridad."
+  },
+  "agencyNews": {
+    "metaTitle": "Noticias de agencia | Thai Akha Kitchen",
+    "metaDesc": "Mantente al día con las últimas noticias y anuncios de Thai Akha Kitchen.",
+    "badgeFallback": "Noticias",
+    "titleFallback": "Noticias de agencia",
+    "noNews": "No hay noticias disponibles"
+  },
+  "agencyRates": {
+    "metaTitle": "Tarifas de contrato 2026 | Portal de socios Thai Akha Kitchen",
+    "metaDesc": "Consulta tus tarifas netas de socio confidenciales y estructura de comisiones para 2026.",
+    "badgeFallback": "Confidencial",
+    "titleFallback": "Tarifas de contrato 2026",
+    "colClass": "Tipo de clase",
+    "colRack": "Tarifa normal",
+    "colNet": "Neto socio",
+    "colCommission": "Comisión",
+    "rateMorning": "Clase de mañana",
+    "rateEvening": "Clase de tarde",
+    "rateFullDay": "Paquete día completo",
+    "ratePrivate": "Sesión privada (1-4 personas)",
+    "guaranteeTitle": "Garantía de precio",
+    "guaranteeDesc": "Las tarifas de temporada están fijadas para todos los contratos firmados antes de marzo de 2026. Cualquier ajuste de precio se notificará con 60 días de anticipación.",
+    "paymentTitle": "Condiciones de pago",
+    "paymentDesc": "Las tarifas netas son pagaderas mediante factura mensual. Los pagos deben liquidarse dentro de los primeros 5 días hábiles del mes siguiente."
+  },
+  "agencyTerms": {
+    "metaTitle": "Políticas de socio | Portal de socios Thai Akha Kitchen",
+    "metaDesc": "Revisa los términos oficiales, política de cancelación y reglas de facturación para agencias socias.",
+    "badgeFallback": "Marco legal",
+    "titleFallback": "Políticas de socio",
+    "cancellationTitle": "Política de cancelación",
+    "cancellationItem1": "Aviso con 24h+: Cancelación gratuita",
+    "cancellationItem2": "Menos de 24h: Cargo del 50%",
+    "cancellationItem3": "No presentación: Cargo del 100%",
+    "cancellationItem4": "Enfermedad del huésped: Gratuito con certificado médico",
+    "logisticsTitle": "Logística y recogida",
+    "logisticsDesc": "Los huéspedes deben estar listos en el lobby del hotel 10 minutos antes de la hora de recogida. Los conductores esperarán un máximo de 15 minutos antes de continuar con la ruta.",
+    "invoicingTitle": "Facturación y liquidación",
+    "invoicingDesc": "Los estados de cuenta se emiten el 1 de cada mes. Cualquier discrepancia debe reportarse dentro de las 48 horas. Los pagos retrasados pueden resultar en suspensión temporal del portal.",
+    "verified": "Firmado y verificado para la temporada 2026",
+    "customContract": "¿Necesitas un contrato personalizado para grandes grupos? Contacta a operaciones en hello@tak.kitchen"
+  },
+  "agencyReservations": {
+    "metaTitle": "Reservaciones | Portal de socios Thai Akha Kitchen",
+    "metaDesc": "Ver y gestionar todas las reservas realizadas a través de tu cuenta de agencia.",
+    "sessionMorning": "Clase de mañana",
+    "sessionEvening": "Clase de tarde"
+  },
+  "agencyAssets": {
+    "badgeFallback": "Marco legal",
+    "titleFallback": "Políticas de socio",
+    "assetPhotos": "Fotos alta resolución",
+    "assetVideo": "Video promocional (4K)",
+    "assetBrochure": "Folleto menú 2026",
+    "assetLogo": "Kit de logotipo (vectorial)",
+    "downloadFile": "Descargar archivo",
+    "showcaseAlt": "Muestra",
+    "socialMediaTitle": "Pack de redes sociales",
+    "socialMediaDesc": "Stories y posts verticales pre-dimensionados para Instagram y Facebook.",
+    "accessFolder": "Acceder a carpeta",
+    "needHelpTitle": "¿Necesitas más ayuda?",
+    "needHelpDesc": "¿Buscas algo específico o materiales de marca personalizados? Nuestro equipo de marketing está listo para ayudarte.",
+    "requestAssets": "Solicitar recursos personalizados"
+  },
+  "adminReport": {
+    "comingSoon": "Panel de informes próximamente...",
+    "loading": "Cargando informe...",
+    "globalPerformance": "Rendimiento global",
+    "season": "Temporada 2026",
+    "analyticsComingSoon": "Analítica interactiva próximamente",
+    "metricDetail": "Detalle de métrica",
+    "globalAnalysis": "Análisis global",
+    "description": "Descripción",
+    "monthlySummary": "Resumen mensual",
+    "exportFull": "Exportar informe completo",
+    "metrics": {
+      "revenue": "Ingresos totales",
+      "commissions": "Comisiones totales",
+      "bookings": "Reservas totales",
+      "pax": "Pax total",
+      "revenueDetail": "Ingresos brutos totales de todas las reservas (excluyendo canceladas).",
+      "commissionsDetail": "Total de comisiones pagaderas a las agencias.",
+      "bookingsDetail": "Número total de reservas activas.",
+      "paxDetail": "Número total de huéspedes atendidos."
+    }
+  },
+  "agencyReport": {
+    "loading": "Cargando informe...",
+    "performanceTrend": "Tendencia de rendimiento",
+    "season": "Temporada 2026",
+    "analyticsComingSoon": "Analítica interactiva próximamente",
+    "metricDetail": "Detalle de métrica",
+    "dataAnalysis": "Análisis de datos",
+    "description": "Descripción",
+    "monthlyInvoices": "Facturas mensuales",
+    "downloadStatement": "Descargar estado de cuenta",
+    "metrics": {
+      "revenue": "Ingresos netos",
+      "commission": "Comisión ganada",
+      "bookings": "Reservas totales",
+      "pax": "Pax total",
+      "revenueDetail": "Ingresos totales de todas tus reservas confirmadas tras descuentos de socio.",
+      "commissionDetail": "Monto total de comisión acumulado. Facturado mensualmente.",
+      "bookingsDetail": "Número total de reservaciones de clientes realizadas a través de tu portal.",
+      "paxDetail": "Número total de pasajeros/clientes atendidos."
+    }
+  },
+  "articleModal": {
+    "author": "Autor",
+    "readTime": "Tiempo de lectura",
+    "noContent": "No hay contenido disponible",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "expandPhoto": "Ampliar foto",
+    "exitPhotoView": "Salir de vista de foto"
+  },
+  "news": {
+    "placeholderMediaId": "ID de medios o URL",
+    "sectionContent": "Contenido",
+    "sectionStatus": "Estado"
+  },
+  "driver": {
+    "status": {
+      "waiting": "EN ESPERA",
+      "enRoute": "EN CAMINO",
+      "atLobby": "EN LOBBY",
+      "onBoard": "A BORDO",
+      "completed": "COMPLETADO"
+    },
+    "action": {
+      "startPickup": "INICIAR",
+      "iAmHere": "YA ESTOY",
+      "pickUpPax": "SUBIR PAX",
+      "dropComplete": "ENTREGA OK",
+      "done": "LISTO"
+    },
+    "pickup": "Recogida",
+    "dropoff": "Entrega",
+    "startPickupRoute": "Iniciar recogida",
+    "startDropoffRoute": "Iniciar entrega",
+    "clickConfirm": "CLICK OTRA VEZ",
+    "pax": "/ {{total}} PAX",
+    "payoutTitle": "Todos los viajes completados",
+    "payoutEarnings": "Ganancias del dia",
+    "payoutReturn": "Volver al inicio",
+    "whatsappMsg": "Sawasdee%20kha%20Driver%20is%20at%20lobby"
+  }
+}

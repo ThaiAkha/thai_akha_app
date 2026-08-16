@@ -1,7 +1,9 @@
 {
   "sidebar": {
     "title": "Guests",
-    "guest": "Guest"
+    "guest": "Guest",
+    "selectGuest": "Select a guest to start billing",
+    "noClass": "No classes to bill."
   },
   "content": {
     "loading": "Loading..."
@@ -16,7 +18,24 @@
     "emptySelectHint": "Select a guest first",
     "emptyTab": "Empty Tab",
     "totalAmount": "Total Amount",
+    "payOnArrival": "Pay on Arrival",
     "saveTab": "Save Tab",
-    "payCash": "Pay Cash"
+    "payCash": "Pay Cash",
+    "removeItemTitle": "Remove item?",
+    "removeItemMsg": "Remove \"{{name}}\" from this order?",
+    "remove": "Remove",
+    "payCard": "Card"
+  },
+  "alerts": {
+    "selectGuestFirst": "Select a guest first",
+    "outOfStock": "Out of stock!",
+    "confirmCharge": "Charge {{amount}} THB to cash?"
+  },
+  "split": {
+    "button": "Split → new group",
+    "create": "Create group",
+    "cancel": "Cancel",
+    "merge": "Merge back",
+    "paxToMove": "Pax to move"
   }
 }

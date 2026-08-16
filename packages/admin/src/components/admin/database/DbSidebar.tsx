@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Database } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import { SYSTEM_TABLES } from '../../../hooks/useAdminDatabase';
@@ -13,9 +14,10 @@ const DbSidebar: React.FC<DbSidebarProps> = ({
     selectedTable,
     onSelect
 }) => {
+    const { t } = useTranslation('database');
     return (
         <DataExplorerSidebar
-            title="Tables"
+            title={t('sidebar.title')}
             titleIcon={<Database className="w-5 h-5" />}
             items={SYSTEM_TABLES}
             selectedId={selectedTable}
@@ -23,9 +25,9 @@ const DbSidebar: React.FC<DbSidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-amber-50 dark:bg-amber-900/10 border-t border-amber-100 dark:border-amber-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title="Status" variant="sidebar" className="text-amber-600 mb-0 ml-0" />
-                        <p className="text-[9px] text-amber-700 dark:text-amber-400 font-bold leading-tight uppercase">
-                            Live edits
+                        <SectionHeader title={t('sidebar.statusLabel')} variant="sidebar" className="text-amber-600 mb-0 ml-0" />
+                        <p className="text-xs text-amber-700 dark:text-amber-400 font-bold leading-tight uppercase">
+                            {t('sidebar.status')}
                         </p>
                     </div>
                 </div>

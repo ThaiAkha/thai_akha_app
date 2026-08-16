@@ -1,0 +1,62 @@
+{
+  "sidebar": {
+    "title": "Clase de cocina",
+    "morningClass": "Clase de mañana",
+    "eveningClass": "Clase de tarde"
+  },
+  "content": {
+    "syncing": "Sincronizando..."
+  },
+  "column": {
+    "hotel_one": "Hotel",
+    "hotel_other": "Hoteles"
+  },
+  "walkIn": {
+    "title": "Walk In",
+    "booking_one": "Reserva",
+    "booking_other": "Reservas"
+  },
+  "list": {
+    "empty": "Vacío",
+    "assign": "Asignar",
+    "guest": "Huésped",
+    "unsavedChanges": "Cambios no guardados en el orden de ruta"
+  },
+  "inspector": {
+    "emptyTitle": "Seleccionar pasajero",
+    "emptyHint": "Haz clic en cualquier tarjeta para inspeccionar y gestionar los detalles.",
+    "routeAssignment": "Asignación de ruta",
+    "fieldPickupDriver": "Driver de recogida",
+    "unassigned": "-- SIN ASIGNAR --",
+    "pickupDetails": "Detalles de recogida",
+    "pickupAtHotel": "Recogida en hotel",
+    "walkInMP": "Walk-in / Punto de encuentro",
+    "fieldHotel": "Hotel / Ubicación",
+    "fieldMP": "Punto de encuentro",
+    "selectMP": "-- Seleccionar punto de encuentro --",
+    "pickupTime": "Hora de recogida",
+    "resetToZone": "Restablecer zona ({{time}})",
+    "pickup": "Recogida",
+    "dropoff": "Entrega",
+    "sameLocation": "Misma ubicación",
+    "differentLocation": "Ubicación diferente",
+    "fieldDropoffHotel": "Hotel / Ubicación de entrega",
+    "fieldDropoffDriver": "Driver de entrega",
+    "sameAsPickup": "-- Igual que recogida --",
+    "searchHotel": "Buscar hotel..."
+  },
+  "actions": {
+    "tooltipSave": "Guardar cambios",
+    "saveOrder": "Guardar orden",
+    "saving": "Guardando...",
+    "save": "GUARDAR"
+  },
+  "meta": {
+    "title": "Logística | Thai Akha Kitchen",
+    "description": "Coordinar drivers, recogidas y asignaciones de ruta."
+  },
+  "zone": {
+    "morningPickup": "Recogida mañana",
+    "eveningPickup": "Recogida tarde"
+  }
+}

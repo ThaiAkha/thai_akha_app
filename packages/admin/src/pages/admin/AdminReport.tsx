@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import PageContainer from '../../components/layout/PageContainer';
 import Badge from '../../components/ui/badge/Badge';
+import { Heading, Paragraph, SectionTitle } from '../../components/typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import {
     BarChart3,
@@ -27,6 +29,7 @@ interface AdminReportCard {
 }
 
 const AdminReport: React.FC = () => {
+    const { t } = useTranslation('pages');
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedMetric, setSelectedMetric] = useState<string>('revenue');
@@ -67,45 +70,45 @@ const AdminReport: React.FC = () => {
     const METRICS: AdminReportCard[] = [
         {
             id: 'revenue',
-            title: 'Total Revenue',
+            title: t('adminReport.metrics.revenue'),
             value: `฿${stats.totalRevenue.toLocaleString()}`,
             change: '+12.5%', // Placeholder for now
             isPositive: true,
             icon: <DollarSign className="w-5 h-5" />,
-            details: 'Total gross revenue from all bookings (excluding cancelled).'
+            details: t('adminReport.metrics.revenueDetail')
         },
         {
             id: 'commission',
-            title: 'Total Commissions',
+            title: t('adminReport.metrics.commissions'),
             value: `฿${stats.totalCommission.toLocaleString()}`,
             change: '+5.4%',
             isPositive: true,
             icon: <Briefcase className="w-5 h-5" />,
-            details: 'Total commissions payable to agencies.'
+            details: t('adminReport.metrics.commissionsDetail')
         },
         {
             id: 'bookings',
-            title: 'Total Bookings',
+            title: t('adminReport.metrics.bookings'),
             value: stats.totalBookings.toString(),
             change: '+8.1%',
             isPositive: true,
             icon: <Calendar className="w-5 h-5" />,
-            details: 'Total number of active bookings.'
+            details: t('adminReport.metrics.bookingsDetail')
         },
         {
             id: 'pax',
-            title: 'Total Pax',
+            title: t('adminReport.metrics.pax'),
             value: stats.totalPax.toString(),
             change: '+6.2%',
             isPositive: true,
             icon: <Users className="w-5 h-5" />,
-            details: 'Total number of guests serviced.'
+            details: t('adminReport.metrics.paxDetail')
         }
     ];
 
     const currentMetric = METRICS.find(m => m.id === selectedMetric);
 
-    if (loading) return <div className="p-8 text-center uppercase font-black text-gray-400">Loading Report...</div>;
+    if (loading) return <div className="p-8 text-center uppercase font-black text-gray-400">{t('adminReport.loading')}</div>;
 
     return (
         <PageContainer variant="wide">
@@ -136,12 +139,12 @@ const AdminReport: React.FC = () => {
                                     )}>
                                         {metric.icon}
                                     </div>
-                                    <div className={cn("flex items-center gap-1 text-[10px] font-black", metric.isPositive ? "text-green-500" : "text-amber-500")}>
+                                    <div className={cn("flex items-center gap-1 text-xs font-black", metric.isPositive ? "text-green-500" : "text-amber-500")}>
                                         {metric.isPositive ? <ArrowUpRight className="w-3" /> : <ArrowDownRight className="w-3" />}
                                         {metric.change}
                                     </div>
                                 </div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{metric.title}</h4>
+                                <SectionTitle className="text-xs text-gray-400 mb-1">{metric.title}</SectionTitle>
                                 <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">{metric.value}</p>
                             </div>
                         ))}
@@ -151,15 +154,15 @@ const AdminReport: React.FC = () => {
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] p-8 shadow-sm">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white leading-none mb-1">Global Performance</h4>
-                                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Monthly comparison of {currentMetric?.title}</p>
+                                <Heading level="h4" className="leading-none mb-1">{t('adminReport.globalPerformance')}</Heading>
+                                <SectionTitle className="text-xs text-gray-400">Monthly comparison of {currentMetric?.title}</SectionTitle>
                             </div>
-                            <Badge variant="light" color="info">2026 Season</Badge>
+                            <Badge variant="light" color="info">{t('adminReport.season')}</Badge>
                         </div>
                         <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-3xl bg-gray-50/50 dark:bg-black/20">
                             <div className="text-center">
                                 <BarChart3 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                <p className="text-[10px] font-black uppercase text-gray-400">Interactive Analytics Coming Soon</p>
+                                <SectionTitle className="text-xs text-gray-400">{t('adminReport.analyticsComingSoon')}</SectionTitle>
                             </div>
                         </div>
                     </div>
@@ -173,21 +176,21 @@ const AdminReport: React.FC = () => {
                                 <FileText className="w-6 h-6" />
                             </div>
                             <div>
-                                <h4 className="text-xl font-black uppercase text-gray-900 dark:text-white leading-none mb-1">Metric Detail</h4>
-                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Global Analysis</p>
+                                <Heading level="h4" className="leading-none mb-1">{t('adminReport.metricDetail')}</Heading>
+                                <SectionTitle className="text-xs text-gray-400">{t('adminReport.globalAnalysis')}</SectionTitle>
                             </div>
                         </div>
 
                         <div className="flex-1 space-y-6">
                             <div className="p-6 bg-primary-50/50 dark:bg-primary-500/5 rounded-3xl border border-primary-100/50 dark:border-primary-500/10">
-                                <h5 className="text-[10px] font-black uppercase tracking-wider text-primary-600 mb-2">Description</h5>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 leading-relaxed italic">
+                                <SectionTitle className="text-xs tracking-wider text-primary-600 mb-2">{t('adminReport.description')}</SectionTitle>
+                                <Paragraph size="sm" color="secondary" className="font-medium italic">
                                     "{currentMetric?.details}"
-                                </p>
+                                </Paragraph>
                             </div>
 
                             <div className="space-y-4">
-                                <h5 className="text-[10px] font-black uppercase tracking-wider text-gray-400 px-2 leading-none">Monthly Summary (Mock)</h5>
+                                <SectionTitle className="text-xs tracking-wider text-gray-400 px-2 leading-none mb-0">{t('adminReport.monthlySummary')}</SectionTitle>
                                 {[
                                     { month: 'January 2026', total: '฿420,400' },
                                     { month: 'December 2025', total: '฿385,200' },
@@ -200,7 +203,7 @@ const AdminReport: React.FC = () => {
                                             </div>
                                             <div>
                                                 <div className="text-xs font-black uppercase text-gray-900 dark:text-white">{inv.month}</div>
-                                                <div className="text-[10px] font-bold text-gray-400">{inv.total}</div>
+                                                <div className="text-xs font-bold text-gray-400">{inv.total}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -209,7 +212,7 @@ const AdminReport: React.FC = () => {
                         </div>
 
                         <button className="w-full mt-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 h-14 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all">
-                            Export Full Report
+                            {t('adminReport.exportFull')}
                         </button>
                     </div>
                 </div>

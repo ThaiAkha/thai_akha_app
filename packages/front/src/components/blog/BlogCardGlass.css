@@ -7,8 +7,8 @@
   --radius: 24px;
   --border-width: 2px;
   /* Accent color stops — override at parent level for per-page theming */
-  --glass-accent-border: rgba(152, 201, 60, 0.6);
-  --glass-accent-glow:   rgba(152, 201, 60, 0.15);
+  --glass-accent-border: rgba(var(--secondary-ch) / 0.6);
+  --glass-accent-glow:   rgba(var(--secondary-ch) / 0.15);
   position: relative;
   isolation: isolate;
 }

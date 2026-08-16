@@ -56,7 +56,33 @@ token.json
 # App snapshots
 App_Snapshot*
 App_Full_Snapshot*
+app_sources.txt
 
 # CI/CD output files
 lint_errors.txt
 *build_output.txt
+
+# Build/deploy caches
+.firebase/
+
+# Local scratch DB & lockfile Deno
+db.sqlite
+deno.lock
+
+# Report/export generati in locale
+outputs/
+
+# macOS custom folder icon
+Icon[\r]
+
+# Tooling agenti locale (symlink al brain)
+.agents
+
+# Note di lavoro temporanee (non codice)
+_multi_kitchen/
+docs/audit-gemini-mobile-ux/
+
+# Backup database: stanno nel brain, non nel repo.
+# Contengono dati clienti (email) e non devono entrare nella cronologia git.
+# Fonte: thai_akha_brain/000_Core_Agents/050_Infrastructure/054_Supabase/backups/
+supabase/backups/

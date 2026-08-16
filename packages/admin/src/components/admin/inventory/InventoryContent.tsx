@@ -54,21 +54,21 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                         subtitle={p.sku}
                                         badges={
                                             <>
-                                                <Badge color="light" size="sm" className="text-[10px] font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
+                                                <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
                                                     {p.category_id}
                                                 </Badge>
                                                 {p.stock_quantity < 5 && (
-                                                    <Badge color="error" size="sm" className="text-[10px] font-black uppercase tracking-widest animate-pulse">
+                                                    <Badge color="error" size="sm" className="text-xs font-black uppercase tracking-widest animate-pulse">
                                                         LOW STOCK: {p.stock_quantity}
                                                     </Badge>
                                                 )}
                                                 {!p.is_active && (
-                                                    <Badge color="error" size="sm" className="text-[9px] font-bold">INACTIVE</Badge>
+                                                    <Badge color="error" size="sm" className="text-xs font-bold">INACTIVE</Badge>
                                                 )}
                                             </>
                                         }
                                         footerLeft={
-                                            <p className="text-[10px] font-mono font-bold text-gray-400 tracking-tighter uppercase truncate">
+                                            <p className="text-xs font-mono font-bold text-gray-400 tracking-tighter uppercase truncate">
                                                 ID: {String(p.id).substring(0, 8)}
                                             </p>
                                         }
@@ -94,11 +94,11 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                 onChange={onToggleSelectAll}
                             />
                         </TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">SKU</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Product Name</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Category</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500 text-center">Stock</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500 text-right">Price</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">SKU</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Product Name</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Category</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500 text-center">Stock</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500 text-right">Price</TableCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -130,7 +130,7 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                     extra={p.category_id}
                                 />
                             </TableCell>
-                            <TableCell className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-tighter">
+                            <TableCell className="px-4 py-3 text-center text-xs font-black uppercase tracking-tighter">
                                 {p.stock_quantity < 5 ? (
                                     <Badge color="error" size="sm">{p.stock_quantity}</Badge>
                                 ) : (

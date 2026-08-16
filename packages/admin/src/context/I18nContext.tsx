@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import type { i18n as I18nInstance } from 'i18next';
-import { LangCode, LANG_STORAGE_KEY, initI18n } from '../i18n';
+import { LangCode, LANGUAGES, DEFAULT_LANGUAGE, LANG_STORAGE_KEY, initI18n } from '../i18n';
 
 interface I18nContextValue {
   lang: LangCode;
@@ -23,8 +23,8 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [switching, setSwitching] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(LANG_STORAGE_KEY);
-    const initial: LangCode = stored === 'th' ? 'th' : 'en';
+    const stored = localStorage.getItem(LANG_STORAGE_KEY) as LangCode | null;
+    const initial: LangCode = stored && LANGUAGES.includes(stored) ? stored : DEFAULT_LANGUAGE;
 
     initI18n(initial).then((inst) => {
       setInstance(inst);

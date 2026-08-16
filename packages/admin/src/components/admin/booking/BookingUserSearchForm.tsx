@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import InputField from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
@@ -20,13 +21,14 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
   selectedUser,
   onSelectedUserChange,
 }) => {
+  const { t } = useTranslation('booking');
   return (
     <div className="space-y-4">
       <InputField
         id="search-user"
         name="search-user"
-        label={userMode === 'existing' ? "Search Guest" : "Search Partner / Agency"}
-        placeholder={userMode === 'existing' ? "Type name..." : "Search agency name..."}
+        label={userMode === 'existing' ? t('search.labelGuest') : t('search.labelAgency')}
+        placeholder={userMode === 'existing' ? t('search.placeholderGuest') : t('search.placeholderAgency')}
         value={searchTerm}
         onChange={e => onSearchTermChange(e.target.value)}
       />
@@ -48,19 +50,19 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-gray-500">{u.email}</p>
                   {userMode === 'agency' && u.agency_company_name && (
-                    <p className="text-[10px] bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">
+                    <p className="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">
                       {u.full_name}
                     </p>
                   )}
                 </div>
               </div>
               <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                Select
+                {t('search.selectBtn')}
               </Button>
             </div>
           ))}
           {searchResults.length === 0 && (
-            <p className="text-xs text-center text-gray-400 p-2">No users found.</p>
+            <p className="text-xs text-center text-gray-400 p-2">{t('search.noUsersFound')}</p>
           )}
         </div>
       )}
@@ -106,7 +108,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
             className="ml-auto text-red-500 border-red-200 hover:bg-red-50"
             onClick={() => onSelectedUserChange(null)}
           >
-            Remove
+            {t('search.removeBtn')}
           </Button>
         </div>
       )}

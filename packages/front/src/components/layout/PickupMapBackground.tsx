@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import type { MeetingPoint } from '@thaiakha/shared/types';
 
 declare global {
   interface Window {
@@ -9,24 +10,35 @@ declare global {
 interface PickupMapBackgroundProps {
   geoJsonData: any;
   selectedLocation?: { lat: number; lng: number } | null;
+  /** Drop-off location — shown as a second amber pin alongside the pickup pin */
+  secondaryLocation?: { lat: number; lng: number } | null;
   onPointSelect?: (point: { name: string; lat: number; lng: number; type: string }) => void;
   onMapClick?: (coords: { lat: number; lng: number }) => void;
   selectionMode?: boolean;
+  /** Meeting points da mostrare sulla mappa (outside zone mode) */
+  meetingPointsOverlay?: MeetingPoint[];
+  /** ID del meeting point selezionato — viene evidenziato con scala maggiore */
+  selectedMeetingPointId?: string | null;
 }
 
-const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({ 
-  geoJsonData, 
+const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
+  geoJsonData,
   selectedLocation,
+  secondaryLocation,
   onPointSelect,
   onMapClick,
-  selectionMode = false
+  selectionMode = false,
+  meetingPointsOverlay,
+  selectedMeetingPointId,
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const googleMapRef = useRef<any>(null);
-  
+
   // Refs per gestire la pulizia della memoria
   const userMarkerRef = useRef<any>(null);
-  const pointMarkersRef = useRef<any[]>([]); 
+  const dropoffMarkerRef = useRef<any>(null);
+  const pointMarkersRef = useRef<any[]>([]);
+  const overlayMarkersRef = useRef<any[]>([]);
   const [mapReady, setMapReady] = useState(false);
 
   // 1. INIZIALIZZAZIONE MAPPA
@@ -226,6 +238,116 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
 
     updateUserMarker();
   }, [selectedLocation, mapReady]);
+
+  // 5. MARKER DROP-OFF SECONDARIO (Pin ambra)
+  useEffect(() => {
+    const updateDropoffMarker = async () => {
+      if (!googleMapRef.current || !window.google) return;
+      const { AdvancedMarkerElement } = await window.google.maps.importLibrary('marker');
+
+      // Rimuovi precedente
+      if (dropoffMarkerRef.current) dropoffMarkerRef.current.map = null;
+
+      if (!secondaryLocation) return;
+
+      // Pin HTML ambra per drop-off
+      const pinContainer = document.createElement('div');
+      pinContainer.className = 'relative flex items-center justify-center -translate-y-full cursor-pointer';
+      pinContainer.innerHTML = `
+        <div style="
+          width: 40px; height: 40px;
+          background: #f59e0b;
+          border: 3px solid white;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+          display: flex; align-items: center; justify-content: center;
+        ">
+          <div style="width: 14px; height: 14px; background: white; border-radius: 50%; transform: rotate(45deg);"></div>
+        </div>
+        <div style="
+          position: absolute; bottom: -10px;
+          width: 20px; height: 6px;
+          background: rgba(0,0,0,0.3);
+          border-radius: 50%;
+          filter: blur(2px);
+        "></div>
+      `;
+
+      dropoffMarkerRef.current = new AdvancedMarkerElement({
+        position: secondaryLocation,
+        map: googleMapRef.current,
+        content: pinContainer,
+        zIndex: 998,
+      });
+    };
+
+    updateDropoffMarker();
+  }, [secondaryLocation, mapReady]);
+
+  // 6. OVERLAY MEETING POINTS (outside zone mode)
+  useEffect(() => {
+    const renderOverlay = async () => {
+      if (!googleMapRef.current || !window.google || !mapReady) return;
+      const { AdvancedMarkerElement } = await window.google.maps.importLibrary('marker');
+
+      // Pulisci overlay precedente
+      overlayMarkersRef.current.forEach(m => m.map = null);
+      overlayMarkersRef.current = [];
+
+      if (!meetingPointsOverlay || meetingPointsOverlay.length === 0) return;
+
+      meetingPointsOverlay.forEach(mp => {
+        const isSelected = mp.id === selectedMeetingPointId;
+
+        // Pin HTML custom: cerchio colorato con icona/lettera
+        const pin = document.createElement('div');
+        pin.style.cssText = `
+          width: ${isSelected ? '48px' : '36px'};
+          height: ${isSelected ? '48px' : '36px'};
+          background: ${isSelected ? '#f59e0b' : '#1d4ed8'};
+          border: 3px solid white;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+          transition: transform 0.2s ease;
+          cursor: pointer;
+          transform: ${isSelected ? 'scale(1.2)' : 'scale(1)'};
+        `;
+
+        if (mp.icon_url) {
+          const img = document.createElement('img');
+          img.src = mp.icon_url;
+          img.style.cssText = 'width: 20px; height: 20px; object-fit: contain; filter: brightness(10);';
+          pin.appendChild(img);
+        } else {
+          pin.style.color = 'white';
+          pin.style.fontSize = '16px';
+          pin.textContent = '📍';
+        }
+
+        const marker = new AdvancedMarkerElement({
+          map: googleMapRef.current,
+          position: { lat: mp.latitude, lng: mp.longitude },
+          title: mp.name,
+          content: pin,
+          zIndex: isSelected ? 200 : 100,
+          gmpClickable: true,
+        });
+
+        marker.addListener('gmp-click', () => {
+          if (onPointSelect) {
+            googleMapRef.current.panTo({ lat: mp.latitude, lng: mp.longitude });
+            onPointSelect({ name: mp.name, lat: mp.latitude, lng: mp.longitude, type: mp.id });
+          }
+        });
+
+        overlayMarkersRef.current.push(marker);
+      });
+    };
+
+    renderOverlay();
+  }, [meetingPointsOverlay, selectedMeetingPointId, mapReady, onPointSelect]);
 
   return <div ref={mapRef} className="w-full h-full bg-map-bg" />;
 };

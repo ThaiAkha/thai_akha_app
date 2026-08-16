@@ -1,5 +1,6 @@
 import React from 'react';
 import { Edit, Save } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Tooltip from '../../ui/Tooltip';
 import Button from '../../ui/button/Button';
 
@@ -24,37 +25,39 @@ const HotelsInspectorActions: React.FC<HotelsInspectorActionsProps> = ({
     onSave,
     onSaveMeetingPoint
 }) => {
+    const { t } = useTranslation('common');
+
     if (!selectedHotel && !isCreating && !selectedMeetingPoint) return null;
 
     if (!isEditing) {
         return (
-            <Tooltip content={selectedMeetingPoint ? "Edit this meeting point" : "Edit this hotel"} position="left">
+            <Tooltip content={selectedMeetingPoint ? t('actions.editMeetingPoint') : t('actions.editHotel')} position="left">
                 <Button
                     type="button"
                     onClick={() => setIsEditing(true)}
                     variant="outline"
                     size="md"
-                    className="h-9 px-4 text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
+                    className="h-9 px-4 text-xs font-black uppercase tracking-widest active:scale-95 transition-all"
                     startIcon={<Edit className="w-4 h-4" />}
                 >
-                    EDIT
+                    {t('actions.edit')}
                 </Button>
             </Tooltip>
         );
     }
 
     return (
-        <Tooltip content="Save modifications" position="left">
+        <Tooltip content={t('actions.saveModifications')} position="left">
             <Button
                 type="button"
                 onClick={selectedMeetingPoint ? onSaveMeetingPoint : onSave}
                 disabled={saving}
                 variant="primary"
                 size="md"
-                className="h-9 px-4 text-[10px] font-black uppercase tracking-widest transition-all"
+                className="h-9 px-4 text-xs font-black uppercase tracking-widest transition-all"
                 startIcon={<Save className="w-4 h-4" />}
             >
-                {saving ? 'SAVING...' : 'SAVE'}
+                {saving ? t('actions.saving') : t('actions.save')}
             </Button>
         </Tooltip>
     );

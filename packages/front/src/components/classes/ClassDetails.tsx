@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Badge, Icon } from '../ui/index';
+import { GlassCard } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import ClassSectionBlock, { ClassSection } from './ClassSectionBlock';
 
@@ -26,6 +27,8 @@ interface ClassDetailsProps {
   schedule?: ScheduleItem[];
   meetingPoints?: MeetingPoint[];
   classSections?: ClassSection[];
+  tagline?: string;
+  price?: string | number;
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -46,6 +49,8 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
   schedule = [],
   meetingPoints = [],
   classSections = [],
+  tagline,
+  price,
 }) => {
   const accent = color === 'primary' ? 'text-primary' : 'text-secondary';
   const accentBg = color === 'primary' ? 'bg-primary/10 border-primary/20' : 'bg-secondary/10 border-secondary/20';
@@ -55,13 +60,32 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
   return (
     <div className="space-y-10 pt-2">
 
+      {/* ── 0. PRICE (standalone, if passed) ─────────────────────────── */}
+      {price && (
+        <div>
+          <SectionTitle icon="payments" label="Course Investment" />
+          <div className={cn("p-5 rounded-2xl border flex items-center justify-between", accentBg)}>
+            <Typography variant="paragraphM" className="text-white/80 font-medium">Price per person</Typography>
+            <Typography variant="h4" className={cn("font-bold", accent)}>
+              {price} THB
+            </Typography>
+          </div>
+        </div>
+      )}
+
       {/* ── 1. TAGS ─────────────────────────────────────────────────────── */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
+            <GlassCard
+              key={tag}
+              variant={color === 'primary' ? 'primary' : 'secondary'}
+              className="rounded-full px-4 py-1.5"
+            >
+              <Typography variant="badge" className={cn('font-semibold', accent)}>
+                {tag}
+              </Typography>
+            </GlassCard>
           ))}
         </div>
       )}
@@ -81,7 +105,7 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
                   <div className={cn('absolute -left-[18px] top-1.5 w-2.5 h-2.5 rounded-full ring-2 ring-surface', accentDot)} />
                   <div className="space-y-0.5">
                     <div className="flex flex-wrap items-baseline gap-2">
-                      <Typography variant="monoLabel" className={cn('text-xs font-bold', accent)}>
+                      <Typography variant="accent" className={cn('text-xs font-bold', accent)}>
                         {item.time}
                       </Typography>
                       <Typography variant="h6" className="text-white/90">{item.label}</Typography>
@@ -132,7 +156,7 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
                   <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
                     {mp.type === 'walk_in' ? 'Walk-in' : 'Market Meeting'}
                   </Badge>
-                  <Typography variant="monoLabel" className={cn('text-xs font-bold', accent)}>
+                  <Typography variant="accent" className={cn('text-xs font-bold', accent)}>
                     {mp.time}
                   </Typography>
                 </div>

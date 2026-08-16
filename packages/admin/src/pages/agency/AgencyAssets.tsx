@@ -53,10 +53,10 @@ const AgencyAssets: React.FC = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white tracking-tight leading-tight">{t(asset.nameKey)}</h4>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{asset.type} • {asset.size}</p>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{asset.type} • {asset.size}</p>
                                 </div>
                             </div>
-                            <button className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors border-t border-gray-50 dark:border-gray-800 pt-4">
+                            <button className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors border-t border-gray-50 dark:border-gray-800 pt-4">
                                 <Download className="w-3 h-3" />
                                 {t('agencyAssets.downloadFile')}
                             </button>
@@ -67,14 +67,14 @@ const AgencyAssets: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 relative h-80 rounded-[3rem] overflow-hidden group">
                         <img
-                            src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/Akha01.jpg"
+                            src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg"
                             alt={t('agencyAssets.showcaseAlt')}
                             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-12 flex flex-col justify-end">
                             <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{t('agencyAssets.socialMediaTitle')}</h3>
                             <p className="text-white/70 text-sm max-w-sm mb-6 font-medium">{t('agencyAssets.socialMediaDesc')}</p>
-                            <button className="w-fit flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white hover:text-primary-500 transition-colors">
+                            <button className="w-fit flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white hover:text-primary-500 transition-colors">
                                 {t('agencyAssets.accessFolder')} <ExternalLink className="w-3 h-3" />
                             </button>
                         </div>
@@ -85,7 +85,7 @@ const AgencyAssets: React.FC = () => {
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed italic">
                             {t('agencyAssets.needHelpDesc')}
                         </p>
-                        <button className="text-[10px] font-black uppercase tracking-widest text-primary-600 hover:scale-105 active:scale-95 transition-all mb-4">
+                        <button className="text-xs font-black uppercase tracking-widest text-primary-600 hover:scale-105 active:scale-95 transition-all mb-4">
                             {t('agencyAssets.requestAssets')}
                         </button>
                     </div>

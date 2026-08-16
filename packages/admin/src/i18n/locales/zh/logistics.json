@@ -1,0 +1,62 @@
+{
+  "sidebar": {
+    "title": "烹饪课",
+    "morningClass": "上午课程",
+    "eveningClass": "下午课程"
+  },
+  "content": {
+    "syncing": "同步中..."
+  },
+  "column": {
+    "hotel_one": "酒店",
+    "hotel_other": "酒店"
+  },
+  "walkIn": {
+    "title": "现场到访",
+    "booking_one": "预订",
+    "booking_other": "预订"
+  },
+  "list": {
+    "empty": "空",
+    "assign": "分配",
+    "guest": "客人",
+    "unsavedChanges": "路线顺序有未保存的更改"
+  },
+  "inspector": {
+    "emptyTitle": "选择乘客",
+    "emptyHint": "点击任意卡片以查看和管理详情。",
+    "routeAssignment": "路线分配",
+    "fieldPickupDriver": "接送司机",
+    "unassigned": "-- 未分配 --",
+    "pickupDetails": "接送详情",
+    "pickupAtHotel": "酒店接送",
+    "walkInMP": "现场到访 / 集合点",
+    "fieldHotel": "酒店 / 地点",
+    "fieldMP": "集合点",
+    "selectMP": "-- 选择集合点 --",
+    "pickupTime": "接送时间",
+    "resetToZone": "重置为区域 ({{time}})",
+    "pickup": "接送",
+    "dropoff": "送达",
+    "sameLocation": "相同地点",
+    "differentLocation": "不同地点",
+    "fieldDropoffHotel": "送达酒店 / 地点",
+    "fieldDropoffDriver": "送达司机",
+    "sameAsPickup": "-- 与接送相同 --",
+    "searchHotel": "搜索酒店..."
+  },
+  "actions": {
+    "tooltipSave": "保存更改",
+    "saveOrder": "保存顺序",
+    "saving": "保存中...",
+    "save": "保存"
+  },
+  "meta": {
+    "title": "物流 | Thai Akha Kitchen",
+    "description": "协调司机、接送和路线分配。"
+  },
+  "zone": {
+    "morningPickup": "上午接送",
+    "eveningPickup": "下午接送"
+  }
+}

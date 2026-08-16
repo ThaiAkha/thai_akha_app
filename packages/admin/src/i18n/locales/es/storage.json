@@ -1,0 +1,68 @@
+{
+  "sidebar": {
+    "title": "Buckets",
+    "statusLabel": "Estado",
+    "status": "Almacenamiento activo"
+  },
+  "meta": {
+    "title": "Explorador de almacenamiento | Thai Akha Kitchen",
+    "description": "Gestionar archivos en buckets y recursos multimedia."
+  },
+  "content": {
+    "searchPlaceholder": "Buscar archivos...",
+    "noFiles": "No se encontraron archivos",
+    "colFileName": "Nombre de archivo",
+    "colSize": "Tamaño",
+    "colType": "Tipo",
+    "colLastModified": "Última modificación"
+  },
+  "inspector": {
+    "noFile": "Ningún archivo seleccionado",
+    "noFileHint": "Haz clic en un archivo de la lista para ver los detalles",
+    "stagingAsset": "Recurso en preparación",
+    "saving": "GUARDANDO...",
+    "confirmUpload": "CONFIRMAR SUBIDA",
+    "saveChanges": "GUARDAR CAMBIOS",
+    "downloadOptions": "Opciones de descarga",
+    "origQuality": "Calidad original",
+    "origQualityDesc": "Recurso en resolución completa",
+    "standardMp3": "MP3 estándar",
+    "mp3Desc": "Formato compatible",
+    "rawDocument": "Documento sin procesar",
+    "rawDocDesc": "Descarga de archivo estándar",
+    "copied": "COPIADO",
+    "copyLink": "COPIAR ENLACE",
+    "preview": "VISTA PREVIA",
+    "setFilename": "Establecer nombre",
+    "assetName": "Nombre del recurso",
+    "filenamePlaceholder": "Ingresa el nombre del archivo...",
+    "newNamePlaceholder": "Ingresa el nuevo nombre...",
+    "diskSize": "Tamaño en disco",
+    "mimeType": "Tipo MIME",
+    "tooltipSize": "Tamaño del archivo en disco",
+    "tooltipMime": "Tipo MIME del recurso",
+    "createdAt": "Creado el",
+    "lastSynced": "Última sincronización",
+    "deleteAsset": "ELIMINAR RECURSO",
+    "unknownFile": "ARCHIVO DESCONOCIDO",
+    "audioNotSupported": "Tu navegador no soporta el elemento de audio.",
+    "uploadTooltip": "Subir recursos al almacenamiento",
+    "saveTooltip": "Guardar cambios"
+  },
+  "actions": {
+    "upload": "Subir",
+    "uploading": "Subiendo",
+    "edit": "EDITAR",
+    "save": "GUARDAR",
+    "saving": "GUARDANDO...",
+    "tooltipEdit": "Editar metadatos del archivo",
+    "tooltipSave": "Guardar cambios"
+  },
+  "alerts": {
+    "confirmDelete": "¿Estás seguro de que quieres eliminar \"{{name}}\"?",
+    "deleteFailed": "Error al eliminar: {{message}}",
+    "uploadFailed": "Error al subir: {{message}}",
+    "renamedSuccess": "Archivo renombrado exitosamente",
+    "renameFailed": "Error al renombrar: {{message}}"
+  }
+}

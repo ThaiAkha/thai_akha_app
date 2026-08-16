@@ -1,198 +1,268 @@
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { Typography, Button, Icon, Badge, Card, InfoCard } from '../components/ui/index';
-import AkhaPixelPattern from '../components/ui/AkhaPixelPattern';
+import { SmartHomeCard, InfoCard, StatCard, MediaImage, AkhaThemedLine, GlassCardFull, FaqBottomPage, ButtonVariant } from '../components/ui/index';
+import { SiblingInfoSection } from '../components/layout';
+import { SmartHeaderSection, ScrollEntrance } from '../components/layout/index';
+import PageEssentials from '../components/layout/PageEssentials';
 import { useFrontHomeCards } from '../hooks/useFrontHomeCards';
+import { useHomePageSections, toStatCardColor, HomeSectionId } from '../hooks/useHomePageSections';
+import AudioPlayer from '../components/modal/AudioPlayer';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { t } from '@thaiakha/shared/lib/ui-strings';
+import { HomeGridSkeleton } from '../components/skeleton';
 
-const ICON_MAP: Record<string, string> = {
-  home: 'Home',
-  BookOpen: 'BookOpen',
-  ChefHat: 'ChefHat',
-  CalendarDays: 'CalendarDays',
-  landmark: 'Landmark',
-  MapPin: 'MapPin',
-  trophy: 'Trophy',
-};
+// ─── HomeGlassSection — deduplica pattern home_03/04 e home_05/06 ────────────
+interface HomeGlassSectionProps {
+  headerId: HomeSectionId;
+  cardId: HomeSectionId;
+  imageAssetId?: string;
+  imageAlt?: string;
+  imageHref?: string;
+  buttonText?: string;
+  buttonVariant?: ButtonVariant;
+  glassVariant?: 'action' | 'secondary';
+  imagePosition?: 'left' | 'right';
+  gradientFrom?: string;
+  gradientTo?: string;
+  buttonSize?: 'xs' | 'sm' | 'md' | 'lg';
+  onNavigate: (p: string, t?: string, s?: string) => void;
+}
 
-const HomePage: React.FC<{ onNavigate: (p: string, t?: string) => void }> = ({ onNavigate }) => {
-  const { cards, loading } = useFrontHomeCards();
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const handlePlayWelcome = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio('https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/voice_over/cherry_welcome_cherry_normal.wav');
-      audioRef.current.onended = () => setIsPlaying(false);
-    }
-    if (isPlaying) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const ROW1_PATHS = ['/classes', '/recipes', '/booking'];
-  const row1Cards = cards.filter(c => ROW1_PATHS.includes(c.target_path));
-  const row2Cards = cards.filter(c => !ROW1_PATHS.includes(c.target_path));
+function HomeGlassSection({
+  headerId,
+  cardId,
+  imageAssetId,
+  imageAlt,
+  imageHref,
+  buttonText,
+  buttonVariant = 'brand',
+  glassVariant = 'action',
+  imagePosition = 'left',
+  gradientFrom = 'quiz-s',
+  gradientTo = 'primary',
+  buttonSize = 'sm',
+  onNavigate,
+}: HomeGlassSectionProps) {
+  const { sections: pageSections, loading: sectionsLoading } = useHomePageSections();
 
   return (
-    <PageLayout slug="home" loading={loading} showPatterns={true} hideDefaultHeader>
-      <div className="space-y-24 pb-32">
-
-        {/* --- HERO SECTION --- */}
-        <section className="relative min-h-[70vh] flex flex-col items-center justify-center text-center px-4 pt-12 md:pt-20">
-          <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <div className="flex justify-center mb-8">
-              <Badge variant="solid" icon="star" pulse>Award Winning School</Badge>
-            </div>
-
-            <Typography variant="display2" className="drop-shadow-2xl">
-              Master the Art of <Typography variant="display2" color="primary" as="span">Akha</Typography> Cooking
-            </Typography>
-
-            <Typography variant="paragraphL" className="max-w-2xl mx-auto dark:opacity-80">
-              A unique culinary journey from the misty mountains of the North to your personal cooking station in Chiang Mai.
-            </Typography>
-          </div>
-
-          <div className="mt-16 opacity-30">
-            <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-          </div>
-        </section>
-
-        {/* --- MEET CHERRY SECTION --- */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-1 space-y-12">
-            <div className="inline-flex items-center">
-              <Badge variant="brand" icon="star" pulse>AI Expert Assistant</Badge>
-            </div>
-
-            <Typography variant="h2" color="title" className="italic">
-              Meet Cherry, Your Digital Host
-            </Typography>
-
-            <Typography variant="paragraphM" className="leading-relaxed">
-              Available 24/7 via text or <strong>live voice</strong>, Cherry is our official cultural ambassador. She can help you choose recipes, manage dietary restrictions, or tell you the ancestral stories behind every dish.
-            </Typography>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card variant="interactive" padding="sm" rounded="xl">
-                <Icon name="mic" className="text-primary mb-4" />
-                <Typography variant="h5">Voice Live</Typography>
-                <Typography variant="paragraphS">Real-time low-latency voice interaction.</Typography>
-              </Card>
-              <Card variant="interactive" padding="sm" rounded="xl">
-                <Icon name="menu_book" className="text-action mb-4" />
-                <Typography variant="h5">Recipe Expert</Typography>
-                <Typography variant="paragraphS">Deep knowledge of our 11 signature dishes.</Typography>
-              </Card>
-            </div>
-          </div>
-
-          <div className="order-1 lg:order-2 relative aspect-square rounded-4xl overflow-hidden border-2 border-gray-200 dark:border-white/10 shadow-2xl group">
-            <img
-              src="https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/Akha01.jpg"
-              className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
-              alt="Cherry Assistant"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            {/* Overlay on dark image */}
-            <div className="absolute bottom-8 left-8 right-8">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handlePlayWelcome}
-                  title={isPlaying ? 'Stop' : 'Play welcome message'}
-                  className={`size-12 rounded-full bg-primary flex items-center justify-center text-white transition-transform hover:scale-110 ${isPlaying ? 'animate-pulse' : ''}`}
-                >
-                  <Icon name={isPlaying ? 'Volume2' : 'Play'} size="sm" />
-                </button>
-                <div>
-                  <Typography variant="h5" color="inverse" className="font-black italic">CHERRY V5.0</Typography>
-                  <Typography variant="caption" color="inverse" className="opacity-60">
-                    {isPlaying ? 'Playing welcome...' : 'Tap to hear Cherry'}
-                  </Typography>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="mt-16 opacity-30">
-          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-        </div>
-
-        {/* --- EXPLORE SECTION --- */}
-        <section className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-primary pl-6">
-            <div className="space-y-2">
-              <Typography variant="h2">
-                Explore the Kitchen
-              </Typography>
-              <Typography variant="paragraphM">Discover our classes, recipes, and heritage.</Typography>
-            </div>
-          </div>
-
-          {/* Row 1 — 3 colonne verticali: Classes, Recipes, Booking */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {loading
-              ? [1, 2, 3].map(i => <div key={i} />)
-              : row1Cards.map(card => (
-                <InfoCard
-                  key={card.id}
-                  card={{ id: card.id, title: card.title, desc: card.description, link: card.target_path.replace('/', ''), image: card.image_url, icon: ICON_MAP[card.icon_name] }}
-                  layout="vertical"
-                  onNavigate={onNavigate}
-                />
-              ))
-            }
-          </div>
-
-          {/* Row 2 — 2 colonne orizzontali: card rimanenti */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {loading
-              ? [1, 2, 3, 4].map(i => <div key={i} />)
-              : row2Cards.map(card => (
-                <InfoCard
-                  key={card.id}
-                  card={{ id: card.id, title: card.title, desc: card.description, link: card.target_path.replace('/', ''), image: card.image_url, icon: ICON_MAP[card.icon_name] }}
-                  layout="horizontal"
-                  onNavigate={onNavigate}
-                />
-              ))
-            }
-          </div>
-        </section>
-
-        <div className="mt-16 opacity-30">
-          <AkhaPixelPattern variant="mountain" size={10} speed={60} expandFromCenter={true} />
-        </div>
-
-        {/* --- TESTIMONIAL / CTA SECTION --- */}
-        <section className="relative py-20 px-8 rounded-[4rem] overflow-hidden text-center bg-primary/5 border border-primary/20">
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
-
-          <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-            <Icon name="format_quote" size="xl" className="text-primary opacity-50" />
-            <Typography variant="h3">
-              "An unforgettable experience that goes far beyond just cooking. It's a deep immersion into a beautiful, resilient culture."
-            </Typography>
-            <div className="space-y-1">
-              <Typography variant="h6">Sarah Jenkins</Typography>
-              <Typography variant="caption" className="dark:opacity-40">Professional Food Traveler</Typography>
-            </div>
-
-            <div className="pt-8">
-              <Button variant="action" size="lg" onClick={() => onNavigate('booking')}>Start Your Journey</Button>
-            </div>
-          </div>
-        </section>
-
+    <section className="flex flex-col [gap:var(--space-fluid-m)]">
+      <div className="hidden md:block">
+        <SmartHeaderSection
+          sectionId={headerId}
+          prefetchedData={pageSections[headerId]}
+          loading={sectionsLoading}
+          variant="hero2"
+          align="center"
+          gradientFrom={gradientFrom}
+          gradientTo={gradientTo}
+          hideSubtitle
+        />
       </div>
+      <GlassCardFull
+        sectionId={cardId}
+        prefetchedData={pageSections[cardId]}
+        loading={sectionsLoading}
+        imageAssetId={imageAssetId}
+        imageAlt={imageAlt}
+        imageHref={imageHref}
+        buttonText={buttonText}
+        buttonVariant={buttonVariant}
+        buttonSize={buttonSize}
+        onNavigate={onNavigate}
+        imagePosition={imagePosition}
+        glassVariant={glassVariant}
+      />
+    </section>
+  );
+}
+
+// ─── HomePage ─────────────────────────────────────────────────────────────────
+const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => void }> = ({ onNavigate }) => {
+  const { cards, loading: cardsLoading } = useFrontHomeCards(['home-card-01', 'home-card-02', 'home-card-03', 'home-card-04', 'home-card-05']);
+  const { sections: pageSections, metadata: pageMetadata, loading: sectionsLoading } = useHomePageSections();
+
+  return (
+    <PageLayout
+      slug="home"
+      customMetadata={pageMetadata || undefined}
+      loading={sectionsLoading}
+      instantContent
+      showPatterns={true}
+      hideDefaultHeader={false}
+    >
+      {/* SEO (title/meta/og/json-ld): interamente di SEOHead, globale via slug "home".
+          Niente PageSEO qui — doppia scrittura degli stessi tag. */}
+
+        {/* ── HERO IMAGE ──────────────────────────────────────────────────────
+            Il container è SEMPRE renderizzato: riserva lo spazio (aspect-15/5)
+            così l'arrivo tardivo di pageMetadata.imageUrl non causa layout shift.
+            Il bg-surface-2 fa da skeleton; l'immagine entra in dissolvenza. */}
+        <div className="w-full relative aspect-15/5 rounded-[2rem] overflow-hidden border-2 border-border shadow-2xl group bg-surface-2">
+          {pageMetadata?.imageUrl && (
+            <>
+              <MediaImage
+                url={pageMetadata.imageUrl}
+                showCaption={false}
+                fallbackAlt={t.alt.homeHero}
+                imgClassName="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                fetchPriority="high"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-30 pointer-events-none" />
+            </>
+          )}
+        </div>
+
+        <AkhaThemedLine theme="akha" />
+
+        {/* ── EXPLORE GRID + AUDIO ────────────────────────────────────────── */}
+        <ScrollEntrance delay={0.1}>
+          <div className="flex flex-col [gap:var(--space-fluid-l)]">
+            <section id="home_02" className="flex flex-col [gap:var(--space-fluid-m)]">
+              <SmartHeaderSection
+                sectionId="home_02"
+                prefetchedData={pageSections['home_02']}
+                loading={sectionsLoading}
+                variant="hero2"
+                align="center"
+                gradientFrom="primary"
+                gradientTo="action"
+              />
+
+              {cardsLoading ? (
+                <HomeGridSkeleton />
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-6 [gap:var(--space-fluid-m)]">
+                  {cards.map((card, idx) => {
+                    const isLast = idx === 4;
+                    const colClass = cn(
+                      idx < 3 ? 'md:col-span-2' : 'md:col-span-3',
+                      isLast ? 'col-span-2' : 'col-span-1'
+                    );
+
+                    return (
+                      <div key={card.card_id} className={colClass}>
+                        {/* Single DOM instance for every card — no responsive dual-render.
+                            Cards 0-2: vertical; cards 3-4: horizontal (same on mobile+desktop).
+                            Eliminates T01/T05 pickup-text duplication and D04 duplicate H3. */}
+                        <SmartHomeCard
+                          cardId={card.card_id}
+                          layout={idx < 3 ? 'vertical' : 'horizontal'}
+                          showDivider={true}
+                          onNavigate={onNavigate}
+                          buttonSize="xs"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            {/* Audio Highlight — The Kitchen Vibe */}
+            <div className="w-full max-w-xl mx-auto">
+              <AudioPlayer assetId="01-kitchen-home" />
+            </div>
+          </div>
+        </ScrollEntrance>
+
+        <AkhaThemedLine theme="akha" />
+
+        {/* ── MEET CHERRY ─────────────────────────────────────────────────── */}
+        <ScrollEntrance delay={0.1} viewportMargin="-20px">
+          <section id="home_01" className="grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center">
+            {/* Colonna Immagine (Full-width mobile, rounded lg on desktop) */}
+            <div className="order-1 lg:order-2 w-full relative aspect-square rounded-[2rem] lg:rounded-[3rem] overflow-hidden border-2 border-border shadow-2xl group bg-surface-2">
+              <MediaImage
+                assetId="01-home-cherry"
+                className="relative z-20 w-full h-full"
+                imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                fallbackAlt={t.alt.cherry}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-30 pointer-events-none" />
+            </div>
+
+            {/* Colonna Testo + StatCards + Audio */}
+            <div className="order-2 lg:order-1 flex flex-col [gap:var(--space-fluid-m)]">
+              <SmartHeaderSection
+                sectionId="home_01"
+                prefetchedData={pageSections['home_01']}
+                loading={sectionsLoading}
+                variant="section"
+                align="left"
+                gradientFrom="action"
+                gradientTo="allergy"
+              />
+
+              <AudioPlayer assetId="01-cherry-home" hideTranscript className="w-full" />
+
+              <div className="grid grid-cols-2 [gap:var(--space-fluid-m)]">
+                {(pageSections['home_01']?.cards ?? []).map((card) => (
+                  <StatCard
+                    key={card.title}
+                    color={toStatCardColor(card.variant)}
+                    value={card.title}
+                    description={card.description}
+                    size="md"
+                    shadow={false}
+                  />
+                ))}
+              </div>
+
+            </div>
+          </section>
+        </ScrollEntrance>
+
+        <AkhaThemedLine theme="history" />
+
+        {/* ── SECTION 03 (Akha People) ────────────────────────────────────── */}
+        <ScrollEntrance delay={0.1} viewportMargin="-20px">
+          <HomeGlassSection
+            headerId="home_03"
+            cardId="home_04"
+            buttonVariant="primary"
+            buttonSize="sm"
+            glassVariant="action"
+            imagePosition="left"
+            gradientFrom="quiz-s"
+            gradientTo="primary"
+            onNavigate={onNavigate}
+          />
+        </ScrollEntrance>
+
+        <AkhaThemedLine theme="akha" />
+
+        {/* ── SECTION 04 (AI Quiz) ────────────────────────────────────────── */}
+        <ScrollEntrance delay={0.1} viewportMargin="-20px">
+          <HomeGlassSection
+            headerId="home_05"
+            cardId="home_06"
+            buttonVariant="quiz-p"
+            buttonSize="sm"
+            glassVariant="secondary"
+            imagePosition="right"
+            gradientFrom="quiz-p"
+            gradientTo="allergy"
+            onNavigate={onNavigate}
+          />
+        </ScrollEntrance>
+
+
+        <PageEssentials
+          slug="home"
+        />
+
+        <FaqBottomPage slug="home"
+          onNavigate={onNavigate} buttonSize="sm" />
+
+        <SiblingInfoSection
+          currentSlug="home"
+          onNavigate={onNavigate}
+          sectionId="sibiling_home"
+        />
+
     </PageLayout>
   );
 };

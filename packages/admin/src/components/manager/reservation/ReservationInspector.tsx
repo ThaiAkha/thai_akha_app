@@ -3,6 +3,9 @@ import InputField from '../../form/input/InputField';
 import TextArea from '../../form/input/TextArea';
 import SelectField from '../../form/input/SelectField';
 import { Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { formatDateByLanguage } from '../../../lib/dateFormatter';
+import LeaderHeader from '../../common/LeaderHeader';
 
 interface ReservationInspectorProps {
     selectedBooking: any | null;
@@ -13,41 +16,56 @@ interface ReservationInspectorProps {
 
 
 
-const formatBookingDate = (dateStr: string): string => {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })
-        .replace(/(\d+)\s+(\w+)\s+(\d+)/, '$1 $2, $3');
-};
-
 const ReservationInspector: React.FC<ReservationInspectorProps> = ({
     selectedBooking,
     isEditing,
     editData,
     onEditChange,
 }) => {
+    const { t, i18n } = useTranslation('reservation');
+
+    const formatBookingDate = (dateStr: string): string => {
+        return formatDateByLanguage(dateStr + 'T00:00:00', i18n.language, { day: '2-digit', month: 'long', year: 'numeric' });
+    };
+
     if (!selectedBooking) {
         return (
             <div className="h-full flex flex-col items-center justify-center p-8 text-center">
                 <div className="size-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center mb-4 text-gray-300 shadow-sm border border-gray-100 dark:border-gray-700">
                     <Users className="w-8 h-8" />
                 </div>
-                <h5 className="text-gray-500 font-bold uppercase tracking-widest text-xs">No Selection</h5>
-                <p className="text-gray-400 text-xs mt-2 max-w-[200px]">Select a booking from the list to view and manage details.</p>
+                <h5 className="text-gray-500 font-bold uppercase tracking-widest text-xs">{t('inspector.noSelection')}</h5>
+                <p className="text-gray-400 text-xs mt-2 max-w-[200px]">{t('inspector.noSelHint')}</p>
             </div>
         );
     }
 
     const b = selectedBooking;
+    const leaderName = b.guest_name || b.profiles?.full_name || b.guest_email || t('inspector.guest', { defaultValue: 'Guest' });
+    const leaderEmail = b.guest_email || b.profiles?.email || '';
 
     return (
         <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500 overflow-hidden">
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+                {/* Header leader gruppo — avatar, nome, contatti (componente unificato) */}
+                <LeaderHeader
+                    label={t('inspector.groupLeader', { defaultValue: 'Group leader' })}
+                    leader={{
+                        name: leaderName,
+                        avatarUrl: b.profiles?.avatar_url,
+                        bookingRef: b.booking_ref,
+                        phone: b.phone_number,
+                        email: leaderEmail,
+                        pax: b.pax_count,
+                        luggage: b.has_luggage,
+                    }}
+                />
                 {isEditing ? (
                     <div className="space-y-4">
                         {/* Participants */}
                         <InputField
-                            label="Participants"
+                            label={t('inspector.fieldPax')}
                             type="number"
                             value={editData.pax_count}
                             onChange={e => onEditChange({ ...editData, pax_count: parseInt(e.target.value, 10) || 0 })}
@@ -55,7 +73,7 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
                         {/* Class Date */}
                         <InputField
-                            label="Reservation Day"
+                            label={t('inspector.fieldDate')}
                             type="date"
                             value={editData.booking_date}
                             onChange={e => onEditChange({ ...editData, booking_date: e.target.value })}
@@ -63,17 +81,17 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
                         {/* Class Type */}
                         <SelectField
-                            label="Class"
+                            label={t('inspector.fieldClass')}
                             value={editData.session_id}
                             onChange={e => onEditChange({ ...editData, session_id: e.target.value })}
                         >
-                            <option value="morning_class">Morning</option>
-                            <option value="evening_class">Evening</option>
+                            <option value="morning_class">{t('inspector.morning')}</option>
+                            <option value="evening_class">{t('inspector.evening')}</option>
                         </SelectField>
 
                         {/* Phone */}
                         <InputField
-                            label="Phone Number"
+                            label={t('inspector.fieldPhone')}
                             type="text"
                             value={editData.phone_number || ''}
                             onChange={e => onEditChange({ ...editData, phone_number: e.target.value })}
@@ -81,19 +99,19 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
                         {/* Payment Status */}
                         <SelectField
-                            label="Payment Status"
+                            label={t('inspector.fieldPayment')}
                             value={editData.payment_status || 'pending'}
                             onChange={e => onEditChange({ ...editData, payment_status: e.target.value })}
                         >
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="partial">Partial</option>
-                            <option value="refunded">Refunded</option>
+                            <option value="pending">{t('inspector.payPending')}</option>
+                            <option value="paid">{t('inspector.payPaid')}</option>
+                            <option value="partial">{t('inspector.payPartial')}</option>
+                            <option value="refunded">{t('inspector.payRefunded')}</option>
                         </SelectField>
 
                         {/* Notes */}
                         <TextArea
-                            label="Notes"
+                            label={t('inspector.fieldNotes')}
                             value={editData.customer_note || ''}
                             onChange={val => onEditChange({ ...editData, customer_note: val })}
                             rows={3}
@@ -104,7 +122,7 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
                     <div className="space-y-4">
                         {/* Participants */}
                         <InputField
-                            label="Participants"
+                            label={t('inspector.fieldPax')}
                             type="number"
                             value={b.pax_count || 0}
                             disabled
@@ -112,7 +130,7 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
                         {/* Reservation Day */}
                         <InputField
-                            label="Reservation Day"
+                            label={t('inspector.fieldDate')}
                             type="text"
                             value={b.booking_date ? formatBookingDate(b.booking_date) : ''}
                             disabled
@@ -120,18 +138,18 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
                         {/* Class */}
                         <SelectField
-                            label="Class"
+                            label={t('inspector.fieldClass')}
                             value={b.session_id || ''}
                             onChange={() => { }}
                             disabled
                         >
-                            <option value="morning_class">Morning</option>
-                            <option value="evening_class">Evening</option>
+                            <option value="morning_class">{t('inspector.morning')}</option>
+                            <option value="evening_class">{t('inspector.evening')}</option>
                         </SelectField>
 
                         {/* Phone Number */}
                         <InputField
-                            label="Phone Number"
+                            label={t('inspector.fieldPhone')}
                             type="text"
                             value={b.phone_number || ''}
                             disabled
@@ -139,20 +157,20 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
                         {/* Payment Status */}
                         <SelectField
-                            label="Payment Status"
+                            label={t('inspector.fieldPayment')}
                             value={b.payment_status || 'pending'}
                             onChange={() => { }}
                             disabled
                         >
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="partial">Partial</option>
-                            <option value="refunded">Refunded</option>
+                            <option value="pending">{t('inspector.payPending')}</option>
+                            <option value="paid">{t('inspector.payPaid')}</option>
+                            <option value="partial">{t('inspector.payPartial')}</option>
+                            <option value="refunded">{t('inspector.payRefunded')}</option>
                         </SelectField>
 
                         {/* Notes */}
                         <TextArea
-                            label="Notes"
+                            label={t('inspector.fieldNotes')}
                             value={b.customer_note || ''}
                             disabled
                             rows={2}

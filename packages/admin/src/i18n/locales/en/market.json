@@ -1,0 +1,83 @@
+{
+  "tabs": {
+    "overview": "Overview",
+    "dashboard": "Dashboard",
+    "logistics": "Logistics",
+    "teacher": "Teacher",
+    "allItems": "All Items"
+  },
+  "buttons": {
+    "newPlanToday": "New Plan for Today",
+    "newPlanSelectDate": "New Plan Select Date",
+    "newReportToday": "New Report for Today",
+    "newReportSelectDate": "New Report Select Date",
+    "viewHistory": "View History",
+    "cancel": "Cancel",
+    "editReport": "Edit Report",
+    "newReport": "New Report",
+    "newPlan": "New Plan",
+    "modify": "Modify",
+    "submitReport": "Submit Report",
+    "publishPlan": "Publish Plan",
+    "saveDraft": "Save draft",
+    "confirmReport": "Confirm report",
+    "deleteReport": "Delete report",
+    "refresh": "Refresh",
+    "sendOrder": "Send Order",
+    "finishRun": "FINISH RUN"
+  },
+  "labels": {
+    "workDraft": "Work Draft",
+    "archiveView": "Archive View",
+    "liveEditing": "Live Editing",
+    "totalExpenses": "Total Expenses",
+    "itemsRequired": "Items Required",
+    "itemChecklist": "Item Checklist",
+    "tapToEdit": "Tap to edit",
+    "vendorContact": "Vendor Contact",
+    "liveTotal": "Live Total",
+    "qty": "QTY: {{quantity}}",
+    "inputThb": "Input THB"
+  },
+  "table": {
+    "date": "Date",
+    "status": "Status",
+    "items": "Items",
+    "totalCost": "Total Cost",
+    "reportArchives": "Report Archives"
+  },
+  "modal": {
+    "selectDate": "Select Date"
+  },
+  "placeholders": {
+    "searchIngredients": "Search ingredients..."
+  },
+  "empty": {
+    "noHistory": "No history found for this category.",
+    "noContent": "No content",
+    "noListFound": "No List Found",
+    "noItemsForStall": "No items found for this stall",
+    "noIngredients": "No ingredients match your search."
+  },
+  "messages": {
+    "mustBeLoggedIn": "You must be logged in to save market reports.",
+    "selectAtLeastOne": "Please select at least one item.",
+    "saveSuccess": "Changes saved successfully!",
+    "saveError": "Error saving: {{message}}",
+    "confirmDelete": "Delete this report? This cannot be undone.",
+    "kitchenNotPublished": "The Kitchen Manager hasn't published a shopping list for today yet.",
+    "finishConfirm": "Mark this run as COMPLETED and save all costs?",
+    "unboughtWarning": "Wait! You have {{count}} items left unbought. Finish anyway?",
+    "syncSuccess": "Run synchronized with Kitchen! Good job!",
+    "error": "Error: {{message}}",
+    "emergencyItemName": "Emergency Item Name?",
+    "loading": "Loading...",
+    "selectWorker": "Please select who is doing the shopping."
+  },
+  "shopItem": {
+    "reportedCost": "Reported Cost",
+    "addedToList": "Added to list",
+    "clickToAdd": "Click to add",
+    "tapToAdd": "Tap to add"
+  }
+}

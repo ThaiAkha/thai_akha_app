@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, Icon } from '../ui/index';
-import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface CertificateDish {

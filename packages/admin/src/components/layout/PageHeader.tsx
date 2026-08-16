@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@thaiakha/shared/lib/utils";
+import { Heading } from "../typography";
 
 interface PageHeaderProps {
     title: string;
@@ -22,9 +23,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             )}
         >
             <div className="flex-1 text-center sm:text-left">
-                <h1 className="text-3xl font-black uppercase tracking-tighter text-gray-900 dark:text-white">
+                <Heading level="h2" className="font-black uppercase tracking-tighter">
                     {title}
-                </h1>
+                </Heading>
                 {subtitle && (
                     <p className="mt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hidden sm:block">
                         {subtitle}

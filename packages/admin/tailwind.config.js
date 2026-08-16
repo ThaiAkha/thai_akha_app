@@ -18,8 +18,6 @@ export default {
         "../shared/src/**/*.{js,ts,jsx,tsx}",
     ],
     safelist: [
-        // ========== SIDEBAR BACKGROUND ==========
-        'dark:bg-gray-dark',
         // ========== ADMIN SIDEBAR COLORS (primary = cherry red) ==========
         // Pill active states
         'bg-primary-500/20',

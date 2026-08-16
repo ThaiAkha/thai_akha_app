@@ -1,24 +1,41 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon } from '../Icon';
-import Typography from '../Typography';
-
-/**
- * Badge Component - System 4.8 Cinematic Edition
- * Refactored for high-end B2C experience with light-layering and micro-interactions.
- */
 
 export interface BadgeProps {
   variant?: 'solid' | 'outline' | 'mineral' | 'mineral-accent' | 'brand' | 'allergy' | 'diet';
-  size?: 'xs' | 'sm' | 'md' | 'lg';
-  color?: 'primary' | 'secondary' | 'action';
+  size?: 'xs' | 'sm' | 'md';
+  color?: 'primary' | 'secondary' | 'action' | string;
   children: React.ReactNode;
   className?: string;
   icon?: string;
   pulse?: boolean;
   active?: boolean;
-  onClick?: () => void;
+  style?: React.CSSProperties;
 }
+
+// 🛡️ MAPPE AGGIUNTE SOLO PER LA VARIANTE MINERAL
+const MINERAL_TEXT: Record<string, string> = {
+  'primary': 'text-primary-400',
+  'action': 'text-action-700',
+  'quiz-p': 'text-quiz-p-400',
+  'quiz-s': 'text-quiz-s-400',
+  'btn-p': 'text-btn-p',
+  'btn-s': 'text-btn-s',
+  'secondary': 'text-secondary',
+  'allergy': 'text-allergy',
+};
+
+const MINERAL_BORDER: Record<string, string> = {
+  'primary': 'border-primary-400/80',
+  'action': 'border-action-700/80',
+  'quiz-p': 'border-quiz-p-400/80',
+  'quiz-s': 'border-quiz-s-400/80',
+  'btn-p': 'border-btn-p/80',
+  'btn-s': 'border-btn-s/80',
+  'secondary': 'border-secondary/90',
+  'allergy': 'border-allergy/80',
+};
 
 const Badge: React.FC<BadgeProps> = ({
   variant = 'solid',
@@ -29,102 +46,59 @@ const Badge: React.FC<BadgeProps> = ({
   icon,
   pulse = false,
   active = false,
-  onClick,
+  style,
 }) => {
-
+  // Dimensioni fluid — token clamp da tokens.css :root (NO text-* Tailwind)
   const sizeStyles = {
-    xs: "px-3 pt-3 pb-2.5 text-[8px] gap-2",
-    sm: "px-3 pt-3 pb-2.5 text-[9px] gap-2",
-    md: "px-4 pt-3 pb-2.5 text-[10px] gap-3",
-    lg: "px-6 pt-3 pb-3.5 text-[11px] gap-3",
+    xs: "[font-size:var(--text-fluid-micro)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-2xs)] font-bold uppercase tracking-wider",
+    sm: "[font-size:var(--text-fluid-caption)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-xs)] font-bold uppercase tracking-widest",
+    md: "[font-size:var(--text-fluid-caption)] md:[font-size:var(--text-fluid-accent)] [padding-inline:var(--space-fluid-m)] md:[padding-inline:var(--space-fluid-l)] [padding-block:var(--space-fluid-2xs)] [gap:var(--space-fluid-xs)] md:[gap:var(--space-fluid-s)] font-bold uppercase tracking-widest",
   };
 
-  const colorStyles = {
-    primary: {
-      bg: "bg-gradient-to-br from-primary-700/90 via-primary-500/90 to-primary-700/90",
-      text: "text-white"
-    },
-    secondary: {
-      bg: "bg-gradient-to-br from-secondary-700/90 via-secondary-500/90 to-secondary-700/90",
-      text: "text-black"
-    },
-    action: {
-      bg: "bg-gradient-to-br from-action-700/90 via-action-500/90 to-action-700/90",
-      text: "text-white"
-    }
+  // Mappe colori solidi originali (intatte)
+  const colorStyles: Record<string, { bg: string; text: string }> = {
+    primary: { bg: "bg-gradient-to-br from-primary-700/90 via-primary-500/90 to-primary-700/90", text: "text-white" },
+    secondary: { bg: "bg-gradient-to-br from-secondary-700/90 via-secondary-500/90 to-secondary-700/90", text: "text-white" },
+    action: { bg: "bg-gradient-to-br from-action-700/90 via-action-500/90 to-action-700/90", text: "text-white" }
   };
 
-  const selectedColor = colorStyles[color] || colorStyles.action;
+  const selectedColor = colorStyles[color as string] || colorStyles.action;
 
-  // Base styles con ease-cinematic per transizioni ultra-fluide
+  // Stili base originali (intatti)
   const baseStyles = "inline-flex items-center justify-center gap-3 transition-all duration-700 select-none ease-cinematic";
 
-  const variants = {
-    // Versione Solid: Gradiente, ombra morbida e bordo di luce superiore
+  // Estrazione classi per la variante Mineral
+  const mineralTextClass = MINERAL_TEXT[color as string] || 'text-action';
+  const mineralBorderClass = MINERAL_BORDER[color as string] || 'border-action/40';
+
+  const variants: Record<string, string> = {
     'solid': cn(
-      selectedColor.bg,
-      selectedColor.text,
-      "shadow-brand-glow",
+      selectedColor.bg, selectedColor.text,
       "border-t border-white/40 rounded-full relative overflow-hidden group",
     ),
-    // Versione Brand (Cherry): Look premium con ombre pesanti per risaltare sulla Home
     'brand': cn(
       "bg-gradient-to-br from-primary-700/90 via-primary-500/90 to-primary-700/90 text-white",
-      "shadow-brand-glow",
       "border-t border-white/40 rounded-full relative overflow-hidden group",
     ),
-
-    // Versione Outline: Più sottile e trasparente per non appesantire il design
-    'outline': 'bg-transparent border border-current/30 text-current rounded-full hover:bg-current/5',
-
-    // Versione Mineral (Vetro): Riflessi dinamici e forte sfocatura sfondo per sezioni Hero
+    // ✨ VARIANTE MINERAL CON EFFETTO VETRO RIPRISTINATO
     'mineral': cn(
-      "bg-white/10 backdrop-blur-xl border border-white/20 shadow-glass",
-      "text-white rounded-full transition-all duration-700",
-      "hover:border-white/40 hover:bg-white/20 glass-shine relative overflow-hidden group"
+      "rounded-full border-1",
+      "backdrop-blur-md bg-white/80 dark:bg-black/80", // Forza il vero Glassmorphism bypassando i Token di sistema
+      mineralBorderClass,
+      mineralTextClass
     ),
-
-    // Versione Mineral Accent (Vetro): Per badge informativi con font accent (ALL CAPS spaced)
-    'mineral-accent': cn(
-      "bg-white/30 backdrop-blur-xl border border-action/40 shadow-glass",
-      "text-white dark:text-white rounded-full transition-all duration-700",
-      "hover:border-action/60 hover:bg-action/30 glass-shine relative overflow-hidden group",
-      "font-black uppercase tracking-wider"
-    ),
-
-    // Versione Allergy: Feedback visivo di sicurezza migliorato con effetto Glow quando attivo
-    'allergy': cn(
-      "rounded-xl border transition-all duration-500",
-      "items-center active:brightness-[2] active:scale-95",
-      active
-        ? "bg-allergy/10 dark:bg-allergy/30 border-allergy text-allergy dark:text-white shadow-glow-allergy glass-shine backdrop-blur-md"
-        : "bg-allergy/10 dark:bg-allergy/15 border-allergy/40 text-allergy/90 dark:text-white/80 hover:text-allergy hover:dark:text-white hover:border-allergy hover:dark:bg-allergy/30"
-    ),
-
-    // Versione Diet: Identica ad Allergy ma con token action (verde)
-    'diet': cn(
-      "rounded-xl border transition-all duration-500",
-      "items-center active:brightness-[2] active:scale-95",
-      active
-        ? "bg-action/10 dark:bg-action/30 border-action text-action dark:text-white shadow-[0_0_15px_-3px_rgba(152,201,60,0.5)] glass-shine backdrop-blur-md"
-        : "bg-action/10 dark:bg-action/15 border-action/40 text-action/90 dark:text-white/80 hover:text-action hover:dark:text-white hover:border-action hover:dark:bg-action/20"
-    )
   };
 
-  const Component = onClick ? 'button' : 'span';
-
   return (
-    <Component
-      onClick={onClick}
+    <span
       className={cn(
         baseStyles,
-        variants[variant],
+        variants[variant] || variants.solid,
         sizeStyles[size],
-        onClick && "cursor-pointer active:scale-95 hover:-translate-y-0.5",
         className
       )}
+      style={style}
     >
-      {/* Icona Standard con scale al hover */}
       {icon && !pulse && (
         <Icon
           name={icon}
@@ -132,23 +106,10 @@ const Badge: React.FC<BadgeProps> = ({
           className="transition-transform duration-500 group-hover:scale-110"
         />
       )}
-
-      {/* Cinematic Pulse: Bagliore soffuso (halo) invece di un semplice ping */}
-      {pulse && (
-        <span className="relative flex items-center justify-center mr-1.5">
-          <span className="animate-ping absolute inline-flex h-4 w-4 rounded-full bg-current opacity-20"></span>
-          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current shadow-[0_0_10px_currentColor]"></span>
-        </span>
-      )}
-
-      <Typography
-        variant={variant === 'mineral-accent' ? 'accent' : 'badge'}
-        color="inherit"
-        className={variant === 'mineral-accent' ? "leading-none whitespace-nowrap" : "leading-none pt-0.5 whitespace-nowrap"}
-      >
+      <span className="inline-block mr-[-0.2em]">
         {children}
-      </Typography>
-    </Component>
+      </span>
+    </span>
   );
 };
 

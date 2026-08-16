@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Typography, Toggle, Badge, Icon } from '../ui/index';
-import { Sun, Moon } from 'lucide-react';
-import { getIcon } from '@thaiakha/shared/lib/icons';
+import { Typography, Icon } from '../ui/index';
+import { Sun, Moon, ChevronDown } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
-import { GraduationCap } from 'lucide-react';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { useLanguage } from '../../context/LanguageContext';
 
 type Page = string;
 
@@ -27,6 +27,65 @@ interface MenuItem {
   menu_order: number;
 }
 
+interface FooterItem {
+  page_slug: string;
+  menu_label: string;
+  header_icon: string;
+  menu_order: number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FOOTER GROUP — collapsible accordion for mobile drawer footer
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface FooterGroupProps {
+  icon: string;
+  label: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+  bgClass?: string;
+}
+
+function FooterGroup({ icon, label, isExpanded, onToggle, children, bgClass = '' }: FooterGroupProps) {
+  return (
+    <div className={cn('rounded-xl overflow-hidden transition-all duration-300', bgClass)}>
+      <button
+        onClick={onToggle}
+        className="w-full h-12 flex items-center px-5 rounded-xl transition-all duration-200 cursor-pointer hover:brightness-125"
+      >
+        <Icon
+          name={icon}
+          className={cn('text-2xl mr-5 transition-colors duration-75', isExpanded ? 'text-sub' : 'text-muted')}
+        />
+        <span className={cn(
+          'font-display font-bold text-xs uppercase tracking-[0.14em]',
+          isExpanded ? 'text-sub' : 'text-muted'
+        )}>
+          {label}
+        </span>
+        <ChevronDown className={cn(
+          'ml-auto w-4 h-4 text-muted transition-transform duration-200',
+          isExpanded ? 'rotate-180' : 'rotate-0'
+        )} />
+      </button>
+
+      <div className={cn(
+        'overflow-hidden transition-all duration-300',
+        isExpanded ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+      )}>
+        <div className="py-1.5 space-y-1.5 px-1">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIDEBAR MOBILE
+// ─────────────────────────────────────────────────────────────────────────────
+
 const SidebarMobile: React.FC<SidebarMobileProps> = ({
   currentPage,
   onNavigate,
@@ -38,49 +97,68 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [stage, setStage] = useState<'closed' | 'opening' | 'open' | 'exiting'>('closed');
 
-  // Lista Menu Dinamica
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const { lang } = useLanguage();
+  const [footerItems, setFooterItems] = useState<FooterItem[]>([]);
   const [visibleIndices, setVisibleIndices] = useState<number[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [, setSelectedId] = useState<string | null>(null);
+  const [footerExpanded, setFooterExpanded] = useState<'info' | 'settings' | null>(null);
 
   const navRef = useRef<HTMLElement>(null);
 
-  // 1. FETCH DATI DAL DATABASE
+  // ── FETCH ──
   useEffect(() => {
-    const loadMenu = async () => {
-      try {
-        const items = await contentService.getMenuItems();
-        setMenuItems(items || []);
-      } catch (err) { console.error("Mobile Menu Error:", err); }
-    };
-    loadMenu();
-  }, []);
+    let cancelled = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 3;
 
-  // 2. FILTRO LOGICO (Allineato con Desktop)
+    const loadMenu = async () => {
+      if (cancelled) return;
+      try {
+        const [items, footer] = await Promise.all([
+          contentService.getMenuItems('site_metadata', lang),
+          contentService.getFooterItems(lang),
+        ]);
+        if (cancelled) return;
+
+        // Keep a good menu and retry on empty (transient session/RLS race at mount)
+        // so the mobile menu fills in without needing a manual refresh.
+        if (items && items.length > 0) {
+          setMenuItems(items as MenuItem[]);
+        } else if (attempts < MAX_ATTEMPTS) {
+          attempts += 1;
+          setTimeout(loadMenu, 400 * attempts);
+          return;
+        }
+        if (footer && footer.length > 0) setFooterItems(footer as MenuItem[]);
+      } catch (err) {
+        console.error('Mobile Menu Error:', err);
+        if (!cancelled && attempts < MAX_ATTEMPTS) {
+          attempts += 1;
+          setTimeout(loadMenu, 400 * attempts);
+        }
+      }
+    };
+
+    loadMenu();
+    return () => { cancelled = true; };
+  // `lang` nelle deps: al cambio lingua il menu si ricarica dal sidecar.
+  }, [lang]);
+
+  // ── FILTER ──
   const filteredNavItems = useMemo(() => {
     return menuItems.filter(item => {
       const level = item.access_level || 'public';
-
-      // Nascondi pagine Auth tecniche
       if (['auth', 'login'].includes(item.page_slug)) return false;
-
-      // 🚫 EXCLUDE: Student Hub (will be shown in avatar menu)
       if (item.page_slug?.toLowerCase().includes('student-hub') || item.page_slug?.toLowerCase() === 'hub') return false;
-
-      // 🛡️ ADMIN: Nascondi voci operative dalla sidebar pubblica
       if (level === 'admin') return false;
-
-      // 🏢 AGENCY: Mostra SOLO se l'utente è un'agenzia
       if (level === 'agency') return userProfile?.role === 'agency';
-
-      // 👤 USER: Mostra solo se loggato
       if (level === 'user') return !!userProfile;
-
       return true;
     });
   }, [menuItems, userProfile]);
 
-  // 3. ANIMAZIONE A CASCATA
+  // ── CASCADE ANIMATION ──
   useEffect(() => {
     if (isOpen && stage === 'opening' && filteredNavItems.length > 0) {
       const timers = filteredNavItems.map((_, i) =>
@@ -100,6 +178,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         setIsOpen(false);
         setStage('closed');
         setVisibleIndices([]);
+        setFooterExpanded(null);
       }, 300);
     } else {
       setIsOpen(true);
@@ -116,6 +195,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       setStage('closed');
       setVisibleIndices([]);
       setSelectedId(null);
+      setFooterExpanded(null);
     }, 400);
   };
 
@@ -125,11 +205,14 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       {/* HAMBURGER BUTTON */}
       <button
         onClick={handleToggle}
+        aria-label="Open navigation menu"
+        aria-expanded={isOpen}
+        aria-controls="mobile-nav-drawer"
         className={cn(
-          "fixed top-6 left-6 z-[1] size-12 rounded-2xl flex items-center justify-center transition-all duration-500 ease-cinematic",
-          "shadow-2xl backdrop-blur-xl border",
-          "bg-surface/90 border-white/10 text-gray-900 dark:text-gray-100",
-          isOpen ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100"
+          'fixed bottom-6 left-6 z-[1] size-12 rounded-2xl flex items-center justify-center transition-all duration-500 ease-cinematic',
+          'shadow-2xl backdrop-blur-xl border',
+          'bg-surface/90 border-white/10 text-title',
+          isOpen ? 'opacity-0 scale-75 pointer-events-none' : 'opacity-100 scale-100'
         )}
       >
         <Icon name="Menu" className="text-2xl" />
@@ -138,8 +221,8 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       {/* BACKDROP */}
       <div
         className={cn(
-          "fixed inset-0 z-[2] transition-all duration-500 bg-black/60 backdrop-blur-md",
-          (stage === 'open' || stage === 'opening') ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          'fixed inset-0 z-[2] transition-all duration-500 bg-black/60 backdrop-blur-md',
+          (stage === 'open' || stage === 'opening') ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={handleToggle}
       />
@@ -147,117 +230,198 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       {/* DRAWER PANEL */}
       <nav
         ref={navRef}
+        id="mobile-nav-drawer"
+        aria-label="Mobile navigation"
         className={cn(
-          "fixed inset-y-0 left-0 z-[3] w-[min(320px,85vw)] flex flex-col",
-          "transition-transform duration-500 ease-cinematic border-r",
-          "bg-white dark:bg-gray-dark backdrop-blur-sm border-gray-100 dark:border-gray-900 shadow-[20px_0_60px_rgba(0,0,0,0.5)]",
-          (stage === 'opening' || stage === 'open') ? "translate-x-0" : "-translate-x-full"
+          'fixed inset-y-0 left-0 z-[3] w-[min(320px,85vw)] pointer-coarse:md:w-[min(288px,80vw)] flex flex-col',
+          'transition-transform duration-500 ease-cinematic border-r',
+          'bg-surface border-border shadow-[20px_0_60px_rgba(0,0,0,0.5)]',
+          (stage === 'opening' || stage === 'open') ? 'translate-x-0' : '-translate-x-full'
         )}
       >
 
         {/* HEADER */}
-        <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-gray-100 dark:border-gray-900">
+        <div className="h-28 flex items-start justify-between px-6 pt-6 border-b border-border">
           <button
             onClick={handleToggle}
-            className="size-12 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 hover:border-primary-500 dark:hover:border-primary-400 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
+            aria-label="Close navigation menu"
+            className="size-12 rounded-2xl bg-surface border border-border flex items-center justify-center text-sub hover:bg-border hover:border-primary-500 transition-all active:scale-95 shadow-lg backdrop-blur-xl"
           >
             <Icon name="X" className="text-2xl" />
           </button>
           <div className="text-right ml-2 mt-1">
-            <Typography variant="h3" className="text-base font-black italic uppercase tracking-tighter text-gray-700 dark:text-gray-300 leading-none">
-              Thai <span className="text-primary-500 dark:text-primary-400">Akha</span>
+            {/* as="p": logo branding inside nav drawer — not a page heading.
+                Prevents H3 from appearing before H1 in DOM order (D04). */}
+            <Typography variant="h3" as="p" className="text-base font-black italic uppercase tracking-tighter text-sub leading-none">
+              Thai <span className="text-primary-500">Akha</span>
             </Typography>
-            <Typography variant="caption" className="text-gray-500 dark:text-gray-400 font-bold tracking-[0.3em] text-xs mt-1 block">
+            <Typography variant="caption" className="text-muted font-bold tracking-[0.3em] text-xs mt-1 block">
               COOKING SCHOOL
             </Typography>
           </div>
         </div>
 
-        {/* LISTA DINAMICA */}
-        <div className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar py-6">
+        {/* NAV LIST */}
+        <div
+          className={cn(
+            'flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar py-6',
+            'transition-all duration-500',
+            footerExpanded !== null
+              ? 'blur-sm opacity-40 cursor-pointer [&_a]:pointer-events-none [&_button]:pointer-events-none select-none'
+              : ''
+          )}
+          onClick={footerExpanded !== null ? () => setFooterExpanded(null) : undefined}
+        >
           {filteredNavItems.length === 0 ? (
-            // Loading Skeleton
             <div className="space-y-4 px-2 opacity-50">
-              {[4, 5, 6, 7].map(i => <div key={i} className="h-14 rounded-2xl bg-gray-100 dark:bg-white/5 animate-pulse" />)}
+              {[4, 5, 6, 7].map(i => <div key={i} className="h-14 rounded-2xl bg-border animate-pulse" />)}
             </div>
           ) : (
             filteredNavItems.map((item, index) => {
               const isVisible = visibleIndices.includes(index);
               const isActive = currentPage === item.page_slug;
               return (
-                <button
+                <a
                   key={item.page_slug}
-                  onClick={() => handleItemClick(item.page_slug)}
+                  href={item.page_slug === 'home' ? '/' : `/${item.page_slug}`}
+                  onClick={(e) => {
+                    if (e.ctrlKey || e.metaKey || e.button !== 0) return;
+                    e.preventDefault();
+                    handleItemClick(item.page_slug);
+                  }}
                   className={cn(
-                    "relative w-full h-14 rounded-2xl flex items-center px-5 transition-all duration-500 overflow-hidden group",
-                    // Waterfall Animation
-                    isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
-                    // Active State
+                    'relative w-full h-14 pointer-coarse:md:h-12 rounded-2xl flex items-center px-5 transition-colors duration-75 overflow-hidden group outline-none',
+                    isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8',
                     isActive
-                      ? "bg-primary-50 dark:bg-primary-500/[0.12] text-primary-500 dark:text-primary-400 shadow-[inset_4px_0_0_0_var(--color-primary-500)]"
-                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300"
+                      ? 'bg-action-500/20 text-action-700 shadow-[inset_4px_0_0_0_var(--color-action-500)]'
+                      : 'text-muted hover:bg-surface hover:text-sub'
                   )}
-                  style={{ transitionDelay: stage === 'opening' ? '0ms' : '0ms' }}
                 >
                   <Icon
                     name={item.header_icon || 'Circle'}
-                    className={cn("text-2xl mr-5 transition-colors", isActive ? "text-primary-500 dark:text-primary-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300")}
+                    className={cn('text-2xl pointer-coarse:md:text-xl mr-5 transition-colors', isActive ? 'text-action-700' : 'text-muted group-hover:text-sub')}
                   />
-                  <Typography variant="h6" className={cn("font-bold tracking-tight text-base", isActive ? "text-primary-500 dark:text-primary-400" : "text-current")}>
+                  <Typography variant="h6" as="span" className={cn('font-bold tracking-tight text-base pointer-coarse:md:text-sm', isActive ? 'text-action-700' : 'text-current')}>
                     {item.menu_label}
                   </Typography>
-                  {/* Freccia Hover */}
                   <Icon
                     name="chevron_right"
                     className="absolute right-4 opacity-0 -translate-x-4 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-300 text-sm"
                   />
-                </button>
+                </a>
               );
             })
           )}
         </div>
 
-        {/* FOOTER */}
-        <div className="p-6 border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-white/5 space-y-4">
+        {/* FOOTER — two collapsible groups */}
+        <div className="px-4 pb-6 pt-2 border-t border-border bg-surface/50 space-y-1">
 
-          {/* Theme Toggle */}
-          <div className="flex h-16 items-center justify-between px-5 rounded-2xl border border-white/5 bg-white/5">
-            <div className="flex items-center gap-3">
-              {isDarkMode
-                ? <Sun className="text-xl text-quiz" />
-                : <Moon className="text-xl text-slate-400" />
-              }
-              <span className="font-black uppercase tracking-widest text-[10px] text-white/80">
-                {isDarkMode ? 'Dark' : 'Light'}
-              </span>
-            </div>
+          {/* INFORMATION GROUP */}
+          {footerItems.length > 0 && (
+            <FooterGroup
+              icon="Info"
+              label="Information"
+              isExpanded={footerExpanded === 'info'}
+              onToggle={() => setFooterExpanded(prev => prev === 'info' ? null : 'info')}
+              bgClass="bg-surface-2"
+            >
+              {footerItems.map(item => (
+                <a
+                  key={item.page_slug}
+                  href={item.page_slug === 'home' ? '/' : `/${item.page_slug}`}
+                  onClick={(e) => {
+                    if (e.ctrlKey || e.metaKey || e.button !== 0) return; // nuova scheda / long-press nativo
+                    e.preventDefault();
+                    handleItemClick(item.page_slug);
+                  }}
+                  className={cn(
+                    'group w-full h-12 flex items-center px-5 rounded-2xl outline-none',
+                    'bg-surface-2 border border-border',
+                    'transition-[background-color,border-color,box-shadow] duration-75',
+                    'hover:bg-action-500/[0.12] hover:border-action-500/25',
+                    'hover:shadow-[inset_0_1px_0_rgba(152,201,60,0.25),0_4px_14px_rgba(152,201,60,0.08)]',
+                  )}
+                >
+                  <Icon name={item.header_icon || 'Circle'} className="text-xl mr-5 text-muted group-hover:text-action-600 transition-colors duration-75" />
+                  <Typography variant="h6" as="span" className="font-bold text-sm text-sub group-hover:text-action-700 transition-colors duration-75">{item.menu_label}</Typography>
+                </a>
+              ))}
+            </FooterGroup>
+          )}
+
+          {/* SETTINGS GROUP */}
+          <FooterGroup
+            icon="Settings"
+            label="Settings"
+            isExpanded={footerExpanded === 'settings'}
+            onToggle={() => setFooterExpanded(prev => prev === 'settings' ? null : 'settings')}
+            bgClass="bg-surface-2"
+          >
+            {/* Language — righe piene, non un dropdown: dentro un pannello che
+                già scorre, un secondo scroll annidato è la cosa più scomoda da
+                usare col pollice. A flag i18n spento non renderizza nulla, quindi
+                oggi il pannello resta identico a prima (prima qui c'era un
+                pulsante "Languages" senza alcun onClick). */}
+            <LanguageSwitcher />
+
+            {/* Theme Toggle */}
             <div
               onClick={onToggleTheme}
               className={cn(
-                'relative inline-flex h-6 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                isDarkMode ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-700'
+                'group flex items-center h-12 px-5 rounded-2xl cursor-pointer',
+                'bg-surface-2 border border-border',
+                'transition-[background-color,border-color,box-shadow] duration-75',
+                'hover:bg-action-500/[0.12] hover:border-action-500/25',
+                'hover:shadow-[inset_0_1px_0_rgba(152,201,60,0.25),0_4px_14px_rgba(152,201,60,0.08)]',
               )}
             >
-              <span className={cn(
-                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
-                isDarkMode ? 'translate-x-4' : 'translate-x-0'
-              )} />
+              {isDarkMode
+                ? <Sun className="w-5 h-5 mr-5 text-muted group-hover:text-action-600 shrink-0 transition-colors duration-75" />
+                : <Moon className="w-5 h-5 mr-5 text-muted group-hover:text-action-600 shrink-0 transition-colors duration-75" />
+              }
+              <Typography variant="h6" as="span" className="font-bold text-sm text-sub group-hover:text-action-700 transition-colors duration-75">
+                {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+              </Typography>
+              <div className={cn(
+                'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ml-auto',
+                isDarkMode ? 'bg-action-600' : 'bg-gray-400'
+              )}>
+                <span className={cn(
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
+                  isDarkMode ? 'translate-x-4' : 'translate-x-0'
+                )} />
+              </div>
             </div>
-          </div>
 
-          {/* Auth Action (Login/Logout) */}
-          <button
-            onClick={userProfile ? onLogout : () => handleItemClick('auth')}
-            className={cn(
-              "w-full flex items-center justify-center gap-2 py-3 rounded-2xl transition-colors text-xs font-black uppercase tracking-widest",
-              userProfile
-                ? "text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
-                : "bg-primary-500 text-white shadow-lg hover:brightness-110"
-            )}
-          >
-            <Icon name={userProfile ? 'LogOut' : 'LogIn'} className="text-sm" />
-            {userProfile ? 'Sign Out' : 'Log In'}
-          </button>
+            {/* Login / Logout */}
+            <button
+              onClick={userProfile ? onLogout : () => handleItemClick('auth')}
+              className={cn(
+                'group w-full h-12 flex items-center px-5 rounded-2xl',
+                'bg-surface-2 border border-border',
+                'transition-[background-color,border-color,box-shadow] duration-75',
+                userProfile
+                  ? 'hover:bg-sys-error/10 hover:border-sys-error/25 hover:shadow-[inset_0_1px_0_rgba(239,68,68,0.2)]'
+                  : 'hover:bg-action-500/[0.12] hover:border-action-500/25 hover:shadow-[inset_0_1px_0_rgba(152,201,60,0.25),0_4px_14px_rgba(152,201,60,0.08)]',
+              )}
+            >
+              <Icon
+                name={userProfile ? 'LogOut' : 'LogIn'}
+                className={cn(
+                  'text-xl mr-5 text-muted transition-colors duration-75',
+                  userProfile ? 'group-hover:text-sys-error' : 'group-hover:text-action-600'
+                )}
+              />
+              <Typography variant="h6" as="span" className={cn(
+                'font-bold text-sm text-sub transition-colors duration-75',
+                userProfile ? 'group-hover:text-sys-error' : 'group-hover:text-action-700'
+              )}>
+                {userProfile ? 'Sign Out' : 'Log In'}
+              </Typography>
+            </button>
+          </FooterGroup>
+
         </div>
 
       </nav>

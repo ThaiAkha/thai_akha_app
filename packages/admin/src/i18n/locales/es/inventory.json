@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "title": "Inventario | Admin",
+    "description": "Gestionar catálogo de productos, niveles de stock y precios."
+  },
+  "sidebar": {
+    "title": "Categorías",
+    "allItems": "Todos los artículos",
+    "status": "Inventario en vivo"
+  },
+  "content": {
+    "searchPlaceholder": "Buscar productos o SKU...",
+    "noProducts": "No se encontraron productos",
+    "colSku": "SKU",
+    "colName": "Nombre del producto",
+    "colCategory": "Categoría",
+    "colStock": "Stock",
+    "colPrice": "Precio",
+    "lowStock": "STOCK BAJO: {{count}}",
+    "inactive": "INACTIVO"
+  },
+  "inspector": {
+    "noImage": "Sin imagen",
+    "updateImageUrl": "Actualizar URL de imagen",
+    "fieldName": "Nombre del producto",
+    "placeholderName": "Ingresa el nombre del producto...",
+    "fieldSku": "SKU",
+    "fieldCategory": "Categoría",
+    "selectCategory": "Seleccionar categoría",
+    "fieldStock": "Cantidad en stock",
+    "fieldPrice": "Precio (THB)",
+    "fieldDescription": "Descripción interna",
+    "descPlaceholder": "Notas/descripción interna...",
+    "statusLabel": "Estado",
+    "active": "ACTIVO",
+    "inactive": "INACTIVO",
+    "visibilityLabel": "Visibilidad",
+    "visOnline": "EN LÍNEA",
+    "visHidden": "OCULTO",
+    "deleteProduct": "ELIMINAR"
+  },
+  "actions": {
+    "new": "Nuevo",
+    "exportFormats": "Formatos de exportación",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "Formato de hoja de cálculo estándar",
+    "exportJson": "Formato JSON",
+    "exportJsonDesc": "Estructura de datos sin procesar",
+    "copyClipboard": "Copiar al portapapeles",
+    "copyClipboardDesc": "Compartir rápidamente como texto",
+    "edit": "EDITAR",
+    "save": "GUARDAR",
+    "saving": "GUARDANDO...",
+    "tooltipEdit": "Editar este registro",
+    "tooltipSave": "Guardar cambios"
+  },
+  "alerts": {
+    "nameSkuRequired": "Por favor ingresa al menos el nombre y el SKU",
+    "savedSuccess": "Producto guardado exitosamente",
+    "saveFailed": "Error al guardar: {{message}}",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este producto?",
+    "copiedCount": "{{count}} artículos copiados al portapapeles"
+  }
+}

@@ -2,21 +2,12 @@ import React from 'react';
 import { User, Search, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { UserProfile } from '@thaiakha/shared/types';
 import Card from '../../ui/Card';
 import { UserMode, NewUser } from '../../../hooks/useAdminBooking';
 import BookingNewUserForm from './BookingNewUserForm';
 import BookingUserSearchForm from './BookingUserSearchForm';
 import BookingLogisticsForm from './BookingLogisticsForm';
-
-interface UserProfile {
-    id: string;
-    full_name: string;
-    email: string;
-    role: string;
-    agency_company_name?: string;
-    agency_phone?: string;
-    phone_number?: string;
-}
 
 interface PickupZone {
     id: string;

@@ -44,12 +44,12 @@ const DbContent: React.FC<DbContentProps> = ({
                 title={String(item[titleField] ?? '—')}
                 subtitle={subtitleField ? String(item[subtitleField] ?? '') : undefined}
                 badges={badgeField && item[badgeField] != null ? (
-                    <Badge color="light" size="sm" className="text-[9px] font-bold tracking-widest uppercase">
+                    <Badge color="light" size="sm" className="text-xs font-bold tracking-widest uppercase">
                         {String(item[badgeField])}
                     </Badge>
                 ) : undefined}
                 footerLeft={
-                    <p className="text-[10px] font-mono font-bold text-gray-300 uppercase tracking-tighter">
+                    <p className="text-xs font-mono font-bold text-gray-300 uppercase tracking-tighter">
                         VAL: {String(item[columns[2]] || '—').substring(0, 10)}
                     </p>
                 }
@@ -77,7 +77,7 @@ const DbContent: React.FC<DbContentProps> = ({
                                 />
                             </TableCell>
                             {columns.map(col => (
-                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-[10px]">
+                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">
                                     {col}
                                 </TableCell>
                             ))}

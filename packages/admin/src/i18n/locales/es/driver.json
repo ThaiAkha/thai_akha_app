@@ -1,0 +1,93 @@
+{
+  "statusLabels": {
+    "waiting": "EN ESPERA",
+    "enRoute": "EN CAMINO",
+    "atLobby": "EN LOBBY",
+    "onBoard": "A BORDO",
+    "completed": "COMPLETADO"
+  },
+  "actions": {
+    "startPickup": "INICIAR",
+    "imHere": "ESTOY AQUÍ",
+    "pickupPax": "RECOGER PAX",
+    "dropComplete": "ENTREGA OK",
+    "done": "LISTO",
+    "confirmAction": "¿CONFIRMAR?",
+    "clickAgainToConfirm": "CLICK OTRA VEZ"
+  },
+  "phase": {
+    "pickup": "Recogida",
+    "dropoff": "Entrega",
+    "startPickupRoute": "Iniciar recogida",
+    "startDropoffRoute": "Iniciar entrega"
+  },
+  "payout": {
+    "allRidesCompleted": "¡Todos los viajes completados!",
+    "dailyEarnings": "Ganancias del día",
+    "returnToHome": "Volver al inicio"
+  },
+  "stopCard": {
+    "pax": "Pax",
+    "noNotes": "Sin notas",
+    "destination": "Destino"
+  },
+  "payoutDashboard": {
+    "loading": "Cargando pagos...",
+    "errorPrefix": "Error:",
+    "paymentReceived": "Pago recibido: {{amount}} Baht ({{count}} servicios).",
+    "ok": "OK",
+    "emptyTitle": "Sin servicios este mes",
+    "emptyMessage": "Elige otro mes o declara un servicio.",
+    "weekLabel": "Semana",
+    "pendingStatus": "Por pagar · Pendiente",
+    "paidStatus": "Pagado",
+    "weekTotal": "Total semana"
+  },
+  "payoutForm": {
+    "successTitle": "Servicio registrado",
+    "deletedTitle": "Servicio eliminado",
+    "deletedMessage": "El servicio ha sido eliminado.",
+    "newSubmission": "Nuevo envío",
+    "editTitle": "Editar servicio",
+    "declareTitle": "Declarar servicio",
+    "formSubtitle": "Ingresa los detalles del servicio para generar el pago.",
+    "paidBannerTitle": "Ya pagado - solo lectura",
+    "paidBannerMessage": "Este servicio ha sido pagado y no puede editarse.",
+    "pendingBannerTitle": "Ya enviado para este día y clase",
+    "pendingBannerMessage": "Guardar sobreescribirá el servicio existente (se enviará un nuevo correo).",
+    "dateLabel": "Fecha",
+    "todayLabel": "Hoy",
+    "classTypeLabel": "Tipo de clase",
+    "morningClass": "Clase de mañana",
+    "eveningClass": "Clase de tarde",
+    "hotelsLabel": "N.° de hoteles (paradas)",
+    "stops12": "1-2 hoteles",
+    "stops34": "3-4 hoteles",
+    "stops56": "5-6 hoteles",
+    "stops7plus": "7+ hoteles",
+    "payoutPriceLabel": "Precio del pago",
+    "baht": "Baht",
+    "paxLabel": "Total de pasajeros (personas en el vehículo)",
+    "person": "persona",
+    "people": "personas",
+    "emailSent": "Correo de confirmación enviado.",
+    "emailFallback": "Guardado (correo no disponible).",
+    "submitting": "Enviando...",
+    "saveEdit": "Guardar cambios",
+    "submit": "Enviar",
+    "deleting": "Eliminando...",
+    "deleteService": "Eliminar servicio",
+    "errorSubmit": "Error al enviar. Inténtalo de nuevo.",
+    "errorDelete": "Error al eliminar el servicio.",
+    "summaryDate": "Fecha",
+    "summaryClass": "Clase",
+    "summaryHotels": "N.° de hoteles",
+    "summaryPrice": "Precio"
+  },
+  "home": {
+    "tabDeclare": "Declarar servicio",
+    "tabDashboard": "Panel",
+    "morningSession": "Mañana",
+    "eveningSession": "Tarde"
+  }
+}

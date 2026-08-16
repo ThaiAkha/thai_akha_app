@@ -46,7 +46,7 @@ const AdminHotels: React.FC = () => {
                         onViewModeChange={ui.setViewMode}
                         searchValue={ui.searchQuery}
                         onSearchChange={ui.setSearchQuery}
-                        searchPlaceholder={ui.activeTab === 'meeting_points' ? "Search meeting points..." : "Search hotels..."}
+                        searchPlaceholder={ui.activeTab === 'meeting_points' ? t('sidebar.searchMeetingPoints') : t('sidebar.searchHotels')}
                         onRefresh={data.fetchData}
                         isRefreshing={data.loading}
                         primaryAction={
@@ -56,7 +56,7 @@ const AdminHotels: React.FC = () => {
                                     className={PRIMARY_BTN}
                                 >
                                     <Plus className="w-4 h-4" />
-                                    {ui.activeTab === 'meeting_points' ? 'NUOVO PUNTO' : 'NUOVO HOTEL'}
+                                    {ui.activeTab === 'meeting_points' ? t('actions.newMeetingPoint') : t('actions.newHotel')}
                                 </button>
                             </div>
                         }

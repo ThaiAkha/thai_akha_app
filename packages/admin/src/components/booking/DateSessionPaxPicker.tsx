@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Minus, Plus } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import AdminClassPicker from '../common/AdminClassPicker';
@@ -29,8 +30,9 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
     maxPax,
     availability
 }) => {
+    const { t } = useTranslation('booking');
     return (
-        <Card title="Date & Session">
+        <Card title={t('picker.cardTitle')}>
             <Card.Content>
                 <AdminClassPicker
                     date={date}
@@ -42,7 +44,7 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
                 />
                 {/* Pax Counter */}
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <SectionTitle>Pax Count</SectionTitle>
+                    <SectionTitle>{t('picker.paxCount')}</SectionTitle>
                     <div className="flex items-center gap-2">
                         {/* Minus Button */}
                         <button
@@ -78,7 +80,7 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
                         </button>
                     </div>
                     <p className="text-center text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mt-3 mb-0">
-                        {pax} of {maxPax} available
+                        {t('picker.paxAvailable', { pax, max: maxPax })}
                     </p>
                 </div>
             </Card.Content>

@@ -1,164 +1,129 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
-import { PageLayout, HeaderMenu, SmartHeaderSection } from '../components/layout/index';
-import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
-import { Typography, Chip, MediaImage, Alert, AkhaPixelLine, AudioPlayer } from '../components/ui/index';
-import { MenuCard, RecipeView, RecipeData } from '../components/menu/index';
+import React, { useState, useMemo, useRef } from 'react';
+import { t } from '@thaiakha/shared/lib/ui-strings';
+
+import { useRecipesListData } from '../hooks/useRecipesListData';
+import { PageLayout, HeaderMenu, SmartHeaderSection, SiblingInfoSection, PageEssentials } from '../components/layout';
+import { MegaMenu, MegaMenuCard, RecipeCategory } from '../components/recipes';
+import { Typography, Alert, AkhaThemedLine, FaqBottomPage } from '../components/ui';
+import { MenuCard } from '../components/menu/index';
 import { mapToRecipeData } from '../lib/recipeHelpers';
-import { adaptRecipeToDiet } from '../lib/recipeAdapter';
+import { adaptRecipeToDiet, RawKeyIngredient } from '../lib/recipeAdapter';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { RecipeCategoryDB } from '@thaiakha/shared';
 import { UserProfile } from '../services/auth.service';
 import { useDietaryKnowledge } from '../hooks/useDietaryKnowledge';
+import { useUserPassport } from '../hooks/useUserPassport';
 
 
 
 interface RecipesPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate?: (targetPage: string, topic?: string, sectionId?: string) => void;
   userProfile: UserProfile | null;
+  onProfileUpdate?: () => void;
 }
 
-const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile }) => {
-  const [loading, setLoading] = useState(true);
 
-  const [categories, setCategories] = useState<RecipeCategoryDB[]>([]);
-  const [recipes, setRecipes] = useState<any[]>([]);
-  const { profiles: dietProfiles, allergies: allergyKnowledge, loading: knowledgeLoading } = useDietaryKnowledge();
-  const [selectedRecipe, setSelectedRecipe] = useState<RecipeData | null>(null);
+const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onProfileUpdate }) => {
+  const { categories, recipes, spicinessLevels, loading } = useRecipesListData();
+  const { profiles: dietProfiles, getAllergyProfiles, loading: knowledgeLoading } = useDietaryKnowledge();
+  const { passport, updatePassport, hasExplicitPassport } = useUserPassport(userProfile, onProfileUpdate);
 
-  const [activeDiet, setActiveDiet] = useState('');
-  const [activeAllergies, setActiveAllergies] = useState<string[]>([]);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isDietDirty, setIsDietDirty] = useState(false);
   const closeMegaMenuRef = useRef<(() => void) | null>(null);
+  const openMegaMenuRef = useRef<(() => void) | null>(null);
 
 
   const allergyOptions = useMemo(() => {
-    return allergyKnowledge.map(ak =>
-      ak.allergy_key.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-    );
-  }, [allergyKnowledge]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [catsRes, recipesRes] = await Promise.all([
-          supabase.from('recipe_categories').select('*').order('display_order'),
-          supabase.from('recipes').select('*, recipe_key_ingredients(ingredient)'),
-        ]);
-
-        if (catsRes.data) setCategories(catsRes.data);
-        if (recipesRes.data) setRecipes(recipesRes.data);
-      } catch (e) {
-        console.error("Error fetching recipes:", e);
-      } finally {
-        setTimeout(() => setLoading(false), 600);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (userProfile?.dietary_profile) {
-      setActiveDiet(userProfile.dietary_profile);
-      setHasInteracted(true);
-    }
-    if (userProfile?.allergies && userProfile.allergies.length > 0) {
-      setActiveAllergies(userProfile.allergies);
-    }
-  }, [userProfile]);
+    return getAllergyProfiles().map(ak => {
+      // id is now 'allergy_peanuts' (underscore, canonical DB id)
+      const key = ak.id.replace('allergy_', '').replace(/_/g, ' ');
+      return key.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    });
+  }, [dietProfiles]);
 
   const activeProfileData = useMemo(() => {
-    if (!activeDiet) return {
+    if (!passport.dietary_profile) return {
       id: '',
-      name: 'Your Diet Style',
+      name: t.recipes.defaultDietName,
       icon: 'restaurant',
-      description: 'Choose your preference to personalize recipes.',
+      description: t.recipes.defaultDietDesc,
       substitutions: []
     } as any;
 
-    return dietProfiles.find(p => p.id === activeDiet) || {
+    return dietProfiles.find(p => p.id === passport.dietary_profile) || {
       id: 'diet_regular',
-      name: 'Regular Diet',
+      name: t.recipes.regularDietName,
       icon: 'restaurant',
-      description: 'Standard authentic preparation.',
+      description: t.recipes.regularDietDesc,
       substitutions: []
     } as any;
-  }, [activeDiet, dietProfiles]);
+  }, [passport.dietary_profile, dietProfiles]);
 
   const groupedDiets = useMemo(() => ({
     lifestyle: dietProfiles.filter(p => p.type !== 'religious'),
     culture: dietProfiles.filter(p => p.type === 'religious')
   }), [dietProfiles]);
 
-  const handleConfirm = (diet: string, allergies: string[]) => {
-    setActiveDiet(diet);
-    setActiveAllergies(allergies);
-    setHasInteracted(true);
+  const handleConfirm = async (diet: string, allergies: string[], spiciness?: string | number) => {
     closeMegaMenuRef.current?.();
+
+    await updatePassport({
+      dietary_profile: diet,
+      allergies,
+      preferred_spiciness_id: typeof spiciness === 'string' ? parseInt(spiciness) : spiciness
+    });
   };
 
   const handleSelectRecipe = (rawRecipe: any) => {
-    setSelectedRecipe(mapToRecipeData(rawRecipe));
-  };
-
-  const handleAskCherryDish = (dish: RecipeData) => {
-    const topic = `Tell me about ${dish.name} for a ${activeDiet.replace('diet_', '')} diet considering my allergies: ${activeAllergies.join(', ')} kha`;
-    window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));
+    if (onNavigate) {
+      onNavigate('recipes', undefined, rawRecipe.slug || rawRecipe.id);
+    }
   };
 
   const getGridConfig = (count: number) => {
-    if (count === 2) return { container: "flex flex-wrap justify-center gap-6 lg:gap-12", item: "w-full md:w-[calc(50%-2rem)] lg:w-[calc(33.33%-3rem)]" };
-    if (count === 4) return { container: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-12 max-w-4xl mx-auto", item: "" };
-    return { container: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12", item: "" };
+    if (count === 2) return { container: "flex flex-wrap justify-center [gap:var(--space-fluid-l)]", item: "w-full md:w-[calc(50%-2rem)] lg:w-[calc(33.33%-3rem)]" };
+    if (count === 3) return { container: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 [gap:var(--space-fluid-l)]", item: "" };
+    if (count === 4) return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 [gap:var(--space-fluid-l)] max-w-4xl mx-auto", item: "" };
+    return { container: "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-l)]", item: "" };
   };
 
 
 
   const dietContent = (
     <MegaMenuCard
-      initialDiet={activeDiet}
-      initialAllergies={activeAllergies}
+      initialDiet={passport.dietary_profile}
+      initialAllergies={passport.allergies}
+      initialSpiciness={passport.preferred_spiciness_id}
       allergyOptions={allergyOptions}
       groupedDiets={groupedDiets}
+      spicinessOptions={spicinessLevels}
       onConfirm={handleConfirm}
+      onDirtyChange={setIsDietDirty}
+      onClose={() => closeMegaMenuRef.current?.()}
     />
   );
 
-  if (selectedRecipe) {
-    const adaptedRecipe = adaptRecipeToDiet(selectedRecipe, activeDiet, activeAllergies);
-    const adaptedAllRecipes = recipes.map(r => adaptRecipeToDiet(mapToRecipeData(r), activeDiet, activeAllergies));
-    const currentCategory = categories.find(c => c.id === selectedRecipe.category);
+  const hasAlerts = hasExplicitPassport && (!!passport.dietary_profile || passport.allergies.length > 0);
 
-    return (
-      <PageLayout slug="recipes" hideDefaultHeader={true} loading={false}>
-        <RecipeView
-          recipe={adaptedRecipe}
-          allRecipes={adaptedAllRecipes}
-          activeDiet={activeDiet.replace('diet_', '').toUpperCase()}
-          categoryData={{ title: currentCategory?.title || 'Collection', description: currentCategory?.description || '', image: currentCategory?.image }}
-          userAllergies={activeAllergies}
-          onBack={() => setSelectedRecipe(null)}
-          onSelectDish={(dish) => setSelectedRecipe(dish)}
-        />
-      </PageLayout>
-    );
-  }
+  const headerDescription = hasExplicitPassport
+    ? t.recipes.headerDescReady({ diet: activeProfileData.name, allergies: passport.allergies })
+    : undefined;
 
   return (
-    <PageLayout slug="recipes" loading={loading || knowledgeLoading} showPatterns={true} hideDefaultHeader={true} customHeader={<HeaderMenu customSlug="recipes" />}>
+    <PageLayout slug="authentic-thai-akha-recipes" loading={loading || knowledgeLoading} showPatterns={true} hideDefaultHeader={true} customHeader={<HeaderMenu customSlug="authentic-thai-akha-recipes" descriptionOverride={headerDescription} />}>
+      {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
 
       {/* MEGA MENU: PERSONALIZZAZIONE */}
       <MegaMenu
         variant="diet"
-        title={activeProfileData.name}
-        subtitle={hasInteracted ? "Active Profile" : "Personalize"}
+        title={hasExplicitPassport ? activeProfileData.name : t.recipes.selectDietLabel}
+        subtitle={hasExplicitPassport ? t.recipes.activeProfile : t.recipes.personalize}
         icon={activeProfileData.icon}
         activeLabel={activeProfileData.name}
-        activeCount={activeAllergies.length}
+        activeCount={passport.allergies.length}
         customContent={dietContent}
-        highlight={!hasInteracted}
+        highlight={!hasExplicitPassport}
         onRegisterClose={(fn) => { closeMegaMenuRef.current = fn; }}
+        onRegisterOpen={(fn) => { openMegaMenuRef.current = fn; }}
         onDietClick={(isNewOpening: boolean) => {
           if (isNewOpening) {
             setTimeout(() => {
@@ -167,148 +132,161 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile }) => {
             }, 100);
           }
         }}
-        onAllergyClick={(isNewOpening: boolean) => {
-          if (isNewOpening) {
-            setTimeout(() => {
-              const el = document.getElementById('dietary-summary');
-              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-          }
-        }}
+        disableOutsideClick={isDietDirty}
       />
 
       {/* DIETARY & ALLERGY SUMMARY (Anchor always present for MegaMenu scroll) */}
-      <div id="dietary-summary" className="w-full max-w-2xl mx-auto mt-4 px-4 md:px-0 scroll-mt-44">
-        {hasInteracted && (
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-            {/* Card 1: Dietary Note */}
-            {activeDiet && (
+      <div id="dietary-summary" className="w-full max-w-2xl mx-auto [padding-inline:var(--space-fluid-s)] md:[padding-inline:0] scroll-mt-44 font-black">
+        {hasAlerts && (
+          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 flex flex-col [gap:var(--space-fluid-s)]">
+            {/* Diet Alert */}
+            {passport.dietary_profile && (
               <Alert
                 variant="warning"
                 title={activeProfileData.name}
                 icon={activeProfileData.icon}
-                message={activeProfileData.description || `This menu has been adapted to follow ${activeProfileData.name} guidelines.`}
+                message={activeProfileData.description || t.recipes.dietAdapted({ name: activeProfileData.name })}
                 body={activeProfileData.experience}
               />
             )}
 
-            {/* Card 2: Allergy Alert */}
-            {activeAllergies.length > 0 && (
+            {/* Allergy Alert */}
+            {passport.allergies.length > 0 && (
               <Alert
                 variant="error"
-                title="Allergy Alert"
-                subtitle={activeAllergies.join(' / ')}
-                message="The recipes below have been filtered or modified to exclude your selected allergens. Always inform your chef about severe allergies."
+                icon="health_and_safety"
+                title={t.recipes.allergyAlertTitle}
+                subtitle={passport.allergies.join(' / ')}
+                message={t.recipes.allergyAlertBody}
               />
             )}
           </div>
         )}
       </div>
 
-      {/* STUDENT PROMISE -> Dynamic Header 00 */}
-      <div className="mt-10 mb-8">
-        <SmartHeaderSection
-          sectionId="recipe-00"
-          variant="section"
-          align="center"
-          hideTitle={false}
-          hideSubtitle={false}
-          hideDivider={false}
-          hideDescription={false}
-        />
-      </div>
-
-      <AkhaPixelLine />
-
-      {!activeDiet && (
-        <div className="mt-16 min-h-[35vh] flex items-center justify-center">
-          <div className="text-center px-8 select-none pointer-events-none">
-            <Typography
-              variant="display1"
-              className="text-title/[0.2] dark:text-white/[0.2] uppercase leading-tight"
-            >
-              Select your<br />diet style before<br />viewing the content
+      {!hasExplicitPassport && (
+        <div className="[margin-top:var(--space-fluid-xl)] [margin-bottom:var(--space-fluid-xl)] min-h-[35vh] flex items-center justify-center">
+          <div className="text-center flex flex-col items-center [gap:var(--space-fluid-m)]">
+            <Typography variant="display2" className="text-title uppercase leading-tight">
+              {t.recipes.selectPrompt.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                  {line}
+                  {i < t.recipes.selectPrompt.split('\n').length - 1 && <br />}
+                </React.Fragment>
+              ))}
             </Typography>
+            <Typography variant="body" className="text-desc max-w-sm">
+              {t.recipes.defaultDietDesc}
+            </Typography>
+            <button
+              onClick={() => openMegaMenuRef.current?.()}
+              className="[margin-top:var(--space-fluid-xs)] inline-flex items-center [gap:var(--space-fluid-2xs)] [padding-block:var(--space-fluid-xs)] [padding-inline:var(--space-fluid-m)] rounded-full bg-title text-inverse font-semibold transition-opacity hover:opacity-80 active:opacity-70"
+            >
+              <span className="material-symbols-rounded text-[1.1em]">tune</span>
+              {t.recipes.personalize}
+            </button>
           </div>
         </div>
       )}
 
       {/* LISTA RICETTE */}
-      <div className="w-full min-h-[50vh] space-y-16">
-        {activeDiet && categories.map((cat, idx) => {
+      <div className="w-full min-h-[50vh] flex flex-col [gap:var(--space-fluid-xl)]">
+        {hasExplicitPassport && passport.dietary_profile && categories.map((cat, idx) => {
           const catRecipes = recipes.filter(r => r.category === cat.id);
           if (catRecipes.length === 0) return null;
           const gridConfig = getGridConfig(catRecipes.length);
 
+          // Immagini del modal gallery categoria: cover di ogni ricetta (join cover:media_assets).
+          const catGalleryItems = catRecipes
+            .map((r: any) => ({
+              asset_id: r.cover?.asset_id as string | undefined,
+              image_url: (r.cover?.image_url || '') as string,
+              title: (r.name || '') as string,
+            }))
+            .filter(g => g.image_url);
+
           return (
             <React.Fragment key={cat.id}>
-              <section className="animate-fade-slide-up scroll-mt-40 space-y-12" id={cat.id} style={{ animationDelay: `${idx * 100}ms` }}>
+              <section className="animate-fade-slide-up scroll-mt-40 flex flex-col [gap:var(--space-fluid-l)]" id={cat.id} style={{ animationDelay: `${idx * 100}ms` }}>
                 <SmartHeaderSection
-                  sectionId={`recipe-${String(idx + 1).padStart(2, '0')}`}
+                  sectionId={`recipe-${String(idx + 2).padStart(2, '0')}`}
                   variant="section"
                   align="center"
                 />
 
-                <div className={cn(gridConfig.container, "mb-16")}>
+                {/* Blocco categoria — prima delle schede ricette */}
+                <RecipeCategory cat={cat} activeDiet={passport.dietary_profile} galleryItems={catGalleryItems} />
+
+                {/* Schede ricette */}
+                <div className={cn(gridConfig.container)}>
                   {catRecipes.map((rawRecipe) => {
                     const r = mapToRecipeData(rawRecipe);
-                    const displayLabel = activeDiet === 'diet_regular' ? 'ORIGINAL' : activeDiet.replace('diet_', '').toUpperCase();
-                    const preview = adaptRecipeToDiet(r, activeDiet, activeAllergies);
+                    const displayLabel = passport.dietary_profile === 'diet_regular' ? 'ORIGINAL' : passport.dietary_profile.replace('diet_', '').toUpperCase();
+                    const rki = (rawRecipe.recipe_key_ingredients as RawKeyIngredient[]) || [];
+                    const preview = adaptRecipeToDiet(r, passport.dietary_profile, passport.allergies, dietProfiles, rki);
 
                     return (
                       <div className={gridConfig.item || ""} key={r.id}>
                         <MenuCard
-                          dish={{ ...preview, colorTheme: r.colorTheme || '#ED5565', image: r.image }}
+                          dish={preview}
                           isSelected={false}
-                          actionLabel="View Recipe"
                           dietLabel={displayLabel}
                           disableBodyCursor={true}
+                          href={`/authentic-thai-akha-recipes/${rawRecipe.slug || rawRecipe.id}`}
                           onClick={() => handleSelectRecipe(rawRecipe)}
                           onPreview={() => handleSelectRecipe(rawRecipe)}
-                          onAskCherry={() => handleAskCherryDish(r)}
                         />
                       </div>
                     );
                   })}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-                  <div className="lg:col-span-5 flex flex-col gap-6 relative lg:sticky lg:top-32">
-                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-border shadow-2xl group">
-                      <MediaImage
-                        url={cat.image || ""}
-                        fallbackAlt={cat.title}
-                        showCaption={false}
-                        imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                {/* Chef's Secrets — card sotto la griglia ricette */}
+                {cat.chef_secrets && cat.chef_secrets.length > 0 && (
+                  <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border/60">
+                    <div className="flex items-center [gap:var(--space-fluid-xs)]">
+                      <span className="material-symbols-rounded text-primary/60 text-xl">restaurant</span>
+                      <Typography variant="caption" color="muted" className="uppercase tracking-widest font-bold">Chef's Secrets</Typography>
                     </div>
-                    <AudioPlayer categoryId={cat.id} className="w-full" />
+                    <ul className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-xs)]">
+                      {(cat.chef_secrets as string[]).map((secret, idx) => (
+                        <li key={idx} className="flex items-start [gap:var(--space-fluid-xs)]">
+                          <span className="material-symbols-rounded text-primary/30 text-sm mt-0.5 flex-shrink-0">chevron_right</span>
+                          <Typography variant="paragraphS" color="muted" className="leading-relaxed">{secret}</Typography>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div className="lg:col-span-7">
-                    <div className="h-full p-8 md:p-12 rounded-[3rem] bg-surface border border-border flex flex-col gap-10 shadow-inner">
-                      {cat.ui_quote && <Typography variant="quote" className="text-2xl md:text-3xl text-gray-900 dark:text-gray-100 opacity-90 border-primary pl-8 py-4">"{cat.ui_quote}"</Typography>}
-                      <div className="space-y-6">
-                        <Typography variant="paragraphM" className="text-desc/90 whitespace-pre-wrap leading-relaxed text-lg font-light text-left">
-                          {cat.content_body || cat.description}
-                        </Typography>
-                      </div>
-                      {cat.keywords && cat.keywords.length > 0 && (
-                        <div className="flex flex-wrap gap-2 pt-6 border-t border-border">
-                          {cat.keywords.map((kw, kIdx) => (
-                            <Chip key={kIdx} label={kw} className="text-xs py-2 px-4 bg-background border-border hover:bg-surface" />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                )}
               </section>
-              {idx < categories.length - 1 && <AkhaPixelLine />}
+
+              {/* Divider tra sezioni */}
+              {idx < categories.length - 1 && (
+                <div className="opacity-80">
+                  <AkhaThemedLine theme="kitchen" />
+                </div>
+              )}
             </React.Fragment>
           );
         })}
       </div>
+
+      {/* PageEssentials: facts, references, author note — always rendered for SEO crawlers */}
+      <PageEssentials
+        slug="authentic-thai-akha-recipes"
+      />
+
+      {/* FaqBottomPage: always rendered (not gated on dietary_profile) — visible to crawlers */}
+      <FaqBottomPage
+        slug="authentic-thai-akha-recipes"
+        onNavigate={onNavigate as any}
+      />
+
+      <SiblingInfoSection
+        currentSlug="authentic-thai-akha-recipes"
+        onNavigate={onNavigate as any}
+        sectionId="sibiling_info"
+      />
     </PageLayout>
   );
 };

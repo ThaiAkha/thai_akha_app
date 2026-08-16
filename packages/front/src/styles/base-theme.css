@@ -21,17 +21,8 @@
 
    /* ============================================================================
      TEXT SIZES & LINE HEIGHTS
+     (fluid typography lives in tokens.css :root — clamp() not allowed in @theme)
      ============================================================================ */
-   --text-title-2xl: 72px;
-   --text-title-2xl--line-height: 90px;
-   --text-title-xl: 60px;
-   --text-title-xl--line-height: 72px;
-   --text-title-lg: 48px;
-   --text-title-lg--line-height: 60px;
-   --text-title-md: 36px;
-   --text-title-md--line-height: 44px;
-   --text-title-sm: 30px;
-   --text-title-sm--line-height: 38px;
    --text-theme-xl: 20px;
    --text-theme-xl--line-height: 30px;
    --text-theme-sm: 14px;
@@ -81,37 +72,107 @@
    --color-action-950: #1e3308;
    --color-action-dark: #0e1a03;
 
-   /* QUIZ-P — Deep Magenta (anchor 500 = #9A0050) */
-   --color-quiz-p-25: #fff0f7;
-   --color-quiz-p-50: #ffe0ee;
-   --color-quiz-p-100: #ffb8d9;
-   --color-quiz-p-200: #ff80bc;
-   --color-quiz-p-300: #f0449c;
-   --color-quiz-p-400: #c8207a;
-   --color-quiz-p-500: #9A0050;
-   --color-quiz-p-600: #820044;
-   --color-quiz-p-700: #680038;
-   --color-quiz-p-800: #50002c;
-   --color-quiz-p-900: #380020;
-   --color-quiz-p-950: #280018;
-   --color-quiz-p-dark: #1a0010;
+   /* ============================================================================
+      QUIZ COLOR SET — 6 palette (Quiz world: domande, premi, livelli).
+      Naming: quiz-1..quiz-4 (warm ramp) + quiz-p (magenta) + quiz-s (violet).
+      I vecchi quiz-p #9A0050 / quiz-s #3B227A sono stati ridefiniti coi nuovi
+      anchor del set. Channel RGB in tokens.css. Vedi /style → Color Sets.
+      ============================================================================ */
 
-   /* QUIZ-S — Deep Purple (anchor 500 = #3B227A) */
-   --color-quiz-s-25: #f4f0ff;
-   --color-quiz-s-50: #eae0ff;
-   --color-quiz-s-100: #d4bfff;
-   --color-quiz-s-200: #b898ff;
-   --color-quiz-s-300: #9470e8;
-   --color-quiz-s-400: #6844b0;
-   --color-quiz-s-500: #3B227A;
-   --color-quiz-s-600: #311a66;
-   --color-quiz-s-700: #261454;
-   --color-quiz-s-800: #1c0e40;
-   --color-quiz-s-900: #14082e;
-   --color-quiz-s-950: #0c0420;
-   --color-quiz-s-dark: #060212;
+   /* QUIZ-1 (anchor 500 = #7db23e — green) */
+   --color-quiz-1-25: #f8fbf5;
+   --color-quiz-1-50: #f2f7ec;
+   --color-quiz-1-100: #e5f0d8;
+   --color-quiz-1-200: #cee2b6;
+   --color-quiz-1-300: #b4d28f;
+   --color-quiz-1-400: #97c165;
+   --color-quiz-1-500: #7db23e;
+   --color-quiz-1-600: #6c9935;
+   --color-quiz-1-700: #587d2c;
+   --color-quiz-1-800: #446122;
+   --color-quiz-1-900: #334919;
+   --color-quiz-1-950: #263613;
+   --color-quiz-1-dark: #1b260d;
 
-   /* BTN-P — Orange (anchor 500 = #FF6D00) */
+   /* QUIZ-2 (anchor 500 = #f3e085 — pale yellow) */
+   --color-quiz-2-25: #fefdf9;
+   --color-quiz-2-50: #fefcf3;
+   --color-quiz-2-100: #fdf9e7;
+   --color-quiz-2-200: #faf3d1;
+   --color-quiz-2-300: #f8edb8;
+   --color-quiz-2-400: #f5e69d;
+   --color-quiz-2-500: #f3e085;
+   --color-quiz-2-600: #d1c070;
+   --color-quiz-2-700: #aa9c59;
+   --color-quiz-2-800: #837841;
+   --color-quiz-2-900: #61582c;
+   --color-quiz-2-950: #47401d;
+   --color-quiz-2-dark: #312c10;
+
+   /* QUIZ-3 (anchor 500 = #f7cb1b — gold) */
+   --color-quiz-3-25: #fffcf4;
+   --color-quiz-3-50: #fefae8;
+   --color-quiz-3-100: #fdf5d1;
+   --color-quiz-3-200: #fceba8;
+   --color-quiz-3-300: #fae17b;
+   --color-quiz-3-400: #f9d549;
+   --color-quiz-3-500: #f7cb1b;
+   --color-quiz-3-600: #d4ae17;
+   --color-quiz-3-700: #ad8e12;
+   --color-quiz-3-800: #866e0d;
+   --color-quiz-3-900: #635109;
+   --color-quiz-3-950: #493c06;
+   --color-quiz-3-dark: #332a04;
+
+   /* QUIZ-4 (anchor 500 = #e78b2e — orange) */
+   --color-quiz-4-25: #fef9f5;
+   --color-quiz-4-50: #fdf3ea;
+   --color-quiz-4-100: #fae8d5;
+   --color-quiz-4-200: #f6d3b0;
+   --color-quiz-4-300: #f1bc86;
+   --color-quiz-4-400: #eca258;
+   --color-quiz-4-500: #e78b2e;
+   --color-quiz-4-600: #c67727;
+   --color-quiz-4-700: #a2611f;
+   --color-quiz-4-800: #7d4b18;
+   --color-quiz-4-900: #5d3711;
+   --color-quiz-4-950: #44280c;
+   --color-quiz-4-dark: #301c07;
+
+   /* QUIZ-P — Magenta (anchor 500 = #9b3357, era #9A0050) */
+   --color-quiz-p-25: #faf5f7;
+   --color-quiz-p-50: #f5ebee;
+   --color-quiz-p-100: #ebd6dd;
+   --color-quiz-p-200: #d9b1bf;
+   --color-quiz-p-300: #c5899e;
+   --color-quiz-p-400: #af5c79;
+   --color-quiz-p-500: #9b3357;
+   --color-quiz-p-600: #862c4b;
+   --color-quiz-p-700: #6e243e;
+   --color-quiz-p-800: #561c30;
+   --color-quiz-p-900: #411525;
+   --color-quiz-p-950: #31101c;
+   --color-quiz-p-dark: #240c14;
+
+   /* QUIZ-S — Violet (anchor 500 = #553a5b, era #3B227A) */
+   --color-quiz-s-25: #f6f5f7;
+   --color-quiz-s-50: #eeebef;
+   --color-quiz-s-100: #ddd8de;
+   --color-quiz-s-200: #beb4c1;
+   --color-quiz-s-300: #9c8da0;
+   --color-quiz-s-400: #77617c;
+   --color-quiz-s-500: #553a5b;
+   --color-quiz-s-600: #4b3250;
+   --color-quiz-s-700: #3f2944;
+   --color-quiz-s-800: #332038;
+   --color-quiz-s-900: #29182d;
+   --color-quiz-s-950: #211225;
+   --color-quiz-s-dark: #1b0d1e;
+
+   /* BTN-P — Orange (anchor 500 = #FF6D00) — ⚠️ DEPRECATO (Brand Akha Set).
+      Stesso arancio di `allergy`. Non usare in nuovi componenti; le occorrenze
+      esistenti vanno migrate (vedi /style → Brand Akha Set migration). Scala
+      mantenuta solo per compat finché la migrazione non è completata. */
    --color-btn-p-25: #fff6ee;
    --color-btn-p-50: #ffead4;
    --color-btn-p-100: #ffd5a8;
@@ -126,7 +187,9 @@
    --color-btn-p-950: #401900;
    --color-btn-p-dark: #200d00;
 
-   /* BTN-S — Blue Light (anchor 500 = #1CA3E6) */
+   /* BTN-S — Blue Light (anchor 500 = #1CA3E6) — SHARED SET: mondo social & contatti.
+      (Ripristinato: in precedenza era aliasato a ocean-blue; il FAQ Ocean Set ha
+      i suoi token dedicati, quindi btn-s torna autonomo per social/contatti.) */
    --color-btn-s-25: #f5fbff;
    --color-btn-s-50: #f0f9ff;
    --color-btn-s-100: #e0f2fe;
@@ -153,7 +216,7 @@
    --color-gray-700: #5E6464;
    --color-gray-800: #4A504F;
    --color-gray-900: #222827;
-   --color-gray-950: #121311;
+   --color-gray-950: #121212;
    --color-gray-dark: #080808;
    /* legacy alias — used by sidebar components */
 
@@ -188,16 +251,321 @@
    --color-allergy-dark: #2b1106;
 
    /* ============================================================================
+     CHERRY AI & FAQ — Ocean family (6 palette dedicate al mondo
+     conversazionale/informativo: chat, Ask Cherry, avatar, FAQ, Q&A).
+     Anchor = 500. Channel RGB in tokens.css :root. Vedi /style → ASSE 1-BIS.
+     ============================================================================ */
+
+   /* DEEP OCEAN (anchor 500 = #01356d) */
+   --color-deep-ocean-25: #f2f5f8;
+   --color-deep-ocean-50: #e6ebf0;
+   --color-deep-ocean-100: #ccd7e2;
+   --color-deep-ocean-200: #9eb2c8;
+   --color-deep-ocean-300: #6c8aaa;
+   --color-deep-ocean-400: #345d8a;
+   --color-deep-ocean-500: #01356d;
+   --color-deep-ocean-600: #012f60;
+   --color-deep-ocean-700: #012852;
+   --color-deep-ocean-800: #012144;
+   --color-deep-ocean-900: #011b37;
+   --color-deep-ocean-950: #00162e;
+   --color-deep-ocean-dark: #001326;
+
+   /* DEEP BLUE (anchor 500 = #016ca5) */
+   --color-deep-blue-25: #f2f8fa;
+   --color-deep-blue-50: #e6f0f6;
+   --color-deep-blue-100: #cce2ed;
+   --color-deep-blue-200: #9ec7dd;
+   --color-deep-blue-300: #6caacb;
+   --color-deep-blue-400: #3489b7;
+   --color-deep-blue-500: #016ca5;
+   --color-deep-blue-600: #015e8f;
+   --color-deep-blue-700: #014e77;
+   --color-deep-blue-800: #013e5f;
+   --color-deep-blue-900: #003049;
+   --color-deep-blue-950: #002639;
+   --color-deep-blue-dark: #001d2c;
+
+   /* OCEAN BLUE (anchor 500 = #0396c7) */
+   --color-ocean-blue-25: #f2fafc;
+   --color-ocean-blue-50: #e6f4f9;
+   --color-ocean-blue-100: #cdeaf4;
+   --color-ocean-blue-200: #9fd7ea;
+   --color-ocean-blue-300: #6dc2df;
+   --color-ocean-blue-400: #35abd2;
+   --color-ocean-blue-500: #0396c7;
+   --color-ocean-blue-600: #0382ac;
+   --color-ocean-blue-700: #026b8e;
+   --color-ocean-blue-800: #02546f;
+   --color-ocean-blue-900: #013f54;
+   --color-ocean-blue-950: #013040;
+   --color-ocean-blue-dark: #01232f;
+
+   /* SKY BLUE (anchor 500 = #04b0df) */
+   --color-sky-blue-25: #f2fbfd;
+   --color-sky-blue-50: #e6f7fc;
+   --color-sky-blue-100: #cdeff9;
+   --color-sky-blue-200: #a0e1f3;
+   --color-sky-blue-300: #6dd1ec;
+   --color-sky-blue-400: #36c0e5;
+   --color-sky-blue-500: #04b0df;
+   --color-sky-blue-600: #0398c0;
+   --color-sky-blue-700: #037c9d;
+   --color-sky-blue-800: #02617b;
+   --color-sky-blue-900: #02485c;
+   --color-sky-blue-950: #013645;
+   --color-sky-blue-dark: #012731;
+
+   /* LIGHT BLUE (anchor 500 = #90e0ef) */
+   --color-light-blue-25: #f9fdfe;
+   --color-light-blue-50: #f4fcfd;
+   --color-light-blue-100: #e9f9fc;
+   --color-light-blue-200: #d5f3f9;
+   --color-light-blue-300: #bfedf6;
+   --color-light-blue-400: #a6e6f2;
+   --color-light-blue-500: #90e0ef;
+   --color-light-blue-600: #7ac0cd;
+   --color-light-blue-700: #609ca7;
+   --color-light-blue-800: #477881;
+   --color-light-blue-900: #31575f;
+   --color-light-blue-950: #203f45;
+   --color-light-blue-dark: #122b30;
+
+   /* PALE ICE (anchor 500 = #beedf4) */
+   --color-pale-ice-25: #fcfefe;
+   --color-pale-ice-50: #f8fdfe;
+   --color-pale-ice-100: #f2fbfd;
+   --color-pale-ice-200: #e6f8fb;
+   --color-pale-ice-300: #d9f5f9;
+   --color-pale-ice-400: #cbf1f6;
+   --color-pale-ice-500: #beedf4;
+   --color-pale-ice-600: #a0cbd1;
+   --color-pale-ice-700: #7fa4aa;
+   --color-pale-ice-800: #5e7e83;
+   --color-pale-ice-900: #405c60;
+   --color-pale-ice-950: #2a4246;
+   --color-pale-ice-dark: #172d30;
+
+   /* ============================================================================
+      CHERRY COLOR SET — 6 palette (Cherry AI world)
+      Mondo colore dedicato a Cherry AI (lampone + teal). SEPARATO dalla Ocean
+      family (che resta al mondo FAQ). Stesso pattern quiz-*: scala 25→dark +
+      alias flat + channel RGB in tokens.css. Divider Cherry: TBD.
+      ============================================================================ */
+   /* CHERRY-1 (anchor 500 = #A0122A — Deep Cherry) */
+   --color-cherry-1-25:#f9f1f2; --color-cherry-1-50:#f4e3e5; --color-cherry-1-100:#eacbd0;
+   --color-cherry-1-200:#dba5ae; --color-cherry-1-300:#ca7a88; --color-cherry-1-400:#b54659;
+   --color-cherry-1-500:#a0122a; --color-cherry-1-600:#8d1025; --color-cherry-1-700:#760d1f;
+   --color-cherry-1-800:#600b19; --color-cherry-1-900:#4a0813; --color-cherry-1-950:#36060e; --color-cherry-1-dark:#26040a;
+   /* CHERRY-2 (anchor 500 = #E11B3C — Cherry, PRIMARIO) */
+   --color-cherry-2-25:#fdf1f3; --color-cherry-2-50:#fbe4e8; --color-cherry-2-100:#f8cdd4;
+   --color-cherry-2-200:#f4a8b5; --color-cherry-2-300:#ee7f92; --color-cherry-2-400:#e84d67;
+   --color-cherry-2-500:#e11b3c; --color-cherry-2-600:#c61835; --color-cherry-2-700:#a6142c;
+   --color-cherry-2-800:#871024; --color-cherry-2-900:#670c1c; --color-cherry-2-950:#4c0914; --color-cherry-2-dark:#36060e;
+   /* CHERRY-3 (anchor 500 = #EF4E71 — Cherry Rose) */
+   --color-cherry-3-25:#fef4f6; --color-cherry-3-50:#fdeaee; --color-cherry-3-100:#fbd8e0;
+   --color-cherry-3-200:#f9bcc9; --color-cherry-3-300:#f69caf; --color-cherry-3-400:#f37590;
+   --color-cherry-3-500:#ef4e71; --color-cherry-3-600:#d24563; --color-cherry-3-700:#b13a54;
+   --color-cherry-3-800:#8f2f44; --color-cherry-3-900:#6e2434; --color-cherry-3-950:#511b26; --color-cherry-3-dark:#39131b;
+   /* TEAL-1 (anchor 500 = #45C3CD — Turquoise) */
+   --color-teal-1-25:#f4fbfc; --color-teal-1-50:#e9f8f9; --color-teal-1-100:#d6f2f4;
+   --color-teal-1-200:#b8e8ec; --color-teal-1-300:#97dde3; --color-teal-1-400:#6ed0d8;
+   --color-teal-1-500:#45c3cd; --color-teal-1-600:#3dacb4; --color-teal-1-700:#339098;
+   --color-teal-1-800:#29757b; --color-teal-1-900:#205a5e; --color-teal-1-950:#174246; --color-teal-1-dark:#112f31;
+   /* TEAL-2 (anchor 500 = #1E7E8C — Teal) */
+   --color-teal-2-25:#f2f7f8; --color-teal-2-50:#e4f0f1; --color-teal-2-100:#cee3e6;
+   --color-teal-2-200:#aaced3; --color-teal-2-300:#81b7bf; --color-teal-2-400:#509aa5;
+   --color-teal-2-500:#1e7e8c; --color-teal-2-600:#1a6f7b; --color-teal-2-700:#165d68;
+   --color-teal-2-800:#124c54; --color-teal-2-900:#0e3a40; --color-teal-2-950:#0a2b30; --color-teal-2-dark:#071e22;
+   /* TEAL-3 (anchor 500 = #103F47 — Pine) */
+   --color-teal-3-25:#f1f3f4; --color-teal-3-50:#e2e8e9; --color-teal-3-100:#cad5d7;
+   --color-teal-3-200:#a4b6b9; --color-teal-3-300:#799398; --color-teal-3-400:#45696f;
+   --color-teal-3-500:#103f47; --color-teal-3-600:#0e373e; --color-teal-3-700:#0c2f35;
+   --color-teal-3-800:#0a262b; --color-teal-3-900:#071d21; --color-teal-3-950:#051518; --color-teal-3-dark:#040f11;
+
+   /* ============================================================================
+      CONTENT COLOR SETS — Recipe Akha · News Ice · History Sunset
+      Stesso pattern (scala 25→dark + alias flat + channel in tokens.css).
+      Divider: recipe→'kitchen' · ice→'news' · sunset→'history'. Vedi /style → Color Sets.
+      ============================================================================ */
+
+   /* RECIPE AKHA SET (Summer Gradient: green→yellow→orange→red) */
+   /* recipe-1 (500=#53c296) */
+   --color-recipe-1-25: #f6fcfa; --color-recipe-1-50: #eef9f4; --color-recipe-1-100: #ddf3ea;
+   --color-recipe-1-200: #bee8d7; --color-recipe-1-300: #9bdcc2; --color-recipe-1-400: #75ceab;
+   --color-recipe-1-500: #53c296; --color-recipe-1-600: #47a781; --color-recipe-1-700: #398869;
+   --color-recipe-1-800: #2c6951; --color-recipe-1-900: #204e3b; --color-recipe-1-950: #17392c; --color-recipe-1-dark: #0f281e;
+   /* recipe-2 (500=#99d973) */
+   --color-recipe-2-25: #fafdf8; --color-recipe-2-50: #f5fbf1; --color-recipe-2-100: #ebf7e3;
+   --color-recipe-2-200: #d8f1ca; --color-recipe-2-300: #c4e9ae; --color-recipe-2-400: #ade18f;
+   --color-recipe-2-500: #99d973; --color-recipe-2-600: #83ba62; --color-recipe-2-700: #69974e;
+   --color-recipe-2-800: #50753b; --color-recipe-2-900: #3a5629; --color-recipe-2-950: #293f1c; --color-recipe-2-dark: #1b2b11;
+   /* recipe-3 (500=#fae50d) */
+   --color-recipe-3-25: #fffef3; --color-recipe-3-50: #fefce7; --color-recipe-3-100: #fefacf;
+   --color-recipe-3-200: #fdf5a3; --color-recipe-3-300: #fcf073; --color-recipe-3-400: #fbea3d;
+   --color-recipe-3-500: #fae50d; --color-recipe-3-600: #d7c50b; --color-recipe-3-700: #afa009;
+   --color-recipe-3-800: #887c07; --color-recipe-3-900: #645c05; --color-recipe-3-950: #4a4403; --color-recipe-3-dark: #343002;
+   /* recipe-4 (500=#f1ba05) */
+   --color-recipe-4-25: #fefcf2; --color-recipe-4-50: #fef8e6; --color-recipe-4-100: #fcf1cd;
+   --color-recipe-4-200: #fae5a0; --color-recipe-4-300: #f7d76e; --color-recipe-4-400: #f4c837;
+   --color-recipe-4-500: #f1ba05; --color-recipe-4-600: #cfa004; --color-recipe-4-700: #a98304;
+   --color-recipe-4-800: #836503; --color-recipe-4-900: #624b02; --color-recipe-4-950: #483801; --color-recipe-4-dark: #332701;
+   /* recipe-5 (500=#dd6000) */
+   --color-recipe-5-25: #fdf7f2; --color-recipe-5-50: #fcefe6; --color-recipe-5-100: #f8dfcc;
+   --color-recipe-5-200: #f2c39e; --color-recipe-5-300: #eba36b; --color-recipe-5-400: #e48033;
+   --color-recipe-5-500: #dd6000; --color-recipe-5-600: #bf5300; --color-recipe-5-700: #9c4400;
+   --color-recipe-5-800: #7a3500; --color-recipe-5-900: #5c2800; --color-recipe-5-950: #451e00; --color-recipe-5-dark: #321600;
+   /* recipe-6 (500=#ca1f34) */
+   --color-recipe-6-25: #fcf4f5; --color-recipe-6-50: #fae9eb; --color-recipe-6-100: #f4d2d6;
+   --color-recipe-6-200: #ebaab2; --color-recipe-6-300: #e07d89; --color-recipe-6-400: #d54c5d;
+   --color-recipe-6-500: #ca1f34; --color-recipe-6-600: #ae1b2d; --color-recipe-6-700: #8e1625;
+   --color-recipe-6-800: #6f111d; --color-recipe-6-900: #530d15; --color-recipe-6-950: #3e0910; --color-recipe-6-dark: #2c070b;
+
+   /* NEWS ICE SET (ghiaccio→teal) */
+   /* ice-1 (500=#a4e5ea) */
+   --color-ice-1-25: #fafefe; --color-ice-1-50: #f6fcfd; --color-ice-1-100: #edfafb;
+   --color-ice-1-200: #dcf5f7; --color-ice-1-300: #caf0f3; --color-ice-1-400: #b6eaee;
+   --color-ice-1-500: #a4e5ea; --color-ice-1-600: #8bc4c9; --color-ice-1-700: #6e9fa3;
+   --color-ice-1-800: #527a7d; --color-ice-1-900: #38595c; --color-ice-1-950: #254143; --color-ice-1-dark: #162c2e;
+   /* ice-2 (500=#6ed6dd) */
+   --color-ice-2-25: #f8fdfd; --color-ice-2-50: #f0fbfc; --color-ice-2-100: #e2f7f8;
+   --color-ice-2-200: #c8eff2; --color-ice-2-300: #abe7eb; --color-ice-2-400: #8bdee4;
+   --color-ice-2-500: #6ed6dd; --color-ice-2-600: #5db8be; --color-ice-2-700: #4b959a;
+   --color-ice-2-800: #387377; --color-ice-2-900: #275558; --color-ice-2-950: #1b3e40; --color-ice-2-dark: #102b2c;
+   /* ice-3 (500=#39c6d0) */
+   --color-ice-3-25: #f5fcfd; --color-ice-3-50: #ebf9fa; --color-ice-3-100: #d7f4f6;
+   --color-ice-3-200: #b4e9ed; --color-ice-3-300: #8cdee4; --color-ice-3-400: #61d1d9;
+   --color-ice-3-500: #39c6d0; --color-ice-3-600: #31aab3; --color-ice-3-700: #288b92;
+   --color-ice-3-800: #1e6b71; --color-ice-3-900: #164f53; --color-ice-3-950: #103a3d; --color-ice-3-dark: #0b292b;
+   /* ice-4 (500=#2699a1) */
+   --color-ice-4-25: #f4fafa; --color-ice-4-50: #e9f5f6; --color-ice-4-100: #d4ebec;
+   --color-ice-4-200: #add8db; --color-ice-4-300: #81c4c8; --color-ice-4-400: #51adb4;
+   --color-ice-4-500: #2699a1; --color-ice-4-600: #21848b; --color-ice-4-700: #1b6d73;
+   --color-ice-4-800: #15565a; --color-ice-4-900: #104144; --color-ice-4-950: #0c3134; --color-ice-4-dark: #092426;
+   /* ice-5 (500=#19666b) */
+   --color-ice-5-25: #f4f7f8; --color-ice-5-50: #e8f0f0; --color-ice-5-100: #d1e0e1;
+   --color-ice-5-200: #a8c5c7; --color-ice-5-300: #7aa6a9; --color-ice-5-400: #478589;
+   --color-ice-5-500: #19666b; --color-ice-5-600: #16595e; --color-ice-5-700: #124b4f;
+   --color-ice-5-800: #0f3d40; --color-ice-5-900: #0c3133; --color-ice-5-950: #0a2729; --color-ice-5-dark: #081f21;
+   /* ice-6 (500=#0e4448) */
+   --color-ice-6-25: #f3f6f6; --color-ice-6-50: #e7eced; --color-ice-6-100: #cfdada;
+   --color-ice-6-200: #a3b8b9; --color-ice-6-300: #739395; --color-ice-6-400: #3e696d;
+   --color-ice-6-500: #0e4448; --color-ice-6-600: #0d3d41; --color-ice-6-700: #0b3538;
+   --color-ice-6-800: #092d30; --color-ice-6-900: #082628; --color-ice-6-950: #072123; --color-ice-6-dark: #061d1e;
+
+   /* HISTORY SUNSET SET (gold→amber→red→magenta→indigo→aubergine) */
+   /* sunset-1 (500=#f2c24b) */
+   --color-sunset-1-25: #fefcf6; --color-sunset-1-50: #fef9ed; --color-sunset-1-100: #fcf3db;
+   --color-sunset-1-200: #fae8bb; --color-sunset-1-300: #f7dc97; --color-sunset-1-400: #f5ce6f;
+   --color-sunset-1-500: #f2c24b; --color-sunset-1-600: #d0a63f; --color-sunset-1-700: #a98732;
+   --color-sunset-1-800: #836825; --color-sunset-1-900: #614c19; --color-sunset-1-950: #473811; --color-sunset-1-dark: #322609;
+   /* sunset-2 (500=#e8872e) */
+   --color-sunset-2-25: #fef9f5; --color-sunset-2-50: #fdf3ea; --color-sunset-2-100: #fae7d5;
+   --color-sunset-2-200: #f6d1b0; --color-sunset-2-300: #f2b986; --color-sunset-2-400: #ed9f58;
+   --color-sunset-2-500: #e8872e; --color-sunset-2-600: #c77427; --color-sunset-2-700: #a25e1f;
+   --color-sunset-2-800: #7e4818; --color-sunset-2-900: #5d3511; --color-sunset-2-950: #44270c; --color-sunset-2-dark: #301b07;
+   /* sunset-3 (500=#d8392a) */
+   --color-sunset-3-25: #fdf5f4; --color-sunset-3-50: #fbebea; --color-sunset-3-100: #f7d7d4;
+   --color-sunset-3-200: #f0b4ae; --color-sunset-3-300: #e88c83; --color-sunset-3-400: #e06155;
+   --color-sunset-3-500: #d8392a; --color-sunset-3-600: #ba3124; --color-sunset-3-700: #97281d;
+   --color-sunset-3-800: #751f17; --color-sunset-3-900: #571711; --color-sunset-3-950: #40110c; --color-sunset-3-dark: #2d0c08;
+   /* sunset-4 (500=#b83a6e) */
+   --color-sunset-4-25: #fbf5f8; --color-sunset-4-50: #f8ebf0; --color-sunset-4-100: #f1d8e2;
+   --color-sunset-4-200: #e4b4c8; --color-sunset-4-300: #d68dab; --color-sunset-4-400: #c6618b;
+   --color-sunset-4-500: #b83a6e; --color-sunset-4-600: #9e325f; --color-sunset-4-700: #81294d;
+   --color-sunset-4-800: #64203c; --color-sunset-4-900: #4b182d; --color-sunset-4-950: #371121; --color-sunset-4-dark: #270c18;
+   /* sunset-5 (500=#3a4fa0) */
+   --color-sunset-5-25: #f5f6fa; --color-sunset-5-50: #ebedf6; --color-sunset-5-100: #d8dcec;
+   --color-sunset-5-200: #b4bcdb; --color-sunset-5-300: #8d99c8; --color-sunset-5-400: #6172b3;
+   --color-sunset-5-500: #3a4fa0; --color-sunset-5-600: #32448a; --color-sunset-5-700: #293871;
+   --color-sunset-5-800: #202c59; --color-sunset-5-900: #182143; --color-sunset-5-950: #121832; --color-sunset-5-dark: #0d1225;
+   /* sunset-6 (500=#4a2a5e) */
+   --color-sunset-6-25: #f6f4f7; --color-sunset-6-50: #edeaef; --color-sunset-6-100: #dbd4df;
+   --color-sunset-6-200: #baaec2; --color-sunset-6-300: #9683a2; --color-sunset-6-400: #6e557e;
+   --color-sunset-6-500: #4a2a5e; --color-sunset-6-600: #412553; --color-sunset-6-700: #371e46;
+   --color-sunset-6-800: #2c1839; --color-sunset-6-900: #23132e; --color-sunset-6-950: #1c0f25; --color-sunset-6-dark: #170b1e;
+
+   /* INGREDIENTS PANTRY SET (earth & spice: lemongrass→turmeric→galangal→paprika→tamarind→cinnamon) */
+   /* pantry-1 (Lemongrass, 500=#8fa05a) */
+   --color-pantry-1-25: #f9faf7; --color-pantry-1-50: #f4f6ee; --color-pantry-1-100: #e9ecde;
+   --color-pantry-1-200: #d4dbc0; --color-pantry-1-300: #bec89f; --color-pantry-1-400: #a5b37b;
+   --color-pantry-1-500: #8fa05a; --color-pantry-1-600: #7c8a4e; --color-pantry-1-700: #667240;
+   --color-pantry-1-800: #4f5832; --color-pantry-1-900: #3b4225; --color-pantry-1-950: #2c321c; --color-pantry-1-dark: #202414;
+   /* pantry-2 (Turmeric, 500=#c7a94a) */
+   --color-pantry-2-25: #fcfbf6; --color-pantry-2-50: #f9f6ed; --color-pantry-2-100: #f4eedb;
+   --color-pantry-2-200: #eadeba; --color-pantry-2-300: #dfcd96; --color-pantry-2-400: #d2ba6e;
+   --color-pantry-2-500: #c7a94a; --color-pantry-2-600: #ac9240; --color-pantry-2-700: #8d7835;
+   --color-pantry-2-800: #6d5d29; --color-pantry-2-900: #53461f; --color-pantry-2-950: #3e3417; --color-pantry-2-dark: #2d2611;
+   /* pantry-3 (Galangal, 500=#d98e3c) */
+   --color-pantry-3-25: #fdf9f5; --color-pantry-3-50: #fbf4ec; --color-pantry-3-100: #f7e8d8;
+   --color-pantry-3-200: #f1d4b5; --color-pantry-3-300: #e9bd8e; --color-pantry-3-400: #e1a563;
+   --color-pantry-3-500: #d98e3c; --color-pantry-3-600: #bc7b34; --color-pantry-3-700: #9a652b;
+   --color-pantry-3-800: #774e21; --color-pantry-3-900: #5a3b19; --color-pantry-3-950: #432c13; --color-pantry-3-dark: #31200e;
+   /* pantry-4 (Paprika, 500=#c25a2e) */
+   --color-pantry-4-25: #fcf7f5; --color-pantry-4-50: #f9eeea; --color-pantry-4-100: #f3ded5;
+   --color-pantry-4-200: #e8c0b0; --color-pantry-4-300: #dc9f86; --color-pantry-4-400: #ce7b58;
+   --color-pantry-4-500: #c25a2e; --color-pantry-4-600: #a84e28; --color-pantry-4-700: #8a4021;
+   --color-pantry-4-800: #6b3219; --color-pantry-4-900: #512513; --color-pantry-4-950: #3c1c0e; --color-pantry-4-dark: #2c140a;
+   /* pantry-5 (Tamarind, 500=#8a4a2c) */
+   --color-pantry-5-25: #f9f6f4; --color-pantry-5-50: #f3edea; --color-pantry-5-100: #e8dbd5;
+   --color-pantry-5-200: #d3baaf; --color-pantry-5-300: #bb9685; --color-pantry-5-400: #a16e56;
+   --color-pantry-5-500: #8a4a2c; --color-pantry-5-600: #774026; --color-pantry-5-700: #62351f;
+   --color-pantry-5-800: #4c2918; --color-pantry-5-900: #391f12; --color-pantry-5-950: #2b170e; --color-pantry-5-dark: #1f110a;
+   /* pantry-6 (Cinnamon, 500=#3e2a1e) */
+   --color-pantry-6-25: #f5f4f4; --color-pantry-6-50: #eceae8; --color-pantry-6-100: #d8d4d2;
+   --color-pantry-6-200: #b6aeaa; --color-pantry-6-300: #8f837c; --color-pantry-6-400: #65554b;
+   --color-pantry-6-500: #3e2a1e; --color-pantry-6-600: #36241a; --color-pantry-6-700: #2c1e15;
+   --color-pantry-6-800: #221710; --color-pantry-6-900: #1a110c; --color-pantry-6-950: #130d09; --color-pantry-6-dark: #0e0907;
+
+   /* ============================================================================
      FLAT ALIAS TOKENS — puntano al 500 di default
      ============================================================================ */
    --color-primary: var(--color-primary-500);
    --color-action: var(--color-action-500);
    --color-quiz-p: var(--color-quiz-p-500);
    --color-quiz-s: var(--color-quiz-s-500);
+   --color-quiz-1: var(--color-quiz-1-500);
+   --color-quiz-2: var(--color-quiz-2-500);
+   --color-quiz-3: var(--color-quiz-3-500);
+   --color-quiz-4: var(--color-quiz-4-500);
+   /* Recipe Akha Set */
+   --color-recipe-1: var(--color-recipe-1-500); --color-recipe-2: var(--color-recipe-2-500);
+   --color-recipe-3: var(--color-recipe-3-500); --color-recipe-4: var(--color-recipe-4-500);
+   --color-recipe-5: var(--color-recipe-5-500); --color-recipe-6: var(--color-recipe-6-500);
+   /* News Ice Set */
+   --color-ice-1: var(--color-ice-1-500); --color-ice-2: var(--color-ice-2-500);
+   --color-ice-3: var(--color-ice-3-500); --color-ice-4: var(--color-ice-4-500);
+   --color-ice-5: var(--color-ice-5-500); --color-ice-6: var(--color-ice-6-500);
+   /* History Sunset Set */
+   --color-sunset-1: var(--color-sunset-1-500); --color-sunset-2: var(--color-sunset-2-500);
+   --color-sunset-3: var(--color-sunset-3-500); --color-sunset-4: var(--color-sunset-4-500);
+   --color-sunset-5: var(--color-sunset-5-500); --color-sunset-6: var(--color-sunset-6-500);
+   /* Ingredients Pantry Set (pantry-4 Paprika = primary) */
+   --color-pantry-1: var(--color-pantry-1-500); --color-pantry-2: var(--color-pantry-2-500);
+   --color-pantry-3: var(--color-pantry-3-500); --color-pantry-4: var(--color-pantry-4-500);
+   --color-pantry-5: var(--color-pantry-5-500); --color-pantry-6: var(--color-pantry-6-500);
    --color-btn-p: var(--color-btn-p-500);
    --color-btn-s: var(--color-btn-s-500);
    --color-secondary: var(--color-secondary-600);
    --color-allergy: var(--color-allergy-500);
+
+   /* FAQ — Ocean family flat aliases */
+   --color-deep-ocean: var(--color-deep-ocean-500);
+   --color-deep-blue:  var(--color-deep-blue-500);
+   --color-ocean-blue: var(--color-ocean-blue-500);
+   --color-sky-blue:   var(--color-sky-blue-500);
+   --color-light-blue: var(--color-light-blue-500);
+   --color-pale-ice:   var(--color-pale-ice-500);
+
+   /* Cherry AI world — flat aliases (ruoli semantici) */
+   --color-cherry-ai:      var(--color-cherry-2-500);  /* primario Cherry (send/CTA)  */
+   --color-cherry-ai-dark: var(--color-cherry-1-500);  /* hover/pressed               */
+   --color-cherry-ai-rose: var(--color-cherry-3-500);  /* highlight/notifiche/badge   */
+   --color-cherry-ai-teal: var(--color-teal-1-500);    /* secondario / voice UI       */
+   --color-cherry-ai-info: var(--color-teal-2-500);    /* link/info                   */
+   --color-cherry-ai-deep: var(--color-teal-3-500);    /* testo profondo / bg scuri   */
+   --color-cherry-static:  var(--color-teal-1-600);    /* turchese: bordi/box STATICI + fill chiaro (attivo→cherry-ai) */
+   --shadow-glow-cherry-ai: 0 4px 20px rgba(225, 27, 60, 0.40);
 
    /* ============================================================================
      SHADOWS
@@ -235,8 +603,13 @@
    --shadow-glow-lime-h: 0 8px 28px rgba(186, 216, 121, 0.55);
    --shadow-glow-orange: 0 4px 20px rgba(255, 109, 0, 0.40);
    --shadow-glow-orange-h: 0 8px 36px rgba(255, 109, 0, 0.60);
-   --shadow-glow-blue: 0 4px 16px rgba(59, 130, 246, 0.35);
-   --shadow-glow-blue-h: 0 8px 28px rgba(59, 130, 246, 0.55);
+   --shadow-glow-blue: 0 0 15px rgba(28, 163, 230, 0.5), 0 0 30px rgba(28, 163, 230, 0.2);
+   --shadow-glow-blue-h: 0 0 20px rgba(28, 163, 230, 0.7), 0 0 45px rgba(28, 163, 230, 0.4);
+   /* FAQ Ocean Set glow (ocean-blue #0396c7) — mondo FAQ/info */
+   --shadow-glow-ocean: 0 4px 20px rgba(3, 150, 199, 0.40);
+   --shadow-glow-ocean-h: 0 8px 36px rgba(3, 150, 199, 0.60);
+   --shadow-glow-quiz-s: 0 4px 16px rgba(59, 34, 122, 0.35);
+   --shadow-glow-quiz-s-h: 0 8px 28px rgba(59, 34, 122, 0.55);
 
    /* ============================================================================
      Z-INDEX SCALE
@@ -392,7 +765,7 @@
       left: -150%;
    }
 
-   20% {
+   30% {
       left: 150%;
    }
 

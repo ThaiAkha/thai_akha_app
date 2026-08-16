@@ -8,6 +8,7 @@ import Badge from '../../components/ui/badge/Badge';
 import { Clock, Calendar, ChevronRight, Newspaper } from 'lucide-react';
 import ArticleModal from '../../components/agency/ArticleModal';
 import PageMeta from '../../components/common/PageMeta';
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 interface Article {
     id: string;
@@ -21,7 +22,7 @@ interface Article {
 }
 
 const AgencyNews: React.FC = () => {
-    const { t } = useTranslation('pages');
+    const { t, i18n } = useTranslation('pages');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('agency-news');
     const [news, setNews] = useState<Article[]>([]);
@@ -35,7 +36,7 @@ const AgencyNews: React.FC = () => {
 
                 // Load News Articles
                 const latestNews = await contentService.getLatestNews();
-                setNews(latestNews);
+                setNews(latestNews as unknown as Article[]);
             } catch (error) {
                 console.error('Error loading news:', error);
             } finally {
@@ -47,7 +48,7 @@ const AgencyNews: React.FC = () => {
     }, []);
 
     const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('it-IT', {
+        return formatDateByLanguage(dateStr, i18n.language, {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
@@ -115,7 +116,7 @@ const AgencyNews: React.FC = () => {
                                     <Badge
                                         variant="solid"
                                         color="primary"
-                                        className="absolute top-4 left-4 px-4 py-1.5 text-[10px] uppercase font-black tracking-widest"
+                                        className="absolute top-4 left-4 px-4 py-1.5 text-xs uppercase font-black tracking-widest"
                                     >
                                         {article.category}
                                     </Badge>
@@ -137,12 +138,12 @@ const AgencyNews: React.FC = () => {
                                     <div className="flex items-center gap-4 text-gray-400">
                                         <div className="flex items-center gap-1.5">
                                             <Calendar className="w-3.5 h-3.5" />
-                                            <span className="text-[10px] font-bold uppercase tracking-widest">{formatDate(article.created_at)}</span>
+                                            <span className="text-xs font-bold uppercase tracking-widest">{formatDate(article.created_at)}</span>
                                         </div>
                                         {article.reading_time && (
                                             <div className="flex items-center gap-1.5">
                                                 <Clock className="w-3.5 h-3.5" />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">{article.reading_time}</span>
+                                                <span className="text-xs font-bold uppercase tracking-widest">{article.reading_time}</span>
                                             </div>
                                         )}
                                     </div>

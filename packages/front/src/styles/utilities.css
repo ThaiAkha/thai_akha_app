@@ -51,26 +51,14 @@
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700;
-
-  @variant dark {
-    @apply text-gray-300;
-  }
+  @apply text-sub;
 }
 
 @utility menu-item-icon {
-  @apply text-gray-500;
+  @apply text-muted;
 
   &:hover {
-    @apply text-gray-700;
-  }
-
-  @variant dark {
-    @apply text-gray-400;
-
-    &:hover {
-      @apply text-gray-300;
-    }
+    @apply text-sub;
   }
 }
 
@@ -89,18 +77,10 @@
 }
 
 @utility menu-item-icon-inactive {
-  @apply text-gray-500;
+  @apply text-muted;
 
   &:hover {
-    @apply text-gray-700;
-  }
-
-  @variant dark {
-    @apply text-gray-400;
-
-    &:hover {
-      @apply text-gray-300;
-    }
+    @apply text-sub;
   }
 }
 
@@ -117,18 +97,10 @@
 }
 
 @utility menu-item-arrow-inactive {
-  @apply text-gray-500;
+  @apply text-muted;
 
   &:hover {
-    @apply text-gray-700;
-  }
-
-  @variant dark {
-    @apply text-gray-400;
-
-    &:hover {
-      @apply text-gray-300;
-    }
+    @apply text-sub;
   }
 }
 
@@ -149,18 +121,10 @@
 }
 
 @utility menu-dropdown-item-inactive {
-  @apply text-gray-700;
+  @apply text-sub;
 
   &:hover {
-    @apply bg-gray-100;
-  }
-
-  @variant dark {
-    @apply text-gray-300;
-
-    &:hover {
-      @apply bg-white/5;
-    }
+    @apply bg-surface;
   }
 }
 
@@ -195,14 +159,36 @@
     }
   }
 }
+/* Glass shine animation effect for premium components */
+@utility glass-shine {
+  @apply relative overflow-hidden;
+
+  &::after {
+    content: '';
+    @apply absolute top-0 left-[-150%] w-full h-full;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg);
+    animation: shine-oblique 8s infinite linear;
+    pointer-events: none;
+  }
+}
 
 /* ============================================================================
    BUTTON RADIAL FLASH EFFECT
    ============================================================================ */
 
 @keyframes btn-flash-expand {
-  from { width: 0; height: 0; opacity: 1; }
-  to   { width: 600px; height: 600px; opacity: 0; }
+  from {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+
+  to {
+    width: 600px;
+    height: 600px;
+    opacity: 0;
+  }
 }
 
 /* Hover glow — follows mouse via --flash-x / --flash-y CSS vars set in JS */
@@ -210,25 +196,23 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(
-    circle at var(--flash-x, 50%) var(--flash-y, 50%),
-    var(--btn-flash-glow-color, rgba(255, 255, 255, 0.38)) 0%,
-    transparent 55%
-  );
+  background: radial-gradient(circle at var(--flash-x, 50%) var(--flash-y, 50%),
+      var(--btn-flash-glow-color, rgba(255, 255, 255, 0.25)) 0%,
+      transparent 55%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 0;
 }
 
-button:hover .btn-flash-glow {
+:is(button, a, div):hover > .btn-flash-glow {
   opacity: 1;
 }
 
-/* MegaMenu: pulsing glow ring — only box-shadow animates, content stays fully visible */
+/* MegaMenu: pulsing glow ring — thinner and brighter (box-shadow pulse) */
 @keyframes megamenu-glow {
-  0%, 100% { box-shadow: 0 0 12px 2px rgba(152, 201, 60, 0.35); }
-  50%       { box-shadow: 0 0 28px 6px rgba(152, 201, 60, 0.75); }
+  0%, 100% { box-shadow: 0 0 10px 1px rgb(var(--action-ch) / 0.35); opacity: 0.6; }
+  50%       { box-shadow: 0 0 20px 3px rgb(var(--action-ch) / 0.85); opacity: 1; }
 }
 
 /* Click ripple — top/left set via inline style from React */
@@ -239,10 +223,9 @@ button:hover .btn-flash-glow {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle,
-    var(--btn-flash-ripple-color, rgba(255, 255, 255, 1))   0%,
-    var(--btn-flash-ripple-soft, rgba(255, 255, 255, 0.6)) 30%,
-    transparent              60%
-  );
+      var(--btn-flash-ripple-color, rgba(255, 255, 255, 1)) 0%,
+      var(--btn-flash-ripple-soft, rgba(255, 255, 255, 0.6)) 30%,
+      transparent 60%);
   pointer-events: none;
   z-index: 1;
   animation: btn-flash-expand 0.5s ease-out forwards;
@@ -271,16 +254,27 @@ button:hover .btn-flash-glow {
   }
 
   &::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 rounded-full;
-  }
-
-  @variant dark {
-    &::-webkit-scrollbar-thumb {
-      background-color: #344054;
-    }
+    @apply bg-border rounded-full;
   }
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #344054;
+/* ============================================================================
+   FONT UTILITIES
+   ============================================================================ */
+
+
+.font-numeric {
+  font-family: var(--font-numeric);
+}
+
+/* ============================================================================
+   RECIPE PROSE — paragraph spacing for HTML-rendered text blocks
+   ============================================================================ */
+
+.recipe-prose p {
+  margin-bottom: var(--space-fluid-l);
+}
+
+.recipe-prose p:last-child {
+  margin-bottom: 0;
 }

@@ -22,7 +22,8 @@ interface TabsProps {
   items: TabItem[];
   value: string;
   onChange: (value: string) => void;
-  variant?: 'default' | 'pills' | 'mineral';
+  variant?: 'default' | 'pills' | 'mineral' | 'dock';
+  compact?: boolean;
   actionButton?: ActionButton;
   className?: string;
   containerClass?: string;
@@ -33,6 +34,7 @@ const Tabs: React.FC<TabsProps> = ({
   value,
   onChange,
   variant = 'mineral',
+  compact = false,
   actionButton,
   className,
   containerClass
@@ -60,16 +62,23 @@ const Tabs: React.FC<TabsProps> = ({
   // --- VARIANT CONFIG ---
   const isMineral = variant === 'mineral';
   const isPills = variant === 'pills';
+  const isCompact = compact;
 
   // Container Styles (Refined for Light/Dark)
   const containerClasses = isMineral
     ? "bg-surface dark:bg-black/40 backdrop-blur-xl border border-border dark:border-white/10 p-2 shadow-2xl rounded-full relative"
-    : isPills
-      ? "bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-2 rounded-full"
-      : "";
+    : isCompact
+      ? cn(
+          "bg-surface/80 dark:bg-black/60 backdrop-blur-2xl border border-white/10 p-1 rounded-full shadow-brand-glow",
+          containerClass
+        )
+      : cn(
+          "bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-2 rounded-full",
+          containerClass
+        );
 
   return (
-    <div className={cn("flex items-center gap-3 md:gap-4 justify-center", containerClass)}>
+    <div className={cn("flex items-center [gap:var(--space-fluid-s)] justify-center", containerClass)}>
 
       {/* External Action Button (Optional) */}
       {actionButton && (
@@ -83,7 +92,7 @@ const Tabs: React.FC<TabsProps> = ({
             // Colors (Light/Dark Ready)
             "bg-surface dark:bg-black/40 backdrop-blur-xl border border-border dark:border-white/10",
             // Interactive
-            "text-gray-700 dark:text-gray-300 hover:text-action hover:border-action/50 hover:bg-action/5 active:scale-95 shadow-sm"
+            "text-sub hover:text-action hover:border-action/50 hover:bg-action/5 active:scale-95 shadow-sm"
           )}
         >
           <Icon name={actionButton.icon} size="sm" className="group-hover:-translate-x-0.5 transition-transform" />
@@ -100,7 +109,10 @@ const Tabs: React.FC<TabsProps> = ({
         {/* Sliding Indicator (Mineral Only) */}
         {isMineral && (
           <div
-            className="absolute top-2 bottom-2 bg-action rounded-full transition-all duration-300 ease-out shadow-brand-glow z-0"
+            className={cn(
+              "absolute bg-action rounded-full transition-all duration-300 ease-out z-0",
+              isCompact ? "top-1.5 bottom-1.5 bg-primary shadow-brand-glow" : "top-2 bottom-2 bg-action shadow-brand-glow"
+            )}
             style={{ ...indicatorStyle, opacity: 0 }}
             ref={(el) => { if (el) setTimeout(() => el.style.opacity = '1', 50) }}
           />
@@ -109,7 +121,9 @@ const Tabs: React.FC<TabsProps> = ({
         {/* Tabs Wrapper with Gap */}
         <div className={cn(
           "flex items-center",
-          isPills ? "gap-2 md:gap-4" : "gap-1"
+          isCompact 
+            ? "[gap:var(--space-fluid-2xs)]" 
+            : (isPills || isCompact) ? "[gap:var(--space-fluid-xs)]" : "gap-1"
         )}>
           {items.map((item, index) => {
             const isActive = value === item.value;
@@ -121,43 +135,40 @@ const Tabs: React.FC<TabsProps> = ({
                 ref={(el) => { tabsRef.current[index] = el; }}
                 onClick={() => onChange(item.value)}
                 className={cn(
-                  "relative z-10 flex items-center gap-2.5 md:gap-3 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full transition-all duration-300 whitespace-nowrap select-none",
+                  "relative z-10 flex items-center rounded-full transition-all duration-300 whitespace-nowrap select-none",
+                  isCompact 
+                    ? "font-accent text-[11px] tracking-[2px] uppercase [gap:0] [padding-inline:var(--space-fluid-2xs)] [padding-block:var(--space-fluid-2xs)]" 
+                    : "text-base font-medium [gap:var(--space-fluid-xs)] [padding-inline:var(--space-fluid-m)] [padding-block:var(--space-fluid-2xs)]",
 
-                  // --- VARIANT 1: PILLS (User Dashboard) ---
+                  // --- VARIANT 1: PILLS ---
                   isPills && isActive
-                    ? cn(
-                      // Active: Primary text, primary border, light bg
-                      "bg-primary/5 text-gray-800 dark:text-gray-200   border border-primary/30",
-                      "hover:bg-primary/10"
-                    )
+                    ? "bg-primary/10 text-primary dark:text-white border border-primary/30 font-bold"
                     : isPills
-                      ? cn(
-                        // Inactive: Gray-800/200 text, action border, very light bg
-                        "bg-white/30 dark:bg-white/5 text-gray-800 dark:text-gray-200 border border-action/30",
-                        "hover:bg-action/5 hover:border-action/60 hover:text-primary"
-                      )
+                      ? "bg-white/30 dark:bg-white/5 text-sub border border-action/20 hover:bg-action/5 hover:text-primary dark:hover:text-white"
+                      : "",
 
-                      // --- VARIANT 2: MINERAL (Admin) ---
-                      : isActive
-                        ? "text-white border-transparent" // Indicator is the background
-                        : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 border-transparent hover:bg-black/5 dark:hover:bg-white/5"
+                  // --- VARIANT 2: MINERAL (Sliding) ---
+                  isMineral && isActive
+                    ? "text-white border-transparent"
+                    : isMineral
+                      ? "text-sub hover:text-title border-transparent hover:bg-black/5 dark:hover:bg-white/5"
+                      : ""
                 )}
               >
-                {/* Icon - visible only on desktop */}
-                {item.icon && (
+                {/* Icon - visible only on desktop and not in compact mode */}
+                {item.icon && !isCompact && (
                   <Icon
                     name={item.icon}
                     size="xs"
-                    className={cn(
-                      "hidden md:block transition-colors duration-300",
-                      isPills && isActive ? "text-primary" :
-                        isPills ? "text-action" :
-                          isActive ? "text-white" : "text-current opacity-70"
-                    )}
+                    className="hidden md:block"
                   />
                 )}
 
-                <Typography variant="badge" color="inherit" className="leading-none pt-0.5">
+                <Typography 
+                  variant={isCompact ? "accent" : "badge"} 
+                  color="inherit" 
+                  className={cn("leading-none pt-0.5", isCompact && "text-[11px] tracking-[3px]")}
+                >
                   {item.label}
                 </Typography>
 

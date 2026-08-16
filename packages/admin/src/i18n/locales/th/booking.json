@@ -42,6 +42,8 @@
     "meetingPoint": "จุดนัดหมาย",
     "selectMeetingPoint": "เลือกจุดนัดหมาย...",
     "luggage": "สัมภาระ",
+    "yes": "ใช่",
+    "no": "ไม่",
     "extraNotes": "หมายเหตุเพิ่มเติม",
     "notesPlaceholder": "คำขอพิเศษ ข้อจำกัดด้านอาหาร หรือข้อมูลเพิ่มเติม..."
   },
@@ -49,18 +51,22 @@
     "fieldFullName": "ชื่อ-นามสกุล",
     "placeholderName": "เช่น สมชาย ใจดี",
     "fieldAge": "อายุ",
+    "placeholderAge": "อายุ",
     "fieldGender": "เพศ",
     "genderSelect": "เลือก",
     "genderMale": "ชาย",
     "genderFemale": "หญิง",
     "genderOther": "อื่นๆ",
     "fieldEmail": "อีเมล",
+    "placeholderEmail": "john@doe.com",
     "fieldPassword": "รหัสผ่าน",
     "passwordHint": "อย่างน้อย 8 ตัวอักษร",
     "fieldNationality": "สัญชาติ",
     "searchCountry": "ค้นหาประเทศ...",
     "fieldPhone": "หมายเลขโทรศัพท์",
-    "whatsapp": "วอทส์แอป"
+    "whatsapp": "วอทส์แอป",
+    "yes": "ใช่",
+    "no": "ไม่"
   },
   "search": {
     "labelGuest": "ค้นหาแขก",
@@ -73,7 +79,10 @@
   },
   "session": {
     "morning": "เช้า",
-    "evening": "เย็น"
+    "evening": "เย็น",
+    "booked": "จองแล้ว:",
+    "seatsLeft": "ที่นั่งเหลือ:",
+    "empty": "รอบว่าง"
   },
   "picker": {
     "cardTitle": "วันที่และรอบ",
@@ -122,5 +131,12 @@
     "btnConfirm": "ยืนยันการจอง",
     "errorNameRequired": "กรุณากรอกชื่อแขก",
     "successConfirmed": "ยืนยันการจองแล้ว! ลูกค้าของคุณได้รับการลงทะเบียนเรียบร้อยแล้ว"
+  },
+  "alerts": {
+    "missingDateSession": "กรุณาเลือกวันที่และเซสชัน",
+    "priceMissing": "ยังไม่มีราคา - ตรวจสอบการตั้งค่าเซสชันในฐานข้อมูลก่อนทำการจอง",
+    "namePasswordRequired": "กรุณากรอกชื่อ-นามสกุล และรหัสผ่าน",
+    "bookingCreated": "สร้างการจองสำเร็จแล้ว!",
+    "errorPrefix": "ข้อผิดพลาด: {{message}}"
   }
 }

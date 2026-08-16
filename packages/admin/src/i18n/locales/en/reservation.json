@@ -3,6 +3,26 @@
     "title": "Reservations | Thai Akha Kitchen",
     "description": "Manage daily reservations and client details."
   },
+  "kitchen": {
+    "days": "Days & classes",
+    "participants": "Participants",
+    "groupInfo": "Group info",
+    "pickParticipant": "Pick a participant to see their group.",
+    "notRegistered": "Seat not registered yet",
+    "bookingDetails": "Booking details",
+    "contacts": "Contacts",
+    "noContacts": "No contacts on file.",
+    "printReport": "Print report",
+    "print": "Print",
+    "downloadPdf": "Download PDF"
+  },
+  "messages": {
+    "loading": "Loading…"
+  },
+  "empty": {
+    "noParticipants": "Select a day & class.",
+    "noBookings": "No upcoming bookings."
+  },
   "sidebar": {
     "title": "Clients",
     "cancelledTitle": "Cancelled Bookings",
@@ -33,8 +53,8 @@
     "guest": "Guest"
   },
   "inspector": {
-    "noSelection": "No Selection",
-    "noSelHint": "Select a booking from the list to view and manage details.",
+    "noSelection": "No group selected",
+    "noSelHint": "Select a group to view details",
     "fieldPax": "Participants",
     "fieldDate": "Reservation Day",
     "fieldClass": "Class",
@@ -46,7 +66,9 @@
     "payPaid": "Paid",
     "payPartial": "Partial",
     "payRefunded": "Refunded",
-    "fieldNotes": "Notes"
+    "fieldNotes": "Notes",
+    "groupLeader": "Group leader",
+    "guest": "Guest"
   },
   "actions": {
     "tooltipEdit": "Edit this booking",
@@ -89,5 +111,11 @@
     "noPhone": "No Phone Recorded",
     "lifecycleStatus": "Lifecycle Status",
     "inspectorIdleMsg": "Inspector Idle"
+  },
+  "alerts": {
+    "saveError": "Save Error: {{message}}",
+    "cancelError": "Cancel Error: {{message}}",
+    "restoreError": "Restore Error: {{message}}",
+    "deleteError": "Delete Error: {{message}}"
   }
 }

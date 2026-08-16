@@ -1,0 +1,171 @@
+{
+  "notFound": {
+    "error": "错误",
+    "errorLabel": "错误",
+    "code": "404",
+    "message": "找不到您要查找的页面！",
+    "backHome": "返回首页",
+    "copyright": "{{year}} - Thai Akha Kitchen",
+    "pageTitle": "404 - 页面未找到 | Thai Akha Kitchen 管理后台",
+    "pageDesc": "您要查找的页面无法找到。"
+  },
+  "profile": {
+    "metaTitle": "个人资料面板 | Cherry Admin",
+    "metaDesc": "管理您的个人信息、机构标识和安全设置。"
+  },
+  "agencyDashboard": {
+    "metaTitle": "机构面板 | Thai Akha Kitchen",
+    "metaDesc": "销售额、收入和客人人口统计概览。"
+  },
+  "userProfiles": {
+    "metaTitle": "个人资料面板 | Cherry Admin",
+    "metaDesc": "管理您的个人信息、机构标识和安全设置。"
+  },
+  "agencyNews": {
+    "metaTitle": "机构新闻 | Thai Akha Kitchen",
+    "metaDesc": "了解Thai Akha Kitchen的最新新闻和公告。",
+    "badgeFallback": "新闻",
+    "titleFallback": "机构新闻",
+    "noNews": "暂无新闻"
+  },
+  "agencyRates": {
+    "metaTitle": "2026年合同价格 | Thai Akha Kitchen合作伙伴门户",
+    "metaDesc": "查看您的保密合作伙伴净价和2026年佣金结构。",
+    "badgeFallback": "机密",
+    "titleFallback": "2026年合同价格",
+    "colClass": "课程类型",
+    "colRack": "标准价",
+    "colNet": "合作净价",
+    "colCommission": "佣金",
+    "rateMorning": "上午课程",
+    "rateEvening": "下午课程",
+    "rateFullDay": "全天套餐",
+    "ratePrivate": "私人课程（1-4人）",
+    "guaranteeTitle": "价格保证",
+    "guaranteeDesc": "季节性价格对所有2026年3月前签署的合同均已锁定。任何价格调整将提前60天通知。",
+    "paymentTitle": "付款条款",
+    "paymentDesc": "净价通过月度发票支付。付款应在次月前5个工作日内完成。"
+  },
+  "agencyTerms": {
+    "metaTitle": "合作伙伴政策 | Thai Akha Kitchen合作伙伴门户",
+    "metaDesc": "查看合作机构的官方条款、取消政策和开票规则。",
+    "badgeFallback": "法律框架",
+    "titleFallback": "合作伙伴政策",
+    "cancellationTitle": "取消政策",
+    "cancellationItem1": "提前24小时以上：免费取消",
+    "cancellationItem2": "不足24小时：收取50%费用",
+    "cancellationItem3": "未出现：收取100%服务费",
+    "cancellationItem4": "客人生病：凭医疗证明免费",
+    "logisticsTitle": "物流与接送",
+    "logisticsDesc": "客人须在预定接送时间前10分钟在酒店大堂等候。司机最多等待15分钟后继续路线。",
+    "invoicingTitle": "开票与结算",
+    "invoicingDesc": "账单于每月1日发出。任何差异须在48小时内报告。延迟付款可能导致门户暂时停用。",
+    "verified": "已签署并验证，适用于2026赛季",
+    "customContract": "需要大型团队奖励旅游的定制合同？请联系运营部门 hello@tak.kitchen"
+  },
+  "agencyReservations": {
+    "metaTitle": "预订 | Thai Akha Kitchen合作伙伴门户",
+    "metaDesc": "查看和管理通过您的机构账户进行的所有预订。",
+    "sessionMorning": "上午课程",
+    "sessionEvening": "下午课程"
+  },
+  "agencyAssets": {
+    "badgeFallback": "法律框架",
+    "titleFallback": "合作伙伴政策",
+    "assetPhotos": "高清照片",
+    "assetVideo": "宣传视频 (4K)",
+    "assetBrochure": "2026年菜单手册",
+    "assetLogo": "标志套件（矢量）",
+    "downloadFile": "下载文件",
+    "showcaseAlt": "展示",
+    "socialMediaTitle": "社交媒体素材包",
+    "socialMediaDesc": "预设尺寸的Instagram和Facebook竖版故事和帖子。",
+    "accessFolder": "访问文件夹",
+    "needHelpTitle": "需要更多帮助？",
+    "needHelpDesc": "正在寻找特定内容或定制品牌材料？我们的营销团队随时为您提供帮助。",
+    "requestAssets": "申请定制素材"
+  },
+  "adminReport": {
+    "comingSoon": "报告面板即将推出...",
+    "loading": "加载报告中...",
+    "globalPerformance": "整体绩效",
+    "season": "2026赛季",
+    "analyticsComingSoon": "交互式分析即将推出",
+    "metricDetail": "指标详情",
+    "globalAnalysis": "全局分析",
+    "description": "描述",
+    "monthlySummary": "月度汇总",
+    "exportFull": "导出完整报告",
+    "metrics": {
+      "revenue": "总收入",
+      "commissions": "总佣金",
+      "bookings": "总预订",
+      "pax": "总人数",
+      "revenueDetail": "所有预订（不含取消）的总毛收入。",
+      "commissionsDetail": "应付给机构的总佣金。",
+      "bookingsDetail": "有效预订总数。",
+      "paxDetail": "接待客人总数。"
+    }
+  },
+  "agencyReport": {
+    "loading": "加载报告中...",
+    "performanceTrend": "绩效趋势",
+    "season": "2026赛季",
+    "analyticsComingSoon": "交互式分析即将推出",
+    "metricDetail": "指标详情",
+    "dataAnalysis": "数据分析",
+    "description": "描述",
+    "monthlyInvoices": "月度发票",
+    "downloadStatement": "下载账单",
+    "metrics": {
+      "revenue": "净收入",
+      "commission": "已赚佣金",
+      "bookings": "总预订",
+      "pax": "总人数",
+      "revenueDetail": "合作伙伴折扣后所有确认预订的总收入。",
+      "commissionDetail": "累计佣金总额。按月开票。",
+      "bookingsDetail": "通过您的门户进行的客户预订总数。",
+      "paxDetail": "接待旅客/客户总数。"
+    }
+  },
+  "articleModal": {
+    "author": "作者",
+    "readTime": "阅读时间",
+    "noContent": "暂无内容",
+    "prev": "上一篇",
+    "next": "下一篇",
+    "expandPhoto": "放大照片",
+    "exitPhotoView": "退出照片视图"
+  },
+  "news": {
+    "placeholderMediaId": "媒体ID或URL",
+    "sectionContent": "内容",
+    "sectionStatus": "状态"
+  },
+  "driver": {
+    "status": {
+      "waiting": "等待中",
+      "enRoute": "途中",
+      "atLobby": "在大厅",
+      "onBoard": "已上车",
+      "completed": "已完成"
+    },
+    "action": {
+      "startPickup": "开始接送",
+      "iAmHere": "我到了",
+      "pickUpPax": "接上乘客",
+      "dropComplete": "送达完成",
+      "done": "完成"
+    },
+    "pickup": "接送",
+    "dropoff": "送达",
+    "startPickupRoute": "开始接送路线",
+    "startDropoffRoute": "开始送达路线",
+    "clickConfirm": "再次点击确认",
+    "pax": "/ {{total}} 人",
+    "payoutTitle": "所有行程已完成！",
+    "payoutEarnings": "当日收入",
+    "payoutReturn": "返回首页",
+    "whatsappMsg": "Sawasdee%20kha%20Driver%20is%20at%20lobby"
+  }
+}

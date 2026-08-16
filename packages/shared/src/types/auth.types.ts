@@ -9,7 +9,8 @@ export type UserRole =
   | 'logistics'
   | 'driver'
   | 'alumni'
-  | 'guest';
+  | 'guest'
+  | 'guest_virtual';
 
 /**
  * Unified UserProfile - compatibile con entrambe le app
@@ -27,14 +28,20 @@ export interface UserProfile {
 
   // Agency fields (optional - solo per role 'agency')
   agency_company_name?: string;
-  agency_commission_rate?: number;
   agency_tax_id?: string;
   agency_phone?: string;
+  /** Modello commissioni 3-tier per-passeggero. Calcolo single-source: RPC calculate_agency_commission. */
   commission_config?: {
     mode: 'flat' | 'tiered';
-    tiers?: { threshold: number; rate: number }[];
-    reset_period?: string;
-    included_statuses?: string[];
+    unit?: string;
+    currency?: string;
+    tiers?: { tier: string; min_pax: number; rate: number }[];
+    cycle?: string;
+    reset_to?: string;
+    applies_to?: string[];
+    private_pax_counts_volume?: boolean;
+    private_earns_tier?: boolean;
+    volume_statuses?: string[];
   };
   agency_address?: string;
   agency_city?: string;
@@ -44,10 +51,16 @@ export interface UserProfile {
 
   // Optional metadata
   whatsapp?: boolean;
+  phone_prefix?: string;
+  phone_number?: string;
+  phone_whatsapp?: boolean;
   gender?: 'male' | 'female' | 'other' | '';
   age?: number | '';
   nationality?: string;
   is_active?: boolean;
+
+  // Gamification
+  quiz_points?: number;
 
   // Timestamps
   created_at?: string;

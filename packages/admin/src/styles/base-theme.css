@@ -155,7 +155,6 @@
   --color-gray-900:  #222827;
   --color-gray-950:  #121311;
   --color-gray-1000: #0A0906;
-  --color-gray-dark: #080808;  /* legacy alias — used by sidebar components */
 
   /* SYSTEM UI */
   --color-sys-success: #22C55E;

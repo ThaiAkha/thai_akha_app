@@ -1,0 +1,83 @@
+{
+  "tabs": {
+    "overview": "ภาพรวม",
+    "dashboard": "แดชบอร์ด",
+    "logistics": "การขนส่ง",
+    "teacher": "ครู",
+    "allItems": "รายการทั้งหมด"
+  },
+  "buttons": {
+    "newPlanToday": "แผนงานใหม่สำหรับวันนี้",
+    "newPlanSelectDate": "เลือกวันที่สำหรับแผนงานใหม่",
+    "newReportToday": "รายงานใหม่สำหรับวันนี้",
+    "newReportSelectDate": "เลือกวันที่สำหรับรายงานใหม่",
+    "viewHistory": "ดูประวัติ",
+    "cancel": "ยกเลิก",
+    "editReport": "แก้ไขรายงาน",
+    "newReport": "รายงานใหม่",
+    "newPlan": "แผนงานใหม่",
+    "modify": "แก้ไข",
+    "submitReport": "ส่งรายงาน",
+    "publishPlan": "เผยแพร่แผนงาน",
+    "saveDraft": "บันทึกฉบับร่าง",
+    "confirmReport": "ยืนยันรายงาน",
+    "deleteReport": "ลบรายงาน",
+    "refresh": "รีเฟรช",
+    "sendOrder": "ส่งคำสั่งซื้อ",
+    "finishRun": "สิ้นสุดการทำงาน"
+  },
+  "labels": {
+    "workDraft": "ฉบับร่าง",
+    "archiveView": "ดูข้อมูลในคลัง",
+    "liveEditing": "แก้ไขแบบเรียลไทม์",
+    "totalExpenses": "ค่าใช้จ่ายทั้งหมด",
+    "itemsRequired": "รายการที่ต้องการ",
+    "itemChecklist": "รายการตรวจสอบ",
+    "tapToEdit": "แตะเพื่อแก้ไข",
+    "vendorContact": "ติดต่อผู้ขาย",
+    "liveTotal": "รวมแบบเรียลไทม์",
+    "qty": "จำนวน: {{quantity}}",
+    "inputThb": "ใส่จำนวนเงิน (บาท)"
+  },
+  "table": {
+    "date": "วันที่",
+    "status": "สถานะ",
+    "items": "รายการ",
+    "totalCost": "ราคารวม",
+    "reportArchives": "คลังรายงาน"
+  },
+  "modal": {
+    "selectDate": "เลือกวันที่"
+  },
+  "placeholders": {
+    "searchIngredients": "ค้นหาส่วนผสม..."
+  },
+  "empty": {
+    "noHistory": "ไม่พบประวัติสำหรับหมวดหมู่นี้ค่ะ",
+    "noContent": "ไม่มีเนื้อหา",
+    "noListFound": "ไม่พบรายการ",
+    "noItemsForStall": "ไม่พบรายการสำหรับร้านค้านี้ค่ะ",
+    "noIngredients": "ไม่พบวัตถุดิบที่ตรงกับการค้นหาค่ะ"
+  },
+  "messages": {
+    "mustBeLoggedIn": "คุณต้องเข้าสู่ระบบเพื่อบันทึกรายงานการซื้อของนะคะ",
+    "selectAtLeastOne": "โปรดเลือกรายการอย่างน้อยหนึ่งรายการค่ะ",
+    "saveSuccess": "บันทึกการเปลี่ยนแปลงเรียบร้อยแล้วค่ะ!",
+    "saveError": "เกิดข้อผิดพลาดในการบันทึก: {{message}}",
+    "confirmDelete": "ลบรายงานนี้หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "kitchenNotPublished": "หัวหน้าแผนกครัวยังไม่ได้เผยแพร่รายการซื้อของสำหรับวันนี้ค่ะ",
+    "finishConfirm": "ต้องการบันทึกการทำงานนี้ว่าเสร็จสมบูรณ์และบันทึกค่าใช้จ่ายทั้งหมดหรือไม่คะ?",
+    "unboughtWarning": "รอ! คุณมีสินค้าที่ยังไม่ได้ซื้อ {{count}} ชิ้น ต้องการดำเนินการต่อหรือไม่คะ?",
+    "syncSuccess": "การทำงานซิงค์กับแผนกครัวแล้วค่ะ ดีมาก!",
+    "error": "เกิดข้อผิดพลาด: {{message}}",
+    "emergencyItemName": "ชื่อสินค้าจำเป็นเร่งด่วน?",
+    "loading": "กำลังโหลด...",
+    "selectWorker": "กรุณาเลือกว่าใครเป็นคนไปซื้อของ"
+  },
+  "shopItem": {
+    "reportedCost": "ราคาที่รายงาน",
+    "addedToList": "เพิ่มในรายการแล้ว",
+    "clickToAdd": "คลิกเพื่อเพิ่ม",
+    "tapToAdd": "แตะเพื่อเพิ่ม"
+  }
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 type ParagraphSize = 'lg' | 'base' | 'sm' | 'xs';
-type ParagraphColor = 'primary' | 'secondary' | 'muted';
+type ParagraphColor = 'primary' | 'secondary' | 'muted' | 'onDark';
 
 interface ParagraphProps {
   size?: ParagraphSize;
@@ -22,6 +22,7 @@ const PARAGRAPH_COLOR_STYLES: Record<ParagraphColor, string> = {
   primary: 'text-gray-700 dark:text-gray-200',
   secondary: 'text-gray-600 dark:text-gray-300',
   muted: 'text-gray-500 dark:text-gray-400',
+  onDark: 'text-white/70',  // for dark surfaces (banners) — same in both modes
 };
 
 const Paragraph: React.FC<ParagraphProps> = ({

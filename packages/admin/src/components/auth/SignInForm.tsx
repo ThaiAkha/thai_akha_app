@@ -67,7 +67,7 @@ export default function SignInForm() {
                     id="email"
                     name="email"
                     autoComplete="email"
-                    placeholder="info@gmail.com"
+                    placeholder={t('signIn.placeholders.email')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -83,20 +83,22 @@ export default function SignInForm() {
                       id="password"
                       name="password"
                       autoComplete="current-password"
-                      placeholder="Enter your password"
+                      placeholder={t('signIn.placeholders.password')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <span
+                    <button
+                      type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                      aria-label={showPassword ? t('common.hidePassword') : t('common.showPassword')}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                     >
                       {showPassword ? (
-                        <Eye className="fill-gray-500 dark:fill-gray-400 size-5" />
-                      ) : (
                         <EyeOff className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      ) : (
+                        <Eye className="fill-gray-500 dark:fill-gray-400 size-5" />
                       )}
-                    </span>
+                    </button>
                   </div>
                 </div>
 

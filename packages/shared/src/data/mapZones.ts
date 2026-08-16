@@ -1,3 +1,5 @@
+import { meetingPointIconDataUri } from './meetingPointIcons';
+
 export const GEOJSON_MASTER = {
   "type": "FeatureCollection",
   "features": [
@@ -213,6 +215,28 @@ export const GEOJSON_MASTER = {
           [98.990404, 18.785395], [98.988611, 18.785602], [98.987590, 18.785694],
           [98.986569, 18.785740], [98.982048, 18.785744]
         ]]
+      }
+    },
+
+    // ============================================================
+    // LIVELLO 2: PUNTI FISSI (marker sempre visibili sulla mappa)
+    // ============================================================
+
+    // --- THAI AKHA KITCHEN (scuola) ---
+    // Coordinate = meeting_points.mp_school. Icona dal kit standard in codice
+    // (meetingPointIcons.ts): cappello chef bianco su cerchio brand red.
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "mp_school",
+        "name": "Thai Akha Kitchen",
+        "type": "school",
+        "icon": meetingPointIconDataUri('mp_school', { color: '#FFFFFF', bg: '#E31F33' }),
+        "zIndex": 50
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [98.9923569, 18.7761982]
       }
     }
   ]

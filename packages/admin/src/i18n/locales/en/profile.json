@@ -25,6 +25,7 @@
     "fieldProvince": "Province / Region",
     "placeholderProvince": "Province",
     "fieldPostalCode": "Postal Code",
+    "placeholderPostalCode": "00000",
     "fieldTaxId": "Tax ID / VAT Number",
     "placeholderTaxId": "VAT Registration Number",
     "fieldCommission": "Commission Rate",
@@ -35,6 +36,7 @@
   "security": {
     "fieldNewPassword": "New Password",
     "fieldConfirmPassword": "Confirm New Password",
+    "placeholderPassword": "••••••••",
     "errorMismatch": "Passwords do not match",
     "errorMinLength": "Password must be at least 6 characters",
     "successUpdated": "Password updated successfully!",

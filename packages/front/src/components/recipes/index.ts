@@ -1,2 +1,14 @@
 export { default as MegaMenu } from './MegaMenu';
 export { default as MegaMenuCard } from './MegaMenuCard';
+export { default as RecipeExplorer } from './RecipeExplorer';
+export { default as RecipeCategory } from './RecipeCategory';
+export { default as RecipeNav } from './RecipeNav';
+export type { RecipeNavItem, RecipeCategoryInfo } from './RecipeNav';
+export { default as RecipeSection } from './RecipeSection';
+export { default as RecipeMetaBar } from './RecipeMetaBar';
+export { default as AllergyAlerts } from './AllergyAlerts';
+export { default as IngredientsGrid } from './IngredientsGrid';
+export { default as DirectionsSteps } from './DirectionsSteps';
+export { default as GarnishAndTip } from './GarnishAndTip';
+export { default as RecipeEssentials } from './RecipeEssentials';
+export type { RecipeEssentialsProps } from './RecipeEssentials';

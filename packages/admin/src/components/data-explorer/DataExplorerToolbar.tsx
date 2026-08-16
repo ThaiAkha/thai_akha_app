@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LayoutGrid, List, RefreshCw, Share2, Plus, Upload } from 'lucide-react';
 import SearchInput from '../form/input/SearchInput';
 import Tooltip from '../ui/Tooltip';
@@ -10,7 +11,7 @@ type ViewMode = 'table' | 'grid';
 const ICON_BTN = "h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-500/10 primary-btn-animation";
 
 /** Shared style for primary action button - premium theme */
-const PRIMARY_BTN = "h-9 px-4 inline-flex items-center gap-2 rounded-lg border border-primary-500 bg-primary-500 text-white text-[10px] font-black uppercase tracking-widest primary-shadow primary-btn-animation disabled:opacity-50 disabled:cursor-not-allowed";
+const PRIMARY_BTN = "h-9 px-4 inline-flex items-center gap-2 rounded-lg border border-primary-500 bg-primary-500 text-white text-xs font-black uppercase tracking-widest primary-shadow primary-btn-animation disabled:opacity-50 disabled:cursor-not-allowed";
 
 interface DataExplorerToolbarProps {
     // View mode toggle
@@ -49,27 +50,29 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
     onPrimaryAction,
     searchValue,
     onSearchChange,
-    searchPlaceholder = 'Search...',
+    searchPlaceholder,
     showViewMode = true,
     showSearch = true,
 }) => {
+    const { t } = useTranslation('dashboard');
+
     // Primary action button default se non fornito primaryAction
     const defaultPrimaryAction = onPrimaryAction && (
         <button
             type="button"
             onClick={onPrimaryAction}
             className={PRIMARY_BTN}
-            aria-label={primaryActionType === 'new' ? 'Create new item' : 'Upload files'}
+            aria-label={primaryActionType === 'new' ? t('explorer.createNew') : t('explorer.uploadFiles')}
         >
             {primaryActionType === 'new' ? (
                 <>
                     <Plus className="w-4 h-4" />
-                    <span>NUOVO</span>
+                    <span>{t('explorer.addNew')}</span>
                 </>
             ) : (
                 <>
                     <Upload className="w-4 h-4" />
-                    <span>CARICA</span>
+                    <span>{t('explorer.uploadFiles')}</span>
                 </>
             )}
         </button>
@@ -80,11 +83,11 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
             {/* 1. View Mode Toggle */}
             {showViewMode && (
                 <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm bg-white dark:bg-gray-800">
-                    <Tooltip content="Switch to table view" position="bottom">
+                    <Tooltip content={t('explorer.tableView')} position="bottom">
                         <button
                             type="button"
                             onClick={() => onViewModeChange('table')}
-                            aria-label="Switch to table view"
+                            aria-label={t('explorer.tableView')}
                             aria-pressed={viewMode === 'table'}
                             className={cn(
                                 "h-9 w-9 flex items-center justify-center transition-colors",
@@ -96,11 +99,11 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
                             <List className="w-4 h-4" />
                         </button>
                     </Tooltip>
-                    <Tooltip content="Switch to grid view" position="bottom">
+                    <Tooltip content={t('explorer.gridView')} position="bottom">
                         <button
                             type="button"
                             onClick={() => onViewModeChange('grid')}
-                            aria-label="Switch to grid view"
+                            aria-label={t('explorer.gridView')}
                             aria-pressed={viewMode === 'grid'}
                             className={cn(
                                 "h-9 w-9 flex items-center justify-center transition-colors",
@@ -123,14 +126,14 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
             {/* 2. Refresh */}
             {onRefresh && (
                 <Tooltip
-                    content={isRefreshing ? "Refreshing..." : "Refresh data"}
+                    content={isRefreshing ? t('explorer.refreshing') : t('explorer.refreshData')}
                     position="bottom"
                 >
                     <button
                         type="button"
                         onClick={onRefresh}
                         disabled={isRefreshing}
-                        aria-label="Refresh data"
+                        aria-label={t('explorer.refreshData')}
                         aria-busy={isRefreshing}
                         className={cn(ICON_BTN, isRefreshing && "opacity-50 cursor-not-allowed")}
                     >
@@ -145,11 +148,11 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
             {/* 3. Export / Share */}
             {(onExportClick || exportDropdown) && (
                 <div className="relative">
-                    <Tooltip content="Export options" position="bottom">
+                    <Tooltip content={t('explorer.exportOptions')} position="bottom">
                         <button
                             type="button"
                             onClick={onExportClick}
-                            aria-label="Open export options"
+                            aria-label={t('explorer.exportOptions')}
                             className={ICON_BTN}
                         >
                             <Share2 className="w-4 h-4" />
@@ -165,10 +168,10 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
             {/* 5. Search */}
             {showSearch && (
                 <div className="w-72 md:w-80 lg:w-96">
-                    <Tooltip content="Filter items by text" position="bottom">
+                    <Tooltip content={t('explorer.filterByText')} position="bottom">
                         <div>
                             <SearchInput
-                                placeholder={searchPlaceholder}
+                                placeholder={searchPlaceholder ?? t('explorer.search')}
                                 value={searchValue}
                                 onChange={(e) => onSearchChange(e.target.value)}
                                 onClear={() => onSearchChange('')}

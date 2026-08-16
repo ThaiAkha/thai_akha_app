@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "title": "库存 | 管理后台",
+    "description": "管理产品目录、库存水平和定价。"
+  },
+  "sidebar": {
+    "title": "分类",
+    "allItems": "所有商品",
+    "status": "实时库存"
+  },
+  "content": {
+    "searchPlaceholder": "搜索产品或SKU...",
+    "noProducts": "未找到产品",
+    "colSku": "SKU",
+    "colName": "产品名称",
+    "colCategory": "分类",
+    "colStock": "库存",
+    "colPrice": "价格",
+    "lowStock": "库存不足：{{count}}",
+    "inactive": "非活跃"
+  },
+  "inspector": {
+    "noImage": "无图片",
+    "updateImageUrl": "更新图片URL",
+    "fieldName": "产品名称",
+    "placeholderName": "输入产品名称...",
+    "fieldSku": "SKU",
+    "fieldCategory": "分类",
+    "selectCategory": "选择分类",
+    "fieldStock": "库存数量",
+    "fieldPrice": "价格（泰铢）",
+    "fieldDescription": "内部描述",
+    "descPlaceholder": "内部备注/描述...",
+    "statusLabel": "状态",
+    "active": "活跃",
+    "inactive": "非活跃",
+    "visibilityLabel": "可见性",
+    "visOnline": "在线",
+    "visHidden": "隐藏",
+    "deleteProduct": "删除产品"
+  },
+  "actions": {
+    "new": "新建",
+    "exportFormats": "导出格式",
+    "exportCsv": "Google Sheets / CSV",
+    "exportCsvDesc": "标准电子表格格式",
+    "exportJson": "JSON格式",
+    "exportJsonDesc": "原始数据结构",
+    "copyClipboard": "复制到剪贴板",
+    "copyClipboardDesc": "快速以文本形式分享",
+    "edit": "编辑",
+    "save": "保存",
+    "saving": "保存中...",
+    "tooltipEdit": "编辑此记录",
+    "tooltipSave": "保存更改"
+  },
+  "alerts": {
+    "nameSkuRequired": "请至少输入名称和SKU",
+    "savedSuccess": "产品保存成功",
+    "saveFailed": "保存失败：{{message}}",
+    "confirmDelete": "确定要删除此产品吗？",
+    "copiedCount": "已复制{{count}}项到剪贴板"
+  }
+}

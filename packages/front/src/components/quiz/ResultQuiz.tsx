@@ -1,12 +1,15 @@
 import React from 'react';
-import { QuizLevel, QuizModule } from '@thaiakha/shared'; // ✅ Tipi Nuovi
+import { QuizLevel, QuizModule } from '@thaiakha/shared';
 import ButtonQuiz from './ButtonQuiz';
-import { Icon } from '../ui';
+import { Typography } from '../ui';
+import { cn } from '@thaiakha/shared/lib/utils';
+import { t } from '@thaiakha/shared/lib/ui-strings';
 
-// Configurazione Locale Bottoni (Senza dipendenze esterne)
-const BTN_NEXT = { label: 'Next Module', icon: 'arrow_forward', variant: 'primary' as const };
-const BTN_RETRY = { label: 'Try Again', icon: 'replay', variant: 'secondary' as const };
-const BTN_HOME = { label: 'Back to Menu', icon: 'grid_view', variant: 'ghost' as const };
+// ── Configurazione Bottoni ──────────────────────────────────────────────────
+
+const BTN_NEXT = { label: t.quiz.nextModule, icon: 'arrow_forward', variant: 'primary' as const };
+const BTN_RETRY = { label: t.quiz.retry, icon: 'replay', variant: 'secondary' as const };
+const BTN_HOME = { label: t.quiz.backToMenu, icon: 'Grid', variant: 'ghost' as const };
 
 interface ResultQuizProps {
   level: QuizLevel;
@@ -20,8 +23,6 @@ interface ResultQuizProps {
 }
 
 const ResultQuiz: React.FC<ResultQuizProps> = ({ 
-  level, 
-  module, 
   correctAnswers, 
   totalQuestions, 
   xpEarned, 
@@ -30,63 +31,94 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
   onReturn 
 }) => {
   const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-  const isPass = percentage >= 60; // 60% per passare
+  const isPass = percentage >= 60;
   const strokeDashArray = `${percentage}, 100`;
 
   return (
-    <div className="fixed inset-0 z-[1] flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-500">
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-3xl"></div>
+    <div className="fixed inset-0 z-[1] flex items-center justify-center [padding:var(--space-fluid-m)] animate-in fade-in duration-500 overflow-y-auto">
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-3xl"></div>
 
-      <main className="relative z-10 w-full max-w-[48rem] animate-in zoom-in-95 duration-700">
-        <div className="bg-surface border border-white/10 rounded-[3rem] p-8 md:p-12 flex flex-col items-center text-center shadow-2xl relative overflow-hidden">
+      {/* div, non <main>: il landmark main è di PageLayout (#main-content) */}
+      <div className="relative z-10 w-full max-w-3xl animate-in zoom-in-95 duration-700 my-auto">
+        <div className={cn(
+          "bg-surface border border-white/10 rounded-[3rem] flex flex-col items-center text-center shadow-2xl relative overflow-hidden",
+          "[padding:var(--space-fluid-xl)]"
+        )}>
           
           {/* Sfondo Glow */}
-          <div className={`absolute top-0 left-0 right-0 h-32 bg-gradient-to-b ${isPass ? 'from-green-500/20' : 'from-red-500/20'} to-transparent pointer-events-none`} />
+          <div className={cn(
+            "absolute top-0 left-0 right-0 h-48 bg-gradient-to-b to-transparent pointer-events-none opacity-40 shrink-0",
+            isPass ? 'from-sys-success/30' : 'from-sys-error/30'
+          )} />
 
-          <h1 className="text-4xl md:text-5xl font-black text-white uppercase mb-8 tracking-tighter relative z-10">
-            {isPass ? 'Mission Complete!' : 'Mission Failed'}
-          </h1>
+          {/* Titolo Missione */}
+          <Typography 
+            variant="display2" 
+            className="uppercase italic font-black [margin-bottom:var(--space-fluid-m)] tracking-tighter relative z-10"
+            color="title"
+          >
+            {isPass ? t.quiz.missionComplete : t.quiz.missionFailed}
+          </Typography>
 
-          {/* Circle Chart */}
-          <div className="relative size-48 mb-10">
+          {/* Circle Progress */}
+          <div className="relative size-48 md:size-56 [margin-bottom:var(--space-fluid-m)]">
             <svg className="size-full rotate-[-90deg]" viewBox="0 0 36 36">
               <path className="fill-none stroke-white/10 stroke-[2.5]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               <path 
-                className={`fill-none stroke-[2.5] stroke-linecap-round transition-all duration-[1.5s] ease-out ${isPass ? 'stroke-action' : 'stroke-red-500'}`}
+                className={cn(
+                  "fill-none stroke-[2.5] stroke-linecap-round transition-all duration-[1.5s] ease-out",
+                  isPass ? 'stroke-action' : 'stroke-sys-error'
+                )}
                 strokeDasharray={strokeDashArray} 
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-white">{correctAnswers}/{totalQuestions}</span>
-              <span className="text-[10px] uppercase font-bold text-white/40 tracking-widest">Correct</span>
+              <Typography variant="numericPrice" color="title" className="leading-none">
+                {correctAnswers}/{totalQuestions}
+              </Typography>
+              <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-widest mt-1">
+                {t.quiz.correctLabel}
+              </Typography>
             </div>
           </div>
 
           {/* Stats Box */}
-          <div className="flex gap-4 mb-10">
-            <div className="bg-white/5 px-6 py-4 rounded-2xl border border-white/5">
-              <div className={`text-2xl font-black ${isPass ? 'text-quiz' : 'text-white/40'}`}>+{isPass ? xpEarned : 0}</div>
-              <div className="text-[9px] uppercase tracking-widest text-white/30">XP Earned</div>
+          <div className="flex [gap:var(--space-fluid-s)] [margin-bottom:var(--space-fluid-m)] w-full max-w-md">
+            <div className="flex-1 bg-white/5 [padding:var(--space-fluid-s)] rounded-2xl border border-white/5 backdrop-blur-sm">
+              <Typography 
+                variant="numericStat" 
+                className={cn("font-black", isPass ? 'text-quiz' : 'text-muted')}
+              >
+                +{isPass ? xpEarned : 0}
+              </Typography>
+              <Typography variant="microLabel" color="muted" className="uppercase tracking-widest mt-1">
+                {t.quiz.xpEarned}
+              </Typography>
             </div>
-            <div className="bg-white/5 px-6 py-4 rounded-2xl border border-white/5">
-              <div className="text-2xl font-black text-white">{percentage}%</div>
-              <div className="text-[9px] uppercase tracking-widest text-white/30">Accuracy</div>
+            
+            <div className="flex-1 bg-white/5 [padding:var(--space-fluid-s)] rounded-2xl border border-white/5 backdrop-blur-sm">
+              <Typography variant="numericStat" color="title">
+                {percentage}%
+              </Typography>
+              <Typography variant="microLabel" color="muted" className="uppercase tracking-widest mt-1">
+                {t.quiz.accuracy}
+              </Typography>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-3 w-full max-w-xs">
+          <div className="flex flex-col [gap:var(--space-fluid-xs)] w-full max-w-xs relative z-10">
             {isPass ? (
-              <ButtonQuiz fullWidth config={BTN_NEXT} onClick={onNext} className="py-4" />
+              <ButtonQuiz fullWidth config={BTN_NEXT} onClick={onNext} className="[padding-block:var(--space-fluid-s)]" />
             ) : (
-              <ButtonQuiz fullWidth config={BTN_RETRY} onClick={onPlayAgain} className="py-4" />
+              <ButtonQuiz fullWidth config={BTN_RETRY} onClick={onPlayAgain} className="[padding-block:var(--space-fluid-s)]" />
             )}
             <ButtonQuiz fullWidth config={BTN_HOME} onClick={onReturn} />
           </div>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 };

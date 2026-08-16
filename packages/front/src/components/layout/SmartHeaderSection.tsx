@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import HeaderSection, { HeaderSectionVariant, HeaderSectionAlign } from './HeaderSection';
-import { cn } from '@thaiakha/shared/lib/utils';
+import HeaderSection, { HeaderSectionVariant, HeaderSectionAlign, HeaderSectionProps } from './HeaderSection';
+import { SkeletonHeader } from '../skeleton';
+import type { PageSectionData } from '../../hooks/useHomePageSections';
+
 
 export interface SmartHeaderSectionProps {
   sectionId: string;
@@ -19,23 +21,31 @@ export interface SmartHeaderSectionProps {
   hideSubtitle?: boolean;
   hideDivider?: boolean;
   hideDescription?: boolean;
-}
-
-interface PageSectionData {
-  section_id: string;
-  title: string;
-  subtitle?: string;
-  description?: string;
-  highlight?: string;
-  tag_badge?: string;
+  hideTag?: boolean;
+  /**
+   * Optional pre-fetched data from useHomePageSections (or similar batch hook).
+   * When provided, the internal Supabase fetch is skipped entirely — zero extra roundtrip.
+   */
+  prefetchedData?: PageSectionData | null;
+  /**
+   * Controlled loading flag from the parent batch hook (e.g. useHomePageSections).
+   * When provided it is authoritative: the component stays in skeleton while true
+   * and never flashes the fallback header on a transient `null` prefetchedData.
+   */
+  loading?: boolean;
+  /** Theme color for the header divider pixel pattern — passed to HeaderSection */
+  dividerTheme?: HeaderSectionProps['dividerTheme'];
 }
 
 /**
  * SmartHeaderSection
- * 
- * Fetches header content dynamically from the `page_sections` table in Supabase.
- * Renders an elegant skeleton loader while fetching.
- * Seamlessly passes fetched data to the core `HeaderSection` layout component.
+ *
+ * Fetches header content dynamically from the page_sections table in Supabase.
+ * Renders a skeleton loader while fetching.
+ *
+ * Performance tip: Pass `prefetchedData` when you already have the section
+ * data from a parent batch fetch (e.g. useHomePageSections). This skips the
+ * internal query entirely.
  */
 export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
   sectionId,
@@ -53,98 +63,83 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
   hideSubtitle,
   hideDivider,
   hideDescription,
+  hideTag = false,
+  prefetchedData,
+  loading: loadingProp,
+  dividerTheme,
 }) => {
-  const [data, setData] = useState<PageSectionData | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Controlled mode: a parent batch hook supplies `loadingProp` and is the single
+  // source of truth — stay in skeleton while true, never self-fetch, never flash
+  // the fallback on a transient `null` prefetchedData.
+  const controlled = loadingProp !== undefined;
+  const [data, setData] = useState<PageSectionData | null>(prefetchedData ?? null);
+  const [loading, setLoading] = useState(controlled ? loadingProp : !prefetchedData);
 
   useEffect(() => {
+    // Controlled: parent owns loading + data. No self-fetch, no premature fallback.
+    if (controlled) {
+      setData(prefetchedData ?? null);
+      setLoading(loadingProp);
+      return;
+    }
+    // Already have data from parent batch fetch — nothing to do
+    if (prefetchedData !== undefined) {
+      setData(prefetchedData);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
     const fetchSectionContent = async () => {
       try {
         setLoading(true);
         const { data: sectionData, error } = await supabase
           .from('page_sections')
-          .select('*')
+          .select('section_id, title, subtitle, description, highlight, tag_badge')
           .eq('section_id', sectionId)
-          .single();
+          .maybeSingle(); // tolerate missing section_id (no 406 / PGRST116 on 0 rows)
 
-        if (error) {
-          console.error(`Error fetching section ${sectionId}:`, error);
-          return;
-        }
-
-        if (sectionData) {
-          setData(sectionData as PageSectionData);
-        }
+        if (error) throw error;
+        if (!cancelled && sectionData) setData(sectionData);
       } catch (err) {
-        console.error(`Unexpected error fetching section ${sectionId}:`, err);
+        console.error(`SmartHeaderSection fetch error [${sectionId}]:`, err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchSectionContent();
-  }, [sectionId]);
-
-  const alignmentClasses = {
-    left: 'items-start text-left flex-col',
-    center: 'items-center text-center flex-col',
-    right: 'items-end text-right flex-col',
-  }[align];
+    return () => { cancelled = true; };
+  }, [sectionId, prefetchedData, controlled, loadingProp]);
 
   if (loading) {
     return (
-      <div className={cn("w-full flex gap-2 animate-pulse opacity-70", alignmentClasses, className)}>
-        {variant === 'kitchen' && (
-          <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full mb-2"></div>
-        )}
-        <div className={cn(
-          "h-12 md:h-14 bg-gray-300 dark:bg-gray-600 rounded-lg w-3/4 max-w-lg", 
-          variant === 'hero' ? "h-14 md:h-16" : ""
-        )}></div>
-        
-        {variant !== 'kitchen' && (
-          <div className="h-6 w-1/2 max-w-sm bg-gray-200 dark:bg-gray-700 rounded-md mt-1"></div>
-        )}
-        
-        {variant === 'section' && (
-          <div className="space-y-2 mt-2 w-full flex flex-col" style={{ alignItems: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start' }}>
-            <div className="h-4 w-2/3 max-w-2xl bg-gray-100 dark:bg-gray-800 rounded"></div>
-            <div className="h-4 w-1/2 max-w-xl bg-gray-100 dark:bg-gray-800 rounded"></div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Fallback to plain title if no data found in DB.
-  if (!data) {
-    return (
-      <HeaderSection
-        title={fallbackTitle || sectionId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-        subtitle={fallbackSubtitle}
-        description={fallbackDescription}
-        highlight={fallbackHighlight}
-        tag={fallbackTag}
-        variant={variant}
+      <SkeletonHeader
+        variant={variant === 'history' || variant === 'kitchen' ? 'sub' : variant}
         align={align}
-        className={className}
-        gradientFrom={gradientFrom}
-        gradientTo={gradientTo}
         hideTitle={hideTitle}
         hideSubtitle={hideSubtitle}
         hideDivider={hideDivider}
         hideDescription={hideDescription}
+        className={className}
       />
     );
   }
 
+  // Se non c'è dato nel DB, usiamo i fallback
+  const title = data?.title || fallbackTitle || sectionId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const subtitle = data?.subtitle || fallbackSubtitle;
+  const description = data?.description || fallbackDescription;
+  const highlight = data?.highlight || fallbackHighlight;
+  const tag = data?.tag_badge || fallbackTag;
+
   return (
     <HeaderSection
-      title={data.title}
-      subtitle={data.subtitle}
-      description={data.description}
-      highlight={data.highlight}
-      tag={data.tag_badge}
+      title={title}
+      subtitle={subtitle ?? undefined}
+      description={description ?? undefined}
+      highlight={highlight ?? undefined}
+      tag={tag ?? undefined}
       variant={variant}
       align={align}
       className={className}
@@ -154,6 +149,8 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
       hideSubtitle={hideSubtitle}
       hideDivider={hideDivider}
       hideDescription={hideDescription}
+      hideTag={hideTag}
+      dividerTheme={dividerTheme}
     />
   );
 };

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Sun, Moon, Calendar as CalendarIcon } from 'lucide-react';
 import BookingCalendarModal from '../booking/BookingCalendarModal';
+import { useTranslation } from 'react-i18next';
+import { formatDateByLanguage } from '../../lib/dateFormatter';
 
 interface AdminClassPickerProps {
     date: string;
@@ -20,6 +22,7 @@ const AdminClassPicker: React.FC<AdminClassPickerProps> = ({
     morningStatus,
     eveningStatus
 }) => {
+    const { i18n } = useTranslation();
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
     const isMorningDisabled = morningStatus === 'FULL' || morningStatus === 'CLOSED';
@@ -33,8 +36,7 @@ const AdminClassPicker: React.FC<AdminClassPickerProps> = ({
     };
 
     const formatDate = (dateStr: string) => {
-        const d = new Date(dateStr);
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return formatDateByLanguage(dateStr, i18n.language, { month: 'short', day: 'numeric', year: 'numeric' });
     };
 
     return (

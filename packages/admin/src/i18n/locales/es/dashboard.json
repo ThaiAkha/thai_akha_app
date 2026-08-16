@@ -1,0 +1,65 @@
+{
+  "metrics": {
+    "customers": "Clientes",
+    "orders": "Pedidos"
+  },
+  "recentBookings": {
+    "title": "Reservas recientes",
+    "loading": "Cargando reservas...",
+    "colUser": "Usuario",
+    "colDate": "Fecha",
+    "colClass": "Clase",
+    "colPax": "Pax",
+    "colStatus": "Estado",
+    "sessionMorning": "Tour mañana",
+    "sessionEvening": "Cena tarde",
+    "guestDefault": "Huésped"
+  },
+  "agencyBookings": {
+    "title": "Reservas de agencia",
+    "loading": "Cargando reservas de agencia...",
+    "colRef": "Ref. agencia / Huésped",
+    "colDate": "Fecha",
+    "colPax": "Pax",
+    "colStatus": "Estado",
+    "guest": "Huésped"
+  },
+  "explorer": {
+    "search": "Buscar registros...",
+    "filter": "Filtrar",
+    "noResults": "Sin resultados",
+    "loading": "Cargando...",
+    "noSelection": "Selecciona un registro para inspeccionar",
+    "rows": "filas",
+    "columns": "columnas",
+    "addNew": "Agregar",
+    "refresh": "Actualizar",
+    "tableView": "Vista de tabla",
+    "gridView": "Vista de cuadrícula",
+    "refreshing": "Actualizando...",
+    "refreshData": "Actualizar datos",
+    "exportOptions": "Opciones de exportación",
+    "filterByText": "Filtrar por texto",
+    "createNew": "Crear nuevo",
+    "uploadFiles": "Subir archivos",
+    "emptyTable": "Tabla vacía",
+    "emptyTableHint": "Agrega tu primer registro para comenzar",
+    "closeCancel": "Cerrar y cancelar",
+    "close": "Cerrar",
+    "details": "Detalles"
+  },
+  "ecommerce": {
+    "demographics": "Demografía de clientes",
+    "demographicsSubtitle": "Número de clientes por país",
+    "monthlySales": "Ventas mensuales",
+    "salesSeriesName": "Ventas",
+    "target": "Meta",
+    "revenue": "Ingresos",
+    "today": "Hoy",
+    "monthlyTarget": "Meta mensual",
+    "monthlyTargetSubtitle": "Meta que has establecido para cada mes",
+    "monthlyTargetMessage": "Ganaste $3287 hoy, es mayor que el mes pasado. ¡Sigue así!",
+    "viewMore": "Ver más",
+    "delete": "Eliminar"
+  }
+}

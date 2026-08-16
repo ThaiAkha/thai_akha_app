@@ -74,11 +74,11 @@ const Tooltip: React.FC<TooltipProps> = ({
             style={{ left: coords.x, top: coords.y }}
           >
             <div
-              className={`absolute ${positionClasses[position]} bg-gray-900 text-white text-sm font-accent px-4 py-1 rounded-2xl whitespace-nowrap backdrop-blur-sm border border-white/10 shadow-2xl`}
+              className={`absolute ${positionClasses[position]} bg-surface text-title text-sm font-accent [padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)] rounded-2xl whitespace-nowrap backdrop-blur-sm border border-border shadow-2xl`}
             >
               {content}
               <div
-                className={`absolute w-3 h-3 bg-gray-900 transform rotate-45 border border-white/10 ${position === 'top'
+                className={`absolute w-3 h-3 bg-surface transform rotate-45 border border-border ${position === 'top'
                   ? 'bottom-[-6px] left-1/2 -translate-x-1/2 border-t-transparent border-l-transparent'
                   : position === 'right'
                     ? 'left-[-6px] top-1/2 -translate-y-1/2 border-r-transparent border-b-transparent'

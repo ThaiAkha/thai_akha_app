@@ -23,5 +23,43 @@
     "colPax": "จำนวนคน",
     "colStatus": "สถานะ",
     "guest": "แขก"
+  },
+  "explorer": {
+    "search": "ค้นหาข้อมูล...",
+    "filter": "กรอง",
+    "noResults": "ไม่พบผลลัพธ์",
+    "loading": "กำลังโหลด...",
+    "noSelection": "เลือกข้อมูลเพื่อตรวจสอบ",
+    "rows": "แถว",
+    "columns": "คอลัมน์",
+    "addNew": "เพิ่มใหม่",
+    "refresh": "รีเฟรช",
+    "tableView": "สลับไปยังมุมมองตาราง",
+    "gridView": "สลับไปยังมุมมองกริด",
+    "refreshing": "กำลังรีเฟรช...",
+    "refreshData": "รีเฟรชข้อมูล",
+    "exportOptions": "ตัวเลือกการส่งออก",
+    "filterByText": "กรองรายการตามข้อความ",
+    "createNew": "สร้างรายการใหม่",
+    "uploadFiles": "อัปโหลดไฟล์",
+    "emptyTable": "ตารางว่างเปล่า",
+    "emptyTableHint": "เพิ่มข้อมูลแรกเพื่อเริ่มต้น",
+    "closeCancel": "ปิดและยกเลิก",
+    "close": "ปิด",
+    "details": "รายละเอียด"
+  },
+  "ecommerce": {
+    "demographics": "ข้อมูลประชากรลูกค้า",
+    "demographicsSubtitle": "จำนวนลูกค้าตามประเทศ",
+    "monthlySales": "ยอดขายรายเดือน",
+    "salesSeriesName": "ยอดขาย",
+    "target": "เป้าหมาย",
+    "revenue": "รายได้",
+    "today": "วันนี้",
+    "monthlyTarget": "เป้าหมายรายเดือน",
+    "monthlyTargetSubtitle": "เป้าหมายที่คุณตั้งไว้สำหรับแต่ละเดือน",
+    "monthlyTargetMessage": "คุณมีรายได้ $3287 วันนี้ ซึ่งสูงกว่าเดือนที่แล้ว ทำต่อไปให้ดีนะ!",
+    "viewMore": "ดูเพิ่มเติม",
+    "delete": "ลบ"
   }
 }

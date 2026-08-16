@@ -87,7 +87,7 @@ export const useMediaResolver = (value: any) => {
 
                         (result.data || []).forEach(record => {
                             const url = record.image_url || null;
-                            const key = record.asset_id; // Use asset_id as key
+                            const key = record.asset_id as string; // Use asset_id as key
                             mediaCache.set(key, url);
                             const idx = idToIndexMap[key];
                             if (idx !== undefined) {

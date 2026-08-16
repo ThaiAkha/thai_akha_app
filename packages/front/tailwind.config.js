@@ -8,8 +8,6 @@
  * - darkMode strategy
  * - content paths
  * - safelist (dynamic class names not detectable by JIT)
- * - front-specific semantic colors (mapped from CSS variables in tokens.css)
- * - plugins
  */
 
 /** @type {import('tailwindcss').Config} */
@@ -18,24 +16,21 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./**/*.{js,ts,jsx,tsx}",
   ],
   safelist: [
-    // ========== SIDEBAR BACKGROUND ==========
-    'dark:bg-gray-dark',
     // ========== FRONT SIDEBAR COLORS (action scale) ==========
-    // Pill active states
     'bg-action-500/20',
-    'dark:bg-action-500/20',
-    // Pill hover state
     'hover:bg-action-500/10',
-    'dark:hover:bg-action-500/10',
-    // Active text & icon
     'text-action-700',
-    'dark:text-action-400',
-    // Badge & indicator
     'bg-action-700',
     // ========== SIDEBAR ICON PADDING ==========
     'pl-5',
+    // ========== SIDEBAR WIDTHS (used via JS constants — must be safelisted) ==========
+    // ========== FOOTER GROUPS (Information, Settings, Login) ==========
+    // All footer buttons use a gray base with quiz-p colored icons
+    'bg-gray-25', 'bg-gray-50', 'border-gray-200', 'hover:bg-gray-100', 'hover:border-gray-300', 'bg-gray-100',
+    'bg-white', 'hover:bg-gray-50',
+    'dark:bg-gray-950', 'dark:bg-gray-900', 'dark:border-gray-800', 'dark:hover:bg-gray-800', 'dark:bg-gray-800', 'dark:border-gray-700', 'dark:hover:bg-gray-900',
+    'text-quiz-p-700', 'dark:text-quiz-p-400',
   ],
 };

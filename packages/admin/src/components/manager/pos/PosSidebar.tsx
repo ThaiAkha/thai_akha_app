@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, Sun, Moon } from 'lucide-react';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
@@ -15,6 +16,8 @@ const PosSidebar: React.FC<PosSidebarProps> = ({
     activeGuestId,
     onSelectGuest,
 }) => {
+    const { t } = useTranslation('pos');
+
     const getSessionIcon = (sessionId?: string) => {
         if (!sessionId) return <Users className="w-5 h-5" />;
         if (sessionId.includes('morning')) {
@@ -56,7 +59,7 @@ const PosSidebar: React.FC<PosSidebarProps> = ({
 
     return (
         <DataExplorerSidebar
-            title="Guests"
+            title={t('sidebar.title')}
             titleIcon={<Users className="w-5 h-5" />}
             items={sidebarItems}
             selectedId={activeGuestId || ''}

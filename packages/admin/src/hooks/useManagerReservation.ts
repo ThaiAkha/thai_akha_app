@@ -1,18 +1,30 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { SessionType } from '../components/common/ClassPicker';
 
 export function useManagerReservation() {
+    const { t } = useTranslation('reservation');
     const [globalDate, setGlobalDate] = useState(new Date().toISOString().split('T')[0]);
-    const [globalSession, setGlobalSession] = useState<SessionType>('all');
+    const [globalSession, setGlobalSession] = useState<SessionType>('morning_class'); // MULTI-KITCHEN: la nav seleziona sempre una sessione
     const [loading, setLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [bookings, setBookings] = useState<any[]>([]);
     const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<any>(null);
+    // MULTI-KITCHEN — colonne teacher + nomi driver + stato move (nav giorni → useDaysOverview)
+    const [kitchens, setKitchens] = useState<{ id: string; full_name: string }[]>([]);
+    const [driverNames, setDriverNames] = useState<Record<string, string>>({});
+    const [movingId, setMovingId] = useState<string | null>(null);
 
     // ✅ AppHeader handles metadata loading automatically
+
+    // MULTI-KITCHEN — kitchen attive (role='kitchen'), dinamiche
+    useEffect(() => {
+        supabase.from('profiles').select('id, full_name').eq('role', 'kitchen').order('full_name')
+            .then(({ data }) => setKitchens((data as { id: string; full_name: string }[]) ?? []));
+    }, []);
 
     // --- FETCH DATA ---
     const fetchTableData = useCallback(async () => {
@@ -23,6 +35,7 @@ export function useManagerReservation() {
                 .select(`
                     internal_id, booking_ref, pax_count, status, session_id, booking_date, pickup_time, customer_note,
                     hotel_name, pickup_zone, meeting_point, requires_dropoff, phone_number, agency_note, user_id, guest_name, guest_email,
+                    payment_status, kitchen_id, pickup_driver_uid,
                     profiles:user_id(full_name, email, dietary_profile, allergies, avatar_url),
                     menu_selections(curry:curry_id(name), soup:soup_id(name), stirfry:stirfry_id(name))
                 `)
@@ -48,6 +61,17 @@ export function useManagerReservation() {
 
             console.log('Bookings loaded:', data?.length || 0, 'for date:', globalDate);
             setBookings(data || []);
+
+            // MULTI-KITCHEN — nomi driver per le card delle colonne teacher
+            const driverIds = Array.from(new Set((data || []).map((b: any) => b.pickup_driver_uid).filter(Boolean)));
+            if (driverIds.length) {
+                const { data: ds } = await supabase.from('profiles').select('id, full_name').in('id', driverIds as string[]);
+                const m: Record<string, string> = {};
+                ((ds as { id: string; full_name: string }[]) ?? []).forEach((d) => { m[d.id] = d.full_name; });
+                setDriverNames(m);
+            } else {
+                setDriverNames({});
+            }
 
             if (selectedBooking) {
                 const updated = data?.find((b: any) => b.internal_id === selectedBooking.internal_id);
@@ -137,7 +161,7 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Save Error:", err);
-            alert("Save Error: " + (err as any).message);
+            alert(t('alerts.saveError', { message: (err as any).message }));
         } finally {
             setIsSaving(false);
         }
@@ -157,7 +181,7 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Cancel Error:", err);
-            alert("Cancel Error: " + (err as any).message);
+            alert(t('alerts.cancelError', { message: (err as any).message }));
         } finally {
             setIsSaving(false);
         }
@@ -177,7 +201,7 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Restore Error:", err);
-            alert("Restore Error: " + (err as any).message);
+            alert(t('alerts.restoreError', { message: (err as any).message }));
         } finally {
             setIsSaving(false);
         }
@@ -199,7 +223,7 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Delete Error:", err);
-            alert("Delete Error: " + (err as any).message);
+            alert(t('alerts.deleteError', { message: (err as any).message }));
         } finally {
             setIsSaving(false);
         }
@@ -209,6 +233,18 @@ export function useManagerReservation() {
         setSelectedBooking(null);
         setIsEditing(false);
     }, []);
+
+    // MULTI-KITCHEN — assegna un gruppo (booking) a una teacher. Autosalvante: RPC set_booking_kitchen
+    // (guardia is_admin) con update ottimistico; rollback via refetch in caso di errore.
+    const moveKitchen = useCallback(async (internalId: string, kitchenId: string) => {
+        setMovingId(internalId);
+        setBookings(prev => prev.map((b: any) => b.internal_id === internalId ? { ...b, kitchen_id: kitchenId } : b));
+        setSelectedBooking((prev: any) => prev && prev.internal_id === internalId ? { ...prev, kitchen_id: kitchenId } : prev);
+        // database.types.ts stale (RPC Fase 1 non rigenerata) → cast.
+        const { error } = await supabase.rpc('set_booking_kitchen' as never, { p_internal_id: internalId, p_kitchen_id: kitchenId } as never);
+        if (error) { console.error('moveKitchen error:', error); await fetchTableData(); }
+        setMovingId(null);
+    }, [fetchTableData]);
 
     // --- COMPUTED ---
     const stats = useMemo(() => {
@@ -227,6 +263,9 @@ export function useManagerReservation() {
         selectedBooking,
         editData,
         stats,
+        kitchens,      // MULTI-KITCHEN
+        driverNames,   // MULTI-KITCHEN
+        movingId,      // MULTI-KITCHEN
 
         // State
         loading,
@@ -250,5 +289,6 @@ export function useManagerReservation() {
         handleRestoreBooking,
         handleDeleteBooking,
         closeInspector,
+        moveKitchen,   // MULTI-KITCHEN
     };
 }

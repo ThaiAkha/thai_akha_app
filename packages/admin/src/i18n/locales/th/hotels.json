@@ -47,12 +47,14 @@
     "fieldEveningStart": "เวลาเริ่มรับตอนเย็น",
     "fieldEveningEnd": "เวลาสิ้นสุดรับตอนเย็น",
     "fieldImageUrl": "URL รูปภาพ",
+    "fieldImageAsset": "รูปภาพ (ไฟล์มีเดีย)",
+    "assetIdPlaceholder": "รหัสไฟล์มีเดีย (uuid)",
     "fieldIconUrl": "URL ไอคอน",
     "fieldActiveStatus": "สถานะการใช้งาน",
     "fieldHotelName": "ชื่อโรงแรม *",
     "placeholderHotelName": "เช่น แชงกรี-ลา เชียงใหม่",
     "fieldZone": "โซนรับส่ง",
-    "noZone": "— ไม่มีโซน —",
+    "noZone": "- ไม่มีโซน -",
     "fieldMapLink": "ลิงก์ Google Maps",
     "placeholderMapLink": "วาง URL Google Maps (ดึง GPS อัตโนมัติ)",
     "fieldAddress": "ที่อยู่",
@@ -79,5 +81,10 @@
     "tooltipEditHotel": "แก้ไขโรงแรมนี้",
     "tooltipEditMP": "แก้ไขจุดนัดหมายนี้",
     "tooltipSave": "บันทึกการแก้ไข"
+  },
+  "alerts": {
+    "nameRequired": "กรุณากรอกชื่อโรงแรม",
+    "saveFailed": "บันทึกข้อมูลโรงแรมล้มเหลว",
+    "saveMPFailed": "บันทึกจุดนัดพบล้มเหลว"
   }
 }

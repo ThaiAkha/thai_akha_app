@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "title": "预订管理 | Thai Akha Kitchen",
+    "description": "管理每日预订和客户详情。"
+  },
+  "kitchen": {
+    "days": "Days & classes",
+    "participants": "Participants",
+    "groupInfo": "Group info",
+    "pickParticipant": "Pick a participant to see their group.",
+    "notRegistered": "Seat not registered yet",
+    "bookingDetails": "Booking details",
+    "contacts": "Contacts",
+    "noContacts": "No contacts on file.",
+    "printReport": "Print report",
+    "print": "Print",
+    "downloadPdf": "Download PDF"
+  },
+  "messages": {
+    "loading": "Loading…"
+  },
+  "empty": {
+    "noParticipants": "Select a day & class.",
+    "noBookings": "No upcoming bookings."
+  },
+  "sidebar": {
+    "title": "客户",
+    "cancelledTitle": "已取消预订",
+    "guest": "访客"
+  },
+  "content": {
+    "loading": "加载中...",
+    "emptySelect": "选择客户以查看详情",
+    "bookingsAvailable": "{{count}}个预订",
+    "noBookings": "所选日期无预订记录",
+    "bookingNumber": "预订号：{{ref}}",
+    "walkIn": "现场",
+    "pickupRequired": "需要接送",
+    "fieldPhone": "电话",
+    "fieldEmail": "电子邮件",
+    "fieldHotel": "酒店",
+    "fieldZone": "区域",
+    "fieldMeetingPoint": "集合点",
+    "notesTitle": "备注",
+    "fieldNote": "客户备注",
+    "statusCancelled": "已取消",
+    "statusActive": "活跃预订",
+    "btnCancelBooking": "取消预订",
+    "btnConfirm": "确认",
+    "btnDiscard": "放弃",
+    "btnRestore": "恢复预订",
+    "btnDeletePerm": "永久删除",
+    "guest": "访客"
+  },
+  "inspector": {
+    "noSelection": "未选择",
+    "noSelHint": "从列表中选择预订以查看和管理详情。",
+    "fieldPax": "参与人数",
+    "fieldDate": "预订日期",
+    "fieldClass": "课程",
+    "morning": "上午",
+    "evening": "下午",
+    "fieldPhone": "电话号码",
+    "fieldPayment": "付款状态",
+    "payPending": "待处理",
+    "payPaid": "已付款",
+    "payPartial": "部分付款",
+    "payRefunded": "已退款",
+    "fieldNotes": "备注",
+    "groupLeader": "Group leader",
+    "guest": "Guest"
+  },
+  "actions": {
+    "tooltipEdit": "编辑此预订",
+    "tooltipSave": "保存更改",
+    "edit": "编辑",
+    "save": "保存",
+    "saving": "保存中..."
+  },
+  "agency": {
+    "pageTitle": "预订",
+    "searchPlaceholder": "搜索参考号或访客...",
+    "loading": "加载预订中...",
+    "noBookings": "未找到预订",
+    "invoiceTitle": "发票预览",
+    "invoiceLabel": "发票",
+    "billedTo": "账单抬头",
+    "partnerAddress": "合作伙伴地址",
+    "guestInfo": "访客信息",
+    "participants": "参与人数",
+    "colDescription": "描述",
+    "colDate": "日期",
+    "colAmount": "金额",
+    "grossSubtotal": "含税小计",
+    "agencyDiscount": "代理折扣（{{rate}}%）",
+    "netPayable": "应付金额",
+    "selectBooking": "选择预订以预览",
+    "inspectorTitle": "检查器",
+    "inspectorIdle": "空闲",
+    "btnPrint": "打印",
+    "btnSaving": "保存中...",
+    "btnSave": "保存",
+    "btnEdit": "编辑",
+    "guestLogistics": "访客后勤",
+    "hotelPickup": "酒店 / 接送",
+    "fieldTime": "时间",
+    "fieldPax": "人数",
+    "internalDetails": "内部详情",
+    "agencyNote": "代理备注",
+    "guestContact": "访客联系方式",
+    "noPhone": "无电话记录",
+    "lifecycleStatus": "生命周期状态",
+    "inspectorIdleMsg": "检查器空闲"
+  },
+  "alerts": {
+    "saveError": "保存错误：{{message}}",
+    "cancelError": "取消错误：{{message}}",
+    "restoreError": "恢复错误：{{message}}",
+    "deleteError": "删除错误：{{message}}"
+  }
+}

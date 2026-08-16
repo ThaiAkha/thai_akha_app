@@ -1,0 +1,1 @@
+/Users/svevomondino/Desktop/thai_akha_brain/000_Core_Agents/030_Cherry/033_App_Prompts/801_Front/cherryPrompt.ts

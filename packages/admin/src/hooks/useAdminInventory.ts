@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 
 export interface Product {
@@ -37,6 +38,7 @@ export const EMPTY_PRODUCT: Product = {
 };
 
 export const useAdminInventory = () => {
+    const { t } = useTranslation('inventory');
     // ✅ AppHeader handles metadata loading automatically
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -60,8 +62,8 @@ export const useAdminInventory = () => {
                 supabase.from('shop_categories').select('*').order('title')
             ]);
 
-            if (prodRes.data) setProducts(prodRes.data);
-            if (catRes.data) setCategories(catRes.data);
+            if (prodRes.data) setProducts(prodRes.data as any[]);
+            if (catRes.data) setCategories(catRes.data as any[]);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -110,7 +112,7 @@ export const useAdminInventory = () => {
 
     const handleSave = async () => {
         if (!editingProduct.item_name || !editingProduct.sku) {
-            alert("Please enter at least Name and SKU kha.");
+            alert(t('alerts.nameSkuRequired'));
             return;
         }
 
@@ -127,10 +129,10 @@ export const useAdminInventory = () => {
             if (isNew) {
                 handleReset();
             }
-            alert("Product saved successfully kha!");
+            alert(t('alerts.savedSuccess'));
         } catch (err: any) {
             console.error("Save error:", err);
-            alert("Failed to save: " + err.message);
+            alert(t('alerts.saveFailed', { message: err.message }));
         } finally {
             setIsSaving(true); // Should this be false? Fixed to false.
             setIsSaving(false);
@@ -139,7 +141,7 @@ export const useAdminInventory = () => {
 
     const handleDelete = async () => {
         if (!editingProduct.id) return;
-        if (!window.confirm("Are you sure you want to delete this product?")) return;
+        if (!window.confirm(t('alerts.confirmDelete'))) return;
 
         setIsSaving(true);
         try {
@@ -226,7 +228,7 @@ export const useAdminInventory = () => {
     const copyToClipboard = () => {
         const exportData = getExportData();
         navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
-        alert(`${exportData.length} items copied to clipboard kha!`);
+        alert(t('alerts.copiedCount', { count: exportData.length }));
         setIsExportOpen(false);
     };
 

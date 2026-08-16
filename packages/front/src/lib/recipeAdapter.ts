@@ -1,108 +1,142 @@
 import { RecipeData } from '../components/menu/RecipeView';
 
 /**
- * 🧠 RECIPE ADAPTER ENGINE V2
- * Supporta ora Dieta (Lifestyle) E Allergie (Safety Filters).
+ * 🥗 DIETARY SUBSTITUTION INTERFACE
+ */
+export interface DietarySubstitution {
+  original: string;
+  substitute: string;
+  alt_substitute?: string | null;
+}
+
+/**
+ * 🥗 DIETARY PROFILE INTERFACE
+ */
+export interface DietaryProfile {
+  id: string;
+  substitutions: DietarySubstitution[];
+  [key: string]: unknown;
+}
+
+/**
+ * 🥗 RAW KEY INGREDIENT — dati completi da recipe_key_ingredients (Sistema B)
+ */
+export interface RawKeyIngredient {
+  ingredient: string;
+  ingredient_id: string | null;
+  display_order: number;
+  dietary_adaptations: Record<string, { action: 'substitute' | 'omit'; substitute_id?: string }>;
+  ui_role: string;
+}
+
+/**
+ * 🧠 RECIPE ADAPTER ENGINE V4
+ *
+ * Gerarchia sostituzione (in ordine di priorità):
+ *   Sistema B (recipe_key_ingredients.dietary_adaptations) → override per-ricetta
+ *   Sistema A (dietary_substitutions via DietaryProfile)   → regola globale di default
+ *
+ * Sistema B gestisce: omit (rimuove ingrediente), substitute (delega a Sistema A per il nome)
+ * Sistema A gestisce: substitute (testo), omit via sentinel "Omitted" → rimosso
  */
 export const adaptRecipeToDiet = (
-  recipe: RecipeData, 
-  diet: string, 
-  allergies: string[] = [] // 👈 NUOVO PARAMETRO
+  recipe: RecipeData,
+  diet: string,
+  allergies: string[] = [],
+  profiles: DietaryProfile[] = [],
+  rawKeyIngredients: RawKeyIngredient[] = []   // Sistema B: campi completi da DB
 ): RecipeData => {
 
   const cleanDiet = diet?.replace('diet_', '').toLowerCase() || 'regular';
   const dietKey = `diet_${cleanDiet}`;
-  
+
   // 1. CLONAZIONE
   const adapted = { ...recipe };
 
-  // 2. ADATTAMENTO BASE (DIETA)
-  // Verifica se esiste variante nel DB, altrimenti fallback algoritmico
+  // 2. ADATTAMENTO BASE (dietary_variants dal DB — nome, descrizione, ingredienti variante)
   const dbVariant = recipe.dietary_variants?.[dietKey];
-
   if (dbVariant) {
     if (dbVariant.name) adapted.name = dbVariant.name;
     if (dbVariant.description) adapted.description = dbVariant.description;
-    if (dbVariant.keyIngredients) adapted.keyIngredients = dbVariant.keyIngredients;
-  } else {
-    // Fallback Algoritmico per dieta
-    if (cleanDiet !== 'regular' && !adapted.name.toLowerCase().includes(cleanDiet)) {
-      const suffix = cleanDiet.charAt(0).toUpperCase() + cleanDiet.slice(1);
-      adapted.name = `${recipe.name} (${suffix})`;
+    if (dbVariant.health_benefits) adapted.healthBenefits = dbVariant.health_benefits;
+    if (dbVariant.subtitle) adapted.subtitle = dbVariant.subtitle;
+    if (dbVariant.excerpt) adapted.excerpt = dbVariant.excerpt;
+    if (Array.isArray(dbVariant.key_ingredients) && dbVariant.key_ingredients.length > 0) {
+      adapted.keyIngredients = dbVariant.key_ingredients;
     }
-    adapted.keyIngredients = calculateIngredients(recipe.keyIngredients, cleanDiet);
   }
 
-  // 3. 🛡️ FILTRO DI SICUREZZA (ALLERGIE) - NUOVO LAYER
-  if (allergies.length > 0) {
-    adapted.keyIngredients = filterAllergens(adapted.keyIngredients, allergies);
-    
-    // Aggiungiamo un flag visuale se ci sono modifiche di sicurezza
-    // (Opzionale: potremmo cambiare il nome in "Safe Pad Thai")
+  // 3. SISTEMA B — costruisce l'insieme degli ingredienti da omettere per questa ricetta
+  // (override per-ricetta: vince su Sistema A per il caso "omit")
+  // Nota: il caso "substitute" di Sistema B delega il nome a Sistema A (UUID resolution futura)
+  const omitSet = new Set<string>();
+
+  if (rawKeyIngredients.length > 0) {
+    const allergyKeys = allergies.map(
+      a => `allergy_${a.toLowerCase().replace(/\s+/g, '_')}`
+    );
+
+    for (const rki of rawKeyIngredients) {
+      const da = rki.dietary_adaptations || {};
+
+      if (da[dietKey]?.action === 'omit') omitSet.add(rki.ingredient.toLowerCase());
+
+      for (const ak of allergyKeys) {
+        if (da[ak]?.action === 'omit') omitSet.add(rki.ingredient.toLowerCase());
+      }
+    }
   }
 
-  // 4. VISUAL BADGE
+  // 4. SISTEMA A — sostituzioni globali da DietaryProfile (text-based)
+  // Base: adapted.keyIngredients (può essere già modificato da dbVariant al passo 2)
+  const activeProfile = profiles.find(p => p.id === dietKey || p.id === diet);
+  let ingredients = applySubstitutions(adapted.keyIngredients, activeProfile?.substitutions || []);
+
+  // Allergie
+  for (const allergyKey of allergies) {
+    const allergyProfileId = `allergy_${allergyKey.toLowerCase().replace(/\s+/g, '_')}`;
+    const allergyProfile = profiles.find(p => p.id === allergyProfileId);
+    if (allergyProfile) {
+      ingredients = applySubstitutions(ingredients, allergyProfile.substitutions);
+    }
+  }
+
+  // 5. APPLICA OMIT DI SISTEMA B — filtra dopo Sistema A
+  // (così gli ingredienti già sostituiti da A non sfuggono all'omit di B)
+  if (omitSet.size > 0) {
+    ingredients = ingredients.filter(ing => !omitSet.has(ing.toLowerCase()));
+  }
+
+  adapted.keyIngredients = ingredients;
+
+  // 6. VISUAL BADGE
   adapted.activeDietLabel = cleanDiet === 'regular' ? 'ORIGINAL' : cleanDiet.toUpperCase();
 
   return adapted;
 };
 
 /**
- * Rimuove o sostituisce ingredienti basandosi sulle allergie selezionate
+ * Applica una lista di sostituzioni a un array di ingredienti.
+ * Se substitute = "Omitted" (sentinel DB), l'ingrediente viene rimosso dalla lista.
  */
-const filterAllergens = (ingredients: string[], allergies: string[]): string[] => {
-  const activeFilters = allergies.map(a => a.toLowerCase());
+const applySubstitutions = (ingredients: string[], substitutions: DietarySubstitution[]): string[] => {
+  if (!substitutions.length) return ingredients;
 
-  return ingredients.map(ing => {
-    const lowerIng = ing.toLowerCase();
+  return ingredients
+    .map((ing): string | null => {
+      const lowerIng = ing.toLowerCase();
 
-    // 🥜 PEANUTS
-    if (activeFilters.includes('peanuts')) {
-      if (lowerIng.includes('peanut')) return 'Sunflower Seeds (Safe Crunch)';
-    }
+      const sub = substitutions.find(s => lowerIng.includes(s.original.toLowerCase()));
 
-    // 🦐 SHELLFISH
-    if (activeFilters.includes('shellfish')) {
-      if (lowerIng.includes('shrimp') && !lowerIng.includes('paste')) return 'King Mushrooms';
-      if (lowerIng.includes('shrimp paste')) return 'Sea Salt (No Shrimp)';
-      if (lowerIng.includes('oyster sauce')) return 'Mushroom Sauce';
-      if (lowerIng.includes('fish sauce')) return 'Soy Sauce'; // Spesso cross-contaminato
-    }
+      if (sub) {
+        // "Omitted" è il sentinel DB per ingredienti da rimuovere
+        if (sub.substitute === 'Omitted') return null;
+        // Se esiste un'alternativa, esponi entrambe — futura UI "1 vs 2"
+        if (sub.alt_substitute) return `${sub.substitute} / ${sub.alt_substitute}`;
+        return sub.substitute;
+      }
 
-    // 🍞 GLUTEN
-    if (activeFilters.includes('gluten')) {
-      if (lowerIng.includes('soy sauce')) return 'Tamari (GF)';
-      if (lowerIng.includes('noodles') && !lowerIng.includes('rice')) return 'Rice Noodles';
-    }
-
-    return ing;
-  });
-};
-
-/**
- * Helper Base per Dieta (Logica esistente)
- */
-const calculateIngredients = (originalIngredients: string[], diet: string): string[] => {
-  return originalIngredients.map(ing => {
-    const lowerIng = ing.toLowerCase();
-
-    if (diet === 'vegan' || diet === 'vegetarian') {
-      if (lowerIng.includes('chicken') || lowerIng.includes('pork') || lowerIng.includes('beef')) return 'Firm Tofu';
-      if (lowerIng.includes('shrimp') && !lowerIng.includes('paste')) return 'King Mushrooms';
-      if (lowerIng.includes('fish sauce')) return 'Soy Sauce';
-      if (lowerIng.includes('oyster sauce')) return 'Mushroom Sauce';
-      if (lowerIng.includes('shrimp paste')) return 'Sea Salt';
-    }
-
-    if (diet === 'vegan') {
-      if (lowerIng.includes('egg')) return 'Tofu Skin';
-      if (lowerIng.includes('honey')) return 'Coconut Sugar';
-    }
-
-    if (diet === 'pescatarian') {
-      if (lowerIng.includes('chicken') || lowerIng.includes('pork')) return 'River Prawns';
-    }
-
-    return ing;
-  });
+      return ing;
+    })
+    .filter((ing): ing is string => ing !== null);
 };

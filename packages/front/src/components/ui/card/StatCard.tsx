@@ -57,19 +57,19 @@ const StatCard: React.FC<StatCardProps> = ({
       icon: 'text-primary dark:text-primary-200',
       bg: 'bg-primary/5 dark:bg-primary/20',
       border: 'border-primary/60',
-      text: 'text-gray-800 dark:text-gray-100',
+      text: 'text-title',
     },
     secondary: {
       icon: 'text-secondary dark:text-secondary-200',
       bg: 'bg-secondary/5 dark:bg-secondary/20',
       border: 'border-secondary/60',
-      text: 'text-gray-800 dark:text-gray-100',
+      text: 'text-title',
     },
     action: {
       icon: 'text-action dark:text-action-200',
       bg: 'bg-action/5 dark:bg-action/20',
       border: 'border-action/60',
-      text: 'text-gray-800 dark:text-gray-100',
+      text: 'text-title',
     },
     success: {
       icon: 'text-green-500',
@@ -108,17 +108,38 @@ const StatCard: React.FC<StatCardProps> = ({
       text: 'text-quiz',
     },
     transparent: {
-      icon: 'text-gray-500',
+      icon: 'text-muted',
       bg: 'bg-transparent',
       border: 'border-transparent',
-      text: 'text-gray-500',
+      text: 'text-muted',
     },
   };
 
-  const currentSize = {
-    sm: { padding: 'pl-3 pr-4 py-3', iconSize: 'md' as const, titleSize: 'microLabel' as const, valueSize: 'h6' as const, descSize: 'caption' as const },
-    md: { padding: 'p-5', iconSize: 'md' as const, titleSize: 'h5' as const, valueSize: 'h4' as const, descSize: 'paragraphS' as const },
-    lg: { padding: 'p-6', iconSize: 'md' as const, titleSize: 'h4' as const, valueSize: 'h3' as const, descSize: 'paragraphM' as const },
+  const sizeConfig = {
+    sm: { 
+      paddingClass: 'p-4', 
+      paddingPx: 16,
+      iconSize: 'md' as const, 
+      titleSize: 'microLabel' as const, 
+      valueSize: 'h6' as const, 
+      descSize: 'caption' as const 
+    },
+    md: { 
+      paddingClass: 'p-5', 
+      paddingPx: 20,
+      iconSize: 'md' as const, 
+      titleSize: 'h5' as const, 
+      valueSize: 'h4' as const, 
+      descSize: 'paragraphS' as const 
+    },
+    lg: { 
+      paddingClass: 'p-6', 
+      paddingPx: 24,
+      iconSize: 'md' as const, 
+      titleSize: 'h4' as const, 
+      valueSize: 'h3' as const, 
+      descSize: 'paragraphM' as const 
+    },
   }[size];
 
   const currentColor = colorStyles[color] || colorStyles.primary;
@@ -129,46 +150,56 @@ const StatCard: React.FC<StatCardProps> = ({
     right: 'text-right items-end',
   };
 
+  // Concentric Radius Calculation
+  // Standard: outer_radius = inner_radius + padding
+  // Going back to radius-card-sm [20px] as requested for a tighter look.
+  const outerRadius = size === 'lg' ? 'var(--radius-card-full)' : 'var(--radius-card-sm)';
+  
   const content = (
     <div className={cn("flex flex-col flex-1", alignStyles[align])}>
       {valuePosition === 'top' ? (
          <>
            <div className="flex items-baseline gap-1 mb-0.5">
-             {prefix && <Typography as="span" variant="monoLabel" className="opacity-50">{prefix}</Typography>}
+             {prefix && <Typography as="span" variant="caption" className="opacity-50 font-sans">{prefix}</Typography>}
              {value && (
-               <Typography variant={currentSize.valueSize} color="title">
+               /* as="p": stat values are UI metrics, not section headings — h-variant
+                  used for visual sizing only. Renders as <p> to prevent D04 skips. */
+               <Typography variant={sizeConfig.valueSize} as="p" color="title" className="font-sans">
                  {value}
                </Typography>
              )}
-             {suffix && <Typography as="span" variant="monoLabel" className="opacity-80">{suffix}</Typography>}
+             {suffix && <Typography as="span" variant="caption" className="opacity-80 font-sans">{suffix}</Typography>}
            </div>
-           <div className={cn("relative", loading && "min-h-[1.5rem] w-3/4 animate-pulse bg-gray-200 dark:bg-gray-800 rounded mb-1")}>
-              <Typography variant={currentSize.titleSize} className={cn('opacity-70', currentColor.text)}>
+           <div className={cn("relative", loading && "min-h-[1.5rem] w-3/4 animate-pulse bg-surface-2 rounded mb-1")}>
+              {/* as="p": label beneath stat value — not a heading element */}
+              <Typography variant={sizeConfig.titleSize} as="p" className={cn('opacity-70 font-sans', currentColor.text)}>
                 {displayTitle}
               </Typography>
            </div>
          </>
       ) : (
          <>
-           <div className={cn("relative", loading && "min-h-[1.5rem] w-3/4 animate-pulse bg-gray-200 dark:bg-gray-800 rounded mb-1")}>
-              <Typography variant={currentSize.titleSize} className={cn('opacity-70 mb-1', currentColor.text)}>
+           <div className={cn("relative", loading && "min-h-[1.5rem] w-3/4 animate-pulse bg-surface-2 rounded mb-1")}>
+              <Typography variant={sizeConfig.titleSize} className={cn('opacity-70 mb-1 font-sans', currentColor.text)}>
                 {displayTitle}
               </Typography>
            </div>
            <div className="flex items-baseline gap-1">
-             {prefix && <Typography as="span" variant="monoLabel" className="opacity-80">{prefix}</Typography>}
+             {prefix && <Typography as="span" variant="caption" className="opacity-80 font-sans">{prefix}</Typography>}
              {value && (
-               <Typography variant={currentSize.valueSize} color="title">
+               /* as="p": stat values are UI metrics, not section headings — h-variant
+                  used for visual sizing only. Renders as <p> to prevent D04 skips. */
+               <Typography variant={sizeConfig.valueSize} as="p" color="title" className="font-sans">
                  {value}
                </Typography>
              )}
-             {suffix && <Typography as="span" variant="monoLabel" className="opacity-50">{suffix}</Typography>}
+             {suffix && <Typography as="span" variant="caption" className="opacity-50 font-sans">{suffix}</Typography>}
            </div>
          </>
       )}
-      <div className={cn("relative", loading && "min-h-[3rem] w-full animate-pulse bg-gray-200/50 dark:bg-gray-800/50 rounded mt-2")}>
+      <div className={cn("relative", loading && "min-h-[3rem] w-full animate-pulse bg-gray-200/50 dark:bg-gray-800/50 rounded mt-1")}>
         {displayDescription && (
-          <Typography variant={currentSize.descSize} className="mt-2 opacity-60 line-clamp-3">
+          <Typography variant={sizeConfig.descSize} className="mt-1 opacity-60 line-clamp-3">
             {displayDescription}
           </Typography>
         )}
@@ -179,12 +210,17 @@ const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       onClick={onClick}
+      style={{ 
+        '--card-padding': `${sizeConfig.paddingPx}px`,
+        '--outer-radius': outerRadius,
+        borderRadius: 'var(--outer-radius)',
+      } as React.CSSProperties}
       className={cn(
-        'rounded-2xl flex',
-        iconPosition === 'top' ? 'flex-col' : 'items-center gap-4',
+        'flex',
+        iconPosition === 'top' ? 'flex-col' : 'items-center gap-3',
         iconPosition === 'right' && 'flex-row-reverse',
         alignStyles[align],
-        currentSize.padding,
+        sizeConfig.paddingClass,
         currentColor.bg,
         bordered && `border ${currentColor.border}`,
         onClick ? 'cursor-pointer' : 'cursor-default',
@@ -192,12 +228,19 @@ const StatCard: React.FC<StatCardProps> = ({
       )}
     >
       {(icon || displayImage) && (
-        <div className={cn(
-          "shrink-0 overflow-hidden flex items-center justify-center",
-          displayImage ? "rounded-xl" : "p-2.5 rounded-xl bg-white/70 dark:bg-white/10",
-          iconPosition === 'top' ? (displayImage ? 'w-full aspect-video mb-6' : 'mb-6') : (displayImage ? 'w-16 h-16 sm:w-20 sm:h-20' : ''),
-          align === 'center' && iconPosition === 'top' && 'mx-auto'
-        )}>
+        <div 
+          style={{
+            // The magic formula: R_inner = R_outer - Padding
+            // We ensure it never goes below 4px to maintain smoothness
+            borderRadius: 'max(4px, calc(var(--outer-radius) - var(--card-padding) + 4px))'
+          }}
+          className={cn(
+            "shrink-0 overflow-hidden flex items-center justify-center",
+            displayImage ? "" : "p-1.5 bg-white/70 dark:bg-white/10",
+            iconPosition === 'top' ? (displayImage ? 'w-full aspect-video mb-6' : 'mb-6') : (displayImage ? 'w-16 h-16 sm:w-20 sm:h-20' : ''),
+            align === 'center' && iconPosition === 'top' && 'mx-auto'
+          )}
+        >
           {displayImage ? (
             <MediaImage
               assetId={assetId}
@@ -207,7 +250,7 @@ const StatCard: React.FC<StatCardProps> = ({
               imgClassName="w-full h-full object-cover"
             />
           ) : (
-            <Icon name={icon!} className={currentColor.icon} size={currentSize.iconSize} />
+            <Icon name={icon!} className={currentColor.icon} size={sizeConfig.iconSize} />
           )}
         </div>
       )}

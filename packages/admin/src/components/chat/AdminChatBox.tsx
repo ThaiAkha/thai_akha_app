@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCherryContext } from '../../providers/CherryProvider';
 import { cn } from '@thaiakha/shared/lib/utils';
 import {
@@ -32,6 +33,7 @@ const SoundWave: React.FC = () => (
 );
 
 export const AdminChatBox: React.FC = () => {
+  const { t } = useTranslation('common');
   const [chatState, setChatState] = useState<ChatState>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -97,7 +99,7 @@ export const AdminChatBox: React.FC = () => {
         <button
           onClick={() => persistState('expanded')}
           className="size-14 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
-          aria-label="Open Cherry AI"
+          aria-label={t('aria.openCherry')}
         >
           <Bot size={24} />
         </button>
@@ -117,7 +119,7 @@ export const AdminChatBox: React.FC = () => {
             <SoundWave />
             <button
               onClick={stopSession}
-              className="text-[10px] text-white/80 hover:text-white transition-colors"
+              className="text-xs text-white/80 hover:text-white transition-colors"
             >
               Stop voice
             </button>
@@ -130,14 +132,14 @@ export const AdminChatBox: React.FC = () => {
           <button
             onClick={() => persistState('expanded')}
             className="size-6 rounded-lg bg-white/20 hover:bg-white/40 flex items-center justify-center transition-colors"
-            aria-label="Expand chat"
+            aria-label={t('aria.expandChat')}
           >
             <Maximize2 size={10} className="text-white" />
           </button>
           <button
             onClick={() => persistState('closed')}
             className="size-6 rounded-lg bg-white/20 hover:bg-white/40 flex items-center justify-center transition-colors"
-            aria-label="Close chat"
+            aria-label={t('aria.closeChat')}
           >
             <X size={10} className="text-white" />
           </button>
@@ -170,7 +172,7 @@ export const AdminChatBox: React.FC = () => {
           </div>
           <div>
             <h4 className="font-bold text-sm tracking-wide">Cherry</h4>
-            <p className="text-[10px] opacity-60 uppercase tracking-widest">
+            <p className="text-xs opacity-60 uppercase tracking-widest">
               {activeError
                 ? <span className="normal-case opacity-80">{activeError}</span>
                 : isConnecting ? 'Connecting...'
@@ -188,21 +190,21 @@ export const AdminChatBox: React.FC = () => {
               'size-9 rounded-xl flex items-center justify-center transition-all duration-300',
               isVoiceActive ? 'bg-white text-red-600' : 'bg-white/10 text-white hover:bg-white/20'
             )}
-            aria-label="Toggle voice"
+            aria-label={t('aria.toggleVoice')}
           >
             {isVoiceActive ? <MicOff size={16} /> : <Mic size={16} />}
           </button>
           <button
             onClick={() => persistState('minimized')}
             className="size-9 rounded-xl bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors"
-            aria-label="Minimize"
+            aria-label={t('aria.minimizeChat')}
           >
             <Minus size={16} />
           </button>
           <button
             onClick={() => persistState('closed')}
             className="size-9 rounded-xl bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors"
-            aria-label="Close"
+            aria-label={t('aria.close')}
           >
             <X size={16} />
           </button>
@@ -217,7 +219,7 @@ export const AdminChatBox: React.FC = () => {
             className={cn('flex flex-col', m.role === 'user' ? 'items-end' : 'items-start')}
           >
             <div className={cn(
-              'max-w-[85%] p-3 rounded-2xl text-[13px] leading-relaxed',
+              'max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed',
               m.role === 'user'
                 ? 'bg-brand-500 text-white rounded-tr-none'
                 : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none'
@@ -235,14 +237,14 @@ export const AdminChatBox: React.FC = () => {
           <div className="mt-auto space-y-3">
             {inputTranscript && (
               <div className="flex justify-end opacity-60">
-                <div className="bg-white/10 p-2 rounded-xl text-[11px] text-white italic">
+                <div className="bg-white/10 p-2 rounded-xl text-xs text-white italic">
                   &ldquo;{inputTranscript}...&rdquo;
                 </div>
               </div>
             )}
             {outputTranscript && (
               <div className="flex justify-start">
-                <div className="bg-brand-500/20 p-3 rounded-xl text-[12px] text-white border border-brand-500/30">
+                <div className="bg-brand-500/20 p-3 rounded-xl text-xs text-white border border-brand-500/30">
                   Cherry: {outputTranscript}
                 </div>
               </div>

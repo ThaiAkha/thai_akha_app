@@ -1,9 +1,12 @@
 // packages/admin/src/hooks/useGeminiLive.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { orchestrator } from '@thaiakha/shared/prompts';
-import { getVoiceConfig } from '@thaiakha/shared/config/voice.config';
+import { LiveServerMessage, Modality } from '@google/genai';
+import { getLiveGeminiClient } from '../services/geminiClient';
+import { selectAdminAgent, buildAdminAgentPrompt } from '../prompts/adminAgents';
+import { formatScopedDataBlocks } from '../prompts/scopedData';
+import { fetchAdminScopedData } from '../prompts/adminScopedFetch';
 import { saveMessage } from '@thaiakha/shared/services';
+import { GEMINI_LIVE_MODEL } from '@thaiakha/shared/lib/cherry-prompts';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
@@ -16,7 +19,6 @@ interface SessionState {
 
 export const useGeminiLive = (
   userProfile?: any,
-  appContext: 'front' | 'admin' = 'admin',
   sessionId?: string | null
 ) => {
   const [state, setState] = useState<SessionState>({
@@ -117,10 +119,7 @@ export const useGeminiLive = (
     setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error('API Key is missing from environment.');
-
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = await getLiveGeminiClient();
       const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
 
       audioCtxRef.current = new AudioContextClass({ sampleRate: 24000 });
@@ -129,19 +128,24 @@ export const useGeminiLive = (
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
-      const voiceConfig = getVoiceConfig(userProfile, appContext);
-      const activeAgent = orchestrator.getAgent(appContext, userProfile?.role);
-      const resolvedSystemInstruction = overrideInstruction || orchestrator.buildPrompt(
-        activeAgent,
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
+      // Multi-Cherry per ruolo (voce): stesso agente + DATI scopati per ruolo del
+      // text chat (Fase 3, fetcher condiviso). isVoiceMode=true.
+      const agent = selectAdminAgent(userProfile?.role);
+      const scoped = await fetchAdminScopedData(userProfile?.role, userProfile?.id, today, nextWeek);
+      const resolvedSystemInstruction = overrideInstruction || buildAdminAgentPrompt(
+        agent,
         userProfile || {},
-        userProfile?.dietary_profile || 'diet_regular',
-        userProfile?.allergies || [],
+        formatScopedDataBlocks(scoped),
         true,
-        'admin'
       );
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+        // Model id da single source of truth (@thaiakha/shared) → allineato al front.
+        // ⚠️ Deve essere l'id COMPLETO: un alias corto fa fallire connect → voce ko.
+        model: GEMINI_LIVE_MODEL,
         callbacks: {
           onopen: async () => {
             setState(prev => ({ ...prev, status: 'active' }));
@@ -230,7 +234,7 @@ export const useGeminiLive = (
           responseModalities: [Modality.AUDIO],
           speechConfig: {
             voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: voiceConfig.voiceName },
+              prebuiltVoiceConfig: { voiceName: agent.voiceName },
             },
           },
           systemInstruction: resolvedSystemInstruction,

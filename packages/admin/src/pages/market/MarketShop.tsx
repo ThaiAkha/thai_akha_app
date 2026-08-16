@@ -16,14 +16,27 @@ import {
   Edit, X, ShoppingCart, CheckCircle2
 } from 'lucide-react';
 import PageContainer from '../../components/layout/PageContainer';
+import { PackStepper } from '../../components/market/PackStepper';
+import { describeQty, packSize, baseUnit, packLabel } from '../../components/market/packUtils';
+import WorkerSelector from '../../components/common/WorkerSelector';
+import type { WorkerRole } from '@thaiakha/shared/types/workers.types';
+
+// "Who are you?" filters by the FUNCTION of the flow, never by login:
+// teacher market → teachers · logistics market → logistics + setup hands.
+const WORKER_ROLES_BY_SCOPE: Record<'logistics' | 'teacher', readonly WorkerRole[]> = {
+  teacher: ['teacher'],
+  logistics: ['logistics', 'setup'],
+};
 
 // --- TYPES ---
 interface ChecklistDisplayItem {
   id: string;
   name: string;
-  qty: number;
-  unit: string;
+  qty: number;      // number of purchase packs
+  unit: string;     // pack label (kg | box | pack | crate ...)
   price: number;
+  pack_size: number; // content of one pack, in base_unit
+  base_unit: string;
 }
 
 // Normalizes both formState entries [id, {qty,price}] and DraftItem snapshots
@@ -35,9 +48,14 @@ function normalizeEntry(
   if (Array.isArray(entry)) {
     const [id, val] = entry;
     const libItem = lib.find(l => l.id === id);
-    return { id, name: libItem?.name_en || '', qty: val.qty, unit: libItem?.default_unit || 'unit', price: val.price };
+    return {
+      id, name: libItem?.name_en || '', qty: val.qty, price: val.price,
+      unit: libItem ? packLabel(libItem) : 'unit',
+      pack_size: libItem ? packSize(libItem) : 1,
+      base_unit: libItem ? baseUnit(libItem) : 'unit',
+    };
   }
-  return { id: entry.id, name: entry.name, qty: entry.quantity, unit: entry.unit, price: entry.price };
+  return { id: entry.id, name: entry.name, qty: entry.quantity, unit: entry.unit, price: entry.price, pack_size: entry.pack_size ?? 1, base_unit: entry.base_unit ?? entry.unit };
 }
 
 interface LibraryItem {
@@ -51,15 +69,19 @@ interface LibraryItem {
   logistics_shop: string;
   teacher_shop: string;
   default_unit: string;
+  purchase_pack_size: number | null;
+  purchase_pack_label: string | null;
 }
 
 interface DraftItem {
   id: string;
   name: string;
-  unit: string;
-  quantity: number;
+  unit: string;       // pack label
+  quantity: number;   // number of packs
   price: number;
   target_shop: string;
+  pack_size?: number; // content of one pack, in base_unit (absent on legacy snapshots = 1)
+  base_unit?: string;
 }
 
 interface MarketRun {
@@ -69,6 +91,7 @@ interface MarketRun {
   items_snapshot: DraftItem[];
   status: 'planned' | 'completed' | 'approved' | 'expensed';
   total_cost: number;
+  worker_id: string | null; // authors.id - WHO did the shopping (created_by = login audit)
 }
 
 type TabType = 'dashboard' | 'logistics' | 'teacher';
@@ -122,6 +145,7 @@ const MarketShop: React.FC = () => {
   // Workspace State
   const [formState, setFormState] = useState<Record<string, { qty: number; price: number }>>({});
   const [activeShopTab, setActiveShopTab] = useState('All');
+  const [workerId, setWorkerId] = useState<string | null>(null);
 
   const selectedDateStr = useMemo(() => {
     const offset = selectedDate.getTimezoneOffset() * 60000;
@@ -161,6 +185,7 @@ const MarketShop: React.FC = () => {
     });
     setFormState(newState);
     setSelectedRun(run);
+    setWorkerId(run.worker_id ?? null);
     setSelectedDate(new Date(run.run_date));
     setActiveTab(run.shopper_role);
     setViewMode('planner');
@@ -170,6 +195,7 @@ const MarketShop: React.FC = () => {
     setSelectedDate(date);
     setFormState({});
     setSelectedRun(null);
+    setWorkerId(null);
     setViewMode('planner');
     setIsCalendarModalOpen(false);
   };
@@ -209,6 +235,7 @@ const MarketShop: React.FC = () => {
     setSelectedDate(target);
     setFormState({});
     setSelectedRun(null);
+    setWorkerId(null);
     setActiveTab('logistics');
     setViewMode('planner');
   };
@@ -226,6 +253,7 @@ const MarketShop: React.FC = () => {
         setSelectedDate(launch.date ? new Date(launch.date) : new Date());
         setFormState({});
         setSelectedRun(null);
+        setWorkerId(null);
         setActiveTab(launchScope);
         setViewMode('planner');
       } else if (launch.action === 'edit' && launch.run_id) {
@@ -302,6 +330,19 @@ const MarketShop: React.FC = () => {
     });
   };
 
+  // Logistics: qty counts purchase PACKS (ingredients_library.purchase_pack_size).
+  // +1 adds a pack (first tap adds the item), reaching 0 removes the item.
+  const handleAdjustQty = (itemId: string, delta: number) => {
+    setFormState(prev => {
+      const cur = prev[itemId];
+      const next = (cur?.qty ?? 0) + delta;
+      const newState = { ...prev };
+      if (next <= 0) delete newState[itemId];
+      else newState[itemId] = { qty: next, price: cur?.price ?? 0 };
+      return newState;
+    });
+  };
+
   const openKeypad = (itemId: string) => {
     setKeypadItemId(itemId);
     setTempPrice(formState[itemId]?.price.toString() || '0');
@@ -349,14 +390,19 @@ const MarketShop: React.FC = () => {
         return {
           id,
           name: item?.name_en || 'Unknown',
-          unit: item?.default_unit || 'unit',
+          // Logistics: quantity = packs, unit = pack label; pack_size/base_unit let
+          // reports & COGS reconstruct the real amount (qty × pack_size base_unit).
+          unit: item ? packLabel(item) : 'unit',
           quantity: val.qty,
           price: val.price,
-          target_shop: (activeScope === 'teacher' ? item?.teacher_shop : item?.logistics_shop) || 'General'
+          target_shop: (activeScope === 'teacher' ? item?.teacher_shop : item?.logistics_shop) || 'General',
+          pack_size: item ? packSize(item) : 1,
+          base_unit: item ? baseUnit(item) : 'unit',
         };
       });
 
     if (itemsToSave.length === 0) return alert(t('messages.selectAtLeastOne'));
+    if (!workerId) return alert(t('messages.selectWorker', { defaultValue: 'Please select who is doing the shopping.' }));
 
     setIsSaving(true);
     try {
@@ -369,6 +415,7 @@ const MarketShop: React.FC = () => {
         shopper_role: activeScope,
         items_snapshot: itemsToSave,
         status,
+        worker_id: workerId, // the PERSON (authors), never the login
         // No quantity model: each line is a total price; total = sum of prices.
         total_cost: itemsToSave.reduce((acc, i) => acc + i.price, 0),
         updated_at: nowIso,
@@ -416,7 +463,9 @@ const MarketShop: React.FC = () => {
       mode={activeTab as 'logistics' | 'teacher'}
       price={formState[item.id]?.price || 0}
       isAdded={!!formState[item.id]}
-      onToggle={() => handleToggleItem(item.id)}
+      qty={formState[item.id]?.qty ?? 0}
+      onIncrement={() => handleAdjustQty(item.id, 1)}
+      onDecrement={() => handleAdjustQty(item.id, -1)}
       onClick={() => openKeypad(item.id)}
     />
   );
@@ -561,6 +610,15 @@ const MarketShop: React.FC = () => {
           </span>
         </div>
 
+        {/* Who is shopping? (authors via worker_roles; the login stays in created_by) */}
+        {activeTab !== 'dashboard' && (
+          <WorkerSelector
+            roles={WORKER_ROLES_BY_SCOPE[activeTab]}
+            value={workerId}
+            onChange={(id) => setWorkerId(id)}
+          />
+        )}
+
         <div className={cn(
           "p-8 rounded-3xl border text-center transition-all duration-300",
           activeTab === 'teacher'
@@ -589,9 +647,12 @@ const MarketShop: React.FC = () => {
                   density="sm"
                   leading={<ReportLineMedia tone="primary" badge={item.qty} />}
                   title={item.name}
-                  subtitle={item.unit || undefined}
+                  subtitle={activeTab === 'teacher' ? (item.unit || undefined) : describeQty(item.qty, { purchase_pack_size: item.pack_size, purchase_pack_label: item.unit, default_unit: item.base_unit })}
                   amount={activeTab === 'teacher' ? item.price.toLocaleString() : undefined}
                   amountSuffix="THB"
+                  actions={activeTab === 'logistics' ? (
+                    <PackStepper size="sm" qty={item.qty} onIncrement={() => handleAdjustQty(item.id, 1)} onDecrement={() => handleAdjustQty(item.id, -1)} />
+                  ) : undefined}
                   onEdit={activeTab === 'teacher' ? () => openKeypad(item.id) : undefined}
                   onDelete={() => handleToggleItem(item.id)}
                   confirmDelete={{

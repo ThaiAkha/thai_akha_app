@@ -101,7 +101,22 @@
     "someFailed": "บางรายการล้มเหลว",
     "expenseError": "ข้อผิดพลาดค่าใช้จ่าย",
     "saveError": "บันทึกไม่สำเร็จ",
-    "payslipError": "ข้อผิดพลาดสลิป"
+    "payslipError": "ข้อผิดพลาดสลิป",
+    "baseHidden": "เงินเดือนฐานดูได้เฉพาะผู้จัดการ",
+    "driverPerRide": "จ่ายตามเที่ยว",
+    "openPayouts": "ค่าจ้างคนขับ",
+    "record": "บันทึก",
+    "roles": {
+      "teacher": "ครูสอน",
+      "helper": "ผู้ช่วย",
+      "extra": "พนักงานเสริม",
+      "setup": "จัดเตรียม",
+      "logistics": "โลจิสติกส์",
+      "manager": "ผู้จัดการ",
+      "admin": "แอดมิน",
+      "driver": "คนขับ",
+      "unassigned": "ยังไม่มีบทบาท"
+    }
   },
   "driverPayouts": {
     "driverLabel": "ไดรเวอร์",

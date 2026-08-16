@@ -71,11 +71,13 @@
     "syncSuccess": "采购已与厨房同步！干得好！",
     "error": "错误：{{message}}",
     "emergencyItemName": "紧急商品名称？",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "selectWorker": "请选择由谁负责采购。"
   },
   "shopItem": {
     "reportedCost": "报告成本",
     "addedToList": "已加入清单",
-    "clickToAdd": "点击添加"
+    "clickToAdd": "点击添加",
+    "tapToAdd": "点按添加"
   }
 }

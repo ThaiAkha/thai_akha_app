@@ -77,7 +77,8 @@ interface SalaryRow {
   id: string; employee_id: string; period: string; total_amount: number;
   overtime_note: string | null; pay_method: 'bank' | 'cash'; status: string;
   zoho_expense_id: string | null;
-  profiles?: { full_name: string | null } | { full_name: string | null }[] | null;
+  // staff_salaries.employee_id → authors.id (the PERSON, not the login) since 2026-08-16
+  authors?: { name: string | null } | { name: string | null }[] | null;
 }
 
 Deno.serve(async (req: Request) => {
@@ -107,7 +108,7 @@ Deno.serve(async (req: Request) => {
 
     // 3) Carica le righe (draft, importo > 0, non ancora expensed)
     let q = admin.from('staff_salaries')
-      .select('id, employee_id, period, total_amount, overtime_note, pay_method, status, zoho_expense_id, profiles:employee_id (full_name)')
+      .select('id, employee_id, period, total_amount, overtime_note, pay_method, status, zoho_expense_id, authors:employee_id (name)')
       .is('zoho_expense_id', null)
       .gt('total_amount', 0)
     q = salaryIds.length > 0 ? q.in('id', salaryIds) : q.eq('period', period!)
@@ -141,8 +142,8 @@ Deno.serve(async (req: Request) => {
       const description = fitDescription(
         `Salaries ${per} - ${method.toUpperCase()} (${g.length}) THB ${amount.toLocaleString('en-US')}`,
         g.map((r) => {
-          const prof = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles
-          const nm = prof?.full_name ?? 'Employee'
+          const who = Array.isArray(r.authors) ? r.authors[0] : r.authors
+          const nm = who?.name ?? 'Employee'
           return `- ${nm}: THB ${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : '')
         }),
       )

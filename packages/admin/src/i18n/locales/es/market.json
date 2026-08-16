@@ -71,11 +71,13 @@
     "syncSuccess": "¡Compra sincronizada con la cocina! ¡Buen trabajo!",
     "error": "Error: {{message}}",
     "emergencyItemName": "¿Nombre del artículo de emergencia?",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "selectWorker": "Selecciona quién hace la compra."
   },
   "shopItem": {
     "reportedCost": "Costo reportado",
     "addedToList": "En la lista",
-    "clickToAdd": "Agregar"
+    "clickToAdd": "Agregar",
+    "tapToAdd": "Toca para añadir"
   }
 }

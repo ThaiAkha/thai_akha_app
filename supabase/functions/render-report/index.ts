@@ -282,10 +282,13 @@ Deno.serve(async (req: Request) => {
       const { salary_id, period } = body
       if (!salary_id && !period) return bad('salary_id or period required')
 
-      let sq = admin.from('staff_salaries').select('id, period, total_amount, overtime_note, employee_id, profiles:employee_id(full_name, role)')
+      // employee_id → authors (the person); position = primary hat from worker_roles.
+      let sq = admin.from('staff_salaries').select('id, period, total_amount, overtime_note, employee_id, authors:employee_id(name, worker_roles(role, is_primary))')
       sq = salary_id ? sq.eq('id', salary_id) : sq.eq('period', period)
       const { data: srows } = await sq.order('created_at', { ascending: true })
-      const list = (srows ?? []) as Array<{ period: string; total_amount: number; overtime_note: string | null; profiles: { full_name: string | null; role: string | null } | null }>
+      type WhoRow = { name: string | null; worker_roles: { role: string; is_primary: boolean }[] | null } | null
+      const list = (srows ?? []) as Array<{ period: string; total_amount: number; overtime_note: string | null; authors: WhoRow }>
+      const positionOf = (w: WhoRow) => (w?.worker_roles ?? []).find((r) => r.is_primary)?.role ?? w?.worker_roles?.[0]?.role ?? ''
       if (list.length === 0) return bad('No salary rows found', 404)
 
       const today = new Date()
@@ -297,8 +300,8 @@ Deno.serve(async (req: Request) => {
         workers: list.map((s) => {
           const amt = Math.round(Number(s.total_amount) || 0)
           return {
-            employee_name: s.profiles?.full_name ?? '-',
-            position: cap(s.profiles?.role ?? ''),
+            employee_name: s.authors?.name ?? '-',
+            position: cap(positionOf(s.authors)),
             period: periodLabel(s.period),
             pay_date: payDate,
             salary: amt, overtime: 0, bonus: 0, advance: 0, ssf: 0, other_ded: 0,
@@ -308,7 +311,7 @@ Deno.serve(async (req: Request) => {
         }),
       }
       filename = salary_id
-        ? `ThaiAkha_Payslip_${(list[0].profiles?.full_name || 'staff').replace(/\s+/g, '')}.pdf`
+        ? `ThaiAkha_Payslip_${(list[0].authors?.name || 'staff').replace(/\s+/g, '')}.pdf`
         : `ThaiAkha_Payslips_${period}.pdf`
 
     } else {

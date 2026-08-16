@@ -446,6 +446,7 @@ export type Database = {
           json_ld: Json
           metadata: Json | null
           name: string
+          profile_id: string | null
           salary_thb: number | null
           same_as: string[] | null
           slug: string
@@ -467,6 +468,7 @@ export type Database = {
           json_ld?: Json
           metadata?: Json | null
           name: string
+          profile_id?: string | null
           salary_thb?: number | null
           same_as?: string[] | null
           slug: string
@@ -488,6 +490,7 @@ export type Database = {
           json_ld?: Json
           metadata?: Json | null
           name?: string
+          profile_id?: string | null
           salary_thb?: number | null
           same_as?: string[] | null
           slug?: string
@@ -502,6 +505,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "authors_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2976,6 +2986,8 @@ export type Database = {
           primary_focus_keyword: string | null
           published_at: string | null
           purchase_group: string | null
+          purchase_pack_label: string
+          purchase_pack_size: number
           reading_time_minutes: number | null
           related_ingredients: string[] | null
           related_queries_geo: Json | null
@@ -3029,6 +3041,8 @@ export type Database = {
           primary_focus_keyword?: string | null
           published_at?: string | null
           purchase_group?: string | null
+          purchase_pack_label?: string
+          purchase_pack_size?: number
           reading_time_minutes?: number | null
           related_ingredients?: string[] | null
           related_queries_geo?: Json | null
@@ -3082,6 +3096,8 @@ export type Database = {
           primary_focus_keyword?: string | null
           published_at?: string | null
           purchase_group?: string | null
+          purchase_pack_label?: string
+          purchase_pack_size?: number
           reading_time_minutes?: number | null
           related_ingredients?: string[] | null
           related_queries_geo?: Json | null
@@ -3324,6 +3340,7 @@ export type Database = {
           status: string | null
           total_cost: number | null
           updated_at: string | null
+          worker_id: string | null
           zoho_expense_id: string | null
           zoho_synced_at: string | null
         }
@@ -3340,6 +3357,7 @@ export type Database = {
           status?: string | null
           total_cost?: number | null
           updated_at?: string | null
+          worker_id?: string | null
           zoho_expense_id?: string | null
           zoho_synced_at?: string | null
         }
@@ -3356,6 +3374,7 @@ export type Database = {
           status?: string | null
           total_cost?: number | null
           updated_at?: string | null
+          worker_id?: string | null
           zoho_expense_id?: string | null
           zoho_synced_at?: string | null
         }
@@ -3365,6 +3384,13 @@ export type Database = {
             columns: ["approved_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_runs_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
             referencedColumns: ["id"]
           },
         ]
@@ -5671,6 +5697,38 @@ export type Database = {
           },
         ]
       }
+      staff_details: {
+        Row: {
+          created_at: string | null
+          pay_notes: string | null
+          salary_thb: number | null
+          updated_at: string | null
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          pay_notes?: string | null
+          salary_thb?: number | null
+          updated_at?: string | null
+          worker_id: string
+        }
+        Update: {
+          created_at?: string | null
+          pay_notes?: string | null
+          salary_thb?: number | null
+          updated_at?: string | null
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_details_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: true
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_salaries: {
         Row: {
           created_at: string
@@ -5719,7 +5777,36 @@ export type Database = {
             foreignKeyName: "staff_salaries_employee_id_fkey"
             columns: ["employee_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worker_roles: {
+        Row: {
+          created_at: string | null
+          is_primary: boolean
+          role: string
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          is_primary?: boolean
+          role: string
+          worker_id: string
+        }
+        Update: {
+          created_at?: string | null
+          is_primary?: boolean
+          role?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_roles_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
             referencedColumns: ["id"]
           },
         ]
@@ -5807,6 +5894,17 @@ export type Database = {
           lang: string | null
           slug_en: string | null
           slug_translated: string | null
+        }
+        Relationships: []
+      }
+      v_translation_status: {
+        Row: {
+          base_rows: number | null
+          complete: boolean | null
+          lang: string | null
+          pct: number | null
+          table_name: string | null
+          translated_rows: number | null
         }
         Relationships: []
       }

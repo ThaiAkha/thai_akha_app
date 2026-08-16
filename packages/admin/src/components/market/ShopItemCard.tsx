@@ -2,7 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Badge from '../ui/badge/Badge';
-import { Check, CheckCircle2, PlusCircle } from 'lucide-react';
+import { CheckCircle2, PlusCircle } from 'lucide-react';
+import { PackStepper } from './PackStepper';
+import { describePack, describeQty, packLabel } from './packUtils';
 
 interface LibraryItem {
   id: string;
@@ -10,6 +12,8 @@ interface LibraryItem {
   name_th: string;
   image_url: string;
   default_unit: string;
+  purchase_pack_size?: number | null;
+  purchase_pack_label?: string | null;
 }
 
 interface ShopItemCardProps {
@@ -17,7 +21,12 @@ interface ShopItemCardProps {
   price: number;
   isAdded: boolean;
   mode: 'logistics' | 'teacher';
-  onToggle?: () => void; // Used for logistics selection
+  /** Logistics: number of purchase packs currently in the list (0 = not added). */
+  qty?: number;
+  /** Logistics: +1 pack (also fired by tapping the card). */
+  onIncrement?: () => void;
+  /** Logistics: -1 pack (reaching 0 removes the item). */
+  onDecrement?: () => void;
   onClick?: () => void;  // Used for teacher price keypad trigger
   isReadOnly?: boolean;
 }
@@ -27,7 +36,9 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
   price,
   isAdded,
   mode,
-  onToggle,
+  qty = 0,
+  onIncrement,
+  onDecrement,
   onClick
 }) => {
   const isLogistics = mode === 'logistics';
@@ -40,7 +51,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
 
   return (
     <div
-      onClick={isLogistics ? onToggle : onClick}
+      onClick={isLogistics ? onIncrement : onClick}
       className={cn(
         "group relative flex flex-col rounded-[2rem] overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer active:scale-95",
         isAdded
@@ -65,8 +76,16 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         {/* CHECKMARK OVERLAY */}
         {isAdded && (
           <div className="absolute inset-0 bg-primary-500/20 flex items-center justify-center animate-in zoom-in fade-in duration-300">
-            <div className="size-12 rounded-full bg-white text-primary-600 flex items-center justify-center shadow-2xl ring-4 ring-primary-500/20">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className={cn(
+              "rounded-full bg-white text-primary-600 flex flex-col items-center justify-center shadow-2xl ring-4 ring-primary-500/20",
+              isLogistics ? "size-16 leading-none" : "size-12"
+            )}>
+              {isLogistics ? (
+                <>
+                  <span className="font-mono font-black text-2xl tabular-nums">{qty}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">{packLabel(item)}</span>
+                </>
+              ) : <CheckCircle2 className="w-8 h-8" />}
             </div>
           </div>
         )}
@@ -74,7 +93,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         {/* UNIT BADGE */}
         <div className="absolute top-3 left-3 z-20">
           <Badge variant="solid" color="dark" size="sm" className="h-5 px-2 text-xs font-black border-white/20 backdrop-blur-md uppercase tracking-widest shadow-sm">
-            {item.default_unit || 'unit'}
+            {isLogistics ? describePack(item) : (item.default_unit || 'unit')}
           </Badge>
         </div>
       </div>
@@ -106,11 +125,23 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
           </div>
         )}
 
-        {/* LOGISTICS HINT */}
+        {/* LOGISTICS: pack stepper [-] N [+] + running total in base unit */}
         {isLogistics && (
-          <div className="mt-auto flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity text-primary-600 dark:text-primary-400">
-            {isAdded ? <Check className="w-4 h-4" /> : <PlusCircle className="w-4 h-4" />}
-            <span className="text-xs font-black uppercase tracking-widest">{isAdded ? t('shopItem.addedToList') : t('shopItem.clickToAdd')}</span>
+          <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
+            {/* Row 1: quantity data (packs + base total) */}
+            <div className="min-h-5 flex items-center">
+              {isAdded ? (
+                <span className="text-xs font-black uppercase tracking-widest text-primary-600 dark:text-primary-400 truncate">{describeQty(qty, item)}</span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-gray-400 opacity-60 group-hover:opacity-100 transition-opacity">
+                  <PlusCircle className="w-4 h-4" />{t('shopItem.tapToAdd', { defaultValue: 'Tap to add' })}
+                </span>
+              )}
+            </div>
+            {/* Row 2: full-width [-] N [+] */}
+            {onIncrement && onDecrement && (
+              <PackStepper qty={qty} onIncrement={onIncrement} onDecrement={onDecrement} size="lg" />
+            )}
           </div>
         )}
       </div>

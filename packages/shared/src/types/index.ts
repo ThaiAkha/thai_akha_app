@@ -17,6 +17,7 @@ export * from './legal.types';
 export * from './infoContent.types';
 export * from './media.types';
 export * from './pickup.types';
+export * from './workers.types';
 import type { ChatOption, NodeBlock } from '../data/cherry/chatFlowData';
 
 /**

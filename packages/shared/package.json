@@ -45,7 +45,9 @@
     "./hooks/useLegalDocument": "./src/hooks/useLegalDocument.ts",
     "./lib/mergeLegalTranslation": "./src/lib/mergeLegalTranslation.ts",
     "./lib/cherryLegalContext": "./src/lib/cherryLegalContext.ts",
-    "./types/faq.types": "./src/types/faq.types.ts"
+    "./types/faq.types": "./src/types/faq.types.ts",
+    "./types/workers.types": "./src/types/workers.types.ts",
+    "./hooks/useWorkers": "./src/hooks/useWorkers.ts"
   },
   "scripts": {
     "build": "tsc",

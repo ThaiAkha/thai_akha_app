@@ -101,7 +101,22 @@
     "someFailed": "Some failed",
     "expenseError": "Expense error",
     "saveError": "Could not save",
-    "payslipError": "Payslip error"
+    "payslipError": "Payslip error",
+    "baseHidden": "Base salaries are visible to managers only.",
+    "driverPerRide": "Paid per ride",
+    "openPayouts": "Driver payouts",
+    "record": "Record",
+    "roles": {
+      "teacher": "Teachers",
+      "helper": "Helpers",
+      "extra": "Extra staff",
+      "setup": "Setup",
+      "logistics": "Logistics",
+      "manager": "Managers",
+      "admin": "Admin",
+      "driver": "Drivers",
+      "unassigned": "No role yet"
+    }
   },
   "driverPayouts": {
     "driverLabel": "Driver",

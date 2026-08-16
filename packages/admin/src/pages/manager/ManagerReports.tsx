@@ -1052,7 +1052,7 @@ const ManagerReports: React.FC = () => {
         >
             {/* CENTER */}
             {reportType === 'salary' ? (
-                <SalaryRoster />
+                <SalaryRoster onOpenDriverPayouts={() => setReportType('driver')} />
             ) : reportType === 'classes' ? (
                 posRows === null ? (
                     <div className="p-8 text-center"><SectionTitle className="text-gray-400">{t('driverPayouts.loading', { defaultValue: 'Loading…' })}</SectionTitle></div>

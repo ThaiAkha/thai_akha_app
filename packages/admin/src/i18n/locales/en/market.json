@@ -71,11 +71,13 @@
     "syncSuccess": "Run synchronized with Kitchen! Good job!",
     "error": "Error: {{message}}",
     "emergencyItemName": "Emergency Item Name?",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "selectWorker": "Please select who is doing the shopping."
   },
   "shopItem": {
     "reportedCost": "Reported Cost",
     "addedToList": "Added to list",
-    "clickToAdd": "Click to add"
+    "clickToAdd": "Click to add",
+    "tapToAdd": "Tap to add"
   }
 }

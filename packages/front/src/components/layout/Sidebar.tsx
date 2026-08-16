@@ -425,7 +425,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Switcher lingua: il bottone "Languages" apre il pannello bandierine FUORI
   // dalla sidebar (portal), ancorato al bottone stesso. A flag i18n spento
   // availableLangs = ['en'] → né bottone né pannello (oggi: tutto com'era).
-  const { availableLangs } = useLanguage();
+  const { availableLangs, lang } = useLanguage();
   const [langPanelOpen, setLangPanelOpen] = useState(false);
   const langBtnRef = useRef<HTMLDivElement>(null);
 
@@ -438,8 +438,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       if (cancelled) return;
       try {
         const [items, footer] = await Promise.all([
-          contentService.getMenuItems(),
-          contentService.getFooterItems(),
+          contentService.getMenuItems('site_metadata', lang),
+          contentService.getFooterItems(lang),
         ]);
         if (cancelled) return;
 
@@ -467,7 +467,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     loadMenu();
     return () => { cancelled = true; };
-  }, [userProfile?.role]);
+  // `lang` nelle deps: al cambio lingua il menu si ricarica dal sidecar.
+  }, [userProfile?.role, lang]);
 
 
   const [expandedParent, setExpandedParent] = useState<string | null>(null);

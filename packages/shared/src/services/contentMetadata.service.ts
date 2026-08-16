@@ -1,6 +1,26 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata, ContentCategoryDB, BusinessProfile } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
+import { mergeTranslation, pickTranslation } from '../lib/mergeTranslation';
+
+/**
+ * Join del sidecar front per le voci di menu — solo i due campi che il menu
+ * mostra. Stringa vuota in inglese: la base È l'inglese, niente da fondere.
+ */
+const frontTranslationJoin = (lang: string): string =>
+    lang === 'en' ? '' : ', translations:site_metadata_translations(lang, menu_label, page_description)';
+
+/**
+ * Fonde una riga di menu con la sua traduzione, campo per campo (regola unica:
+ * lib/mergeTranslation). Toglie `translations` dal risultato: i consumatori
+ * ricevono la stessa forma di prima, solo con i campi già nella lingua giusta.
+ */
+const mergeFrontMenuRow = (row: Record<string, unknown>, lang: string): Record<string, unknown> => {
+    const { translations, ...base } = row;
+    if (lang === 'en') return base;
+    const t = pickTranslation(translations as Array<{ lang?: string | null }> | null, lang);
+    return mergeTranslation(base, t as Record<string, unknown> | null);
+};
 
 /**
  * Colonne pubbliche di content_categories servite al browser.
@@ -168,7 +188,7 @@ export const contentMetadataService = {
      */
     async getMenuItems(table: 'site_metadata' | 'site_metadata_admin' = 'site_metadata', lang = 'en') {
         const normalizedLang = normalizeLang(lang);
-        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v32`, async () => {
+        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v33`, async () => {
             // Le due query restano separate perche' il front distingue menu primario e
             // footer e non ha sidecar traduzioni. Cio' che conta e' che la REGOLA di
             // risoluzione dell'etichetta sia una sola (resolveLabel, sotto).
@@ -205,9 +225,12 @@ export const contentMetadataService = {
                 });
             }
 
+            // FRONT: base inglese sulla riga + sidecar site_metadata_translations
+            // (menu_label, page_description) fuso PER CAMPO — stessa regola di
+            // seo.service. In inglese il join non parte: la base È l'inglese.
             const { data, error } = await supabase
                 .from('site_metadata')
-                .select('id, page_slug, menu_label, header_icon, menu_order, access_level, page_description, parent_id')
+                .select(`id, page_slug, menu_label, header_icon, menu_order, access_level, page_description, parent_id${frontTranslationJoin(normalizedLang)}`)
                 .eq('show_in_menu', true)
                 .eq('menu_location', 'primary')
                 .order('menu_order', { ascending: true });
@@ -216,21 +239,27 @@ export const contentMetadataService = {
                 console.error('Errore Menu DB:', error);
                 return [];
             }
-            return data;
+            return (data ?? []).map(row => mergeFrontMenuRow(row as unknown as Record<string, unknown>, normalizedLang));
         }) || [];
     },
 
-    /** 🔗 FOOTER MENU: Pagine informative (about, faq, contact) */
-    async getFooterItems() {
-        return fetchWithCache('footer_menu_v2', async () => {
+    /**
+     * 🔗 FOOTER MENU: Pagine informative (about, faq, contact).
+     * Stesso merge per campo del menu primario: era l'unico lettore del menu
+     * senza `lang`, e su /es/ il footer restava inglese mentre il resto no.
+     */
+    async getFooterItems(lang = 'en') {
+        const normalizedLang = normalizeLang(lang);
+        // v3: +lang nella chiave (due lingue non possono servirsi la cache a vicenda)
+        return fetchWithCache(`footer_menu_${normalizedLang}_v3`, async () => {
             const { data, error } = await supabase
                 .from('site_metadata')
-                .select('id, page_slug, menu_label, header_icon, menu_order')
+                .select(`id, page_slug, menu_label, header_icon, menu_order${frontTranslationJoin(normalizedLang)}`)
                 .eq('show_in_menu', true)
                 .eq('menu_location', 'footer')
                 .order('menu_order', { ascending: true });
             if (error) { console.error('Footer menu error:', error); return []; }
-            return data || [];
+            return (data ?? []).map(row => mergeFrontMenuRow(row as unknown as Record<string, unknown>, normalizedLang));
         }) || [];
     },
 

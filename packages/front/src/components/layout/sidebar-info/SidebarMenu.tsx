@@ -5,6 +5,7 @@ import type { TocAccent } from '../../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '@thaiakha/shared/lib/ui-strings';
 import SidebarCard from './SidebarCard';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface FooterItem {
   page_slug: string;
@@ -38,15 +39,16 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
   title = t.components.sidebarInfo.menuTitle,
 }) => {
   const [footer, setFooter] = useState<FooterItem[]>([]);
+  const { lang } = useLanguage();
   const a = MENU_ACCENT[accent];
 
   useEffect(() => {
     let cancelled = false;
-    contentService.getFooterItems().then((items: any[]) => {
+    contentService.getFooterItems(lang).then((items: any[]) => {
       if (!cancelled && items?.length) setFooter(items as FooterItem[]);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [lang]);
 
   if (footer.length === 0) return null;
 

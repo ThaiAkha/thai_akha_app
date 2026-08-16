@@ -6,6 +6,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useLanguage } from '../../context/LanguageContext';
 
 type Page = string;
 
@@ -97,6 +98,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
   const [stage, setStage] = useState<'closed' | 'opening' | 'open' | 'exiting'>('closed');
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const { lang } = useLanguage();
   const [footerItems, setFooterItems] = useState<FooterItem[]>([]);
   const [visibleIndices, setVisibleIndices] = useState<number[]>([]);
   const [, setSelectedId] = useState<string | null>(null);
@@ -114,8 +116,8 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
       if (cancelled) return;
       try {
         const [items, footer] = await Promise.all([
-          contentService.getMenuItems(),
-          contentService.getFooterItems(),
+          contentService.getMenuItems('site_metadata', lang),
+          contentService.getFooterItems(lang),
         ]);
         if (cancelled) return;
 
@@ -140,7 +142,8 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
 
     loadMenu();
     return () => { cancelled = true; };
-  }, []);
+  // `lang` nelle deps: al cambio lingua il menu si ricarica dal sidecar.
+  }, [lang]);
 
   // ── FILTER ──
   const filteredNavItems = useMemo(() => {

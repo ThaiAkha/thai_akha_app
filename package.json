@@ -15,7 +15,9 @@
     "gen-legal": "tsx --env-file=.env scripts/gen-legal-data.ts",
     "sync-prompts": "node scripts/sync-prompts.mjs",
     "check-prompts": "node scripts/sync-prompts.mjs --check",
-    "check-ui-strings": "node scripts/check-ui-strings.mjs"
+    "check-ui-strings": "node scripts/check-ui-strings.mjs",
+    "ui-strings:export": "node scripts/sync-ui-strings.mjs --export",
+    "ui-strings:status": "node scripts/sync-ui-strings.mjs --status"
   },
   "engines": {
     "node": ">=18",

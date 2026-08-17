@@ -1,7 +1,7 @@
 {
   "ogDefault": "https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg",
   "home": {
-    "title": "Thai Akha Kitchen — Authentic Cooking Class in Chiang Mai",
+    "title": "Thai Akha Kitchen | Authentic Cooking Class in Chiang Mai",
     "description": "Cook 11 authentic Akha highland dishes at your personal station. Tailored to dietary needs, from hotel pick-up to full-color cookbook.",
     "canonical": "https://www.thaiakha.com/"
   },
@@ -17,7 +17,7 @@
   },
   "evening": {
     "title": "Evening Cooking Class in Chiang Mai | Thai Akha Kitchen",
-    "description": "Relaxed 5-hour evening cooking class in Chiang Mai (1,300 THB). 5:00–9:00 PM. Cook and eat 11 dishes for dinner at your own wok. Free hotel pickup.",
+    "description": "Relaxed 5-hour evening cooking class in Chiang Mai (1,300 THB). 5:00 to 9:00 PM. Cook and eat 11 dishes for dinner at your own wok. Free hotel pickup.",
     "canonical": "https://www.thaiakha.com/evening-cooking-class-dinner"
   }
 }

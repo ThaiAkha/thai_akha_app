@@ -55,6 +55,17 @@ Chi vuole reattività fine può usare `useTranslation()` di react-i18next: stess
 4. **Logica nel componente, non nella stringa**: una chiave per ramo (`headerDescReady` / `headerDescReadyAllergies`), mai template con `if`.
 5. **`pnpm check-ui-strings`** prima di ogni commit che tocca `locales/`: parità chiavi, placeholder, vuoti, namespace ↔ `NAMESPACES`.
 
+## Il banco di lavoro nel brain (dove si traduce)
+
+Le 11 lingue si traducono in **`thai_akha_brain/010_ThaiAkha_com/013_Ui_Strings/{LANG}/{ns}.md`** (tabella `chiave | EN | LANG`, leggibile in Obsidian, registro Dataview). Ponte unico, mai symlink:
+
+```bash
+pnpm ui-strings:export                          # repo → brain (EN specchio + scheletri/valori)
+node scripts/sync-ui-strings.mjs --import es    # brain → repo, SOLO se check-ui-strings passa
+pnpm ui-strings:status                          # copertura per lingua
+```
+La sorgente resta **il repo**: `EN/*.md` nel brain è uno specchio, si edita il JSON. Regole complete: `013_Ui_Strings/_STRUCTURE.md` e `_WORKFLOW.md`.
+
 ## Storia
 
 Migrato il 2026-08-17 da `@thaiakha/shared/lib/ui-strings.ts` (oggetto TS solo-EN, 867 righe, 66 consumatori) con `scripts/gen-ui-strings-json.mts` + `scripts/codemod-ui-strings-to-i18n.mts`. Motivo: 12 lingue richiedono fallback per chiave e un traduttore con validazione meccanica — cose che i18next e /i18n fanno già per l'admin. Un solo motore, un solo formato, un solo traduttore per le due app.

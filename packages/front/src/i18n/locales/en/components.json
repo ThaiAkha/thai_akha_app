@@ -24,7 +24,7 @@
   },
   "cherryChat": {
     "title": "Cherry Chef",
-    "statusError": "Error — try again",
+    "statusError": "Error. Try again",
     "statusTyping": "Typing...",
     "statusIdle": "Ask me anything kha",
     "askCherry": "Ask Cherry",

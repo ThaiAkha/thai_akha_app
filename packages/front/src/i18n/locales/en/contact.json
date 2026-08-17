@@ -44,7 +44,7 @@
     "send": "Send Message",
     "sending": "Sending…",
     "success": "Message sent! We usually reply within a day kha.",
-    "error": "Something went wrong — please try again or write us on WhatsApp.",
+    "error": "Something went wrong. Please try again or write us on WhatsApp.",
     "required": "Please fill in name, email and a message (min 10 characters)."
   }
 }

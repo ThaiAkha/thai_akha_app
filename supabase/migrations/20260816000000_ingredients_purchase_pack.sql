@@ -76,3 +76,16 @@ with m(slug, unit, size, label) as (values
 update public.ingredients_library il
    set default_unit = m.unit, purchase_pack_size = m.size, purchase_pack_label = m.label, updated_at = now()
   from m where il.slug = m.slug;
+
+-- Round 3 - spec v5 (2026-08-17): Shop 03 / small shop standardised on 1 kg, basil 100 g packs, cucumber 10 kg packs.
+with m(slug, unit, size, label) as (values
+  ('galangal','kg',1,'kg'), ('lemongrass','kg',1,'kg'), ('turmeric','kg',1,'kg'),
+  ('red-sun-dried-anaheim-pepper','kg',1,'kg'), ('chinese-celery','kg',1,'kg'),
+  ('bird-eye-chili','kg',1,'kg'), ('green-chilli','kg',1,'kg'), ('coriander','kg',1,'kg'),
+  ('green-onion','kg',1,'kg'), ('chives','kg',1,'kg'),
+  ('thai-basil','g',100,'pack'), ('hot-basil','g',100,'pack'),
+  ('cucumber','kg',10,'pack')
+)
+update public.ingredients_library il
+   set default_unit = m.unit, purchase_pack_size = m.size, purchase_pack_label = m.label, updated_at = now()
+  from m where il.slug = m.slug;

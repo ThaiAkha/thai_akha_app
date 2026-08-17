@@ -3,7 +3,7 @@ import { QuizLevel } from '@thaiakha/shared';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Typography } from '../ui';
 import { Badge } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface QuizCardLevelProps {
   level: QuizLevel;
@@ -65,13 +65,13 @@ const QuizCardLevel: React.FC<QuizCardLevelProps> = ({
               color={!isLocked ? 'quiz-p' : 'action'}
               size="sm"
             >
-              {`${t.quiz.levelPrefix} ${levelNumber}`}
+              {`${t('quiz:levelPrefix')} ${levelNumber}`}
             </Badge>
             {isCurrent && (
               <span className="flex items-center gap-1">
                 <Icon name="radio_button_checked" size="xs" className="text-quiz animate-pulse" />
                 <Typography variant="microLabel" className="font-black uppercase tracking-widest text-quiz">
-                  {t.quiz.currentMission}
+                  {t('quiz:currentMission')}
                 </Typography>
               </span>
             )}
@@ -91,7 +91,7 @@ const QuizCardLevel: React.FC<QuizCardLevelProps> = ({
           <div className="flex flex-col [gap:var(--space-fluid-3xs)] [margin-top:var(--space-fluid-2xs)] w-full max-w-sm">
             <div className="flex justify-between items-end">
               <Typography variant="microLabel" className="text-white/60 tracking-wider">
-                {percentage === 100 ? t.quiz.mastered || 'Mastered' : t.quiz.progress || 'Progress'}
+                {percentage === 100 ? t('quiz:mastered') || 'Mastered' : t('quiz:progress') || 'Progress'}
               </Typography>
               <Typography variant="microLabel" className="font-bold text-quiz">
                 {percentage}%
@@ -116,7 +116,7 @@ const QuizCardLevel: React.FC<QuizCardLevelProps> = ({
             {percentage}%
           </Typography>
           <Typography variant="microLabel" color="muted">
-            {t.quiz.completed || 'COMPLETED'}
+            {t('quiz:completed') || 'COMPLETED'}
           </Typography>
         </div>
 

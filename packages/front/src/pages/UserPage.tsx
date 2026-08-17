@@ -22,7 +22,7 @@ import ContextualStatsView from '../components/user-dashboard/ContextualStatsVie
 import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
 import TopWarriorsCard from '../components/user-dashboard/TopWarriorsCard';
 import { CherryHelp } from '../components/chat/CherryHelp';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 /* ── CONSTANTS ── */
 // Synced with DB profiles.role constraint — agency uses Admin App, logistics doesn't exist in schema
@@ -84,11 +84,11 @@ const UserPage: React.FC<UserPageProps> = ({
 
   /* ── TABS — Menu + Reservation solo con un booking attivo (qualsiasi ruolo) ── */
   const ALL_TABS = [
-    { value: 'overview', label: t.user.tabOverview, icon: 'home' },
-    { value: 'reservation', label: t.user.tabReservation, icon: 'event_available' },
-    { value: 'menu', label: t.user.tabMenu, icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
-    { value: 'quiz', label: t.user.tabQuiz, icon: 'psychology' },
-    { value: 'passport', label: t.user.tabPassport, icon: 'account_box', activeColor: 'secondary' as const },
+    { value: 'overview', label: t('user:tabOverview'), icon: 'home' },
+    { value: 'reservation', label: t('user:tabReservation'), icon: 'event_available' },
+    { value: 'menu', label: t('user:tabMenu'), icon: 'restaurant_menu', badge: menuSelection ? undefined : '!' },
+    { value: 'quiz', label: t('user:tabQuiz'), icon: 'psychology' },
+    { value: 'passport', label: t('user:tabPassport'), icon: 'account_box', activeColor: 'secondary' as const },
   ];
 
   const TABS = ALL_TABS.filter(tab =>
@@ -373,8 +373,8 @@ const UserPage: React.FC<UserPageProps> = ({
             day: 'numeric', month: 'short', year: 'numeric'
           })}
           classType={activeBooking.session_id?.includes('morning')
-            ? t.user.morningClass
-            : t.user.eveningClass
+            ? t('user:morningClass')
+            : t('user:eveningClass')
           }
           dietLabel={userProfile.dietary_profile?.replace('diet_', '').toUpperCase()}
           dishes={getCertificateDishes()}

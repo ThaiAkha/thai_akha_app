@@ -10,7 +10,7 @@ import { NewsArticle } from '../hooks/useNewsFeed';
 import { NewsHeaderSinglePost } from '../components/news/NewsHeaderSinglePost';
 import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { useAudioAsset } from '../hooks/useAudioAsset';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 interface TabItem {
   value: string;
@@ -180,7 +180,7 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
                         id: block.anchorId || slugify(block.text),
                         label: block.text,
                       }))}
-                      title={t.blog.contents}
+                      title={t('blog:contents')}
                       dividerTheme="news"
                       accent="brand"
                     />

@@ -5,7 +5,7 @@ import ModalMediaHeader from './ModalMediaHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Typography } from '../ui/index';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -260,7 +260,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
             onClick={onClose}
             className="text-action border-action/20"
           >
-            {t.components.gallery.closeGallery}
+            {t('components:gallery.closeGallery')}
           </Button>
         </div>
       </div>

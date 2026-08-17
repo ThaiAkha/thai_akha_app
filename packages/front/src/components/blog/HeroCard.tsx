@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
 import { Typography, Badge, Icon, RippleLink, AkhaPixelPattern } from '../ui/index';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import './BlogCardGlass.css';
 import { SECTION_ICONS } from './sectionIcons';
 
@@ -128,7 +128,7 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
             'translate-y-0 md:translate-y-4 md:group-hover:translate-y-0',
             'transition-all duration-500 delay-100',
           )}>
-            <Typography variant="microLabel" className="uppercase">{t.blog.explore}</Typography>
+            <Typography variant="microLabel" className="uppercase">{t('blog:explore')}</Typography>
             <Icon name="arrow_forward" size="sm" />
           </div>
         </div>

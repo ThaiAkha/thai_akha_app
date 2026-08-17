@@ -12,7 +12,7 @@ import { useClassesPageSections } from '../hooks/useClassesPageSections';
 import { useClassOverviewExtras } from '../hooks/useClassOverviewExtras';
 import { useMediaAsset } from '../hooks/useMediaAsset';
 import { useShareLink } from '../hooks/useShareLink';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 interface InfoClassesProps {
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
@@ -220,9 +220,9 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <div className="w-full">
               <div className="grid grid-cols-1 md:grid-cols-3 [gap:var(--space-fluid-m)]">
                 {/* TODO: placeholder — 3 video identici (stesso videoId). Sostituire con videoId diversi. */}
-                <VideoPlayer videoId="j7kN7fw5OfY" title={t.alt.classVideo} />
-                <VideoPlayer videoId="j7kN7fw5OfY" title={t.alt.classVideo} />
-                <VideoPlayer videoId="j7kN7fw5OfY" title={t.alt.classVideo} />
+                <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
+                <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
+                <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
               </div>
             </div>
           </section>

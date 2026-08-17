@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, GlassCard, AkhaPixelPattern } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { cherryPrompts } from '@thaiakha/shared/lib/cherry-prompts';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import type { ChatOption } from '@thaiakha/shared/data/chatFlowData';
 import { CHERRY_TITLE_STYLE, CHERRY_SUBTITLE_STYLE, CHERRY_AVATAR_SRC, CHERRY_CARD_AVATAR_RING, CHERRY_SMALL_AVATAR_BG } from './ChatIdentityHeader';
 
@@ -18,7 +18,7 @@ interface AskCherryButtonProps {
   topic?: string;
   systemContext?: string;
   label?: string;
-  /** Sottotitolo pill (variant='inline'). Default t.components.cherryChat.greeting. */
+  /** Sottotitolo pill (variant='inline'). Default t('components:cherryChat.greeting'). */
   subtitle?: string;
   className?: string;
   /** Solo per variant='inline': dimensione dell'avatar pill (default 'md') */
@@ -75,7 +75,7 @@ interface CherryPillProps {
 
 export const CherryPill: React.FC<CherryPillProps> = ({
   label,
-  subtitle = t.components.cherryChat.greeting,
+  subtitle = t('components:cherryChat.greeting'),
   onClick,
   size = 'md',
   className,
@@ -163,7 +163,7 @@ export const AskCherryButton: React.FC<AskCherryButtonProps> = ({
   // 2. Logica di generazione Prompt / Label
   let finalTopic = manualTopic || dbPrompt || '';
   let finalSystemContext = manualSystemContext || '';
-  const finalLabel = label || dbPrompt || t.components.cherryChat.askCherry;
+  const finalLabel = label || dbPrompt || t('components:cherryChat.askCherry');
   const finalPreset = dbPreset || null;
 
   if (!manualTopic && !dbPrompt) {
@@ -238,7 +238,7 @@ export const AskCherryButton: React.FC<AskCherryButtonProps> = ({
               color: 'transparent',
             }}
           >
-            {t.recipeSingle.curiousAboutDetails}
+            {t('recipeSingle:curiousAboutDetails')}
           </Typography>
 
           {/* Divider cherry — tra titolo e domanda, in entrambi i layout */}
@@ -248,15 +248,15 @@ export const AskCherryButton: React.FC<AskCherryButtonProps> = ({
 
           {/* Domanda della pagina — sempre visibile */}
           <Typography variant="paragraphM" color="sub" className="italic leading-relaxed">
-            {dbPrompt ? `“${dbPrompt}”` : t.components.cherryChat.promptFallback}
+            {dbPrompt ? `“${dbPrompt}”` : t('components:cherryChat.promptFallback')}
           </Typography>
         </div>
 
         {/* Pill Ask Cherry — full-width in verticale, auto a destra in orizzontale */}
         <div className="w-full @2xl:w-auto shrink-0">
           <CherryPill
-            label={t.recipeSingle.askCherry}
-            subtitle={t.recipeSingle.askCherrySubtitle}
+            label={t('recipeSingle:askCherry')}
+            subtitle={t('recipeSingle:askCherrySubtitle')}
             onClick={handleClick}
             size="md"
             tone={tone}

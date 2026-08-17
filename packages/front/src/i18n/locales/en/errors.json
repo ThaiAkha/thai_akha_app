@@ -1,0 +1,10 @@
+{
+  "network": "Please check your connection and try again.",
+  "server": "Something went wrong. Please try again.",
+  "notFound": "Resource not found.",
+  "unauthorized": "You need to sign in to access this page.",
+  "generic": "An unexpected error occurred.",
+  "couldNotLoad": "Could not load {{resource}}",
+  "connectionError": "Could not load culture sections",
+  "tryDifferentTab": "Try a different tab or check back soon."
+}

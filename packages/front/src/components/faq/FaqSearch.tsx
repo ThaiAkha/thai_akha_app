@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Icon, SmartInput } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 /**
  * 🔎 FAQ SEARCH — barra ricerca + filtri categoria della pagina FAQ hub.
@@ -57,8 +57,8 @@ const FaqSearch: React.FC<FaqSearchProps> = ({
           id="faq-search"
           type="search"
           icon="search"
-          label={t.faq.searchLabel}
-          placeholder={t.faq.searchPlaceholder}
+          label={t('faq:searchLabel')}
+          placeholder={t('faq:searchPlaceholder')}
           value={query}
           onChange={e => onQueryChange(e.target.value)}
           autoComplete="off"
@@ -68,7 +68,7 @@ const FaqSearch: React.FC<FaqSearchProps> = ({
           <button
             type="button"
             onClick={() => onQueryChange('')}
-            aria-label={t.faq.searchClear}
+            aria-label={t('faq:searchClear')}
             className="absolute right-3 bottom-0 h-14 flex items-center justify-center size-11 text-muted hover:text-ocean-blue transition-colors"
           >
             <Icon name="close" size="sm" />
@@ -79,7 +79,7 @@ const FaqSearch: React.FC<FaqSearchProps> = ({
       {/* ── Chip categorie — scroll-x su mobile, wrap da sm ─────────────── */}
       <div
         role="group"
-        aria-label={t.faq.filterAll}
+        aria-label={t('faq:filterAll')}
         className="flex sm:flex-wrap [gap:var(--space-fluid-2xs)] overflow-x-auto sm:overflow-visible -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {/* "All topics" = nessun filtro categoria */}
@@ -94,7 +94,7 @@ const FaqSearch: React.FC<FaqSearchProps> = ({
           }`}
         >
           <Typography as="span" variant="caption" className={allActive ? 'text-inverse font-semibold' : 'font-semibold'}>
-            {t.faq.filterAll}
+            {t('faq:filterAll')}
           </Typography>
         </button>
 
@@ -127,7 +127,7 @@ const FaqSearch: React.FC<FaqSearchProps> = ({
       {isFiltered && (
         <div className="flex items-center justify-between [gap:var(--space-fluid-s)]">
           <Typography variant="paragraphS" color="muted">
-            {t.faq.resultsCount({ shown, total })}
+            {t('faq:resultsCount', { shown, total })}
           </Typography>
           <button
             type="button"
@@ -136,7 +136,7 @@ const FaqSearch: React.FC<FaqSearchProps> = ({
           >
             <Icon name="restart_alt" size="sm" />
             <Typography as="span" variant="caption" className="font-semibold">
-              {t.faq.filterReset}
+              {t('faq:filterReset')}
             </Typography>
           </button>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { SocialIcons, type SocialIconKey } from '@thaiakha/shared/assets/icons';
 import type { ContactChannel } from '@thaiakha/shared/types';
 import { Typography } from '../ui';
@@ -15,16 +15,16 @@ import { useBusinessProfile } from '../../hooks/useBusinessProfile';
 
 // Colori BRAND UFFICIALI di servizi terzi (non fanno parte del design system interno).
 const CHANNEL_STYLE: Record<string, { label: string; hint?: string; icon: SocialIconKey; bg: string }> = {
-  whatsapp: { label: t.contact.channels.whatsapp, hint: t.contact.channels.whatsappHint, icon: 'whatsapp', bg: 'linear-gradient(135deg,#2BB741,#25D366)' },
-  line: { label: t.contact.channels.line, hint: t.contact.channels.lineHint, icon: 'line', bg: 'linear-gradient(135deg,#05A94B,#06C755)' },
-  instagram: { label: t.contact.channels.instagram, icon: 'instagram', bg: 'linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)' },
-  messenger: { label: t.contact.channels.messenger, icon: 'messenger', bg: 'linear-gradient(135deg,#00B2FF,#A033FF)' },
-  facebook: { label: t.contact.channels.facebook, icon: 'facebook', bg: '#1877F2' },
-  youtube: { label: t.contact.channels.youtube, icon: 'youtube', bg: '#FF0000' },
-  pinterest: { label: t.contact.channels.pinterest, icon: 'pinterest', bg: '#E60023' },
-  x: { label: t.contact.channels.x, icon: 'x', bg: '#111111' },
-  tripadvisor: { label: t.contact.channels.tripadvisor, icon: 'tripadvisor', bg: '#34E0A1' },
-  maps: { label: t.contact.channels.maps, icon: 'maps', bg: '#EA4335' },
+  whatsapp: { label: t('contact:channels.whatsapp'), hint: t('contact:channels.whatsappHint'), icon: 'whatsapp', bg: 'linear-gradient(135deg,#2BB741,#25D366)' },
+  line: { label: t('contact:channels.line'), hint: t('contact:channels.lineHint'), icon: 'line', bg: 'linear-gradient(135deg,#05A94B,#06C755)' },
+  instagram: { label: t('contact:channels.instagram'), icon: 'instagram', bg: 'linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)' },
+  messenger: { label: t('contact:channels.messenger'), icon: 'messenger', bg: 'linear-gradient(135deg,#00B2FF,#A033FF)' },
+  facebook: { label: t('contact:channels.facebook'), icon: 'facebook', bg: '#1877F2' },
+  youtube: { label: t('contact:channels.youtube'), icon: 'youtube', bg: '#FF0000' },
+  pinterest: { label: t('contact:channels.pinterest'), icon: 'pinterest', bg: '#E60023' },
+  x: { label: t('contact:channels.x'), icon: 'x', bg: '#111111' },
+  tripadvisor: { label: t('contact:channels.tripadvisor'), icon: 'tripadvisor', bg: '#34E0A1' },
+  maps: { label: t('contact:channels.maps'), icon: 'maps', bg: '#EA4335' },
 };
 
 const isVisible = (c: ContactChannel) => c.is_active !== false && !!c.url;

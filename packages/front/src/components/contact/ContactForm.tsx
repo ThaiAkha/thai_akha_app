@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { Typography, Icon, Button } from '../ui';
 
 /**
@@ -14,10 +14,10 @@ type Topic = 'general' | 'agency' | 'press' | 'other';
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
 const TOPICS: { key: Topic; label: string; icon: string }[] = [
-  { key: 'general', label: t.contact.form.topicTraveller, icon: 'travel_explore' },
-  { key: 'agency', label: t.contact.form.topicAgency, icon: 'business_center' },
-  { key: 'press', label: t.contact.form.topicPress, icon: 'photo_camera' },
-  { key: 'other', label: t.contact.form.topicOther, icon: 'chat_bubble' },
+  { key: 'general', label: t('contact:form.topicTraveller'), icon: 'travel_explore' },
+  { key: 'agency', label: t('contact:form.topicAgency'), icon: 'business_center' },
+  { key: 'press', label: t('contact:form.topicPress'), icon: 'photo_camera' },
+  { key: 'other', label: t('contact:form.topicOther'), icon: 'chat_bubble' },
 ];
 
 const FIELD =
@@ -37,7 +37,7 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
     if (website) return; // bot: campo honeypot compilato → scarta in silenzio
     if (!name.trim() || !email.includes('@') || message.trim().length < 10) {
       setStatus('error');
-      setFeedback(t.contact.form.required);
+      setFeedback(t('contact:form.required'));
       return;
     }
     setStatus('sending');
@@ -50,11 +50,11 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
     if (error) {
       console.error('[ContactForm] insert:', error);
       setStatus('error');
-      setFeedback(t.contact.form.error);
+      setFeedback(t('contact:form.error'));
       return;
     }
     setStatus('success');
-    setFeedback(t.contact.form.success);
+    setFeedback(t('contact:form.success'));
     setName(''); setEmail(''); setMessage('');
   };
 
@@ -63,7 +63,7 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
       {/* Topic — chip selector */}
       <div className="flex flex-col [gap:var(--space-fluid-xs)]">
         <Typography as="span" variant="microLabel" color="muted" className="uppercase tracking-widest">
-          {t.contact.form.writingAs}
+          {t('contact:form.writingAs')}
         </Typography>
         <div className="flex flex-wrap [gap:var(--space-fluid-xs)]">
           {TOPICS.map(tp => (
@@ -92,31 +92,31 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
         <div className="flex flex-col [gap:var(--space-fluid-2xs)]">
           <label htmlFor="cf-name">
             <Typography as="span" variant="microLabel" color="muted" className="uppercase tracking-widest">
-              {t.contact.form.nameLabel}
+              {t('contact:form.nameLabel')}
             </Typography>
           </label>
           <input id="cf-name" value={name} onChange={e => setName(e.target.value)}
-            placeholder={t.contact.form.namePlaceholder} autoComplete="name" className={FIELD} />
+            placeholder={t('contact:form.namePlaceholder')} autoComplete="name" className={FIELD} />
         </div>
         <div className="flex flex-col [gap:var(--space-fluid-2xs)]">
           <label htmlFor="cf-email">
             <Typography as="span" variant="microLabel" color="muted" className="uppercase tracking-widest">
-              {t.contact.form.emailLabel}
+              {t('contact:form.emailLabel')}
             </Typography>
           </label>
           <input id="cf-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
-            placeholder={t.contact.form.emailPlaceholder} autoComplete="email" className={FIELD} />
+            placeholder={t('contact:form.emailPlaceholder')} autoComplete="email" className={FIELD} />
         </div>
       </div>
 
       <div className="flex flex-col [gap:var(--space-fluid-2xs)]">
         <label htmlFor="cf-msg">
           <Typography as="span" variant="microLabel" color="muted" className="uppercase tracking-widest">
-            {t.contact.form.messageLabel}
+            {t('contact:form.messageLabel')}
           </Typography>
         </label>
         <textarea id="cf-msg" value={message} onChange={e => setMessage(e.target.value)}
-          placeholder={t.contact.form.messagePlaceholder} rows={5}
+          placeholder={t('contact:form.messagePlaceholder')} rows={5}
           className={cn(FIELD, 'resize-y min-h-[130px]')} />
       </div>
 
@@ -151,7 +151,7 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
           iconPosition="right"
           disabled={status === 'sending'}
         >
-          {status === 'sending' ? t.contact.form.sending : t.contact.form.send}
+          {status === 'sending' ? t('contact:form.sending') : t('contact:form.send')}
         </Button>
       </div>
     </form>

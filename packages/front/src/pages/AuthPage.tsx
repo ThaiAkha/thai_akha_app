@@ -5,7 +5,7 @@ import { CinematicBackground, SmartHeaderSection } from '../components/layout/in
 import AuthForm from '../components/auth/AuthForm';
 import { contentService } from '@thaiakha/shared/services';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t, tObj } from '../i18n';
 import type { LegalDocument } from '@thaiakha/shared';
 import { getInfoPage } from '../services/infoPages.service';
 import LegalDocumentStaticViewer from '../components/legal/LegalDocumentStaticViewer';
@@ -117,7 +117,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar [scrollbar-gutter:stable] [padding-inline:var(--space-fluid-m)] [padding-top:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)] flex flex-col items-center [gap:var(--space-fluid-s)]">
                   <div className="flex justify-center shrink-0 [min-height:calc(var(--auth-hero-img)*0.67)] items-center">
                     <img
-                      src={t.auth.onboarding.chef.heroImage}
+                      src={t('auth:onboarding.chef.heroImage')}
                       alt="Chef Cherry"
                       className="h-auto object-contain"
                       style={{ width: 'calc(var(--auth-hero-img) * 0.63)', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
@@ -130,13 +130,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                       align="center"
                       hideSubtitle
                       hideTag
-                      fallbackTitle={t.auth.onboarding.chef.titleMain}
-                      fallbackHighlight={t.auth.onboarding.chef.titleHighlight}
-                      fallbackDescription={t.auth.onboarding.chef.description}
+                      fallbackTitle={t('auth:onboarding.chef.titleMain')}
+                      fallbackHighlight={t('auth:onboarding.chef.titleHighlight')}
+                      fallbackDescription={t('auth:onboarding.chef.description')}
                     />
                   </div>
                   <div className="flex flex-col [gap:var(--space-fluid-xs)] [margin-top:var(--space-fluid-s)] w-full">
-                    {t.auth.onboarding.chef.cards.map((card, i) => renderFeatureRow(card, i))}
+                    {tObj('auth:onboarding.chef.cards').map((card, i) => renderFeatureRow(card as OnboardingCard, i))}
                   </div>
                 </div>
               </div>
@@ -146,7 +146,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar [scrollbar-gutter:stable] [padding-inline:var(--space-fluid-m)] [padding-top:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)] flex flex-col items-center [gap:var(--space-fluid-s)]">
                   <div className="flex justify-center shrink-0 [min-height:calc(var(--auth-hero-img)*0.67)] items-center">
                     <img
-                      src={t.auth.onboarding.story.heroImage}
+                      src={t('auth:onboarding.story.heroImage')}
                       alt="Akha Storyteller"
                       className="h-auto object-contain"
                       loading="lazy"
@@ -160,15 +160,15 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                       align="center"
                       hideSubtitle
                       hideTag
-                      fallbackTitle={t.auth.onboarding.story.titleMain}
-                      fallbackHighlight={t.auth.onboarding.story.titleHighlight}
-                      fallbackDescription={t.auth.onboarding.story.description}
+                      fallbackTitle={t('auth:onboarding.story.titleMain')}
+                      fallbackHighlight={t('auth:onboarding.story.titleHighlight')}
+                      fallbackDescription={t('auth:onboarding.story.description')}
                       gradientFrom="primary"
                       gradientTo="secondary"
                     />
                   </div>
                   <div className="flex flex-col [gap:var(--space-fluid-xs)] [margin-top:var(--space-fluid-s)] w-full">
-                    {t.auth.onboarding.story.cards.map((card, i) => renderFeatureRow(card, i))}
+                    {tObj('auth:onboarding.story.cards').map((card, i) => renderFeatureRow(card as OnboardingCard, i))}
                   </div>
                 </div>
               </div>
@@ -198,22 +198,22 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
             <div className="flex [gap:var(--space-fluid-xs)]">
               {step === 1 && (
                 <Button variant="outline" size="sm" icon="arrow_back" className="invisible pointer-events-none" aria-hidden tabIndex={-1}>
-                  {t.common.back}
+                  {t('common:back')}
                 </Button>
               )}
               {step === 2 && (
                 <Button variant="outline" size="sm" onClick={() => setStep(1)} icon="arrow_back">
-                  {t.common.back}
+                  {t('common:back')}
                 </Button>
               )}
               {step === 3 && authPanel === 'login' && (
                 <Button variant="outline" size="sm" onClick={() => setStep(2)} icon="arrow_back">
-                  {t.common.back}
+                  {t('common:back')}
                 </Button>
               )}
               {step === 3 && authPanel === 'signup' && (
                 <Button variant="outline" size="sm" onClick={() => setAuthPanel('login')} icon="arrow_back">
-                  {t.auth.switchToLogin}
+                  {t('auth:switchToLogin')}
                 </Button>
               )}
             </div>
@@ -222,22 +222,22 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
             <div className="flex [gap:var(--space-fluid-xs)]">
               {step === 1 && (
                 <Button variant="brand" size="sm" onClick={() => setStep(2)} icon="arrow_forward" iconPosition="right">
-                  {t.auth.nextExperience}
+                  {t('auth:nextExperience')}
                 </Button>
               )}
               {step === 2 && (
                 <Button variant="brand" size="sm" onClick={() => setStep(3)} icon="arrow_forward" iconPosition="right">
-                  {t.nav.login}
+                  {t('nav:login')}
                 </Button>
               )}
               {step === 3 && authPanel === 'login' && (
                 <Button variant="outline" size="sm" onClick={() => setAuthPanel('signup')} icon="arrow_forward" iconPosition="right">
-                  {t.auth.newUser}
+                  {t('auth:newUser')}
                 </Button>
               )}
               {step === 3 && authPanel === 'signup' && (
                 <Button variant="outline" size="sm" icon="arrow_forward" iconPosition="right" className="invisible pointer-events-none" aria-hidden tabIndex={-1}>
-                  {t.auth.newUser}
+                  {t('auth:newUser')}
                 </Button>
               )}
             </div>
@@ -256,7 +256,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 ? 'w-6 bg-primary shadow-[0_0_10px_rgba(227,31,51,0.4)]'
                 : 'w-3 bg-white/10 hover:bg-white/30'
                 }`}
-              aria-label={t.auth.goToStep({ n: dotIndex })}
+              aria-label={t('auth:goToStep', { n: dotIndex })}
             >
               <span className="sr-only">Step {dotIndex}</span>
             </button>
@@ -272,7 +272,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 className="hover:opacity-70 transition-opacity [padding-block:var(--space-fluid-2xs)]"
               >
                 <Typography variant="accent" color="primary">
-                  {isForgotPassword ? t.common.back : "Forgot Password?"}
+                  {isForgotPassword ? t('common:back') : "Forgot Password?"}
                 </Typography>
               </button>
             )}
@@ -283,11 +283,11 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
               {authPanel === 'signup' ? (
                 <Typography variant="accent" color="muted" className="text-center">
                   By creating an account, you agree to our{' '}
-                  <span className="text-primary font-semibold">{t.auth.privacyLabel}</span>
+                  <span className="text-primary font-semibold">{t('auth:privacyLabel')}</span>
                 </Typography>
               ) : (
                 <Typography variant="accent" color="muted">
-                  {t.auth.privacyLabel}
+                  {t('auth:privacyLabel')}
                 </Typography>
               )}
             </button>
@@ -305,7 +305,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
       <Modal
         isOpen={showPrivacy}
         onClose={() => setShowPrivacy(false)}
-        title={t.auth.privacyLabel}
+        title={t('auth:privacyLabel')}
       >
         {privacyDoc
           ? <LegalDocumentStaticViewer document={privacyDoc} />

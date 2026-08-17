@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { Typography, Icon } from '../ui/index';
 import { getPageDates } from '../../services/infoPages.service';
 
@@ -55,7 +55,7 @@ export const PageMeta: React.FC<PageMetaProps> = ({
         <div className="flex items-center [gap:var(--space-fluid-2xs)]">
           <Icon name="calendar_today" size="xs" className={isOcean ? 'text-ocean-blue/60' : 'text-primary/60'} />
           <Typography variant="caption" color="muted">
-            {t.components.essentials.published}: {fmt(dates.published)}
+            {t('components:essentials.published')}: {fmt(dates.published)}
           </Typography>
         </div>
       )}
@@ -63,7 +63,7 @@ export const PageMeta: React.FC<PageMetaProps> = ({
         <div className="flex items-center [gap:var(--space-fluid-2xs)]">
           <Icon name="update" size="xs" className="text-action" />
           <Typography variant="caption" color="muted">
-            {t.components.essentials.updated}: {fmt(dates.modified)}
+            {t('components:essentials.updated')}: {fmt(dates.modified)}
           </Typography>
         </div>
       )}

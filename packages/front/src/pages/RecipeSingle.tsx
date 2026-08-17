@@ -14,7 +14,7 @@ import { useRecipePageData } from '../hooks/useRecipePageData';
 import { useShareLink } from '../hooks/useShareLink';
 import type { RecipeNavItem } from '../components/recipes';
 import type { UserProfile } from '@thaiakha/shared/types';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 interface RecipeSinglePageProps {
   slug: string;
@@ -70,8 +70,8 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
     return (
       <PageLayout slug="recipes" showPatterns={true} hideDefaultHeader={true}>
         <div className="flex flex-col justify-center items-center h-[60vh] text-center [padding:var(--space-fluid-m)]">
-          <Typography variant="h3" as="p" className="mb-4">{t.recipeSingle.notFound}</Typography>
-          <Button variant="action" onClick={() => onNavigate?.('recipes')}>{t.recipeSingle.backToRecipes}</Button>
+          <Typography variant="h3" as="p" className="mb-4">{t('recipeSingle:notFound')}</Typography>
+          <Button variant="action" onClick={() => onNavigate?.('recipes')}>{t('recipeSingle:backToRecipes')}</Button>
         </div>
       </PageLayout>
     );

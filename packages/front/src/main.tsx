@@ -3,7 +3,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { LanguageProvider } from './context/LanguageContext';
+import { initI18n } from './i18n';
+import { parseLangPath } from './lib/langRouting';
 import './styles/index.css';
+
+// i18next parte PRIMA del primo render, con la lingua dell'URL: i namespace di
+// shell (common/nav/errors/components) sono bundlati in inglese, quindi il
+// primo paint non mostra mai chiavi grezze; il resto si carica per lingua.
+void initI18n(parseLangPath(window.location.pathname).lang);
 
 // Verifica caricamento in console
 console.log('%c Thai Akha Kitchen: Tailwind CSS Loaded kha! ', 'background: #98C93C; color: #fff; font-weight: bold;');

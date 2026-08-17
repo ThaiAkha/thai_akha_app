@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography, Icon, Badge } from '../ui/index';
 import { ContentCategoryDB } from '@thaiakha/shared/types';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { useMediaAsset } from '../../hooks/useMediaAsset';
 
 interface QuizCardCategoryProps {
@@ -164,7 +164,7 @@ const QuizCardCategory: React.FC<QuizCardCategoryProps> = ({
             <div className="flex flex-col [gap:var(--space-fluid-3xs)] [margin-top:var(--space-fluid-xs)]">
               <div className="flex justify-between items-end">
                 <Typography variant="microLabel" className="text-white/60 tracking-wider">
-                  {progress.completed === progress.total ? t.quiz.mastered || 'Mastered' : t.quiz.progress || 'Progress'}
+                  {progress.completed === progress.total ? t('quiz:mastered') || 'Mastered' : t('quiz:progress') || 'Progress'}
                 </Typography>
                 <Typography variant="microLabel" style={{ color: colorVar }} className="font-bold">
                   {progress.completed} / {progress.total} Modules
@@ -187,7 +187,7 @@ const QuizCardCategory: React.FC<QuizCardCategoryProps> = ({
           {variant !== 'compact' && !hidePlayButton && (
             <div className="flex justify-end [margin-top:var(--space-fluid-2xs)]">
               <div className="inline-flex items-center gap-1.5 [padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)] rounded-full bg-primary text-white text-xs font-black uppercase tracking-widest transition-all duration-300 group-hover:bg-primary/90">
-                <span>{progress?.percentage === 100 ? t.quiz.playAgain || 'Play Again' : t.quiz.startQuiz || 'Start Quiz'}</span>
+                <span>{progress?.percentage === 100 ? t('quiz:playAgain') || 'Play Again' : t('quiz:startQuiz') || 'Start Quiz'}</span>
                 <span className="material-symbols-outlined text-base leading-none">arrow_forward</span>
               </div>
             </div>

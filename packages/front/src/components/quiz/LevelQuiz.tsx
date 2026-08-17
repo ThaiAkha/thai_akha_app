@@ -4,14 +4,14 @@ import ButtonQuiz from './ButtonQuiz';
 import QuizBackButton from './QuizBackButton';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Typography } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 // ── Configurazione Bottoni ──────────────────────────────────────────────────
 
 const BUTTON_CONFIG = {
-  START: { label: t.quiz.startQuiz, icon: 'play_arrow', variant: 'primary' as const },
-  RESUME: { label: t.quiz.resume, icon: 'play_circle', variant: 'primary' as const },
-  RETAKE: { label: t.quiz.retake, icon: 'replay', variant: 'secondary' as const },
+  START: { label: t('quiz:startQuiz'), icon: 'play_arrow', variant: 'primary' as const },
+  RESUME: { label: t('quiz:resume'), icon: 'play_circle', variant: 'primary' as const },
+  RETAKE: { label: t('quiz:retake'), icon: 'replay', variant: 'secondary' as const },
 };
 
 interface LevelQuizProps {
@@ -85,7 +85,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
       {/* ── HEADER NAVIGAZIONE ── */}
       <div className="[margin-bottom:var(--space-fluid-m)] text-center lg:text-left flex flex-col items-center lg:items-start [gap:var(--space-fluid-s)]">
         <QuizBackButton
-          label={t.quiz.backLevels}
+          label={t('quiz:backLevels')}
           onClick={onBack}
         />
 
@@ -98,7 +98,7 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
             {level.title}
           </Typography>
           <Typography variant="paragraphM" color="muted" className="max-w-2xl font-light">
-            {level.subtitle || t.quiz.noSubtitle}
+            {level.subtitle || t('quiz:noSubtitle')}
           </Typography>
         </div>
       </div>
@@ -142,12 +142,12 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
                   {isPerfect ? (
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
                       <Icon name="auto_awesome" size="xs" className="text-emerald-400" />
-                      <Typography variant="microLabel" className="font-black text-emerald-400 uppercase tracking-widest">{t.quiz.mastered}</Typography>
+                      <Typography variant="microLabel" className="font-black text-emerald-400 uppercase tracking-widest">{t('quiz:mastered')}</Typography>
                     </div>
                   ) : isAttempted ? (
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
                       <Icon name="timer" size="xs" className="text-primary" />
-                      <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-widest">{t.quiz.inProgress}</Typography>
+                      <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-widest">{t('quiz:inProgress')}</Typography>
                     </div>
                   ) : null}
                 </div>
@@ -163,12 +163,12 @@ const LevelQuiz: React.FC<LevelQuizProps> = ({
 
                 {/* THEME LABEL */}
                 <Typography variant="microLabel" color="muted" className="font-bold uppercase tracking-widest mb-auto">
-                  {mod.theme || t.quiz.noTheme}
+                  {mod.theme || t('quiz:noTheme')}
                 </Typography>
 
                 {/* STATS BAR (Fluid Spacing) */}
                 <div className="flex items-center justify-between [padding:var(--space-fluid-s)] bg-black/20 rounded-2xl [margin-bottom:var(--space-fluid-m)] border border-white/5">
-                  <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-widest">{t.quiz.score}</Typography>
+                  <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-widest">{t('quiz:score')}</Typography>
                   <Typography
                     variant="numericStat"
                     className={cn("font-black leading-none", isPerfect ? 'text-emerald-400' : 'text-color-inverse')}

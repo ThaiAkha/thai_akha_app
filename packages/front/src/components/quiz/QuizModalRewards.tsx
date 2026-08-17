@@ -5,7 +5,7 @@ import Modal from '../modal/Modal';
 import { HeaderSection } from '../layout/HeaderSection';
 import { cn } from '@thaiakha/shared/lib/utils';
 import AudioPlayer from '../modal/AudioPlayer';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import ButtonQuiz from './ButtonQuiz';
 
 export interface QuizModalReward {
@@ -288,7 +288,7 @@ const QuizModalRewards: React.FC<QuizModalRewardsProps> = ({
             onClick={onClose}
             className="text-action border-action/30 hover:bg-action/10 hover:border-action/50 transition-all"
           >
-            {t.common.closeReward}
+            {t('common:closeReward')}
           </Button>
         </div>
       </div>

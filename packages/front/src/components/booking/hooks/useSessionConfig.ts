@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { contentService } from '@thaiakha/shared/services';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../../i18n';
 import type { SessionInfo } from '../booking.types';
 
 export interface UseSessionConfigResult {
@@ -31,7 +31,7 @@ export function useSessionConfig(): UseSessionConfigResult {
           config[s.id] = {
             id:          s.id,
             label:       s.display_name,
-            shortLabel:  isMorning ? t.booking.morningSession : t.booking.eveningSession,
+            shortLabel:  isMorning ? t('booking:morningSession') : t('booking:eveningSession'),
             basePrice:   s.price_thb,
             icon:        isMorning ? 'wb_sunny' : 'dark_mode',
             color:       isMorning ? 'text-primary' : 'text-secondary',

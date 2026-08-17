@@ -10,7 +10,7 @@ import {
 } from '../components/blog/index';
 import { AudioPlayer } from '../components/modal/AudioPlayer';
 import { BlogGridSkeleton } from '../components/skeleton';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { useHistoryFeed } from '../hooks/useHistoryFeed';
 import HistoryPageSingle from './HistoryPageSingle';
 
@@ -105,16 +105,16 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
         {!loading && error && (
           <div className="flex flex-col items-center justify-center py-24 text-center [gap:var(--space-fluid-s)]">
             <Icon name="wifi_off" size="xl" className="text-primary/40" />
-            <Typography variant="h5" color="sub">{t.history.loadError}</Typography>
-            <Typography variant="paragraphS" color="muted">{t.history.loadErrorHint}</Typography>
+            <Typography variant="h5" color="sub">{t('history:loadError')}</Typography>
+            <Typography variant="paragraphS" color="muted">{t('history:loadErrorHint')}</Typography>
           </div>
         )}
 
         {!loading && !error && !hasContent && (
           <div className="flex flex-col items-center justify-center py-24 text-center [gap:var(--space-fluid-s)]">
             <Icon name="auto_stories" size="xl" className="text-action/40" />
-            <Typography variant="h5" color="sub">{t.history.emptyTitle}</Typography>
-            <Typography variant="paragraphS" color="muted">{t.history.emptyHint}</Typography>
+            <Typography variant="h5" color="sub">{t('history:emptyTitle')}</Typography>
+            <Typography variant="paragraphS" color="muted">{t('history:emptyHint')}</Typography>
           </div>
         )}
 
@@ -142,7 +142,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
                     onClick={() => handleOpenSection(featuredSection.slug, onNavigate)}
                     className="shrink-0"
                   >
-                    {t.history.explore}
+                    {t('history:explore')}
                   </Button>
                 </div>
 

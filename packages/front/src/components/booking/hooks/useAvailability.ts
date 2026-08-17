@@ -13,7 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../../i18n';
 import type { DailyAvailability, SessionInfo, SessionStatus } from '../booking.types';
 
 export interface UseAvailabilityResult {
@@ -82,7 +82,7 @@ export function useAvailability(
               return {
                 status: 'CLOSED',
                 remaining: 0,
-                reason: override.closure_reason || t.booking.closed,
+                reason: override.closure_reason || t('booking:closed'),
                 totalVisitors: 0,
               };
             }
@@ -95,7 +95,7 @@ export function useAvailability(
             return {
               status: remaining > 0 ? 'OPEN' : 'FULL',
               remaining,
-              reason: remaining === 0 ? t.booking.fullyBooked : undefined,
+              reason: remaining === 0 ? t('booking:fullyBooked') : undefined,
               totalVisitors: 0,
             };
           };

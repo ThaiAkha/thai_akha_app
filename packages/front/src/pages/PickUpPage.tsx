@@ -17,7 +17,7 @@ import { GEOJSON_MASTER } from '@thaiakha/shared/data';
 import { PageLayout } from '../components/layout/PageLayout';
 import { Typography, Badge } from '../components/ui';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
 import { useBottomSheet, type SnapState } from '../hooks/useBottomSheet';
@@ -171,12 +171,12 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
   const handleConfirm = async () => {
     if (!loc.pickupLoc) return;
     if (loc.transportMode === 'pickup' && loc.pickupLoc.type === 'custom_pin' && !loc.pickupLoc.name.trim()) {
-      alert(t.location.enterPickupName);
+      alert(t('location:enterPickupName'));
       return;
     }
     const finalDropoff = loc.isDropoffSame ? loc.pickupLoc : loc.dropoffLoc;
     if (!loc.isDropoffSame && !finalDropoff) {
-      alert(t.location.selectDropoff);
+      alert(t('location:selectDropoff'));
       return;
     }
 
@@ -220,7 +220,7 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
       }
     } catch (e) {
       console.error(e);
-      alert(t.errors.generic);
+      alert(t('errors:generic'));
     } finally {
       setSaving(false);
     }
@@ -316,7 +316,7 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
               </Typography>
               {isEditMode && (
                 <Badge variant="mineral" className="text-dropoff border-dropoff/30">
-                  {t.location.editMode}
+                  {t('location:editMode')}
                 </Badge>
               )}
             </div>

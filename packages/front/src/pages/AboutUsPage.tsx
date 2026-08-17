@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { PageLayout, InfoPageHero, PageEssentials, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
 import { InfoPageSidebar } from '../components/layout/sidebar-info';
 import { Typography, Icon, Badge, FaqBottomPage, GlassCard } from '../components/ui';
@@ -340,7 +340,7 @@ function CherryTeamCard({ member, cherrySection }: { member: TeamMember; cherryS
           <Typography variant="h4" as="h3" color="title">{member.name}</Typography>
           {member.is_ai_agent && (
             <Badge variant="mineral" color="quiz-p" size="xs">
-              {t.about.aiDigitalGuide}
+              {t('about:aiDigitalGuide')}
             </Badge>
           )}
         </div>

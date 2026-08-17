@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Pickup Location",
+  "editMode": "Edit Mode",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Need Pickup",
+  "fromHotel": "From Hotel",
+  "goMyself": "Go Myself",
+  "meetAtSchool": "Meet at School",
+  "startLocation": "Start Location (Pickup)",
+  "searchHotel": "Search Hotel...",
+  "sameDropoff": "Same Drop-off?",
+  "endLocation": "End Location (Drop-off)",
+  "sameAsPickup": "Same as Pickup",
+  "pinOnMap": "Pin on Map",
+  "pinDropoff": "Pin Drop-off",
+  "selectMeetingPoint": "Select Meeting Point",
+  "updateBooking": "Update Booking",
+  "confirmLocation": "Confirm Location",
+  "enterPickupName": "Please enter a name for your Pickup Location kha.",
+  "selectDropoff": "Please select a Drop-off location or enable 'Same as Pickup'."
+}

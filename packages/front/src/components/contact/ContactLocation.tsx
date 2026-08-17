@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import type { MeetingPoint } from '@thaiakha/shared/types';
 import { Typography, Icon } from '../ui';
 import { SmartHeaderSection } from '../layout';
@@ -91,8 +91,8 @@ export default function ContactLocation() {
               const morning = fmtTime(point.morning_pickup_time);
               const evening = fmtTime(point.evening_pickup_time);
               const arrival = [
-                morning ? `${t.contact.morningLabel}: ${morning}` : null,
-                evening ? `${t.contact.eveningLabel}: ${evening}` : null,
+                morning ? `${t('contact:morningLabel')}: ${morning}` : null,
+                evening ? `${t('contact:eveningLabel')}: ${evening}` : null,
               ].filter(Boolean).join(' · ');
               return (
                 <div key={point.id} className="flex flex-col [gap:var(--space-fluid-s)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
@@ -105,14 +105,14 @@ export default function ContactLocation() {
                   )}
                   {arrival && (
                     <div className="mt-auto pt-4 border-t border-border">
-                      <Typography variant="microLabel" color="muted" className="uppercase tracking-widest mb-2">{t.contact.arrivalTime}</Typography>
+                      <Typography variant="microLabel" color="muted" className="uppercase tracking-widest mb-2">{t('contact:arrivalTime')}</Typography>
                       <Typography variant="paragraphS" color="default">{arrival}</Typography>
                     </div>
                   )}
                   {point.google_maps_link && (
                     <a href={point.google_maps_link} target="_blank" rel="noopener noreferrer"
                        className="mt-2 inline-flex w-full items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl border border-action/40 text-action text-sm font-semibold hover:bg-action/5 active:scale-[0.98] transition-colors">
-                      {t.contact.openInMaps} <Icon name="open_in_new" size="sm" />
+                      {t('contact:openInMaps')} <Icon name="open_in_new" size="sm" />
                     </a>
                   )}
                 </div>
@@ -150,10 +150,10 @@ export default function ContactLocation() {
                       </Typography>
                     </div>
                     <Typography variant="microLabel" color="muted" className="mt-1">
-                      {t.contact.morningLabel}: {fmtTime(zone.morning_pickup_time) ?? '—'}
+                      {t('contact:morningLabel')}: {fmtTime(zone.morning_pickup_time) ?? '—'}
                     </Typography>
                     <Typography variant="microLabel" color="muted">
-                      {t.contact.eveningLabel}: {fmtTime(zone.evening_pickup_time) ?? '—'}
+                      {t('contact:eveningLabel')}: {fmtTime(zone.evening_pickup_time) ?? '—'}
                     </Typography>
                   </div>
                 ))}
@@ -176,19 +176,19 @@ export default function ContactLocation() {
             <div className="flex flex-col [gap:var(--space-fluid-s)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
               {fullAddress && (
                 <div className="flex flex-col [gap:var(--space-fluid-3xs)]">
-                  <Typography variant="microLabel" color="muted" className="uppercase tracking-widest">{t.contact.labelAddress}</Typography>
+                  <Typography variant="microLabel" color="muted" className="uppercase tracking-widest">{t('contact:labelAddress')}</Typography>
                   <Typography variant="paragraphS" color="default">{fullAddress}</Typography>
                 </div>
               )}
               {bp.legal_name && (
                 <div className="flex flex-col [gap:var(--space-fluid-3xs)]">
-                  <Typography variant="microLabel" color="muted" className="uppercase tracking-widest">{t.contact.labelLegalName}</Typography>
+                  <Typography variant="microLabel" color="muted" className="uppercase tracking-widest">{t('contact:labelLegalName')}</Typography>
                   <Typography variant="paragraphS" color="default">{bp.legal_name}</Typography>
                 </div>
               )}
               {bp.tax_id && (
                 <div className="flex flex-col [gap:var(--space-fluid-3xs)]">
-                  <Typography variant="microLabel" color="muted" className="uppercase tracking-widest">{t.contact.labelTaxId}</Typography>
+                  <Typography variant="microLabel" color="muted" className="uppercase tracking-widest">{t('contact:labelTaxId')}</Typography>
                   <Typography variant="paragraphS" color="default">{bp.tax_id}</Typography>
                 </div>
               )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography, Icon } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface HeaderQuizProps {
   title: string;
@@ -76,7 +76,7 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({
           <div className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_6px_var(--color-primary)]" />
             <Typography variant="microLabel" color="primary" className="uppercase font-black tracking-[0.25em]">
-              {t.quiz.headerBadge || 'Active Quiz'}
+              {t('quiz:headerBadge') || 'Active Quiz'}
             </Typography>
           </div>
           {/* as="p": UI app-bar label — semantic H1 lives in QuizPage sr-only (fixes D04 H5-before-H1). */}
@@ -89,7 +89,7 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({
         <div className="flex sm:hidden shrink-0 items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_6px_var(--color-primary)]" />
           <Typography variant="microLabel" color="primary" className="uppercase font-black tracking-[0.25em]">
-            {t.quiz.headerBadge || 'Quiz'}
+            {t('quiz:headerBadge') || 'Quiz'}
           </Typography>
         </div>
 
@@ -99,7 +99,7 @@ const HeaderQuiz: React.FC<HeaderQuizProps> = ({
             <Typography variant="microLabel" color="primary" className="font-black uppercase tracking-[0.15em] truncate">
               {view === 'PLAYING'
                 ? `Q. ${Math.min((questionResults?.length || 0) + 1, (totalQuestions || 0))}`
-                : (progressTextLeft || t.quiz.progress)}
+                : (progressTextLeft || t('quiz:progress'))}
             </Typography>
             <Typography variant="microLabel" color="muted" className="uppercase tracking-[0.15em] font-bold shrink-0">
               {view === 'PLAYING'

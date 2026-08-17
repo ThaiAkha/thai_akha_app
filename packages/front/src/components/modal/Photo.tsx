@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, MediaImage } from '../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { GalleryItem } from './GalleryModal';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 // square  — 1:1  (default, usato in InfoClasses gallery grid)
@@ -47,7 +47,7 @@ export const Photo: React.FC<PhotoProps> = ({
     <MediaImage
       assetId={item.asset_id}
       url={item.image_url}
-      fallbackAlt={item.title || t.components.media.photoFallback}
+      fallbackAlt={item.title || t('components:media.photoFallback')}
       showCaption={false}
       imgClassName="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
     />

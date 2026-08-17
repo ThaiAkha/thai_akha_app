@@ -17,10 +17,13 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
+    "i18next": "^24.2.3",
+    "i18next-resources-to-backend": "^1.2.1",
     "lucide-react": "^0.474.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-google-recaptcha": "^3.1.0",
+    "react-i18next": "^15.7.4",
     "react-swipeable": "^7.0.2"
   },
   "devDependencies": {

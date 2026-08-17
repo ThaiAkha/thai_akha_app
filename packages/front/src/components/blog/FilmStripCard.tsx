@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink, AkhaPixelPattern } from '../ui/index';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import './BlogCardGlass.css';
 import { SECTION_ICONS } from './sectionIcons';
 
@@ -118,7 +118,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
           </Typography>
 
           <div className="flex items-center [gap:var(--space-fluid-2xs)] text-action [margin-top:var(--space-fluid-s)] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-            <Typography variant="microLabel" className="uppercase">{t.blog.explore}</Typography>
+            <Typography variant="microLabel" className="uppercase">{t('blog:explore')}</Typography>
             <Icon name="arrow_forward" size="sm" />
           </div>
         </div>

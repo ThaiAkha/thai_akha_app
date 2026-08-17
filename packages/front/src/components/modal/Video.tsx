@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icon, Typography } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface VideoProps {
   videoId: string;
@@ -41,7 +41,7 @@ export const Video: React.FC<VideoProps> = ({
               <img 
                 src={imageUrl} 
                 className="w-full h-full object-cover opacity-80 group-hover/video:scale-105 transition-all duration-[2s]" 
-                alt={altText || title || t.components.media.videoThumbnail} 
+                alt={altText || title || t('components:media.videoThumbnail')} 
               />
             )}
             <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 bg-gradient-to-t from-black/50 to-transparent">

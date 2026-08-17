@@ -1,0 +1,21 @@
+{
+  "tabAll": "All",
+  "loadError": "Could not load culture sections",
+  "loadErrorHint": "Please check your connection and try again.",
+  "emptyTitle": "No sections in this category",
+  "emptyHint": "Try a different tab or check back soon.",
+  "chapterLoadError": "Could not load this chapter",
+  "fallbackTitle": "Akha Heritage & Culture",
+  "fallbackSubtitle": "Discover the journey and living culture of the Akha people",
+  "galleryLabel": "Gallery · {{count}} photos",
+  "openGallery": "Open Full Gallery",
+  "featuredBadge": "Featured",
+  "chapter": "CH. {{num}}",
+  "back": "All Chapters",
+  "explore": "Explore",
+  "listen": "Listen",
+  "pause": "Pause",
+  "otherChapters": "Other Chapters",
+  "backToHistory": "Back to History",
+  "moreHeritage": "More Akha Heritage"
+}

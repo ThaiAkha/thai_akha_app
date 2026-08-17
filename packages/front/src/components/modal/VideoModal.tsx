@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '../ui/index';
 import Modal from './Modal';
 import ModalMediaHeader from './ModalMediaHeader';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
   videoId,
   title,
   description,
-  buttonText = t.common.closeVideo,
+  buttonText = t('common:closeVideo'),
   backgroundImage = '',
 }) => {
   return (

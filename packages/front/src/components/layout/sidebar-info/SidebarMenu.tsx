@@ -3,7 +3,7 @@ import { contentService } from '@thaiakha/shared/services';
 import { Typography, Icon } from '../../ui';
 import type { TocAccent } from '../../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../../i18n';
 import SidebarCard from './SidebarCard';
 import { useLanguage } from '../../../context/LanguageContext';
 
@@ -36,7 +36,7 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
   currentSlug,
   onNavigate,
   accent = 'ocean',
-  title = t.components.sidebarInfo.menuTitle,
+  title = t('components:sidebarInfo.menuTitle'),
 }) => {
   const [footer, setFooter] = useState<FooterItem[]>([]);
   const { lang } = useLanguage();

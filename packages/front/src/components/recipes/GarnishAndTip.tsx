@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import Alert from '../ui/card/Alert';
 
 interface GarnishAndTipProps {
@@ -16,7 +16,7 @@ const GarnishAndTip: React.FC<GarnishAndTipProps> = ({ garnish, cooksTip }) => {
         <Alert
           variant="warning"
           icon="eco"
-          title={t.recipeSingle.garnish || 'Garnish'}
+          title={t('recipeSingle:garnish') || 'Garnish'}
           message={garnish}
           className="h-full"
         />
@@ -25,7 +25,7 @@ const GarnishAndTip: React.FC<GarnishAndTipProps> = ({ garnish, cooksTip }) => {
         <Alert
           variant="warning"
           icon="tips_and_updates"
-          title={t.recipeSingle.cooksTip || "Cook's Tip"}
+          title={t('recipeSingle:cooksTip') || "Cook's Tip"}
           message={cooksTip}
           className="h-full"
         />

@@ -15,7 +15,7 @@ import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useIngredientDetail } from '../hooks/useIngredientDetail';
 import { INGREDIENTS_HUB_SLUG } from '../hooks/useIngredientsFeed';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 interface TabItem { value: string; label: string; icon?: string; }
 
@@ -131,7 +131,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
             <div className="flex flex-col items-center justify-center py-24 text-center [gap:var(--space-fluid-s)]">
               <Icon name="wifi_off" size="xl" className="text-pantry-4/40" />
               <Typography variant="h5" color="sub">This ingredient could not be loaded.</Typography>
-              <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">{t.common.goBack}</Button>
+              <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">{t('common:goBack')}</Button>
             </div>
           )}
 
@@ -158,7 +158,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
                     {tocItems.length > 0 && (
                       <TableOfContents
                         items={tocItems}
-                        title={t.blog.contents}
+                        title={t('blog:contents')}
                         dividerTheme="ingredients"
                         accent="ingredients"
                       />

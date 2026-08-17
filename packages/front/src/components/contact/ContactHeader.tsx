@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { Typography, Icon } from '../ui';
 import { SmartHeaderSection } from '../layout';
 import { useBusinessProfile } from '../../hooks/useBusinessProfile';
@@ -45,7 +45,7 @@ export default function ContactHeader() {
           <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
             <div className="flex items-center [gap:var(--space-fluid-xs)] mb-2">
               <Icon name="schedule" className="text-primary" />
-              <Typography variant="h5" as="h3" color="title">{t.contact.labelHours}</Typography>
+              <Typography variant="h5" as="h3" color="title">{t('contact:labelHours')}</Typography>
             </div>
             {hours.map((h, i) => (
               <React.Fragment key={i}>
@@ -60,7 +60,7 @@ export default function ContactHeader() {
           <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
             <div className="flex items-center [gap:var(--space-fluid-xs)] mb-2">
               <Icon name="call" className="text-primary" />
-              <Typography variant="h5" as="h3" color="title">{t.contact.directContacts}</Typography>
+              <Typography variant="h5" as="h3" color="title">{t('contact:directContacts')}</Typography>
             </div>
             {/* Tap target reali: telefono → chiama, email → mail (min-h 44px iOS/Android) */}
             {phone && (

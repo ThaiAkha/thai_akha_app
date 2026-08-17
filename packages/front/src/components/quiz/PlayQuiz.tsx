@@ -6,7 +6,7 @@ import { Icon, Typography, Button, AkhaPixelPattern } from '../ui';
 import Toggle from '../ui/navigation/Toggle';
 import { CherryFormatter } from '../chat/CherryFormatter';
 import { useMediaAssets } from '../../hooks/useMediaAssets';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import PhotoGrid from './PhotoGrid';
 import { scoreAnswer } from './quizScoring';
 
@@ -139,7 +139,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
         <div className="[margin-bottom:var(--space-fluid-s)] inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-quiz-p/10 border border-quiz-p/20 backdrop-blur-md">
           <Icon name="psychology" size="xs" className="text-quiz-p" />
           <Typography variant="microLabel" color="quiz-p" className="font-black uppercase tracking-[0.2em]">
-            {t.quiz.questionOf({ current: currentQuestionIndex + 1, total: totalQuestions })}
+            {t('quiz:questionOf', { current: currentQuestionIndex + 1, total: totalQuestions })}
           </Typography>
         </div>
 
@@ -199,8 +199,8 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
                   onClick={() => onSubmitSelection(selection)}
                 >
                   {isOrder
-                    ? (selection.length < totalOptions ? `${t.quiz.orderPrompt} (${selection.length}/${totalOptions})` : t.quiz.confirm)
-                    : (selection.length === 0 ? t.quiz.selectPrompt : `${t.quiz.confirm} (${selection.length})`)}
+                    ? (selection.length < totalOptions ? `${t('quiz:orderPrompt')} (${selection.length}/${totalOptions})` : t('quiz:confirm'))
+                    : (selection.length === 0 ? t('quiz:selectPrompt') : `${t('quiz:confirm')} (${selection.length})`)}
                 </Button>
               </div>
             ) : currentQuestion.questionType === 'photo_single' ? (
@@ -252,7 +252,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
                   <div className="flex items-center justify-center [gap:var(--space-fluid-xs)] [margin-bottom:var(--space-fluid-m)]">
                     <Icon name={selectionCorrect ? "check_circle" : "info"} size="md" className={selectionCorrect ? "text-action" : "text-primary"} />
                     <Typography variant="microLabel" className={cn("font-black uppercase tracking-[0.2em]", selectionCorrect ? "text-action" : "text-primary")}>
-                      {selectionCorrect ? t.quiz.correctLabel : t.quiz.notQuite}
+                      {selectionCorrect ? t('quiz:correctLabel') : t('quiz:notQuite')}
                     </Typography>
                   </div>
                   <PhotoGrid
@@ -282,7 +282,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
                     <div className="flex items-center [gap:var(--space-fluid-xs)] px-3 -mt-1">
                       <Icon name="cancel" size="sm" className="text-primary shrink-0" />
                       <Typography variant="caption" color="muted">
-                        {t.quiz.yourAnswer}: <span className="text-primary/80 line-through">{selectedOption}</span>
+                        {t('quiz:yourAnswer')}: <span className="text-primary/80 line-through">{selectedOption}</span>
                       </Typography>
                     </div>
                   )}
@@ -298,7 +298,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
                   <div className="flex items-center [gap:var(--space-fluid-xs)]">
                     <Icon name={answeredWrong ? "volunteer_activism" : "menu_book"} size="sm" className={answeredWrong ? "text-primary" : "text-quiz-p"} />
                     <Typography variant="microLabel" color={answeredWrong ? "primary" : "quiz-p"} className="font-black uppercase tracking-[0.2em]">
-                      {answeredWrong ? t.quiz.keepGoingLabel : t.quiz.explanationLabel}
+                      {answeredWrong ? t('quiz:keepGoingLabel') : t('quiz:explanationLabel')}
                     </Typography>
                   </div>
                   <CherryFormatter text={revealText} className="text-desc" />
@@ -311,7 +311,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
                     >
                       <Icon name="auto_stories" size="xs" className="text-ocean-blue" />
                       <Typography as="span" variant="microLabel" className="font-black uppercase tracking-[0.2em] text-ocean-blue">
-                        {t.quiz.learnMore}
+                        {t('quiz:learnMore')}
                       </Typography>
                       <span className="material-symbols-outlined text-sm text-ocean-blue group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
                     </button>
@@ -333,11 +333,11 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
                     )}
                   >
                     <Icon name="restart_alt" size="xs" />
-                    <Typography variant="microLabel" className="font-black uppercase tracking-[0.2em]">{t.quiz.retryWithCherry}</Typography>
+                    <Typography variant="microLabel" className="font-black uppercase tracking-[0.2em]">{t('quiz:retryWithCherry')}</Typography>
                   </button>
                 )}
                 <Button variant="action" size="md" icon="arrow_forward" iconPosition="right" onClick={onNext}>
-                  {t.quiz.next}
+                  {t('quiz:next')}
                 </Button>
               </div>
             </div>
@@ -357,11 +357,11 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
             )}
           >
             <Icon name="lightbulb" size="xs" />
-            <Typography variant="microLabel" className="font-black uppercase tracking-[0.2em]">{t.quiz.requestHint}</Typography>
+            <Typography variant="microLabel" className="font-black uppercase tracking-[0.2em]">{t('quiz:requestHint')}</Typography>
           </button>
 
           {/* Switch Explanation — sempre qui, identico su domanda e reveal */}
-          <Toggle checked={explanationsOn} onChange={onToggleExplanations} label={t.quiz.explanationLabel} />
+          <Toggle checked={explanationsOn} onChange={onToggleExplanations} label={t('quiz:explanationLabel')} />
         </div>
       </div>
 
@@ -374,7 +374,7 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
           onClick={onBack}
           className="text-action border-action/30 hover:bg-action/10 hover:border-action/50 transition-all"
         >
-          {t.quiz.abort}
+          {t('quiz:abort')}
         </Button>
       </div>
     </div>

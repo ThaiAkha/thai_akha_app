@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { StickyTabNav, SiblingInfoSection } from '../components/layout';
 import { Typography, Icon, FaqBottomPage } from '../components/ui';
 import { Input } from '../components/ui/form';
@@ -147,7 +147,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
                     : "text-muted hover:text-sub hover:bg-black/5 dark:hover:bg-white/5"
                 )}
               >
-                {t.news.sortById}
+                {t('news:sortById')}
               </button>
               <button
                 onClick={() => setSortBy('latest')}
@@ -158,7 +158,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
                     : "text-muted hover:text-sub hover:bg-black/5 dark:hover:bg-white/5"
                 )}
               >
-                {t.news.sortByLatest}
+                {t('news:sortByLatest')}
               </button>
               <button
                 onClick={() => setSortBy('oldest')}
@@ -169,7 +169,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
                     : "text-muted hover:text-sub hover:bg-black/5 dark:hover:bg-white/5"
                 )}
               >
-                {t.news.sortByOldest}
+                {t('news:sortByOldest')}
               </button>
             </div>
           </div>

@@ -1,0 +1,23 @@
+{
+  "spicinessMap": {
+    "1": "The Farang (Soft)",
+    "2": "Thai Smile (Mild)",
+    "3": "Respect! (Medium)",
+    "4": "Thai Spicy (Local)",
+    "5": "Akha Warrior (Extreme)"
+  },
+  "dietaryMap": {
+    "diet_regular": "Regular",
+    "diet_vegan": "Vegan",
+    "diet_vegetarian": "Vegetarian",
+    "diet_pescatarian": "Pescatarian",
+    "diet_meat_lover": "Meat Lover",
+    "diet_halal": "Halal Friendly",
+    "diet_kosher": "Kosher Friendly",
+    "diet_rastafari": "Rastafari (Ital)",
+    "diet_jain": "Jain Friendly",
+    "diet_hindu": "Hindu Friendly"
+  },
+  "summaryThreshold": 20,
+  "typewriterIntervalMs": 80
+}

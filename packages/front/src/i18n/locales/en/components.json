@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "Akha Kitchen Wisdom",
+    "fallbackDesc": "Traditional voice story from the mountains.",
+    "playAudio": "Play audio",
+    "pauseAudio": "Pause audio",
+    "playStory": "Play mystery story",
+    "pauseStory": "Pause mystery story",
+    "restartTitle": "Restart",
+    "restartAria": "Restart from beginning",
+    "readTranscript": "Read Transcript",
+    "hideTranscript": "Hide Transcript"
+  },
+  "map": {
+    "locationTitle": "Location Map",
+    "enableInteraction": "Click to Enable Map Interaction",
+    "lockScroll": "Lock Map Scroll"
+  },
+  "gallery": {
+    "viewGallery": "View Gallery",
+    "closeGallery": "Close Gallery",
+    "chip": "Gallery",
+    "openCategoryGallery": "Open {{name}} photo gallery"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "Error — try again",
+    "statusTyping": "Typing...",
+    "statusIdle": "Ask me anything kha",
+    "askCherry": "Ask Cherry",
+    "greeting": "Sawasdee kha",
+    "voiceActive": "Voice session active",
+    "promptFallback": "Ask Cherry, your Thai Akha culinary guide."
+  },
+  "legalMeta": {
+    "version": "Version",
+    "effective": "Effective:",
+    "lastUpdated": "Last updated:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "Information"
+  },
+  "media": {
+    "photoFallback": "Photo",
+    "videoThumbnail": "Video Thumbnail"
+  },
+  "essentials": {
+    "keyFacts": "Key Facts",
+    "references": "References",
+    "aboutAi": "About AI",
+    "published": "Published",
+    "updated": "Updated"
+  }
+}

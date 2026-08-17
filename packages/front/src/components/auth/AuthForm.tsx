@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Typography, Button, SmartInput, Icon } from '../ui/index';
 import { authService } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface AuthFormProps {
   onSuccess: () => void;
@@ -75,7 +75,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
       }
     } catch (err: unknown) {
       console.error(err);
-      setError(err instanceof Error ? err.message : t.auth.authFailed);
+      setError(err instanceof Error ? err.message : t('auth:authFailed'));
     } finally {
       if (!isForgotPassword) setLoading(false);
     }
@@ -97,11 +97,11 @@ const AuthForm: React.FC<AuthFormProps> = ({
     <div className="w-full h-full flex flex-col animate-in fade-in duration-500">
       {panel === 'login' ? (
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          {renderHeader("Welcome", "Back", t.auth.existingUserDesc)}
+          {renderHeader("Welcome", "Back", t('auth:existingUserDesc'))}
 
           <div className="flex-1 min-h-0 overflow-y-auto [padding-inline:var(--space-fluid-m)] flex flex-col [gap:var(--space-fluid-s)]">
             <SmartInput
-              label={t.auth.emailLabel}
+              label={t('auth:emailLabel')}
               type="email"
               placeholder="chef@example.com"
               icon="mail"
@@ -113,7 +113,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             />
             {!isForgotPassword && (
               <SmartInput
-                label={t.auth.passwordLabel}
+                label={t('auth:passwordLabel')}
                 type="password"
                 placeholder="••••••••"
                 icon="lock"
@@ -136,13 +136,13 @@ const AuthForm: React.FC<AuthFormProps> = ({
         </form>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          {renderHeader("Join the", "Kitchen", t.auth.newUserDesc)}
+          {renderHeader("Join the", "Kitchen", t('auth:newUserDesc'))}
 
           <div className="flex-1 min-h-0 overflow-y-auto [padding-inline:var(--space-fluid-m)] flex flex-col [gap:var(--space-fluid-s)]">
             {signupStep === 0 ? (
               <>
                 <SmartInput
-                  label={t.auth.emailLabel}
+                  label={t('auth:emailLabel')}
                   type="email"
                   placeholder="chef@example.com"
                   icon="mail"
@@ -153,9 +153,9 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   inputMode="email"
                 />
                 <SmartInput
-                  label={t.auth.createPasswordLabel}
+                  label={t('auth:createPasswordLabel')}
                   type="password"
-                  placeholder={t.auth.passwordPlaceholder}
+                  placeholder={t('auth:passwordPlaceholder')}
                   icon="lock"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -171,11 +171,11 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   className="self-start flex items-center [gap:var(--space-fluid-2xs)] py-1 hover:opacity-70 transition-opacity"
                 >
                   <Icon name="arrow_back" size="xs" className="text-muted" />
-                  <Typography variant="caption" color="muted">{t.common.back}</Typography>
+                  <Typography variant="caption" color="muted">{t('common:back')}</Typography>
                 </button>
 
                 <SmartInput
-                  label={t.auth.fullNameLabel}
+                  label={t('auth:fullNameLabel')}
                   placeholder="Somchai Akha"
                   icon="person"
                   value={fullName}
@@ -186,7 +186,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <div className="flex [gap:var(--space-fluid-s)]">
                   <div className="flex-1">
                     <SmartInput
-                      label={t.auth.ageLabel}
+                      label={t('auth:ageLabel')}
                       type="number"
                       placeholder="25"
                       icon="cake"
@@ -195,16 +195,16 @@ const AuthForm: React.FC<AuthFormProps> = ({
                     />
                   </div>
                   <div className="flex-1 flex flex-col [gap:var(--space-fluid-2xs)]">
-                    <Typography variant="fieldLabel" as="label" className="[margin-left:var(--space-fluid-2xs)]">{t.auth.genderLabel}</Typography>
+                    <Typography variant="fieldLabel" as="label" className="[margin-left:var(--space-fluid-2xs)]">{t('auth:genderLabel')}</Typography>
                     <div className="relative group">
                       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
                         <Icon name="wc" size="sm" />
                       </div>
                       <select value={gender} onChange={e => setGender(e.target.value)} className={selectClass}>
-                        <option value="" disabled>{t.auth.genderSelect}</option>
-                        <option value="male">{t.auth.genderMale}</option>
-                        <option value="female">{t.auth.genderFemale}</option>
-                        <option value="other">{t.auth.genderOther}</option>
+                        <option value="" disabled>{t('auth:genderSelect')}</option>
+                        <option value="male">{t('auth:genderMale')}</option>
+                        <option value="female">{t('auth:genderFemale')}</option>
+                        <option value="other">{t('auth:genderOther')}</option>
                       </select>
                     </div>
                   </div>

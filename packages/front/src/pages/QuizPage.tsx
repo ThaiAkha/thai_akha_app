@@ -10,7 +10,7 @@ import QuizCard from '../components/quiz/QuizCard';
 import QuizCardCategory from '../components/quiz/QuizCardCategory';
 import QuizCardRewards from '../components/quiz/QuizCardRewards';
 import QuizModalRewards from '../components/quiz/QuizModalRewards';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { AkhaThemedLine } from '../components/blog';
 import { useQuizProgress } from '../hooks/useQuizProgress';
 import { useQuizHomeData } from '../hooks/useQuizHomeData';
@@ -65,10 +65,10 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
       {/* ── QUIZ HEADER + SCORE BAR — sticky below the page header ── */}
       <div className="sticky top-[20px] z-30 w-full">
         <HeaderQuiz
-          title={t.quiz.spiritQuizTitle}
+          title={t('quiz:spiritQuizTitle')}
           score={score}
           view="HOME"
-          progressTextLeft={t.quiz.globalProgress || 'Global Progress'}
+          progressTextLeft={t('quiz:globalProgress') || 'Global Progress'}
           progressTextRight={`${globalProg.completed} / ${globalProg.total} Modules`}
           progressPercentage={globalProg.percentage}
         />
@@ -138,7 +138,7 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
 
             />
             {categories.length === 0 ? (
-              <Typography variant="paragraphM" color="muted">{t.quiz.noCategories}</Typography>
+              <Typography variant="paragraphM" color="muted">{t('quiz:noCategories')}</Typography>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-m)]">
                 {categories.map(cat => (

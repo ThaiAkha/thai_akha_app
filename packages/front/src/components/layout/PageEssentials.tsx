@@ -7,7 +7,7 @@ import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import AkhaThemedLine from '../divider/AkhaThemedLine';
 import { SmartHeaderSection } from './SmartHeaderSection';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { renderInline } from '../ui/inlineMarkdown';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -189,7 +189,7 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
           {/* ── Key Facts ─────────────────────────────────────────────── */}
           {hasFacts && (
             <Card variant="glass" padding="md" rounded="2xl" className="flex flex-col [gap:var(--space-fluid-s)]">
-              <SectionLabel icon="info" label={t.components.essentials.keyFacts} />
+              <SectionLabel icon="info" label={t('components:essentials.keyFacts')} />
               <div className="flex flex-col">
                 {data.facts!.map((fact, idx) => (
                   <div key={idx}>
@@ -213,7 +213,7 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
                   <div>
                     <div className="flex items-start justify-between [gap:var(--space-fluid-s)] [padding-block:var(--space-fluid-xs)]">
                       <Typography variant="microLabel" color="muted" className="uppercase tracking-wider shrink-0 w-28 [margin-top:2px]">
-                        {t.components.essentials.published}
+                        {t('components:essentials.published')}
                       </Typography>
                       <Typography variant="paragraphS" color="title" className="text-right flex-1 font-medium">
                         {formatDate(dates.published)}
@@ -227,7 +227,7 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
                 {dates?.modified && (
                   <div className="flex items-start justify-between [gap:var(--space-fluid-s)] [padding-block:var(--space-fluid-xs)]">
                     <Typography variant="microLabel" color="muted" className="uppercase tracking-wider shrink-0 w-28 [margin-top:2px]">
-                      {t.components.essentials.updated}
+                      {t('components:essentials.updated')}
                     </Typography>
                     <Typography variant="paragraphS" color="title" className="text-right flex-1 font-medium">
                       {formatDate(dates.modified)}
@@ -245,7 +245,7 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
               {/* ── References ──────────────────────────────────────────── */}
               {hasRefs && (
                 <Card variant="glass" padding="md" rounded="2xl" className="flex flex-col">
-                  <SectionLabel icon="link" label={t.components.essentials.references} className="[margin-bottom:var(--space-fluid-m)]" />
+                  <SectionLabel icon="link" label={t('components:essentials.references')} className="[margin-bottom:var(--space-fluid-m)]" />
                   <div className="flex flex-col [gap:var(--space-fluid-xs)]">
                     {data.references!.map((ref, idx) => (
                       <a
@@ -281,7 +281,7 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
               {/* ── About AI — come l'AI supporta il servizio ──────────── */}
               {hasAuthor && (
                 <Card variant="glass" padding="md" rounded="2xl" className="flex flex-col flex-1">
-                  <SectionLabel icon="smart_toy" label={t.components.essentials.aboutAi} className="[margin-bottom:var(--space-fluid-m)]" />
+                  <SectionLabel icon="smart_toy" label={t('components:essentials.aboutAi')} className="[margin-bottom:var(--space-fluid-m)]" />
 
                   <div className="flex flex-col [gap:var(--space-fluid-xs)] flex-1">
                     {(aboutAiText || '').split('\n\n').map((para, i) => (

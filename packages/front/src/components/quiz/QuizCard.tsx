@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Icon, Card, Badge } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import QuizModalRewards from './QuizModalRewards';
 
 // ── Interfaccia Reward Dinamica ──────────────────────────────────────────────
@@ -36,8 +36,8 @@ const QuizCard: React.FC<QuizCardProps> = ({
   currentScore = 0,
   onCardClick, 
   className = "",
-  title = t.quiz.collectionTitle,
-  description = t.quiz.collectionDesc,
+  title = t('quiz:collectionTitle'),
+  description = t('quiz:collectionDesc'),
   hideDescription = false,
   columns = 4,
   onModalClose
@@ -183,7 +183,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
         <div className="[padding-inline:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)] [margin-top:var(--space-fluid-2xs)]">
           <div className="bg-black/20 rounded-2xl [padding:var(--space-fluid-xs)] border border-white/5">
             <Typography variant="paragraphS" className="text-white/60 leading-tight">
-              <span className="font-black text-action uppercase text-[10px] tracking-widest mr-2">{t.quiz.unlockedLabel || 'Unlocked'}:</span>
+              <span className="font-black text-action uppercase text-[10px] tracking-widest mr-2">{t('quiz:unlockedLabel') || 'Unlocked'}:</span>
               {rewards
                 .filter(r => awardedBonuses.includes(r.id))
                 .map((r, i, arr) => (

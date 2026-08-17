@@ -11,7 +11,7 @@ import { useActiveProfile } from '../context/ActiveProfileContext';
 import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
 import { NoBookingBanner } from '../components/user-dashboard';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { contentService } from '@thaiakha/shared/services';
 import { ContentCategoryDB } from '@thaiakha/shared';
 
@@ -143,7 +143,7 @@ const MenuPage: React.FC<{
   // --- ACTIONS ---
   const handleConfirm = async () => {
     const hasDishes = selections.curry && selections.soup && selections.stirfry;
-    if (!hasDishes) return alert(t.user.select3Dishes);
+    if (!hasDishes) return alert(t('user:select3Dishes'));
     if (!targetBookingId) return onNavigate('booking');
 
     setSaving(true);
@@ -174,7 +174,7 @@ const MenuPage: React.FC<{
 
       if (onAuthSuccess) await onAuthSuccess();
       onNavigate('user');
-    } catch (err: any) { alert(t.user.saveFailed); } finally { setSaving(false); }
+    } catch (err: any) { alert(t('user:saveFailed')); } finally { setSaving(false); }
   };
 
   const handleSelectFromPreview = (dish: RecipeData) => {
@@ -293,8 +293,8 @@ const MenuPage: React.FC<{
             return (
             <section key={cat.id} className="flex flex-col [gap:var(--space-fluid-m)] scroll-mt-48 w-full" id={catKey}>
               <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
-                <Typography variant="h2" className="italic uppercase text-gray-900 dark:text-gray-100">{cat.title} <span className="text-primary">{t.user.selectionLabel}</span></Typography>
-                <Badge variant="mineral" className="bg-white/5">{getRecipes(cat.id).length} {t.user.optionsLabel}</Badge>
+                <Typography variant="h2" className="italic uppercase text-gray-900 dark:text-gray-100">{cat.title} <span className="text-primary">{t('user:selectionLabel')}</span></Typography>
+                <Badge variant="mineral" className="bg-white/5">{getRecipes(cat.id).length} {t('user:optionsLabel')}</Badge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 [gap:var(--space-fluid-m)]">
                 {getRecipes(cat.id).map(recipe => (
@@ -315,7 +315,7 @@ const MenuPage: React.FC<{
             <div className="pointer-events-auto flex items-center gap-3 w-full max-w-md bg-surface/80 dark:bg-surface/90 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
               <button onClick={() => onNavigate('user')} className="size-14 rounded-[1.5rem] flex items-center justify-center text-red-400 hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-95"><Icon name="close" size="lg" /></button>
               <Button variant="brand" fullWidth size="lg" disabled={!selections.curry || !selections.soup || !selections.stirfry || saving} onClick={handleConfirm} isLoading={saving} icon={saving ? 'sync' : 'check'} className={cn("rounded-[1.5rem] h-14 text-sm font-black tracking-widest", (!selections.curry || !selections.soup || !selections.stirfry) && "opacity-50 grayscale")}>
-                {saving ? t.user.selectionSaving : t.user.confirmMenu}
+                {saving ? t('user:selectionSaving') : t('user:confirmMenu')}
               </Button>
             </div>
           </div>

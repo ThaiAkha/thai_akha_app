@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 import { useRecipesListData } from '../hooks/useRecipesListData';
 import { PageLayout, HeaderMenu, SmartHeaderSection, SiblingInfoSection, PageEssentials } from '../components/layout';
@@ -43,17 +43,17 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
   const activeProfileData = useMemo(() => {
     if (!passport.dietary_profile) return {
       id: '',
-      name: t.recipes.defaultDietName,
+      name: t('recipes:defaultDietName'),
       icon: 'restaurant',
-      description: t.recipes.defaultDietDesc,
+      description: t('recipes:defaultDietDesc'),
       substitutions: []
     } as any;
 
     return dietProfiles.find(p => p.id === passport.dietary_profile) || {
       id: 'diet_regular',
-      name: t.recipes.regularDietName,
+      name: t('recipes:regularDietName'),
       icon: 'restaurant',
-      description: t.recipes.regularDietDesc,
+      description: t('recipes:regularDietDesc'),
       substitutions: []
     } as any;
   }, [passport.dietary_profile, dietProfiles]);
@@ -105,7 +105,11 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
   const hasAlerts = hasExplicitPassport && (!!passport.dietary_profile || passport.allergies.length > 0);
 
   const headerDescription = hasExplicitPassport
-    ? t.recipes.headerDescReady({ diet: activeProfileData.name, allergies: passport.allergies })
+    // Una chiave per ramo (pattern i18next): la logica "ci sono allergie?" resta
+    // qui, le due frasi complete stanno nel JSON — traducibili per intero.
+    ? (passport.allergies.length > 0
+        ? t('recipes:headerDescReadyAllergies', { diet: activeProfileData.name, allergies: passport.allergies.join(', ') })
+        : t('recipes:headerDescReady', { diet: activeProfileData.name }))
     : undefined;
 
   return (
@@ -115,8 +119,8 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
       {/* MEGA MENU: PERSONALIZZAZIONE */}
       <MegaMenu
         variant="diet"
-        title={hasExplicitPassport ? activeProfileData.name : t.recipes.selectDietLabel}
-        subtitle={hasExplicitPassport ? t.recipes.activeProfile : t.recipes.personalize}
+        title={hasExplicitPassport ? activeProfileData.name : t('recipes:selectDietLabel')}
+        subtitle={hasExplicitPassport ? t('recipes:activeProfile') : t('recipes:personalize')}
         icon={activeProfileData.icon}
         activeLabel={activeProfileData.name}
         activeCount={passport.allergies.length}
@@ -145,7 +149,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
                 variant="warning"
                 title={activeProfileData.name}
                 icon={activeProfileData.icon}
-                message={activeProfileData.description || t.recipes.dietAdapted({ name: activeProfileData.name })}
+                message={activeProfileData.description || t('recipes:dietAdapted', { name: activeProfileData.name })}
                 body={activeProfileData.experience}
               />
             )}
@@ -155,9 +159,9 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
               <Alert
                 variant="error"
                 icon="health_and_safety"
-                title={t.recipes.allergyAlertTitle}
+                title={t('recipes:allergyAlertTitle')}
                 subtitle={passport.allergies.join(' / ')}
-                message={t.recipes.allergyAlertBody}
+                message={t('recipes:allergyAlertBody')}
               />
             )}
           </div>
@@ -168,22 +172,22 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
         <div className="[margin-top:var(--space-fluid-xl)] [margin-bottom:var(--space-fluid-xl)] min-h-[35vh] flex items-center justify-center">
           <div className="text-center flex flex-col items-center [gap:var(--space-fluid-m)]">
             <Typography variant="display2" className="text-title uppercase leading-tight">
-              {t.recipes.selectPrompt.split('\n').map((line, i) => (
+              {String(t('recipes:selectPrompt')).split('\n').map((line, i) => (
                 <React.Fragment key={i}>
                   {line}
-                  {i < t.recipes.selectPrompt.split('\n').length - 1 && <br />}
+                  {i < String(t('recipes:selectPrompt')).split('\n').length - 1 && <br />}
                 </React.Fragment>
               ))}
             </Typography>
             <Typography variant="body" className="text-desc max-w-sm">
-              {t.recipes.defaultDietDesc}
+              {t('recipes:defaultDietDesc')}
             </Typography>
             <button
               onClick={() => openMegaMenuRef.current?.()}
               className="[margin-top:var(--space-fluid-xs)] inline-flex items-center [gap:var(--space-fluid-2xs)] [padding-block:var(--space-fluid-xs)] [padding-inline:var(--space-fluid-m)] rounded-full bg-title text-inverse font-semibold transition-opacity hover:opacity-80 active:opacity-70"
             >
               <span className="material-symbols-rounded text-[1.1em]">tune</span>
-              {t.recipes.personalize}
+              {t('recipes:personalize')}
             </button>
           </div>
         </div>

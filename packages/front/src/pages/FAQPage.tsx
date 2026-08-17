@@ -13,7 +13,7 @@ import { InfoContentSkeleton } from '../components/skeleton';
 import { SkeletonBase } from '../components/skeleton/atoms';
 import { usePageSection } from '../hooks/usePageSection';
 import type { PageSectionData } from '../hooks/useHomePageSections';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 // Header categoria: page_sections.section_id da faq_categories.section_id (DB-driven,
 // nessuna mappa hardcoded — le categorie nuove si agganciano da sole).
@@ -235,7 +235,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                     <button
                       type="button"
                       onClick={() => openGallery(category.id)}
-                      aria-label={t.components.gallery.openCategoryGallery({ name: category.categoryTitle })}
+                      aria-label={t('components:gallery.openCategoryGallery', { name: category.categoryTitle })}
                       className="group relative w-full aspect-[16/9] rounded-[2rem] overflow-hidden border border-ocean-blue/15 shadow-theme-md cursor-zoom-in focus-visible:shadow-focus-ring"
                     >
                       <MediaImage
@@ -248,7 +248,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
                       <span className="absolute inset-0 bg-gradient-to-t from-deep-ocean/40 via-transparent to-transparent pointer-events-none" />
                       <span className="absolute top-3 right-3 flex items-center [gap:var(--space-fluid-2xs)] rounded-full bg-black/40 backdrop-blur-md [padding-inline:var(--space-fluid-s)] [padding-block:var(--space-fluid-2xs)] text-inverse">
                         <Icon name="zoom_in" size="sm" />
-                        <Typography as="span" variant="caption" className="text-inverse">{t.components.gallery.chip}</Typography>
+                        <Typography as="span" variant="caption" className="text-inverse">{t('components:gallery.chip')}</Typography>
                       </span>
                     </button>
                   )}
@@ -340,10 +340,10 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
             <GlassCard variant="subtle" padding="l" radius="2rem" className="text-center flex flex-col items-center [gap:var(--space-fluid-s)]">
               <Icon name="search_off" size="lg" className="text-ocean-blue" />
               <Typography variant="h4" as="p" color="title" className="font-bold">
-                {t.faq.noResultsTitle}
+                {t('faq:noResultsTitle')}
               </Typography>
               <Typography variant="paragraphM" color="sub" className="leading-relaxed">
-                {t.faq.noResultsBody}
+                {t('faq:noResultsBody')}
               </Typography>
               <button
                 type="button"
@@ -352,7 +352,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
               >
                 <Icon name="restart_alt" size="sm" />
                 <Typography as="span" variant="caption" className="font-semibold">
-                  {t.faq.filterReset}
+                  {t('faq:filterReset')}
                 </Typography>
               </button>
             </GlassCard>

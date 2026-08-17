@@ -15,7 +15,7 @@ import type { ChatMessage } from '@thaiakha/shared';
 import { filterOptionsForProfile, filterBlocksForProfile, type ChatNodeId, type ChatOption, type NodeBlock } from '@thaiakha/shared/data/chatFlowData';
 import { getChatNode, type ChatLocale } from '@thaiakha/shared/data/chatFlowI18n';
 import type { UserProfile } from '../services/auth.service';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t, tObj } from '../i18n';
 import { cleanCherryResponse } from '@thaiakha/shared/lib/cherry-utils';
 import { getContextualFollowups } from '@thaiakha/shared/lib/cherryFollowups';
 import { getRecipeContextForCherry } from '@thaiakha/shared/lib/cherryRecipeContext';
@@ -280,16 +280,16 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
         stopTypewriter(modelMsgId);
       }
       // else: queue empty but server still streaming → wait next tick
-    }, t.cherry.typewriterIntervalMs);
+    }, t('cherry:typewriterIntervalMs'));
 
     try {
       const userContext: CherryUserContext = {
         isLogged: !!userProfile,
         role: userProfile?.role,
         name: userProfile?.full_name,
-        dietary_profile: userProfile?.dietary_profile ? (t.cherry.dietaryMap[userProfile.dietary_profile] ?? userProfile.dietary_profile) : undefined,
+        dietary_profile: userProfile?.dietary_profile ? ((tObj('cherry:dietaryMap') as Record<string, string>)[userProfile.dietary_profile] ?? userProfile.dietary_profile) : undefined,
         allergies: userProfile?.allergies,
-        preferred_spiciness: userProfile?.preferred_spiciness_id ? t.cherry.spicinessMap[String(userProfile.preferred_spiciness_id)] : undefined,
+        preferred_spiciness: userProfile?.preferred_spiciness_id ? (tObj('cherry:spicinessMap') as Record<string, string>)[String(userProfile.preferred_spiciness_id)] : undefined,
         booking_state: bookingStateRef.current.state,
         days_until_class: bookingStateRef.current.daysUntil,
         session_type: bookingStateRef.current.sessionType ?? undefined,
@@ -411,7 +411,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
 
       if (sid) saveMessage(sid, 'assistant', response, 'text');
 
-      if (sid && sessionRef.current && sessionRef.current.message_count >= t.cherry.summaryThreshold) {
+      if (sid && sessionRef.current && sessionRef.current.message_count >= t('cherry:summaryThreshold')) {
         sessionRef.current.message_count = 0;
         triggerAutoSummary(sid);
       }
@@ -492,7 +492,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
           serverDoneRef.current = true;
           stopTypewriter(modelMsgId);
         }
-      }, t.cherry.typewriterIntervalMs);
+      }, t('cherry:typewriterIntervalMs'));
     }, THINK_DELAY_MS);
 
     // 3. BACKGROUND SYNC
@@ -571,7 +571,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
           serverDoneRef.current = true;
           stopTypewriter(modelMsgId);
         }
-      }, t.cherry.typewriterIntervalMs);
+      }, t('cherry:typewriterIntervalMs'));
     }, THINK_DELAY_MS);
 
     // 3. BACKGROUND SYNC (to database for session persistence)

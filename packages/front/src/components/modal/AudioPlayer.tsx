@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { useAudioAsset } from '../../hooks/useAudioAsset';
 import { Typography, Icon } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface AudioPlayerProps {
   /** UUID of the asset in audio_assets */
@@ -56,8 +56,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [eqBars, setEqBars] = useState([20, 40, 30, 60, 45, 25, 55, 35]);
 
   const audioSrc = url ?? asset?.audio_url;
-  const displayTitle = titleOverride ?? asset?.title ?? t.components.audioPlayer.fallbackTitle;
-  const displayCaption = descriptionOverride ?? asset?.caption ?? t.components.audioPlayer.fallbackDesc;
+  const displayTitle = titleOverride ?? asset?.title ?? t('components:audioPlayer.fallbackTitle');
+  const displayCaption = descriptionOverride ?? asset?.caption ?? t('components:audioPlayer.fallbackDesc');
   const displayDuration = durationOverride ?? asset?.duration_seconds;
   const displayTranscript = transcriptOverride ?? asset?.transcript;
 
@@ -139,7 +139,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           "active:scale-95",
           className
         )}
-        aria-label={isPlaying ? t.components.audioPlayer.pauseAudio : t.components.audioPlayer.playAudio}
+        aria-label={isPlaying ? t('components:audioPlayer.pauseAudio') : t('components:audioPlayer.playAudio')}
       >
         <audio ref={audioRef} src={audioSrc} preload="metadata" />
         <Icon
@@ -200,7 +200,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                   e.stopPropagation();
                   togglePlay();
                 }}
-                aria-label={isPlaying ? t.components.audioPlayer.pauseStory : t.components.audioPlayer.playStory}
+                aria-label={isPlaying ? t('components:audioPlayer.pauseStory') : t('components:audioPlayer.playStory')}
               >
                 <Icon
                   name={isPlaying ? "pause" : "play_arrow"}
@@ -219,8 +219,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                       audioRef.current.currentTime = 0;
                     }
                   }}
-                  aria-label={t.components.audioPlayer.restartAria}
-                  title={t.components.audioPlayer.restartTitle}
+                  aria-label={t('components:audioPlayer.restartAria')}
+                  title={t('components:audioPlayer.restartTitle')}
                 >
                   <Icon name="rewind" size="sm" />
                 </button>
@@ -269,7 +269,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                     e.stopPropagation();
                     setShowTranscript(!showTranscript);
                   }}
-                  aria-label={showTranscript ? t.components.audioPlayer.hideTranscript : t.components.audioPlayer.readTranscript}
+                  aria-label={showTranscript ? t('components:audioPlayer.hideTranscript') : t('components:audioPlayer.readTranscript')}
                 >
                   <Icon name="FileText" size="lg" aria-hidden="true" />
                 </button>

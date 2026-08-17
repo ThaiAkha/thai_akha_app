@@ -14,6 +14,7 @@ import {
   toEnglishSegments,
   canonicalSlugRedirect,
 } from '../lib/langRouting';
+import { syncI18nLanguage } from '../i18n';
 
 /**
  * 🌍 LINGUA CORRENTE — una sola fonte: l'URL.
@@ -118,12 +119,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setRoute(parseLangPath(canonical));
   }, [slugMap, lang, route.segments, route.redirectTo]);
 
-  // ── <html lang> e dir ───────────────────────────────────────────────────────
+  // ── <html lang>, dir, e stringhe UI ─────────────────────────────────────────
   // Il tag lang è il segnale che leggono screen reader, traduttori automatici e
   // motori: se resta 'en' su una pagina spagnola, tutti e tre sbagliano.
+  // Nello stesso punto la lingua dell'URL diventa la lingua di i18next: le
+  // stringhe UI (t('quiz:…')) seguono l'URL, mai il browser — una fonte sola.
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = LANG_DIR;
+    syncI18nLanguage(lang);
   }, [lang]);
 
   // ── Preferenza salvata (informativa, non redirige) ──────────────────────────

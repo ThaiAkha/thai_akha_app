@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { useCherry } from './CherryProvider';
 import { useChatScroll } from './useChatScroll';
 import { ChatMessageList } from './ChatMessageList';
@@ -98,7 +98,7 @@ export const CherryInlineChat: React.FC<CherryInlineChatProps> = ({ onNavigate, 
   return (
     <section
       ref={sectionRef}
-      aria-label={t.components.cherryChat.askCherry}
+      aria-label={t('components:cherryChat.askCherry')}
       onMouseDown={() => setIsActive(true)}
       onFocus={() => setIsActive(true)}
       className={cn(
@@ -114,9 +114,9 @@ export const CherryInlineChat: React.FC<CherryInlineChatProps> = ({ onNavigate, 
       {/* ── Header — schema identità Cherry (avatar+badge+testi), taglia lg.
           Gradiente FISSO dei pulsanti cherry (--cherry-btn-grad). */}
       <ChatIdentityHeader
-        title={t.components.cherryChat.title}
+        title={t('components:cherryChat.title')}
         status={chatError ? 'error' : isLoading ? 'typing' : 'ready'}
-        statusLabel={chatError ? t.components.cherryChat.statusError : isLoading ? t.components.cherryChat.statusTyping : t.components.cherryChat.statusIdle}
+        statusLabel={chatError ? t('components:cherryChat.statusError') : isLoading ? t('components:cherryChat.statusTyping') : t('components:cherryChat.statusIdle')}
         size="lg"
         className="bg-[image:var(--cherry-btn-grad)]"
       />

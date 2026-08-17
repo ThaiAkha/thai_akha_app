@@ -15,7 +15,7 @@ import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useCultureDetail } from '../hooks/useCultureDetail';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -119,8 +119,8 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
           {!dataLoading && (error || !section) && (
             <div className="flex flex-col items-center justify-center py-24 text-center [gap:var(--space-fluid-s)]">
               <Icon name="wifi_off" size="xl" className="text-primary/40" />
-              <Typography variant="h5" color="sub">{t.history.chapterLoadError}</Typography>
-              <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">{t.common.goBack}</Button>
+              <Typography variant="h5" color="sub">{t('history:chapterLoadError')}</Typography>
+              <Button variant="outline" size="sm" onClick={onBack} icon="arrow_back">{t('common:goBack')}</Button>
             </div>
           )}
 
@@ -152,7 +152,7 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
                           id: block.anchorId || slugify(block.text),
                           label: block.text,
                         }))}
-                        title={t.blog.contents}
+                        title={t('blog:contents')}
                         dividerTheme="history"
                         accent="sunset"
                       />

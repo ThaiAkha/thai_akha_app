@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { newsService, contentMetadataService } from '@thaiakha/shared/services';
 import { NewsArticle } from '@thaiakha/shared/types';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 export type { NewsArticle };
 
@@ -155,7 +155,7 @@ export function useNewsFeed(targetCategory: string | null = null) {
     );
 
     const tabItems = [
-        { value: 'all', label: t.news.tabAll, icon: 'newspaper' as string },
+        { value: 'all', label: t('news:tabAll'), icon: 'newspaper' as string },
         ...activeCategories.map(c => ({
             value: c.id,
             label: c.tab_label || c.title,

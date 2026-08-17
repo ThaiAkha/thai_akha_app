@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Icon } from '../ui';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface MapBlockProps {
   url: string;
@@ -24,7 +24,7 @@ const MapBlock: React.FC<MapBlockProps> = ({ url, title, height }) => {
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title={title || t.components.map.locationTitle}
+          title={title || t('components:map.locationTitle')}
         />
 
         {/* Scroll Lock Overlay */}
@@ -35,7 +35,7 @@ const MapBlock: React.FC<MapBlockProps> = ({ url, title, height }) => {
           >
             <div className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/20 text-white text-sm font-medium opacity-0 group-hover/map:opacity-100 transition-opacity duration-300 flex items-center gap-2 shadow-xl">
               <Icon name="mouse_pointer_click" size="xl" className="text-primary" />
-              {t.components.map.enableInteraction}
+              {t('components:map.enableInteraction')}
             </div>
           </div>
         )}
@@ -48,7 +48,7 @@ const MapBlock: React.FC<MapBlockProps> = ({ url, title, height }) => {
               e.stopPropagation();
               setIsMapActive(false);
             }}
-            title={t.components.map.lockScroll}
+            title={t('components:map.lockScroll')}
           >
             <Icon name="lock" size="sm" />
           </button>

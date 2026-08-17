@@ -5,7 +5,7 @@ import { useScrollLock } from '../../hooks/useScrollLock';
 import { useCherry } from './CherryProvider';
 import { UserProfile } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { Typography } from '../ui/Typography';
 import { VoiceWaveform } from './VoiceWaveform';
 import { CherryFormatter } from './CherryFormatter';
@@ -342,16 +342,16 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
 
               <div className="min-w-0 flex flex-col items-start justify-center gap-1">
                 <Typography variant="accent" className="uppercase text-white leading-none" style={CHERRY_TITLE_STYLE}>
-                  {t.components.cherryChat.title}
+                  {t('components:cherryChat.title')}
                 </Typography>
                 <Typography variant="body" as="p" className="text-white normal-case" style={CHERRY_SUBTITLE_STYLE}>
                   {(voiceError || chatError)
-                    ? t.components.cherryChat.statusError
+                    ? t('components:cherryChat.statusError')
                     : isConnecting
                       ? 'Connecting...'
                       : isVoiceActive
                         ? 'Listening...'
-                        : t.components.cherryChat.statusIdle}
+                        : t('components:cherryChat.statusIdle')}
                 </Typography>
               </div>
             </div>
@@ -612,10 +612,10 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userPr
           {/* Testi coerenti con l'header: stesso titolo + sottotitolo, stesse costanti font */}
           <div className="hidden sm:flex flex-col items-start justify-center text-left gap-1">
             <Typography variant="accent" className="uppercase text-white leading-none" style={CHERRY_TITLE_STYLE}>
-              {t.components.cherryChat.title}
+              {t('components:cherryChat.title')}
             </Typography>
             <Typography variant="body" as="span" className="text-white normal-case" style={CHERRY_SUBTITLE_STYLE}>
-              {isVoiceActive ? 'Listening...' : t.components.cherryChat.statusIdle}
+              {isVoiceActive ? 'Listening...' : t('components:cherryChat.statusIdle')}
             </Typography>
           </div>
 

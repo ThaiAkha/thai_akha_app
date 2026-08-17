@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface NoBookingBannerProps {
   onNavigate: (page: string) => void;
@@ -15,14 +15,14 @@ export const NoBookingBanner: React.FC<NoBookingBannerProps> = ({ onNavigate }) 
     <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
       <span className="material-symbols-rounded text-primary text-3xl">event_busy</span>
     </div>
-    <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">{t.user.noActiveBooking}</p>
-    <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">{t.user.noActiveBookingHint}</p>
+    <p className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">{t('user:noActiveBooking')}</p>
+    <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 max-w-xs">{t('user:noActiveBookingHint')}</p>
     <button
       onClick={() => onNavigate('booking')}
       className="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-2xl hover:bg-primary/90 transition-colors"
     >
       <span className="material-symbols-rounded text-xl">calendar_add_on</span>
-      {t.user.bookClass}
+      {t('user:bookClass')}
     </button>
   </div>
 );

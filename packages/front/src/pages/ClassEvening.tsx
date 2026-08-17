@@ -9,7 +9,7 @@ import ClassInclusions from '../components/classes/ClassInclusions';
 import ClassDetails from '../components/classes/ClassDetails';
 import AkhaButtonLine from '../components/divider/AkhaButtonLine';
 import { useClassPageData } from '../hooks/useClassPageData';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 interface EveningClassPageProps {
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
@@ -53,7 +53,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
           <SmartHeaderSection sectionId="evening-02" variant="section" align="center" />
           <ClassGallery items={gallery1} />
           <AkhaButtonLine
-            label={t.classes.bookYourClass}
+            label={t('classes:bookYourClass')}
             icon="calendar_month"
             href="/booking"
             onClick={() => onNavigate('booking')}

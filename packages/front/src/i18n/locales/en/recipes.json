@@ -1,0 +1,18 @@
+{
+  "defaultDietName": "Your Diet Style",
+  "defaultDietDesc": "Choose your preference to personalize recipes.",
+  "regularDietName": "Regular Diet",
+  "regularDietDesc": "Standard authentic preparation.",
+  "selectPrompt": "Select your dietary style\nbefore viewing the content",
+  "originalLabel": "ORIGINAL",
+  "viewRecipe": "View Recipe",
+  "allergyAlertTitle": "Allergy Alert",
+  "allergyAlertBody": "The recipes below have been filtered or modified to exclude your selected allergens. Always inform your chef about severe allergies.",
+  "dietAdapted": "This menu has been adapted to follow {{name}} guidelines.",
+  "selectDietLabel": "Select your Diet",
+  "personalize": "Personalize",
+  "activeProfile": "Active Profile",
+  "askCherryDish": "Tell me about undefined for a undefined diet considering my allergies: undefined kha",
+  "headerDescReady": "{{diet}} menu ready.",
+  "headerDescReadyAllergies": "{{diet}} menu ready. Allergen-free: {{allergies}}."
+}

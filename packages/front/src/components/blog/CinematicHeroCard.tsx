@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
 import { Typography, Badge, RippleLink, AkhaPixelPattern } from '../ui/index';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import './BlogCardGlass.css';
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
@@ -21,7 +21,7 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categorie
   const categoryLabel = catObj?.tab_label 
     ?? catObj?.title 
     ?? section.category?.title
-    ?? t.blog.cultureHistory;
+    ?? t('blog:cultureHistory');
 
   useEffect(() => {
     const card = cardRef.current;
@@ -113,7 +113,7 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categorie
               </Badge>
             )}
             {section.featured && (
-              <Badge variant="mineral" size="md" icon="star" className="text-allergy border-allergy/60">{t.history.featuredBadge}</Badge>
+              <Badge variant="mineral" size="md" icon="star" className="text-allergy border-allergy/60">{t('history:featuredBadge')}</Badge>
             )}
           </div>
 

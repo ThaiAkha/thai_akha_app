@@ -13,7 +13,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t, tObj } from '../../../i18n';
 import type {
   DailyAvailability,
   SessionInfo,
@@ -131,7 +131,7 @@ export function useBookingSelection(
 
   const shortDateStr = useMemo(() => {
     if (!selectedDate) return '';
-    return `${selectedDate.getDate()} ${t.common.monthsShort[selectedDate.getMonth()]}`;
+    return `${selectedDate.getDate()} ${tObj('common:monthsShort')[selectedDate.getMonth()]}`;
   }, [selectedDate]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -149,8 +149,8 @@ export function useBookingSelection(
   const handleSessionSelect = (s: SessionKey) => {
     const stats = currentStats[s];
     if (stats.status !== 'OPEN') {
-      alert(t.booking.classUnavailable({
-        status: stats.status === 'FULL' ? t.booking.classFull : t.booking.closed.toLowerCase(),
+      alert(t('booking:classUnavailable', {
+        status: stats.status === 'FULL' ? t('booking:classFull') : String(t('booking:closed')).toLowerCase(),
       }));
       return;
     }
@@ -169,7 +169,7 @@ export function useBookingSelection(
     const stats = currentStats[session];
 
     if (stats.status !== 'OPEN' || stats.remaining < pax) {
-      alert(t.booking.availabilityChanged({ count: stats.remaining }));
+      alert(t('booking:availabilityChanged', { count: stats.remaining }));
       return;
     }
 

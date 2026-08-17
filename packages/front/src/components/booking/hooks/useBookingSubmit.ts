@@ -15,7 +15,7 @@
 import { useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { authService } from '../../../services/auth.service';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../../i18n';
 import type { BookingFormData, SessionKey, AuthMode } from '../booking.types';
 import type { UserProfile } from '../../../services/auth.service';
 
@@ -159,7 +159,7 @@ export function useBookingSubmit(
       onNavigate('user');
     } catch (err: any) {
       console.error('Submit error:', err);
-      alert(t.booking.bookingError + (err.message ?? 'Unknown error'));
+      alert(t('booking:bookingError') + (err.message ?? 'Unknown error'));
     } finally {
       setLoading(false);
     }
@@ -201,7 +201,7 @@ export function useBookingSubmit(
       onNavigate('user');
     } catch (err: any) {
       console.error('Login+booking error:', err);
-      alert(t.booking.bookingError + (err.message ?? 'Errore durante il login o la prenotazione.'));
+      alert(t('booking:bookingError') + (err.message ?? 'Errore durante il login o la prenotazione.'));
     } finally {
       setLoading(false);
     }

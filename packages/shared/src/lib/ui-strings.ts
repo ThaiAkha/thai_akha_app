@@ -1,5 +1,17 @@
 /**
- * ─── UI STRINGS ────────────────────────────────────────────────────────────────
+ * ⚠️ DEPRECATO (2026-08-17) — NON È PIÙ LA SORGENTE.
+ *
+ * Le stringhe UI del front vivono in packages/front/src/i18n/locales/
+ * {lang}/{namespace}.json (i18next, 12 lingue, tipizzate dai JSON inglesi).
+ * Questo file è stato migrato con scripts/gen-ui-strings-json.mts (JSON) e
+ * scripts/codemod-ui-strings-to-i18n.mts (66 consumatori) e non è più
+ * esportato dal barrel. Resta come sorgente storica del generatore; verrà
+ * eliminato quando /i18n avrà consegnato le 11 lingue.
+ *
+ * Mappa: t.quiz.hint.title → t('quiz:hint.title') · t.x.fn({a}) → t('x:fn', {a})
+ *        array/oggetti (monthsShort, cards, dietaryMap) → tObj('ns:key')
+ *
+ * ─── UI STRINGS (storico) ──────────────────────────────────────────────────────
  *
  * Single source of truth for all hardcoded UI text in the front app.
  *
@@ -45,9 +57,9 @@ const strings = {
     done: 'Done',
     select: 'Select',
     search: 'Search...',
-    share: 'Condividi',
-    copyLink: 'Copia link',
-    copied: 'Copiato!',
+    share: 'Share',
+    copyLink: 'Copy link',
+    copied: 'Copied!',
     copiedLink: 'Link copied to clipboard!',
 
     // States

@@ -9,7 +9,7 @@ import { useFrontHomeCards } from '../hooks/useFrontHomeCards';
 import { useHomePageSections, toStatCardColor, HomeSectionId } from '../hooks/useHomePageSections';
 import AudioPlayer from '../components/modal/AudioPlayer';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { HomeGridSkeleton } from '../components/skeleton';
 
 // ─── HomeGlassSection — deduplica pattern home_03/04 e home_05/06 ────────────
@@ -105,7 +105,7 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
               <MediaImage
                 url={pageMetadata.imageUrl}
                 showCaption={false}
-                fallbackAlt={t.alt.homeHero}
+                fallbackAlt={t('alt:homeHero')}
                 imgClassName="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                 fetchPriority="high"
                 loading="eager"
@@ -179,7 +179,7 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
                 assetId="01-home-cherry"
                 className="relative z-20 w-full h-full"
                 imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                fallbackAlt={t.alt.cherry}
+                fallbackAlt={t('alt:cherry')}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-30 pointer-events-none" />
             </div>

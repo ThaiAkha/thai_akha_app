@@ -1,0 +1,13 @@
+{
+  "selectPrompt": "Please select 3 dishes to complete your menu kha!",
+  "saveFailed": "Save failed",
+  "selectionSuffix": "Selection",
+  "optionsSuffix": "Options",
+  "confirmMenu": "Confirm Menu",
+  "savingMenu": "Saving...",
+  "categoryIds": {
+    "curry": "curry",
+    "soup": "soup",
+    "stirfry": "stirfry"
+  }
+}

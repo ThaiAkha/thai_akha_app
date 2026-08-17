@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 import { Typography, Icon } from '../ui/index';
 
 interface LegalMetaBannerProps {
@@ -40,13 +40,13 @@ export const LegalMetaBanner: React.FC<LegalMetaBannerProps> = ({
     >
       <div className="flex items-center [gap:var(--space-fluid-xs)]">
         <Icon name="info" size="xs" className={isOcean ? 'text-ocean-blue/60' : 'text-primary/60'} />
-        <Typography variant="caption" color="muted">{t.components.legalMeta.version} {version}</Typography>
+        <Typography variant="caption" color="muted">{t('components:legalMeta.version')} {version}</Typography>
         <span className="text-border">·</span>
-        <Typography variant="caption" color="muted">{t.components.legalMeta.effective} {fmt(effectiveDate)}</Typography>
+        <Typography variant="caption" color="muted">{t('components:legalMeta.effective')} {fmt(effectiveDate)}</Typography>
       </div>
       <div className="flex items-center [gap:var(--space-fluid-2xs)]">
         <Icon name="check_circle" size="xs" className="text-action" />
-        <Typography variant="caption" color="muted">{t.components.legalMeta.lastUpdated} {fmt(lastUpdated)}</Typography>
+        <Typography variant="caption" color="muted">{t('components:legalMeta.lastUpdated')} {fmt(lastUpdated)}</Typography>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { Card, Typography, AkhaThemedLine } from '../ui/index';
 import { CookingClassDB } from '@thaiakha/shared';
 import { SmartHeaderSection } from '../layout/SmartHeaderSection';
 import AudioPlayer from '../modal/AudioPlayer';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface HeroContentProps {
@@ -59,7 +59,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
             <div className="flex flex-row flex-wrap [gap:var(--space-fluid-xs)]">
               <div className="px-5 py-3 rounded-2xl flex flex-col backdrop-blur-md border bg-action/40 text-white border-action/40 shadow-lg">
                 <Typography variant="microLabel" className="opacity-60 leading-none mb-1 text-white">
-                  {currentClass.unit || t.classes.perPerson}
+                  {currentClass.unit || t('classes:perPerson')}
                 </Typography>
                 <Typography variant="numericMedium" className="font-bold leading-tight text-white">
                   {Number(currentClass.price).toLocaleString()} {currentClass.currency === 'THB' ? 'Baht' : currentClass.currency}
@@ -68,7 +68,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
               {currentClass.duration_text && (
                 <div className="px-5 py-3 rounded-2xl flex flex-col backdrop-blur-md border bg-black/40 text-white border-black/20 shadow-lg">
                   <Typography variant="microLabel" className="opacity-60 leading-none mb-1 text-white">
-                    {t.classes.classTime}
+                    {t('classes:classTime')}
                   </Typography>
                   <Typography variant="numericMedium" className="font-bold leading-tight text-white">
                     {currentClass.duration_text}
@@ -77,10 +77,10 @@ export const HeroContent: React.FC<HeroContentProps> = ({
               )}
               <div className="px-5 py-3 rounded-2xl flex flex-col backdrop-blur-md border bg-black/40 text-white border-black/20 shadow-lg">
                 <Typography variant="microLabel" className="opacity-60 leading-none mb-1 text-white">
-                  {t.classes.hotelPickup}
+                  {t('classes:hotelPickup')}
                 </Typography>
                 <Typography variant="numericMedium" className="font-bold leading-tight text-white">
-                  {t.classes.pickupIncluded}
+                  {t('classes:pickupIncluded')}
                 </Typography>
               </div>
             </div>

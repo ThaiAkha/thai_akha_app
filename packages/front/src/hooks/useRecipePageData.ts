@@ -9,7 +9,7 @@ import { adaptRecipeToDiet } from '../lib/recipeAdapter';
 import type { RecipeData } from '../components/menu/index';
 import type { RecipeCategoryInfo } from '../components/recipes';
 import type { GalleryItem } from '../components/modal/GalleryModal';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 
 export interface IngredientDetail {
   id: string;
@@ -323,7 +323,7 @@ export function useRecipePageData(
         const normalized = normalizeAllergenKey(allergen);
         const hasConflict = checkMap[normalized] ?? false;
         if (!hasConflict) return null;
-        const warning = allergyMap[normalized] || t.recipeSingle.defaultWarning;
+        const warning = allergyMap[normalized] || t('recipeSingle:defaultWarning');
         return { allergen: normalized.replace(/\b\w/g, c => c.toUpperCase()), warning };
       })
       .filter((c): c is { allergen: string; warning: string } => c !== null);

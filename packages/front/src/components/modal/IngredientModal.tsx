@@ -4,7 +4,7 @@ import Modal from './Modal';
 import HeaderSection from '../layout/HeaderSection';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -210,7 +210,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
             onClick={onClose}
             className="text-action border-action/20"
           >
-            {t.components.gallery.closeGallery}
+            {t('components:gallery.closeGallery')}
           </Button>
         </div>
       </div>

@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "HERITAGE EXPLORER",
+  "signature": "Signature",
+  "enlarge": "Enlarge",
+  "containsAllergen": "Contains {{allergen}}",
+  "askCherry": "Ask Cherry",
+  "askCherrySubtitle": "your AI assistant",
+  "curiousAboutDetails": "Curious about the details?",
+  "viewDetails": "View Details",
+  "secretChef": "Ingredient details are kept as our Chef's secret.",
+  "closeDetails": "Close Details",
+  "backToRecipes": "Back to Recipes",
+  "notFound": "Recipe Not Found",
+  "dishAdded": "Dish added to your collection",
+  "reserveMenu": "Reserve for your Menu",
+  "detailN": "Detail {{n}}",
+  "signatureDish": "Signature Dish",
+  "historyOf": "Tell me about the history of {{name}} for my {{diet}} diet kha",
+  "defaultWarning": "We will modify the preparation for your safety.",
+  "garnish": "Garnish",
+  "cooksTip": "Cook's Tip",
+  "loginForRecipe": "Full Recipe for Members",
+  "loginForRecipeDesc": "Sign in to access step-by-step directions, garnish notes, and cook's tips.",
+  "categories": {
+    "appetizer": "Appetizers",
+    "dessert": "Desserts",
+    "akha_specialty": "Akha Traditional",
+    "curry": "Curry",
+    "soup": "Soup",
+    "stirfry": "Stir-Fry"
+  }
+}

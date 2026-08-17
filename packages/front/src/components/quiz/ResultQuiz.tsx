@@ -3,13 +3,13 @@ import { QuizLevel, QuizModule } from '@thaiakha/shared';
 import ButtonQuiz from './ButtonQuiz';
 import { Typography } from '../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 // ── Configurazione Bottoni ──────────────────────────────────────────────────
 
-const BTN_NEXT = { label: t.quiz.nextModule, icon: 'arrow_forward', variant: 'primary' as const };
-const BTN_RETRY = { label: t.quiz.retry, icon: 'replay', variant: 'secondary' as const };
-const BTN_HOME = { label: t.quiz.backToMenu, icon: 'Grid', variant: 'ghost' as const };
+const BTN_NEXT = { label: t('quiz:nextModule'), icon: 'arrow_forward', variant: 'primary' as const };
+const BTN_RETRY = { label: t('quiz:retry'), icon: 'replay', variant: 'secondary' as const };
+const BTN_HOME = { label: t('quiz:backToMenu'), icon: 'Grid', variant: 'ghost' as const };
 
 interface ResultQuizProps {
   level: QuizLevel;
@@ -57,7 +57,7 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
             className="uppercase italic font-black [margin-bottom:var(--space-fluid-m)] tracking-tighter relative z-10"
             color="title"
           >
-            {isPass ? t.quiz.missionComplete : t.quiz.missionFailed}
+            {isPass ? t('quiz:missionComplete') : t('quiz:missionFailed')}
           </Typography>
 
           {/* Circle Progress */}
@@ -78,7 +78,7 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
                 {correctAnswers}/{totalQuestions}
               </Typography>
               <Typography variant="microLabel" color="muted" className="uppercase font-black tracking-widest mt-1">
-                {t.quiz.correctLabel}
+                {t('quiz:correctLabel')}
               </Typography>
             </div>
           </div>
@@ -93,7 +93,7 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
                 +{isPass ? xpEarned : 0}
               </Typography>
               <Typography variant="microLabel" color="muted" className="uppercase tracking-widest mt-1">
-                {t.quiz.xpEarned}
+                {t('quiz:xpEarned')}
               </Typography>
             </div>
             
@@ -102,7 +102,7 @@ const ResultQuiz: React.FC<ResultQuizProps> = ({
                 {percentage}%
               </Typography>
               <Typography variant="microLabel" color="muted" className="uppercase tracking-widest mt-1">
-                {t.quiz.accuracy}
+                {t('quiz:accuracy')}
               </Typography>
             </div>
           </div>

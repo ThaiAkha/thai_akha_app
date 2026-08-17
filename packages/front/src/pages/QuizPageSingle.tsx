@@ -9,7 +9,7 @@ import { Typography, Button, Icon, Card, GlassCardFull, FaqBottomPage } from '..
 import { AkhaThemedLine } from '../components/blog';
 import { contentService } from '@thaiakha/shared/services';
 import { QuizLevel, QuizQuestion } from '@thaiakha/shared';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { useQuizProgress } from '../hooks/useQuizProgress';
 import { useActiveProfile } from '../context/ActiveProfileContext';
 
@@ -65,7 +65,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
   const [quizRewards, setQuizRewards] = useState<any[]>([]);
   const [allCategories, setAllCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoryTitle, setCategoryTitle] = useState<string>(t.quiz.spiritQuizTitle);
+  const [categoryTitle, setCategoryTitle] = useState<string>(t('quiz:spiritQuizTitle'));
   const { getCategoryProgress } = useQuizProgress();
 
   // F2 — quiz per PROFILO ATTIVO. Quando si agisce come gestito: DB-only su
@@ -403,7 +403,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
   };
 
   const handleAskHint = (question: QuizQuestion) => {
-    if (score < 50) { alert(t.quiz.notEnoughXp); return; }
+    if (score < 50) { alert(t('quiz:notEnoughXp')); return; }
     spendXp(50);            // ← FIX: addebita davvero −50 XP
     dispatchHint(question);
   };
@@ -411,7 +411,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
   // T8 — "Ask Cherry & Retry": riapre la stessa domanda al costo doppio dell'hint.
   // Possibile perché explanation_wrong NON spoilera la risposta corretta.
   const handleRetry = (question: QuizQuestion) => {
-    if (score < 100) { alert(t.quiz.notEnoughXpRetry); return; }
+    if (score < 100) { alert(t('quiz:notEnoughXpRetry')); return; }
     spendXp(100);          // ← FIX: addebita −100 XP (non passa più da handleAskHint)
     dispatchHint(question);
     setSessionAnswers(prev => prev.slice(0, -1));     // annulla la 'wrong' appena registrata
@@ -447,7 +447,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
           view={view}
           questionResults={view === 'PLAYING' ? sessionAnswers : undefined}
           totalQuestions={currentModule?.questions?.length || 0}
-          progressTextLeft={t.quiz.progress || 'Progress'}
+          progressTextLeft={t('quiz:progress') || 'Progress'}
           progressTextRight={view === 'PLAYING' ? undefined : `${categoryProg.completed} / ${categoryProg.total} Modules`}
           progressPercentage={view === 'PLAYING' ? 0 : categoryProg.percentage}
           onBackClick={() => {
@@ -486,7 +486,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
 
               {quizLevels.length === 0 ? (
                 <div className="mineral-panel rounded-2xl [padding:var(--space-fluid-l)] text-center">
-                  <Typography variant="paragraphM" color="muted">{t.quiz.noLevels}</Typography>
+                  <Typography variant="paragraphM" color="muted">{t('quiz:noLevels')}</Typography>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 [gap:var(--space-fluid-m)]">
@@ -529,8 +529,8 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
 
               <div className="w-full [padding-top:var(--space-fluid-m)]">
                 <QuizCard
-                  title={t.quiz.heritageWalletTitle}
-                  description={t.quiz.heritageWalletDesc}
+                  title={t('quiz:heritageWalletTitle')}
+                  description={t('quiz:heritageWalletDesc')}
                   awardedBonuses={awardedBonuses}
                   rewards={rewardsList}
                   currentScore={score}
@@ -605,14 +605,14 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
                   <div className="size-10 rounded-xl bg-action/20 flex items-center justify-center text-action">
                     <Icon name="school" />
                   </div>
-                  <Typography variant="h5" className="text-white">{t.quiz.cherryRulesTitle}</Typography>
+                  <Typography variant="h5" className="text-white">{t('quiz:cherryRulesTitle')}</Typography>
                 </div>
 
                 <div className="flex flex-col [gap:var(--space-fluid-xs)]">
                   {[
-                    { label: t.quiz.hintLabel, val: t.quiz.hintCost, color: 'text-red-400' },
-                    { label: t.quiz.wrongAnswer, val: t.quiz.zeroXp, color: 'text-white/40' },
-                    { label: t.quiz.perfectModule, val: t.quiz.bonus, color: 'text-quiz' },
+                    { label: t('quiz:hintLabel'), val: t('quiz:hintCost'), color: 'text-red-400' },
+                    { label: t('quiz:wrongAnswer'), val: t('quiz:zeroXp'), color: 'text-white/40' },
+                    { label: t('quiz:perfectModule'), val: t('quiz:bonus'), color: 'text-quiz' },
                   ].map(row => (
                     <div key={row.label} className="flex justify-between items-center [padding:var(--space-fluid-xs)] rounded-xl bg-white/5 border border-white/5">
                       <Typography variant="paragraphS" className="text-white/80">{row.label}</Typography>
@@ -629,10 +629,10 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
                     icon="arrow_forward"
                     iconPosition="right"
                     onClick={() => window.dispatchEvent(new CustomEvent('trigger-chat-topic', {
-                      detail: { topic: t.quiz.scoringTopic },
+                      detail: { topic: t('quiz:scoringTopic') },
                     }))}
                   >
-                    {t.quiz.askCherry}
+                    {t('quiz:askCherry')}
                   </Button>
                 </div>
               </Card>

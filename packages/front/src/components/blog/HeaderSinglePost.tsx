@@ -11,7 +11,7 @@ import {
 import AkhaThemedLine from '../divider/AkhaThemedLine';
 import AkhaPixelLine from '../divider/AkhaPixelLine';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../../i18n';
 
 interface HeaderSinglePostProps {
     title: string;
@@ -87,7 +87,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
                                     className="px-3 py-1 md:px-6 md:py-2.5 bg-white/5 border-white/10 text-white/90 backdrop-blur-sm"
                                     icon="person"
                                 >
-                                    {t.blog.byAuthor} {authorName}
+                                    {t('blog:byAuthor')} {authorName}
                                 </Badge>
                             )}
                             {dietLabel && (

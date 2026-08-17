@@ -3,7 +3,7 @@ import { getLiveGeminiClient } from '../services/geminiClient';
 import { LiveServerMessage, Modality } from '@google/genai';
 import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
 import { checkRateLimit, getGuestSessionToken, getUserBookingState } from '@thaiakha/shared/services';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t, tObj } from '../i18n';
 import { getAllStaticKnowledge } from '@thaiakha/shared/data/cherryKnowledge';
 import type { UserProfile } from '@thaiakha/shared/types';
 import { encodeAudio, decodeAudio, decodeAudioDataToBuffer } from '../lib/audioUtils';
@@ -143,11 +143,11 @@ export const useGeminiLive = (
               role: userProfile?.role, // #17 Chameleon: modula persona anche in voce
               name: userProfile?.full_name,
               dietary_profile: userProfile?.dietary_profile
-                ? (t.cherry.dietaryMap[userProfile.dietary_profile] ?? userProfile.dietary_profile)
+                ? ((tObj('cherry:dietaryMap') as Record<string, string>)[userProfile.dietary_profile] ?? userProfile.dietary_profile)
                 : undefined,
               allergies: userProfile?.allergies,
               preferred_spiciness: userProfile?.preferred_spiciness_id
-                ? t.cherry.spicinessMap[String(userProfile.preferred_spiciness_id)]
+                ? (tObj('cherry:spicinessMap') as Record<string, string>)[String(userProfile.preferred_spiciness_id)]
                 : undefined,
               booking_state: booking.state,
               days_until_class: booking.daysUntil,

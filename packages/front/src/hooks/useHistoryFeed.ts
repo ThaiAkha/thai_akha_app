@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { contentService } from '@thaiakha/shared/services';
 import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
-import { t } from '@thaiakha/shared/lib/ui-strings';
+import { t } from '../i18n';
 import { PageMetadata } from './useHomePageSections';
 
 // URL patterns:
@@ -143,7 +143,7 @@ export function useHistoryFeed(targetSection?: string | null) {
       label: cat.tab_label ?? cat.title,
       icon: cat.icon_name ?? 'tag',
     }));
-    return [{ value: 'all', label: t.history.tabAll, icon: 'Grid' }, ...catTabs];
+    return [{ value: 'all', label: t('history:tabAll'), icon: 'Grid' }, ...catTabs];
   }, [categories]);
 
   const featuredSection = useMemo(() => {

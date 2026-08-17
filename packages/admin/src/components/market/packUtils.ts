@@ -21,12 +21,12 @@ export const baseUnit = (p: PackSpec): string => p.default_unit || 'unit';
 
 const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, ''));
 
-/** "5 kg pack" · "box 30 pcs" · "kg" - what ONE pack contains (card badge). */
+/** What ONE click adds (card badge): "1 kg" · "pack 500 g" · "box 30 pcs" - never the bare unit. */
 export const describePack = (p: PackSpec): string => {
   const size = packSize(p);
   const label = packLabel(p);
   const unit = baseUnit(p);
-  if (size === 1 && label === unit) return unit;
+  if (label === unit) return `${fmt(size)} ${unit}`;
   return `${label} ${fmt(size)} ${unit}`;
 };
 

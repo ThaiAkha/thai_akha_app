@@ -55,6 +55,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check prompt copies (skipped when the brain is not present)
+        run: pnpm check-prompts
+
       - name: Lint Admin
         run: pnpm --filter admin lint
 

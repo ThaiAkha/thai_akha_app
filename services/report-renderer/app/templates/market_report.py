@@ -17,9 +17,9 @@ TOT_FG = '#2c6951'
 
 LABELS = {
     'en': {'idx': '#', 'item': 'Item', 'price': 'Price (THB)', 'date': 'Date',
-           'daily': 'Daily total (THB)', 'total': 'TOTAL', 'period': 'Period'},
+           'daily': 'Daily total (THB)', 'total': 'TOTAL', 'period': 'Period', 'shopper': 'Shopper'},
     'th': {'idx': '#', 'item': 'รายการ', 'price': 'ราคา (บาท)', 'date': 'วันที่',
-           'daily': 'รวมรายวัน (บาท)', 'total': 'รวมทั้งหมด', 'period': 'ช่วงเวลา'},
+           'daily': 'รวมรายวัน (บาท)', 'total': 'รวมทั้งหมด', 'period': 'ช่วงเวลา', 'shopper': 'ผู้ซื้อ'},
 }
 
 
@@ -109,6 +109,7 @@ def build(data, fmt='A4'):
       "run_date": "10 Feb 2026",          # type=run
       "period": "1–28 Feb 2026",          # type=monthly
       "status": "Completed",
+      "shopper": "Aon",                   # optional, type=run (market_runs.worker_id → authors.name)
       "rows": [{"name","price"}] | [{"date","total"}],
       "total": 176,
     }
@@ -121,6 +122,7 @@ def build(data, fmt='A4'):
     kicker = data.get('kicker', 'Market Report')
     shop = data.get('shop', '')
     status = data.get('status', '')
+    shopper = (data.get('shopper') or '').strip()   # the person who did the shopping (authors via market_runs.worker_id); '-' or '' = unknown
     rows = data.get('rows', []) or []
     total = _int(data.get('total'))
 
@@ -145,7 +147,8 @@ def build(data, fmt='A4'):
         head_cols = f'<th class="c">{L["idx"]}</th><th>{L["item"]}</th><th class="n">{L["price"]}</th>'
         meta_lab, meta_val = L['date'], data.get('run_date', '')
 
-    sub = 'Thai Akha Kitchen · Chiang Mai' + (f' · {status}' if status else '')
+    sub = 'Thai Akha Kitchen · Chiang Mai' + (f' · {status}' if status else '') \
+        + (f' · {L["shopper"]}: {shopper}' if shopper and shopper != '-' else '')
     header = f'''
     <table class="htab"><tr>
       <td class="lg"><img src="{LOGO}"></td>

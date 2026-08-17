@@ -24,7 +24,9 @@ interface MarketRun {
     status: string;
     total_cost: number;
     items_snapshot: RunItem[];
+    worker: { name: string | null } | { name: string | null }[] | null; // authors via worker_id
 }
+const shopperOf = (r: MarketRun): string | null => (Array.isArray(r.worker) ? r.worker[0]?.name : r.worker?.name) ?? null;
 
 // Role-aware market reports: kitchen → teacher runs, logistics → logistics runs.
 // Shared by /logistic-reports and /kitchen-reports.
@@ -55,7 +57,7 @@ const LogisticReports: React.FC = () => {
             setLoading(true);
             const { data, error } = await supabase
                 .from('market_runs')
-                .select('id, run_date, status, total_cost, items_snapshot')
+                .select('id, run_date, status, total_cost, items_snapshot, worker:authors!worker_id(name)')
                 .eq('shopper_role', scope)
                 .order('run_date', { ascending: false });
             if (error) console.error('Failed to load logistic reports:', error);
@@ -105,6 +107,7 @@ const LogisticReports: React.FC = () => {
                             <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 uppercase font-black text-xs">
                                 <tr>
                                     <th className="px-6 py-4">{t('table.date', { defaultValue: 'Date' })}</th>
+                                    <th className="px-6 py-4">{t('table.shopper', { defaultValue: 'Shopper' })}</th>
                                     <th className="px-6 py-4">{t('table.status', { defaultValue: 'Status' })}</th>
                                     <th className="px-6 py-4 text-center">{t('table.items', { defaultValue: 'Items' })}</th>
                                     <th className="px-6 py-4 text-right">{t('table.totalCost', { defaultValue: 'Total' })}</th>
@@ -122,6 +125,7 @@ const LogisticReports: React.FC = () => {
                                                 className={cn('cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50', isOpen && 'bg-primary-50/50 dark:bg-primary-900/10')}
                                             >
                                                 <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{run.run_date}</td>
+                                                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200">{shopperOf(run) ?? <span className="text-gray-300 dark:text-gray-600">-</span>}</td>
                                                 <td className="px-6 py-4"><Badge variant="light" color="light" size="sm" className="uppercase">{run.status}</Badge></td>
                                                 <td className="px-6 py-4 text-center font-medium">{items.length}</td>
                                                 <td className="px-6 py-4 text-right font-mono font-black text-primary-600 dark:text-primary-400">{Number(run.total_cost || 0).toLocaleString()} <span className="text-xs text-gray-400">THB</span></td>
@@ -129,7 +133,7 @@ const LogisticReports: React.FC = () => {
                                             </tr>
                                             {isOpen && (
                                                 <tr>
-                                                    <td colSpan={5} className="px-6 pb-5 pt-1 bg-gray-50/50 dark:bg-gray-800/20">
+                                                    <td colSpan={6} className="px-6 pb-5 pt-1 bg-gray-50/50 dark:bg-gray-800/20">
                                                         <div className="space-y-2">
                                                             {items.length === 0 ? (
                                                                 <Paragraph size="sm" color="muted">{t('empty.noContent', { defaultValue: 'No items.' })}</Paragraph>

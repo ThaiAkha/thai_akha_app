@@ -51,7 +51,7 @@ interface WeekGroup { key: string; start: Date; end: Date; endISO: string; rows:
 interface DriverReport { id: string; name: string; avatar: string | null; weeks: WeekGroup[] }
 
 interface MarketItem { id?: string; name?: string; unit?: string; quantity?: number; price?: number; actual_price?: number; }
-interface MarketRunRow { id: string; run_date: string; status: string; total_cost: number; items: MarketItem[]; archived: boolean; }
+interface MarketRunRow { id: string; run_date: string; status: string; total_cost: number; items: MarketItem[]; archived: boolean; shopper: string | null; /* authors.name via worker_id */ }
 // A logistics run leaves "In progress" and enters "Archive" once it is expensed.
 const isRunArchived = (status: string) => status === 'expensed';
 
@@ -166,13 +166,15 @@ const ManagerReports: React.FC = () => {
         setMarketRuns(null);
         const { data } = await supabase
             .from('market_runs')
-            .select('id, run_date, status, total_cost, items_snapshot')
+            .select('id, run_date, status, total_cost, items_snapshot, worker:authors!worker_id(name)')
             .eq('shopper_role', scope)
             .order('run_date', { ascending: false });
-        const rows: MarketRunRow[] = ((data as Array<{ id: string; run_date: string; status: string; total_cost: number; items_snapshot: unknown }>) ?? []).map(r => ({
+        type Row = { id: string; run_date: string; status: string; total_cost: number; items_snapshot: unknown; worker: { name: string | null } | { name: string | null }[] | null };
+        const rows: MarketRunRow[] = ((data as unknown as Row[]) ?? []).map(r => ({
             id: r.id, run_date: r.run_date, status: r.status, total_cost: Number(r.total_cost) || 0,
             items: Array.isArray(r.items_snapshot) ? (r.items_snapshot as MarketItem[]) : [],
             archived: isRunArchived(r.status),
+            shopper: (Array.isArray(r.worker) ? r.worker[0]?.name : r.worker?.name) ?? null,
         }));
         setMarketRuns(rows);
     }, []);
@@ -641,6 +643,7 @@ const ManagerReports: React.FC = () => {
             amount={r.total_cost.toLocaleString()}
             meta={<>
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{r.items.length} items</span>
+                {r.shopper && <span className="text-xs font-bold text-gray-500 dark:text-gray-400 truncate">· {r.shopper}</span>}
                 <ReportStatusBadge tone={r.archived ? 'green' : 'amber'}>{r.status}</ReportStatusBadge>
             </>}
         />
@@ -859,7 +862,7 @@ const ManagerReports: React.FC = () => {
                     ) : isMarketType(reportType) ? (
                         selRun ? (
                             <>
-                                <InspectorHeader subtitle={reportType === 'market_teacher' ? t('reports.typeTeacher', { defaultValue: 'Market · Kitchen' }) : t('reports.typeLogistic', { defaultValue: 'Market · Logistic' })} title={new Date(selRun.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} onClose={() => setSelectedRunId(null)} />
+                                <InspectorHeader subtitle={`${reportType === 'market_teacher' ? t('reports.typeTeacher', { defaultValue: 'Market · Kitchen' }) : t('reports.typeLogistic', { defaultValue: 'Market · Logistic' })}${selRun.shopper ? ` · ${selRun.shopper}` : ''}`} title={new Date(selRun.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} onClose={() => setSelectedRunId(null)} />
                                 <InspectorBody className="p-4 space-y-2">
                                     {selRun.items.length === 0 ? (
                                         <div className="text-sm text-gray-400 px-1">{t('reports.noItems', { defaultValue: 'No items.' })}</div>

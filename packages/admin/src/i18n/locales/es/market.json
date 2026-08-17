@@ -44,7 +44,8 @@
     "status": "Estado",
     "items": "Artículos",
     "totalCost": "Costo total",
-    "reportArchives": "Archivos de informes"
+    "reportArchives": "Archivos de informes",
+    "shopper": "Comprador"
   },
   "modal": {
     "selectDate": "Seleccionar fecha"

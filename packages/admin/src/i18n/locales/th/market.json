@@ -44,7 +44,8 @@
     "status": "สถานะ",
     "items": "รายการ",
     "totalCost": "ราคารวม",
-    "reportArchives": "คลังรายงาน"
+    "reportArchives": "คลังรายงาน",
+    "shopper": "ผู้ซื้อ"
   },
   "modal": {
     "selectDate": "เลือกวันที่"

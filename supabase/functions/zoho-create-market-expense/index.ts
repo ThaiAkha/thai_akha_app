@@ -141,7 +141,7 @@ Deno.serve(async (req: Request) => {
     // 3) Carica i run del gruppo
     const { data: rows, error: rowsErr } = await admin
       .from('market_runs')
-      .select('id, run_date, shopper_role, total_cost, notes, items_snapshot, status, approved_by, approved_at, zoho_expense_id')
+      .select('id, run_date, shopper_role, total_cost, notes, items_snapshot, status, approved_by, approved_at, zoho_expense_id, worker:authors!worker_id(name)')
       .in('id', runIds)
       .eq('shopper_role', stream)
       .order('run_date', { ascending: true })
@@ -169,7 +169,10 @@ Deno.serve(async (req: Request) => {
       rows.map((r) => {
         const items = Array.isArray(r.items_snapshot) ? r.items_snapshot.length : 0
         const note = r.notes ? ` - ${r.notes}` : ''
-        return `${r.run_date} THB ${Number(r.total_cost ?? 0).toLocaleString('en-US')}${items ? ` (${items} items)` : ''}${note}`
+        // shopper = the PERSON (authors via worker_id), useful for per-person COGS
+        const w = (r as { worker?: { name: string | null } | { name: string | null }[] | null }).worker
+        const who = Array.isArray(w) ? w[0]?.name : w?.name
+        return `${r.run_date} THB ${Number(r.total_cost ?? 0).toLocaleString('en-US')}${items ? ` (${items} items)` : ''}${who ? ` by ${who}` : ''}${note}`
       }),
     )
 

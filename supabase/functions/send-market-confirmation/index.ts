@@ -38,6 +38,8 @@ interface MarketRun {
   run_date: string
   created_at: string
   shopper_role: Role
+  worker_id: string | null
+  worker: { name: string | null } | { name: string | null }[] | null
   total_cost: number
   status: string
   items_snapshot: SnapshotItem[]
@@ -105,7 +107,7 @@ Deno.serve(async (req: Request) => {
     for (const runId of ids) {
       const { data: run, error } = await supabase
         .from('market_runs')
-        .select('id, run_date, created_at, shopper_role, total_cost, status, items_snapshot')
+        .select('id, run_date, created_at, shopper_role, total_cost, status, items_snapshot, worker_id, worker:authors!worker_id(name)')
         .eq('id', runId)
         .maybeSingle()
 
@@ -138,10 +140,14 @@ Deno.serve(async (req: Request) => {
         price: it.price ?? 0,
       })).join('\n')
 
+      // Chi ha fatto la spesa: la PERSONA (authors via worker_id), non il login.
+      const who = Array.isArray(r.worker) ? r.worker[0] : r.worker
+      const shopper = who?.name ?? '-'
       const reportDate = fmtDate(r.run_date)              // data scelta del report (run_date)
       const createdLabel = fmtDateTime(r.created_at)       // momento di compilazione (created_at)
       const html = renderEmail(TEMPLATE[role], {
         shop: SHOP[role],
+        shopper,
         created_at: createdLabel,
         run_date: reportDate,
         item_count: items.length,
@@ -151,7 +157,7 @@ Deno.serve(async (req: Request) => {
         items_rows: rows,
       })
 
-      const subject = `${SUBJECT_LABEL[role]} market expenses confirmed — ${reportDate}`
+      const subject = `${SUBJECT_LABEL[role]} market expenses confirmed — ${reportDate}${who?.name ? ` · ${who.name}` : ''}`
       const sent = await sendResend(to, subject, html)
       results[runId] = sent.ok ? { sent: true, id: sent.id } : { sent: false, detail: sent.detail }
     }

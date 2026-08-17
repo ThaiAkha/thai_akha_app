@@ -44,7 +44,8 @@
     "status": "Status",
     "items": "Items",
     "totalCost": "Total Cost",
-    "reportArchives": "Report Archives"
+    "reportArchives": "Report Archives",
+    "shopper": "Shopper"
   },
   "modal": {
     "selectDate": "Select Date"

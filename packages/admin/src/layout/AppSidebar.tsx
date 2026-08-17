@@ -153,7 +153,7 @@ const AppSidebar: React.FC = () => {
         isActive={active}
         onClick={() => {
           if (location.pathname !== nav.path) navigate(nav.path);
-          isMobileOpen && toggleMobileSidebar();
+          if (isMobileOpen) toggleMobileSidebar();
         }}
         isOpen={isSidebarOpen}
       />

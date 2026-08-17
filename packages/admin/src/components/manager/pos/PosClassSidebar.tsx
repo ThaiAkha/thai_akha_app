@@ -94,7 +94,7 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
     };
 
     const startSplit = (g: Guest) => { setSplitMode(g.internal_id); setSeatSel(new Set()); };
-    const toggleSeat = (key: string) => setSeatSel(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
+    const toggleSeat = (key: string) => setSeatSel(prev => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n; });
     const confirmSplit = (g: Guest) => {
         const userIds = [...seatSel].filter(k => k.startsWith('u:')).map(k => k.slice(2));
         const pax = seatSel.size;

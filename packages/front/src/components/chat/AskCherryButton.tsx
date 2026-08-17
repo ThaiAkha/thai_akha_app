@@ -163,8 +163,8 @@ export const AskCherryButton: React.FC<AskCherryButtonProps> = ({
   // 2. Logica di generazione Prompt / Label
   let finalTopic = manualTopic || dbPrompt || '';
   let finalSystemContext = manualSystemContext || '';
-  let finalLabel = label || dbPrompt || t.components.cherryChat.askCherry;
-  let finalPreset = dbPreset || null;
+  const finalLabel = label || dbPrompt || t.components.cherryChat.askCherry;
+  const finalPreset = dbPreset || null;
 
   if (!manualTopic && !dbPrompt) {
     if (context === 'recipe-category' && data?.title) {

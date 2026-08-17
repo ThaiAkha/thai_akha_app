@@ -10,7 +10,7 @@ Backend pronto. Mancano la **pagina admin** e il **wiring payslip** (lato Claude
 ## Contratto dati (Supabase `mtqullobcsypkqgdkaob`)
 **Tabella `staff_salaries`**: `id · employee_id→profiles.id · period 'YYYY-MM' · total_amount · overtime_note · pay_method('bank'|'cash') · status('draft'|'paid') · zoho_expense_id` · unique(employee_id, period). `profiles.base_salary` = default.
 
-**RPC `get_salary_run(p_period)`** → roster (9 lavoratori): `employee_id, full_name, role, zoho_contact_id, base_salary, salary_id, total_amount, overtime_note, pay_method, status, zoho_expense_id`.
+**Roster** (dal 2026-08-16, RPC `get_salary_run` DROPPATA): il `SalaryRoster` legge `authors` (persone attive) + `worker_roles` (ruolo primario = gruppo) + `staff_details.salary_thb` (base, RLS admin/manager) + `staff_salaries` del mese (`employee_id` = `authors.id`).
 
 **Edge `zoho-create-salary-expense`** (POST, staff JWT): body `{ period }` o `{ salary_ids[] }`.
 → raggruppa le draft per metodo, crea 1 Expense/metodo (account+cassa per metodo, righe nei `description`), write-back `status=paid`+`zoho_expense_id` su tutto il gruppo. Idempotente. Risposta `{ success, expenses[], failures[] }`.
@@ -29,7 +29,7 @@ Generatore già pronto: `thai_akha_brain/600_Business_Thai_Akha/605_Financial/Pa
 **Wiring suggerito**: nuovo tipo `salary_payslip` in `render-report` (riusa lo script) → input `{ salary_id }` o `{ period }` (zip di N PDF). In alternativa edge dedicata.
 
 ## UI da costruire (pagina manager, es. `ManagerSalaries.tsx`)
-1. Selettore mese → `get_salary_run(period)`.
+1. Selettore mese → query authors/worker_roles/staff_details/staff_salaries (client).
 2. Lista 9 lavoratori: nome+ruolo · input **importo totale** (prefill `base_salary`) · input **nota straordinari** · toggle **Bank/Cash** · badge stato.
 3. Salva riga → upsert `staff_salaries` su unique(employee_id, period).
 4. Bottone **"Crea spese salari"** → invoke `zoho-create-salary-expense` `{ period }`.

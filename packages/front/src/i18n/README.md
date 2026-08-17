@@ -55,6 +55,10 @@ Chi vuole reattività fine può usare `useTranslation()` di react-i18next: stess
 4. **Logica nel componente, non nella stringa**: una chiave per ramo (`headerDescReady` / `headerDescReadyAllergies`), mai template con `if`.
 5. **`pnpm check-ui-strings`** prima di ogni commit che tocca `locales/`: parità chiavi, placeholder, vuoti, namespace ↔ `NAMESPACES`.
 
+## ⚠️ Limite noto dei tipi stretti
+
+Con i tipi da JSON, tsc costruisce una union di TUTTE le chiavi. A 576 chiavi (front) regge. Provato sull'admin (1.328 chiavi × 20 ns) **tsc 5.7 crasha** (`Debug Failure. No error for last overload signature`) — e un crash non stampa errori: sembrava "0 errori". Per questo l'admin NON ha `types.ts` e si affida solo a `check-ui-strings --app admin`. Se il front cresce molto e tsc inizia a morire, la via d'uscita è tipizzare per namespace (un `t` per ns) o rinunciare ai tipi stretti: verificare sempre l'exit code, non contare le righe "error TS".
+
 ## Il banco di lavoro nel brain (dove si traduce)
 
 Le 11 lingue si traducono in **`thai_akha_brain/010_ThaiAkha_com/013_Ui_Strings/{LANG}/{ns}.md`** (tabella `chiave | EN | LANG`, leggibile in Obsidian, registro Dataview). Ponte unico, mai symlink:

@@ -28,15 +28,33 @@ import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 
 const REPO  = new URL('..', import.meta.url).pathname;
-const LOC   = join(REPO, 'packages/front/src/i18n/locales');
-const BRAIN = '/Users/svevomondino/Desktop/thai_akha_brain/010_ThaiAkha_com/013_Ui_Strings';
-const LANGS = ['en','es','fr','de','pt','it','ca','nl','th','zh','ko','ja']; // = SUPPORTED_LANGS shared/lib/i18n.ts
+const BRAIN_ROOT = '/Users/svevomondino/Desktop/thai_akha_brain/010_ThaiAkha_com';
 const NATIVE = { en:'English', es:'Español', fr:'Français', de:'Deutsch', pt:'Português', it:'Italiano', ca:'Català', nl:'Nederlands', th:'ไทย', zh:'中文', ko:'한국어', ja:'日本語' };
 const today = new Date().toISOString().slice(0, 10);
 
+/**
+ * DUE APP, stesso motore, stesso formato, stesso ponte — perimetri diversi:
+ *   front  12 lingue (pubblico)      → brain 013_Ui_Strings
+ *   admin   4 lingue (staff/agenzie) → brain 014_Ui_Strings_Admin
+ * Le lingue sono quelle di shared/lib/i18n.ts (front) e admin/src/i18n/index.ts
+ * (admin): qui la copia va tenuta allineata (una riga per lingua).
+ */
+const APPS = {
+  front: { loc: 'packages/front/src/i18n/locales', brain: '013_Ui_Strings',
+           langs: ['en','es','fr','de','pt','it','ca','nl','th','zh','ko','ja'], index: '013_Ui_Strings_Index' },
+  admin: { loc: 'packages/admin/src/i18n/locales', brain: '014_Ui_Strings_Admin',
+           langs: ['en','es','th','zh'], index: '014_Ui_Strings_Admin_Index' },
+};
+
 const args = process.argv.slice(2);
-const mode = args.find(a => a.startsWith('--'))?.slice(2) ?? 'status';
-const targetLangs = args.filter(a => !a.startsWith('--'));
+const appName = args.includes('--app') ? args[args.indexOf('--app') + 1] : 'front';
+const APP = APPS[appName];
+if (!APP) { console.error(`--app deve essere front|admin (dato: ${appName})`); process.exit(1); }
+const LOC   = join(REPO, APP.loc);
+const BRAIN = join(BRAIN_ROOT, APP.brain);
+const LANGS = APP.langs;
+const mode = args.filter(a => a.startsWith('--') && a !== '--app').map(a => a.slice(2))[0] ?? 'status';
+const targetLangs = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--app');
 
 // ── flatten / unflatten (array → chiave[i]) ────────────────────────────────
 const flat = (o, p = '', out = {}) => {
@@ -76,14 +94,14 @@ function renderMd(ns, lang, en, tr) {
     `namespace: ${ns}`, `lang: ${lang}`, `lang_native: "${NATIVE[lang]}"`,
     `keys: ${keys.length}`, `translated: ${isEn ? keys.length : done}`,
     `coverage: ${isEn ? 100 : Math.round(done / keys.length * 100)}`,
-    `source: packages/front/src/i18n/locales/${lang}/${ns}.json`,
+    `app: ${appName}`, `source: ${APP.loc}/${lang}/${ns}.json`,
     `updated: ${today}`, 'generated_by: scripts/sync-ui-strings.mjs',
-    `type: ui_strings`, `status: ${isEn ? 'source' : done === keys.length ? 'complete' : done ? 'partial' : 'todo'}`,
+    `type: ui_strings_${appName}`, `status: ${isEn ? 'source' : done === keys.length ? 'complete' : done ? 'partial' : 'todo'}`,
     '---', '',
     `# ${ns} · ${L}`, '',
     isEn
-      ? `> ↑ [[013_Ui_Strings_Index]] · **SPECCHIO del repo, sola lettura**: si rigenera con \`--export\`. Per cambiare una stringa EN si edita il JSON nel repo, non questo file.`
-      : `> ↑ [[013_Ui_Strings_Index]] · sorgente EN: [[010_ThaiAkha_com/013_Ui_Strings/EN/${ns}|${ns} EN]] · Traduci la colonna **${L}** (lascia vuoto = fallback EN). Poi: \`node scripts/sync-ui-strings.mjs --import ${lang}\` (passa \`check-ui-strings\`).`,
+      ? `> ↑ [[${APP.index}]] · **SPECCHIO del repo, sola lettura**: si rigenera con \`--export\`. Per cambiare una stringa EN si edita il JSON nel repo, non questo file.`
+      : `> ↑ [[${APP.index}]] · sorgente EN: [[010_ThaiAkha_com/${APP.brain}/EN/${ns}|${ns} EN]] · Traduci la colonna **${L}** (lascia vuoto = fallback EN). Poi: \`node scripts/sync-ui-strings.mjs --app ${appName} --import ${lang}\` (passa \`check-ui-strings\`).`,
     '',
     `> ${isEn ? `${keys.length} chiavi` : `**${done}/${keys.length}** tradotte`} · placeholder \`{{x}}\` vanno lasciati IDENTICI · celle: \`\\|\` = pipe, \`⏎\` = a capo`,
     '',
@@ -103,7 +121,7 @@ function doExport() {
       writeFileSync(join(dir, `${ns}.md`), renderMd(ns, lang, en, tr)); n++;
     }
   }
-  console.log(`export: ${n} file (${LANGS.length} lingue × ${nss.length} namespace) → ${BRAIN}`);
+  console.log(`export [${appName}]: ${n} file (${LANGS.length} lingue × ${nss.length} namespace) → ${BRAIN}`);
 }
 
 // ── IMPORT: brain → repo (con check) ───────────────────────────────────────
@@ -146,7 +164,7 @@ function doImport(langs) {
       files++; keys += Object.keys(m).length;
     }
     console.log(`import ${lang}: ${files} namespace, ${keys} chiavi → ${outDir}`);
-    try { execSync(`node scripts/check-ui-strings.mjs --lang ${lang}`, { cwd: REPO, stdio: 'inherit' }); }
+    try { execSync(`node scripts/check-ui-strings.mjs --app ${appName} --lang ${lang}`, { cwd: REPO, stdio: 'inherit' }); }
     catch { console.error(`\n❌ check-ui-strings FALLITO per ${lang}: correggi nel brain e rilancia. I JSON scritti NON vanno committati così.`); process.exit(1); }
   }
   console.log('\n✓ import ok. Ora: --export (per riallineare gli specchi) e commit dei JSON.');
@@ -155,7 +173,7 @@ function doImport(langs) {
 // ── STATUS ─────────────────────────────────────────────────────────────────
 function doStatus() {
   const nss = nsList(); const total = nss.reduce((n, ns) => n + Object.keys(readJson('en', ns)).length, 0);
-  console.log(`EN: ${nss.length} namespace, ${total} chiavi\n`);
+  console.log(`[${appName}] EN: ${nss.length} namespace, ${total} chiavi\n`);
   for (const lang of LANGS.filter(l => l !== 'en')) {
     const dir = join(BRAIN, lang.toUpperCase()); let done = 0;
     if (existsSync(dir)) for (const ns of nss) { const f = join(dir, `${ns}.md`); if (existsSync(f)) done += Object.keys(parseMd(f)).length; }
@@ -165,4 +183,4 @@ function doStatus() {
 }
 
 const run = { export: doExport, import: () => doImport(targetLangs), status: doStatus }[mode];
-if (run) run(); else console.error(`modo sconosciuto: --${mode} (usa --export | --import <lang…> | --status)`);
+if (run) run(); else console.error(`modo sconosciuto: --${mode} (usa [--app front|admin] --export | --import <lang…> | --status)`);

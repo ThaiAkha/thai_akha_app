@@ -17,8 +17,12 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = new URL('..', import.meta.url).pathname;
-const LOC = join(ROOT, 'packages/front/src/i18n/locales');
+const APPS = { front: 'packages/front/src/i18n', admin: 'packages/admin/src/i18n' };
+const appName = process.argv.includes('--app') ? process.argv[process.argv.indexOf('--app') + 1] : 'front';
+if (!APPS[appName]) { console.error(`--app deve essere front|admin`); process.exit(1); }
+const LOC = join(ROOT, APPS[appName], 'locales');
 const onlyLang = process.argv.includes('--lang') ? process.argv[process.argv.indexOf('--lang') + 1] : null;
+console.log(`[${appName}]`);
 
 const flat = (o, p = '', out = {}) => {
   for (const [k, v] of Object.entries(o)) {
@@ -32,7 +36,7 @@ const placeholders = (s) => new Set(String(s).match(/\{\{\s*[\w.]+\s*\}\}/g) ?? 
 const readNs = (lang, ns) => { const f = join(LOC, lang, `${ns}.json`); return existsSync(f) ? flat(JSON.parse(readFileSync(f, 'utf8'))) : null; };
 
 const enNs = readdirSync(join(LOC, 'en')).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort();
-const idx = readFileSync(join(ROOT, 'packages/front/src/i18n/index.ts'), 'utf8');
+const idx = readFileSync(join(ROOT, APPS[appName], 'index.ts'), 'utf8');
 const declared = [...idx.matchAll(/'([a-zA-Z]+)'/g)].map(m => m[1]).filter(n => enNs.includes(n) || /^[a-z]+$/.test(n));
 const missingDecl = enNs.filter(n => !idx.includes(`'${n}'`));
 let errors = 0;

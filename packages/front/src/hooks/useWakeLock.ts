@@ -33,7 +33,7 @@ export function useWakeLock(): UseWakeLockResult {
   }, [isSupported]);
 
   const toggle = useCallback(() => {
-    isActive ? release() : request();
+    if (isActive) release(); else request();
   }, [isActive, request, release]);
 
   // Re-acquire after tab becomes visible again (OS can revoke the lock on hide)

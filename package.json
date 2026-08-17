@@ -12,7 +12,9 @@
     "build:admin": "pnpm --filter admin build",
     "build": "pnpm --filter front build && pnpm --filter admin build",
     "generate-embeddings": "tsx --env-file=.env scripts/generate-embeddings.ts",
-    "gen-legal": "tsx --env-file=.env scripts/gen-legal-data.ts"
+    "gen-legal": "tsx --env-file=.env scripts/gen-legal-data.ts",
+    "sync-prompts": "node scripts/sync-prompts.mjs",
+    "check-prompts": "node scripts/sync-prompts.mjs --check"
   },
   "engines": {
     "node": ">=18",

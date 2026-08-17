@@ -111,18 +111,21 @@ Deno.serve(async (req: Request) => {
 
       const { data: run } = await admin
         .from('market_runs')
-        .select('run_date, shopper_role, total_cost, status, items_snapshot')
+        .select('run_date, shopper_role, total_cost, status, items_snapshot, worker:authors!worker_id(name)')
         .eq('id', run_id)
         .maybeSingle()
       if (!run) return bad('market run not found', 404)
 
       const isTeacher = run.shopper_role === 'teacher'
       const items = Array.isArray(run.items_snapshot) ? run.items_snapshot : []
+      const w = (run as { worker?: { name: string | null } | { name: string | null }[] | null }).worker
+      const shopper = (Array.isArray(w) ? w[0]?.name : w?.name) ?? '-'   // the person (authors via worker_id)
       template = 'market_report'
       data = {
         lang, type: 'run',
         kicker: `Market Report · ${isTeacher ? 'Kitchen' : 'Logistics'}`,
         shop: isTeacher ? 'Chiang Mai Gate' : 'Muang Mai Market',
+        shopper,   // needs the market_report template on Cloud Run to render it
         run_date: fmtDate(run.run_date, lang),
         status: cap(String(run.status ?? '')),
         rows: (items as Array<{ name?: string; price?: number }>).map((it) => ({ name: it.name ?? '', price: it.price ?? 0 })),

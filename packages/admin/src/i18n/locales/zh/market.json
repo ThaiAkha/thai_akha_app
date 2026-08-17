@@ -44,7 +44,8 @@
     "status": "状态",
     "items": "商品",
     "totalCost": "总成本",
-    "reportArchives": "报告存档"
+    "reportArchives": "报告存档",
+    "shopper": "采购人"
   },
   "modal": {
     "selectDate": "选择日期"

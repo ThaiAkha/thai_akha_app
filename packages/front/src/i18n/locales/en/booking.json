@@ -45,5 +45,19 @@
   "cookPlural": "Cooks",
   "errorAvailability": "Sorry, availability changed. Only {{remaining}} seats left.",
   "errorStatus": "Sorry, this class is {{status}}.",
-  "errorBooking": "Booking Error: "
+  "errorBooking": "Booking Error: ",
+  "tooltips": {
+    "calendar": {
+      "prevMonth": "Previous Month",
+      "nextMonth": "Next Month",
+      "close": "Close Calendar",
+      "dayUnavailable": "Not available",
+      "dayLoading": "Loading...",
+      "daySoldOut": "Date not available (Sold Out)",
+      "dayBothOpen": "Morning and Evening available",
+      "dayMorningOnly": "Morning available (Evening Full)",
+      "dayEveningOnly": "Evening available (Morning Full)",
+      "daySelectable": "Select this date"
+    }
+  }
 }

@@ -16,8 +16,6 @@
     "./lib/icons": "./src/lib/icons.ts",
     "./lib/sessionUtils": "./src/lib/sessionUtils.ts",
     "./lib/dateKeyUtils": "./src/lib/dateKeyUtils.ts",
-    "./lib/ui-strings": "./src/lib/ui-strings.ts",
-    "./lib/ui-tooltips": "./src/lib/ui-tooltips.ts",
     "./lib/avatarSystem": "./src/lib/avatarSystem.ts",
     "./lib/cherry-prompts": "./src/lib/cherry-prompts.ts",
     "./lib/cherry-utils": "./src/lib/cherry-utils.ts",

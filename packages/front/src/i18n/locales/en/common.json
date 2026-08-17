@@ -48,5 +48,6 @@
     "OCT",
     "NOV",
     "DEC"
-  ]
+  ],
+  "submitRequest": "Submit Request"
 }

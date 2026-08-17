@@ -3,7 +3,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 import { Icon, Button, Tooltip, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { TOOLTIPS } from '@thaiakha/shared/lib/ui-tooltips';
+import { t } from '../../i18n';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 
 interface CalendarViewProps {
@@ -168,7 +168,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
 
         <div className="flex gap-2">
-          <Tooltip content={TOOLTIPS.BOOKING.CALENDAR.PREV_MONTH} position="bottom">
+          <Tooltip content={t('booking:tooltips.calendar.prevMonth')} position="bottom">
             <Button
               variant="mineral"
               size="md"
@@ -181,7 +181,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             />
           </Tooltip>
 
-          <Tooltip content={TOOLTIPS.BOOKING.CALENDAR.NEXT_MONTH} position="bottom">
+          <Tooltip content={t('booking:tooltips.calendar.nextMonth')} position="bottom">
             <Button
               variant="mineral"
               size="md"
@@ -193,7 +193,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             />
           </Tooltip>
 
-          <Tooltip content={TOOLTIPS.BOOKING.CALENDAR.CLOSE} position="bottom">
+          <Tooltip content={t('booking:tooltips.calendar.close')} position="bottom">
             <Button
               variant="mineral"
               size="md"
@@ -241,14 +241,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           const eOpen = data?.evening.status === 'OPEN';
 
           const getTooltipContent = () => {
-            if (isPast || !isCurrentMonth) return TOOLTIPS.BOOKING.CALENDAR.DAY_UNAVAILABLE;
-            if (loading) return TOOLTIPS.BOOKING.CALENDAR.DAY_LOADING;
-            if (isFullDay && !allowSelectionOnFullDays) return TOOLTIPS.BOOKING.CALENDAR.DAY_SOLD_OUT;
+            if (isPast || !isCurrentMonth) return t('booking:tooltips.calendar.dayUnavailable');
+            if (loading) return t('booking:tooltips.calendar.dayLoading');
+            if (isFullDay && !allowSelectionOnFullDays) return t('booking:tooltips.calendar.daySoldOut');
 
-            if (mOpen && eOpen) return TOOLTIPS.BOOKING.CALENDAR.DAY_BOTH_OPEN;
-            if (mOpen) return TOOLTIPS.BOOKING.CALENDAR.DAY_MORNING_ONLY;
-            if (eOpen) return TOOLTIPS.BOOKING.CALENDAR.DAY_EVENING_ONLY;
-            return TOOLTIPS.BOOKING.CALENDAR.DAY_SELECTABLE;
+            if (mOpen && eOpen) return t('booking:tooltips.calendar.dayBothOpen');
+            if (mOpen) return t('booking:tooltips.calendar.dayMorningOnly');
+            if (eOpen) return t('booking:tooltips.calendar.dayEveningOnly');
+            return t('booking:tooltips.calendar.daySelectable');
           };
 
           return (

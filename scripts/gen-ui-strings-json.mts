@@ -1,4 +1,8 @@
 /**
+ * ⚠️ STORICO — non gira più: la sorgente ui-strings.ts è stata ELIMINATA il
+ * 2026-08-17 dopo la migrazione (git: 05bfda9^). I JSON in locales/en/ sono
+ * ORA la sorgente e si editano a mano. Resta come documentazione del come.
+ *
  * gen-ui-strings-json — passo 1 della migrazione ui-strings → i18next.
  *
  * Legge l'oggetto `t` da packages/shared/src/lib/ui-strings.ts (eseguendolo)

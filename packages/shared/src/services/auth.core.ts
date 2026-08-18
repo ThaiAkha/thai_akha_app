@@ -1,6 +1,12 @@
 import { supabase } from '../lib/supabase';
-import { UserProfile } from '../types/auth.types';
-import type { TablesUpdate } from '../types';
+import { UserProfile, UserRole } from '../types/auth.types';
+import type { TablesInsert, TablesUpdate } from '../types';
+
+/** Campi profilo che il chiamante puo' aggiungere all'upsert di sicurezza del signup. */
+export type SignUpProfileFields = Omit<
+    TablesInsert<'profiles'>,
+    'id' | 'email' | 'full_name' | 'updated_at'
+>;
 
 export const authCoreService = {
     /** 🔑 LOGIN (Comune per tutti) */
@@ -11,6 +17,47 @@ export const authCoreService = {
         });
         if (error) throw error;
         return data;
+    },
+
+    /**
+     * 📝 SIGN UP + SAFETY UPSERT (Comune)
+     * Crea l'utente Auth (metadata `full_name`) e garantisce il profilo anche se il
+     * trigger SQL fallisce. Ruolo e campi extra arrivano dal chiamante: e' l'unico
+     * punto in cui front e admin divergono davvero (guest vs agency).
+     * `warnLabel` tiene invariato il messaggio di console.warn di ciascuna app.
+     */
+    async signUpWithProfile(
+        email: string,
+        password: string,
+        fullName: string,
+        profileFields: SignUpProfileFields,
+        warnLabel: string
+    ) {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: { full_name: fullName }
+            }
+        });
+
+        if (authError) throw authError;
+
+        if (authData.user) {
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: authData.user.id,
+                    email,
+                    full_name: fullName,
+                    ...profileFields,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+            if (profileError) console.warn(`${warnLabel} warning:`, profileError.message);
+        }
+
+        return authData;
     },
 
     /**
@@ -62,7 +109,7 @@ export const authCoreService = {
                 id: data.id,
                 full_name: data.full_name,
                 email: data.email,
-                role: (data.role as any) || defaultRole,
+                role: (data.role as UserRole | null) || defaultRole,
                 avatar_url: data.avatar_url,
                 whatsapp: data.whatsapp,
                 dietary_profile: data.dietary_profile || 'diet_regular',

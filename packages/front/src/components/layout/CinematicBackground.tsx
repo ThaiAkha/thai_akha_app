@@ -10,7 +10,6 @@ interface CinematicBackgroundProps {
 const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
   isLoaded,
   imageUrl,
-  showPatterns = false
 }) => {
   const [imgReady, setImgReady] = useState(false);
 

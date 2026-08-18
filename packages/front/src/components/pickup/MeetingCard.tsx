@@ -77,7 +77,7 @@ interface MeetingCardProps {
   /** Show "Nearest" badge */
   isNearest?: boolean;
   /** Override the body description (e.g. dynamic walk-in text) */
-  descriptionOverride?: string;
+  descriptionOverride?: string | null;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

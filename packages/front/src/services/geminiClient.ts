@@ -7,7 +7,6 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 // This prevents the master API key from being exposed in the browser bundle
 // during long-lived, expensive voice sessions.
 let liveClient: GoogleGenAI | null = null;
-let liveTokenExpiresAt = 0;
 
 export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
   // ⚠️ Il token effimero è SINGLE-USE (uses:1 nell'edge gemini-token). NON riutilizzare
@@ -30,7 +29,6 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
       apiKey: data.ephemeralToken,
       httpOptions: { apiVersion: 'v1alpha' },
     });
-    liveTokenExpiresAt = 0; // niente cache: token single-use
 
     return liveClient;
   } catch (err) {
@@ -45,5 +43,4 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
  */
 export function invalidateGeminiClients(): void {
   liveClient = null;
-  liveTokenExpiresAt = 0;
 }

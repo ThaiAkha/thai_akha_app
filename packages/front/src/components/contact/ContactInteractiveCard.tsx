@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Typography, Icon, Badge } from '../ui';
 import { HeaderSection } from '../layout';
 

@@ -229,9 +229,12 @@ const UserPage: React.FC<UserPageProps> = ({
       .map(d => ({
         name: d.name || 'Signature Dish',
         image: d.image || '',
-        variantLabel: userProfile?.dietary_profile !== 'diet_regular'
-          ? userProfile?.dietary_profile?.replace('diet_', '').charAt(0).toUpperCase() + userProfile?.dietary_profile?.slice(6) + ' Version'
-          : undefined,
+        variantLabel: (() => {
+          const diet = userProfile?.dietary_profile;
+          if (!diet || diet === 'diet_regular') return undefined;
+          const label = diet.replace('diet_', '');
+          return label.charAt(0).toUpperCase() + label.slice(1) + ' Version';
+        })(),
       }));
   };
 

@@ -122,7 +122,7 @@ export default i18n;
  * primo `initI18n` risponde con la chiave stessa — mai un crash a import-time.
  */
 export const t: typeof i18n.t = ((...args: Parameters<typeof i18n.t>) =>
-  (i18n.t as (...a: unknown[]) => string)(...args)) as typeof i18n.t;
+  (i18n.t as unknown as (...a: unknown[]) => string)(...args)) as typeof i18n.t;
 
 /**
  * `tObj('common:monthsShort')` → l'ARRAY/OGGETTO tipizzato dal JSON EN.

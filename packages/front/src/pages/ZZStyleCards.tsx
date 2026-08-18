@@ -38,7 +38,7 @@ import FaqBottomPage from '../components/faq/FaqBottomPage';
 import StyleColorsTab from './style-cards/StyleColorsTab';
 
 // Card components
-import Card, { CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card/Card';
+import Card, { CardHeader, CardTitle, CardContent } from '../components/ui/card/Card';
 import InfoCard from '../components/ui/card/InfoCard';
 import StatCard from '../components/ui/card/StatCard';
 import Alert from '../components/ui/card/Alert';

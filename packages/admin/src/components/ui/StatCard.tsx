@@ -1,8 +1,20 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import * as LucideIcons from 'lucide-react';
+import {
+    Activity, User, Users, Hotel, Calendar, DollarSign, TrendingUp, TrendingDown,
+    ShoppingCart, Truck, ChefHat, Package, Star, Clock, type LucideIcon,
+} from 'lucide-react';
 import Card from './Card';
 import { Numeric } from '../typography';
+
+// Mappa STATICA nome → icona (audit 2026-08, P7). Prima c'era `import * as LucideIcons`
+// + accesso dinamico: annullava il tree-shaking e portava TUTTO lucide-react (~775 KB)
+// nel chunk vendor-icons dell'admin. Le icone della StatCard sono un set piccolo:
+// aggiungerne una qui costa una riga, non 750 KB.
+const STAT_ICONS: Record<string, LucideIcon> = {
+    Activity, User, Users, Hotel, Calendar, DollarSign, TrendingUp, TrendingDown,
+    ShoppingCart, Truck, ChefHat, Package, Star, Clock,
+};
 
 interface StatCardProps {
     title: string;
@@ -20,9 +32,9 @@ const StatCard: React.FC<StatCardProps> = ({
     color = 'primary',
     className
 }) => {
-    // Map string icon name to Lucide component
+    // Nome icona → componente (PascalCase tollerante: "user" → "User"); sconosciuta → Activity
     const safeIcon = (typeof icon === 'string' && icon.length > 0) ? (icon.charAt(0).toUpperCase() + icon.slice(1)) : 'Activity';
-    const IconComponent = (LucideIcons as any)[safeIcon] || LucideIcons.Activity;
+    const IconComponent: LucideIcon = STAT_ICONS[safeIcon] ?? Activity;
 
     const colorStyles = {
         primary: {

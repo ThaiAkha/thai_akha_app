@@ -50,7 +50,7 @@ export function useBookingLoader({
           state.setTransportMode('self');
           state.setPickupLoc({
             type: 'meeting_point',
-            name: booking.hotel_name,
+            name: booking.hotel_name ?? '',
             lat: 0,
             lng: 0,
             zoneId: 'meeting_point',
@@ -61,9 +61,9 @@ export function useBookingLoader({
             state.setPickupLoc({
               type: 'db_hotel',
               name: booking.hotel_name,
-              lat: booking.pickup_lat,
-              lng: booking.pickup_lng,
-              zoneId: booking.pickup_zone,
+              lat: booking.pickup_lat ?? 0,
+              lng: booking.pickup_lng ?? 0,
+              zoneId: booking.pickup_zone ?? undefined,
             });
             setPickupSearchQuery(booking.hotel_name);
           }
@@ -76,9 +76,9 @@ export function useBookingLoader({
             state.setDropoffLoc({
               type: 'db_hotel',
               name: booking.dropoff_hotel,
-              lat: booking.dropoff_lat,
-              lng: booking.dropoff_lng,
-              zoneId: booking.dropoff_zone,
+              lat: booking.dropoff_lat ?? 0,
+              lng: booking.dropoff_lng ?? 0,
+              zoneId: booking.dropoff_zone ?? undefined,
             });
           }
         }

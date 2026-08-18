@@ -42,7 +42,6 @@ const InfoCard: React.FC<InfoCardProps> = ({
   card,
   onNavigate,
   layout = 'vertical',
-  aspectRatio = 'video',
   showDivider = false,
   titleVariant,
   linkLabel,

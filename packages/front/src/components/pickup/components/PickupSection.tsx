@@ -38,7 +38,7 @@ interface PickupSectionProps {
   onPickupLocChange: (loc: LocationState | null) => void;
 
   // zone data
-  selectedZoneData: (PickupZone & { color_code?: string; morning_pickup_end?: string | null; evening_pickup_end?: string | null }) | null;
+  selectedZoneData: (PickupZone & { color_code?: string | null; morning_pickup_end?: string | null; evening_pickup_end?: string | null }) | null;
   isOutsideZone: boolean;
   outsideHotelCoords: { lat: number; lng: number } | null;
 }

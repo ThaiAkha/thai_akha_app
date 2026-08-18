@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { FaqCategoryUI } from '@thaiakha/shared';
 import { getFaqData, getInfoPageMeta } from '../services/infoPages.service';
 import { PageLayout, PageEssentials, InfoPageHero, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
-import { Typography, Icon, FaqBottomPage, AkhaPixelLine, AkhaPixelPattern, FAQRichAnswer, GlassCard, MediaImage, FaqSearch } from '../components/ui';
+import { Typography, Icon, FaqBottomPage, AkhaPixelLine, FAQRichAnswer, GlassCard, MediaImage, FaqSearch } from '../components/ui';
 import { CherryInlineChat, CherryIntroCard } from '../components/chat';
 import { InfoPageSidebar } from '../components/layout/sidebar-info';
 import LegalMetaBanner from '../components/legal/LegalMetaBanner';
@@ -10,9 +10,7 @@ import LegalFooterCard from '../components/legal/LegalFooterCard';
 import { GalleryModal } from '../components/modal';
 import type { GalleryItem } from '../components/modal';
 import { InfoContentSkeleton } from '../components/skeleton';
-import { SkeletonBase } from '../components/skeleton/atoms';
 import { usePageSection } from '../hooks/usePageSection';
-import type { PageSectionData } from '../hooks/useHomePageSections';
 import { t } from '../i18n';
 
 // Header categoria: page_sections.section_id da faq_categories.section_id (DB-driven,

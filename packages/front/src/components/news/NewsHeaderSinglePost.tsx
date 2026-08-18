@@ -29,7 +29,6 @@ export const NewsHeaderSinglePost: React.FC<NewsHeaderSinglePostProps> = ({
   categoryName,
   audioAssetId,
   hasAudio,
-  quote,
   onShare,
   isCopied,
   theme,

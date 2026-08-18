@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Icon, Badge, Typography } from '../ui';
+import { Button, Icon, Badge, Typography } from '../ui';
 import { UserProfile } from '../../services/auth.service';
 import { useActiveProfile } from '../../context/ActiveProfileContext';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -18,7 +18,6 @@ interface DashboardTabProps {
 }
 
 const DashboardTab: React.FC<DashboardTabProps> = ({
-  userProfile,
   bookings,
   activeId,
   routeStops,
@@ -26,7 +25,6 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   menuStatus,
   onNavigate,
   onChangeTab,
-  onOpenSettings,
   onShowCertificate,
 }) => {
   const { isActiveVisitor } = useActiveProfile();

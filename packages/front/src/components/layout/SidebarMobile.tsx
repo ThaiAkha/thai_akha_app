@@ -124,13 +124,14 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
         // Keep a good menu and retry on empty (transient session/RLS race at mount)
         // so the mobile menu fills in without needing a manual refresh.
         if (items && items.length > 0) {
-          setMenuItems(items as MenuItem[]);
+          // vedi nota in Sidebar.tsx: service non tipizzato -> cast via unknown
+          setMenuItems(items as unknown as MenuItem[]);
         } else if (attempts < MAX_ATTEMPTS) {
           attempts += 1;
           setTimeout(loadMenu, 400 * attempts);
           return;
         }
-        if (footer && footer.length > 0) setFooterItems(footer as MenuItem[]);
+        if (footer && footer.length > 0) setFooterItems(footer as unknown as MenuItem[]);
       } catch (err) {
         console.error('Mobile Menu Error:', err);
         if (!cancelled && attempts < MAX_ATTEMPTS) {

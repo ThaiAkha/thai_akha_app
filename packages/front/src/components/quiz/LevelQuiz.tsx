@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuizLevel, QuizModule } from '@thaiakha/shared';
+import { QuizLevel } from '@thaiakha/shared';
 import ButtonQuiz from './ButtonQuiz';
 import QuizBackButton from './QuizBackButton';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -27,7 +27,6 @@ interface LevelQuizProps {
 
 const LevelQuiz: React.FC<LevelQuizProps> = ({
   level,
-  levelNumber,
   completedModules,
   perfectModules,
   bestScores,

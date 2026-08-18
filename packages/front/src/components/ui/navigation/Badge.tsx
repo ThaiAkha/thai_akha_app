@@ -45,7 +45,6 @@ const Badge: React.FC<BadgeProps> = ({
   className,
   icon,
   pulse = false,
-  active = false,
   style,
 }) => {
   // Dimensioni fluid — token clamp da tokens.css :root (NO text-* Tailwind)

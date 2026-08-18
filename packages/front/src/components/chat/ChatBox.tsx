@@ -7,7 +7,6 @@ import { UserProfile } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 import { Typography } from '../ui/Typography';
-import { VoiceWaveform } from './VoiceWaveform';
 import { CherryFormatter } from './CherryFormatter';
 import { CherryRichBlocks } from './CherryRichBlocks';
 import type { ChatOption, ChatNodeId } from '@thaiakha/shared/data/chatFlowData';
@@ -36,7 +35,7 @@ interface ChatBoxProps {
   userProfile?: UserProfile | null;
 }
 
-export const ChatBox: React.FC<ChatBoxProps> = ({ isDarkMode, onNavigate, userProfile }) => {
+export const ChatBox: React.FC<ChatBoxProps> = ({ onNavigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isScrolledUp, setIsScrolledUp] = useState(false);

@@ -11,7 +11,7 @@ interface PageLayoutProps {
   slug: string;
   children: React.ReactNode;
   loading?: boolean;
-  customMetadata?: HeaderMetadata & { imageUrl: string };
+  customMetadata?: HeaderMetadata & { imageUrl?: string };
   customHeader?: React.ReactNode;
   hideDefaultHeader?: boolean;
   isFullScreen?: boolean;
@@ -43,7 +43,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   patternTheme,
   instantContent = false
 }) => {
-  const [metadata, setMetadata] = useState<HeaderMetadata & { imageUrl: string } | null>(customMetadata || null);
+  const [metadata, setMetadata] = useState<HeaderMetadata & { imageUrl?: string } | null>(customMetadata || null);
   // instantContent: parent owns loading → no internal blocking state, no self-fetch.
   const [isInternalLoading, setIsInternalLoading] = useState(instantContent ? false : !customMetadata);
 
@@ -102,7 +102,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       <div className="fixed inset-0 z-0">
         <CinematicBackground 
           isLoaded={!isLoading} 
-          imageUrl={safeMetadata.imageUrl}
+          imageUrl={safeMetadata.imageUrl ?? ""}
           showPatterns={showPatterns}
         />
       </div>

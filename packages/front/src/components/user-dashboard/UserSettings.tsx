@@ -35,8 +35,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   userProfile,
   spicinessLevels,
   onUpdate,
-  isStaff,
-  onShowCertificate,
 }) => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);

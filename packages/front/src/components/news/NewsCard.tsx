@@ -1,5 +1,5 @@
 import React from 'react';
-import { GlassCard, Button, Badge, Icon } from '../ui';
+import { GlassCard, Button, Badge } from '../ui';
 import { RippleLink } from '../ui/RippleLink';
 import Typography from '../ui/Typography';
 import { AkhaPixelPattern } from '../divider';

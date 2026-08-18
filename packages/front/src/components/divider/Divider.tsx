@@ -45,12 +45,6 @@ const Divider: React.FC<DividerProps> = ({
   };
 
   // Stili specifici per il gradiente (override se necessario)
-  const gradientOverrides = {
-    brand: 'from-transparent via-primary/50 to-transparent',
-    action: 'from-transparent via-action/50 to-transparent',
-    mineral: 'from-transparent via-white/20 to-transparent',
-    default: 'from-transparent via-border to-transparent',
-  };
 
   // 2. LOGICA LABEL (Tipografia Accent)
   const labelStyles = "font-accent [font-size:var(--text-fluid-caption)] font-black uppercase tracking-[0.2em] text-muted whitespace-nowrap [padding-inline:var(--space-fluid-m)]";

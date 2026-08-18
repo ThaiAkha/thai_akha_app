@@ -20,7 +20,6 @@ const Card: React.FC<CardProps> = ({
   padding = 'md',
   rounded = '4xl', // Default più moderno e curvo
   onClick,
-  hoverable,
   shadow,
 }) => {
   const paddingStyles = {

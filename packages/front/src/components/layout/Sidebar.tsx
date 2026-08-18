@@ -448,14 +448,16 @@ const Sidebar: React.FC<SidebarProps> = ({
         // session is restored → RLS yields 0 rows). Keep prior items and retry
         // with backoff so the menu fills in WITHOUT needing a manual refresh.
         if (items && items.length > 0) {
-          setMenuItems(items as MenuItem[]);
+          // contentService ritorna righe non tipizzate (Record<string, unknown>): il doppio
+          // passaggio via unknown e' l'unico cast lecito finche' il service non e' tipizzato (P6 audit 2026-08).
+          setMenuItems(items as unknown as MenuItem[]);
           setIsLoaded(true);
         } else if (attempts < MAX_ATTEMPTS) {
           attempts += 1;
           setTimeout(loadMenu, 400 * attempts);
           return;
         }
-        if (footer && footer.length > 0) setFooterItems(footer as MenuItem[]);
+        if (footer && footer.length > 0) setFooterItems(footer as unknown as MenuItem[]);
       } catch (error) {
         console.error("Menu error", error);
         if (!cancelled && attempts < MAX_ATTEMPTS) {

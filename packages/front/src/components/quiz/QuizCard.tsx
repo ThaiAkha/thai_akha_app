@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Icon, Card, Badge } from '../ui/index';
+import { Typography, Icon, Card } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 import QuizModalRewards from './QuizModalRewards';
@@ -51,7 +51,6 @@ const QuizCard: React.FC<QuizCardProps> = ({
   const lastUnlocked = [...sortedRewards].reverse().find(r => currentScore >= r.required_points);
   const nextReward = sortedRewards.find(r => currentScore < r.required_points);
 
-  const basePoints = lastUnlocked?.required_points ?? 0;
   const targetPoints = nextReward?.required_points ?? (lastUnlocked ? lastUnlocked.required_points + 100 : 100);
   
   // Calcola la percentuale di avanzamento DIRETTA verso l'obiettivo

@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { Typography, Icon, Badge } from '../ui/index';
+import { Typography } from '../ui/index';
 import { ContentCategoryDB } from '@thaiakha/shared/types';
 import { t } from '../../i18n';
 import { useMediaAsset } from '../../hooks/useMediaAsset';

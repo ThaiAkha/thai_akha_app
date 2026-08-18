@@ -28,8 +28,9 @@ export interface ChatMessageListProps {
   onOptionClick: (opt: ChatOption) => void;
   /** Segna un link/gallery come visitato (memoria ragnatela). Opzionale. */
   onBlockVisit?: (id: string, meta?: Record<string, unknown>) => void;
-  scrollContainerRef: React.RefObject<HTMLDivElement>;
-  messagesEndRef: React.RefObject<HTMLDivElement>;
+  // React 19: useRef<T>(null) tipizza RefObject<T | null>, non RefObject<T>.
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
   isScrolledUp: boolean;
   scrollToBottom: () => void;
   // Voice (opzionale — l'inline text-only non li passa)

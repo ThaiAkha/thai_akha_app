@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Crown, Truck, ChefHat, BookOpen, Shield, GraduationCap, Flame, AlertCircle } from 'lucide-react';
+import { User, Crown, Truck, ChefHat, BookOpen, Shield, GraduationCap } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { GlassCard, Typography, Icon, Badge } from '../ui';
 import type { UserProfile, SpicinessLevel } from '@thaiakha/shared/types';

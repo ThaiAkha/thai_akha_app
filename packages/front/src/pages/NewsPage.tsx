@@ -10,7 +10,6 @@ import { useNewsFeed } from '../hooks/useNewsFeed';
 import { NewsGrid } from '../components/news';
 import NewsPageSingle from './NewsPageSingle';
 import PageEssentials from '../components/layout/PageEssentials';
-import { AkhaThemedLine } from '../components/blog';
 
 interface NewsPageProps {
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
@@ -30,8 +29,6 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
     sortBy,
     setSortBy,
     currentPage,
-    setCurrentPage,
-    totalPages,
     loading
   } = useNewsFeed(targetSection);
 

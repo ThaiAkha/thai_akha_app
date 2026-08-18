@@ -9,6 +9,8 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AkhaPixelPattern from "./components/ui/AkhaPixelPattern";
 import { ConfirmProvider } from "./components/ui/confirm/ConfirmProvider";
+import { AppErrorBoundary } from "@thaiakha/shared/components/AppErrorBoundary";
+import PageErrorFallback from "./components/common/PageErrorFallback";
 
 // Lazy-loaded pages — loaded only when navigated to
 const DriverRoute = lazy(() => import("./pages/driver/DriverRoute"));
@@ -66,6 +68,8 @@ function App() {
       <Router>
         <ScrollToTop />
         <ConfirmProvider>
+        {/* Boundary radice: copre le route pubbliche fuori da AppLayout (signin, signup, reset). */}
+        <AppErrorBoundary renderFallback={(p) => <PageErrorFallback {...p} />}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route element={<AppLayout />}>
@@ -138,6 +142,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes >
         </Suspense>
+        </AppErrorBoundary>
         </ConfirmProvider>
       </Router >
     </>

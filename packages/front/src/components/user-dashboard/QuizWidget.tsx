@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button, Icon, Badge, Card } from '../ui';
-import { cn } from '@thaiakha/shared/lib/utils';
 // Assicurati che l'import includa sia la costante che il TIPO
 import { contentService } from '@thaiakha/shared/services';
 import { UserProfile } from '../../services/auth.service';
@@ -16,25 +14,19 @@ interface QuizWidgetProps {
 }
 
 // Mock Data per la Leaderboard
-const LEADERBOARD = [
-  { rank: 1, name: "HillWarrior", xp: 14200, avatar: "🔥" },
-  { rank: 2, name: "BambooSpirit", xp: 13850, avatar: "🎋" },
-  { rank: 3, name: "TeaLeaf_99", xp: 12400, avatar: "🍵" },
-];
 
 const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
   const [xp, setXp] = useState(0);
-  const [level, setLevel] = useState(1);
+  const [, setLevel] = useState(1);
   const [rewards, setRewards] = useState<any[]>([]);
   const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [nextReward, setNextReward] = useState<any | null>(null);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [accuracy, setAccuracy] = useState(0);
+  const [, setNextReward] = useState<any | null>(null);
+  const [, setCompletedCount] = useState(0);
+  const [, setAccuracy] = useState(0);
   
   const { getCategoryProgress } = useQuizProgress();
   const { managedProfiles, activeProfileId, isActingAsManaged } = useActiveProfile();
   const activeManaged = managedProfiles.find(p => p.id === activeProfileId) ?? null;
-  const [selectedRewardId, setSelectedRewardId] = useState<string | null>(null);
   
   // ✅ FIX STATO: Manteniamo anche questo fix precedente
   const [awardedBonuses, setAwardedBonuses] = useState<number[]>([]);
@@ -83,15 +75,6 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
     };
     init();
   }, [userProfile?.quiz_points, activeProfileId, activeManaged?.quiz_points, isActingAsManaged]);
-
-  // Calcolo Percentuale per il prossimo livello (visivo)
-  const progressPercent = Math.min(100, (xp % 100)); 
-  const rankTitle = level < 2 ? "Novice Visitor" : level < 4 ? "Village Explorer" : "Akha Guardian";
-  
-  // Parametri Cerchio SVG
-  const radius = 18;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   // Derived walletRewards
   const walletRewards = rewards.map(r => ({

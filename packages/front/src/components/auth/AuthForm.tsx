@@ -29,7 +29,6 @@ const LOGO_SRC = '/avatarCherry/00 - Logo 2026.png';
 const AuthForm: React.FC<AuthFormProps> = ({
   onSuccess,
   onNavigate,
-  onOpenPrivacy,
   panel: controlledPanel,
   isForgotPassword = false,
 }) => {

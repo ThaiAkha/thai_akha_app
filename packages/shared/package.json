@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./lib": "./src/lib/index.ts",
+    "./components/AppErrorBoundary": "./src/components/AppErrorBoundary.tsx",
     "./lib/supabase": "./src/lib/supabase.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/geoUtils": "./src/lib/geoUtils.ts",

@@ -1,8 +1,6 @@
 import React from 'react';
 import {
     Typography,
-    Button,
-    MediaImage,
     AudioPlayer,
     AkhaQuote,
     Badge,
@@ -10,7 +8,6 @@ import {
 } from '../ui/index';
 import AkhaThemedLine from '../divider/AkhaThemedLine';
 import AkhaPixelLine from '../divider/AkhaPixelLine';
-import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 
 interface HeaderSinglePostProps {

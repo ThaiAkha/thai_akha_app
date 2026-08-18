@@ -38,7 +38,6 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
   // ── Derived data ─────────────────────────────────────────────────────────────
   const nextReward = rewards.find(r => r.required_points > score) ?? null;
   const nextRewardId = nextReward?.id ?? null;
-  const xpMax = nextReward?.required_points ?? 100;
 
   // Heritage Wallet: mappa i reward al formato richiesto da QuizCard
   const walletRewards = rewards.map(r => ({

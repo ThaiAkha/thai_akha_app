@@ -57,16 +57,22 @@ const SmartHomeCard: React.FC<SmartHomeCardProps> = ({
     link: cardData.target_path.startsWith('/') ? cardData.target_path.substring(1) : cardData.target_path,
     image: (Array.isArray(cardData.cover_data) ? cardData.cover_data[0]?.image_url : cardData.cover_data?.image_url) || '',
     stats: [
-      cardData.extra_1 && {
-        label: cardData.suffix_extra_1 || undefined,
-        value: cardData.extra_1,
-        color: 'action' as const
-      },
-      cardData.extra_2 && {
-        label: cardData.suffix_extra_2 || undefined,
-        value: cardData.extra_2,
-        color: 'gray' as const
-      }
+      // Ternario, non `&&`: con extra_1 = "" il corto-circuito restituirebbe la
+      // stringa vuota (non null) e passerebbe il filtro NonNullable qui sotto.
+      cardData.extra_1
+        ? {
+            label: cardData.suffix_extra_1 || undefined,
+            value: cardData.extra_1,
+            color: 'action' as const,
+          }
+        : null,
+      cardData.extra_2
+        ? {
+            label: cardData.suffix_extra_2 || undefined,
+            value: cardData.extra_2,
+            color: 'gray' as const,
+          }
+        : null
     ].filter((s): s is NonNullable<typeof s> => !!s)
   };
 

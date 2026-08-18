@@ -36,7 +36,6 @@ export function useNewsFeed(targetCategory: string | null = null) {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'by-id'>('by-id');
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 9;
 
     // Reset to page 1 when filters change
     useEffect(() => {
@@ -143,7 +142,6 @@ export function useNewsFeed(targetCategory: string | null = null) {
     });
 
     // 4. Pagination (Disabled - returning all articles)
-    const totalArticles = filteredArticles.length;
     const totalPages = 1; 
     const paginatedArticles = filteredArticles;
 

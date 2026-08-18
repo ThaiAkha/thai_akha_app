@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMediaAsset } from '../../hooks/useMediaAsset';
 import { ContentCategoryDB } from '@thaiakha/shared';
-import { Typography, AudioPlayer, Button, AkhaPixelLine, AkhaThemedLine, AkhaQuote, MediaImage } from '../ui/index';
+import { Typography, AudioPlayer, Button, AkhaPixelLine, AkhaQuote, MediaImage } from '../ui/index';
 import { Photo, GalleryModal } from '../modal/index';
 import type { GalleryItem } from '../modal/index';
 import PhotoModal from '../modal/PhotoModal';

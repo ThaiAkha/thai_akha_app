@@ -3,7 +3,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Typography, Button, Icon, Badge } from '../components/ui/index';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
-import { MenuCard, RecipeView, RecipeData } from '../components/menu/index';
+import { MenuCard } from '../components/menu/index';
 import { authService, UserProfile } from '../services/auth.service';
 import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
 import { useDietaryKnowledge } from '../hooks/useDietaryKnowledge';
@@ -37,7 +37,7 @@ const MenuPage: React.FC<{
 
   // Dati
   const [recipes, setRecipes] = useState<any[]>([]);
-  const [spicinessLevels, setSpicinessLevels] = useState<any[]>([]);
+  const [, setSpicinessLevels] = useState<any[]>([]);
 
   // Preferenze
   const [diet, setDiet] = useState<string>('regular');
@@ -47,7 +47,6 @@ const MenuPage: React.FC<{
   // Selezioni
   const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
   const [selections, setSelections] = useState<Record<string, any>>({});
-  const [viewingRecipe, setViewingRecipe] = useState<RecipeData | null>(null);
 
   // Dietary Knowledge
   const { profiles, getDietProfiles, getAllergyProfiles } = useDietaryKnowledge();
@@ -177,37 +176,7 @@ const MenuPage: React.FC<{
     } catch (err: any) { alert(t('user:saveFailed')); } finally { setSaving(false); }
   };
 
-  const handleSelectFromPreview = (dish: RecipeData) => {
-      const cat = normalizeCat(dish.category);
-      setSelections(prev => ({ ...prev, [cat]: dish }));
-      setViewingRecipe(null);
-  };
 
-  const mapToRecipeView = (dbRecipe: any): RecipeData => ({
-    id: dbRecipe.id,
-    name: dbRecipe.name,
-    thai_name: dbRecipe.thai_name,
-    description: dbRecipe.description,
-    category: dbRecipe.category,
-    image: dbRecipe.cover?.image_url || '',
-    hasPeanuts: dbRecipe.has_peanuts,
-    hasGluten: dbRecipe.has_gluten,
-    hasShellfish: dbRecipe.has_shellfish || false,
-    hasSoy: dbRecipe.has_soy || false,
-    hasEggs: dbRecipe.has_eggs || false,
-    hasFish: dbRecipe.has_fish || false,
-    hasFishSauce: dbRecipe.has_fish_sauce || false,
-    hasSeafood: dbRecipe.has_seafood || false,
-    hasSesame: dbRecipe.has_sesame || false,
-    hasSoySauce: dbRecipe.has_soy_sauce || false,
-    hasTreeNuts: dbRecipe.has_tree_nuts || false,
-    isSignature: dbRecipe.is_signature || false,
-    isFixedDish: dbRecipe.is_fixed_dish || false,
-    healthBenefits: dbRecipe.health_benefits,
-    keyIngredients: dbRecipe.keyIngredients || [],
-    galleryImages: [],
-    dietary_variants: dbRecipe.dietary_variants || {}
-  });
 
   // Match by the exact category SLUG of the active tab (not the normalized key),
   // so e.g. the inactive 'curry-paste-recipes' category doesn't leak into 'curry'.

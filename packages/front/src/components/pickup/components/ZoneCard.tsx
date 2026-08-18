@@ -10,7 +10,7 @@ import { fmtTime } from '../utils/locationHelpers';
 import type { PickupZone } from '@thaiakha/shared/types';
 
 interface ZoneCardProps {
-  zone: PickupZone & { color_code?: string };
+  zone: PickupZone & { color_code?: string | null };
   selectedClass: 'morning' | 'evening';
 }
 

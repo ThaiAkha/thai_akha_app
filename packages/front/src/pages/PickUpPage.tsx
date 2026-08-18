@@ -186,7 +186,7 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
       let pickupTime = '08:50:00';
       if (loc.transportMode === 'pickup' && loc.pickupLoc.zoneId && zones[loc.pickupLoc.zoneId]) {
         const z = zones[loc.pickupLoc.zoneId];
-        pickupTime = loc.selectedClass === 'morning' ? z.morning_pickup_time : (z.evening_pickup_time ?? '16:50:00');
+        pickupTime = loc.selectedClass === 'morning' ? (z.morning_pickup_time ?? '08:50:00') : (z.evening_pickup_time ?? '16:50:00');
       } else if (loc.transportMode === 'self') {
         const mp = meetingData.meetingPoints.find(m => m.id === loc.pickupLoc!.zoneId || m.name === loc.pickupLoc!.name);
         if (mp) {

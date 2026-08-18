@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Badge, Icon, MediaImage } from '../ui/index';
+import { Typography, Badge, MediaImage } from '../ui/index';
 import { RecipeData } from '../menu/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 

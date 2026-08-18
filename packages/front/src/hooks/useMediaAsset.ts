@@ -29,13 +29,14 @@ export function useMediaAsset({ assetId }: UseMediaAssetOptions): UseMediaAssetR
     }
 
     let cancelled = false;
+    const id = assetId; // il narrowing di assetId non sopravvive alla closure async
 
     async function fetch() {
       setLoading(true);
       setError(null);
 
       try {
-        const result = await mediaService.getMediaAsset(assetId);
+        const result = await mediaService.getMediaAsset(id);
         if (!cancelled) setAsset(result);
       } catch (err) {
         if (!cancelled) setError((err as Error).message ?? 'Unknown error');

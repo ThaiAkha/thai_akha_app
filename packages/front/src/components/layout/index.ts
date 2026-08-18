@@ -1,7 +1,6 @@
 export { default as PageLayout } from './PageLayout';
 export { default as InfoPageHero } from './InfoPageHero';
 export { default as CinematicBackground } from './CinematicBackground';
-export { default as PickupMapBackground } from './PickupMapBackground';
 export { default as PageEssentials } from './PageEssentials';
 export { default as PageMeta } from './PageMeta';
 

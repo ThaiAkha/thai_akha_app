@@ -44,8 +44,8 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
 
   useEffect(() => {
     let cancelled = false;
-    contentService.getFooterItems(lang).then((items: any[]) => {
-      if (!cancelled && items?.length) setFooter(items as FooterItem[]);
+    contentService.getFooterItems(lang).then((items) => {
+      if (!cancelled && items?.length) setFooter(items as unknown as FooterItem[]);
     });
     return () => { cancelled = true; };
   }, [lang]);

@@ -25,7 +25,6 @@ const InfoPageHero: React.FC<InfoPageHeroProps> = ({
   slug,
   fallbackTitle = '',
   fallbackHighlight = '',
-  accentColor = 'primary',
   dividerTheme = 'akha',
   gradientFrom,
   gradientTo,

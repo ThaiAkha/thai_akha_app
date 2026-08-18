@@ -20,7 +20,7 @@ export const ArticleDetailSkeleton: React.FC = () => {
 
       {/* Content Blocks Skeleton */}
       <div className="max-w-3xl mx-auto space-y-8 pt-4">
-        {[800, 600, 700].map((h, i) => (
+        {[800, 600, 700].map((_h, i) => (
           <div key={i} className="space-y-4">
             <SkeletonBase className="h-6 w-3/4 rounded-full" />
             <SkeletonBase className="h-4 w-full rounded-full" />

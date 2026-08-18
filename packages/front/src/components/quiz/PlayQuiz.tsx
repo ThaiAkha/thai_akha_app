@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { QuizLevel, QuizModule, QuizQuestion } from '@thaiakha/shared';
-import QuizBackButton from './QuizBackButton';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Typography, Button, AkhaPixelPattern } from '../ui';
 import Toggle from '../ui/navigation/Toggle';
@@ -35,7 +34,6 @@ interface PlayQuizProps {
 }
 
 const PlayQuiz: React.FC<PlayQuizProps> = ({
-  level,
   module,
   currentQuestionIndex,
   totalQuestions,
@@ -55,7 +53,6 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
 }) => {
 
   const currentQuestion = module.questions[currentQuestionIndex];
-  const progress = Math.round((currentQuestionIndex / totalQuestions) * 100);
   const canAffordHint = score >= 50;
   // T8 — retry costa il doppio dell'hint (gate XP, niente deduzione, come l'hint).
   const canAffordRetry = score >= 100;

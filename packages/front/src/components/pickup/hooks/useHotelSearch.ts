@@ -45,7 +45,13 @@ export function useHotelSearch(enabled: boolean = true): UseHotelSearchResult {
           .eq('is_active', true)
           .order('name')
           .limit(8);
-        setResults(data ?? []);
+        // Un hotel senza coordinate non e' piazzabile sulla mappa ne' assegnabile
+        // a una zona: si scarta qui invece di propagare null nello stato.
+        setResults(
+          (data ?? []).filter(
+            (h): h is HotelResult => h.latitude !== null && h.longitude !== null,
+          ),
+        );
       } finally {
         setLoading(false);
       }

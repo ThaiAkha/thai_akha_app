@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { SmartHomeCard, InfoCard, StatCard, MediaImage, AkhaThemedLine, GlassCardFull, FaqBottomPage, ButtonVariant } from '../components/ui/index';
+import { SmartHomeCard, StatCard, MediaImage, AkhaThemedLine, GlassCardFull, FaqBottomPage, ButtonVariant } from '../components/ui/index';
 import { SiblingInfoSection } from '../components/layout';
 import { SmartHeaderSection, ScrollEntrance } from '../components/layout/index';
 import PageEssentials from '../components/layout/PageEssentials';
@@ -136,6 +136,8 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-6 [gap:var(--space-fluid-m)]">
                   {cards.map((card, idx) => {
+                    // card_id e' nullable nel tipo: una card senza id non e' renderizzabile
+                    if (!card.card_id) return null;
                     const isLast = idx === 4;
                     const colClass = cn(
                       idx < 3 ? 'md:col-span-2' : 'md:col-span-3',

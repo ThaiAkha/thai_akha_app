@@ -19,7 +19,9 @@ const RecipesPage = lazy(() => import('./pages/Recipes'));
 const RecipeSinglePage = lazy(() => import('./pages/RecipeSingle'));
 const BookingPage = lazy(() => import('./pages/BookingPage'));
 const JoinGroupPage = lazy(() => import('./pages/JoinGroupPage'));
-const StyleCards = lazy(() => import('./pages/ZZStyleCards'));
+// Galleria stile: strumento di sviluppo, fuori dal bundle di produzione (audit 2026-08, P8).
+// Con import.meta.env.DEV=false Vite/Rollup eliminano il ramo e non emettono il chunk.
+const StyleCards = import.meta.env.DEV ? lazy(() => import('./pages/ZZStyleCards')) : null;
 const NewsPage = lazy(() => import('./pages/NewsPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
@@ -36,12 +38,12 @@ import {
   SEOHead,
 } from './components/layout/index';
 import { AkhaLoader } from './components/ui/index';
+import { AppErrorBoundary } from '@thaiakha/shared/components/AppErrorBoundary';
+import PageErrorFallback from './components/layout/PageErrorFallback';
 import { ChatBox, CherryProvider } from './components/chat/index';
 import { authService, UserProfile } from './services/auth.service';
 import { ActiveProfileProvider } from './context/ActiveProfileContext';
-import { useViewportHeight } from './hooks/useViewportHeight';
 
-type Page = string;
 
 // Staff roles that HAVE an admin booking page → booking CTA opens the admin app.
 const ADMIN_ROLES = new Set(['agency', 'admin', 'manager']);
@@ -65,7 +67,6 @@ const PageLoader: React.FC = () => (
 
 const App: React.FC = () => {
   // Hook per gestire l'altezza reale su mobile (100vh fix)
-  useViewportHeight();
 
   const mainScrollRef = useRef<HTMLElement>(null);
   // Timestamp dell'ultimo fetch profilo: throttle del refresh su visibilitychange
@@ -380,7 +381,7 @@ const App: React.FC = () => {
       case 'contact-us': return <ContactUsPage onNavigate={handleNavigate} />;
       case 'cooking-class-faq-chiang-mai':
       case 'faq': return <FAQPage onNavigate={handleNavigate} />;
-      case 'style': return <StyleCards />;
+      case 'style': return StyleCards ? <StyleCards /> : <HomePage onNavigate={handleNavigate} />;
 
       // Flows Operativi Utente — dipendono dal profilo: attendono fetchUser()
       // per non lampeggiare lo stato sbagliato (es. redirect staff su booking).
@@ -479,9 +480,16 @@ const App: React.FC = () => {
         className="flex-grow lg:h-full lg:overflow-y-auto overflow-x-hidden no-scrollbar relative z-10"
         id="main-scroll-container"
       >
-        <Suspense fallback={<PageLoader />}>
-          {renderPage()}
-        </Suspense>
+        {/* Boundary di pagina (audit 2026-08, P5): un throw o un chunk lazy fallito non
+            spegne piu' tutta l'app; resetKey=page rimonta al cambio route. */}
+        <AppErrorBoundary
+          resetKey={page}
+          renderFallback={(p) => <PageErrorFallback {...p} />}
+        >
+          <Suspense fallback={<PageLoader />}>
+            {renderPage()}
+          </Suspense>
+        </AppErrorBoundary>
       </main>
 
       {/* Global Chat Assistant (Abilitato per TUTTI gli utenti ora!) */}

@@ -14,7 +14,6 @@ interface IngredientsGridProps {
 const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   ingredients,
   onIngredientClick,
-  multiplier = 1,
 }) => {
   // Sort: 'main' always first, then preserve display order (which comes sorted from the hook)
   const topLevel = ingredients
@@ -26,7 +25,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
     });
   const baseLevel = ingredients.filter(ing => ing.ui_role === 'base');
 
-  const renderCard = (ing: IngredientDetail, index: number, isBase = false) => {
+  const renderCard = (ing: IngredientDetail, _index: number, isBase = false) => {
     const isMain = ing.ui_role === 'main';
     
     // Create base array so that the index points to the original ingredient list in the parent

@@ -20,7 +20,12 @@ export function useZones(): UseZonesResult {
         const { data } = await supabase.from('pickup_zones').select('*');
         if (cancelled) return;
         const features = GEOJSON_MASTER?.features ?? [];
-        setZones(mergeZonesWithGeoJson(data ?? [], features));
+        // display_order e' nullable in DB ma opzionale nel tipo: normalizza null -> undefined
+        const zoneRows = (data ?? []).map((z) => ({
+          ...z,
+          display_order: z.display_order ?? undefined,
+        }));
+        setZones(mergeZonesWithGeoJson(zoneRows, features));
       } finally {
         if (!cancelled) setLoading(false);
       }

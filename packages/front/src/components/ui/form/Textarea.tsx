@@ -95,7 +95,6 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       disabled && 'opacity-50 cursor-not-allowed grayscale'
     );
 
-    const textareaValue = value !== undefined ? value : defaultValue || '';
 
     return (
       <div className={cn('space-y-2', fullWidth && 'w-full', containerClassName)}>

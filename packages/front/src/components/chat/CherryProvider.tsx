@@ -79,7 +79,7 @@ export const CherryProvider: React.FC<CherryProviderProps> = ({ userProfile, chi
     outputTranscript,
     analyserRef,
     error: voiceError,
-  } = useGeminiLive(userProfile, sessionId, addVoiceMessages);
+  } = useGeminiLive(userProfile ?? undefined, sessionId, addVoiceMessages);
 
   // Registro superfici inline visibili (ref-counter → nessun re-render).
   const inlineSurfaceCount = useRef(0);

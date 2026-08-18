@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
-import { Typography, Badge, RippleLink, AkhaPixelPattern } from '../ui/index';
+import { Typography, Badge, RippleLink } from '../ui/index';
 import { t } from '../../i18n';
 import './BlogCardGlass.css';
 

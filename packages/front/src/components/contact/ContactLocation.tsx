@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { t } from '../../i18n';
 import type { MeetingPoint } from '@thaiakha/shared/types';

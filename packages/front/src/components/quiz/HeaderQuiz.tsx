@@ -20,8 +20,6 @@ interface HeaderQuizProps {
 
 const HeaderQuiz: React.FC<HeaderQuizProps> = ({
   title,
-  currentLevel = 0,
-  totalLevels = 1,
   score,
   view = 'HOME',
   questionResults,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
-import { Icon, Button, Tooltip, Typography } from '../ui/index';
+import { Button, Tooltip, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
@@ -218,7 +218,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
       {/* GRIGLIA PRINCIPALE */}
       <div className="grid grid-cols-7 grid-rows-6 flex-1 gap-px bg-border overflow-y-auto custom-scrollbar">
-        {calendarDays.map((date, idx) => {
+        {calendarDays.map((date) => {
           const dateStr = getDateKey(date);
           const data = availability[dateStr];
 

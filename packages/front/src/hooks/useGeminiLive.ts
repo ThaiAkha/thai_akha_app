@@ -3,7 +3,7 @@ import { getLiveGeminiClient } from '../services/geminiClient';
 import { LiveServerMessage, Modality } from '@google/genai';
 import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
 import { checkRateLimit, getGuestSessionToken, getUserBookingState } from '@thaiakha/shared/services';
-import { t, tObj } from '../i18n';
+import { tObj } from '../i18n';
 import { getAllStaticKnowledge } from '@thaiakha/shared/data/cherryKnowledge';
 import type { UserProfile } from '@thaiakha/shared/types';
 import { encodeAudio, decodeAudio, decodeAudioDataToBuffer } from '../lib/audioUtils';
@@ -241,7 +241,7 @@ export const useGeminiLive = (
                             setState(prev => ({ ...prev, inputTranscript: '', outputTranscript: '' }));
                         }
 
-                        const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+                        const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
                         if (base64Audio && audioCtxRef.current) {
                             nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioCtxRef.current.currentTime);
                             const audioBuffer = await decodeAudioDataToBuffer(decodeAudio(base64Audio), audioCtxRef.current, 24000);

@@ -23,7 +23,7 @@ docs/               → architettura, design system
 
 ## Stack Tecnico
 
-- React 18 + TypeScript strict — no `any`, tipi generati da Supabase
+- React 19 + TypeScript strict (front, admin, shared) - no `any`, tipi generati da Supabase; `pnpm typecheck` gira in CI prima del build
 - Vite 6 — bundle separato per admin e front
 - Tailwind CSS v4 — token in `@theme {}` in CSS, non in `tailwind.config.js`
 - Supabase — auth, DB, RLS, Edge Functions, Storage
@@ -50,6 +50,9 @@ docs/               → architettura, design system
     - `is_key_ingredient` su `recipe_composition` → **DEPRECATA**, ignorare.
     - `dietary_profiles.id` → sempre underscore (`diet_vegan`, `allergy_peanuts`). MAI usare `.slug` come chiave.
     - Manuale completo: `docs/RECIPE-ARCHITECTURE.md` · Regole agente: `.claude/agent-memory/database/recipe_pipeline.md`
+14. **HTML dal DB (front)** - mai `dangerouslySetInnerHTML={{ __html: x }}` nudo: sempre `{{ __html: sanitizeHtml(x) }}` (`packages/front/src/lib/sanitizeHtml.ts`, DOMPurify profilo html + `target`). Chi scrive quelle colonne e' staff/agenzia, ma l'HTML gira nella sessione di ogni visitatore (audit 2026-08).
+15. **Segreti e prefisso `VITE_`** - tutto cio' che si chiama `VITE_*` finisce nel bundle browser appena qualcuno scrive `import.meta.env.VITE_X`. Chiavi a pagamento e segreti (Gemini, OpenAI, Resend, Zoho, service_role) vivono SOLO come secret delle edge function, mai con prefisso `VITE_`. `scripts/check-env.mjs` ferma il build se ne trova una fuori dall'allowlist (anon key, Maps, reCAPTCHA).
+16. **Error boundary** - `AppErrorBoundary` in `@thaiakha/shared/components/AppErrorBoundary` (headless: rileva chunk lazy fallito e ricarica una volta); il fallback visivo e' per app (`front/components/layout/PageErrorFallback`, `admin/components/common/PageErrorFallback`). Nuove aree isolate (widget, modali pesanti) si avvolgono nello stesso boundary col loro fallback, non con un `try/catch` in render.
 
 ## Agenti Disponibili
 

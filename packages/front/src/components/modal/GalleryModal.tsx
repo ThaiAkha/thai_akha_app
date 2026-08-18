@@ -39,8 +39,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
   startIndex = 0,
 }) => {
   const [index, setIndex] = useState(startIndex);
-  const [direction, setDirection] = useState(0);
-  const touchStartX = useRef<number | null>(null);
+  const [, setDirection] = useState(0);
   const activeThumbRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -167,7 +166,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
-              onDragEnd={(e, { offset, velocity }) => {
+              onDragEnd={(_e, { offset, velocity }) => {
                 const swipe = swipePower(offset.x, velocity.x);
                 if (swipe < -swipeConfidenceThreshold) next();
                 else if (swipe > swipeConfidenceThreshold) prev();

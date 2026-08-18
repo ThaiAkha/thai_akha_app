@@ -49,7 +49,6 @@ const ClassDetails: React.FC<ClassDetailsProps> = ({
   schedule = [],
   meetingPoints = [],
   classSections = [],
-  tagline,
   price,
 }) => {
   const accent = color === 'primary' ? 'text-primary' : 'text-secondary';

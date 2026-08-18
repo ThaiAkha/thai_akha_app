@@ -684,7 +684,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
             showFeedback={showFeedback}
             showExplanations={showExplanations}
             onToggleExplanations={setExplanationPref}
-            categoryImage={currentModule.image_url}
+            categoryImage={currentModule.image_url ?? undefined}
           />
         )}
 

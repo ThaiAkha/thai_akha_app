@@ -9,6 +9,7 @@ import { SmartHeaderSection } from '../layout/SmartHeaderSection';
 import { CherryEntryCard } from '../chat/CherryEntryCard';
 import { handleFaqAnswerClick } from './faqLinkNav';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -71,7 +72,7 @@ const FaqCard: React.FC<{ card: FaqCardUI; onNavigate?: (path: string) => void }
         <div
           onClick={(e) => handleFaqAnswerClick(e, onNavigate)}
           className="leading-relaxed [font-size:var(--text-fluid-paragraphM)] font-sans text-muted [&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_a]:font-bold [&_a]:text-ocean-blue [&_a]:no-underline hover:[&_a]:opacity-75 [&_a]:transition-opacity [&_a]:cursor-pointer"
-          dangerouslySetInnerHTML={{ __html: card.answerHtml }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(card.answerHtml) }}
         />
       </div>
     </Card>

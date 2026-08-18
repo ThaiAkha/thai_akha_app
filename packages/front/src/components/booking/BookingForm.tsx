@@ -22,6 +22,7 @@ import { getInfoPage } from '../../services/infoPages.service';
 import { InfoContentSkeleton } from '../skeleton';
 import type { BookingFormData, AuthMode, PaymentMethod } from './booking.types';
 import type { UserProfile } from '../../services/auth.service';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 // ─── Mineral select ───────────────────────────────────────────────────────────
 const MineralSelect = ({
@@ -55,12 +56,12 @@ const LegalContent = ({ doc }: { doc: any }) => (
       <div key={i}>
         <Typography variant="h5" className="mb-2 font-black">{s.title}</Typography>
         {typeof s.content === 'string'
-          ? <Typography variant="body" className="opacity-80" dangerouslySetInnerHTML={{ __html: s.content }} />
+          ? <Typography variant="body" className="opacity-80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(s.content) }} />
           : Array.isArray(s.content)
             ? <ul className="list-disc list-inside space-y-1">
                 {s.content.map((c: string, j: number) => (
                   <li key={j} className="inline-block w-full">
-                    <Typography variant="body" color="sub" className="opacity-80 inline" dangerouslySetInnerHTML={{ __html: c }} />
+                    <Typography variant="body" color="sub" className="opacity-80 inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(c) }} />
                   </li>
                 ))}
               </ul>
@@ -69,12 +70,12 @@ const LegalContent = ({ doc }: { doc: any }) => (
           <div key={k} className="ml-4 mt-3">
             <Typography variant="paragraphS" className="font-bold mb-1 text-title">{sub.title}</Typography>
             {typeof sub.content === 'string'
-              ? <Typography variant="body" className="opacity-80" dangerouslySetInnerHTML={{ __html: sub.content }} />
+              ? <Typography variant="body" className="opacity-80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(sub.content) }} />
               : Array.isArray(sub.content)
                 ? <ul className="list-disc list-inside space-y-1">
                     {sub.content.map((c: string, j: number) => (
                       <li key={j} className="inline-block w-full">
-                        <Typography variant="body" color="sub" className="opacity-80 inline" dangerouslySetInnerHTML={{ __html: c }} />
+                        <Typography variant="body" color="sub" className="opacity-80 inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(c) }} />
                       </li>
                     ))}
                   </ul>

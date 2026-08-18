@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { Typography, Icon, MediaImage, Card, AkhaPixelLine } from '../ui';
+import { Typography, Icon, MediaImage, Card } from '../ui';
 import AkhaThemedLine from '../divider/AkhaThemedLine';
 import AkhaQuote from '../divider/AkhaQuote';
 import AkhaPixelPattern, { AkhaTheme } from '../divider/AkhaPixelPattern';
 import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { useMediaAsset } from '../../hooks/useMediaAsset';
 import MapBlock from '../modal/MapBlock';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 // ─── Block types ──────────────────────────────────────────────────────────────
 
@@ -170,7 +171,7 @@ function renderBlock(block: ContentBlock, i: number, ctx: BlockContext): React.R
           variant="paragraphL"
           color="default"
           className={`leading-loose${isBold ? ' font-bold' : ''} [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all`}
-          dangerouslySetInnerHTML={{ __html: block.text }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.text) }}
         />
       );
     }
@@ -181,7 +182,7 @@ function renderBlock(block: ContentBlock, i: number, ctx: BlockContext): React.R
           {block.items.map((item, j) => (
             <li key={j} className="flex items-start gap-3">
               <Icon name="chevron_right" size="sm" className="text-action shrink-0 mt-1 opacity-70" />
-              <Typography variant="paragraphM" color="default" className="leading-relaxed [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all" dangerouslySetInnerHTML={{ __html: item }} />
+              <Typography variant="paragraphM" color="default" className="leading-relaxed [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all" dangerouslySetInnerHTML={{ __html: sanitizeHtml(item) }} />
             </li>
           ))}
         </ul>
@@ -196,7 +197,7 @@ function renderBlock(block: ContentBlock, i: number, ctx: BlockContext): React.R
             variant={isLevel2 ? 'h2' : 'h3'}
             as={isLevel2 ? 'h2' : 'h3'}
             className="text-title leading-[1.15] tracking-tight [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline transition-all"
-            dangerouslySetInnerHTML={{ __html: block.text }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.text) }}
           />
 
           {isLevel2 && (
@@ -306,7 +307,7 @@ function renderBlock(block: ContentBlock, i: number, ctx: BlockContext): React.R
                   {items.map((item, j) => (
                     <li key={j} className="flex items-start gap-3">
                       <Icon name="chevron_right" size="xs" className="text-action shrink-0 mt-1.5 opacity-60" />
-                      <Typography variant="paragraphM" color="muted" className="leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
+                      <Typography variant="paragraphM" color="muted" className="leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHtml(item) }} />
                     </li>
                   ))}
                 </ul>

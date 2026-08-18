@@ -16,6 +16,20 @@ import { join } from 'node:path';
 
 const REQUIRED = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
 
+// Guard segreti (audit 2026-08, P2): tutto cio' che si chiama VITE_* finisce nel
+// bundle browser appena qualcuno scrive `import.meta.env.VITE_X`. Le chiavi a
+// pagamento (Gemini, OpenAI, Resend, Zoho, service_role...) NON devono mai avere
+// quel prefisso: vivono solo come secret delle edge function. Qui blocchiamo il
+// build se una VITE_* con nome sensibile compare negli .env o nelle env di processo.
+// Allowlist = chiavi PENSATE per il browser (pubbliche per design, ristrette per referrer).
+const VITE_PUBLIC_ALLOWLIST = new Set([
+  'VITE_SUPABASE_ANON_KEY',
+  'VITE_GOOGLE_MAPS_API_KEY',
+  'VITE_RECAPTCHA_SITE_KEY',
+]);
+const VITE_SENSITIVE_WORDS = /(SERVICE_ROLE|SECRET|PRIVATE|GEMINI|OPENAI|ANTHROPIC|RESEND|ZOHO|REFRESH_TOKEN|ACCESS_TOKEN|PASSWORD)/i;
+const VITE_KEY_LIKE = /(_KEY|_TOKEN|_SECRET)$/i;
+
 const pkgDir = process.argv[2];
 const mode = process.argv[3] ?? 'production';
 if (!pkgDir) {
@@ -51,6 +65,29 @@ for (const f of files) {
 }
 // Le env di processo battono i file (CI, shell).
 for (const k of REQUIRED) if (process.env[k]) env[k] = process.env[k];
+
+// --- Guard segreti: nomi VITE_* sensibili (file + processo) ---
+const viteNames = new Set([
+  ...Object.keys(env),
+  ...Object.keys(process.env),
+].filter((k) => k.startsWith('VITE_')));
+const leaks = [...viteNames].filter(
+  (k) => !VITE_PUBLIC_ALLOWLIST.has(k) && (VITE_SENSITIVE_WORDS.test(k) || VITE_KEY_LIKE.test(k)),
+);
+if (leaks.length > 0) {
+  console.error(`
+[thaiakha] Build interrotta: ${leaks.length} variabili VITE_* con nome sensibile.
+
+${leaks.map((k) => `  - ${k}`).join('\n')}
+
+Tutto cio' che inizia per VITE_ e' destinato al bundle browser: una chiave a pagamento
+o un segreto con quel prefisso diventa pubblico appena qualcuno scrive
+\`import.meta.env.<NOME>\`. Rinominala senza VITE_ e tienila solo come secret delle
+edge function (supabase secrets set). Se e' davvero una chiave pubblica per design,
+aggiungila a VITE_PUBLIC_ALLOWLIST in scripts/check-env.mjs.
+`);
+  process.exit(1);
+}
 
 const missing = REQUIRED.filter((k) => !env[k]);
 if (missing.length === 0) process.exit(0);

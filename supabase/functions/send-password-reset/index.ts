@@ -7,6 +7,15 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { PASSWORD_RESET_EN_HTML, PASSWORD_RESET_TH_HTML, renderEmail } from './templates.ts'
+import { clientIp, isAllowedRedirect, rateLimit } from '../_shared/edgeGuard.ts'
+
+// Sicurezza (audit 2026-08, #85). Endpoint necessariamente pubblico (chi ha perso la
+// password non ha sessione), quindi:
+//   - redirectTo SOLO verso origin in allowlist: la edge costruisce da sola il link con
+//     token_hash, senza allowlist chiunque si farebbe recapitare il token della vittima
+//     su un dominio suo dentro un'email brandizzata vera
+//   - rate limit per email (3 / 15 min) e per IP (10 / 15 min)
+//   - risposta SEMPRE { ok: true } anche se l'email non esiste: niente enumerazione account
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
@@ -50,6 +59,11 @@ async function sendResend(to: string, subject: string, html: string) {
   return { ok: res.ok, id: (detail as { id?: string }).id, detail }
 }
 
+const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' }
+const okGeneric = () => new Response(JSON.stringify({ ok: true }), { headers: jsonHeaders, status: 200 })
+const badRequest = (error: string) =>
+  new Response(JSON.stringify({ ok: false, error }), { headers: jsonHeaders, status: 400 })
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -58,10 +72,24 @@ Deno.serve(async (req: Request) => {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error('Service-role env non disponibile')
 
     const p: ResetPayload = await req.json()
-    const email = (p.email ?? '').trim()
-    if (!email) throw new Error('email mancante')
+    const email = (p.email ?? '').trim().toLowerCase()
+    if (!email) return badRequest('email mancante')
 
     const lang: Lang = p.lang === 'th' ? 'th' : 'en' // es/zh → fallback EN (template non ancora tradotti)
+
+    // Il link con token puo' puntare solo alle nostre app
+    const base = (p.redirectTo ?? '').replace(/[?#].*$/, '').replace(/\/$/, '')
+    if (!base || !isAllowedRedirect(base)) {
+      console.warn('send-password-reset: redirectTo rifiutato', p.redirectTo)
+      return badRequest('redirectTo non consentito')
+    }
+
+    // Rate limit: risposta generica anche qui (un attaccante non deve distinguere)
+    const ip = clientIp(req)
+    if (!rateLimit(`email:${email}`, 3, 15 * 60_000) || !rateLimit(`ip:${ip}`, 10, 15 * 60_000)) {
+      console.warn('send-password-reset: rate limit', { email, ip })
+      return okGeneric()
+    }
 
     // 1) Recovery link SENZA invio email di default
     const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -74,7 +102,12 @@ Deno.serve(async (req: Request) => {
       options: p.redirectTo ? { redirectTo: p.redirectTo } : undefined,
     })
 
-    if (error) throw error
+    // Email sconosciuta (o altro errore di generateLink): rispondi come se fosse andata,
+    // cosi' l'endpoint non rivela quali email sono registrate.
+    if (error) {
+      console.warn('send-password-reset: generateLink', error.message)
+      return okGeneric()
+    }
 
     // Use the PKCE-safe token_hash flow instead of the GET magic-link (action_link).
     // Email scanners / browser prefetchers fire a GET on action_link and CONSUME the
@@ -84,8 +117,6 @@ Deno.serve(async (req: Request) => {
     // Bonus: no Supabase /verify redirect → no Redirect-URL allowlist dependency.
     const tokenHash = data?.properties?.hashed_token
     if (!tokenHash) throw new Error('hashed_token non generato')
-    const base = (p.redirectTo ?? '').replace(/[?#].*$/, '').replace(/\/$/, '')
-    if (!base) throw new Error('redirectTo mancante')
     const resetUrl = `${base}?token_hash=${encodeURIComponent(tokenHash)}&type=recovery`
 
     // 2) Render template per lingua

@@ -5,6 +5,7 @@ import GalleryModal, { GalleryItem } from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { contentService } from '@thaiakha/shared/services';
 import { ContentCategoryDB } from '@thaiakha/shared';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 // --- INTERFACCE ---
 
@@ -93,7 +94,6 @@ const CAT_COLORS: Record<string, string> = {
 
 const RecipeView: React.FC<RecipeViewProps> = ({
   recipe,
-  categoryData,
   allRecipes,
   activeDiet,
   userAllergies = [],
@@ -453,7 +453,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                     as="div"
                     variant="body"
                     className="text-white/70 leading-relaxed text-sm font-light [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
-                    dangerouslySetInnerHTML={{ __html: activeIngredient.description ?? '' }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(activeIngredient.description ?? '') }}
                  />
                  <Button variant="mineral" fullWidth onClick={() => setActiveIngredient(null)} className="h-12">Close Details</Button>
               </div>

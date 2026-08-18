@@ -2,8 +2,18 @@
 // Welcome email brandizzata (EN/TH) alla registrazione di un partner agency (admin side).
 // Invocata via functions.invoke da SignUpForm dopo signup riuscito (non-blocking).
 // Specchio di send-password-reset (Resend + templates.ts dal brain). Niente admin client.
+//
+// Sicurezza (audit 2026-08, #85): dopo signUp la sessione esiste (email confirmations
+// disabilitate: le RPC di consenso legale la usano gia'), quindi:
+//   - JWT obbligatorio: senza utente → 401
+//   - l'email destinataria e' SEMPRE quella dell'utente autenticato (il body non la sceglie):
+//     niente invio di email brandizzate a indirizzi arbitrari
+//   - login_url solo verso origin in allowlist
+//   - rate limit per utente (2 / ora)
 
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { WELCOME_ADMIN_EN_HTML, WELCOME_ADMIN_TH_HTML, renderEmail } from './templates.ts'
+import { isAllowedRedirect, rateLimit } from '../_shared/edgeGuard.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM = 'Thai Akha Kitchen <office@thaiakhakitchen.com>'
@@ -49,16 +59,35 @@ Deno.serve(async (req: Request) => {
   try {
     if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY non configurata')
 
+    // Chi chiama? Il destinatario e' l'utente stesso.
+    const authHeader = req.headers.get('Authorization') ?? ''
+    const authClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
+      global: { headers: { Authorization: authHeader } },
+    })
+    const { data: userData } = await authClient.auth.getUser()
+    const user = userData?.user
+    if (!user?.email) {
+      return new Response(JSON.stringify({ ok: false, error: 'Unauthorized' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      })
+    }
+    if (!rateLimit(`welcome:${user.id}`, 2, 60 * 60_000)) {
+      return new Response(JSON.stringify({ ok: true, skipped: 'rate_limit' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
     const p: WelcomePayload = await req.json()
-    const email = (p.email ?? '').trim()
-    if (!email) throw new Error('email mancante')
+    const email = user.email
 
     const lang: Lang = p.lang === 'th' ? 'th' : 'en' // es/zh → fallback EN (template non ancora tradotti)
 
     const html = renderEmail(TEMPLATE[lang], {
       user_name: (p.user_name ?? '').trim() || 'there',
       account_email: email,
-      login_url: (p.login_url ?? '').trim() || DEFAULT_LOGIN_URL,
+      login_url: (p.login_url && isAllowedRedirect(p.login_url)) ? p.login_url.trim() : DEFAULT_LOGIN_URL,
     })
 
     const sent = await sendResend(email, SUBJECT[lang], html)

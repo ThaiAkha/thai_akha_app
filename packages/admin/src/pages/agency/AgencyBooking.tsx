@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import { supabase, getFunctionErrorMessage } from '@thaiakha/shared/lib/supabase';
 import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import Button from '../../components/ui/button/Button';
@@ -124,7 +124,7 @@ const AgencyBooking: React.FC = () => {
                 }
             });
 
-            if (uError) throw uError;
+            if (uError) throw new Error(await getFunctionErrorMessage(uError));
             if (uData?.error) throw new Error(uData.error);
 
             const guestUserId = uData.userId || uData.user?.id;

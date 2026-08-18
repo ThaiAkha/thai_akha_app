@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography } from '../ui/index';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 interface DirectionStep {
   step: number;
@@ -30,7 +31,7 @@ const DirectionsSteps: React.FC<DirectionsStepsProps> = ({ steps }) => {
               variant="paragraphM"
               color="default"
               className="leading-relaxed [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline"
-              dangerouslySetInnerHTML={{ __html: step.text }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(step.text) }}
             />
           </div>
         </li>

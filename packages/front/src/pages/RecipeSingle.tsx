@@ -15,6 +15,7 @@ import { useShareLink } from '../hooks/useShareLink';
 import type { RecipeNavItem } from '../components/recipes';
 import type { UserProfile } from '@thaiakha/shared/types';
 import { t } from '../i18n';
+import { sanitizeHtml } from '../lib/sanitizeHtml';
 
 interface RecipeSinglePageProps {
   slug: string;
@@ -158,7 +159,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
           {recipe.description && (
             <RecipeSection sectionId="recipe_single_description">
               <Typography as="div" variant="paragraphL" color="default" className="leading-relaxed [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
-                dangerouslySetInnerHTML={{ __html: recipe.description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(recipe.description) }}
               />
             </RecipeSection>
           )}
@@ -233,7 +234,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
 
                   {recipe.notes && (
                     <Typography as="div" variant="paragraphM" color="muted" className="leading-relaxed italic [&_strong]:font-bold [&_em]:not-italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
-                      dangerouslySetInnerHTML={{ __html: recipe.notes }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(recipe.notes) }}
                     />
                   )}
 
@@ -253,7 +254,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
                     </div>
                   )}
 
-                  {recipeRaw?.culture_link_url && (
+                  {!!recipeRaw?.culture_link_url && (
                     <div className="[margin-top:var(--space-fluid-m)] [padding-top:var(--space-fluid-s)] border-t border-white/10">
                       <Typography variant="microLabel" color="muted" className="block [margin-bottom:var(--space-fluid-3xs)]">
                         Discover more
@@ -281,7 +282,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
               <RecipeSection sectionId="recipe_single_health">
                 <Card variant="glass" padding="md" rounded="2xl">
                   <Typography as="div" variant="paragraphM" color="default" className="leading-relaxed [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
-                    dangerouslySetInnerHTML={{ __html: recipe.healthBenefits }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(recipe.healthBenefits) }}
                   />
                 </Card>
               </RecipeSection>
@@ -334,13 +335,13 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
             </div>
           )}
 
-          {recipeRaw?.author_note && (
+          {!!recipeRaw?.author_note && (
             <div className="contents">
               <AkhaThemedLine theme="kitchen" />
               <RecipeSection sectionId="recipe_single_author_note" hideSubtitle={false}>
                 <Card variant="glass" padding="md" rounded="2xl">
                   <Typography as="div" variant="paragraphM" color="muted" className="leading-relaxed italic [&_strong]:font-bold [&_em]:not-italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
-                    dangerouslySetInnerHTML={{ __html: recipeRaw.author_note as string }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(recipeRaw.author_note as string) }}
                   />
                 </Card>
               </RecipeSection>

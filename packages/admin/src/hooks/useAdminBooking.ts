@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import { supabase, getFunctionErrorMessage } from '@thaiakha/shared/lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { getSmartAvatarUrlSafe } from '@thaiakha/shared/lib/avatarSystem';
 import { getSessionCapacity, getSessionPrice } from '@thaiakha/shared/lib/sessionUtils';
@@ -242,32 +242,19 @@ export const useAdminBooking = () => {
             let userId = selectedUser?.id;
 
             if (userMode === 'new') {
-                console.log("[useAdminBooking] Attempting create-guest-user call. Mode: anonymous-authenticated");
-
-                const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-guest-user`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-                    },
-                    body: JSON.stringify({
+                // functions.invoke manda il JWT della sessione staff: l'edge verifica utente + ruolo (P1 audit 2026-08).
+                const { data: uData, error: uError } = await supabase.functions.invoke('create-guest-user', {
+                    body: {
                         email: newUser.email || `guest-${Date.now()}@temp.tak`,
                         full_name: newUser.fullName,
+                        phone: newUser.phone,
                         password: newUser.password
-                    })
+                    }
                 });
+                if (uError) throw new Error(await getFunctionErrorMessage(uError));
+                if (uData?.error) throw new Error(uData.error);
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error("[useAdminBooking] Edge Function Error Status:", response.status, errorText);
-                    let errorData;
-                    try { errorData = JSON.parse(errorText); } catch (e) { }
-                    throw new Error(errorData?.error || `HTTP ${response.status}: ${errorText || 'Unauthorized or Gateway Error'}`);
-                }
-
-                const uData = await response.json();
-                userId = uData.userId;
+                userId = uData?.userId;
                 if (userId) {
                     const avatarUrl = await getSmartAvatarUrlSafe(newUser.gender, newUser.age);
                     await supabase.from('profiles').update({

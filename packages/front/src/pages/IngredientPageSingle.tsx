@@ -16,6 +16,7 @@ import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useIngredientDetail } from '../hooks/useIngredientDetail';
 import { INGREDIENTS_HUB_SLUG } from '../hooks/useIngredientsFeed';
 import { t } from '../i18n';
+import { sanitizeHtml } from '../lib/sanitizeHtml';
 
 interface TabItem { value: string; label: string; icon?: string; }
 
@@ -34,7 +35,7 @@ interface IngredientPageSingleProps {
 const IngredientProse: React.FC<{ html: string }> = ({ html }) => (
   <div
     className="max-w-none text-desc leading-relaxed [&_p]:mb-4 [&_strong]:font-bold [&_strong]:text-title [&_em]:italic [&_a]:text-pantry-4 [&_a]:font-semibold hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_li]:mb-1"
-    dangerouslySetInnerHTML={{ __html: html }}
+    dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
   />
 );
 

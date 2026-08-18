@@ -124,3 +124,20 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 
 // Re-export types utili
 export type { SupabaseClient } from '@supabase/supabase-js';
+
+/**
+ * Estrae il messaggio d'errore leggibile da un fallimento di `supabase.functions.invoke`.
+ * Le edge rispondono con status reali (400/401/403/500) e body `{ error }`: supabase-js
+ * lo incapsula in un FunctionsHttpError con `context` = Response, che va letto a mano.
+ */
+export async function getFunctionErrorMessage(err: unknown, fallback = 'Edge function error'): Promise<string> {
+  const ctx = (err as { context?: unknown } | null)?.context;
+  if (ctx instanceof Response) {
+    try {
+      const body = await ctx.clone().json();
+      if (body && typeof body.error === 'string') return body.error;
+    } catch { /* body non JSON */ }
+    return `${fallback} (HTTP ${ctx.status})`;
+  }
+  return err instanceof Error && err.message ? err.message : fallback;
+}

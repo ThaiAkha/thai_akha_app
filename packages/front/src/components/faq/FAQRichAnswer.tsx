@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography, Icon, Button } from '../ui';
 import type { FAQItem, FAQLink } from '@thaiakha/shared/types';
 import { handleFaqAnswerClick } from './faqLinkNav';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -72,7 +73,7 @@ const FAQRichAnswer: React.FC<FAQRichAnswerProps> = ({ item, onNavigate }) => {
                     variant="paragraphM"
                     color="default"
                     className="[&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_a]:font-bold [&_a]:text-ocean-blue [&_a]:no-underline hover:[&_a]:opacity-75 [&_a]:transition-opacity [&_a]:cursor-pointer"
-                    dangerouslySetInnerHTML={{ __html: item.answer }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.answer) }}
                 />
             </div>
 

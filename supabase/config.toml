@@ -411,7 +411,8 @@ verify_jwt = false
 
 # Welcome email is triggered right at signup, before a session is guaranteed.
 [functions.send-admin-welcome]
-verify_jwt = false
+# audit 2026-08 #85: richiede sessione utente (invia solo alla propria email)
+verify_jwt = true
 
 # Market expense has TWO auth channels: staff JWT, or the cron channel that sends
 # x-market-cron-secret (no JWT at all). It was deployed by hand with --no-verify-jwt

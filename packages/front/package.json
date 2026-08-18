@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node ../../scripts/check-env.mjs . && vite build",
+    "build": "node ../../scripts/check-env.mjs . && tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -14,6 +15,7 @@
     "@supabase/supabase-js": "^2.95.3",
     "@thaiakha/shared": "workspace:*",
     "@types/react-google-recaptcha": "^2.1.9",
+    "dompurify": "^3.4.13",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",

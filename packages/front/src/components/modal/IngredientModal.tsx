@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Icon, MediaImage, Typography, Badge } from '../ui/index';
+import { Button, Icon, MediaImage, Typography } from '../ui/index';
 import Modal from './Modal';
 import HeaderSection from '../layout/HeaderSection';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { t } from '../../i18n';
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -25,7 +26,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
   startIndex = 0,
 }) => {
   const [index, setIndex] = useState(startIndex);
-  const [direction, setDirection] = useState(0);
+  const [, setDirection] = useState(0);
 
   useEffect(() => {
     if (isOpen) setIndex(startIndex);
@@ -127,7 +128,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
-              onDragEnd={(e, { offset, velocity }) => {
+              onDragEnd={(_e, { offset, velocity }) => {
                 const swipe = swipePower(offset.x, velocity.x);
                 if (swipe < -swipeConfidenceThreshold) next();
                 else if (swipe > swipeConfidenceThreshold) prev();
@@ -176,7 +177,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
                   variant="paragraphM"
                   color="sub"
                   className="mt-2 md:mt-4 leading-relaxed pointer-events-none [&_strong]:font-bold [&_em]:italic [&_a]:text-action [&_a]:font-bold hover:[&_a]:underline recipe-prose"
-                  dangerouslySetInnerHTML={{ __html: currentItem.description || 'Every component tells a story of the Akha highlands.' }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentItem.description || 'Every component tells a story of the Akha highlands.') }}
                 />
 
               </div>

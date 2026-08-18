@@ -1,6 +1,7 @@
 // supabase/functions/gemini-proxy-chat/index.ts
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@^0.21.0';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { clientIp, rateLimit } from '../_shared/edgeGuard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -151,6 +152,17 @@ Deno.serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       { auth: { persistSession: false } }
     );
+
+    // Guest (nessun JWT): metering per IP (audit 2026-08 #85). Prima era illimitato →
+    // spesa Gemini scoperta per chiunque con la anon key. 90 msg/ora per IP: largo per
+    // un wifi d'hotel condiviso, stretto per uno script.
+    if (isGuest && !rateLimit(`chat-guest:${clientIp(req)}`, 90, 60 * 60_000)) {
+      logMetrics(userId, message.length, 0, Date.now() - startTime, false, 'Guest rate limit');
+      return new Response(
+        JSON.stringify({ error: 'Too many messages. Please try again in a while, or sign in.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const rateLimitResult = await checkRateLimit(userId, supabaseService);
     if (!rateLimitResult.allowed) {

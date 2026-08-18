@@ -1,5 +1,6 @@
 import { GoogleGenAI } from 'npm:@google/genai@^1';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { clientIp, rateLimit } from '../_shared/edgeGuard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,6 +32,15 @@ Deno.serve(async (req: Request) => {
       if (user?.id) {
         userId = user.id;
       }
+    }
+
+    // ── METERING GUEST (audit 2026-08 #85) ────────────────────────────────────
+    // Ogni token apre una sessione Gemini Live (costosa). Anonimi: 12 token/ora per IP.
+    if (userId === 'guest' && !rateLimit(`voice-guest:${clientIp(req)}`, 12, 60 * 60_000)) {
+      return new Response(
+        JSON.stringify({ error: 'Too many voice sessions. Please try again later, or sign in.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // ── GENERA TOKEN EFFIMERO ─────────────────────────────────────────────────

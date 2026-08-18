@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { CHERRY_CONFIG } from '../config/cherry';
 import { sendChatMessageProxy, sendChatMessageStream } from '@thaiakha/shared/services';
 import { buildCherryPrompt, type CherryUserContext } from '../prompts/cherryPrompt';
 import {
@@ -15,7 +16,7 @@ import type { ChatMessage } from '@thaiakha/shared';
 import { filterOptionsForProfile, filterBlocksForProfile, type ChatNodeId, type ChatOption, type NodeBlock } from '@thaiakha/shared/data/chatFlowData';
 import { getChatNode, type ChatLocale } from '@thaiakha/shared/data/chatFlowI18n';
 import type { UserProfile } from '../services/auth.service';
-import { t, tObj } from '../i18n';
+import { tObj } from '../i18n';
 import { cleanCherryResponse } from '@thaiakha/shared/lib/cherry-utils';
 import { getContextualFollowups } from '@thaiakha/shared/lib/cherryFollowups';
 import { getRecipeContextForCherry } from '@thaiakha/shared/lib/cherryRecipeContext';
@@ -280,7 +281,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
         stopTypewriter(modelMsgId);
       }
       // else: queue empty but server still streaming → wait next tick
-    }, t('cherry:typewriterIntervalMs'));
+    }, CHERRY_CONFIG.TYPEWRITER_INTERVAL_MS);
 
     try {
       const userContext: CherryUserContext = {
@@ -411,7 +412,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
 
       if (sid) saveMessage(sid, 'assistant', response, 'text');
 
-      if (sid && sessionRef.current && sessionRef.current.message_count >= t('cherry:summaryThreshold')) {
+      if (sid && sessionRef.current && sessionRef.current.message_count >= CHERRY_CONFIG.SUMMARY_THRESHOLD) {
         sessionRef.current.message_count = 0;
         triggerAutoSummary(sid);
       }
@@ -492,7 +493,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
           serverDoneRef.current = true;
           stopTypewriter(modelMsgId);
         }
-      }, t('cherry:typewriterIntervalMs'));
+      }, CHERRY_CONFIG.TYPEWRITER_INTERVAL_MS);
     }, THINK_DELAY_MS);
 
     // 3. BACKGROUND SYNC
@@ -571,7 +572,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
           serverDoneRef.current = true;
           stopTypewriter(modelMsgId);
         }
-      }, t('cherry:typewriterIntervalMs'));
+      }, CHERRY_CONFIG.TYPEWRITER_INTERVAL_MS);
     }, THINK_DELAY_MS);
 
     // 3. BACKGROUND SYNC (to database for session persistence)

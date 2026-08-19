@@ -1,0 +1,21 @@
+{
+  "tabAll": "Todos",
+  "loadError": "Não foi possível carregar as seções de cultura",
+  "loadErrorHint": "Verifique sua conexão e tente de novo.",
+  "emptyTitle": "Nenhuma seção nesta categoria",
+  "emptyHint": "Tente outra aba ou volte em breve.",
+  "chapterLoadError": "Não foi possível carregar este capítulo",
+  "fallbackTitle": "Herança e cultura Akha",
+  "fallbackSubtitle": "Descubra a jornada e a cultura viva do povo Akha",
+  "galleryLabel": "Galeria · {{count}} fotos",
+  "openGallery": "Abrir galeria completa",
+  "featuredBadge": "Destaque",
+  "chapter": "CAP. {{num}}",
+  "back": "Todos os capítulos",
+  "explore": "Explorar",
+  "listen": "Ouvir",
+  "pause": "Pausar",
+  "otherChapters": "Outros capítulos",
+  "backToHistory": "Voltar à história",
+  "moreHeritage": "Mais herança Akha"
+}

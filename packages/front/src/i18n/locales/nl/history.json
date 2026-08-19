@@ -1,0 +1,21 @@
+{
+  "tabAll": "Alle",
+  "loadError": "Kan de cultuurhoofdstukken niet laden",
+  "loadErrorHint": "Controleer je verbinding en probeer het opnieuw.",
+  "emptyTitle": "Geen hoofdstukken in deze categorie",
+  "emptyHint": "Probeer een ander tabblad of kom snel terug.",
+  "chapterLoadError": "Kan dit hoofdstuk niet laden",
+  "fallbackTitle": "Akha-erfgoed & cultuur",
+  "fallbackSubtitle": "Ontdek de reis en de levende cultuur van het Akha-volk",
+  "galleryLabel": "Galerij · {{count}} foto's",
+  "openGallery": "Volledige galerij openen",
+  "featuredBadge": "Uitgelicht",
+  "chapter": "H. {{num}}",
+  "back": "Alle hoofdstukken",
+  "explore": "Ontdekken",
+  "listen": "Luisteren",
+  "pause": "Pauze",
+  "otherChapters": "Andere hoofdstukken",
+  "backToHistory": "Terug naar de geschiedenis",
+  "moreHeritage": "Meer Akha-erfgoed"
+}

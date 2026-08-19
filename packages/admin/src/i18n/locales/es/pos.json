@@ -2,7 +2,7 @@
   "sidebar": {
     "title": "Huéspedes",
     "guest": "Huésped",
-    "selectGuest": "Select a guest to start billing",
+    "selectGuest": "Selecciona un huésped para empezar a cobrar",
     "noClass": "No hay clases para cobrar."
   },
   "content": {

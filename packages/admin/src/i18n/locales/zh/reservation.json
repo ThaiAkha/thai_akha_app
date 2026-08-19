@@ -4,24 +4,24 @@
     "description": "管理每日预订和客户详情。"
   },
   "kitchen": {
-    "days": "Days & classes",
-    "participants": "Participants",
-    "groupInfo": "Group info",
-    "pickParticipant": "Pick a participant to see their group.",
-    "notRegistered": "Seat not registered yet",
-    "bookingDetails": "Booking details",
-    "contacts": "Contacts",
-    "noContacts": "No contacts on file.",
-    "printReport": "Print report",
-    "print": "Print",
-    "downloadPdf": "Download PDF"
+    "days": "日期与课程",
+    "participants": "参与者",
+    "groupInfo": "小组信息",
+    "pickParticipant": "选择一位参与者查看其小组。",
+    "notRegistered": "座位尚未登记",
+    "bookingDetails": "预订详情",
+    "contacts": "联系方式",
+    "noContacts": "暂无联系方式。",
+    "printReport": "打印报告",
+    "print": "打印",
+    "downloadPdf": "下载PDF"
   },
   "messages": {
-    "loading": "Loading…"
+    "loading": "加载中…"
   },
   "empty": {
-    "noParticipants": "Select a day & class.",
-    "noBookings": "No upcoming bookings."
+    "noParticipants": "请选择日期与课程。",
+    "noBookings": "暂无即将到来的预订。"
   },
   "sidebar": {
     "title": "客户",
@@ -67,8 +67,8 @@
     "payPartial": "部分付款",
     "payRefunded": "已退款",
     "fieldNotes": "备注",
-    "groupLeader": "Group leader",
-    "guest": "Guest"
+    "groupLeader": "组长",
+    "guest": "客人"
   },
   "actions": {
     "tooltipEdit": "编辑此预订",

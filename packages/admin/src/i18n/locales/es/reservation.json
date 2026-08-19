@@ -4,24 +4,24 @@
     "description": "Gestionar reservas diarias y detalles de clientes."
   },
   "kitchen": {
-    "days": "Days & classes",
-    "participants": "Participants",
-    "groupInfo": "Group info",
-    "pickParticipant": "Pick a participant to see their group.",
-    "notRegistered": "Seat not registered yet",
-    "bookingDetails": "Booking details",
-    "contacts": "Contacts",
-    "noContacts": "No contacts on file.",
-    "printReport": "Print report",
-    "print": "Print",
-    "downloadPdf": "Download PDF"
+    "days": "Días y clases",
+    "participants": "Participantes",
+    "groupInfo": "Info del grupo",
+    "pickParticipant": "Elige un participante para ver su grupo.",
+    "notRegistered": "Asiento aún sin registrar",
+    "bookingDetails": "Detalles de la reserva",
+    "contacts": "Contactos",
+    "noContacts": "Sin contactos registrados.",
+    "printReport": "Imprimir informe",
+    "print": "Imprimir",
+    "downloadPdf": "Descargar PDF"
   },
   "messages": {
-    "loading": "Loading…"
+    "loading": "Cargando…"
   },
   "empty": {
-    "noParticipants": "Select a day & class.",
-    "noBookings": "No upcoming bookings."
+    "noParticipants": "Selecciona día y clase.",
+    "noBookings": "Sin reservas próximas."
   },
   "sidebar": {
     "title": "Clientes",
@@ -67,8 +67,8 @@
     "payPartial": "Parcial",
     "payRefunded": "Reembolsado",
     "fieldNotes": "Notas",
-    "groupLeader": "Group leader",
-    "guest": "Guest"
+    "groupLeader": "Líder del grupo",
+    "guest": "Invitado"
   },
   "actions": {
     "tooltipEdit": "Editar esta reserva",

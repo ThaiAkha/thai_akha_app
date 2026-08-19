@@ -1,0 +1,21 @@
+{
+  "tabAll": "すべて",
+  "loadError": "文化の章を読み込めませんでした",
+  "loadErrorHint": "接続を確認してもう一度お試しください。",
+  "emptyTitle": "このカテゴリーに章はありません",
+  "emptyHint": "別のタブを試すか、また後で来てくださいね。",
+  "chapterLoadError": "この章を読み込めませんでした",
+  "fallbackTitle": "アカの遺産と文化",
+  "fallbackSubtitle": "アカ族の旅路と生きた文化にふれてみましょう",
+  "galleryLabel": "ギャラリー · 写真{{count}}枚",
+  "openGallery": "ギャラリーをすべて見る",
+  "featuredBadge": "注目",
+  "chapter": "第{{num}}章",
+  "back": "すべての章",
+  "explore": "見てみる",
+  "listen": "聴く",
+  "pause": "一時停止",
+  "otherChapters": "その他の章",
+  "backToHistory": "歴史に戻る",
+  "moreHeritage": "アカの遺産をもっと見る"
+}

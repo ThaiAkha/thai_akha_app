@@ -19,6 +19,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { contentService } from '@thaiakha/shared/services';
 import { supabase } from '@thaiakha/shared';
+import type { CookingClassDB, Tables } from '@thaiakha/shared';
 import type { BookingDaySummary, GuestAlert } from './adminPrompt';
 
 export type AdminScope = 'driver' | 'logistics' | 'kitchen' | 'manager' | 'admin' | 'agency';
@@ -33,7 +34,7 @@ export interface MarketRunSummary {
 
 export interface AdminScopedData {
   scope: AdminScope;
-  cookingClasses: any[];
+  cookingClasses: CookingClassDB[];
   bookingSnapshot: BookingDaySummary[];
   guestAlerts: GuestAlert[];
   marketRuns: MarketRunSummary[];
@@ -57,7 +58,14 @@ const BOOKING_COLS_DRIVER =
   'internal_id, booking_date, session_id, pax_count, visitor_count, status, guest_name, ' +
   'hotel_name, pickup_time, pickup_zone';
 
-const mapBooking = (b: any): BookingDaySummary => ({
+/** Shape delle righe lette con BOOKING_COLS / BOOKING_COLS_DRIVER (bookings o driver_route_v). */
+// Le colonne sono stringhe concatenate (non literal): PostgREST non le inferisce, quindi il
+// risultato viene castato UNA volta a questa shape (colonne driver = sottoinsieme, opzionali).
+type BookingScopedRow = Pick<Tables<'bookings'>, 'internal_id' | 'booking_date' | 'session_id' | 'pax_count' | 'visitor_count' | 'status' | 'guest_name' | 'hotel_name' | 'pickup_time' | 'pickup_zone'>
+  & Partial<Pick<Tables<'bookings'>, 'booking_ref' | 'payment_method' | 'payment_status' | 'total_price' | 'special_requests' | 'customer_note'>>;
+type MarketRunScopedRow = Pick<Tables<'market_runs'>, 'run_date' | 'shopper_role' | 'total_cost' | 'status' | 'notes' | 'created_by'>;
+
+const mapBooking = (b: BookingScopedRow): BookingDaySummary => ({
   date: b.booking_date,
   session: b.session_id ?? 'unknown',
   pax: b.pax_count ?? 0,
@@ -74,7 +82,7 @@ const mapBooking = (b: any): BookingDaySummary => ({
   customerNote: b.customer_note ?? undefined,
 });
 
-async function fetchGuestAlerts(bookings: any[]): Promise<GuestAlert[]> {
+async function fetchGuestAlerts(bookings: BookingScopedRow[]): Promise<GuestAlert[]> {
   const confirmedIds = bookings
     .filter(b => b.status === 'confirmed')
     .map(b => b.internal_id)
@@ -114,7 +122,7 @@ async function fetchMarketRuns(userId?: string, ownOnly = true): Promise<MarketR
     .limit(30);
   if (ownOnly && userId) q = q.eq('created_by', userId);
   const { data } = await q;
-  return (data ?? []).map((m: any) => ({
+  return ((data ?? []) as MarketRunScopedRow[]).map((m) => ({
     date: m.run_date,
     shopperRole: m.shopper_role ?? 'unknown',
     totalCost: m.total_cost ?? undefined,
@@ -145,17 +153,21 @@ export async function fetchAdminScopedData(
   }
 
   // ── DRIVER: solo i propri pickup, colonne minime, niente finanza/menu ─────
+  // Fonte = driver_route_v, NON bookings: dal 2026-08-03 il driver non ha piu' SELECT su
+  // `bookings` (ramo rimosso da bookings_select_scoped) e la RLS non da' errore, filtra - da
+  // `bookings` questa query tornava semplicemente vuota. Il filtro .or() sotto e' ridondante
+  // (la vista gia' scopa per auth.uid()) ma resta esplicito: la fonte dice cosa stiamo leggendo.
   if (scope === 'driver') {
     if (!userId) return empty;
     const { data } = await supabase
-      .from('bookings')
+      .from('driver_route_v')
       .select(BOOKING_COLS_DRIVER)
       .or(`pickup_driver_uid.eq.${userId},dropoff_driver_uid.eq.${userId}`)
       .gte('booking_date', today)
       .lte('booking_date', nextWeek)
       .neq('status', 'cancelled')
       .order('booking_date');
-    return { ...empty, bookingSnapshot: (data ?? []).map(mapBooking) };
+    return { ...empty, bookingSnapshot: ((data ?? []) as unknown as BookingScopedRow[]).map(mapBooking) };
   }
 
   // ── AGENCY: solo le proprie prenotazioni (user_id) ────────────────────────
@@ -169,7 +181,7 @@ export async function fetchAdminScopedData(
       .lte('booking_date', nextWeek)
       .neq('status', 'cancelled')
       .order('booking_date');
-    return { ...empty, bookingSnapshot: (data ?? []).map(mapBooking) };
+    return { ...empty, bookingSnapshot: ((data ?? []) as unknown as BookingScopedRow[]).map(mapBooking) };
   }
 
   // ── KITCHEN: solo OGGI, diete/menu (no finanza/pickup nel blocco) ─────────
@@ -180,7 +192,7 @@ export async function fetchAdminScopedData(
       .eq('booking_date', today)
       .neq('status', 'cancelled')
       .order('booking_date');
-    const bookings = data ?? [];
+    const bookings = (data ?? []) as unknown as BookingScopedRow[];
     return { ...empty, bookingSnapshot: bookings.map(mapBooking), guestAlerts: await fetchGuestAlerts(bookings) };
   }
 
@@ -192,7 +204,7 @@ export async function fetchAdminScopedData(
     .lte('booking_date', nextWeek)
     .neq('status', 'cancelled')
     .order('booking_date');
-  const bookings = data ?? [];
+  const bookings = (data ?? []) as unknown as BookingScopedRow[];
   return {
     ...empty,
     bookingSnapshot: bookings.map(mapBooking),

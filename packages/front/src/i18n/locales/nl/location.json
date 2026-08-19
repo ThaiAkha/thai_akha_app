@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Ophaalpunt",
+  "editMode": "Bewerkmodus",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Ophaalservice nodig",
+  "fromHotel": "Vanaf het hotel",
+  "goMyself": "Ik kom zelf",
+  "meetAtSchool": "Afspreken bij de school",
+  "startLocation": "Startpunt (ophalen)",
+  "searchHotel": "Zoek je hotel...",
+  "sameDropoff": "Zelfde terugbrengpunt?",
+  "endLocation": "Eindpunt (terugbrengen)",
+  "sameAsPickup": "Zelfde als ophalen",
+  "pinOnMap": "Op de kaart markeren",
+  "pinDropoff": "Terugbrengpunt markeren",
+  "selectMeetingPoint": "Kies het ontmoetingspunt",
+  "updateBooking": "Boeking bijwerken",
+  "confirmLocation": "Locatie bevestigen",
+  "enterPickupName": "Geef je ophaalpunt een naam kha.",
+  "selectDropoff": "Kies een terugbrengpunt of zet 'Zelfde als ophalen' aan."
+}

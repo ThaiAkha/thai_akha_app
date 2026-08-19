@@ -1,0 +1,11 @@
+-- 20260817223956_profiles_role_default_guest.sql
+-- Task #73 - profiles.role. Applicata live 2026-08-18.
+--
+-- Il CHECK a elenco chiuso c'era gia' (profiles_role_check: admin · manager · agency · kitchen ·
+-- driver · logistics · alumni · guest - `alumni` previsto per il futuro), ma il DEFAULT era
+-- rimasto 'user', che in quell'elenco NON c'e': un INSERT che si affida al default fallisce
+-- contro il CHECK. Bug LATENTE, non una regressione: nessuna riga con role='user' e' mai esistita
+-- (decisione owner 2026-08-04: il cliente si chiama `guest`).
+--
+-- Nessuna migrazione dati: e' un solo ALTER.
+alter table public.profiles alter column role set default 'guest';

@@ -1,0 +1,8 @@
+{
+  "selectPrompt": "메뉴를 완성하려면 3가지 요리를 골라 주세요 kha!",
+  "saveFailed": "저장 실패",
+  "selectionSuffix": "선택",
+  "optionsSuffix": "옵션",
+  "confirmMenu": "메뉴 확정",
+  "savingMenu": "저장 중..."
+}

@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "สไตล์อาหารของคุณ",
+  "defaultDietDesc": "เลือกความชอบเพื่อปรับสูตรให้เข้ากับคุณ",
+  "regularDietName": "อาหารปกติ",
+  "regularDietDesc": "การปรุงแบบดั้งเดิม",
+  "selectPrompt": "เลือกสไตล์อาหารของคุณ\nก่อนดูเนื้อหา",
+  "originalLabel": "ต้นตำรับ",
+  "viewRecipe": "ดูสูตร",
+  "allergyAlertTitle": "แจ้งเตือนภูมิแพ้",
+  "allergyAlertBody": "สูตรด้านล่างตัดสารก่อภูมิแพ้ที่คุณเลือกออกแล้ว หากแพ้รุนแรงโปรดแจ้งเชฟทุกครั้ง",
+  "dietAdapted": "เมนูนี้จัดตามแนวทาง {{name}}",
+  "selectDietLabel": "เลือกอาหารของคุณ",
+  "personalize": "ปรับให้เป็นของคุณ",
+  "activeProfile": "โปรไฟล์ที่ใช้อยู่",
+  "headerDescReady": "เมนู {{diet}} พร้อมแล้ว",
+  "headerDescReadyAllergies": "เมนู {{diet}} พร้อมแล้ว ไม่มีสารก่อภูมิแพ้: {{allergies}}"
+}

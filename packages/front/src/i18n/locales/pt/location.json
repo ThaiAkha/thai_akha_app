@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Ponto de traslado",
+  "editMode": "Modo de edição",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Preciso de traslado",
+  "fromHotel": "Do hotel",
+  "goMyself": "Vou por conta própria",
+  "meetAtSchool": "Encontro na escola",
+  "startLocation": "Ponto de partida (traslado)",
+  "searchHotel": "Busque seu hotel...",
+  "sameDropoff": "Mesmo ponto de volta?",
+  "endLocation": "Ponto final (volta)",
+  "sameAsPickup": "Igual ao traslado",
+  "pinOnMap": "Marcar no mapa",
+  "pinDropoff": "Marcar a volta",
+  "selectMeetingPoint": "Escolha o ponto de encontro",
+  "updateBooking": "Atualizar reserva",
+  "confirmLocation": "Confirmar local",
+  "enterPickupName": "Dê um nome ao seu ponto de traslado kha.",
+  "selectDropoff": "Escolha um ponto de volta ou ative 'Igual ao traslado'."
+}

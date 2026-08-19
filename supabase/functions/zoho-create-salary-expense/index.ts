@@ -1,12 +1,25 @@
 // supabase/functions/zoho-create-salary-expense/index.ts
 //
-// Stipendi → Expense Zoho RAGGRUPPATE per metodo (max 2 al mese), su GO del manager:
-//   bank → 1 spesa unica "Employers - Salary - Bank"  · paid_through Bank 7502
-//   cash → 1 spesa unica "Employers - Salary - Cash"   · paid_through Black Box
-// Account-only (nessun vendor). I lavoratori (nome + totale + eventuale nota OT)
-// vanno tutti nella DESCRIZIONE della rispettiva spesa.
-// amount spesa = somma dei total_amount del gruppo.
-// Idempotente: salta le righe già con zoho_expense_id; write-back status=paid su tutto il gruppo.
+// Stipendi → Expense Zoho, su GO del manager. DUE regimi, decisi da staff_details.zoho_vendor_id:
+//
+//   A) INDIVIDUALE (zoho_vendor_id VALORIZZATO, oggi i founders Svevo/Niti)
+//      1 spesa per persona, con vendor_id = quel valore, ESCLUSA dai gruppi.
+//      Replica la prassi contabile fatta a mano da 2026-03 (serie mensile ~50k THB):
+//      stesso account/paid-through del pay_method, nonbillable, reference "Nome - salary YYYY-MM".
+//
+//   B) RAGGRUPPATO (zoho_vendor_id NULL) → max 2 spese account-only per mese:
+//      bank → 1 spesa unica "Employers - Salary - Bank"  · paid_through Bank 7502
+//      cash → 1 spesa unica "Employers - Salary - Cash"   · paid_through Black Box
+//      Nessun vendor. I lavoratori (nome + totale + eventuale nota OT) vanno tutti
+//      nella DESCRIZIONE della rispettiva spesa; amount = somma dei total_amount del gruppo
+//      (le righe individuali NON entrano nel totale).
+//
+// Idempotente: la select filtra già le righe con zoho_expense_id (per-riga sugli individuali,
+// per-gruppo sui raggruppati); write-back zoho_expense_id + status=paid.
+// staff_details è admin-only in RLS: qui si legge con service_role, di proposito. Il valore
+// del vendor NON esce mai nella response verso il client.
+//
+// Debug: { dry_run: true } restituisce la partizione e i payload SENZA scrivere su Zoho.
 //
 // I PAYSLIP individuali NON sono qui: si generano con un pulsante separato (render-report 'salary_payslip').
 //
@@ -81,6 +94,11 @@ interface SalaryRow {
   authors?: { name: string | null } | { name: string | null }[] | null;
 }
 
+const nameOf = (r: SalaryRow): string => {
+  const who = Array.isArray(r.authors) ? r.authors[0] : r.authors
+  return who?.name ?? 'Employee'
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ success: false, message: 'POST only' }, 405)
@@ -103,6 +121,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}))
     const period = body.period as string | undefined
     const salaryIds = Array.isArray(body.salary_ids) ? (body.salary_ids as string[]) : []
+    const dryRun = body.dry_run === true
     if (!period && salaryIds.length === 0)
       return json({ success: false, message: 'period or salary_ids[] required' }, 400)
 
@@ -117,20 +136,117 @@ Deno.serve(async (req: Request) => {
     const rows = (rowsRaw ?? []) as unknown as SalaryRow[]
     if (rows.length === 0) return json({ success: true, skipped: true, message: 'No pending salaries.' })
 
-    // 4) Raggruppa per metodo (bank/cash)
+    // 4) Chi ha un vendor Zoho proprio → spesa INDIVIDUALE, fuori dai gruppi.
+    //    staff_details è admin-only in RLS: qui service_role, letto di proposito e mai esposto.
+    const { data: sd, error: sdErr } = await admin
+      .from('staff_details')
+      .select('worker_id, zoho_vendor_id')
+      .in('worker_id', [...new Set(rows.map((r) => r.employee_id))])
+    if (sdErr) return json({ success: false, message: sdErr.message }, 500)
+    const vendorByWorker = new Map<string, string>()
+    for (const d of sd ?? []) {
+      const v = (d.zoho_vendor_id as string | null)?.trim()
+      if (v) vendorByWorker.set(d.worker_id as string, v)
+    }
+
+    const individuals = rows.filter((r) => vendorByWorker.has(r.employee_id))
+    const grouped = rows.filter((r) => !vendorByWorker.has(r.employee_id))
+
+    // 5) Raggruppa per metodo (bank/cash) SOLO le righe senza vendor proprio
     const groups: Record<string, SalaryRow[]> = {}
-    for (const r of rows) (groups[r.pay_method] ??= []).push(r)
+    for (const r of grouped) (groups[r.pay_method] ??= []).push(r)
 
     const dc = Deno.env.get('ZOHO_DC') ?? 'com'
     const org = Deno.env.get('ZOHO_ORG_ID')!
-    const token = await zohoToken()
     const today = new Date().toISOString().slice(0, 10)
     const per = period ?? rows[0].period
 
-    const results: Array<{ method: string; zoho_expense_id: string; amount: number; employees: number }> = []
-    const failures: Array<{ method: string; message: string }> = []
+    interface ExpenseResult {
+      kind: 'individual' | 'group'
+      method: string
+      zoho_expense_id: string
+      amount: number
+      employees: number
+      employee?: string
+    }
+    const results: ExpenseResult[] = []
+    const failures: Array<{ method: string; message: string; employee?: string }> = []
 
-    // 5) Una spesa unica per metodo
+    // Payload comune: individuale = vendor + 1 riga · gruppo = account-only + N righe.
+    const buildPayload = (method: string, amount: number, reference: string, description: string, vendorId?: string) => {
+      const cfg = METHOD_CFG[method]
+      return {
+        account_id: envOr(cfg.accountEnv, cfg.accountDef),
+        paid_through_account_id: envOr(cfg.paidEnv, cfg.paidDef),
+        ...(vendorId ? { vendor_id: vendorId } : {}),
+        date: today,
+        amount,
+        currency_code: 'THB',
+        is_billable: false,
+        reference_number: reference,
+        description,
+      }
+    }
+
+    if (dryRun) {
+      return json({
+        success: true, dry_run: true, period: per,
+        individual: individuals.map((r) => {
+          const ref = `${nameOf(r)} - salary ${per}`
+          return {
+            salary_id: r.id, employee: nameOf(r), method: r.pay_method, amount: Number(r.total_amount),
+            // vendor_id oscurato di proposito: il valore reale non esce mai verso il client
+            payload: METHOD_CFG[r.pay_method]
+              ? buildPayload(r.pay_method, Number(r.total_amount), ref.slice(0, 100), ref, '(vendor set)')
+              : { error: `Unknown pay_method "${r.pay_method}"` },
+          }
+        }),
+        groups: Object.keys(groups).map((m) => ({
+          method: m, employees: groups[m].length,
+          amount: groups[m].reduce((s, r) => s + Number(r.total_amount || 0), 0),
+        })),
+      })
+    }
+
+    const token = await zohoToken()
+
+    // 6) Spese INDIVIDUALI (una per riga, col vendor della persona)
+    for (const r of individuals) {
+      const who = nameOf(r)
+      const amount = Number(r.total_amount || 0)
+      if (amount <= 0) continue
+      if (!METHOD_CFG[r.pay_method]) {
+        failures.push({ method: r.pay_method, employee: who, message: `Unknown pay_method "${r.pay_method}"` })
+        continue
+      }
+      const ref = `${who} - salary ${per}`
+      const description = (r.overtime_note ? `${ref} (OT: ${r.overtime_note})` : ref).slice(0, 500)
+
+      const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${org}`, {
+        method: 'POST',
+        headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPayload(r.pay_method, amount, ref.slice(0, 100), description, vendorByWorker.get(r.employee_id)!)),
+      })
+      const zdata = await zres.json()
+      if (zdata.code !== 0 || !zdata.expense?.expense_id) {
+        console.error('ZOHO_SALARY_INDIVIDUAL_FAIL', who, zres.status, JSON.stringify(zdata))
+        failures.push({ method: r.pay_method, employee: who, message: zdata.message ?? 'Zoho error' })
+        continue
+      }
+      const expenseId = zdata.expense.expense_id as string
+
+      const nowIso = new Date().toISOString()
+      const { error: upErr } = await admin.from('staff_salaries')
+        .update({ zoho_expense_id: expenseId, status: 'paid', paid_at: nowIso, zoho_synced_at: nowIso })
+        .eq('id', r.id)
+      if (upErr) {
+        failures.push({ method: r.pay_method, employee: who, message: `Expense ${expenseId} ok but write-back failed: ${upErr.message}` })
+        continue
+      }
+      results.push({ kind: 'individual', method: r.pay_method, zoho_expense_id: expenseId, amount, employees: 1, employee: who })
+    }
+
+    // 7) Una spesa unica per metodo (solo le righe raggruppate)
     for (const method of Object.keys(groups)) {
       const cfg = METHOD_CFG[method]
       if (!cfg) continue
@@ -141,25 +257,15 @@ Deno.serve(async (req: Request) => {
       // Zoho: description max 500 caratteri (9 lavoratori + note OT possono sforare).
       const description = fitDescription(
         `Salaries ${per} - ${method.toUpperCase()} (${g.length}) THB ${amount.toLocaleString('en-US')}`,
-        g.map((r) => {
-          const who = Array.isArray(r.authors) ? r.authors[0] : r.authors
-          const nm = who?.name ?? 'Employee'
-          return `- ${nm}: THB ${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : '')
-        }),
+        g.map((r) =>
+          `- ${nameOf(r)}: THB ${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : ''),
+        ),
       )
 
       const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${org}`, {
         method: 'POST',
         headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          account_id: envOr(cfg.accountEnv, cfg.accountDef),
-          paid_through_account_id: envOr(cfg.paidEnv, cfg.paidDef),
-          date: today,
-          amount,
-          currency_code: 'THB',
-          reference_number: `SAL-${per}-${method.toUpperCase()}`,
-          description,
-        }),
+        body: JSON.stringify(buildPayload(method, amount, `SAL-${per}-${method.toUpperCase()}`, description)),
       })
       const zdata = await zres.json()
       if (zdata.code !== 0 || !zdata.expense?.expense_id) {
@@ -175,7 +281,7 @@ Deno.serve(async (req: Request) => {
         .in('id', g.map((r) => r.id))
       if (upErr) { failures.push({ method, message: `Expense ${expenseId} ok but write-back failed: ${upErr.message}` }); continue }
 
-      results.push({ method, zoho_expense_id: expenseId, amount, employees: g.length })
+      results.push({ kind: 'group', method, zoho_expense_id: expenseId, amount, employees: g.length })
     }
 
     return json({ success: failures.length === 0, period: per, expenses: results, failures })

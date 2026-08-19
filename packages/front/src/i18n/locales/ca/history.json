@@ -1,0 +1,21 @@
+{
+  "tabAll": "Tots",
+  "loadError": "No s'han pogut carregar les seccions de cultura",
+  "loadErrorHint": "Comprova la connexió i torna-ho a provar.",
+  "emptyTitle": "Cap secció en aquesta categoria",
+  "emptyHint": "Prova una altra pestanya o torna aviat.",
+  "chapterLoadError": "No s'ha pogut carregar aquest capítol",
+  "fallbackTitle": "Herència i cultura Akha",
+  "fallbackSubtitle": "Descobreix el viatge i la cultura viva del poble Akha",
+  "galleryLabel": "Galeria · {{count}} fotos",
+  "openGallery": "Obre la galeria completa",
+  "featuredBadge": "Destacat",
+  "chapter": "CAP. {{num}}",
+  "back": "Tots els capítols",
+  "explore": "Explora",
+  "listen": "Escolta",
+  "pause": "Pausa",
+  "otherChapters": "Altres capítols",
+  "backToHistory": "Torna a la història",
+  "moreHeritage": "Més herència Akha"
+}

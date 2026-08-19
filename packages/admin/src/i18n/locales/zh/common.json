@@ -115,5 +115,22 @@
   },
   "badges": {
     "hasLuggage": "携带行李"
+  },
+  "worker": {
+    "whoAreYou": "你是谁？",
+    "select": "选择你的名字",
+    "change": "更改",
+    "loading": "加载中…",
+    "none": "此任务暂无员工",
+    "roles": {
+      "teacher": "老师",
+      "helper": "助手",
+      "extra": "临时员工",
+      "setup": "布置",
+      "logistics": "后勤",
+      "driver": "司机",
+      "manager": "经理",
+      "admin": "管理员"
+    }
   }
 }

@@ -1,0 +1,10 @@
+{
+  "network": "Controlla la connessione e riprova.",
+  "server": "Qualcosa è andato storto. Riprova.",
+  "notFound": "Risorsa non trovata.",
+  "unauthorized": "Accedi per vedere questa pagina.",
+  "generic": "Si è verificato un errore inatteso.",
+  "couldNotLoad": "Impossibile caricare {{resource}}",
+  "connectionError": "Impossibile caricare le sezioni di cultura",
+  "tryDifferentTab": "Prova un'altra scheda o torna presto."
+}

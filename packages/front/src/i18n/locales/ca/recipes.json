@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "El teu estil de dieta",
+  "defaultDietDesc": "Tria la teva preferència per personalitzar les receptes.",
+  "regularDietName": "Dieta regular",
+  "regularDietDesc": "Preparació autèntica clàssica.",
+  "selectPrompt": "Tria el teu estil de dieta\nabans de veure el contingut",
+  "originalLabel": "ORIGINAL",
+  "viewRecipe": "Mostra la recepta",
+  "allergyAlertTitle": "Avís d'al·lèrgies",
+  "allergyAlertBody": "Les receptes de sota ja deixen fora els teus al·lèrgens seleccionats. Avisa sempre el teu xef si la teva al·lèrgia és greu.",
+  "dietAdapted": "Aquest menú segueix les pautes {{name}}.",
+  "selectDietLabel": "Tria la teva dieta",
+  "personalize": "Personalitza",
+  "activeProfile": "Perfil actiu",
+  "headerDescReady": "Menú {{diet}} a punt.",
+  "headerDescReadyAllergies": "Menú {{diet}} a punt. Sense al·lèrgens: {{allergies}}."
+}

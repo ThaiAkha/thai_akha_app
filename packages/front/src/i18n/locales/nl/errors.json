@@ -1,0 +1,10 @@
+{
+  "network": "Controleer je verbinding en probeer het opnieuw.",
+  "server": "Er ging iets mis. Probeer het opnieuw.",
+  "notFound": "Bron niet gevonden.",
+  "unauthorized": "Log in om deze pagina te bekijken.",
+  "generic": "Er is een onverwachte fout opgetreden.",
+  "couldNotLoad": "Kan {{resource}} niet laden",
+  "connectionError": "Kan de cultuurhoofdstukken niet laden",
+  "tryDifferentTab": "Probeer een ander tabblad of kom snel terug."
+}

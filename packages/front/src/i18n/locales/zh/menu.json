@@ -1,0 +1,8 @@
+{
+  "selectPrompt": "选择3道菜完成你的菜单!",
+  "saveFailed": "保存失败",
+  "selectionSuffix": "已选",
+  "optionsSuffix": "选项",
+  "confirmMenu": "确认菜单",
+  "savingMenu": "保存中..."
+}

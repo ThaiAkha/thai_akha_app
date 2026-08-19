@@ -1,0 +1,21 @@
+{
+  "tabAll": "Tutti",
+  "loadError": "Impossibile caricare le sezioni di cultura",
+  "loadErrorHint": "Controlla la connessione e riprova.",
+  "emptyTitle": "Nessuna sezione in questa categoria",
+  "emptyHint": "Prova un'altra scheda o torna presto.",
+  "chapterLoadError": "Impossibile caricare questo capitolo",
+  "fallbackTitle": "Eredità e cultura Akha",
+  "fallbackSubtitle": "Scopri il viaggio e la cultura viva del popolo Akha",
+  "galleryLabel": "Galleria · {{count}} foto",
+  "openGallery": "Apri la galleria completa",
+  "featuredBadge": "In evidenza",
+  "chapter": "CAP. {{num}}",
+  "back": "Tutti i capitoli",
+  "explore": "Esplora",
+  "listen": "Ascolta",
+  "pause": "Pausa",
+  "otherChapters": "Altri capitoli",
+  "backToHistory": "Torna alla storia",
+  "moreHeritage": "Altra eredità Akha"
+}

@@ -1,0 +1,21 @@
+{
+  "tabAll": "전체",
+  "loadError": "문화 챕터를 불러올 수 없어요",
+  "loadErrorHint": "연결을 확인하고 다시 시도해 주세요.",
+  "emptyTitle": "이 카테고리에는 챕터가 없어요",
+  "emptyHint": "다른 탭을 눌러 보거나 잠시 후 다시 와 주세요.",
+  "chapterLoadError": "이 챕터를 불러올 수 없어요",
+  "fallbackTitle": "아카 유산과 문화",
+  "fallbackSubtitle": "아카족의 여정과 살아 있는 문화를 만나 보세요",
+  "galleryLabel": "갤러리 · 사진 {{count}}장",
+  "openGallery": "전체 갤러리 열기",
+  "featuredBadge": "추천",
+  "chapter": "{{num}}장",
+  "back": "모든 챕터",
+  "explore": "둘러보기",
+  "listen": "듣기",
+  "pause": "일시정지",
+  "otherChapters": "다른 챕터",
+  "backToHistory": "역사로 돌아가기",
+  "moreHeritage": "아카 유산 더 보기"
+}

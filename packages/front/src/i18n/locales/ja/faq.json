@@ -1,0 +1,13 @@
+{
+  "title": "よくある質問",
+  "viewAll": "すべての質問",
+  "askCherry": "Cherryに聞く",
+  "searchLabel": "答えを探す",
+  "searchPlaceholder": "質問を検索...",
+  "searchClear": "検索をクリア",
+  "filterAll": "すべてのテーマ",
+  "filterReset": "フィルターをリセット",
+  "resultsCount": "{{total}}件中{{shown}}件の質問",
+  "noResultsTitle": "検索に一致する質問がありません",
+  "noResultsBody": "別の言葉で試すか、フィルターをクリアしてください。すぐ上のCherryに直接聞くこともできますよ。"
+}

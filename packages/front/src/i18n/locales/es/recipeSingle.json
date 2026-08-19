@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "EXPLORADOR DE HERENCIA",
+  "signature": "Insignia",
+  "enlarge": "Ampliar",
+  "containsAllergen": "Contiene {{allergen}}",
+  "askCherry": "Pregunta a Cherry",
+  "askCherrySubtitle": "tu asistente de IA",
+  "curiousAboutDetails": "¿Curioso por los detalles?",
+  "viewDetails": "Ver detalles",
+  "secretChef": "Los detalles de los ingredientes son el secreto de nuestro Chef.",
+  "closeDetails": "Cerrar detalles",
+  "backToRecipes": "Volver a recetas",
+  "notFound": "Receta no encontrada",
+  "dishAdded": "Plato añadido a tu colección",
+  "reserveMenu": "Resérvalo para tu menú",
+  "detailN": "Detalle {{n}}",
+  "signatureDish": "Plato insignia",
+  "historyOf": "Cuéntame la historia de {{name}} para mi dieta {{diet}} kha",
+  "defaultWarning": "Prepararemos tu plato pensando en tu seguridad.",
+  "garnish": "Guarnición",
+  "cooksTip": "Consejo del chef",
+  "loginForRecipe": "Receta completa para miembros",
+  "loginForRecipeDesc": "Inicia sesión para ver el paso a paso, las guarniciones y los consejos del chef.",
+  "categories": {
+    "appetizer": "Entrantes",
+    "dessert": "Postres",
+    "akha_specialty": "Tradicional Akha",
+    "curry": "Curry",
+    "soup": "Sopa",
+    "stirfry": "Salteado"
+  }
+}

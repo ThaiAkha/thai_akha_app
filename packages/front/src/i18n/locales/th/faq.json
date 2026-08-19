@@ -1,0 +1,13 @@
+{
+  "title": "ถาม-ตอบ",
+  "viewAll": "คำถามทั้งหมด",
+  "askCherry": "ถาม Cherry",
+  "searchLabel": "หาคำตอบ",
+  "searchPlaceholder": "ค้นหาในคำถาม...",
+  "searchClear": "ล้างการค้นหา",
+  "filterAll": "ทุกหัวข้อ",
+  "filterReset": "รีเซ็ตตัวกรอง",
+  "resultsCount": "{{shown}} จาก {{total}} คำถาม",
+  "noResultsTitle": "ไม่มีคำถามที่ตรงกับการค้นหา",
+  "noResultsBody": "ลองคำอื่นหรือล้างตัวกรอง หรือถาม Cherry ด้านบนได้เลยค่ะ"
+}

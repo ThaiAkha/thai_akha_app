@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Thai Akha Kitchen | Corso di cucina autentico a Chiang Mai",
+    "description": "Cucina 11 piatti autentici Akha alla tua postazione personale. Secondo la tua dieta, con pickup in hotel e ricettario a colori."
+  },
+  "cookingClass": {
+    "title": "Corsi di cucina | Thai Akha Kitchen",
+    "description": "Impara l'autentica cucina Akha delle montagne a Chiang Mai. Corsi mattutini e pomeridiani con pickup in hotel incluso."
+  },
+  "morning": {
+    "title": "Corso mattutino e mercato | Thai Akha Kitchen",
+    "description": "Corso mattutino di 6 ore a Chiang Mai (1,400 THB). 1 ora di mercato con ceste di bambù e 11 piatti al tuo wok. Vegani e allergie benvenuti."
+  },
+  "evening": {
+    "title": "Corso di cucina pomeridiano a Chiang Mai | Thai Akha Kitchen",
+    "description": "Rilassato corso pomeridiano di 5 ore a Chiang Mai (1,300 THB). Dalle 17 alle 21. Cucina e cena con 11 piatti al tuo wok. Pickup gratuito."
+  }
+}

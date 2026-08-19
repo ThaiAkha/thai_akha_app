@@ -4,7 +4,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { WorkerRole } from '@thaiakha/shared/types/workers.types';
 import Button from '../ui/button/Button';
 import Avatar from '../ui/avatar/Avatar';
-import { Banknote, Printer, Save, Check, Wallet, Landmark, FileText, Truck, EyeOff, ArrowRight } from 'lucide-react';
+import { Banknote, Printer, Save, Check, Wallet, Landmark, FileText, Truck, EyeOff, ArrowRight, Receipt } from 'lucide-react';
 
 /**
  * Salary roster (task #29) - PEOPLE, not logins.
@@ -49,6 +49,8 @@ const SalaryRoster: React.FC<SalaryRosterProps> = ({ onOpenDriverPayouts }) => {
     const [period, setPeriod] = useState<string>(thisMonth());
     const [people, setPeople] = useState<Person[] | null>(null);
     const [bases, setBases] = useState<Record<string, number | null>>({});
+    // staff_details.zoho_vendor_id valorizzato → la riga esce dai gruppi: spesa Zoho individuale.
+    const [individualIds, setIndividualIds] = useState<Set<string>>(new Set());
     const [baseVisible, setBaseVisible] = useState<boolean>(true);
     const [salaries, setSalaries] = useState<Record<string, SalaryRow>>({});
     const [drafts, setDrafts] = useState<Record<string, Draft>>({});
@@ -75,13 +77,18 @@ const SalaryRoster: React.FC<SalaryRosterProps> = ({ onOpenDriverPayouts }) => {
 
         // Base salary: RLS returns nothing (or an error) for non admin/manager. That is BY DESIGN:
         // never bypass, just show a clean "not visible" hint.
-        const { data: sd, error: sdErr } = await supabase.from('staff_details').select('worker_id, salary_thb');
-        if (sdErr || !sd || sd.length === 0) { setBaseVisible(false); setBases({}); }
+        const { data: sd, error: sdErr } = await supabase.from('staff_details').select('worker_id, salary_thb, zoho_vendor_id');
+        if (sdErr || !sd || sd.length === 0) { setBaseVisible(false); setBases({}); setIndividualIds(new Set()); }
         else {
             setBaseVisible(true);
             const m: Record<string, number | null> = {};
-            for (const r of sd) m[r.worker_id] = r.salary_thb;
+            const ind = new Set<string>();
+            for (const r of sd) {
+                m[r.worker_id] = r.salary_thb;
+                if (r.zoho_vendor_id) ind.add(r.worker_id);
+            }
             setBases(m);
+            setIndividualIds(ind);
         }
         return list;
     }, []);
@@ -155,7 +162,8 @@ const SalaryRoster: React.FC<SalaryRosterProps> = ({ onOpenDriverPayouts }) => {
         } finally { setSavingId(null); }
     };
 
-    // Grouped Zoho expenses (bank / cash) for the month - edge zoho-create-salary-expense { period }.
+    // Zoho expenses for the month - edge zoho-create-salary-expense { period }:
+    // one per person with an own vendor (staff_details.zoho_vendor_id), plus the bank/cash group ones for the rest.
     const createExpenses = async () => {
         if (busy) return;
         if (!window.confirm(t('salary.confirmExpenses', { defaultValue: 'Create the grouped Zoho salary expense(s) for {{p}}?', p: period }))) return;
@@ -163,8 +171,8 @@ const SalaryRoster: React.FC<SalaryRosterProps> = ({ onOpenDriverPayouts }) => {
         try {
             const { data, error } = await supabase.functions.invoke('zoho-create-salary-expense', { body: { period } });
             if (error) throw error;
-            const res = data as { success?: boolean; failures?: { method: string; message: string }[] };
-            if (res.failures?.length) alert(t('salary.someFailed', { defaultValue: 'Some failed' }) + ': ' + res.failures.map(f => `${f.method}: ${f.message}`).join(' · '));
+            const res = data as { success?: boolean; failures?: { method: string; message: string; employee?: string }[] };
+            if (res.failures?.length) alert(t('salary.someFailed', { defaultValue: 'Some failed' }) + ': ' + res.failures.map(f => `${f.employee ? `${f.employee} (${f.method})` : f.method}: ${f.message}`).join(' · '));
             await fetchSalaries(period, people ?? []);
         } catch (err) {
             alert(t('salary.expenseError', { defaultValue: 'Expense error' }) + ': ' + (err instanceof Error ? err.message : ''));
@@ -242,11 +250,21 @@ const SalaryRoster: React.FC<SalaryRosterProps> = ({ onOpenDriverPayouts }) => {
                                 const d = drafts[p.id] ?? { amount: '', note: '', method: 'bank' as const };
                                 const locked = !!s?.zoho_expense_id; // already expensed → read-only
                                 const otherHats = p.roles.filter(r => r !== p.primaryRole);
+                                // Own Zoho vendor → own expense, never inside the bank/cash group one.
+                                const individual = individualIds.has(p.id) && !isDriver(p);
                                 const head = (
                                     <div className="min-w-[140px] flex-1 flex items-center gap-3">
                                         <Avatar src={p.avatarUrl ?? undefined} alt={p.name} size="medium" />
                                         <div className="min-w-0">
-                                            <div className="text-sm font-bold text-gray-900 dark:text-white truncate">{p.name}</div>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{p.name}</span>
+                                                {individual && (
+                                                    <span title={t('salary.individualExpenseHint', { defaultValue: 'Its own Zoho expense, not part of the bank/cash group one.' })}
+                                                        className="shrink-0 inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                        <Receipt className="w-3 h-3" />{t('salary.individualExpense', { defaultValue: 'Individual expense' })}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="text-[10px] font-black uppercase tracking-wider text-gray-400 truncate">
                                                 {roleLabel(p.primaryRole)}{otherHats.length > 0 && <span className="text-gray-300 dark:text-gray-600"> · {otherHats.map(roleLabel).join(' · ')}</span>}
                                             </div>

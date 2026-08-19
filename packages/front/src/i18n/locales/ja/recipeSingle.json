@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "遺産エクスプローラー",
+  "signature": "シグネチャー",
+  "enlarge": "拡大",
+  "containsAllergen": "{{allergen}}を含む",
+  "askCherry": "Cherryに聞く",
+  "askCherrySubtitle": "あなたのAIアシスタント",
+  "curiousAboutDetails": "詳しく知りたい？",
+  "viewDetails": "詳細を見る",
+  "secretChef": "食材の詳細はシェフの秘密です。",
+  "closeDetails": "詳細を閉じる",
+  "backToRecipes": "レシピに戻る",
+  "notFound": "レシピが見つかりません",
+  "dishAdded": "コレクションに料理を追加しました",
+  "reserveMenu": "マイメニューに入れる",
+  "detailN": "ディテール{{n}}",
+  "signatureDish": "シグネチャー料理",
+  "historyOf": "{{diet}}の私に{{name}}の歴史を教えてください kha",
+  "defaultWarning": "あなたの安全を考えてお料理を準備します。",
+  "garnish": "付け合わせ",
+  "cooksTip": "シェフのコツ",
+  "loginForRecipe": "メンバー限定フルレシピ",
+  "loginForRecipeDesc": "ログインすると手順、付け合わせ、シェフのコツが見られます。",
+  "categories": {
+    "appetizer": "前菜",
+    "dessert": "デザート",
+    "akha_specialty": "アカの伝統",
+    "curry": "カレー",
+    "soup": "スープ",
+    "stirfry": "炒めもの"
+  }
+}

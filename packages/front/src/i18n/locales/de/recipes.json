@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "Dein Ernährungsstil",
+  "defaultDietDesc": "Wähle deine Vorliebe, um die Rezepte auf dich abzustimmen.",
+  "regularDietName": "Klassische Küche",
+  "regularDietDesc": "Klassische authentische Zubereitung.",
+  "selectPrompt": "Wähle deinen Ernährungsstil\nbevor du den Inhalt siehst",
+  "originalLabel": "ORIGINAL",
+  "viewRecipe": "Rezept ansehen",
+  "allergyAlertTitle": "Allergie-Hinweis",
+  "allergyAlertBody": "Die Rezepte unten sind bereits frei von deinen gewählten Allergenen. Sag deinem Chef immer Bescheid, wenn deine Allergie schwer ist.",
+  "dietAdapted": "Dieses Menü folgt den {{name}}-Richtlinien.",
+  "selectDietLabel": "Wähle deine Ernährung",
+  "personalize": "Personalisieren",
+  "activeProfile": "Aktives Profil",
+  "headerDescReady": "{{diet}}-Menü bereit.",
+  "headerDescReadyAllergies": "{{diet}}-Menü bereit. Allergenfrei: {{allergies}}."
+}

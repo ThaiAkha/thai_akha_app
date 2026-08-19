@@ -1,0 +1,8 @@
+{
+  "selectPrompt": "Choisissez 3 plats pour compléter votre menu kha !",
+  "saveFailed": "Échec de l'enregistrement",
+  "selectionSuffix": "Sélection",
+  "optionsSuffix": "Options",
+  "confirmMenu": "Confirmer le menu",
+  "savingMenu": "Enregistrement..."
+}

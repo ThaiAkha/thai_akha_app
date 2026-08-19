@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "นักสำรวจมรดก",
+  "signature": "ซิกเนเจอร์",
+  "enlarge": "ขยาย",
+  "containsAllergen": "มี {{allergen}}",
+  "askCherry": "ถาม Cherry",
+  "askCherrySubtitle": "ผู้ช่วย AI ของคุณ",
+  "curiousAboutDetails": "อยากรู้รายละเอียด?",
+  "viewDetails": "ดูรายละเอียด",
+  "secretChef": "รายละเอียดวัตถุดิบเป็นความลับของเชฟเรา",
+  "closeDetails": "ปิดรายละเอียด",
+  "backToRecipes": "กลับไปที่สูตร",
+  "notFound": "ไม่พบสูตร",
+  "dishAdded": "เพิ่มเมนูในคอลเลกชันของคุณแล้ว",
+  "reserveMenu": "จองไว้สำหรับเมนูของคุณ",
+  "detailN": "รายละเอียด {{n}}",
+  "signatureDish": "เมนูซิกเนเจอร์",
+  "historyOf": "เล่าประวัติของ {{name}} สำหรับอาหาร {{diet}} ของฉันหน่อยค่ะ",
+  "defaultWarning": "เราจะปรุงจานของคุณโดยคำนึงถึงความปลอดภัยของคุณ",
+  "garnish": "เครื่องเคียง",
+  "cooksTip": "เคล็ดลับเชฟ",
+  "loginForRecipe": "สูตรเต็มสำหรับสมาชิก",
+  "loginForRecipeDesc": "เข้าสู่ระบบเพื่อดูขั้นตอน เครื่องเคียง และเคล็ดลับเชฟ",
+  "categories": {
+    "appetizer": "ของว่าง",
+    "dessert": "ของหวาน",
+    "akha_specialty": "อาข่าดั้งเดิม",
+    "curry": "แกง",
+    "soup": "ซุป",
+    "stirfry": "ผัด"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "ザ・ファラン（マイルド）",
+    "2": "タイスマイル（軽め）",
+    "3": "リスペクト！（中辛）",
+    "4": "タイスパイシー（現地流）",
+    "5": "アカの戦士（激辛）"
+  },
+  "dietaryMap": {
+    "diet_regular": "通常",
+    "diet_vegan": "ヴィーガン",
+    "diet_vegetarian": "ベジタリアン",
+    "diet_pescatarian": "ペスカタリアン",
+    "diet_meat_lover": "お肉好き",
+    "diet_halal": "ハラル対応",
+    "diet_kosher": "コーシャ対応",
+    "diet_rastafari": "ラスタファリ（Ital）",
+    "diet_jain": "ジャイナ教対応",
+    "diet_hindu": "ヒンドゥー教対応"
+  }
+}

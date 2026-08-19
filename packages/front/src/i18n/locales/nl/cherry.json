@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "De Farang (Zacht)",
+    "2": "Thaise Glimlach (Mild)",
+    "3": "Respect! (Medium)",
+    "4": "Thai Spicy (Lokaal)",
+    "5": "Akha-Krijger (Extreem)"
+  },
+  "dietaryMap": {
+    "diet_regular": "Gewoon",
+    "diet_vegan": "Vegan",
+    "diet_vegetarian": "Vegetarisch",
+    "diet_pescatarian": "Pescotarisch",
+    "diet_meat_lover": "Vleesliefhebber",
+    "diet_halal": "Halal-vriendelijk",
+    "diet_kosher": "Koosjer-vriendelijk",
+    "diet_rastafari": "Rastafari (Ital)",
+    "diet_jain": "Jain-vriendelijk",
+    "diet_hindu": "Hindoe-vriendelijk"
+  }
+}

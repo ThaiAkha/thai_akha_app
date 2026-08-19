@@ -1,0 +1,13 @@
+{
+  "title": "Preguntes i respostes",
+  "viewAll": "Totes les preguntes",
+  "askCherry": "Pregunta a la Cherry",
+  "searchLabel": "Troba una resposta",
+  "searchPlaceholder": "Cerca entre les preguntes...",
+  "searchClear": "Esborra la cerca",
+  "filterAll": "Tots els temes",
+  "filterReset": "Restableix els filtres",
+  "resultsCount": "{{shown}} de {{total}} preguntes",
+  "noResultsTitle": "Cap pregunta coincideix amb la teva cerca",
+  "noResultsBody": "Prova una altra paraula o esborra els filtres. La Cherry és aquí dalt si prefereixes preguntar directament."
+}

@@ -1,0 +1,10 @@
+{
+  "network": "请检查网络后重试。",
+  "server": "出了点问题,请重试。",
+  "notFound": "未找到资源。",
+  "unauthorized": "请登录后查看此页面。",
+  "generic": "发生了意外错误。",
+  "couldNotLoad": "无法加载{{resource}}",
+  "connectionError": "无法加载文化章节",
+  "tryDifferentTab": "试试其他标签或稍后再来。"
+}

@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Abholpunkt",
+  "editMode": "Bearbeitungsmodus",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Abholung nötig",
+  "fromHotel": "Vom Hotel",
+  "goMyself": "Ich komme selbst",
+  "meetAtSchool": "Treffen an der Schule",
+  "startLocation": "Startpunkt (Abholung)",
+  "searchHotel": "Hotel suchen...",
+  "sameDropoff": "Gleicher Rückweg?",
+  "endLocation": "Endpunkt (Rückfahrt)",
+  "sameAsPickup": "Wie die Abholung",
+  "pinOnMap": "Auf der Karte markieren",
+  "pinDropoff": "Rückfahrt markieren",
+  "selectMeetingPoint": "Treffpunkt wählen",
+  "updateBooking": "Buchung aktualisieren",
+  "confirmLocation": "Ort bestätigen",
+  "enterPickupName": "Gib deinem Abholpunkt einen Namen kha.",
+  "selectDropoff": "Wähle einen Rückfahrpunkt oder aktiviere 'Wie die Abholung'."
+}

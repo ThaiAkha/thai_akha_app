@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "Jouw eetstijl",
+  "defaultDietDesc": "Kies je voorkeur om de recepten op jou af te stemmen.",
+  "regularDietName": "Gewoon dieet",
+  "regularDietDesc": "Klassieke authentieke bereiding.",
+  "selectPrompt": "Kies je eetstijl\nvoordat je de inhoud bekijkt",
+  "originalLabel": "ORIGINEEL",
+  "viewRecipe": "Bekijk recept",
+  "allergyAlertTitle": "Allergiewaarschuwing",
+  "allergyAlertBody": "De recepten hieronder laten jouw geselecteerde allergenen al weg. Vertel het je chef altijd als je allergie ernstig is.",
+  "dietAdapted": "Dit menu volgt de {{name}}-richtlijnen.",
+  "selectDietLabel": "Kies je dieet",
+  "personalize": "Personaliseren",
+  "activeProfile": "Actief profiel",
+  "headerDescReady": "{{diet}}-menu klaar.",
+  "headerDescReadyAllergies": "{{diet}}-menu klaar. Allergeenvrij: {{allergies}}."
+}

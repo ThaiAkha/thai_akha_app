@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "アカの台所の知恵",
+    "fallbackDesc": "山から届く伝統の語り。",
+    "playAudio": "音声を再生",
+    "pauseAudio": "音声を一時停止",
+    "playStory": "不思議な物語を再生",
+    "pauseStory": "物語を一時停止",
+    "restartTitle": "最初から",
+    "restartAria": "最初から再生",
+    "readTranscript": "文字起こしを読む",
+    "hideTranscript": "文字起こしを隠す"
+  },
+  "map": {
+    "locationTitle": "周辺マップ",
+    "enableInteraction": "クリックで地図を操作",
+    "lockScroll": "地図のスクロールをロック"
+  },
+  "gallery": {
+    "viewGallery": "ギャラリーを見る",
+    "closeGallery": "ギャラリーを閉じる",
+    "chip": "ギャラリー",
+    "openCategoryGallery": "{{name}}のフォトギャラリーを開く"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "エラー。もう一度どうぞ",
+    "statusTyping": "入力中...",
+    "statusIdle": "何でも聞いてくださいね kha",
+    "askCherry": "Cherryに聞く",
+    "greeting": "サワディーカー",
+    "voiceActive": "音声セッション中",
+    "promptFallback": "Thai Akhaの台所ガイド、Cherryに聞いてみて。"
+  },
+  "legalMeta": {
+    "version": "バージョン",
+    "effective": "発効日：",
+    "lastUpdated": "最終更新："
+  },
+  "sidebarInfo": {
+    "menuTitle": "インフォメーション"
+  },
+  "media": {
+    "photoFallback": "写真",
+    "videoThumbnail": "動画サムネイル"
+  },
+  "essentials": {
+    "keyFacts": "基本データ",
+    "references": "参考資料",
+    "aboutAi": "AIについて",
+    "published": "公開日",
+    "updated": "更新日"
+  }
+}

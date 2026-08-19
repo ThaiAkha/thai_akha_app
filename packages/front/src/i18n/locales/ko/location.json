@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "픽업 장소",
+  "editMode": "편집 모드",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "픽업 필요",
+  "fromHotel": "호텔에서",
+  "goMyself": "직접 갈게요",
+  "meetAtSchool": "스쿨에서 만나요",
+  "startLocation": "출발지 (픽업)",
+  "searchHotel": "호텔 검색...",
+  "sameDropoff": "돌아갈 곳도 같나요?",
+  "endLocation": "도착지 (드롭오프)",
+  "sameAsPickup": "픽업과 동일",
+  "pinOnMap": "지도에 표시",
+  "pinDropoff": "드롭오프 표시",
+  "selectMeetingPoint": "미팅 포인트 선택",
+  "updateBooking": "예약 업데이트",
+  "confirmLocation": "위치 확정",
+  "enterPickupName": "픽업 장소에 이름을 붙여 주세요 kha.",
+  "selectDropoff": "드롭오프 지점을 고르거나 '픽업과 동일'을 켜 주세요."
+}

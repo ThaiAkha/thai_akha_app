@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Thai Akha Kitchen | Aula de culinária autêntica em Chiang Mai",
+    "description": "Cozinhe 11 pratos autênticos Akha na sua estação pessoal. Conforme sua dieta, com traslado do hotel e livro de receitas colorido."
+  },
+  "cookingClass": {
+    "title": "Aulas de culinária | Thai Akha Kitchen",
+    "description": "Aprenda a autêntica culinária Akha das montanhas em Chiang Mai. Aulas matinais e vespertinas com traslado do hotel incluído."
+  },
+  "morning": {
+    "title": "Aula matinal e tour do mercado | Thai Akha Kitchen",
+    "description": "Aula matinal de 6 horas em Chiang Mai (1,400 THB). 1 hora de mercado com cestas de bambu e 11 pratos no seu wok. Veganos e alergias bem-vindos."
+  },
+  "evening": {
+    "title": "Aula de culinária vespertina em Chiang Mai | Thai Akha Kitchen",
+    "description": "Aula vespertina relaxada de 5 horas em Chiang Mai (1,300 THB). Das 17h às 21h. Cozinhe e jante 11 pratos no seu wok. Traslado grátis."
+  }
+}

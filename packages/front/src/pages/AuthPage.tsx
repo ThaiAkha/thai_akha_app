@@ -6,15 +6,19 @@ import AuthForm from '../components/auth/AuthForm';
 import { contentService } from '@thaiakha/shared/services';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t, tObj } from '../i18n';
+import { AUTH_HERO_IMAGES, ONBOARDING_CARDS_META } from '../config/auth';
 import type { LegalDocument } from '@thaiakha/shared';
 import { getInfoPage } from '../services/infoPages.service';
 import LegalDocumentStaticViewer from '../components/legal/LegalDocumentStaticViewer';
 import { InfoContentSkeleton } from '../components/skeleton';
 
-interface OnboardingCard {
+/** Testo (da i18n) - icon/color arrivano da ONBOARDING_CARDS_META (config/auth). */
+interface OnboardingCardText {
   title: string;
   description?: string;
   body?: string;
+}
+interface OnboardingCard extends OnboardingCardText {
   icon: string;
   color: 'primary' | 'action' | 'secondary' | 'subtle';
 }
@@ -117,7 +121,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar [scrollbar-gutter:stable] [padding-inline:var(--space-fluid-m)] [padding-top:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)] flex flex-col items-center [gap:var(--space-fluid-s)]">
                   <div className="flex justify-center shrink-0 [min-height:calc(var(--auth-hero-img)*0.67)] items-center">
                     <img
-                      src={t('auth:onboarding.chef.heroImage')}
+                      src={AUTH_HERO_IMAGES.chef}
                       alt="Chef Cherry"
                       className="h-auto object-contain"
                       style={{ width: 'calc(var(--auth-hero-img) * 0.63)', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))' }}
@@ -136,7 +140,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                     />
                   </div>
                   <div className="flex flex-col [gap:var(--space-fluid-xs)] [margin-top:var(--space-fluid-s)] w-full">
-                    {tObj('auth:onboarding.chef.cards').map((card, i) => renderFeatureRow(card as OnboardingCard, i))}
+                    {tObj('auth:onboarding.chef.cards').map((card, i) => renderFeatureRow({ ...(card as OnboardingCardText), ...ONBOARDING_CARDS_META.chef[i] }, i))}
                   </div>
                 </div>
               </div>
@@ -146,7 +150,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar [scrollbar-gutter:stable] [padding-inline:var(--space-fluid-m)] [padding-top:var(--space-fluid-m)] [padding-bottom:var(--space-fluid-m)] flex flex-col items-center [gap:var(--space-fluid-s)]">
                   <div className="flex justify-center shrink-0 [min-height:calc(var(--auth-hero-img)*0.67)] items-center">
                     <img
-                      src={t('auth:onboarding.story.heroImage')}
+                      src={AUTH_HERO_IMAGES.story}
                       alt="Akha Storyteller"
                       className="h-auto object-contain"
                       loading="lazy"
@@ -168,7 +172,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
                     />
                   </div>
                   <div className="flex flex-col [gap:var(--space-fluid-xs)] [margin-top:var(--space-fluid-s)] w-full">
-                    {tObj('auth:onboarding.story.cards').map((card, i) => renderFeatureRow(card as OnboardingCard, i))}
+                    {tObj('auth:onboarding.story.cards').map((card, i) => renderFeatureRow({ ...(card as OnboardingCardText), ...ONBOARDING_CARDS_META.story[i] }, i))}
                   </div>
                 </div>
               </div>

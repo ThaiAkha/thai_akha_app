@@ -1,23 +1,18 @@
 {
-  "ogDefault": "https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg",
   "home": {
     "title": "Thai Akha Kitchen | Authentic Cooking Class in Chiang Mai",
-    "description": "Cook 11 authentic Akha highland dishes at your personal station. Tailored to dietary needs, from hotel pick-up to full-color cookbook.",
-    "canonical": "https://www.thaiakha.com/"
+    "description": "Cook 11 authentic Akha highland dishes at your personal station. Tailored to dietary needs, from hotel pick-up to full-color cookbook."
   },
   "cookingClass": {
     "title": "Cooking Classes | Thai Akha Kitchen",
-    "description": "Learn authentic Akha highland cooking in Chiang Mai. Morning and evening classes available with hotel pickup included.",
-    "canonical": "https://www.thaiakha.com/thai-cooking-classes-chiang-mai"
+    "description": "Learn authentic Akha highland cooking in Chiang Mai. Morning and evening classes available with hotel pickup included."
   },
   "morning": {
     "title": "Morning Cooking Class & Market Tour | Thai Akha Kitchen",
-    "description": "6-hour morning cooking class in Chiang Mai (1,400 THB). 1-hour market tour with bamboo baskets, then cook 11 dishes at your own wok. Vegan/allergy safe.",
-    "canonical": "https://www.thaiakha.com/morning-cooking-class-market-tour"
+    "description": "6-hour morning cooking class in Chiang Mai (1,400 THB). 1-hour market tour with bamboo baskets, then cook 11 dishes at your own wok. Vegan/allergy safe."
   },
   "evening": {
     "title": "Evening Cooking Class in Chiang Mai | Thai Akha Kitchen",
-    "description": "Relaxed 5-hour evening cooking class in Chiang Mai (1,300 THB). 5:00 to 9:00 PM. Cook and eat 11 dishes for dinner at your own wok. Free hotel pickup.",
-    "canonical": "https://www.thaiakha.com/evening-cooking-class-dinner"
+    "description": "Relaxed 5-hour evening cooking class in Chiang Mai (1,300 THB). 5:00 to 9:00 PM. Cook and eat 11 dishes for dinner at your own wok. Free hotel pickup."
   }
 }

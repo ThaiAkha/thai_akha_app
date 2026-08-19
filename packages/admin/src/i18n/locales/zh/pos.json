@@ -2,7 +2,7 @@
   "sidebar": {
     "title": "访客",
     "guest": "访客",
-    "selectGuest": "Select a guest to start billing",
+    "selectGuest": "选择一位客人开始结账",
     "noClass": "没有需要结算的课程。"
   },
   "content": {

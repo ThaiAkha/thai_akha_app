@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "Sabiduría de la cocina Akha",
+    "fallbackDesc": "Relato tradicional de las montañas.",
+    "playAudio": "Reproducir audio",
+    "pauseAudio": "Pausar audio",
+    "playStory": "Reproducir historia misteriosa",
+    "pauseStory": "Pausar historia misteriosa",
+    "restartTitle": "Reiniciar",
+    "restartAria": "Reiniciar desde el principio",
+    "readTranscript": "Leer transcripción",
+    "hideTranscript": "Ocultar transcripción"
+  },
+  "map": {
+    "locationTitle": "Mapa de ubicación",
+    "enableInteraction": "Haz clic para activar el mapa",
+    "lockScroll": "Bloquear desplazamiento del mapa"
+  },
+  "gallery": {
+    "viewGallery": "Ver galería",
+    "closeGallery": "Cerrar galería",
+    "chip": "Galería",
+    "openCategoryGallery": "Abrir la galería de fotos de {{name}}"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "Error. Inténtalo de nuevo",
+    "statusTyping": "Escribiendo...",
+    "statusIdle": "Pregúntame lo que quieras kha",
+    "askCherry": "Pregunta a Cherry",
+    "greeting": "Sawasdee kha",
+    "voiceActive": "Sesión de voz activa",
+    "promptFallback": "Pregunta a Cherry, tu guía culinaria Thai Akha."
+  },
+  "legalMeta": {
+    "version": "Versión",
+    "effective": "En vigor desde:",
+    "lastUpdated": "Última actualización:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "Información"
+  },
+  "media": {
+    "photoFallback": "Foto",
+    "videoThumbnail": "Miniatura del vídeo"
+  },
+  "essentials": {
+    "keyFacts": "Datos clave",
+    "references": "Referencias",
+    "aboutAi": "Sobre la IA",
+    "published": "Publicado",
+    "updated": "Actualizado"
+  }
+}

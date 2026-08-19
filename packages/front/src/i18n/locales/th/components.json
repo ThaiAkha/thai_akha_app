@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "ภูมิปัญญาครัวอาข่า",
+    "fallbackDesc": "เรื่องเล่าดั้งเดิมจากขุนเขา",
+    "playAudio": "เล่นเสียง",
+    "pauseAudio": "หยุดเสียง",
+    "playStory": "เล่นเรื่องเล่าลึกลับ",
+    "pauseStory": "หยุดเรื่องเล่า",
+    "restartTitle": "เริ่มใหม่",
+    "restartAria": "เริ่มจากต้น",
+    "readTranscript": "อ่านบทถอดเสียง",
+    "hideTranscript": "ซ่อนบทถอดเสียง"
+  },
+  "map": {
+    "locationTitle": "แผนที่ตำแหน่ง",
+    "enableInteraction": "คลิกเพื่อใช้งานแผนที่",
+    "lockScroll": "ล็อกการเลื่อนแผนที่"
+  },
+  "gallery": {
+    "viewGallery": "ดูแกลเลอรี",
+    "closeGallery": "ปิดแกลเลอรี",
+    "chip": "แกลเลอรี",
+    "openCategoryGallery": "เปิดแกลเลอรีรูป {{name}}"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "ผิดพลาด ลองใหม่",
+    "statusTyping": "กำลังพิมพ์...",
+    "statusIdle": "ถามอะไรก็ได้ค่ะ",
+    "askCherry": "ถาม Cherry",
+    "greeting": "สวัสดีค่ะ",
+    "voiceActive": "เซสชันเสียงทำงานอยู่",
+    "promptFallback": "ถาม Cherry ไกด์ครัว Thai Akha ของคุณ"
+  },
+  "legalMeta": {
+    "version": "เวอร์ชัน",
+    "effective": "มีผลตั้งแต่:",
+    "lastUpdated": "อัปเดตล่าสุด:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "ข้อมูล"
+  },
+  "media": {
+    "photoFallback": "รูปภาพ",
+    "videoThumbnail": "ภาพตัวอย่างวิดีโอ"
+  },
+  "essentials": {
+    "keyFacts": "ข้อเท็จจริงสำคัญ",
+    "references": "แหล่งอ้างอิง",
+    "aboutAi": "เกี่ยวกับ AI",
+    "published": "เผยแพร่",
+    "updated": "อัปเดต"
+  }
+}

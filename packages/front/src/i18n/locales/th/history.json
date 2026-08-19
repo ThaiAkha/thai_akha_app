@@ -1,0 +1,21 @@
+{
+  "tabAll": "ทั้งหมด",
+  "loadError": "โหลดเนื้อหาวัฒนธรรมไม่ได้",
+  "loadErrorHint": "โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่",
+  "emptyTitle": "ไม่มีเนื้อหาในหมวดนี้",
+  "emptyHint": "ลองแท็บอื่นหรือกลับมาใหม่เร็ว ๆ นี้",
+  "chapterLoadError": "โหลดบทนี้ไม่ได้",
+  "fallbackTitle": "มรดกและวัฒนธรรมอาข่า",
+  "fallbackSubtitle": "ค้นพบการเดินทางและวัฒนธรรมที่มีชีวิตของชาวอาข่า",
+  "galleryLabel": "แกลเลอรี · {{count}} รูป",
+  "openGallery": "เปิดแกลเลอรีทั้งหมด",
+  "featuredBadge": "แนะนำ",
+  "chapter": "บทที่ {{num}}",
+  "back": "ทุกบท",
+  "explore": "สำรวจ",
+  "listen": "ฟัง",
+  "pause": "หยุด",
+  "otherChapters": "บทอื่น ๆ",
+  "backToHistory": "กลับไปที่ประวัติศาสตร์",
+  "moreHeritage": "มรดกอาข่าเพิ่มเติม"
+}

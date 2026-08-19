@@ -1,0 +1,21 @@
+{
+  "tabAll": "全部",
+  "loadError": "无法加载文化章节",
+  "loadErrorHint": "请检查网络后重试。",
+  "emptyTitle": "此分类暂无内容",
+  "emptyHint": "试试其他标签或稍后再来。",
+  "chapterLoadError": "无法加载本章",
+  "fallbackTitle": "阿卡遗产与文化",
+  "fallbackSubtitle": "探索阿卡族的旅程与鲜活文化",
+  "galleryLabel": "图库 · {{count}}张照片",
+  "openGallery": "打开完整图库",
+  "featuredBadge": "精选",
+  "chapter": "第{{num}}章",
+  "back": "全部章节",
+  "explore": "探索",
+  "listen": "收听",
+  "pause": "暂停",
+  "otherChapters": "其他章节",
+  "backToHistory": "返回历史",
+  "moreHeritage": "更多阿卡遗产"
+}

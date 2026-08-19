@@ -4,10 +4,5 @@
   "selectionSuffix": "Selection",
   "optionsSuffix": "Options",
   "confirmMenu": "Confirm Menu",
-  "savingMenu": "Saving...",
-  "categoryIds": {
-    "curry": "curry",
-    "soup": "soup",
-    "stirfry": "stirfry"
-  }
+  "savingMenu": "Saving..."
 }

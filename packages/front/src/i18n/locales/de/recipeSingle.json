@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "ERBE-ENTDECKER",
+  "signature": "Signature",
+  "enlarge": "Vergrößern",
+  "containsAllergen": "Enthält {{allergen}}",
+  "askCherry": "Frag Cherry",
+  "askCherrySubtitle": "deine KI-Assistentin",
+  "curiousAboutDetails": "Neugierig auf die Details?",
+  "viewDetails": "Details ansehen",
+  "secretChef": "Die Zutaten-Details bleiben das Geheimnis unseres Chefs.",
+  "closeDetails": "Details schließen",
+  "backToRecipes": "Zurück zu den Rezepten",
+  "notFound": "Rezept nicht gefunden",
+  "dishAdded": "Gericht zu deiner Sammlung hinzugefügt",
+  "reserveMenu": "Für dein Menü reservieren",
+  "detailN": "Detail {{n}}",
+  "signatureDish": "Signature-Gericht",
+  "historyOf": "Erzähl mir die Geschichte von {{name}} für meine {{diet}}-Ernährung kha",
+  "defaultWarning": "Wir bereiten dein Gericht mit Blick auf deine Sicherheit zu.",
+  "garnish": "Garnitur",
+  "cooksTip": "Tipp vom Chef",
+  "loginForRecipe": "Ganzes Rezept für Mitglieder",
+  "loginForRecipeDesc": "Melde dich an für Schritt-für-Schritt-Anleitung, Garnitur-Notizen und Tipps vom Chef.",
+  "categories": {
+    "appetizer": "Vorspeisen",
+    "dessert": "Desserts",
+    "akha_specialty": "Traditionell Akha",
+    "curry": "Curry",
+    "soup": "Suppe",
+    "stirfry": "Wok-Gericht"
+  }
+}

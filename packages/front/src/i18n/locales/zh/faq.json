@@ -1,0 +1,13 @@
+{
+  "title": "问与答",
+  "viewAll": "全部问题",
+  "askCherry": "问问Cherry",
+  "searchLabel": "找答案",
+  "searchPlaceholder": "搜索问题...",
+  "searchClear": "清除搜索",
+  "filterAll": "全部主题",
+  "filterReset": "重置筛选",
+  "resultsCount": "{{shown}}/{{total}}个问题",
+  "noResultsTitle": "没有符合搜索的问题",
+  "noResultsBody": "换个词试试或清除筛选,也可以直接问上方的Cherry。"
+}

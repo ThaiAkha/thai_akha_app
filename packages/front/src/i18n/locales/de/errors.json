@@ -1,0 +1,10 @@
+{
+  "network": "Prüfe deine Verbindung und versuch es noch mal.",
+  "server": "Etwas ist schiefgelaufen. Versuch es noch mal.",
+  "notFound": "Ressource nicht gefunden.",
+  "unauthorized": "Melde dich an, um diese Seite zu sehen.",
+  "generic": "Ein unerwarteter Fehler ist aufgetreten.",
+  "couldNotLoad": "{{resource}} konnte nicht geladen werden",
+  "connectionError": "Die Kultur-Kapitel konnten nicht geladen werden",
+  "tryDifferentTab": "Probier einen anderen Tab oder schau bald wieder vorbei."
+}

@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "ESPLORATORE DELL'EREDITÀ",
+  "signature": "Signature",
+  "enlarge": "Ingrandisci",
+  "containsAllergen": "Contiene {{allergen}}",
+  "askCherry": "Chiedi a Cherry",
+  "askCherrySubtitle": "la tua assistente IA",
+  "curiousAboutDetails": "Curioso dei dettagli?",
+  "viewDetails": "Vedi dettagli",
+  "secretChef": "I dettagli degli ingredienti restano il segreto del nostro Chef.",
+  "closeDetails": "Chiudi dettagli",
+  "backToRecipes": "Torna alle ricette",
+  "notFound": "Ricetta non trovata",
+  "dishAdded": "Piatto aggiunto alla tua collezione",
+  "reserveMenu": "Riservalo per il tuo menu",
+  "detailN": "Dettaglio {{n}}",
+  "signatureDish": "Piatto signature",
+  "historyOf": "Raccontami la storia di {{name}} per la mia dieta {{diet}} kha",
+  "defaultWarning": "Prepareremo il tuo piatto pensando alla tua sicurezza.",
+  "garnish": "Guarnizione",
+  "cooksTip": "Consiglio dello chef",
+  "loginForRecipe": "Ricetta completa per i membri",
+  "loginForRecipeDesc": "Accedi per vedere il passo passo, le guarnizioni e i consigli dello chef.",
+  "categories": {
+    "appetizer": "Antipasti",
+    "dessert": "Dolci",
+    "akha_specialty": "Tradizionale Akha",
+    "curry": "Curry",
+    "soup": "Zuppa",
+    "stirfry": "Saltato al wok"
+  }
+}

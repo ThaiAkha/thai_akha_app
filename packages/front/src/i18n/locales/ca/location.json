@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Punt de recollida",
+  "editMode": "Mode edició",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Necessito recollida",
+  "fromHotel": "Des de l'hotel",
+  "goMyself": "Hi vaig pel meu compte",
+  "meetAtSchool": "Ens veiem a l'escola",
+  "startLocation": "Punt d'inici (recollida)",
+  "searchHotel": "Cerca el teu hotel...",
+  "sameDropoff": "Mateix punt de tornada?",
+  "endLocation": "Punt final (tornada)",
+  "sameAsPickup": "Igual que la recollida",
+  "pinOnMap": "Marca al mapa",
+  "pinDropoff": "Marca la tornada",
+  "selectMeetingPoint": "Tria el punt de trobada",
+  "updateBooking": "Actualitza la reserva",
+  "confirmLocation": "Confirma la ubicació",
+  "enterPickupName": "Posa un nom al teu punt de recollida kha.",
+  "selectDropoff": "Tria un punt de tornada o activa 'Igual que la recollida'."
+}

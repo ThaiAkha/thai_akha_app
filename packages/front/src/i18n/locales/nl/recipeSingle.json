@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "ERFGOEDVERKENNER",
+  "signature": "Signatuur",
+  "enlarge": "Vergroten",
+  "containsAllergen": "Bevat {{allergen}}",
+  "askCherry": "Vraag het Cherry",
+  "askCherrySubtitle": "je AI-assistent",
+  "curiousAboutDetails": "Benieuwd naar de details?",
+  "viewDetails": "Details bekijken",
+  "secretChef": "De ingrediëntdetails blijven het geheim van onze chef.",
+  "closeDetails": "Details sluiten",
+  "backToRecipes": "Terug naar recepten",
+  "notFound": "Recept niet gevonden",
+  "dishAdded": "Gerecht toegevoegd aan je collectie",
+  "reserveMenu": "Reserveer voor je menu",
+  "detailN": "Detail {{n}}",
+  "signatureDish": "Signatuurgerecht",
+  "historyOf": "Vertel me de geschiedenis van {{name}} voor mijn {{diet}}-dieet kha",
+  "defaultWarning": "We bereiden je gerecht met jouw veiligheid in gedachten.",
+  "garnish": "Garnering",
+  "cooksTip": "Tip van de chef",
+  "loginForRecipe": "Volledig recept voor leden",
+  "loginForRecipeDesc": "Log in voor de stap-voor-stap-bereiding, garneringen en tips van de chef.",
+  "categories": {
+    "appetizer": "Voorgerechten",
+    "dessert": "Desserts",
+    "akha_specialty": "Traditioneel Akha",
+    "curry": "Curry",
+    "soup": "Soep",
+    "stirfry": "Roerbakgerecht"
+  }
+}

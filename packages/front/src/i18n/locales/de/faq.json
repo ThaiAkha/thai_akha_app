@@ -1,0 +1,13 @@
+{
+  "title": "Fragen & Antworten",
+  "viewAll": "Alle Fragen",
+  "askCherry": "Frag Cherry",
+  "searchLabel": "Finde eine Antwort",
+  "searchPlaceholder": "Fragen durchsuchen...",
+  "searchClear": "Suche löschen",
+  "filterAll": "Alle Themen",
+  "filterReset": "Filter zurücksetzen",
+  "resultsCount": "{{shown}} von {{total}} Fragen",
+  "noResultsTitle": "Keine Frage passt zu deiner Suche",
+  "noResultsBody": "Probier ein anderes Wort oder lösche die Filter. Cherry ist direkt oben, wenn du lieber einfach fragst."
+}

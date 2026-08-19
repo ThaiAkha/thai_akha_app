@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "法朗(温和)",
+    "2": "泰式微笑(轻辣)",
+    "3": "致敬!(中辣)",
+    "4": "泰式辣(本地)",
+    "5": "阿卡勇士(极辣)"
+  },
+  "dietaryMap": {
+    "diet_regular": "常规",
+    "diet_vegan": "纯素",
+    "diet_vegetarian": "素食",
+    "diet_pescatarian": "鱼素",
+    "diet_meat_lover": "肉食爱好者",
+    "diet_halal": "适合清真",
+    "diet_kosher": "适合犹太洁食",
+    "diet_rastafari": "拉斯塔法里(Ital)",
+    "diet_jain": "适合耆那教",
+    "diet_hindu": "适合印度教"
+  }
+}

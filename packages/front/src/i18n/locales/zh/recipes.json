@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "你的饮食风格",
+  "defaultDietDesc": "选择偏好来定制食谱。",
+  "regularDietName": "常规饮食",
+  "regularDietDesc": "经典地道做法。",
+  "selectPrompt": "请先选择饮食风格\n再查看内容",
+  "originalLabel": "原版",
+  "viewRecipe": "查看食谱",
+  "allergyAlertTitle": "过敏提醒",
+  "allergyAlertBody": "下方食谱已排除你选择的过敏原。如过敏严重请务必告知主厨。",
+  "dietAdapted": "此菜单遵循{{name}}准则。",
+  "selectDietLabel": "选择你的饮食",
+  "personalize": "个性定制",
+  "activeProfile": "当前档案",
+  "headerDescReady": "{{diet}}菜单已就绪。",
+  "headerDescReadyAllergies": "{{diet}}菜单已就绪。不含过敏原:{{allergies}}。"
+}

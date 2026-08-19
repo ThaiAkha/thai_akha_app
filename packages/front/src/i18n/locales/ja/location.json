@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "送迎場所",
+  "editMode": "編集モード",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "送迎が必要",
+  "fromHotel": "ホテルから",
+  "goMyself": "自分で行く",
+  "meetAtSchool": "スクールで待ち合わせ",
+  "startLocation": "出発地（お迎え）",
+  "searchHotel": "ホテルを検索...",
+  "sameDropoff": "帰りも同じ場所？",
+  "endLocation": "到着地（お送り）",
+  "sameAsPickup": "お迎えと同じ",
+  "pinOnMap": "地図にピンを立てる",
+  "pinDropoff": "お送り場所にピン",
+  "selectMeetingPoint": "待ち合わせ場所を選ぶ",
+  "updateBooking": "予約を更新",
+  "confirmLocation": "場所を確定",
+  "enterPickupName": "送迎場所に名前をつけてください kha。",
+  "selectDropoff": "お送り場所を選ぶか「お迎えと同じ」をオンにしてください。"
+}

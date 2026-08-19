@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "阿卡厨房的智慧",
+    "fallbackDesc": "来自山间的传统讲述。",
+    "playAudio": "播放音频",
+    "pauseAudio": "暂停音频",
+    "playStory": "播放神秘故事",
+    "pauseStory": "暂停故事",
+    "restartTitle": "重新开始",
+    "restartAria": "从头开始",
+    "readTranscript": "阅读文字稿",
+    "hideTranscript": "隐藏文字稿"
+  },
+  "map": {
+    "locationTitle": "位置地图",
+    "enableInteraction": "点击启用地图",
+    "lockScroll": "锁定地图滚动"
+  },
+  "gallery": {
+    "viewGallery": "查看图库",
+    "closeGallery": "关闭图库",
+    "chip": "图库",
+    "openCategoryGallery": "打开{{name}}图库"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "出错了,请重试",
+    "statusTyping": "输入中...",
+    "statusIdle": "随便问我吧",
+    "askCherry": "问问Cherry",
+    "greeting": "萨瓦迪卡",
+    "voiceActive": "语音会话进行中",
+    "promptFallback": "问问Cherry,你的Thai Akha厨房向导。"
+  },
+  "legalMeta": {
+    "version": "版本",
+    "effective": "生效日期:",
+    "lastUpdated": "最近更新:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "信息"
+  },
+  "media": {
+    "photoFallback": "照片",
+    "videoThumbnail": "视频缩略图"
+  },
+  "essentials": {
+    "keyFacts": "关键事实",
+    "references": "参考资料",
+    "aboutAi": "关于AI",
+    "published": "发布于",
+    "updated": "更新于"
+  }
+}

@@ -5704,6 +5704,7 @@ export type Database = {
           salary_thb: number | null
           updated_at: string | null
           worker_id: string
+          zoho_vendor_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -5711,6 +5712,7 @@ export type Database = {
           salary_thb?: number | null
           updated_at?: string | null
           worker_id: string
+          zoho_vendor_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -5718,6 +5720,7 @@ export type Database = {
           salary_thb?: number | null
           updated_at?: string | null
           worker_id?: string
+          zoho_vendor_id?: string | null
         }
         Relationships: [
           {
@@ -5833,6 +5836,7 @@ export type Database = {
           session_id: string | null
           status: string | null
           transport_status: string | null
+          visitor_count: number | null
         }
         Relationships: [
           {

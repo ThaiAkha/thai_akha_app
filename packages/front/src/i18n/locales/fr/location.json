@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Point de prise en charge",
+  "editMode": "Mode édition",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Besoin d'une prise en charge",
+  "fromHotel": "Depuis l'hôtel",
+  "goMyself": "J'y vais par mes propres moyens",
+  "meetAtSchool": "Rendez-vous à l'école",
+  "startLocation": "Point de départ (prise en charge)",
+  "searchHotel": "Cherchez votre hôtel...",
+  "sameDropoff": "Même point de retour ?",
+  "endLocation": "Point d'arrivée (retour)",
+  "sameAsPickup": "Identique à la prise en charge",
+  "pinOnMap": "Épingler sur la carte",
+  "pinDropoff": "Épingler le retour",
+  "selectMeetingPoint": "Choisissez le point de rendez-vous",
+  "updateBooking": "Mettre à jour la réservation",
+  "confirmLocation": "Confirmer le lieu",
+  "enterPickupName": "Donnez un nom à votre point de prise en charge kha.",
+  "selectDropoff": "Choisissez un point de retour ou activez 'Identique à la prise en charge'."
+}

@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "Wijsheid van de Akha-keuken",
+    "fallbackDesc": "Traditioneel verhaal uit de bergen.",
+    "playAudio": "Audio afspelen",
+    "pauseAudio": "Audio pauzeren",
+    "playStory": "Mysterieus verhaal afspelen",
+    "pauseStory": "Verhaal pauzeren",
+    "restartTitle": "Opnieuw starten",
+    "restartAria": "Opnieuw vanaf het begin",
+    "readTranscript": "Transcript lezen",
+    "hideTranscript": "Transcript verbergen"
+  },
+  "map": {
+    "locationTitle": "Locatiekaart",
+    "enableInteraction": "Klik om de kaart te activeren",
+    "lockScroll": "Kaart-scrollen vergrendelen"
+  },
+  "gallery": {
+    "viewGallery": "Galerij bekijken",
+    "closeGallery": "Galerij sluiten",
+    "chip": "Galerij",
+    "openCategoryGallery": "Fotogalerij {{name}} openen"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "Fout. Probeer opnieuw",
+    "statusTyping": "Aan het typen...",
+    "statusIdle": "Vraag me alles kha",
+    "askCherry": "Vraag het Cherry",
+    "greeting": "Sawasdee kha",
+    "voiceActive": "Spraaksessie actief",
+    "promptFallback": "Vraag het Cherry, je Thai Akha keukengids."
+  },
+  "legalMeta": {
+    "version": "Versie",
+    "effective": "Geldig sinds:",
+    "lastUpdated": "Laatst bijgewerkt:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "Informatie"
+  },
+  "media": {
+    "photoFallback": "Foto",
+    "videoThumbnail": "Videominiatuur"
+  },
+  "essentials": {
+    "keyFacts": "Kernfeiten",
+    "references": "Bronnen",
+    "aboutAi": "Over AI",
+    "published": "Gepubliceerd",
+    "updated": "Bijgewerkt"
+  }
+}

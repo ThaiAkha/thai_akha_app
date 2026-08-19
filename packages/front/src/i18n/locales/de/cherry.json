@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "Der Farang (Sanft)",
+    "2": "Thai-Lächeln (Mild)",
+    "3": "Respekt! (Mittel)",
+    "4": "Thai Spicy (Lokal)",
+    "5": "Akha-Krieger (Extrem)"
+  },
+  "dietaryMap": {
+    "diet_regular": "Klassisch",
+    "diet_vegan": "Vegan",
+    "diet_vegetarian": "Vegetarisch",
+    "diet_pescatarian": "Pescetarisch",
+    "diet_meat_lover": "Fleischliebhaber",
+    "diet_halal": "Halal-freundlich",
+    "diet_kosher": "Koscher-freundlich",
+    "diet_rastafari": "Rastafari (Ital)",
+    "diet_jain": "Jain-freundlich",
+    "diet_hindu": "Hindu-freundlich"
+  }
+}

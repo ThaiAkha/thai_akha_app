@@ -1,0 +1,10 @@
+{
+  "network": "Revisa tu conexión e inténtalo de nuevo.",
+  "server": "Algo salió mal. Inténtalo de nuevo.",
+  "notFound": "Recurso no encontrado.",
+  "unauthorized": "Inicia sesión para acceder a esta página.",
+  "generic": "Ocurrió un error inesperado.",
+  "couldNotLoad": "No se pudo cargar {{resource}}",
+  "connectionError": "No se pudieron cargar las secciones de cultura",
+  "tryDifferentTab": "Prueba otra pestaña o vuelve pronto."
+}

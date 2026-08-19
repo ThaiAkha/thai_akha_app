@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "接送点",
+  "editMode": "编辑模式",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "需要接送",
+  "fromHotel": "从酒店",
+  "goMyself": "自行前往",
+  "meetAtSchool": "学校见",
+  "startLocation": "起点(接)",
+  "searchHotel": "搜索你的酒店...",
+  "sameDropoff": "返程同一地点?",
+  "endLocation": "终点(送)",
+  "sameAsPickup": "与接送点相同",
+  "pinOnMap": "在地图上标记",
+  "pinDropoff": "标记返程点",
+  "selectMeetingPoint": "选择集合点",
+  "updateBooking": "更新预订",
+  "confirmLocation": "确认位置",
+  "enterPickupName": "给你的接送点起个名字吧。",
+  "selectDropoff": "选择返程点或开启'与接送点相同'。"
+}

@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "나의 식단 스타일",
+  "defaultDietDesc": "취향을 선택해 레시피를 맞춰 보세요.",
+  "regularDietName": "일반 식단",
+  "regularDietDesc": "클래식한 정통 조리법.",
+  "selectPrompt": "내용을 보기 전에\n식단 스타일을 선택하세요",
+  "originalLabel": "오리지널",
+  "viewRecipe": "레시피 보기",
+  "allergyAlertTitle": "알레르기 안내",
+  "allergyAlertBody": "아래 레시피는 선택하신 알레르겐을 이미 뺐어요. 알레르기가 심하면 꼭 셰프에게 알려 주세요.",
+  "dietAdapted": "이 메뉴는 {{name}} 지침을 따라요.",
+  "selectDietLabel": "식단 선택",
+  "personalize": "맞춤 설정",
+  "activeProfile": "활성 프로필",
+  "headerDescReady": "{{diet}} 메뉴 준비 완료.",
+  "headerDescReadyAllergies": "{{diet}} 메뉴 준비 완료. 알레르겐 프리: {{allergies}}."
+}

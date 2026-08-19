@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "El Farang (Suau)",
+    "2": "Somriure Thai (Lleuger)",
+    "3": "Respecte! (Mitjà)",
+    "4": "Picant Thai (Local)",
+    "5": "Guerrer Akha (Extrem)"
+  },
+  "dietaryMap": {
+    "diet_regular": "Regular",
+    "diet_vegan": "Vegà",
+    "diet_vegetarian": "Vegetarià",
+    "diet_pescatarian": "Pescetarià",
+    "diet_meat_lover": "Amant de la carn",
+    "diet_halal": "Apte per a halal",
+    "diet_kosher": "Apte per a kosher",
+    "diet_rastafari": "Rastafari (Ital)",
+    "diet_jain": "Apte per a jainistes",
+    "diet_hindu": "Apte per a hindús"
+  }
+}

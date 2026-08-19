@@ -1,0 +1,8 @@
+{
+  "selectPrompt": "メニューを完成させるには3品選んでください kha!",
+  "saveFailed": "保存できませんでした",
+  "selectionSuffix": "選択",
+  "optionsSuffix": "オプション",
+  "confirmMenu": "メニューを確定",
+  "savingMenu": "保存中..."
+}

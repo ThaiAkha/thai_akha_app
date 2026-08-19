@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "あなたの食事スタイル",
+  "defaultDietDesc": "好みを選んでレシピをあなた仕様に。",
+  "regularDietName": "通常の食事",
+  "regularDietDesc": "クラシックな本格調理。",
+  "selectPrompt": "内容を見る前に\n食事スタイルを選んでください",
+  "originalLabel": "オリジナル",
+  "viewRecipe": "レシピを見る",
+  "allergyAlertTitle": "アレルギーのご案内",
+  "allergyAlertBody": "下のレシピは選んだアレルゲンをすでに除いています。重いアレルギーは必ずシェフに伝えてくださいね。",
+  "dietAdapted": "このメニューは{{name}}の指針に沿っています。",
+  "selectDietLabel": "食事を選ぶ",
+  "personalize": "パーソナライズ",
+  "activeProfile": "有効なプロフィール",
+  "headerDescReady": "{{diet}}メニューの準備ができました。",
+  "headerDescReadyAllergies": "{{diet}}メニューの準備ができました。アレルゲンフリー：{{allergies}}。"
+}

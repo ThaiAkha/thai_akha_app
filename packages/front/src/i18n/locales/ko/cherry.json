@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "더 파랑 (순한맛)",
+    "2": "타이 스마일 (약간 매운맛)",
+    "3": "리스펙트! (중간맛)",
+    "4": "타이 스파이시 (현지맛)",
+    "5": "아카 전사 (극한맛)"
+  },
+  "dietaryMap": {
+    "diet_regular": "일반",
+    "diet_vegan": "비건",
+    "diet_vegetarian": "베지테리언",
+    "diet_pescatarian": "페스코",
+    "diet_meat_lover": "고기 러버",
+    "diet_halal": "할랄 프렌들리",
+    "diet_kosher": "코셔 프렌들리",
+    "diet_rastafari": "라스타파리 (Ital)",
+    "diet_jain": "자이나교 프렌들리",
+    "diet_hindu": "힌두교 프렌들리"
+  }
+}

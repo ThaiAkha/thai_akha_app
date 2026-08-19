@@ -1,0 +1,21 @@
+{
+  "spicinessMap": {
+    "1": "O Farang (Suave)",
+    "2": "Sorriso Thai (Leve)",
+    "3": "Respeito! (Médio)",
+    "4": "Picante Thai (Local)",
+    "5": "Guerreiro Akha (Extremo)"
+  },
+  "dietaryMap": {
+    "diet_regular": "Regular",
+    "diet_vegan": "Vegano",
+    "diet_vegetarian": "Vegetariano",
+    "diet_pescatarian": "Pescetariano",
+    "diet_meat_lover": "Amante de carne",
+    "diet_halal": "Apto para halal",
+    "diet_kosher": "Apto para kosher",
+    "diet_rastafari": "Rastafari (Ital)",
+    "diet_jain": "Apto para jainistas",
+    "diet_hindu": "Apto para hindus"
+  }
+}

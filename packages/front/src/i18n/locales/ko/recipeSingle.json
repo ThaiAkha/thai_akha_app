@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "유산 탐험가",
+  "signature": "시그니처",
+  "enlarge": "확대",
+  "containsAllergen": "{{allergen}} 함유",
+  "askCherry": "Cherry에게 묻기",
+  "askCherrySubtitle": "나의 AI 어시스턴트",
+  "curiousAboutDetails": "자세한 내용이 궁금하다면?",
+  "viewDetails": "상세 보기",
+  "secretChef": "재료의 디테일은 우리 셰프의 비밀이에요.",
+  "closeDetails": "상세 닫기",
+  "backToRecipes": "레시피로 돌아가기",
+  "notFound": "레시피를 찾을 수 없어요",
+  "dishAdded": "요리가 컬렉션에 추가됐어요",
+  "reserveMenu": "내 메뉴로 예약하기",
+  "detailN": "디테일 {{n}}",
+  "signatureDish": "시그니처 요리",
+  "historyOf": "{{diet}} 식단인 제게 {{name}}의 역사를 들려주세요 kha",
+  "defaultWarning": "당신의 안전을 생각하며 요리를 준비할게요.",
+  "garnish": "가니시",
+  "cooksTip": "셰프의 팁",
+  "loginForRecipe": "멤버 전용 전체 레시피",
+  "loginForRecipeDesc": "로그인하면 단계별 조리법, 가니시, 셰프의 팁을 볼 수 있어요.",
+  "categories": {
+    "appetizer": "애피타이저",
+    "dessert": "디저트",
+    "akha_specialty": "아카 전통",
+    "curry": "커리",
+    "soup": "수프",
+    "stirfry": "볶음"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "จุดรับส่ง",
+  "editMode": "โหมดแก้ไข",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "ต้องการรถรับส่ง",
+  "fromHotel": "จากโรงแรม",
+  "goMyself": "ไปเอง",
+  "meetAtSchool": "เจอกันที่โรงเรียน",
+  "startLocation": "จุดเริ่มต้น (รับ)",
+  "searchHotel": "ค้นหาโรงแรมของคุณ...",
+  "sameDropoff": "จุดส่งกลับเดียวกัน?",
+  "endLocation": "จุดสิ้นสุด (ส่งกลับ)",
+  "sameAsPickup": "เหมือนจุดรับ",
+  "pinOnMap": "ปักหมุดบนแผนที่",
+  "pinDropoff": "ปักหมุดจุดส่งกลับ",
+  "selectMeetingPoint": "เลือกจุดนัดพบ",
+  "updateBooking": "อัปเดตการจอง",
+  "confirmLocation": "ยืนยันตำแหน่ง",
+  "enterPickupName": "ตั้งชื่อจุดรับของคุณค่ะ",
+  "selectDropoff": "เลือกจุดส่งกลับหรือเปิด 'เหมือนจุดรับ'"
+}

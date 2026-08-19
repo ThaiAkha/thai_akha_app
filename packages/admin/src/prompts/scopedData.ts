@@ -3,6 +3,7 @@
 // markdown-lite unico, da passare come `scopedDataBlocks` a buildAdminAgentPrompt.
 // Condiviso da chat testo + voce. Il fetcher (adminScopedFetch) decide QUALI righe;
 // qui decidiamo QUALI campi vede la Cherry di quel ruolo (es. driver = NO finanza).
+import type { CookingClassDB } from '@thaiakha/shared';
 import type { BookingDaySummary, GuestAlert } from './adminPrompt';
 import type { AdminScopedData, MarketRunSummary } from './adminScopedFetch';
 
@@ -20,7 +21,7 @@ Working summary for staff. The binding texts are the Terms and the Privacy Polic
 - Guest payment: online card or PayPal with no surcharge; cash in THB, USD or EUR on arrival with no fee; card or Alipay on site carry 3%.
 - Agency payment: invoiced through Zoho Books, terms agreed at onboarding. Never quote the guest payment rules to an agency partner.`;
 
-function renderClasses(cookingClasses: any[]): string {
+function renderClasses(cookingClasses: CookingClassDB[]): string {
   const body = cookingClasses?.length
     ? cookingClasses.map(c =>
         `- ID: ${c.id} | **${c.title}** | Price: ${c.price} ${c.currency ?? 'THB'} ${c.unit ?? 'per person'}\n  Status: ${c.is_active ? 'ACTIVE' : 'INACTIVE'}`

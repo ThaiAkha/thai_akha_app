@@ -1,0 +1,13 @@
+{
+  "title": "질문과 답변",
+  "viewAll": "모든 질문",
+  "askCherry": "Cherry에게 묻기",
+  "searchLabel": "답 찾아보기",
+  "searchPlaceholder": "질문 검색...",
+  "searchClear": "검색 지우기",
+  "filterAll": "모든 주제",
+  "filterReset": "필터 초기화",
+  "resultsCount": "{{total}}개 중 {{shown}}개 질문",
+  "noResultsTitle": "검색과 일치하는 질문이 없어요",
+  "noResultsBody": "다른 단어로 해 보거나 필터를 지워 보세요. 바로 위의 Cherry에게 직접 물어봐도 좋아요."
+}

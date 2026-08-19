@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "EXPLORATEUR D'HÉRITAGE",
+  "signature": "Signature",
+  "enlarge": "Agrandir",
+  "containsAllergen": "Contient {{allergen}}",
+  "askCherry": "Demandez à Cherry",
+  "askCherrySubtitle": "votre assistante IA",
+  "curiousAboutDetails": "Curieux d'en savoir plus ?",
+  "viewDetails": "Voir les détails",
+  "secretChef": "Les détails des ingrédients restent le secret de notre Chef.",
+  "closeDetails": "Fermer les détails",
+  "backToRecipes": "Retour aux recettes",
+  "notFound": "Recette introuvable",
+  "dishAdded": "Plat ajouté à votre collection",
+  "reserveMenu": "Réservez-le pour votre menu",
+  "detailN": "Détail {{n}}",
+  "signatureDish": "Plat signature",
+  "historyOf": "Racontez-moi l'histoire de {{name}} pour mon régime {{diet}} kha",
+  "defaultWarning": "Nous préparerons votre plat en pensant à votre sécurité.",
+  "garnish": "Garniture",
+  "cooksTip": "Astuce du chef",
+  "loginForRecipe": "Recette complète pour les membres",
+  "loginForRecipeDesc": "Connectez-vous pour accéder au pas-à-pas, aux garnitures et aux astuces du chef.",
+  "categories": {
+    "appetizer": "Entrées",
+    "dessert": "Desserts",
+    "akha_specialty": "Traditionnel Akha",
+    "curry": "Curry",
+    "soup": "Soupe",
+    "stirfry": "Sauté"
+  }
+}

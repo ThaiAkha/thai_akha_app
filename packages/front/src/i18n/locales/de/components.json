@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "Weisheit der Akha-Küche",
+    "fallbackDesc": "Traditionelle Stimme aus den Bergen.",
+    "playAudio": "Audio abspielen",
+    "pauseAudio": "Audio pausieren",
+    "playStory": "Mysteriöse Geschichte abspielen",
+    "pauseStory": "Geschichte pausieren",
+    "restartTitle": "Neu starten",
+    "restartAria": "Von vorn beginnen",
+    "readTranscript": "Transkript lesen",
+    "hideTranscript": "Transkript ausblenden"
+  },
+  "map": {
+    "locationTitle": "Lageplan",
+    "enableInteraction": "Klicken, um die Karte zu aktivieren",
+    "lockScroll": "Karten-Scrollen sperren"
+  },
+  "gallery": {
+    "viewGallery": "Galerie ansehen",
+    "closeGallery": "Galerie schließen",
+    "chip": "Galerie",
+    "openCategoryGallery": "{{name}}-Fotogalerie öffnen"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "Fehler. Versuch es noch mal",
+    "statusTyping": "Schreibt...",
+    "statusIdle": "Frag mich alles kha",
+    "askCherry": "Frag Cherry",
+    "greeting": "Sawasdee kha",
+    "voiceActive": "Sprachsitzung aktiv",
+    "promptFallback": "Frag Cherry, deinen Thai-Akha-Küchenguide."
+  },
+  "legalMeta": {
+    "version": "Version",
+    "effective": "Gültig seit:",
+    "lastUpdated": "Zuletzt aktualisiert:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "Informationen"
+  },
+  "media": {
+    "photoFallback": "Foto",
+    "videoThumbnail": "Video-Vorschau"
+  },
+  "essentials": {
+    "keyFacts": "Wichtige Fakten",
+    "references": "Quellen",
+    "aboutAi": "Über KI",
+    "published": "Veröffentlicht",
+    "updated": "Aktualisiert"
+  }
+}

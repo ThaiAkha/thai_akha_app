@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "아카 주방의 지혜",
+    "fallbackDesc": "산에서 전해 내려오는 이야기.",
+    "playAudio": "오디오 재생",
+    "pauseAudio": "오디오 일시정지",
+    "playStory": "신비로운 이야기 재생",
+    "pauseStory": "이야기 일시정지",
+    "restartTitle": "다시 시작",
+    "restartAria": "처음부터 다시",
+    "readTranscript": "스크립트 읽기",
+    "hideTranscript": "스크립트 숨기기"
+  },
+  "map": {
+    "locationTitle": "위치 지도",
+    "enableInteraction": "클릭해서 지도 활성화",
+    "lockScroll": "지도 스크롤 잠금"
+  },
+  "gallery": {
+    "viewGallery": "갤러리 보기",
+    "closeGallery": "갤러리 닫기",
+    "chip": "갤러리",
+    "openCategoryGallery": "{{name}} 사진 갤러리 열기"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "오류. 다시 시도해 주세요",
+    "statusTyping": "입력 중...",
+    "statusIdle": "무엇이든 물어보세요 kha",
+    "askCherry": "Cherry에게 묻기",
+    "greeting": "사와디 카",
+    "voiceActive": "음성 세션 진행 중",
+    "promptFallback": "Thai Akha 주방 가이드 Cherry에게 물어보세요."
+  },
+  "legalMeta": {
+    "version": "버전",
+    "effective": "시행일:",
+    "lastUpdated": "최근 업데이트:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "정보"
+  },
+  "media": {
+    "photoFallback": "사진",
+    "videoThumbnail": "동영상 썸네일"
+  },
+  "essentials": {
+    "keyFacts": "핵심 정보",
+    "references": "참고 자료",
+    "aboutAi": "AI에 대해",
+    "published": "게시일",
+    "updated": "업데이트"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Thai Akha Kitchen | 치앙마이 정통 쿠킹 클래스",
+    "description": "전용 스테이션에서 11가지 정통 아카 요리를 만들어요. 식단에 맞춰, 호텔 픽업과 컬러 요리책까지."
+  },
+  "cookingClass": {
+    "title": "쿠킹 클래스 | Thai Akha Kitchen",
+    "description": "치앙마이에서 정통 아카 고산 요리를 배워요. 오전·오후 클래스, 호텔 픽업 포함."
+  },
+  "morning": {
+    "title": "오전 클래스 & 시장 투어 | Thai Akha Kitchen",
+    "description": "치앙마이 6시간 오전 클래스(1,400바트). 대나무 바구니와 1시간 시장 투어, 이어서 전용 웍으로 11가지 요리. 비건·알레르기 안심."
+  },
+  "evening": {
+    "title": "치앙마이 오후 쿠킹 클래스 | Thai Akha Kitchen",
+    "description": "치앙마이의 여유로운 5시간 오후 클래스(1,300바트). 17:00-21:00. 전용 웍으로 11가지 요리를 만들고 맛봐요. 무료 픽업."
+  }
+}

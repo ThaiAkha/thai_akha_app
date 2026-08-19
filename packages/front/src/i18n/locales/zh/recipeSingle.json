@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "遗产探索者",
+  "signature": "招牌",
+  "enlarge": "放大",
+  "containsAllergen": "含{{allergen}}",
+  "askCherry": "问问Cherry",
+  "askCherrySubtitle": "你的AI助手",
+  "curiousAboutDetails": "想了解细节?",
+  "viewDetails": "查看详情",
+  "secretChef": "食材细节是我们主厨的秘密。",
+  "closeDetails": "关闭详情",
+  "backToRecipes": "返回食谱",
+  "notFound": "未找到食谱",
+  "dishAdded": "菜品已加入你的收藏",
+  "reserveMenu": "为你的菜单预留",
+  "detailN": "细节{{n}}",
+  "signatureDish": "招牌菜",
+  "historyOf": "给我讲讲{{name}}的历史,我的饮食是{{diet}}",
+  "defaultWarning": "我们会以你的安全为先来准备菜品。",
+  "garnish": "配菜",
+  "cooksTip": "主厨小贴士",
+  "loginForRecipe": "会员专享完整食谱",
+  "loginForRecipeDesc": "登录查看分步做法、配菜和主厨小贴士。",
+  "categories": {
+    "appetizer": "前菜",
+    "dessert": "甜点",
+    "akha_specialty": "阿卡传统",
+    "curry": "咖喱",
+    "soup": "汤",
+    "stirfry": "炒菜"
+  }
+}

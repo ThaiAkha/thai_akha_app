@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "Saviesa de la cuina Akha",
+    "fallbackDesc": "Relat tradicional de les muntanyes.",
+    "playAudio": "Reprodueix l'àudio",
+    "pauseAudio": "Posa en pausa l'àudio",
+    "playStory": "Reprodueix la història misteriosa",
+    "pauseStory": "Posa en pausa la història",
+    "restartTitle": "Torna a començar",
+    "restartAria": "Torna a començar des de l'inici",
+    "readTranscript": "Llegeix la transcripció",
+    "hideTranscript": "Amaga la transcripció"
+  },
+  "map": {
+    "locationTitle": "Mapa de la ubicació",
+    "enableInteraction": "Fes clic per activar el mapa",
+    "lockScroll": "Bloqueja el desplaçament del mapa"
+  },
+  "gallery": {
+    "viewGallery": "Mostra la galeria",
+    "closeGallery": "Tanca la galeria",
+    "chip": "Galeria",
+    "openCategoryGallery": "Obre la galeria de fotos de {{name}}"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "Error. Torna-ho a provar",
+    "statusTyping": "Escrivint...",
+    "statusIdle": "Pregunta'm el que vulguis kha",
+    "askCherry": "Pregunta a la Cherry",
+    "greeting": "Sawasdee kha",
+    "voiceActive": "Sessió de veu activa",
+    "promptFallback": "Pregunta a la Cherry, la teva guia culinària Thai Akha."
+  },
+  "legalMeta": {
+    "version": "Versió",
+    "effective": "En vigor des de:",
+    "lastUpdated": "Última actualització:"
+  },
+  "sidebarInfo": {
+    "menuTitle": "Informació"
+  },
+  "media": {
+    "photoFallback": "Foto",
+    "videoThumbnail": "Miniatura del vídeo"
+  },
+  "essentials": {
+    "keyFacts": "Fets clau",
+    "references": "Referències",
+    "aboutAi": "Sobre la IA",
+    "published": "Publicat",
+    "updated": "Actualitzat"
+  }
+}

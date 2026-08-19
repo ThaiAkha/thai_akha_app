@@ -1,0 +1,32 @@
+{
+  "heritageExplorer": "EXPLORADOR DE L'HERÈNCIA",
+  "signature": "Insígnia",
+  "enlarge": "Amplia",
+  "containsAllergen": "Conté {{allergen}}",
+  "askCherry": "Pregunta a la Cherry",
+  "askCherrySubtitle": "la teva assistent d'IA",
+  "curiousAboutDetails": "Curiós pels detalls?",
+  "viewDetails": "Mostra els detalls",
+  "secretChef": "Els detalls dels ingredients són el secret del nostre Xef.",
+  "closeDetails": "Tanca els detalls",
+  "backToRecipes": "Torna a les receptes",
+  "notFound": "Recepta no trobada",
+  "dishAdded": "Plat afegit a la teva col·lecció",
+  "reserveMenu": "Reserva'l per al teu menú",
+  "detailN": "Detall {{n}}",
+  "signatureDish": "Plat insígnia",
+  "historyOf": "Explica'm la història de {{name}} per a la meva dieta {{diet}} kha",
+  "defaultWarning": "Prepararem el teu plat pensant en la teva seguretat.",
+  "garnish": "Guarnició",
+  "cooksTip": "Consell del xef",
+  "loginForRecipe": "Recepta completa per a membres",
+  "loginForRecipeDesc": "Inicia sessió per veure el pas a pas, les guarnicions i els consells del xef.",
+  "categories": {
+    "appetizer": "Entrants",
+    "dessert": "Postres",
+    "akha_specialty": "Tradicional Akha",
+    "curry": "Curri",
+    "soup": "Sopa",
+    "stirfry": "Saltat al wok"
+  }
+}

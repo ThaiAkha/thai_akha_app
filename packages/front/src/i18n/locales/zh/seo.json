@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Thai Akha Kitchen | 清迈地道烹饪课",
+    "description": "在专属工作站烹制11道地道阿卡菜。按你的饮食定制,含酒店接送和彩色食谱书。"
+  },
+  "cookingClass": {
+    "title": "烹饪课 | Thai Akha Kitchen",
+    "description": "在清迈学习地道的阿卡高山料理。上午课与下午课,含酒店接送。"
+  },
+  "morning": {
+    "title": "上午课与市场之旅 | Thai Akha Kitchen",
+    "description": "清迈6小时上午课(1,400泰铢)。1小时竹篮市场之旅,然后在专属炒锅烹制11道菜。纯素与过敏安全。"
+  },
+  "evening": {
+    "title": "清迈下午烹饪课 | Thai Akha Kitchen",
+    "description": "清迈轻松的5小时下午课(1,300泰铢)。17:00-21:00。在专属炒锅烹制并享用11道菜。免费接送。"
+  }
+}

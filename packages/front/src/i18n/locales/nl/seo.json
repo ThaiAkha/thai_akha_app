@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Thai Akha Kitchen | Authentieke kookcursus in Chiang Mai",
+    "description": "Kook 11 authentieke Akha-gerechten aan je eigen station. Volgens jouw dieet, met hotel-ophaalservice en kleurenkookboek."
+  },
+  "cookingClass": {
+    "title": "Kookcursussen | Thai Akha Kitchen",
+    "description": "Leer authentieke Akha-bergkeuken in Chiang Mai. Ochtend- en middagcursussen met gratis hotel-ophaalservice."
+  },
+  "morning": {
+    "title": "Ochtendcursus & markttour | Thai Akha Kitchen",
+    "description": "6 uur durende ochtendcursus in Chiang Mai (1,400 THB). 1 uur markt met bamboemanden, daarna 11 gerechten aan je eigen wok. Vegan en allergievriendelijk."
+  },
+  "evening": {
+    "title": "Middagkookcursus in Chiang Mai | Thai Akha Kitchen",
+    "description": "Ontspannen middagcursus van 5 uur in Chiang Mai (1,300 THB). Van 17 tot 21 uur. Kook en eet 11 gerechten aan je eigen wok. Gratis ophaalservice."
+  }
+}

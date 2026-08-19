@@ -1,0 +1,54 @@
+{
+  "audioPlayer": {
+    "fallbackTitle": "Sagesse de la cuisine Akha",
+    "fallbackDesc": "Récit traditionnel venu des montagnes.",
+    "playAudio": "Lire l'audio",
+    "pauseAudio": "Mettre l'audio en pause",
+    "playStory": "Lire l'histoire mystérieuse",
+    "pauseStory": "Mettre l'histoire en pause",
+    "restartTitle": "Recommencer",
+    "restartAria": "Recommencer depuis le début",
+    "readTranscript": "Lire la transcription",
+    "hideTranscript": "Masquer la transcription"
+  },
+  "map": {
+    "locationTitle": "Carte du lieu",
+    "enableInteraction": "Cliquez pour activer la carte",
+    "lockScroll": "Verrouiller le défilement de la carte"
+  },
+  "gallery": {
+    "viewGallery": "Voir la galerie",
+    "closeGallery": "Fermer la galerie",
+    "chip": "Galerie",
+    "openCategoryGallery": "Ouvrir la galerie photo {{name}}"
+  },
+  "cherryChat": {
+    "title": "Cherry Chef",
+    "statusError": "Erreur. Réessayez",
+    "statusTyping": "En train d'écrire...",
+    "statusIdle": "Demandez-moi ce que vous voulez kha",
+    "askCherry": "Demandez à Cherry",
+    "greeting": "Sawasdee kha",
+    "voiceActive": "Session vocale active",
+    "promptFallback": "Interrogez Cherry, votre guide culinaire Thai Akha."
+  },
+  "legalMeta": {
+    "version": "Version",
+    "effective": "En vigueur depuis :",
+    "lastUpdated": "Dernière mise à jour :"
+  },
+  "sidebarInfo": {
+    "menuTitle": "Informations"
+  },
+  "media": {
+    "photoFallback": "Photo",
+    "videoThumbnail": "Miniature vidéo"
+  },
+  "essentials": {
+    "keyFacts": "Faits clés",
+    "references": "Références",
+    "aboutAi": "À propos de l'IA",
+    "published": "Publié",
+    "updated": "Mis à jour"
+  }
+}

@@ -12,7 +12,6 @@
   "selectDietLabel": "Select your Diet",
   "personalize": "Personalize",
   "activeProfile": "Active Profile",
-  "askCherryDish": "Tell me about undefined for a undefined diet considering my allergies: undefined kha",
   "headerDescReady": "{{diet}} menu ready.",
   "headerDescReadyAllergies": "{{diet}} menu ready. Allergen-free: {{allergies}}."
 }

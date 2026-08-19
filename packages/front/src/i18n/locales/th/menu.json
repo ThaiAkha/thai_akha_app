@@ -1,0 +1,8 @@
+{
+  "selectPrompt": "เลือก 3 เมนูเพื่อให้เมนูของคุณครบค่ะ!",
+  "saveFailed": "บันทึกไม่สำเร็จ",
+  "selectionSuffix": "การเลือก",
+  "optionsSuffix": "ตัวเลือก",
+  "confirmMenu": "ยืนยันเมนู",
+  "savingMenu": "กำลังบันทึก..."
+}

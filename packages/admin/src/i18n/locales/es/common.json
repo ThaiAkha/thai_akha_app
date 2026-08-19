@@ -115,5 +115,22 @@
   },
   "badges": {
     "hasLuggage": "Con equipaje"
+  },
+  "worker": {
+    "whoAreYou": "¿Quién eres?",
+    "select": "Selecciona tu nombre",
+    "change": "Cambiar",
+    "loading": "Cargando…",
+    "none": "Sin personal para esta tarea",
+    "roles": {
+      "teacher": "Profesor",
+      "helper": "Ayudante",
+      "extra": "Extra",
+      "setup": "Setup",
+      "logistics": "Logística",
+      "driver": "Driver",
+      "manager": "Manager",
+      "admin": "Admin"
+    }
   }
 }

@@ -1,0 +1,17 @@
+{
+  "defaultDietName": "Il tuo stile alimentare",
+  "defaultDietDesc": "Scegli la tua preferenza per personalizzare le ricette.",
+  "regularDietName": "Dieta regolare",
+  "regularDietDesc": "Preparazione autentica classica.",
+  "selectPrompt": "Scegli il tuo stile alimentare\nprima di vedere il contenuto",
+  "originalLabel": "ORIGINALE",
+  "viewRecipe": "Vedi ricetta",
+  "allergyAlertTitle": "Avviso allergie",
+  "allergyAlertBody": "Le ricette qui sotto lasciano già fuori i tuoi allergeni selezionati. Avvisa sempre il tuo chef se la tua allergia è grave.",
+  "dietAdapted": "Questo menu segue le linee {{name}}.",
+  "selectDietLabel": "Scegli la tua dieta",
+  "personalize": "Personalizza",
+  "activeProfile": "Profilo attivo",
+  "headerDescReady": "Menu {{diet}} pronto.",
+  "headerDescReadyAllergies": "Menu {{diet}} pronto. Senza allergeni: {{allergies}}."
+}

@@ -1,0 +1,10 @@
+{
+  "network": "Vérifiez votre connexion et réessayez.",
+  "server": "Un problème est survenu. Réessayez.",
+  "notFound": "Ressource introuvable.",
+  "unauthorized": "Connectez-vous pour accéder à cette page.",
+  "generic": "Une erreur inattendue est survenue.",
+  "couldNotLoad": "Impossible de charger {{resource}}",
+  "connectionError": "Impossible de charger les sections culture",
+  "tryDifferentTab": "Essayez un autre onglet ou revenez bientôt."
+}

@@ -17,7 +17,5 @@
     "diet_rastafari": "Rastafari (Ital)",
     "diet_jain": "Jain Friendly",
     "diet_hindu": "Hindu Friendly"
-  },
-  "summaryThreshold": 20,
-  "typewriterIntervalMs": 80
+  }
 }

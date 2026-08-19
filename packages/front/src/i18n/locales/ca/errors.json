@@ -1,0 +1,10 @@
+{
+  "network": "Comprova la connexió i torna-ho a provar.",
+  "server": "Alguna cosa ha fallat. Torna-ho a provar.",
+  "notFound": "Recurs no trobat.",
+  "unauthorized": "Inicia sessió per accedir a aquesta pàgina.",
+  "generic": "S'ha produït un error inesperat.",
+  "couldNotLoad": "No s'ha pogut carregar {{resource}}",
+  "connectionError": "No s'han pogut carregar les seccions de cultura",
+  "tryDifferentTab": "Prova una altra pestanya o torna aviat."
+}

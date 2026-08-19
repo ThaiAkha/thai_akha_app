@@ -1,0 +1,21 @@
+{
+  "tabAll": "Alle",
+  "loadError": "Die Kultur-Kapitel konnten nicht geladen werden",
+  "loadErrorHint": "Prüfe deine Verbindung und versuch es noch mal.",
+  "emptyTitle": "Keine Kapitel in dieser Kategorie",
+  "emptyHint": "Probier einen anderen Tab oder schau bald wieder vorbei.",
+  "chapterLoadError": "Dieses Kapitel konnte nicht geladen werden",
+  "fallbackTitle": "Akha-Erbe & Kultur",
+  "fallbackSubtitle": "Entdecke die Reise und die lebendige Kultur des Akha-Volkes",
+  "galleryLabel": "Galerie · {{count}} Fotos",
+  "openGallery": "Ganze Galerie öffnen",
+  "featuredBadge": "Empfohlen",
+  "chapter": "KAP. {{num}}",
+  "back": "Alle Kapitel",
+  "explore": "Entdecken",
+  "listen": "Anhören",
+  "pause": "Pause",
+  "otherChapters": "Weitere Kapitel",
+  "backToHistory": "Zurück zur Geschichte",
+  "moreHeritage": "Mehr Akha-Erbe"
+}

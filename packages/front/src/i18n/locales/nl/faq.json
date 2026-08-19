@@ -1,0 +1,13 @@
+{
+  "title": "Vragen & antwoorden",
+  "viewAll": "Alle vragen",
+  "askCherry": "Vraag het Cherry",
+  "searchLabel": "Vind een antwoord",
+  "searchPlaceholder": "Zoek in de vragen...",
+  "searchClear": "Zoekopdracht wissen",
+  "filterAll": "Alle onderwerpen",
+  "filterReset": "Filters resetten",
+  "resultsCount": "{{shown}} van {{total}} vragen",
+  "noResultsTitle": "Geen vraag past bij je zoekopdracht",
+  "noResultsBody": "Probeer een ander woord of wis de filters. Cherry staat hierboven als je liever direct vraagt."
+}

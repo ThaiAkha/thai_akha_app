@@ -1,0 +1,22 @@
+{
+  "pickupTitle": "Punto di pickup",
+  "editMode": "Modalità modifica",
+  "amLabel": "AM",
+  "pmLabel": "PM",
+  "needPickup": "Mi serve il pickup",
+  "fromHotel": "Dall'hotel",
+  "goMyself": "Vengo per conto mio",
+  "meetAtSchool": "Ci vediamo a scuola",
+  "startLocation": "Punto di partenza (pickup)",
+  "searchHotel": "Cerca il tuo hotel...",
+  "sameDropoff": "Stesso punto di ritorno?",
+  "endLocation": "Punto finale (ritorno)",
+  "sameAsPickup": "Uguale al pickup",
+  "pinOnMap": "Segna sulla mappa",
+  "pinDropoff": "Segna il ritorno",
+  "selectMeetingPoint": "Scegli il punto di incontro",
+  "updateBooking": "Aggiorna prenotazione",
+  "confirmLocation": "Conferma posizione",
+  "enterPickupName": "Dai un nome al tuo punto di pickup kha.",
+  "selectDropoff": "Scegli un punto di ritorno o attiva 'Uguale al pickup'."
+}

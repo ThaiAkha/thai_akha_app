@@ -1,0 +1,14 @@
+-- 20260816001000_staff_zoho_vendor.sql
+-- Payslip founders: Svevo e Niti hanno spese Zoho INDIVIDUALI a loro nome
+-- (prassi contabile verificata su Zoho org 663160082: serie mensile 50k/mese dal
+-- 2026-03, vendor "Svevo share" e "Niti share", conto Employers-Salary-Bank,
+-- paid-through Bank 7502). Gli altri lavoratori restano nei 2 gruppi cash/bank.
+--
+-- REGOLA: staff_details.zoho_vendor_id VALORIZZATO = spesa individuale col vendor ·
+-- NULL = raggruppato. Nessun flag aggiuntivo.
+-- L'edge zoho-create-salary-expense va estesa di conseguenza (spec nel prompt
+-- Code: brain 730_Operations/Staff_Workers_2027/PROMPT_code_staff_workers.md §6).
+alter table public.staff_details add column if not exists zoho_vendor_id text;
+-- popolamento eseguito live 2026-08-16:
+--   svevo-mondino → 1215788000004417001 (vendor "Svevo share")
+--   niti-muelaeku → 1215788000004417031 (vendor "Niti share")

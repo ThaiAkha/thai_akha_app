@@ -10,7 +10,7 @@ import { usePageSections, toStatCardColor, HOME_SECTION_IDS, HomeSectionId } fro
 import AudioPlayer from '../components/modal/AudioPlayer';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../i18n';
-import { HomeGridSkeleton } from '../components/skeleton';
+import { HomeGridSkeleton, SkeletonBase } from '../components/skeleton';
 
 // ─── HomeGlassSection — deduplica pattern home_03/04 e home_05/06 ────────────
 interface HomeGlassSectionProps {
@@ -96,10 +96,11 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
           Niente PageSEO qui — doppia scrittura degli stessi tag. */}
 
         {/* ── HERO IMAGE ──────────────────────────────────────────────────────
-            Il container è SEMPRE renderizzato: riserva lo spazio (aspect-15/5)
-            così l'arrivo tardivo di pageMetadata.imageUrl non causa layout shift.
-            Il bg-surface-2 fa da skeleton; l'immagine entra in dissolvenza. */}
-        <div className="w-full relative aspect-15/5 rounded-[2rem] overflow-hidden border-2 border-border shadow-2xl group bg-surface-2">
+            Il container è SEMPRE renderizzato: riserva lo spazio così l'arrivo
+            tardivo di pageMetadata.imageUrl non causa layout shift. Il bg-surface-2
+            fa da skeleton; l'immagine entra in dissolvenza. Rapporto: 4:3 su mobile
+            (a 375px il 3:1 era alto ~115px, un nastro), 3:1 da md in su. */}
+        <div className="w-full relative aspect-[4/3] md:aspect-15/5 rounded-[2rem] overflow-hidden border-2 border-border shadow-2xl group bg-surface-2">
           {pageMetadata?.imageUrl && (
             <>
               <MediaImage
@@ -138,10 +139,12 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
                   {cards.map((card, idx) => {
                     // card_id e' nullable nel tipo: una card senza id non e' renderizzabile
                     if (!card.card_id) return null;
-                    const isLast = idx === 4;
+                    // Card 0-2 verticali a mezza colonna; card 3-4 orizzontali SEMPRE a
+                    // tutta larghezza su mobile (a mezza colonna l'immagine w-32 lasciava
+                    // ~30px al testo e il bottone collassava a 16px). Desktop invariato.
                     const colClass = cn(
                       idx < 3 ? 'md:col-span-2' : 'md:col-span-3',
-                      isLast ? 'col-span-2' : 'col-span-1'
+                      idx >= 3 ? 'col-span-2' : 'col-span-1'
                     );
 
                     return (
@@ -201,6 +204,11 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
               <AudioPlayer assetId="01-cherry-home" hideTranscript className="w-full" />
 
               <div className="grid grid-cols-2 [gap:var(--space-fluid-m)]">
+                {/* Le StatCard arrivano con le page_sections: finche' caricano, due
+                    placeholder della stessa altezza (niente salto sotto l'audio). */}
+                {sectionsLoading && [0, 1].map((i) => (
+                  <SkeletonBase key={i} className="w-full aspect-[6/5] rounded-[2rem]" />
+                ))}
                 {(pageSections['home_01']?.cards ?? []).map((card) => (
                   <StatCard
                     key={card.title}

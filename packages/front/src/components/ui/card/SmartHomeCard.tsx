@@ -1,8 +1,7 @@
 import React from 'react';
 import { useFrontHomeCards } from '../../../hooks/useFrontHomeCards';
 import InfoCard from './InfoCard';
-import { SkeletonBase } from '../../skeleton/atoms';
-import { cn } from '@thaiakha/shared/lib/utils';
+import { HomeCardSkeleton } from '../../skeleton/compositions/HomeGridSkeleton';
 import type { ButtonVariant } from '../navigation/Button';
 
 interface SmartHomeCardProps {
@@ -31,19 +30,8 @@ const SmartHomeCard: React.FC<SmartHomeCardProps> = ({
   const { cards, loading } = useFrontHomeCards([cardId]);
 
   if (loading) {
-    const loadingAspect = aspectRatio === 'video' ? 'aspect-video' : 
-                          aspectRatio === 'square' ? 'aspect-square' : 
-                          aspectRatio === 'portrait' ? 'aspect-[3/4]' : 'aspect-video';
-                          
-    return (
-      <div className={cn(
-        "w-full rounded-[2rem] overflow-hidden bg-surface-2 animate-pulse",
-        layout === 'horizontal' ? 'aspect-video md:aspect-auto md:h-40' : loadingAspect,
-        className
-      )}>
-        <SkeletonBase className="w-full h-full" />
-      </div>
-    );
+    // Stessa struttura della card reale (immagine + testo + footer): niente salto al caricamento.
+    return <HomeCardSkeleton layout={layout} className={className} />;
   }
 
   const cardData = cards.find(c => c.card_id === cardId);

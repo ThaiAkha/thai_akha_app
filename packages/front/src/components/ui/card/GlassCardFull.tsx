@@ -7,7 +7,7 @@ import { SmartHeaderSection } from '../../layout';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { usePageSection, type PageSectionData } from '../../../hooks/usePageSections';
 import { ButtonVariant } from '../navigation/Button';
-import { SkeletonBase } from '../../skeleton/atoms';
+import { SkeletonBase, SkeletonText, SkeletonTitle } from '../../skeleton/atoms';
 
 interface GlassCardFullProps {
   sectionId: string;
@@ -74,7 +74,20 @@ export const GlassCardFull: React.FC<GlassCardFullProps> = ({
   const imageHref = isExternal ? rawHref : `/${navigatePath}`;
 
   if (loading) {
-    return <SkeletonBase className="w-full h-48 rounded-[2.5rem]" />;
+    // Stessa griglia della card reale (immagine aspect-video + colonna testo, 2 colonne da lg):
+    // prenota l'altezza vera (~600px su mobile), non un blocco fisso.
+    return (
+      <div aria-hidden="true" className="w-full rounded-[var(--radius-card-full)] border border-border bg-surface/60 [padding:var(--space-fluid-l)]">
+        <div className={cn(hideImage ? 'flex flex-col' : 'grid grid-cols-1 lg:grid-cols-2 [gap:var(--space-fluid-xl)] items-center')}>
+          {!hideImage && <SkeletonBase className="w-full aspect-video rounded-[calc(var(--radius-card-full)-var(--space-fluid-l))]" />}
+          <div className="flex flex-col [gap:var(--space-fluid-s)]">
+            <SkeletonTitle variant="section" width="w-4/5" className="items-start" />
+            <SkeletonText lines={4} align="left" />
+            <SkeletonBase className="h-10 w-40 rounded-full mt-2" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const imageContent = (

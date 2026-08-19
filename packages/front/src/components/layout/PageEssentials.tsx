@@ -199,7 +199,7 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                          'flex items-center [gap:var(--space-fluid-2xs)]',
+                          'flex items-center [gap:var(--space-fluid-2xs)] pointer-coarse:min-h-11',
                           'rounded-xl border border-border/20 bg-white/5',
                           '[padding:var(--space-fluid-2xs)_var(--space-fluid-xs)]',
                           'hover:border-action/40 hover:bg-action/5 transition-all duration-200',

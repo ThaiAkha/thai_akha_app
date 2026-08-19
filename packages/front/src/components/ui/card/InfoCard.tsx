@@ -164,8 +164,9 @@ const InfoCard: React.FC<InfoCardProps> = ({
             </div>
           )}
 
+          {/* flex-wrap: a mezza colonna (~170px) stats + bottone vanno a capo invece di schiacciarsi. */}
           <div className={cn(
-            "flex items-center justify-between [padding:var(--space-fluid-m)]",
+            "flex flex-wrap items-center justify-between [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)]",
             isHorizontal ? "pt-4" : "pt-[var(--space-fluid-m)]"
           )}>
             <div className="flex [gap:var(--space-fluid-m)]">

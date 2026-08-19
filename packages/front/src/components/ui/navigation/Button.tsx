@@ -6,7 +6,9 @@ import { cn } from '@thaiakha/shared/lib/utils';
 /* -------------------------------------------------------------------------- */
 
 // relative + overflow-hidden + isolate are required for the flash effect
-const BASE_STYLES = "relative overflow-hidden isolate inline-flex items-center justify-center rounded-[var(--radius-button)] font-display font-black uppercase tracking-[0.15em] transition-all duration-500 ease-cinematic cursor-pointer active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+// pointer-coarse:min-h-11 = 44px di altezza minima sui dispositivi touch (Apple HIG / WCAG 2.5.8),
+// qualunque sia la size: su mouse le size restano quelle di sempre.
+const BASE_STYLES = "relative overflow-hidden isolate inline-flex items-center justify-center pointer-coarse:min-h-11 rounded-[var(--radius-button)] font-display font-black uppercase tracking-[0.15em] transition-all duration-500 ease-cinematic cursor-pointer active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 const BUTTON_VARIANTS = {
   // PRIMARY: High Contrast (Black/White or Dark/Light)

@@ -233,20 +233,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               <Typography variant="h6" as="p" className="truncate text-secondary-400">
                 {displayTitle}
               </Typography>
-              <Typography variant="microLabel" className="truncate opacity-70 italic text-secondary-400">
+              {/* Sotto sm: il chrome (play + tempo + transcript) lascia al testo ~60px; resta il titolo. */}
+              <Typography variant="microLabel" className="hidden sm:block truncate opacity-70 italic text-secondary-400">
                 {displayCaption}
               </Typography>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
               {/* DIVIDER */}
-              <div className="h-8 w-px bg-secondary/30 shrink-0" />
+              <div className="hidden sm:block h-8 w-px bg-secondary/30 shrink-0" />
 
               {/* TIME + EQ RECTANGLE */}
               <div
                 className="flex flex-col items-center justify-center rounded-full bg-secondary shrink-0 size-12 [gap:var(--space-fluid-2xs)]"
               >
-                <Typography variant="numericRegular" className="text-[10px] leading-none text-white font-medium">
+                <Typography variant="numericRegular" className="[font-size:var(--text-fluid-micro)] leading-none text-white font-medium">
                   {formatTime(displayDuration)}
                 </Typography>
                 <div className="flex items-end justify-center gap-[2px] h-3">
@@ -311,20 +312,20 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 <Typography variant="h6" as="p" className="truncate text-white">
                   {displayTitle}
                 </Typography>
-                <Typography variant="microLabel" className="truncate opacity-90 italic text-white/80">
+                <Typography variant="microLabel" className="hidden sm:block truncate opacity-90 italic text-white/80">
                   {displayCaption}
                 </Typography>
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
                 {/* DIVIDER */}
-                <div className="h-8 w-px bg-white/30 shrink-0" />
+                <div className="hidden sm:block h-8 w-px bg-white/30 shrink-0" />
 
                 {/* TIME + EQ RECTANGLE (inverted) */}
                 <div
                   className="flex flex-col items-center justify-center rounded-full bg-white shrink-0 size-12 [gap:var(--space-fluid-2xs)]"
                 >
-                  <Typography variant="numericRegular" className="text-[10px] leading-none font-medium" style={{ color: 'var(--color-secondary)' }}>
+                  <Typography variant="numericRegular" className="[font-size:var(--text-fluid-micro)] leading-none font-medium" style={{ color: 'var(--color-secondary)' }}>
                     {formatTime(displayDuration)}
                   </Typography>
                   <div className="flex items-end justify-center gap-[2px] h-3">

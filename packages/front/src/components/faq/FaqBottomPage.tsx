@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import type { FaqCardUI } from '@thaiakha/shared';
 import { useQuery } from '@thaiakha/shared/query';
 import { getFaqsByRefs, getEntityFaqs } from '../../services/infoPages.service';
-import { useMediaAsset } from '../../hooks/useMediaAsset';
+import { useMediaAssets } from '../../hooks/useMediaAsset';
 import { useSiteMetadata } from '../../hooks/useSiteMetadata';
 import { Typography, Card } from '../ui/index';
 import { AkhaPixelPattern, AkhaPixelLine } from '../divider';
@@ -37,9 +37,8 @@ export interface FaqBottomPageProps {
 // ─── FAQ card — avatar risolto da avatar_asset_id via media_assets (frozen) ─────
 // Deterministico: nessun Math.random. L'avatar arriva dalla centrale faq_questions
 // (getPageFaqs/getEntityFaqs); assente solo per gli items di demo/mock.
-const FaqCard: React.FC<{ card: FaqCardUI; onNavigate?: (path: string) => void }> = ({ card, onNavigate }) => {
-  const { asset } = useMediaAsset({ assetId: card.avatarAssetId });
-  const avatarUrl = asset?.image_url ?? '';
+// L'avatar arriva gia' risolto dal padre (UNA query batch per tutte le card, non N singole).
+const FaqCard: React.FC<{ card: FaqCardUI; avatarUrl: string; onNavigate?: (path: string) => void }> = ({ card, avatarUrl, onNavigate }) => {
 
   return (
     <Card variant="glass" padding="none" rounded="2xl" className="flex flex-col">
@@ -143,6 +142,10 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
       ? (extrasLoading || (refsKey.length > 0 && pageQuery.isPending))
       : false;
 
+  // Avatar delle card: una sola query batch (prima: una query per card, 8+ sulla home).
+  const avatarIds = useMemo(() => cards.map(c => c.avatarAssetId).filter((id): id is string => !!id), [cards]);
+  const { assets: avatarAssets } = useMediaAssets(avatarIds);
+
   const hasCherry = !!(cherry && (cherry.prompt || cherry.response));
   if (!loading && cards.length === 0 && !hasCherry) return null;
 
@@ -198,7 +201,7 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-m)]">
           {cards.map((card, idx) => (
-            <FaqCard key={idx} card={card} onNavigate={onNavigate} />
+            <FaqCard key={idx} card={card} avatarUrl={card.avatarAssetId ? (avatarAssets[card.avatarAssetId]?.image_url ?? '') : ''} onNavigate={onNavigate} />
           ))}
         </div>
       )}

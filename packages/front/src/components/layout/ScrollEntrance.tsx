@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { motion, useReducedMotion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface ScrollEntranceProps extends HTMLMotionProps<'div'> {
@@ -28,14 +28,17 @@ export const ScrollEntrance: React.FC<ScrollEntranceProps> = ({
   yDistance = 40,
   ...props
 }) => {
+  // prefers-reduced-motion: niente slide (y=0) e transizione istantanea; il contenuto
+  // resta comunque visibile subito (opacity 1 → 1).
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, y: yDistance }}
+      initial={{ opacity: reduceMotion ? 1 : 0, y: reduceMotion ? 0 : yDistance }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: viewportMargin }}
       transition={{
-        duration,
-        delay,
+        duration: reduceMotion ? 0 : duration,
+        delay: reduceMotion ? 0 : delay,
         ease: [0.21, 1.11, 0.81, 0.99], // Custom cinematic ease
       }}
       className={cn('w-full', className)}

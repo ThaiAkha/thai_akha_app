@@ -87,7 +87,7 @@ const AdminHotels: React.FC = () => {
                             saving={inspector.saving}
                             form={inspector.form}
                             zones={data.zones}
-                            onFormChange={(update) => inspector.setForm((prev: any) => ({ ...prev, ...update }))}
+                            onFormChange={(update) => inspector.setForm((prev) => ({ ...prev, ...update }))}
                             onMapLinkChange={inspector.handleMapLinkChange}
                             onManualGPSChange={inspector.handleManualGPSChange}
                             onSelectedMeetingPointChange={inspector.setSelectedMeetingPoint}

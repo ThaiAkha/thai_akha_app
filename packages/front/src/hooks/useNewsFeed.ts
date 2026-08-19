@@ -83,12 +83,12 @@ export function useNewsFeed(targetCategory: string | null = null) {
                         header_title_highlight: meta.titleHighlight ?? undefined,
                         header_badge: meta.badge ?? undefined,
                         page_description: meta.description ?? undefined,
-                        hero_image_url: (meta as any).imageUrl as string ?? undefined,
+                        hero_image_url: meta.imageUrl ?? undefined,
                         seo_title: meta.seoTitle ?? undefined,
-                        seo_description: (meta as any).seoDescription as string ?? undefined,
+                        seo_description: meta.seoDescription ?? undefined,
                         seo_robots: meta.robots ?? undefined,
                         og_image: meta.ogImage ?? undefined,
-                        json_ld: (meta as any).jsonLd as Record<string, unknown> ?? null,
+                        json_ld: (meta.jsonLd as Record<string, unknown> | null | undefined) ?? null,
                     });
                 }
 

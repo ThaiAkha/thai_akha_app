@@ -27,7 +27,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
     onDelete,
 }) => {
     const { t } = useTranslation('inventory');
-    const handleChange = (field: keyof Product, value: any) => {
+    const handleChange = <K extends keyof Product>(field: K, value: Product[K]) => {
         onEditingProductChange({ ...editingProduct, [field]: value });
     };
 

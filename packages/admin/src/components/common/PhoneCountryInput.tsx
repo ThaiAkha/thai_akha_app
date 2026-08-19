@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import PhoneInput from 'react-phone-input-2';
+import PhoneInput, { type CountryData as PhoneCountryData } from 'react-phone-input-2';
 import ReactCountryFlag from 'react-country-flag';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Globe } from 'lucide-react';
@@ -60,7 +60,7 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
         <PhoneInput
           country={selectedCountry?.toLowerCase() || 'th'}
           value={value}
-          onChange={(phone: string, data: any) => {
+          onChange={(phone: string, data?: PhoneCountryData) => {
             onChange?.(phone);
             const info: CountryInfo = {
               code: (data?.countryCode || '').toUpperCase(),

@@ -46,7 +46,7 @@ export const NewsHeaderSinglePost: React.FC<NewsHeaderSinglePostProps> = ({
           size={6}
           opacity={0.8}
           animate={true}
-          theme={theme as any}
+          theme={theme}
           className="justify-start py-2"
         />
 

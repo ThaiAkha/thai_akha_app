@@ -3,10 +3,11 @@ import { Edit, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Tooltip from '../../ui/Tooltip';
 import Button from '../../ui/button/Button';
+import type { HotelLocation, MeetingPoint } from '@thaiakha/shared/types';
 
 interface HotelsInspectorActionsProps {
-    selectedHotel: any;
-    selectedMeetingPoint: any;
+    selectedHotel: HotelLocation | null;
+    selectedMeetingPoint: MeetingPoint | null;
     isCreating: boolean;
     isEditing: boolean;
     setIsEditing: (val: boolean) => void;

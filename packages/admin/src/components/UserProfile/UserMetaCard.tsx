@@ -3,8 +3,8 @@ import { useAuth } from "../../context/AuthContext";
 import { Camera, BadgeCheck, Mail, Loader2, Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileFooter, ProfileRow } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
-import { getSmartAvatarUrl } from "@thaiakha/shared/lib/avatarSystem";
-import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
+import { getSmartAvatarUrl, type AvatarGender } from "@thaiakha/shared/lib/avatarSystem";
+import { searchCountries, getCountryByCode, type CountryData } from "@thaiakha/shared/data";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -30,7 +30,7 @@ export default function UserMetaCard() {
   });
 
   const [nationalitySearchQuery, setNationalitySearchQuery] = useState('');
-  const [nationalitySearchResults, setNationalitySearchResults] = useState<any[]>([]);
+  const [nationalitySearchResults, setNationalitySearchResults] = useState<CountryData[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -76,7 +76,7 @@ export default function UserMetaCard() {
       // Re-generating it for an existing preset avatar picked a NEW random
       // variant on every save — that was the "random avatar on each edit" bug.
       if (!user.avatar_url && formData.gender && formData.age) {
-        finalAvatarUrl = await getSmartAvatarUrl(formData.gender as any, Number(formData.age));
+        finalAvatarUrl = await getSmartAvatarUrl(formData.gender as AvatarGender, Number(formData.age));
       }
 
       await updateProfile(user.id, {
@@ -103,9 +103,10 @@ export default function UserMetaCard() {
       setIsUploading(true);
       try {
         await uploadAvatar(user.id, file);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Avatar upload failed:", error);
-        alert(t("avatar.uploadFail", { message: error.message || "Unknown error" }));
+        const message = error instanceof Error ? error.message : "Unknown error";
+        alert(t("avatar.uploadFail", { message: message || "Unknown error" }));
       } finally {
         setIsUploading(false);
       }

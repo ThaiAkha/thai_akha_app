@@ -3,7 +3,7 @@ import { Typography, Icon, GlassCard, AkhaPixelPattern } from '../ui';
 import { SkeletonBase } from '../skeleton/atoms';
 import { AskCherryButton } from './AskCherryButton';
 import { CHERRY_AVATAR_SRC, CHERRY_CARD_AVATAR_RING } from './ChatIdentityHeader';
-import type { PageSectionData } from '../../hooks/useHomePageSections';
+import type { PageSectionData } from '../../hooks/usePageSections';
 
 /**
  * CherryIntroCard — card intro del mondo Cherry (avatar + how-to + Ask Cherry).

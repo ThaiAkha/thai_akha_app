@@ -36,7 +36,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 }) => {
     const { t } = useTranslation('media');
 
-    const handleChange = (field: keyof MediaAsset, value: any) => {
+    const handleChange = <K extends keyof MediaAsset>(field: K, value: MediaAsset[K]) => {
         onEditingAssetChange({ ...editingAsset, [field]: value });
     };
 
@@ -190,8 +190,8 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.width')}</label>
                         <input
                             type="number"
-                            value={(editingAsset as any).width || ''}
-                            onChange={e => handleChange('width' as any, parseInt(e.target.value))}
+                            value={editingAsset.width || ''}
+                            onChange={e => handleChange('width', parseInt(e.target.value))}
                             disabled={!isEditing}
                             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-xs font-bold"
                         />
@@ -200,8 +200,8 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.height')}</label>
                         <input
                             type="number"
-                            value={(editingAsset as any).height || ''}
-                            onChange={e => handleChange('height' as any, parseInt(e.target.value))}
+                            value={editingAsset.height || ''}
+                            onChange={e => handleChange('height', parseInt(e.target.value))}
                             disabled={!isEditing}
                             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-xs font-bold"
                         />
@@ -232,8 +232,8 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     <div className="space-y-1.5">
                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.caption')}</label>
                         <textarea
-                            value={(editingAsset as any).caption || ''}
-                            onChange={e => handleChange('caption' as any, e.target.value)}
+                            value={editingAsset.caption || ''}
+                            onChange={e => handleChange('caption', e.target.value)}
                             disabled={!isEditing}
                             rows={2}
                             className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-transparent focus:border-emerald-500/50 rounded-xl transition-all text-xs font-medium outline-none resize-none disabled:opacity-60"
@@ -257,8 +257,8 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                             <Tag className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
                             <input
                                 type="text"
-                                value={(editingAsset as any).tags?.join(', ') || ''}
-                                onChange={e => handleChange('tags' as any, e.target.value.split(',').map(t => t.trim()))}
+                                value={editingAsset.tags?.join(', ') || ''}
+                                onChange={e => handleChange('tags', e.target.value.split(',').map(t => t.trim()))}
                                 disabled={!isEditing}
                                 className="w-full pl-10 pr-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-xs font-bold outline-none"
                                 placeholder="organic, spicy, akha"
@@ -270,8 +270,8 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.copyright')}</label>
                         <input
                             type="text"
-                            value={(editingAsset as any).copyright || ''}
-                            onChange={e => handleChange('copyright' as any, e.target.value)}
+                            value={editingAsset.copyright || ''}
+                            onChange={e => handleChange('copyright', e.target.value)}
                             disabled={!isEditing}
                             className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-xs font-bold outline-none"
                             placeholder="© Thai Akha Kitchen"
@@ -341,7 +341,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                             <User className="w-3.5 h-3.5" />
                             <span className="text-xs font-black uppercase tracking-widest italic">{t('inspector.labels.uploadedBy')}</span>
                         </div>
-                        <span className="text-xs font-bold text-gray-500">{(editingAsset as any).uploaded_by || 'System Admin'}</span>
+                        <span className="text-xs font-bold text-gray-500">{editingAsset.uploaded_by || 'System Admin'}</span>
                     </div>
 
                     <div className="flex justify-between items-center">
@@ -357,7 +357,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                             <Clock className="w-3.5 h-3.5" />
                             <span className="text-xs font-black uppercase tracking-widest italic">{t('inspector.labels.lastUpdate')}</span>
                         </div>
-                        <span className="text-xs font-bold text-gray-500">{(editingAsset as any).updated_at ? new Date((editingAsset as any).updated_at).toLocaleString() : 'Just now'}</span>
+                        <span className="text-xs font-bold text-gray-500">{editingAsset.updated_at ? new Date(editingAsset.updated_at).toLocaleString() : 'Just now'}</span>
                     </div>
                 </div>
             </section>

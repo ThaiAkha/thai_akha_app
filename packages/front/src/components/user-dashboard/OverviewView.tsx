@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Rocket } from 'lucide-react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Button, Typography, Icon } from '../ui';
-import type { UserProfile } from '@thaiakha/shared/types';
+import type { UserProfile, UserDashboardBooking, DashboardMenuSelection } from '@thaiakha/shared/types';
 import StaffWelcomeCard from './StaffWelcomeCard';
 import CardOverviewBooking from './CardOverviewBooking';
 
 interface OverviewViewProps {
   userProfile: UserProfile | null;
-  bookings: any[];
-  menuSelection: any | null;
+  bookings: UserDashboardBooking[];
+  menuSelection: DashboardMenuSelection | null;
   onChangeTab: (tab: string) => void;
   onNavigate: (page: string) => void;
   isStaff: boolean;

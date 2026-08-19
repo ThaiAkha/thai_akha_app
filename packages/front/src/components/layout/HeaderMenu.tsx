@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Typography from '../ui/Typography';
-import { contentService } from '@thaiakha/shared/services'; // ✅ Usa il Service (Cache)
-import { HeaderMetadata } from './Header';
+import { usePageMetadata } from '../../hooks/usePageMetadata';
 import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { LogoFullLight, LogoFullDark } from '@thaiakha/shared';
@@ -13,21 +12,10 @@ interface HeaderMenuProps {
 }
 
 const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug, descriptionOverride }) => {
-  const [data, setData] = useState<HeaderMetadata | null>(null);
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
-
-  useEffect(() => {
-    const fetchMenuMeta = async () => {
-      try {
-        const targetSlug = customSlug || (currentStep === 1 ? 'menu-step-1' : 'menu-step-2');
-        const meta = await contentService.getPageMetadata(targetSlug);
-        if (meta) setData(meta);
-      } catch (e) {
-        console.error("Header metadata error kha:", e);
-      }
-    };
-    fetchMenuMeta();
-  }, [currentStep, customSlug]);
+  // Data layer (#86): metadata del menu dalla cache condivisa per slug.
+  const targetSlug = customSlug || (currentStep === 1 ? 'menu-step-1' : 'menu-step-2');
+  const { metadata: data } = usePageMetadata(targetSlug);
 
   // Reactive dark mode: aggiorna il logo quando cambia il tema
   useEffect(() => {

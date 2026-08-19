@@ -3,6 +3,7 @@ import { Icon, Button, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { StepHeader } from './StepHeader';
 import { PaxVisitorPicker } from './PaxVisitorPicker';
+import type { DailyAvailability, SessionInfo } from './booking.types';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS_SHORT = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -11,13 +12,13 @@ interface BookingSelectionProps {
   selectedDate: Date | null;
   handleDateSelect: (d: Date) => void;
   dateOptions: Date[];
-  dailyStats: Record<string, any>;
+  dailyStats: Record<string, DailyAvailability>;
   formattedDateStr: string;
   setShowCalendarModal: (show: boolean) => void;
   session: 'morning_class' | 'evening_class' | null;
   handleSessionSelect: (s: 'morning_class' | 'evening_class') => void;
-  sessionConfig: Record<string, any>;
-  currentStats: any;
+  sessionConfig: Record<string, SessionInfo>;
+  currentStats: DailyAvailability;
   pax: number;
   setPax: (p: number) => void;
   maxSelectable: number;

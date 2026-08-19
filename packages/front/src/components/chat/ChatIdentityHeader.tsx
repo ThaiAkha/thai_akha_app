@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- componente + costanti dello standard identita' Cherry (unica sorgente, importate da index/pulsanti) */
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography } from '../ui/Typography';

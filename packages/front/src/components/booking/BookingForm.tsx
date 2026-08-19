@@ -17,7 +17,7 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Icon, Button, Card, Modal } from '../ui/index';
 import { Input, PhonePrefixSelect, NationalitySelect } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
-import type { LegalDocument } from '@thaiakha/shared';
+import type { LegalDocument, LegalDocumentSection } from '@thaiakha/shared';
 import { getInfoPage } from '../../services/infoPages.service';
 import { InfoContentSkeleton } from '../skeleton';
 import type { BookingFormData, AuthMode, PaymentMethod } from './booking.types';
@@ -47,12 +47,12 @@ const MineralSelect = ({
 );
 
 // ─── Legal document renderer ──────────────────────────────────────────────────
-const LegalContent = ({ doc }: { doc: any }) => (
+const LegalContent = ({ doc }: { doc: LegalDocument }) => (
   <div className="space-y-6 text-sm">
     <Typography variant="caption" className="not-italic opacity-60">
       Effective: {new Date(doc.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
     </Typography>
-    {doc.sections?.map((s: any, i: number) => (
+    {doc.sections?.map((s: LegalDocumentSection, i: number) => (
       <div key={i}>
         <Typography variant="h5" className="mb-2 font-black">{s.title}</Typography>
         {typeof s.content === 'string'
@@ -66,7 +66,7 @@ const LegalContent = ({ doc }: { doc: any }) => (
                 ))}
               </ul>
             : null}
-        {s.subsections?.map((sub: any, k: number) => (
+        {s.subsections?.map((sub, k: number) => (
           <div key={k} className="ml-4 mt-3">
             <Typography variant="paragraphS" className="font-bold mb-1 text-title">{sub.title}</Typography>
             {typeof sub.content === 'string'

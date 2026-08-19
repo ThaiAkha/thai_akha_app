@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import React from 'react';
 import type { EssentialsData } from '@thaiakha/shared/types';
-import { getPageDates } from '../../services/infoPages.service';
+import { useSiteMetadata } from '../../hooks/useSiteMetadata';
 import { Typography, Icon, Card } from '../ui';
 import AkhaPixelPattern from '../divider/AkhaPixelPattern';
 import AkhaThemedLine from '../divider/AkhaThemedLine';
@@ -21,32 +20,6 @@ export interface PageEssentialsProps {
   hideTopDivider?: boolean;
   /** Accento per mondo: 'brand' (default) | 'ocean' (pagine info a tema FAQ). */
   accent?: 'brand' | 'ocean';
-}
-
-// ─── Module-level fetch cache ─────────────────────────────────────────────────
-
-interface EssentialsCacheEntry {
-  data: EssentialsData;
-}
-
-const _cache = new Map<string, EssentialsCacheEntry>();
-
-async function fetchEssentials(slug: string): Promise<EssentialsCacheEntry> {
-  if (_cache.has(slug)) return _cache.get(slug)!;
-
-  const { data, error } = await supabase
-    .from('site_metadata')
-    .select('page_essentials')
-    .eq('page_slug', slug)
-    .maybeSingle();
-
-  if (error || !data?.page_essentials) return { data: {} };
-
-  const entry: EssentialsCacheEntry = {
-    data: data.page_essentials as EssentialsData,
-  };
-  _cache.set(slug, entry);
-  return entry;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -100,45 +73,17 @@ const PageEssentials: React.FC<PageEssentialsProps> = ({
   // sull'intero sottoalbero (tutte le classi -action/-primary diventano ocean).
   const oceanVars = isOcean ? '[--color-action:var(--color-ocean-blue)] [--color-primary:var(--color-deep-ocean)]' : '';
   const dividerTheme = isOcean ? 'block_faq' : 'akha';
-  const [data, setData] = useState<EssentialsData>(() => dataProp ?? (_cache.get(slug ?? '')?.data ?? {}));
-  const [loading, setLoading] = useState(!dataProp && !!slug && !_cache.has(slug ?? ''));
+  // Data layer (#86): page_essentials + date pagina dalla riga site_metadata
+  // condivisa (useSiteMetadata: una query per slug, per tutti i consumer).
+  // `data` esplicito bypassa il fetch (stesso pattern di FaqBottomPage).
+  const fetchMode = dataProp === undefined && !!slug;
+  // Le date si leggono dallo slug anche quando `data` e' passato (contratto invariato).
+  const { extras, loading: extrasLoading } = useSiteMetadata(slug);
+  const data: EssentialsData = dataProp ?? ((extras?.essentials as EssentialsData | null) ?? {});
+  const loading = fetchMode && extrasLoading;
   // Date pagina — da site_metadata.date_published/date_modified (colonne dedicate,
   // fonte unica per TUTTE le pagine): rese come righe in coda ai Key Facts.
-  const [dates, setDates] = useState<{ published: string | null; modified: string | null } | null>(null);
-
-  useEffect(() => {
-    if (!slug) return;
-    let cancelled = false;
-    getPageDates(slug).then(d => {
-      if (!cancelled) setDates(d);
-    });
-    return () => { cancelled = true; };
-  }, [slug]);
-
-  useEffect(() => {
-    if (dataProp !== undefined) {
-      setData(dataProp);
-      setLoading(false);
-      return;
-    }
-    if (!slug) { setLoading(false); return; }
-    if (_cache.has(slug)) {
-      const entry = _cache.get(slug)!;
-      setData(entry.data);
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setLoading(true);
-    fetchEssentials(slug).then(entry => {
-      if (!cancelled) {
-        setData(entry.data);
-        setLoading(false);
-      }
-    });
-    return () => { cancelled = true; };
-  }, [slug, dataProp]);
+  const dates = slug ? (extras?.dates ?? null) : null;
 
   const hasFacts = data.facts && data.facts.length > 0;
   const hasRefs = data.references && data.references.length > 0;

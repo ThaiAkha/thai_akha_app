@@ -10,7 +10,7 @@ import LegalFooterCard from '../components/legal/LegalFooterCard';
 import { GalleryModal } from '../components/modal';
 import type { GalleryItem } from '../components/modal';
 import { InfoContentSkeleton } from '../components/skeleton';
-import { usePageSection } from '../hooks/usePageSection';
+import { usePageSection } from '../hooks/usePageSections';
 import { t } from '../i18n';
 
 // Header categoria: page_sections.section_id da faq_categories.section_id (DB-driven,

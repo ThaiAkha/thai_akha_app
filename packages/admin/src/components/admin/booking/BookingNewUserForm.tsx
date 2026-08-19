@@ -4,7 +4,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import PhoneCountryInput from '../../common/PhoneCountryInput';
-import { searchCountries, getCountryByCode } from '@thaiakha/shared/data';
+import { searchCountries, getCountryByCode, type CountryData } from '@thaiakha/shared/data';
 import { NewUser } from '../../../hooks/useAdminBooking';
 import SectionHeader from '../../ui/SectionHeader';
 
@@ -19,7 +19,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
 }) => {
   const { t } = useTranslation('booking');
   const [nationalitySearchQuery, setNationalitySearchQuery] = useState('');
-  const [nationalitySearchResults, setNationalitySearchResults] = useState<any[]>([]);
+  const [nationalitySearchResults, setNationalitySearchResults] = useState<CountryData[]>([]);
 
   const handleNationalitySearch = (query: string) => {
     setNationalitySearchQuery(query);
@@ -67,7 +67,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
           <SelectField
             label={t('newUser.fieldGender')}
             value={newUser.gender || ''}
-            onChange={e => onNewUserChange({ ...newUser, gender: e.target.value as any })}
+            onChange={e => onNewUserChange({ ...newUser, gender: e.target.value as NewUser['gender'] })}
           >
             <option value="">{t('newUser.genderSelect')}</option>
             <option value="male">{t('newUser.genderMale')}</option>

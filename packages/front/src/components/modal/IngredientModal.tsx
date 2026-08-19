@@ -12,10 +12,19 @@ const swipePower = (offset: number, velocity: number) => {
   return Math.abs(offset) * velocity;
 };
 
+/** Minimal ingredient shape rendered by the modal (IngredientDetail from useRecipePageData satisfies it). */
+export interface IngredientModalItem {
+  name_en: string;
+  name_th?: string | null;
+  phonetic?: string | null;
+  description?: string | null;
+  image_url?: string;
+}
+
 interface IngredientModalProps {
   isOpen: boolean;
   onClose: () => void;
-  items: any[];
+  items: IngredientModalItem[];
   startIndex?: number;
 }
 
@@ -41,6 +50,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- next/prev/onClose are recreated each render; listener re-binds on the state it reads
   }, [isOpen, index, items.length]);
 
   const next = () => {

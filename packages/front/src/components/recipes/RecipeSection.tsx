@@ -1,7 +1,7 @@
 import React from 'react';
 import SmartHeaderSection from '../layout/SmartHeaderSection';
-import { useRecipeSingleSections } from '../../hooks/useRecipeSingleSections';
-import type { RecipeSingleSectionId } from '../../hooks/useRecipeSingleSections';
+import { usePageSections, RECIPE_SINGLE_SECTION_IDS } from '../../hooks/usePageSections';
+import type { RecipeSingleSectionId } from '../../hooks/usePageSections';
 
 interface RecipeSectionProps {
   sectionId: RecipeSingleSectionId;
@@ -18,7 +18,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({
   hideSubtitle = true,
   className,
 }) => {
-  const { sections } = useRecipeSingleSections();
+  const { sections } = usePageSections(RECIPE_SINGLE_SECTION_IDS);
 
   return (
     <section className={className ? className : undefined}>

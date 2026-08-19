@@ -1,15 +1,51 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { meetingPointIconDataUri } from '@thaiakha/shared/data';
-import type { MeetingPoint } from '@thaiakha/shared/types';
+import type { MeetingPoint, PickupGeoJsonCollection, PickupGeoJsonFeature } from '@thaiakha/shared/types';
+
+// Minimal typing of the Google Maps JS SDK surface used here (no @types/google.maps in the repo).
+type GmLatLng = { lat: number; lng: number };
+interface GmListener { remove(): void }
+interface GmMarker {
+  map: GmMap | null;
+  addListener(event: string, handler: () => void): GmListener;
+}
+interface GmDataFeature {
+  getGeometry(): { getType(): string };
+  getProperty(name: string): unknown;
+}
+interface GmMapMouseEvent {
+  placeId?: string;
+  latLng: { lat(): number; lng(): number };
+  stop(): void;
+}
+interface GmMap {
+  data: {
+    forEach(cb: (feature: GmDataFeature) => void): void;
+    remove(feature: GmDataFeature): void;
+    addGeoJson(geoJson: PickupGeoJsonCollection): void;
+    setStyle(cb: (feature: GmDataFeature) => Record<string, unknown>): void;
+  };
+  setOptions(opts: Record<string, unknown>): void;
+  addListener(event: string, handler: (e: GmMapMouseEvent) => void): GmListener;
+  panTo(pos: GmLatLng): void;
+}
+interface GmMapsGlobal {
+  importLibrary(name: string): Promise<{
+    Map: new (el: HTMLElement, opts: Record<string, unknown>) => GmMap;
+    AdvancedMarkerElement: new (opts: Record<string, unknown>) => GmMarker;
+    PinElement: new (opts: Record<string, unknown>) => unknown;
+  }>;
+  event: { removeListener(listener: GmListener): void };
+}
 
 declare global {
   interface Window {
-    google: any;
+    google: { maps: GmMapsGlobal };
   }
 }
 
 interface PickupMapBackgroundProps {
-  geoJsonData: any;
+  geoJsonData: PickupGeoJsonCollection;
   selectedLocation?: { lat: number; lng: number } | null;
   /** Drop-off location — shown as a second amber pin alongside the pickup pin */
   secondaryLocation?: { lat: number; lng: number } | null;
@@ -33,13 +69,13 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
   selectedMeetingPointId,
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const googleMapRef = useRef<any>(null);
+  const googleMapRef = useRef<GmMap | null>(null);
 
   // Refs per gestire la pulizia della memoria
-  const userMarkerRef = useRef<any>(null);
-  const dropoffMarkerRef = useRef<any>(null);
-  const pointMarkersRef = useRef<any[]>([]);
-  const overlayMarkersRef = useRef<any[]>([]);
+  const userMarkerRef = useRef<GmMarker | null>(null);
+  const dropoffMarkerRef = useRef<GmMarker | null>(null);
+  const pointMarkersRef = useRef<GmMarker[]>([]);
+  const overlayMarkersRef = useRef<GmMarker[]>([]);
   const [mapReady, setMapReady] = useState(false);
 
   // 1. INIZIALIZZAZIONE MAPPA
@@ -78,15 +114,15 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
 
       // --- A. GESTIONE ZONE (POLIGONI) ---
       // Usiamo il Data Layer nativo per i poligoni (veloce ed efficiente)
-      map.data.forEach((feature: any) => map.data.remove(feature)); // Pulizia
+      map.data.forEach((feature) => map.data.remove(feature)); // Pulizia
       map.data.addGeoJson(geoJsonData);
 
-      map.data.setStyle((feature: any) => {
+      map.data.setStyle((feature) => {
         const geometryType = feature.getGeometry().getType();
         
         // Disegna SOLO i Poligoni (Zone Colorate)
         if (geometryType === 'Polygon') {
-          const color = feature.getProperty('color') || '#ff7597';
+          const color = (feature.getProperty('color') as string | undefined) || '#ff7597';
           return {
             fillColor: color,
             fillOpacity: 0.15, // Trasparenza elegante
@@ -108,9 +144,9 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
 
       // 2. Itera sulle feature per creare Marker Avanzati
       if (geoJsonData.features) {
-        geoJsonData.features.forEach((feature: any) => {
+        geoJsonData.features.forEach((feature: PickupGeoJsonFeature) => {
           if (feature.geometry.type === 'Point') {
-            const [lng, lat] = feature.geometry.coordinates; // GeoJSON è [Lon, Lat]
+            const [lng, lat] = feature.geometry.coordinates as [number, number]; // GeoJSON è [Lon, Lat]
             const props = feature.properties;
             
             // Creazione Contenuto Marker
@@ -152,9 +188,9 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
               if (onPointSelect) {
                 map.panTo({ lat, lng }); // Zoom fluido sul punto
                 onPointSelect({
-                  name: props.name,
+                  name: props.name ?? '',
                   lat, lng,
-                  type: props.type
+                  type: props.type ?? ''
                 });
               }
             });
@@ -166,6 +202,7 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
     };
 
     renderData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onPointSelect intentionally excluded: markers rebuild only on data/map change
   }, [geoJsonData, mapReady]); // Riesegue se cambiano i dati o la mappa è pronta
 
   // 3. GESTIONE CLICK MAPPA (Pin Manuale Utente)
@@ -177,7 +214,7 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
     map.setOptions({ draggableCursor: selectionMode ? 'crosshair' : 'grab' });
 
     // Listener (Il click sulla mappa usa ancora l'evento standard 'click')
-    const listener = map.addListener('click', (e: any) => {
+    const listener = map.addListener('click', (e) => {
       if (selectionMode && onMapClick) {
         // Ignora click se è su un POI di Google Maps (es. un ristorante)
         if (e.placeId) {
@@ -345,7 +382,7 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
 
         marker.addListener('gmp-click', () => {
           if (onPointSelect) {
-            googleMapRef.current.panTo({ lat: mp.latitude, lng: mp.longitude });
+            googleMapRef.current?.panTo({ lat: mp.latitude, lng: mp.longitude });
             onPointSelect({ name: mp.name, lat: mp.latitude, lng: mp.longitude, type: mp.id });
           }
         });

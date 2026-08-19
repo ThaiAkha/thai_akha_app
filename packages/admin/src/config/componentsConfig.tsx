@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import { ElementType } from 'react';
 import Button from '../components/ui/button/Button';
 import InputField from '../components/form/input/InputField';
 import Badge from '../components/ui/badge/Badge';
@@ -9,17 +9,18 @@ export type PropType = 'string' | 'number' | 'boolean' | 'select' | 'color' | 'i
 export interface ComponentProp {
     name: string;
     type: PropType;
-    defaultValue?: any;
+    defaultValue?: unknown;
     options?: string[]; // For 'select' type
     description?: string;
 }
 
 export interface ComponentConfig {
     name: string;
-    component: ComponentType<any>;
+    /** Any renderable component: the showcase feeds it a dynamic prop bag (ElementType, not a typed FC). */
+    component: ElementType;
     description?: string;
     props: ComponentProp[];
-    demoProps?: any; // Default props for the demo
+    demoProps?: Record<string, unknown>; // Default props for the demo
 }
 
 export interface ComponentCategory {

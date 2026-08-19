@@ -77,6 +77,7 @@ export const useChatScroll = (messages: ChatMessage[], active: boolean, idPrefix
         }
       }, 100); // Small timeout to ensure DOM update
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- idPrefix is a static id prefix; effect must run only on new messages
   }, [messages]);
 
   const scrollToBottom = () => {

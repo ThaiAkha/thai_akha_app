@@ -1,8 +1,10 @@
+/* eslint-disable react-refresh/only-export-components -- provider + hook useAuth colocati (pattern standard) */
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { authService, UserProfile } from '../services/auth.service';
 import type { UserRole } from '@thaiakha/shared/types';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { useQueryClient } from '@thaiakha/shared/query';
 
 interface AuthContextType {
     user: UserProfile | null;
@@ -18,7 +20,7 @@ interface AuthContextType {
         taxId: string,
         phone: string,
         lineId?: string
-    ) => Promise<any>;
+    ) => ReturnType<typeof authService.signUpAgency>;
     signOut: typeof authService.signOut;
     updateProfile: typeof authService.updateProfile;
     changePassword: typeof authService.changePassword;
@@ -43,8 +45,9 @@ async function withAbortRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 10
     for (let attempt = 0; attempt <= retries; attempt++) {
         try {
             return await fn();
-        } catch (e: any) {
-            const isAbort = e?.name === 'AbortError' || e?.message?.includes('signal is aborted');
+        } catch (e: unknown) {
+            const err = e as { name?: string; message?: string } | null;
+            const isAbort = err?.name === 'AbortError' || err?.message?.includes('signal is aborted');
             if (isAbort && attempt < retries) {
                 console.log(`[Auth] AbortError, retrying in ${delayMs}ms (attempt ${attempt + 1})`);
                 await new Promise(r => setTimeout(r, delayMs));
@@ -102,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // DB Row columns are nullable; UserProfile is stricter. Cast at the
             // source (stale database.types pattern) to preserve runtime values.
-            const d = data as any;
+            const d = data as unknown as UserProfile;
 
             // Security: never grant a default role. A missing/invalid role must
             // deny access (return null → user routed to /signin), not silently
@@ -144,8 +147,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
             return profile;
-        } catch (e: any) {
-            console.error("[Auth] fetchProfile exception:", e.message || e);
+        } catch (e: unknown) {
+            console.error("[Auth] fetchProfile exception:", (e as { message?: string } | null)?.message || e);
             return null;
         }
     }, []);
@@ -169,6 +172,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [fetchProfile]);
 
+    const queryClient = useQueryClient();
+
     useEffect(() => {
         let mounted = true;
 
@@ -182,6 +187,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(null);
                 setLoading(false);
                 localStorage.removeItem(PROFILE_CACHE_KEY);
+                // Data layer (#86): le query admin sono RLS-scoped, la cache non deve
+                // sopravvivere all'utente che l'ha riempita. Prima si fermano le query in
+                // volo, poi si svuota: gli observer ancora montati non rilanciano fetch anonimi.
+                await queryClient.cancelQueries();
+                queryClient.clear();
                 return;
             }
 
@@ -283,7 +293,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             mounted = false;
             subscription.unsubscribe();
         };
-    }, [fetchProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 'user' letto nel listener; ri-sottoscrivere ad ogni cambio utente cambierebbe il flusso
+    }, [fetchProfile, queryClient]);
 
     const updateProfile = useCallback(async (userId: string, updates: Partial<UserProfile>) => {
         await authService.updateProfile(userId, updates);

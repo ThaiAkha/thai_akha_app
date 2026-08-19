@@ -34,9 +34,10 @@ export default function SignInForm() {
         // fetch individual profile here.
         navigate("/");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login failed:", err);
-      setError(err.message || t('signIn.error'));
+      // AuthError o Error: entrambi espongono .message
+      setError((err as { message?: string } | null)?.message || t('signIn.error'));
     } finally {
       setLoading(false);
     }

@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { InspectorSaveButton } from '../../ui/inspector/InspectorActionButtons';
+import type { LogisticsItem } from '../../../hooks/useManagerLogistic';
 
 interface LogisticInspectorActionsProps {
     handleSave: () => void;
     isSaving: boolean;
-    selectedBooking: any;
+    selectedBooking: LogisticsItem | null;
 }
 
 const LogisticInspectorActions: React.FC<LogisticInspectorActionsProps> = ({

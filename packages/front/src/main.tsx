@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
+import { AppQueryProvider } from '@thaiakha/shared/query';
 import { LanguageProvider } from './context/LanguageContext';
 import { initI18n } from './i18n';
 import { parseLangPath } from './lib/langRouting';
@@ -31,9 +32,12 @@ if (rootElement) {
     <React.StrictMode>
       {/* La lingua è la prima cosa che si decide: sta sopra a tutto, perché
           App, SEOHead e ogni pagina leggono da qui quale lingua servire. */}
-      <LanguageProvider>
-        <App />
-      </LanguageProvider>
+      {/* Data layer unico (#86): un QueryClient per l'app, sopra tutto cio' che legge da Supabase. */}
+      <AppQueryProvider>
+        <LanguageProvider>
+          <App />
+        </LanguageProvider>
+      </AppQueryProvider>
     </React.StrictMode>
   );
 }

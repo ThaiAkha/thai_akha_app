@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import type { Tables } from '@thaiakha/shared/types';
 import { SessionType } from '../components/common/ClassPicker';
 
 // --- TYPES ---
@@ -34,6 +35,27 @@ export interface LogisticsItem {
     // Luggage
     has_luggage: boolean;
 }
+
+/**
+ * Riga della select bookings + profiles:user_id (join non inferibile da PostgREST: relazione ambigua).
+ * Base Tables<'bookings'>; i campi che LogisticsItem consuma come NON nulli (pax_count, session_id,
+ * transport_status, note, phone) sono ristretti qui esattamente come faceva il vecchio `any`.
+ */
+type LogisticBookingRow = Omit<Pick<Tables<'bookings'>,
+    | 'internal_id' | 'pax_count' | 'hotel_name' | 'pickup_zone' | 'pickup_time' | 'route_order'
+    | 'customer_note' | 'agency_note' | 'pickup_driver_uid' | 'phone_number' | 'session_id'
+    | 'booking_date' | 'transport_status' | 'guest_name' | 'guest_email'
+    | 'requires_dropoff' | 'dropoff_hotel' | 'dropoff_zone' | 'dropoff_driver_uid'
+    | 'dropoff_sequence' | 'pickup_sequence' | 'meeting_point' | 'has_luggage'
+>, 'pax_count' | 'session_id' | 'transport_status' | 'customer_note' | 'agency_note' | 'phone_number'> & {
+    pax_count: number;
+    session_id: string;
+    transport_status: string;
+    customer_note?: string;
+    agency_note?: string;
+    phone_number?: string;
+    profiles: { full_name: string | null; avatar_url?: string } | null;
+};
 
 export interface DriverProfile {
     id: string;
@@ -166,7 +188,8 @@ export function useManagerLogistic() {
                 .order('route_order', { ascending: true });
 
             if (bookingData) {
-                setItems(bookingData.map((b: any) => {
+                // Join non inferibile (vedi LogisticBookingRow): cast unico alla sorgente
+                setItems((bookingData as unknown as LogisticBookingRow[]).map((b) => {
                     // Resolve meeting point name from ID
                     const meetingPointName = b.meeting_point
                         ? meetingPoints.find(mp => mp.id === b.meeting_point)?.name || b.meeting_point

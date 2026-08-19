@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Typography } from '../ui/Typography';
-import AkhaPixelPattern from './AkhaPixelPattern';
+import AkhaPixelPattern, { type AkhaTheme } from './AkhaPixelPattern';
 
 interface AkhaQuoteProps {
     /** Text content of the quote */
@@ -17,7 +17,7 @@ interface AkhaQuoteProps {
     /** Text color from Design System tokens */
     color?: 'title' | 'sub' | 'muted' | 'inverse' | 'inherit' | 'primary' | 'secondary' | 'action';
     /** Optional theme override */
-    theme?: any;
+    theme?: AkhaTheme;
 }
 
 /**

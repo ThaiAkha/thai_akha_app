@@ -44,6 +44,9 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
 
     const [visibleCount, setVisibleCount] = useState(0);
     const [isMounted, setIsMounted] = useState(false);
+    // Restart the reveal timer only when the counter is reset to 0 (loop), not on every tick.
+    const isAtStart = visibleCount === 0;
+    const activeLength = activeData.length;
 
     useEffect(() => {
         if (expandFromCenter) {
@@ -54,7 +57,7 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
         let timeoutId: ReturnType<typeof setTimeout>;
         const interval = setInterval(() => {
             setVisibleCount((prev) => {
-                if (prev < activeData.length) return prev + 1;
+                if (prev < activeLength) return prev + 1;
                 if (loop) {
                     clearInterval(interval);
                     timeoutId = setTimeout(() => setVisibleCount(0), loopDelay);
@@ -69,7 +72,7 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
             clearInterval(interval);
             clearTimeout(timeoutId);
         };
-    }, [variant, customData, speed, loop, loopDelay, visibleCount === 0, expandFromCenter]);
+    }, [variant, customData, speed, loop, loopDelay, isAtStart, expandFromCenter, activeLength]);
 
     const centerIndex = Math.floor(activeData.length / 2);
 

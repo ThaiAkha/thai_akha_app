@@ -53,7 +53,7 @@ export function useBookingForm(
       age:         userProfile.age           ? String(userProfile.age) : prev.age,
       hasWhatsapp: userProfile.phone_whatsapp ?? prev.hasWhatsapp,
     }));
-  }, [userProfile]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [userProfile]);
 
   return {
     formData, setFormData,

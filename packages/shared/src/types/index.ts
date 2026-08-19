@@ -18,6 +18,7 @@ export * from './infoContent.types';
 export * from './media.types';
 export * from './pickup.types';
 export * from './workers.types';
+export * from './userDashboard.types';
 import type { ChatOption, NodeBlock } from '../data/cherry/chatFlowData';
 
 /**
@@ -47,6 +48,8 @@ export interface ChatMessage {
    * (getCherryCTA). Assente nei messaggi AI in streaming reale.
    */
   nodeLevel?: 1 | 2 | 3;
+  /** Origin channel: voice transcripts (Gemini Live) are tagged 'voice'; default text. */
+  type?: 'text' | 'voice';
 }
 
 

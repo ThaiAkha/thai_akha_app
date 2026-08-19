@@ -8,7 +8,7 @@ import { NewsCard } from '../components/news/NewsCard';
 import AudioPlayer from '../components/modal/AudioPlayer';
 import VideoPlayer from '../components/modal/VideoPlayer';
 import PhotoModal from '../components/modal/PhotoModal';
-import { useClassesPageSections } from '../hooks/useClassesPageSections';
+import { usePageSections, CLASSES_SECTION_IDS } from '../hooks/usePageSections';
 import { useClassOverviewExtras } from '../hooks/useClassOverviewExtras';
 import { useMediaAsset } from '../hooks/useMediaAsset';
 import { useShareLink } from '../hooks/useShareLink';
@@ -19,7 +19,7 @@ interface InfoClassesProps {
 }
 
 const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
-  const { sections: pageSections, metadata: classesMetadata, loading: sectionsLoading } = useClassesPageSections();
+  const { sections: pageSections, metadata: classesMetadata, loading: sectionsLoading } = usePageSections(CLASSES_SECTION_IDS, { metadataSlug: 'thai-cooking-classes-chiang-mai' });
   const { featuredNews, reasons, loading } = useClassOverviewExtras();
   // Blocco confronto Morning vs Evening — dati dalla media asset
   const { asset: compareAsset } = useMediaAsset({ assetId: 'classes-compare-cover-01' });

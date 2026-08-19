@@ -6,7 +6,7 @@ import HeaderMenu from '../components/layout/HeaderMenu';
 import { MenuCard } from '../components/menu/index';
 import { authService, UserProfile } from '../services/auth.service';
 import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
-import { useDietaryKnowledge } from '../hooks/useDietaryKnowledge';
+import { useDietaryKnowledge, type DietaryProfile } from '../hooks/useDietaryKnowledge';
 import { useActiveProfile } from '../context/ActiveProfileContext';
 import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
 import { NoBookingBanner } from '../components/user-dashboard';
@@ -14,6 +14,15 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../i18n';
 import { contentService } from '@thaiakha/shared/services';
 import { ContentCategoryDB } from '@thaiakha/shared';
+import type { SpicinessLevel, Tables } from '@thaiakha/shared/types';
+
+/** Recipe row as selected below (recipes + key ingredients + cover join).
+ *  keyIngredients is flattened for the list; saved selections keep the raw row (no keyIngredients). */
+type MenuRecipe = Tables<'recipes'> & {
+  recipe_key_ingredients: Pick<Tables<'recipe_key_ingredients'>, 'ingredient'>[];
+  cover: Pick<Tables<'media_assets'>, 'asset_id' | 'image_url' | 'alt_text'> | null;
+  keyIngredients?: string[];
+};
 
 const normalizeCat = (cat: string) => {
   const lower = cat.toLowerCase();
@@ -36,8 +45,8 @@ const MenuPage: React.FC<{
   const [targetBookingId, setTargetBookingId] = useState<string | null>(sectionId || null);
 
   // Dati
-  const [recipes, setRecipes] = useState<any[]>([]);
-  const [, setSpicinessLevels] = useState<any[]>([]);
+  const [recipes, setRecipes] = useState<MenuRecipe[]>([]);
+  const [, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
 
   // Preferenze
   const [diet, setDiet] = useState<string>('regular');
@@ -46,7 +55,7 @@ const MenuPage: React.FC<{
 
   // Selezioni
   const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [selections, setSelections] = useState<Record<string, any>>({});
+  const [selections, setSelections] = useState<Record<string, MenuRecipe | null>>({});
 
   // Dietary Knowledge
   const { profiles, getDietProfiles, getAllergyProfiles } = useDietaryKnowledge();
@@ -77,7 +86,7 @@ const MenuPage: React.FC<{
           // content_categories.id is a SLUG (e.g. 'authentic-thai-curry-recipes'),
           // not a short key — normalize it to curry/soup/stirfry before matching.
           const selectionCats = cats.filter(c => ['curry', 'soup', 'stirfry'].includes(normalizeCat(c.id)));
-          const initialSelections: Record<string, any> = {};
+          const initialSelections: Record<string, MenuRecipe | null> = {};
           selectionCats.forEach(c => { initialSelections[normalizeCat(c.id)] = null; });
           setSelections(initialSelections);
         }
@@ -85,7 +94,7 @@ const MenuPage: React.FC<{
         if (recRes.data) {
           setRecipes(recRes.data.map(r => ({
             ...r,
-            keyIngredients: r.recipe_key_ingredients?.map((i:any) => i.ingredient) || []
+            keyIngredients: r.recipe_key_ingredients?.map((i) => i.ingredient) || []
           })));
         }
         if (spiceRes.length > 0) setSpicinessLevels(spiceRes);
@@ -124,7 +133,7 @@ const MenuPage: React.FC<{
               .maybeSingle();
 
             if (savedMenu && recRes.data) {
-              const menuSelections: Record<string, any> = {};
+              const menuSelections: Record<string, MenuRecipe | null> = {};
               menuSelections.curry = recRes.data.find(r => r.id === savedMenu.curry_id) || null;
               menuSelections.soup = recRes.data.find(r => r.id === savedMenu.soup_id) || null;
               menuSelections.stirfry = recRes.data.find(r => r.id === savedMenu.stirfry_id) || null;
@@ -137,6 +146,7 @@ const MenuPage: React.FC<{
       } catch (err) { console.error(err); } finally { setLoading(false); }
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeManaged/isActingAsManaged derive from activeProfileId; onNavigate is stable enough, re-init would refetch
   }, [userProfile, sectionId, activeProfileId]);
 
   // --- ACTIONS ---
@@ -173,7 +183,7 @@ const MenuPage: React.FC<{
 
       if (onAuthSuccess) await onAuthSuccess();
       onNavigate('user');
-    } catch (err: any) { alert(t('user:saveFailed')); } finally { setSaving(false); }
+    } catch { alert(t('user:saveFailed')); } finally { setSaving(false); }
   };
 
 
@@ -182,9 +192,9 @@ const MenuPage: React.FC<{
   // so e.g. the inactive 'curry-paste-recipes' category doesn't leak into 'curry'.
   const getRecipes = (catSlug: string) => recipes.filter(r => r.category === catSlug && !r.is_fixed_dish);
 
-  const activeProfileData = useMemo(() => {
-    if (!diet) return { id: '', name: 'Your Diet Style', icon: 'restaurant' } as any;
-    return dietProfiles.find(p => p.id === `diet_${diet}`) || { id: 'diet_regular', name: 'Regular Diet', icon: 'restaurant' } as any;
+  const activeProfileData = useMemo<Pick<DietaryProfile, 'id' | 'name' | 'icon'>>(() => {
+    if (!diet) return { id: '', name: 'Your Diet Style', icon: 'restaurant' };
+    return dietProfiles.find(p => p.id === `diet_${diet}`) || { id: 'diet_regular', name: 'Regular Diet', icon: 'restaurant' };
   }, [diet, dietProfiles]);
 
   const allergyOptions = useMemo(() => {
@@ -192,6 +202,7 @@ const MenuPage: React.FC<{
       const key = ak.id.replace(/^allergy[_-]/, '').replace(/[_-]/g, ' ');
       return key.split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- getAllergyProfiles is a new fn every render; profiles is its only input
   }, [profiles]);
 
   const groupedDiets = useMemo(() => ({

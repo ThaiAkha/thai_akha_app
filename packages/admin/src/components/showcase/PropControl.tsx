@@ -5,8 +5,8 @@ import InputField from '../form/input/InputField';
 
 interface PropControlProps {
     prop: ComponentProp;
-    value: any;
-    onChange: (value: any) => void;
+    value: unknown;
+    onChange: (value: unknown) => void;
 }
 
 const PropControl: React.FC<PropControlProps> = ({ prop, value, onChange }) => {
@@ -21,7 +21,7 @@ const PropControl: React.FC<PropControlProps> = ({ prop, value, onChange }) => {
                     <Switch
                         key={String(value)} // Force re-render when external value changes
                         label=""
-                        defaultChecked={value || false}
+                        defaultChecked={Boolean(value)}
                         onChange={onChange}
                     />
                 </div>
@@ -32,7 +32,7 @@ const PropControl: React.FC<PropControlProps> = ({ prop, value, onChange }) => {
                 <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{prop.name}</label>
                     <select
-                        value={value}
+                        value={typeof value === 'string' ? value : undefined}
                         onChange={(e) => onChange(e.target.value)}
                         className="block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-2 border"
                     >
@@ -49,7 +49,7 @@ const PropControl: React.FC<PropControlProps> = ({ prop, value, onChange }) => {
             return (
                 <InputField
                     label={prop.name}
-                    value={value}
+                    value={typeof value === 'string' || typeof value === 'number' ? value : undefined}
                     onChange={(e) => onChange(prop.type === 'number' ? Number(e.target.value) : e.target.value)}
                     type={prop.type === 'number' ? 'number' : 'text'}
                 />

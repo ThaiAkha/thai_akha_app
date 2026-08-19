@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import type { Tables } from '@thaiakha/shared/types';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 
@@ -8,7 +9,7 @@ export interface SessionStatus {
     seats: number;
     capacity: number;
     isLocked?: boolean;
-    reason?: string;
+    reason?: string | null;
     occupiedCount: number;
 }
 
@@ -51,7 +52,7 @@ export const useCalendarAvailability = (viewDate: Date) => {
             if (!sessionsCache.current) {
                 const { data: sessionsData } = await supabase.from('class_sessions').select('id, max_capacity');
                 sessionsCache.current = {};
-                sessionsData?.forEach((s: any) => sessionsCache.current![s.id] = getSessionCapacity(s.max_capacity) ?? 0);
+                sessionsData?.forEach((s) => sessionsCache.current![s.id] = getSessionCapacity(s.max_capacity) ?? 0);
             }
 
             // Parallel queries for faster loading
@@ -74,7 +75,7 @@ export const useCalendarAvailability = (viewDate: Date) => {
                 bookingsMap.set(key, b.total_occupied);
             });
 
-            const overridesMap = new Map<string, any>();
+            const overridesMap = new Map<string, Tables<'class_calendar_overrides'>>();
             overrides?.forEach(o => {
                 const key = `${o.date}-${o.session_id}`;
                 overridesMap.set(key, o);

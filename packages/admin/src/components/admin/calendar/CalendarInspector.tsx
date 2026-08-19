@@ -18,7 +18,7 @@ interface CalendarInspectorProps {
     setIsEditing: (v: boolean) => void;
     bulkSessionType: BulkSessionType;
     editState: Record<string, EditSessionState>;
-    updateEditState: (sid: string, field: keyof EditSessionState, value: any) => void;
+    updateEditState: (sid: string, field: keyof EditSessionState, value: string | number | boolean) => void;
     onSave: () => void;
     onCancel: () => void;
 }

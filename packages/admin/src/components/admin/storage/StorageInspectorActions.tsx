@@ -1,10 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector/InspectorActionButtons';
+import type { FileObject } from '../../../hooks/useAdminStorage';
 
 interface StorageInspectorActionsProps {
-    pendingFile: any;
-    selectedFile: any;
+    pendingFile: File | null;
+    selectedFile: FileObject | null;
     isEditing: boolean;
     setIsEditing: (val: boolean) => void;
     setEditingNameValue: (val: string) => void;

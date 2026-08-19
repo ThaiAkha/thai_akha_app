@@ -157,9 +157,9 @@ export function useBookingSubmit(
       if (data) localStorage.setItem('last_edited_booking', data.internal_id);
 
       onNavigate('user');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Submit error:', err);
-      alert(t('booking:bookingError') + (err.message ?? 'Unknown error'));
+      alert(t('booking:bookingError') + ((err as { message?: string }).message ?? 'Unknown error'));
     } finally {
       setLoading(false);
     }
@@ -199,9 +199,9 @@ export function useBookingSubmit(
 
       onAuthSuccess();
       onNavigate('user');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Login+booking error:', err);
-      alert(t('booking:bookingError') + (err.message ?? 'Errore durante il login o la prenotazione.'));
+      alert(t('booking:bookingError') + ((err as { message?: string }).message ?? 'Errore durante il login o la prenotazione.'));
     } finally {
       setLoading(false);
     }

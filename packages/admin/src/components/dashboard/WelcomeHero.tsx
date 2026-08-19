@@ -6,7 +6,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface WelcomeHeroProps {
     badge?: string;
-    titleMain: string;
+    titleMain?: string;
     titleHighlight?: string;
     description?: string;
     imageUrl?: string;

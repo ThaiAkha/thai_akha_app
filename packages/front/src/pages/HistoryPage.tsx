@@ -86,7 +86,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
     >
       {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
       <div
-        ref={historyContentRef as any}
+        ref={historyContentRef}
         className="contents"
         style={{
           '--glass-accent-border': 'rgba(0, 0, 0, 0.5)',

@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import { supabase, type SupabaseClient } from '@thaiakha/shared/lib/supabase';
 import {
     Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music
 } from 'lucide-react';
+
+// Generic table explorer: the table is chosen at runtime, so this hook talks to the client
+// without schema generics (a union of every table makes TS instantiation explode).
+const dynamicDb = supabase as unknown as SupabaseClient;
 
 // --- CONFIG ---
 // Note: akha_news, culture_sections, ethnic_groups, page_sections → moved to AdminNews
@@ -155,19 +159,20 @@ export const useAdminDatabase = () => {
         setShowDeleteConfirm(false);
         setSelectedIds(new Set());
         try {
-            const { data: tableData, error } = await supabase
-                .from(tableName as any)
+            const { data: tableData, error } = await dynamicDb
+                .from(tableName)
                 .select('*')
                 .limit(100);
 
             if (error) throw error;
-            setData((tableData as any) || []);
+            setData((tableData as Record<string, unknown>[] | null) || []);
         } catch (err) {
             console.error(`Error fetching table ${tableName}:`, err);
             alert(t('alerts.loadFailed', { table: tableName }));
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t is only used in an alert; adding it would refetch on language change
     }, []);
 
     useEffect(() => {
@@ -189,7 +194,7 @@ export const useAdminDatabase = () => {
 
             let error;
             if (isNew) {
-                const { error: insertError } = await supabase.from(selectedTable as any).insert(payload);
+                const { error: insertError } = await dynamicDb.from(selectedTable).insert(payload);
                 error = insertError;
             } else {
                 const idField = PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
@@ -199,8 +204,8 @@ export const useAdminDatabase = () => {
                     throw new Error(`Primary key ${idField} not found in row data.`);
                 }
 
-                const { error: updateError } = await supabase
-                    .from(selectedTable as any)
+                const { error: updateError } = await dynamicDb
+                    .from(selectedTable)
                     .update(payload)
                     .eq(idField, idValue);
                 error = updateError;
@@ -228,8 +233,8 @@ export const useAdminDatabase = () => {
                 throw new Error(`Primary key ${idField} not found in row data.`);
             }
 
-            const { error } = await supabase
-                .from(selectedTable as any)
+            const { error } = await dynamicDb
+                .from(selectedTable)
                 .delete()
                 .eq(idField, idValue);
 

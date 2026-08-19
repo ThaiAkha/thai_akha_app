@@ -95,7 +95,7 @@ const GlassCard = React.forwardRef<HTMLElement, GlassCardProps>(
     return (
       <Component
         ref={(node: HTMLElement) => {
-          (cardRef as any).current = node;
+          (cardRef as React.MutableRefObject<HTMLElement | null>).current = node;
           if (typeof forwardedRef === 'function') forwardedRef(node);
           else if (forwardedRef) (forwardedRef as React.MutableRefObject<HTMLElement | null>).current = node;
         }}
@@ -110,15 +110,15 @@ const GlassCard = React.forwardRef<HTMLElement, GlassCardProps>(
           href && 'outline-none focus:ring-2 focus:ring-action-400 block',
           className
         )}
-        onClick={(e: React.MouseEvent<any>) => {
+        onClick={(e: React.MouseEvent<HTMLElement>) => {
           if (href && onClick) {
             // Se c'è sia un link che un onClick (e.g. onNavigate custom), usiamo preventDefault per non caricare la pagina se è un link interno locale
             if (!(e.ctrlKey || e.metaKey || e.button !== 0)) {
               e.preventDefault();
-              onClick(e as any);
+              onClick(e as React.MouseEvent<HTMLDivElement>);
             }
           } else if (onClick) {
-            onClick(e as any);
+            onClick(e as React.MouseEvent<HTMLDivElement>);
           }
         }}
         style={{

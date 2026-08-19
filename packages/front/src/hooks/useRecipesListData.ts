@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { contentService } from '@thaiakha/shared/services';
-import { ContentCategoryDB } from '@thaiakha/shared';
+import { ContentCategoryDB, SpicinessLevel } from '@thaiakha/shared';
 
 /**
  * Data loader for the Recipes LIST page (Recipes.tsx).
@@ -10,8 +10,8 @@ import { ContentCategoryDB } from '@thaiakha/shared';
 export const useRecipesListData = () => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [recipes, setRecipes] = useState<any[]>([]);
-  const [spicinessLevels, setSpicinessLevels] = useState<any[]>([]);
+  const [recipes, setRecipes] = useState<Record<string, unknown>[]>([]);
+  const [spicinessLevels, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
 
   useEffect(() => {
     let mounted = true;

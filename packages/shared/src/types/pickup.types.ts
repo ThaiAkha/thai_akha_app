@@ -68,3 +68,32 @@ export interface HotelLocation {
 }
 
 export type HotelFormData = Omit<HotelLocation, 'id' | 'created_at' | 'zone_name' | 'zone_color'>;
+
+// ─── GeoJSON shape of GEOJSON_MASTER (shared/data/mapZones.ts) ──────────────
+// Loose on purpose: features are heterogeneous (zone polygons + point markers).
+
+export interface PickupGeoJsonProperties {
+  id?: string;
+  name?: string;
+  type?: string;
+  color?: string;
+  icon?: string | null;
+  'marker-color'?: string;
+  zIndex?: number;
+  [key: string]: unknown;
+}
+
+export interface PickupGeoJsonFeature {
+  type: string;
+  properties: PickupGeoJsonProperties;
+  geometry: {
+    type: string;
+    /** Point: [lng, lat] · Polygon: rings of [lng, lat] */
+    coordinates: number[] | number[][] | number[][][];
+  };
+}
+
+export interface PickupGeoJsonCollection {
+  type: string;
+  features: PickupGeoJsonFeature[];
+}

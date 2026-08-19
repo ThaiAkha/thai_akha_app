@@ -4,7 +4,7 @@ import { Typography, Icon } from '../ui/index';
 import { Sun, Moon, ChevronDown } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../../services/auth.service';
-import { contentService } from '@thaiakha/shared/services';
+import { useSidebarMenuData } from './sidebar/useSidebarMenuData';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -19,20 +19,7 @@ interface SidebarMobileProps {
   onLogout?: () => void;
 }
 
-interface MenuItem {
-  page_slug: string;
-  menu_label: string;
-  header_icon: string;
-  access_level: 'public' | 'user' | 'admin' | 'agency';
-  menu_order: number;
-}
-
-interface FooterItem {
-  page_slug: string;
-  menu_label: string;
-  header_icon: string;
-  menu_order: number;
-}
+// MenuItem: tipo condiviso con la sidebar desktop (./sidebar/useSidebarMenuData).
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FOOTER GROUP — collapsible accordion for mobile drawer footer
@@ -97,54 +84,14 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [stage, setStage] = useState<'closed' | 'opening' | 'open' | 'exiting'>('closed');
 
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const { lang } = useLanguage();
-  const [footerItems, setFooterItems] = useState<FooterItem[]>([]);
+  // Menu + footer dal DB: stesso fetch con retry della sidebar desktop (una sola implementazione).
+  const { menuItems, footerItems } = useSidebarMenuData(lang, '', 'Mobile Menu Error:');
   const [visibleIndices, setVisibleIndices] = useState<number[]>([]);
   const [, setSelectedId] = useState<string | null>(null);
   const [footerExpanded, setFooterExpanded] = useState<'info' | 'settings' | null>(null);
 
   const navRef = useRef<HTMLElement>(null);
-
-  // ── FETCH ──
-  useEffect(() => {
-    let cancelled = false;
-    let attempts = 0;
-    const MAX_ATTEMPTS = 3;
-
-    const loadMenu = async () => {
-      if (cancelled) return;
-      try {
-        const [items, footer] = await Promise.all([
-          contentService.getMenuItems('site_metadata', lang),
-          contentService.getFooterItems(lang),
-        ]);
-        if (cancelled) return;
-
-        // Keep a good menu and retry on empty (transient session/RLS race at mount)
-        // so the mobile menu fills in without needing a manual refresh.
-        if (items && items.length > 0) {
-          // vedi nota in Sidebar.tsx: service non tipizzato -> cast via unknown
-          setMenuItems(items as unknown as MenuItem[]);
-        } else if (attempts < MAX_ATTEMPTS) {
-          attempts += 1;
-          setTimeout(loadMenu, 400 * attempts);
-          return;
-        }
-        if (footer && footer.length > 0) setFooterItems(footer as unknown as MenuItem[]);
-      } catch (err) {
-        console.error('Mobile Menu Error:', err);
-        if (!cancelled && attempts < MAX_ATTEMPTS) {
-          attempts += 1;
-          setTimeout(loadMenu, 400 * attempts);
-        }
-      }
-    };
-
-    loadMenu();
-    return () => { cancelled = true; };
-  // `lang` nelle deps: al cambio lingua il menu si ricarica dal sidecar.
-  }, [lang]);
 
   // ── FILTER ──
   const filteredNavItems = useMemo(() => {

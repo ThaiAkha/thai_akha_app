@@ -48,7 +48,7 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                 onClick={() => onProductSelect(product)}
                                 imageUrl={product.catalog_image_url}
                                 imageIcon={<Package className="w-8 h-8" />}
-                                renderFields={(p: any) => (
+                                renderFields={(p: Product) => (
                                     <DataCardContent
                                         title={p.item_name}
                                         subtitle={p.sku}

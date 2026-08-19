@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import React, { useMemo } from 'react';
 import type { FaqCardUI } from '@thaiakha/shared';
-import { getPageFaqs, getEntityFaqs } from '../../services/infoPages.service';
+import { useQuery } from '@thaiakha/shared/query';
+import { getFaqsByRefs, getEntityFaqs } from '../../services/infoPages.service';
 import { useMediaAsset } from '../../hooks/useMediaAsset';
+import { useSiteMetadata } from '../../hooks/useSiteMetadata';
 import { Typography, Card } from '../ui/index';
 import { AkhaPixelPattern, AkhaPixelLine } from '../divider';
 import { SmartHeaderSection } from '../layout/SmartHeaderSection';
@@ -79,40 +80,18 @@ const FaqCard: React.FC<{ card: FaqCardUI; onNavigate?: (path: string) => void }
   );
 };
 
-// ─── Module-level fetch cache ─────────────────────────────────────────────────
-// In modalità slug recuperiamo da site_metadata sia le FAQ sia l'entry-point Cherry
-// (prompt/response/button_ids) in un'unica query. La card Cherry viene mostrata in
-// cima al blocco FAQ. NB: i single (culture/news) passano `items` → niente fetch
-// cherry qui (la loro card è montata separatamente dalla riga di contenuto).
+// ─── Data (TanStack, #86) ─────────────────────────────────────────────────────
+// Modalità slug-pagina: entry-point Cherry (prompt/response/button_ids) e faq_refs
+// arrivano dalla riga site_metadata condivisa (useSiteMetadata), le card dalla
+// centrale faq_questions per refs. NB: i single (culture/news) passano `items` →
+// niente Cherry qui (la loro card è montata separatamente dalla riga di contenuto).
 
 interface PageCherry { prompt?: string | null; response?: string | null; buttonIds?: string[] | null; }
-
-const _cherryCache = new Map<string, PageCherry>();
-const _cardsCache = new Map<string, FaqCardUI[]>();
 
 /** items espliciti (solo demo/mock, es. ZZStyleCards) → FaqCardUI. */
 const legacyToCard = (f: FaqItem): FaqCardUI => ({ name: f.name, answerHtml: f.acceptedAnswer.text });
 
-// Cherry entry-point (prompt/response/button_ids) da site_metadata. Le FAQ NON
-// vengono più da qui: fonte unica = centrale faq_questions (getPageFaqs/getEntityFaqs).
-async function fetchPageCherry(slug: string): Promise<PageCherry> {
-  if (_cherryCache.has(slug)) return _cherryCache.get(slug)!;
-  const { data, error } = await supabase
-    .from('site_metadata')
-    .select('cherry_prompt, cherry_response, cherry_button_ids')
-    .eq('page_slug', slug)
-    .maybeSingle();
-  if (error || !data) { _cherryCache.set(slug, {}); return {}; }
-  const cherry: PageCherry = {
-    prompt: (data as Record<string, unknown>).cherry_prompt as string | null,
-    response: (data as Record<string, unknown>).cherry_response as string | null,
-    buttonIds: (data as Record<string, unknown>).cherry_button_ids as string[] | null,
-  };
-  _cherryCache.set(slug, cherry);
-  return cherry;
-}
-
-
+const NO_CARDS: FaqCardUI[] = [];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -125,60 +104,44 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
   onNavigate,
 }) => {
   const slugKey = slug ?? '';
-  // Cache key distinta per modalità entità (stesso slug possibile su tabelle diverse).
-  const cacheKey = entityType ? `${entityType}:${slugKey}` : slugKey;
-
   // Card model unificato (FaqCardUI). Fonte UNICA = centrale faq_questions:
   // 1. entityType → getEntityFaqs (entity_type+entity_slug);
-  // 2. slug (pagina) → getPageFaqs (site_metadata.faq_refs → centrale);
+  // 2. slug (pagina) → site_metadata.faq_refs (useSiteMetadata) → getFaqsByRefs;
   // 3. items espliciti → SOLO demo/mock (nessuna lettura embedded DB).
-  const [cards, setCards] = useState<FaqCardUI[]>(() => {
-    if (_cardsCache.has(cacheKey)) return _cardsCache.get(cacheKey)!;
-    if (itemsProp && !entityType) return itemsProp.filter(f => f?.name && f?.acceptedAnswer?.text).map(legacyToCard);
-    return [];
+  const entityMode = !!entityType && slugKey.length > 0;
+  const itemsMode = !entityMode && itemsProp !== undefined;
+  const pageMode = !entityMode && !itemsMode && slugKey.length > 0;
+
+  const { extras, loading: extrasLoading } = useSiteMetadata(slugKey, { enabled: pageMode });
+  const refs = extras?.faqRefs ?? [];
+  const refsKey = refs.join(',');
+
+  const entityQuery = useQuery({
+    queryKey: ['entity_faqs', entityType ?? '', slugKey] as const,
+    queryFn: () => getEntityFaqs(entityType!, slugKey),
+    enabled: entityMode,
   });
-  // Entry-point Cherry: solo in modalità slug-pagina (entità e items → null:
-  // i single montano la propria card Cherry separatamente).
-  const [cherry, setCherry] = useState<PageCherry | null>(() =>
-    itemsProp || entityType ? null : (_cherryCache.get(slugKey) ?? null),
+  const pageQuery = useQuery({
+    queryKey: ['page_faqs', refsKey] as const,
+    queryFn: () => getFaqsByRefs(refsKey.split(',')),
+    enabled: pageMode && refsKey.length > 0,
+  });
+
+  const itemCards = useMemo(
+    () => (itemsMode ? (itemsProp ?? []).filter(f => f?.name && f?.acceptedAnswer?.text).map(legacyToCard) : NO_CARDS),
+    [itemsMode, itemsProp],
   );
-  const [loading, setLoading] = useState(!_cardsCache.has(cacheKey) && (!!entityType || !itemsProp));
-
-  useEffect(() => {
-    if (_cardsCache.has(cacheKey)) {
-      setCards(_cardsCache.get(cacheKey)!);
-      setCherry(entityType || itemsProp ? null : (_cherryCache.get(slugKey) ?? null));
-      setLoading(false);
-      return;
-    }
-    let cancelled = false;
-
-    // ── Modalità ENTITÀ: centrale via entity_type+entity_slug ──
-    if (entityType && slugKey) {
-      setLoading(true);
-      getEntityFaqs(entityType, slugKey).then(entity => {
-        _cardsCache.set(cacheKey, entity);
-        if (!cancelled) { setCards(entity); setCherry(null); setLoading(false); }
-      });
-      return () => { cancelled = true; };
-    }
-
-    // ── Modalità items pura (legacy, senza entityType) ──
-    if (itemsProp !== undefined) {
-      setCards(itemsProp.filter(f => f?.name && f?.acceptedAnswer?.text).map(legacyToCard));
-      setCherry(null);
-      setLoading(false);
-      return;
-    }
-
-    // ── Modalità slug-pagina: site_metadata.faq_refs → centrale faq_questions ──
-    setLoading(true);
-    Promise.all([fetchPageCherry(slugKey), getPageFaqs(slugKey)]).then(([c, entity]) => {
-      _cardsCache.set(cacheKey, entity);
-      if (!cancelled) { setCards(entity); setCherry(c); setLoading(false); }
-    });
-    return () => { cancelled = true; };
-  }, [cacheKey, slugKey, itemsProp, entityType]);
+  const cards: FaqCardUI[] = entityMode
+    ? (entityQuery.data ?? NO_CARDS)
+    : pageMode
+      ? (refsKey.length > 0 ? (pageQuery.data ?? NO_CARDS) : NO_CARDS)
+      : itemCards;
+  const cherry: PageCherry | null = pageMode ? (extras?.cherry ?? null) : null;
+  const loading = entityMode
+    ? entityQuery.isPending
+    : pageMode
+      ? (extrasLoading || (refsKey.length > 0 && pageQuery.isPending))
+      : false;
 
   const hasCherry = !!(cherry && (cherry.prompt || cherry.response));
   if (!loading && cards.length === 0 && !hasCherry) return null;

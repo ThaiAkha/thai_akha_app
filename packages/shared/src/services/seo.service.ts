@@ -1,6 +1,5 @@
 import { supabase } from '../lib/supabase';
 import { PageMetadata, SitePage } from '../types/content.types';
-import { fetchWithCache } from './_cache';
 import { buildLocalBusinessSchema } from '../lib/businessSchema';
 import { contentMetadataService } from './contentMetadata.service';
 import { mergeTranslation, pickTranslation } from '../lib/mergeTranslation';
@@ -107,7 +106,9 @@ export const seoService = {
   /**
    * Recupera i metadati SEO per uno slug specifico con logica di sicurezza e fallback.
    * Risolve cover_asset_id → media_assets.image_url via join.
-   * Fallback a og_image (legacy) se cover_asset_id non ancora popolato.
+   *
+   * Data layer #86: la cache la possiede TanStack (front `useSEO`); qui nessun
+   * localStorage. Miss/errore → default (mai null).
    *
    * @param slug SEMPRE lo slug INGLESE (identità DB). La traduzione dell'URL la
    *             fa il router prima di chiamare qui: un solo posto che conosce gli slug.
@@ -119,18 +120,7 @@ export const seoService = {
     table: 'site_metadata' = 'site_metadata',
     lang: string = DEFAULT_LANG,
   ): Promise<PageMetadata> {
-    // Cached + in-flight-deduped: SEOHead (global) and the page both read the same
-    // slug — without this they fire two identical round-trips per page load.
-    // Only real DB data is cached; misses/errors return null and fall back to
-    // defaults below (so a transient failure never poisons the cache).
-    // v2: json_ld LocalBusiness rigenerato da business_profile (bump cache)
-    // v3: sidecar site_metadata_translations + hreflang generato (la chiave porta
-    //     la lingua: due lingue non possono più servirsi la cache a vicenda)
-    const cached = await fetchWithCache<PageMetadata>(
-      `seo_meta_${slug}_${table}_${lang}_v3`,
-      () => this.fetchMetadataForSlug(slug, table, lang),
-    );
-    return cached ?? this.getDefaultMetadata();
+    return (await this.fetchMetadataForSlug(slug, table, lang)) ?? this.getDefaultMetadata();
   },
 
   /** Raw fetch+build of page metadata. Returns null on miss/error (never cached). */

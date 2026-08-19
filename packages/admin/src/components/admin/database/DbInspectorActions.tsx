@@ -8,7 +8,7 @@ interface DbInspectorActionsProps {
     setShowDeleteConfirm: (val: boolean) => void;
     handleSave: (e?: React.FormEvent | React.MouseEvent) => Promise<void>;
     isSaving: boolean;
-    selectedRow: any;
+    selectedRow: Record<string, unknown> | null;
 }
 
 const DbInspectorActions: React.FC<DbInspectorActionsProps> = ({

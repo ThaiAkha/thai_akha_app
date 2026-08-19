@@ -1,19 +1,22 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
-interface GridCardProps {
-    item: Record<string, any>;
+/** Generic explorer row: any table shape, read as a plain record. */
+export type DataRow = Record<string, unknown>;
+
+interface GridCardProps<T> {
+    item: T;
     selected?: boolean;
     onClick?: () => void;
     imageUrl?: string;
     imageIcon?: React.ReactNode;
     imageOverlay?: React.ReactNode;
-    renderFields: (item: Record<string, any>) => React.ReactNode;
+    renderFields: (item: T) => React.ReactNode;
     className?: string;
     aspectClassName?: string;
 }
 
-const GridCard: React.FC<GridCardProps> = ({
+function GridCard<T>({
     item,
     selected = false,
     onClick,
@@ -23,7 +26,7 @@ const GridCard: React.FC<GridCardProps> = ({
     renderFields,
     className,
     aspectClassName = 'aspect-square',
-}) => {
+}: GridCardProps<T>) {
     return (
         <div
             onClick={(e) => { e.stopPropagation(); onClick?.(); }}
@@ -66,6 +69,6 @@ const GridCard: React.FC<GridCardProps> = ({
             </div>
         </div>
     );
-};
+}
 
 export default GridCard;

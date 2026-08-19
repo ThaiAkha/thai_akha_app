@@ -2,16 +2,24 @@ import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Badge, Typography, RippleLink } from '../ui/index';
 
+/** Minimal shape MenuCard reads: RecipeData, raw recipe rows and DB previews all satisfy it. */
+export interface MenuCardDish {
+  name: string;
+  description?: string | null;
+  excerpt?: string | null;
+  image?: string | null;
+}
+
 interface MenuCardProps {
-  dish: any;
+  dish: MenuCardDish;
   isSelected: boolean;
   onClick: () => void;
-  onPreview?: (dish: any) => void;
+  onPreview?: (dish: MenuCardDish) => void;
   isDemo?: boolean;
   disableBodyCursor?: boolean;
   dietLabel?: string;
   actionLabel?: string;
-  onAskCherry?: (dish: any) => void;
+  onAskCherry?: (dish: MenuCardDish) => void;
   /** Enables Cmd/Ctrl+click → open in new tab */
   href?: string;
 }

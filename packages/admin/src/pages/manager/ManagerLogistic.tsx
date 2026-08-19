@@ -157,7 +157,8 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                         onClose={closeInspector}
                         headerActions={
                             <LogisticInspectorActions
-                                handleSave={() => handleUpdateBooking(new Event('submit') as any)}
+                                // evento DOM sintetico al posto del FormEvent React (solo preventDefault): stesso comportamento
+                                handleSave={() => handleUpdateBooking(new Event('submit') as unknown as React.FormEvent)}
                                 isSaving={isSaving}
                                 selectedBooking={selectedBooking}
                             />

@@ -1,8 +1,11 @@
 import { ComponentConfig } from '../config/componentsConfig';
 
+/** Props del componente in showcase: bag dinamica name → valore (config.props). */
+export type ShowcaseProps = Record<string, unknown>;
+
 // Generate default props for a component 
-export const generateDefaultProps = (config: ComponentConfig): any => {
-    const props: any = { ...config.demoProps };
+export const generateDefaultProps = (config: ComponentConfig): ShowcaseProps => {
+    const props: ShowcaseProps = { ...config.demoProps };
 
     config.props.forEach(prop => {
         if (props[prop.name] === undefined && prop.defaultValue !== undefined) {
@@ -15,7 +18,7 @@ export const generateDefaultProps = (config: ComponentConfig): any => {
 
 
 // Generate JSX string code based on current props
-export const generateCodeSnippet = (componentName: string, props: any): string => {
+export const generateCodeSnippet = (componentName: string, props: ShowcaseProps): string => {
     const propsString = Object.entries(props)
         .filter(([_key, value]) => value !== undefined && value !== null && value !== false)
         .map(([key, value]) => {

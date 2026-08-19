@@ -2,9 +2,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Minus, Plus } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { Tables } from '@thaiakha/shared/types';
 import AdminClassPicker from '../common/AdminClassPicker';
 import Card from '../ui/Card';
 import { SectionTitle } from '../typography';
+
+/** Same shape as useAdminBooking's availability rows (session_id, pax_count, guest_name). */
+type AvailabilityRow = Pick<Tables<'bookings'>, 'session_id' | 'pax_count' | 'guest_name'>;
 
 interface DateSessionPaxPickerProps {
     date: string;
@@ -15,8 +19,8 @@ interface DateSessionPaxPickerProps {
     onPaxChange: (p: number) => void;
     maxPax: number;
     availability?: {
-        morning: { status: string; booked: number; total: number; bookings: any[] };
-        evening: { status: string; booked: number; total: number; bookings: any[] };
+        morning: { status: string; booked: number; total: number; bookings: AvailabilityRow[] };
+        evening: { status: string; booked: number; total: number; bookings: AvailabilityRow[] };
     };
 }
 

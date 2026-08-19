@@ -11,23 +11,24 @@ import PageContainer from '../../components/layout/PageContainer';
 import { contentService } from '@thaiakha/shared/services';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import WelcomeHero from '../../components/dashboard/WelcomeHero';
-import FeatureCardsGrid from '../../components/dashboard/FeatureCardsGrid';
+import FeatureCardsGrid, { type HomeCard } from '../../components/dashboard/FeatureCardsGrid';
 import DashboardNavCard from '../../components/dashboard/DashboardNavCard';
 import BasicCard from '../../components/dashboard/BasicCard';
-import CTABanner from '../../components/dashboard/CTABanner';
+import CTABanner, { type CTABannerProps } from '../../components/dashboard/CTABanner';
 
 const AgencyHome: React.FC = () => {
     const { t, i18n } = useTranslation('common');
     // ✅ Use hook for metadata (AppHeader handles setPageHeader automatically)
     const { pageMeta } = usePageMetadata('agency-home');
-    const [homeCards, setHomeCards] = useState<any[]>([]);
+    const [homeCards, setHomeCards] = useState<HomeCard[]>([]);
 
     useEffect(() => {
         const loadHomeCards = async () => {
             try {
                 // Load home cards from database with current language
                 const cards = await contentService.getHomeCards(i18n.language);
-                const agencyCards = cards.filter((card: any) => card.role === 'agency');
+                // getHomeCards returns loose records: one cast to the card shape used by this page.
+                const agencyCards = cards.filter((card) => card.role === 'agency') as unknown as HomeCard[];
                 console.log('🏠 Agency Home Cards loaded:', agencyCards);
                 setHomeCards(agencyCards || []);
             } catch (error) {
@@ -73,14 +74,14 @@ const AgencyHome: React.FC = () => {
 
                         {/* CTA Banners */}
                         <div className="space-y-6 mt-6">
-                            {ctaBanners.map((card: any) => (
+                            {ctaBanners.map((card) => (
                                 <CTABanner
                                     key={card.id}
-                                    title={card.title || card.card_title}
-                                    description={card.description || card.card_description}
+                                    title={card.title || card.card_title || ''}
+                                    description={card.description || card.card_description || ''}
                                     ctaLabel={card.link_label || t('fallback.viewMore')}
                                     ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
-                                    variant={card.variant || 'dark'}
+                                    variant={(card.variant || 'dark') as CTABannerProps['variant']}
                                     className="flex items-center justify-between gap-6"
                                 />
                             ))}
@@ -90,17 +91,17 @@ const AgencyHome: React.FC = () => {
                     {/* SIDEBAR (3 col) - Nav cards and Basic cards */}
                     <div className="lg:col-span-3 min-w-0">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-                            {leftCards.map((card: any) => {
+                            {leftCards.map((card) => {
                                 const path = card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#';
                                 if (card.card_type === 'nav') {
                                     return (
                                         <div key={card.id}>
                                             <DashboardNavCard
                                                 path={path}
-                                                iconName={card.icon_name}
-                                                label={card.title || card.card_title}
-                                                description={card.description || card.card_description}
-                                                linkLabel={card.link_label}
+                                                iconName={card.icon_name ?? undefined}
+                                                label={card.title || card.card_title || ''}
+                                                description={card.description || card.card_description || undefined}
+                                                linkLabel={card.link_label ?? undefined}
                                             />
                                         </div>
                                     );
@@ -111,9 +112,9 @@ const AgencyHome: React.FC = () => {
                                     <div key={card.id}>
                                         <BasicCard
                                             path={path}
-                                            iconName={card.icon_name}
-                                            label={card.title || card.card_title}
-                                            description={card.description || card.card_description}
+                                            iconName={card.icon_name ?? undefined}
+                                            label={card.title || card.card_title || ''}
+                                            description={card.description || card.card_description || undefined}
                                         />
                                     </div>
                                 );

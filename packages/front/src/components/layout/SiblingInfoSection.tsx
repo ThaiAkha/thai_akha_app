@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { contentMetadataService } from '@thaiakha/shared/services';
+import React, { useMemo } from 'react';
+import { getSiblingPagesBySlugs } from '@thaiakha/shared/services';
+import { useQuery } from '@thaiakha/shared/query';
+import { useSiteMetadata } from '../../hooks/useSiteMetadata';
 import { SiblingCardPage, SiblingPage } from '../ui/card/SiblingCardPage';
 import { SiblingSection } from './SiblingSection';
 import { SkeletonBase } from '../skeleton/atoms';
@@ -28,8 +30,6 @@ export const SiblingInfoSection: React.FC<SiblingInfoSectionProps> = ({
   sectionId = 'sibiling_info',
   accent = 'brand',
 }) => {
-  const [siblings, setSiblings] = useState<SiblingPage[]>([]);
-  const [loading, setLoading] = useState(true);
   const isOcean = accent === 'ocean';
   // Ocean: divider block_faq + rimappa token accent (primary/action) → ocean.
   // Il glow hover NON è un color token (shadow-action-glow è inlinato) → gestito
@@ -37,33 +37,27 @@ export const SiblingInfoSection: React.FC<SiblingInfoSectionProps> = ({
   const oceanVars = isOcean ? '[--color-action:var(--color-ocean-blue)] [--color-primary:var(--color-deep-ocean)]' : '';
   const dividerTheme = isOcean ? 'block_faq' : 'akha';
 
-  useEffect(() => {
-    let cancelled = false;
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const data = await contentMetadataService.getSiblingPagesBySlug(currentSlug);
-        if (!cancelled) {
-          setSiblings(
-            data.map(d => ({
-              titleMain: d.header_title_main,
-              titleHighlight: d.header_title_highlight,
-              description: d.page_description,
-              imageUrl: d.hero_image_url,
-              href: `/${d.page_slug}`,
-              slug: d.page_slug,
-            }))
-          );
-        }
-      } catch (err) {
-        console.error('SiblingInfoSection fetch error:', err);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    fetch();
-    return () => { cancelled = true; };
-  }, [currentSlug]);
+  // Data layer (#86): sibling_slugs dalla riga site_metadata condivisa, poi UNA
+  // query per le sorelle (chiave = lista slug: pagine con le stesse sorelle la condividono).
+  const { extras, loading: extrasLoading } = useSiteMetadata(currentSlug);
+  const slugsKey = (extras?.siblingSlugs ?? []).join(',');
+  const siblingsQuery = useQuery({
+    queryKey: ['sibling_pages', slugsKey] as const,
+    queryFn: () => getSiblingPagesBySlugs(slugsKey.split(',')),
+    enabled: slugsKey.length > 0,
+  });
+  const siblings: SiblingPage[] = useMemo(
+    () => (siblingsQuery.data ?? []).map(d => ({
+      titleMain: d.header_title_main,
+      titleHighlight: d.header_title_highlight,
+      description: d.page_description,
+      imageUrl: d.hero_image_url,
+      href: `/${d.page_slug}`,
+      slug: d.page_slug,
+    })),
+    [siblingsQuery.data],
+  );
+  const loading = extrasLoading || (slugsKey.length > 0 && siblingsQuery.isPending);
 
   if (loading) {
     return (

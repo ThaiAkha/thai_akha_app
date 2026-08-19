@@ -1,13 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector/InspectorActionButtons';
+import type { ManagerBooking } from '../../../hooks/useManagerReservation';
 
 interface ReservationInspectorActionsProps {
     isEditing: boolean;
     handleEditStart: () => void;
     handleSave: () => Promise<void>;
     isSaving: boolean;
-    selectedBooking: any;
+    selectedBooking: ManagerBooking | null;
 }
 
 const ReservationInspectorActions: React.FC<ReservationInspectorActionsProps> = ({

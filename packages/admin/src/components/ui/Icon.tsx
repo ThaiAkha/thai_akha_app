@@ -48,7 +48,7 @@ const VARIANTS: Record<string, { container: string; icon: string }> = {
 // MAIN ICON COMPONENT
 // ============================================================================
 
-export interface IconProps {
+export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'name' | 'ref'> {
   /** Icon name as string (e.g., "Home", "Package") */
   name: string | IconName | undefined | null;
 
@@ -73,9 +73,6 @@ export interface IconProps {
 
   /** Stroke width (default: 2) */
   strokeWidth?: number;
-
-  /** Additional SVG props */
-  [key: string]: any;
 }
 
 const Icon: React.FC<IconProps> = ({

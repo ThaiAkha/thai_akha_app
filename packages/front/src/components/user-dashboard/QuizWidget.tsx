@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 // Assicurati che l'import includa sia la costante che il TIPO
 import { contentService } from '@thaiakha/shared/services';
 import { UserProfile } from '../../services/auth.service';
-import type { ContentCategoryDB } from '@thaiakha/shared/types';
+import type { ContentCategoryDB, QuizRewardDB } from '@thaiakha/shared/types';
 import { useQuizProgress } from '../../hooks/useQuizProgress';
 import { useActiveProfile } from '../../context/ActiveProfileContext';
 import QuizCardCategory from '../quiz/QuizCardCategory';
@@ -18,9 +18,9 @@ interface QuizWidgetProps {
 const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
   const [xp, setXp] = useState(0);
   const [, setLevel] = useState(1);
-  const [rewards, setRewards] = useState<any[]>([]);
+  const [rewards, setRewards] = useState<QuizRewardDB[]>([]);
   const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [, setNextReward] = useState<any | null>(null);
+  const [, setNextReward] = useState<QuizRewardDB | null>(null);
   const [, setCompletedCount] = useState(0);
   const [, setAccuracy] = useState(0);
   
@@ -68,12 +68,13 @@ const QuizWidget: React.FC<QuizWidgetProps> = ({ onNavigate, userProfile }) => {
       setAwardedBonuses(localData?.awardedBonuses || []);
 
       // Prossimo premio = primo non ancora sbloccato dal punteggio reale (no per i visitor).
-      const next = visitor ? null : (dbRewards || []).find((r: any) => currentScore < (r.required_points ?? 0));
+      const next = visitor ? null : (dbRewards || []).find((r) => currentScore < (r.required_points ?? 0));
       setNextReward(visitor ? null : (next || (dbRewards && dbRewards[dbRewards.length - 1]) || null));
 
       setAccuracy(localData || currentScore > 0 ? 98 : 0);
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeManaged object identity changes; its used fields are already tracked
   }, [userProfile?.quiz_points, activeProfileId, activeManaged?.quiz_points, isActingAsManaged]);
 
   // Derived walletRewards

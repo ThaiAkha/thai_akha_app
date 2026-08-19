@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, MediaImage } from '../ui';
 import { SmartHeaderSection } from '../layout/SmartHeaderSection';
 import AudioPlayer from '../modal/AudioPlayer';
+import type { PageSectionData } from '../../hooks/usePageSections';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface HeroContentOverviewProps {
@@ -12,7 +13,7 @@ interface HeroContentOverviewProps {
   /** Section ID for the text content */
   sectionId?: string;
   /** Prefetched data to avoid extra roundtrips */
-  prefetchedData?: any;
+  prefetchedData?: PageSectionData | null;
   /** Content overrides for dynamic management at call-site */
   title?: string;
   subtitle?: string;

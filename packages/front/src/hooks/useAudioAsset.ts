@@ -1,4 +1,10 @@
-import { useState, useEffect } from 'react';
+/**
+ * useAudioAsset - riga `audio_assets` (o audio di una content_category) via TanStack (#86).
+ * Gemello audio di useMediaAsset: chiave `['audio_asset', assetId]` /
+ * `['category_audio', categoryId]`; niente `let cancelled`, StrictMode non raddoppia.
+ */
+import { useMemo } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { audioService } from '@thaiakha/shared/services';
 import { AudioAsset } from '@thaiakha/shared';
 
@@ -20,50 +26,26 @@ interface UseAudioAssetResult {
  * Supports `assetId` (string) and `categoryId` (string).
  */
 export function useAudioAsset({ assetId, categoryId, url }: UseAudioAssetOptions): UseAudioAssetResult {
-  const [asset, setAsset] = useState<Partial<AudioAsset> | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const byAsset = Boolean(assetId);
+  const byCategory = !byAsset && Boolean(categoryId);
+  const enabled = byAsset || byCategory;
 
-  useEffect(() => {
-    // If we have a direct URL but no assetId/categoryId, we wrap it in a partial asset
-    if (!assetId && !categoryId && url) {
-      setAsset({ audio_url: url, title: 'Audio Story' });
-      setLoading(false);
-      return;
-    }
+  const query = useQuery({
+    queryKey: byAsset ? (['audio_asset', assetId ?? ''] as const) : (['category_audio', categoryId ?? ''] as const),
+    queryFn: (): Promise<Partial<AudioAsset> | null> =>
+      byAsset ? audioService.getAudioAsset(assetId!) : audioService.getCategoryAudio(categoryId!),
+    enabled,
+  });
 
-    if (!assetId && !categoryId) {
-      setLoading(false);
-      return;
-    }
+  // If we have a direct URL but no assetId/categoryId, we wrap it in a partial asset
+  const urlAsset = useMemo<Partial<AudioAsset> | null>(
+    () => (!enabled && url ? { audio_url: url, title: 'Audio Story' } : null),
+    [enabled, url],
+  );
 
-    let cancelled = false;
-
-    async function fetch() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        let result: Partial<AudioAsset> | null = null;
-
-        if (assetId) {
-          result = await audioService.getAudioAsset(assetId);
-        } else if (categoryId) {
-          result = await audioService.getCategoryAudio(categoryId);
-        }
-
-        if (!cancelled) setAsset(result);
-      } catch (err) {
-        if (!cancelled) setError((err as Error).message ?? 'Unknown error');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    fetch();
-
-    return () => { cancelled = true; };
-  }, [assetId, categoryId, url]);
-
-  return { asset, loading, error };
+  return {
+    asset: enabled ? (query.data ?? null) : urlAsset,
+    loading: enabled && query.isPending,
+    error: query.error ? (query.error instanceof Error ? query.error.message : String(query.error)) : null,
+  };
 }

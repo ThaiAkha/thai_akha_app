@@ -59,7 +59,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             try {
                 const { data: sessionsData } = await supabase.from('class_sessions').select('id, max_capacity');
                 const baseCaps: Record<string, number> = {};
-                sessionsData?.forEach((s: any) => baseCaps[s.id] = getSessionCapacity(s.max_capacity) ?? 0);
+                sessionsData?.forEach((s) => baseCaps[s.id] = getSessionCapacity(s.max_capacity) ?? 0);
 
                 const { data: bookings } = await supabase
                     .from('bookings')

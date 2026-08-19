@@ -6,8 +6,8 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { READ_ONLY_COLUMNS } from '../../../hooks/useAdminDatabase';
 
 interface DbInspectorProps {
-    selectedRow: any;
-    onRowChange: (row: any) => void;
+    selectedRow: Record<string, unknown> | null;
+    onRowChange: (row: Record<string, unknown>) => void;
     allColumns: string[];
     isEditing: boolean;
     showDeleteConfirm: boolean;
@@ -88,7 +88,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
             {/* Delete Zone */}
             {isEditing && (
                 <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/20 shrink-0">
-                    {(selectedRow.id || selectedRow.internal_id) && (
+                    {Boolean(selectedRow.id || selectedRow.internal_id) && (
                         <div className="flex flex-col gap-2 max-w-sm mx-auto">
                             {!showDeleteConfirm ? (
                                 <Button

@@ -3,6 +3,13 @@ import { contentService } from '@thaiakha/shared/services';
 
 const PROGRESS_KEY = 'thai_akha_quiz_progress_v2';
 
+/** Shape minima dei livelli grezzi restituiti da getQuizData (con category_id) usata da questo hook. */
+interface QuizProgressLevel {
+  id: number;
+  category_id: string | null;
+  modules?: { id: string }[];
+}
+
 export interface ProgressData {
   completed: number;
   total: number;
@@ -13,7 +20,7 @@ export const useQuizProgress = () => {
   const [loading, setLoading] = useState(true);
   const [perfectModules, setPerfectModules] = useState<string[]>([]);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
-  const [quizData, setQuizData] = useState<any[]>([]);
+  const [quizData, setQuizData] = useState<QuizProgressLevel[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -31,7 +38,8 @@ export const useQuizProgress = () => {
 
         // Fetch all quiz data
         const dbData = await contentService.getQuizData();
-        setQuizData(dbData || []);
+        // getQuizData e' tipizzato Record<string, unknown>[]: si dichiara qui la shape minima usata (id, category_id, modules).
+        setQuizData((dbData || []) as unknown as QuizProgressLevel[]);
       } catch (e) {
         console.error('[useQuizProgress]', e);
       } finally {
@@ -49,7 +57,7 @@ export const useQuizProgress = () => {
     categoryLevels.forEach(lvl => {
       if (lvl.modules) {
         total += lvl.modules.length;
-        lvl.modules.forEach((m: any) => {
+        lvl.modules.forEach((m) => {
           if (completedModules.includes(m.id)) {
             completed += 1;
           }
@@ -71,7 +79,7 @@ export const useQuizProgress = () => {
 
     if (level && level.modules) {
       total = level.modules.length;
-      level.modules.forEach((m: any) => {
+      level.modules.forEach((m) => {
         if (completedModules.includes(m.id)) {
           completed += 1;
         }
@@ -92,7 +100,7 @@ export const useQuizProgress = () => {
     quizData.forEach(lvl => {
       if (lvl.modules) {
         total += lvl.modules.length;
-        lvl.modules.forEach((m: any) => {
+        lvl.modules.forEach((m) => {
           if (completedModules.includes(m.id)) {
             completed += 1;
           }

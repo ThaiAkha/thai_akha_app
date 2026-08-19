@@ -42,8 +42,8 @@ export default function UserSecurityCard() {
             setPassword("");
             setConfirmPassword("");
             setTimeout(() => setMessage({ type: "", text: "" }), 5000);
-        } catch (error: any) {
-            setMessage({ type: "error", text: error.message || t("security.errorFailed") });
+        } catch (error: unknown) {
+            setMessage({ type: "error", text: (error instanceof Error && error.message) || t("security.errorFailed") });
         } finally {
             setIsLoading(false);
         }

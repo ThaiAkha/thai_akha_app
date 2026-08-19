@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector/InspectorActionButtons';
+import type { Product } from '../../../hooks/useAdminInventory';
 
 interface InventoryInspectorActionsProps {
     isNew: boolean;
@@ -8,7 +9,7 @@ interface InventoryInspectorActionsProps {
     setIsEditing: (val: boolean) => void;
     handleSave: () => Promise<void>;
     isSaving: boolean;
-    editingProduct: any;
+    editingProduct: Product;
 }
 
 const InventoryInspectorActions: React.FC<InventoryInspectorActionsProps> = ({

@@ -4,17 +4,22 @@ import { Typography } from '../ui/Typography';
 import AkhaPixelLine from '../divider/AkhaPixelLine';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { AllergySelector, DietSelector, SpicySelector } from '../menu';
+import type { DietOption } from '../menu';
+import type { SpicinessLevel } from '@thaiakha/shared/types';
+
+/** Profilo dieta come arriva dal DB (dietary_profiles): `type` e' stringa libera, DietSelector la legge come 'lifestyle' | 'religious'. */
+type MegaMenuDietOption = Omit<DietOption, 'type'> & { type?: string };
 
 interface MegaMenuCardProps {
   initialDiet: string;
   initialAllergies: string[];
   initialSpiciness?: string | number;
-  spicinessOptions?: any[];
+  spicinessOptions?: SpicinessLevel[];
   allergyOptions: string[];
   allergyMap?: Record<string, string>;
   groupedDiets: {
-    lifestyle: any[];
-    culture: any[];
+    lifestyle: MegaMenuDietOption[];
+    culture: MegaMenuDietOption[];
   };
   onConfirm: (diet: string, allergies: string[], spiciness?: string | number) => void;
   onDirtyChange?: (isDirty: boolean) => void;
@@ -62,7 +67,8 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
     if (canConfirm) onConfirm(draftDiet, draftAllergies, draftSpiciness);
   };
 
-  const allDietOptions = [...groupedDiets.lifestyle, ...groupedDiets.culture];
+  // `type` dal DB e' string: DietSelector la usa solo per confronto con 'lifestyle'/'religious' (come prima, via any).
+  const allDietOptions = [...groupedDiets.lifestyle, ...groupedDiets.culture] as DietOption[];
   return (
     <div className="space-y-6">
       {/* ── Allergy Section ── */}

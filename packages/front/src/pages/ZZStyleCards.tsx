@@ -19,8 +19,8 @@ import AkhaQuote from '../components/divider/AkhaQuote';
 import AkhaThemedLine from '../components/divider/AkhaThemedLine';
 import AkhaButtonLine from '../components/divider/AkhaButtonLine';
 import Divider from '../components/divider/Divider';
-import { AKHA_PATTERNS } from '@thaiakha/shared';
-import { AKHA_THEMES, AkhaTheme } from '../components/divider/AkhaPixelPattern';
+import { AKHA_PATTERNS, type PatternName } from '@thaiakha/shared';
+import { AKHA_THEMES, AkhaTheme } from '../components/divider/AkhaPixelPattern.constants';
 // Skeleton atoms
 import { SkeletonBase, SkeletonText, SkeletonTitle, SkeletonDivider } from '../components/skeleton/atoms/index';
 // Skeleton compositions
@@ -391,7 +391,7 @@ const StyleCards: React.FC = () => {
           {Object.keys(AKHA_PATTERNS).map((variantName) => (
             <DemoBox key={variantName} label={`variant: ${variantName}`}>
               <div className="flex justify-center items-center min-h-[40px] w-full overflow-hidden">
-                <AkhaPixelPattern variant={variantName as any} size={8} theme="history" />
+                <AkhaPixelPattern variant={variantName as PatternName} size={8} theme="history" />
               </div>
             </DemoBox>
           ))}
@@ -405,7 +405,7 @@ const StyleCards: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {Object.keys(AKHA_THEMES).map((themeName) => (
             <DemoBox key={themeName} label={`theme: ${themeName}`}>
-              <AkhaPixelLine length="medium" geometry="flower" theme={themeName as any} size={10} />
+              <AkhaPixelLine length="medium" geometry="flower" theme={themeName as AkhaTheme} size={10} />
             </DemoBox>
           ))}
         </div>

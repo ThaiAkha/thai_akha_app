@@ -37,7 +37,8 @@ export function useAdminMedia() {
                 .order('asset_id', { ascending: true });
 
             if (error) throw error;
-            setAssets((data as any[]) || []);
+            // Colonne media_assets nullable vs MediaAsset (shape condivisa piu' stretta): cast alla sorgente
+            setAssets((data as unknown as MediaAsset[]) || []);
         } catch (err) {
             console.error('Error fetching media:', err);
         } finally {

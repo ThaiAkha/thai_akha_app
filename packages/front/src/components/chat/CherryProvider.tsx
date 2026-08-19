@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Provider + hook useCherry convivono per design (context pattern) */
 import React, { createContext, useContext, useRef, useCallback, ReactNode } from 'react';
 import { useCherryChat } from '../../hooks/useCherryChat';
 import { useGeminiLive } from '../../hooks/useGeminiLive';

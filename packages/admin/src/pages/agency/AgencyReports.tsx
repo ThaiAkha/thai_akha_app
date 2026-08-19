@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -25,35 +26,46 @@ interface CommissionTier { tier: string; min_pax: number; rate: number; }
 const AgencyReports: React.FC = () => {
     const { t } = useTranslation('pages');
     const { user } = useAuth();
-    const [bookings, setBookings] = useState<{ internal_id: string; total_price: number | null; commission_amount: number | null; pax_count: number | null; status: string | null }[]>([]);
-    const [invoices, setInvoices] = useState<AgencyInvoice[]>([]);
-    const [tiers, setTiers] = useState<CommissionTier[]>([]);
-    const [commStatus, setCommStatus] = useState<{ tier: string; rate_per_pax: number; cycle_prior_pax: number } | null>(null);
-    const [loading, setLoading] = useState(true);
+    type BookingRow = { internal_id: string; total_price: number | null; commission_amount: number | null; pax_count: number | null; status: string | null };
+    type CommStatus = { tier: string; rate_per_pax: number; cycle_prior_pax: number };
     const [selectedMetric, setSelectedMetric] = useState<string>('revenue');
     const [selectedInv, setSelectedInv] = useState<string[]>([]);
     const [busy, setBusy] = useState(false);
     const [reportBusy, setReportBusy] = useState(false);
     const [proofFile, setProofFile] = useState<File | null>(null);
 
-    const fetchAll = useCallback(async () => {
-        if (!user) return;
-        const [bk, inv, prof, rpc] = await Promise.all([
-            supabase.from('bookings').select('internal_id, total_price, commission_amount, pax_count, status').eq('user_id', user.id).neq('status', 'cancelled'),
-            supabase.from('agency_invoices').select('id, zoho_invoice_number, amount, status, payment_proof_url, booking_ids, created_at').eq('agency_id', user.id).order('created_at', { ascending: false }),
-            supabase.from('profiles').select('commission_config').eq('id', user.id).single(),
-            supabase.rpc('calculate_agency_commission', { p_agency_id: user.id, p_pax: 1 }),
-        ]);
-        setBookings(bk.data || []);
-        setInvoices((inv.data as AgencyInvoice[]) || []);
-        const cfg = (prof.data?.commission_config as { tiers?: CommissionTier[] } | null);
-        setTiers((cfg?.tiers || []).slice().sort((a, b) => a.min_pax - b.min_pax));
-        const r = rpc.data as { success?: boolean; tier?: string; rate_per_pax?: number; cycle_prior_pax?: number } | null;
-        if (r?.success) setCommStatus({ tier: r.tier!, rate_per_pax: r.rate_per_pax!, cycle_prior_pax: r.cycle_prior_pax! });
-        setLoading(false);
-    }, [user]);
-
-    useEffect(() => { fetchAll(); }, [fetchAll]);
+    // Data layer (#86): un'unica query per agenzia (bookings + invoices + tiers + RPC fascia).
+    // staleTime 0: dati operativi, ogni ritorno sulla pagina li rilegge; `refetch()` dopo le azioni.
+    const reportQuery = useQuery({
+        queryKey: ['agency_reports', user?.id ?? ''] as const,
+        enabled: Boolean(user),
+        staleTime: 0,
+        queryFn: async () => {
+            const uid = user!.id;
+            const [bk, inv, prof, rpc] = await Promise.all([
+                supabase.from('bookings').select('internal_id, total_price, commission_amount, pax_count, status').eq('user_id', uid).neq('status', 'cancelled'),
+                supabase.from('agency_invoices').select('id, zoho_invoice_number, amount, status, payment_proof_url, booking_ids, created_at').eq('agency_id', uid).order('created_at', { ascending: false }),
+                supabase.from('profiles').select('commission_config').eq('id', uid).single(),
+                supabase.rpc('calculate_agency_commission', { p_agency_id: uid, p_pax: 1 }),
+            ]);
+            const cfg = (prof.data?.commission_config as { tiers?: CommissionTier[] } | null);
+            const r = rpc.data as { success?: boolean; tier?: string; rate_per_pax?: number; cycle_prior_pax?: number } | null;
+            return {
+                bookings: (bk.data ?? []) as BookingRow[],
+                invoices: ((inv.data as AgencyInvoice[]) ?? []),
+                tiers: (cfg?.tiers ?? []).slice().sort((a, b) => a.min_pax - b.min_pax),
+                commStatus: r?.success ? { tier: r.tier!, rate_per_pax: r.rate_per_pax!, cycle_prior_pax: r.cycle_prior_pax! } as CommStatus : null,
+            };
+        },
+    });
+    // Memoizzati: `?? []` creerebbe un array nuovo a ogni render e invaliderebbe i useMemo a valle.
+    const bookings = useMemo(() => reportQuery.data?.bookings ?? [], [reportQuery.data]);
+    const invoices = reportQuery.data?.invoices ?? [];
+    const tiers = useMemo(() => reportQuery.data?.tiers ?? [], [reportQuery.data]);
+    const commStatus = reportQuery.data?.commStatus ?? null;
+    // Finche' l'auth non ha risolto (user null) si resta in loading: mai un report vuoto.
+    const loading = !user || reportQuery.isPending;
+    const fetchAll = async () => { if (user) await reportQuery.refetch(); };
 
     const stats = useMemo(() => {
         const totalBookings = bookings.length;

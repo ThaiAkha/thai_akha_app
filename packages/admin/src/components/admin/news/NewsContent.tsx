@@ -5,19 +5,20 @@ import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../com
 import Badge from '../../../components/ui/badge/Badge';
 import Checkbox from '../../../components/form/input/Checkbox';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { DataRow } from '../../../components/data-explorer/GridCard';
 import { NEWS_GRID_PRIMARY_FIELDS } from '../../../hooks/useAdminNews';
 
 interface NewsContentProps {
     loading: boolean;
     viewMode: 'table' | 'grid';
     selectedTable: string;
-    filteredData: any[];
-    selectedRow: any | null;
-    onRowSelect: (row: any) => void;
+    filteredData: DataRow[];
+    selectedRow: DataRow | null;
+    onRowSelect: (row: DataRow) => void;
     columns: string[];
     selectedIds: Set<string>;
     onToggleSelectAll: () => void;
-    onToggleSelectRow: (row: any) => void;
+    onToggleSelectRow: (row: DataRow) => void;
 }
 
 const NewsContent: React.FC<NewsContentProps> = ({
@@ -32,7 +33,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
     onToggleSelectAll,
     onToggleSelectRow,
 }) => {
-    const renderGridCardFields = (item: Record<string, any>) => {
+    const renderGridCardFields = (item: DataRow) => {
         const config = NEWS_GRID_PRIMARY_FIELDS[selectedTable];
         const titleField = config?.title || columns[0] || 'id';
         const subtitleField = config?.subtitle || columns[1];
@@ -52,7 +53,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                 ) : undefined}
                 footerLeft={imageUrl ? (
                     <img
-                        src={imageUrl}
+                        src={String(imageUrl)}
                         alt=""
                         className="w-full h-10 object-cover rounded-md mt-1 opacity-80"
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
@@ -66,7 +67,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
         );
     };
 
-    const getRowId = (r: any) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
+    const getRowId = (r: DataRow) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
     const selectedRowId = selectedRow ? getRowId(selectedRow) : null;
 
     return (

@@ -156,9 +156,10 @@ const AgencyBooking: React.FC = () => {
             alert(t('agencyBooking.successConfirmed'));
             navigate('/agency-dashboard');
 
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error(e);
-            alert(`Error: ${e.message}`);
+            // Error o PostgrestError: entrambi espongono .message
+            alert(`Error: ${(e as { message?: string } | null)?.message}`);
         } finally {
             setLoading(false);
         }

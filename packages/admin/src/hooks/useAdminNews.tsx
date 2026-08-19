@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import type { TablesInsert } from '@thaiakha/shared/types';
 import { Newspaper, BookOpen, Globe, Layout } from 'lucide-react';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -59,9 +60,9 @@ export const NEWS_GRID_PRIMARY_FIELDS: Record<string, { title: string; subtitle?
 export const useAdminNews = () => {
     const { t } = useTranslation('database');
     const [selectedTable, setSelectedTable] = useState('akha_news');
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<Record<string, unknown>[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedRow, setSelectedRow] = useState<any | null>(null);
+    const [selectedRow, setSelectedRow] = useState<Record<string, unknown> | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -82,13 +83,14 @@ export const useAdminNews = () => {
                 .select('*')
                 .limit(100);
             if (error) throw error;
-            setData(tableData || []);
+            setData((tableData || []) as Record<string, unknown>[]);
         } catch (err) {
             console.error(`Error fetching table ${tableName}:`, err);
             alert(t('alerts.loadFailed', { table: tableName }));
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t cambierebbe il fetch al cambio lingua
     }, []);
 
     useEffect(() => {
@@ -109,7 +111,8 @@ export const useAdminNews = () => {
 
             let error;
             if (isNew) {
-                const { error: insertError } = await supabase.from(selectedTable as "akha_news").insert(payload);
+                // Riga generica dell'editor tabellare: la tabella e' scelta a runtime.
+                const { error: insertError } = await supabase.from(selectedTable as "akha_news").insert(payload as unknown as TablesInsert<'akha_news'>);
                 error = insertError;
             } else {
                 const idField = NEWS_PRIMARY_KEY_MAP[selectedTable] || (selectedRow.id ? 'id' : 'internal_id');
@@ -117,17 +120,17 @@ export const useAdminNews = () => {
                 if (!idValue) throw new Error(`Primary key ${idField} not found in row data.`);
                 const { error: updateError } = await supabase
                     .from(selectedTable as "akha_news")
-                    .update(payload)
-                    .eq(idField, idValue);
+                    .update(payload as unknown as TablesInsert<'akha_news'>)
+                    .eq(idField, idValue as string);
                 error = updateError;
             }
             if (error) throw error;
             alert(t('alerts.savedSuccess'));
             setIsEditing(false);
             fetchTableData(selectedTable);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Save error:', err);
-            alert(t('alerts.saveFailed', { message: err.message || '' }));
+            alert(t('alerts.saveFailed', { message: (err as { message?: string } | null)?.message || '' }));
         } finally {
             setIsSaving(false);
         }
@@ -142,14 +145,14 @@ export const useAdminNews = () => {
             const { error } = await supabase
                 .from(selectedTable as "akha_news")
                 .delete()
-                .eq(idField, idValue);
+                .eq(idField, idValue as string);
             if (error) throw error;
             alert(t('alerts.deletedSuccess'));
             setShowDeleteConfirm(false);
             fetchTableData(selectedTable);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Delete error:', err);
-            alert(t('alerts.deleteFailed', { message: err.message || '' }));
+            alert(t('alerts.deleteFailed', { message: (err as { message?: string } | null)?.message || '' }));
         }
     };
 
@@ -186,7 +189,7 @@ export const useAdminNews = () => {
         );
     }, [data, searchTerm]);
 
-    const getRowId = (r: any) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
+    const getRowId = (r: Record<string, unknown>) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
 
     const toggleSelectAll = () => {
         if (selectedIds.size === filteredData.length && filteredData.length > 0) {
@@ -198,7 +201,7 @@ export const useAdminNews = () => {
         }
     };
 
-    const toggleSelectRow = (row: any) => {
+    const toggleSelectRow = (row: Record<string, unknown>) => {
         const id = getRowId(row);
         const s = new Set(selectedIds);
         if (s.has(id)) s.delete(id); else s.add(id);

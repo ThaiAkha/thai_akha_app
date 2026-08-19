@@ -20,7 +20,7 @@ interface BookingItem {
 interface ReservationSidebarProps {
     bookings: BookingItem[];
     activeBookingId: string | null;
-    onSelectBooking: (booking: any) => void;
+    onSelectBooking: (booking: BookingItem) => void;
 }
 
 const ReservationSidebar: React.FC<ReservationSidebarProps> = ({

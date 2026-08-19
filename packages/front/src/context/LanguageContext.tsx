@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- context provider + useLanguage hook are colocated on purpose */
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ACTIVE_LANGS,

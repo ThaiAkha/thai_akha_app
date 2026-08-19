@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { contentMetadataService } from '@thaiakha/shared/services';
+import React from 'react';
+import { usePageMetadata } from '../../hooks/usePageMetadata';
 import HeaderSection from './HeaderSection';
 
 interface InfoPageHeroProps {
@@ -29,13 +29,9 @@ const InfoPageHero: React.FC<InfoPageHeroProps> = ({
   gradientFrom,
   gradientTo,
 }) => {
-  const [meta, setMeta] = useState<PageMeta | null>(null);
-
-  useEffect(() => {
-    contentMetadataService.getPageMetadata(slug).then(data => {
-      if (data) setMeta(data as PageMeta);
-    });
-  }, [slug]);
+  // Data layer (#86): stessa query/cache degli altri lettori di site_metadata per slug.
+  const { metadata } = usePageMetadata(slug);
+  const meta = metadata as PageMeta | null;
 
   const title = meta?.titleMain || fallbackTitle;
   const highlight = meta?.titleHighlight || fallbackHighlight;

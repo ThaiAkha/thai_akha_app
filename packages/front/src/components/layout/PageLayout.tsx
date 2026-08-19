@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Header, CinematicBackground } from './index';
-import { contentService } from '@thaiakha/shared/services';
+import { usePageMetadata } from '../../hooks/usePageMetadata';
 import { HeaderMetadata } from './Header';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { AkhaLoader, Typography } from '../ui/index';
@@ -43,37 +43,13 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   patternTheme,
   instantContent = false
 }) => {
-  const [metadata, setMetadata] = useState<HeaderMetadata & { imageUrl?: string } | null>(customMetadata || null);
-  // instantContent: parent owns loading → no internal blocking state, no self-fetch.
-  const [isInternalLoading, setIsInternalLoading] = useState(instantContent ? false : !customMetadata);
-
-  useEffect(() => {
-    // Progressive mode: parent supplies metadata (when ready) + the loading flag.
-    // Mirror metadata as it arrives, never self-fetch (avoids a duplicate roundtrip).
-    if (instantContent) {
-      if (customMetadata) setMetadata(customMetadata);
-      return;
-    }
-
-    if (customMetadata) {
-      setMetadata(customMetadata);
-      setIsInternalLoading(false);
-      return;
-    }
-
-    let isMounted = true;
-    const load = async () => {
-      setIsInternalLoading(true);
-      const data = await contentService.getPageMetadata(slug);
-      
-      if (isMounted) {
-        if (data) setMetadata(data);
-        setIsInternalLoading(false);
-      }
-    };
-    load();
-    return () => { isMounted = false; };
-  }, [slug, customMetadata, instantContent]);
+  // Data layer (#86): self-fetch SOLO quando il padre non passa customMetadata e non
+  // e' in modalita' progressiva (instantContent: il padre possiede metadata + loading).
+  // Stessa query/cache di usePageSections({ metadataSlug }) e degli altri lettori dello slug.
+  const selfFetch = !instantContent && !customMetadata;
+  const { metadata: fetched, loading: fetchLoading } = usePageMetadata(slug, { enabled: selfFetch });
+  const metadata: (HeaderMetadata & { imageUrl?: string }) | null = customMetadata ?? (selfFetch ? fetched : null);
+  const isInternalLoading = selfFetch && fetchLoading;
 
   const isLoading = isInternalLoading || externalLoading;
 

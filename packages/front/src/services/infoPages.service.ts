@@ -111,19 +111,9 @@ export async function getEntityFaqs(
 // Le FAQ mostrate da una pagina sono referenziate per faq_key nell'array ordinato
 // site_metadata.faq_refs (N-a-N: la stessa FAQ è riusabile su più pagine, l'ordine
 // dell'array = ordine di presentazione). entity_type/entity_slug NON sono più il
-// collante pagina↔FAQ. Ritorna [] se la pagina non ha refs → fallback JSONB legacy.
-export async function getPageFaqs(entitySlug: string): Promise<FaqCardUI[]> {
-  const { data: metaData, error: metaErr } = await supabase
-    .from('site_metadata')
-    .select('faq_refs')
-    .eq('page_slug', entitySlug)
-    .maybeSingle();
-
-  if (metaErr || !metaData) {
-    if (metaErr) console.error('[infoPages] getPageFaqs (refs):', metaErr);
-    return [];
-  }
-  const refs = (metaData.faq_refs ?? []) as string[];
+// collante pagina↔FAQ. I refs arrivano dal data layer (#86: `useSiteMetadata`),
+// qui si risolvono in card. Ritorna [] se non ci sono refs.
+export async function getFaqsByRefs(refs: readonly string[]): Promise<FaqCardUI[]> {
   if (!Array.isArray(refs) || refs.length === 0) return [];
 
   const { data, error } = await supabase
@@ -133,7 +123,7 @@ export async function getPageFaqs(entitySlug: string): Promise<FaqCardUI[]> {
     .eq('is_active', true);
 
   if (error || !data) {
-    console.error('[infoPages] getPageFaqs:', error);
+    console.error('[infoPages] getFaqsByRefs:', error);
     return [];
   }
   const rows = data as unknown as Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'cta'>[];
@@ -155,34 +145,6 @@ export async function getPageFaqs(entitySlug: string): Promise<FaqCardUI[]> {
     }));
 }
 
-// ─── PAGE DATES (site_metadata) — sorgente unica per la riga meta Published/Updated ──
-// Vale per QUALSIASI pagina con riga site_metadata (info pages, classi, home…).
-// Le date NON vivono più nei page_essentials.facts né in info_pages.
-const _datesCache = new Map<string, { published: string | null; modified: string | null }>();
-
-export async function getPageDates(
-  pageSlug: string,
-): Promise<{ published: string | null; modified: string | null }> {
-  const cached = _datesCache.get(pageSlug);
-  if (cached) return cached;
-
-  const { data, error } = await supabase
-    .from('site_metadata')
-    .select('date_published, date_modified')
-    .eq('page_slug', pageSlug)
-    .maybeSingle();
-
-  if (error || !data) {
-    if (error) console.error('[infoPages] getPageDates:', error);
-    return { published: null, modified: null };
-  }
-  const entry = {
-    published: data.date_published ?? null,
-    modified: data.date_modified ?? null,
-  };
-  _datesCache.set(pageSlug, entry);
-  return entry;
-}
 
 // ─── INFO PAGE META (versione/date) — sorgente per la LegalMetaBanner ───────────
 // Da site_metadata (info_pages DISMESSA): legal_version + date_published (effective)

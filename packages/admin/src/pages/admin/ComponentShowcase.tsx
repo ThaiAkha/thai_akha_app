@@ -59,8 +59,10 @@ const ComponentShowcase: React.FC = () => {
         return getAllComponents().find(c => c.name === componentName);
     }, [componentName]);
 
+    // Read at render time (same moment the deps array was evaluated before).
+    const locationHash = window.location.hash;
     useEffect(() => {
-        const hash = window.location.hash.replace('#', '');
+        const hash = locationHash.replace('#', '');
         if (hash) {
             setSearchParams(prev => {
                 prev.set('component', hash);
@@ -68,7 +70,8 @@ const ComponentShowcase: React.FC = () => {
                 return prev;
             });
         }
-    }, [window.location.hash]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setSearchParams changes with searchParams: adding it would re-run the sync
+    }, [locationHash]);
 
 
     return (

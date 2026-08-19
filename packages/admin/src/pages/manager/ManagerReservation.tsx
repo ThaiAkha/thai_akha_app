@@ -10,12 +10,14 @@ import { Users, Hotel, Car, Loader2, CalendarDays } from 'lucide-react';
 import PageMeta from '../../components/common/PageMeta';
 import { DataExplorerLayout, DataExplorerInspector } from '../../components/data-explorer';
 import { Heading } from '../../components/typography';
-import DaysSidebar, { dayLabel, type DaySession } from '../../components/common/DaysSidebar';
+import DaysSidebar, { type DaySession } from '../../components/common/DaysSidebar';
+import { dayLabel } from '../../components/common/DaysSidebar.helpers';
 import { useDaysOverview } from '../../hooks/useDaysOverview';
 
 import ReservationInspector from '../../components/manager/reservation/ReservationInspector';
 import ReservationInspectorActions from '../../components/manager/reservation/ReservationInspectorActions';
 import { useManagerReservation } from '../../hooks/useManagerReservation';
+import type { ManagerBooking } from '../../hooks/useManagerReservation';
 
 const shortKitchen = (name: string) => name.replace(/teacher\s*/i, 'T').replace(/kitchen\s*/i, 'K');
 
@@ -33,11 +35,11 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
     const daySession: DaySession = globalSession === 'evening_class' ? 'evening_class' : 'morning_class';
 
     // Gruppi attivi del giorno+sessione selezionati, divisi per teacher (+ "Da assegnare").
-    const active = bookings.filter((b: any) => b.status !== 'cancelled');
-    const columns: { id: string | null; name: string; items: any[] }[] = kitchens.map(k => ({
-        id: k.id, name: k.full_name, items: active.filter((b: any) => b.kitchen_id === k.id),
+    const active = bookings.filter((b: ManagerBooking) => b.status !== 'cancelled');
+    const columns: { id: string | null; name: string; items: ManagerBooking[] }[] = kitchens.map(k => ({
+        id: k.id, name: k.full_name, items: active.filter((b) => b.kitchen_id === k.id),
     }));
-    const unassigned = active.filter((b: any) => !b.kitchen_id);
+    const unassigned = active.filter((b) => !b.kitchen_id);
     if (unassigned.length) columns.push({ id: null, name: tm('groupsPlanner.unassigned', { defaultValue: 'Unassigned' }), items: unassigned });
 
     return (
@@ -62,7 +64,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                         <span className="text-base font-bold text-gray-900 dark:text-white">
                             {dayLabel(globalDate, tm)} · {globalSession === 'evening_class' ? tm('groupsPlanner.evening', { defaultValue: 'Evening' }) : tm('groupsPlanner.morning', { defaultValue: 'Morning' })}
                         </span>
-                        <span className="ml-auto text-sm font-bold text-gray-400">{active.reduce((a: number, b: any) => a + (b.pax_count || 0), 0)} pax · {active.length} {tm('groupsPlanner.groups', { defaultValue: 'groups' })}</span>
+                        <span className="ml-auto text-sm font-bold text-gray-400">{active.reduce((a: number, b) => a + (b.pax_count || 0), 0)} pax · {active.length} {tm('groupsPlanner.groups', { defaultValue: 'groups' })}</span>
                     </div>
                 }
                 inspector={
@@ -115,7 +117,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                                         </div>
                                     )}
 
-                                    {col.items.map((b: any) => {
+                                    {col.items.map((b) => {
                                         const isSel = selectedBooking?.internal_id === b.internal_id;
                                         const paid = b.payment_status === 'paid' || b.payment_status === 'completed' || b.payment_status === 'succeeded';
                                         return (

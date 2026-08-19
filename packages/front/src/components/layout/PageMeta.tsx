@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 import { Typography, Icon } from '../ui/index';
-import { getPageDates } from '../../services/infoPages.service';
+import { useSiteMetadata } from '../../hooks/useSiteMetadata';
 
 interface PageMetaProps {
   /** Slug site_metadata da cui leggere date_published + date_modified. */
@@ -28,15 +28,9 @@ export const PageMeta: React.FC<PageMetaProps> = ({
   accent = 'brand',
   className,
 }) => {
-  const [dates, setDates] = useState<{ published: string | null; modified: string | null } | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    getPageDates(pageSlug).then(d => {
-      if (!cancelled) setDates(d);
-    });
-    return () => { cancelled = true; };
-  }, [pageSlug]);
+  // Data layer (#86): stessa riga site_metadata di PageEssentials/FaqBottomPage.
+  const { extras } = useSiteMetadata(pageSlug);
+  const dates = extras?.dates ?? null;
 
   if (!dates || (!dates.published && !dates.modified)) return null;
 

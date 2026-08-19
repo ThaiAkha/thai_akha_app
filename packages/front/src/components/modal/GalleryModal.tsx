@@ -60,6 +60,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- next/prev/onClose are recreated each render; listener re-binds on the state it reads
   }, [isOpen, index, items.length]);
 
   const next = () => {

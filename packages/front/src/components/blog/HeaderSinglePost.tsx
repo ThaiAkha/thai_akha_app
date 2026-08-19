@@ -8,6 +8,7 @@ import {
 } from '../ui/index';
 import AkhaThemedLine from '../divider/AkhaThemedLine';
 import AkhaPixelLine from '../divider/AkhaPixelLine';
+import type { AkhaTheme } from '../divider/AkhaPixelPattern';
 import { t } from '../../i18n';
 
 interface HeaderSinglePostProps {
@@ -113,7 +114,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
                             size={7}
                             opacity={0.8}
                             animate={true}
-                            theme={theme as any}
+                            theme={theme as AkhaTheme | undefined}
                             className="[padding-block:var(--space-fluid-2xs)] justify-start"
                         />
 
@@ -143,7 +144,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
                     size={6}
                     opacity={0.8}
                     animate={true}
-                    theme={theme as any}
+                    theme={theme as AkhaTheme | undefined}
                     className="justify-start py-2"
                 />
 
@@ -174,7 +175,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
             )}
 
             {/* 5. DIVIDER */}
-            <AkhaThemedLine theme={theme as any} className="![padding-bottom:0]" />
+            <AkhaThemedLine theme={theme as AkhaTheme | undefined} className="![padding-bottom:0]" />
         </div>
     );
 };

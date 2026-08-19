@@ -14,8 +14,7 @@ import { t } from '../i18n';
 import { AkhaThemedLine } from '../components/blog';
 import { useQuizProgress } from '../hooks/useQuizProgress';
 import { useQuizHomeData } from '../hooks/useQuizHomeData';
-import { usePageSection } from '../hooks/usePageSection';
-import { toStatCardColor } from '../hooks/useHomePageSections';
+import { usePageSection, toStatCardColor } from '../hooks/usePageSections';
 import { useActiveProfile } from '../context/ActiveProfileContext';
 
 // ── QuizPage ──────────────────────────────────────────────────────────────────

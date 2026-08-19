@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- il file esporta solo la funzione renderInline; InlineLink e' un helper interno */
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 

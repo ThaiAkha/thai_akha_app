@@ -4,6 +4,7 @@ import { Typography, Icon } from '../../ui';
 import type { TocAccent } from '../../ui';
 import { SkeletonBase } from '../../skeleton/atoms';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { FrontHomeCard } from '@thaiakha/shared/types';
 
 interface SidebarClassCtaProps {
   /** card_id in home_cards_front (es. 'sidebar-cta-classes'). Banner sostituibile per pagina. */
@@ -38,9 +39,10 @@ export const SidebarClassCta: React.FC<SidebarClassCtaProps> = ({ cardId, onNavi
   const card = cards.find(c => c.card_id === cardId);
   if (!card) return null;
 
-  const image = Array.isArray(card.cover_data)
-    ? card.cover_data[0]?.image_url
-    : (card.cover_data as any)?.image_url;
+  // Embed PostgREST: cover_data puo' arrivare come oggetto o come array di un elemento.
+  type CoverData = NonNullable<FrontHomeCard['cover_data']>;
+  const cover = card.cover_data as CoverData | CoverData[] | undefined;
+  const image = Array.isArray(cover) ? cover[0]?.image_url : cover?.image_url;
   const href = card.target_path || '/';
   const linkTarget = href.startsWith('/') ? href.substring(1) : href;
   const kicker = card.link_label; // es. "Go to"

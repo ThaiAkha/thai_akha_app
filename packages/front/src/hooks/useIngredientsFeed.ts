@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ingredientService, contentMetadataService } from '@thaiakha/shared/services';
 import { IngredientListItem, ContentCategoryDB } from '@thaiakha/shared/types';
-import { PageMetadata } from './useHomePageSections';
+import type { PageMetadata } from './usePageSections';
 
 // URL patterns (hub prefix = 'thai-cooking-ingredients'):
 //   /thai-cooking-ingredients                         → hub (6 category cards)

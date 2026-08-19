@@ -4,7 +4,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Typography, Button, AkhaPixelPattern } from '../ui';
 import Toggle from '../ui/navigation/Toggle';
 import { CherryFormatter } from '../chat/CherryFormatter';
-import { useMediaAssets } from '../../hooks/useMediaAssets';
+import { useMediaAssets } from '../../hooks/useMediaAsset';
 import { t } from '../../i18n';
 import PhotoGrid from './PhotoGrid';
 import { scoreAnswer } from './quizScoring';
@@ -100,9 +100,9 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
     ? (currentQuestion?.options.map(o => o.assetId).filter(Boolean) as string[])
     : [];
   const { assets: optionAssets } = useMediaAssets(optionAssetIds);
-  const urlFor = (assetId?: string) => assetId ? optionAssets[assetId]?.url : undefined;
+  const urlFor = (assetId?: string) => assetId ? optionAssets[assetId]?.image_url : undefined;
   const correctOption = correctIndex >= 0 ? currentQuestion?.options[correctIndex] : undefined;
-  const correctPhotoUrl = correctOption?.assetId ? optionAssets[correctOption.assetId]?.url : undefined;
+  const correctPhotoUrl = correctOption?.assetId ? optionAssets[correctOption.assetId]?.image_url : undefined;
 
   // Guard: se la domanda non esiste (modulo vuoto o indice errato) non renderizzare
   if (!currentQuestion) return null;

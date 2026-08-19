@@ -168,9 +168,9 @@ export default function SignUpForm() {
       }
 
       navigate("/"); // Redirect or show success message
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Signup failed:", err);
-      setError(err.message || t('signUp.error'));
+      setError((err instanceof Error ? err.message : '') || t('signUp.error'));
     } finally {
       setLoading(false);
     }

@@ -95,6 +95,7 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     };
 
     init();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- session bootstrap runs once per user id; role/name are read at that moment
   }, [userProfile?.id]);
 
   const triggerAutoSummary = async (sid: string) => {

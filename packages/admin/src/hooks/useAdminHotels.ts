@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { GEOJSON_MASTER } from '@thaiakha/shared/data';
 import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
-import type { HotelLocation, HotelFormData, MeetingPoint, PickupZone } from '@thaiakha/shared/types';
+import type { HotelLocation, HotelFormData, MeetingPoint, PickupZone, PickupGeoJsonFeature, TablesInsert, TablesUpdate } from '@thaiakha/shared/types';
 export type { HotelLocation, HotelFormData, MeetingPoint, PickupZone };
 
 const emptyForm: HotelFormData = {
@@ -63,7 +63,7 @@ export function useAdminHotels() {
         const priority = ['azure', 'pink', 'green', 'yellow'];
         for (const zoneId of priority) {
             const geoId = Object.keys(geoIdToZoneId).find(k => geoIdToZoneId[k] === zoneId);
-            const feature = GEOJSON_MASTER.features.find((f: any) => f.properties.id === geoId);
+            const feature = GEOJSON_MASTER.features.find((f: PickupGeoJsonFeature) => f.properties.id === geoId);
             if (feature && feature.geometry.type === 'Polygon') {
                 // GeoJSON union type: dopo il narrow su 'Polygon' coordinates[0] è il ring esterno
                 const polygonRing = feature.geometry.coordinates[0] as number[][];
@@ -80,7 +80,7 @@ export function useAdminHotels() {
         setLoading(true);
         try {
             const fetchAllHotels = async () => {
-                let allData: any[] = [];
+                let allData: HotelLocation[] = [];
                 let from = 0;
                 const step = 1000;
                 while (true) {
@@ -93,7 +93,8 @@ export function useAdminHotels() {
                     if (error) throw error;
                     if (!data || data.length === 0) break;
 
-                    allData = [...allData, ...data];
+                    // DB row (is_active/created_at nullable) -> domain HotelLocation, as before the typing.
+                    allData = [...allData, ...(data as unknown as HotelLocation[])];
                     if (data.length < step) break;
                     from += step;
                 }
@@ -114,8 +115,8 @@ export function useAdminHotels() {
             }) as unknown as MeetingPoint[]);
 
             if (hotelsData && zonesRes.data) {
-                const enriched = hotelsData.map((h: any) => {
-                    const zone = (zonesRes.data as any[]).find((z: any) => z.id === h.zone_id);
+                const enriched = hotelsData.map((h) => {
+                    const zone = zonesRes.data.find((z) => z.id === h.zone_id);
                     return {
                         ...h,
                         zone_name: zone?.name || 'No Zone',
@@ -283,8 +284,9 @@ export function useAdminHotels() {
         };
 
         const { error } = selectedMeetingPoint.id.startsWith('new-')
-            ? await supabase.from('meeting_points').insert([payload as any])
-            : await supabase.from('meeting_points').update(payload as any).eq('id', selectedMeetingPoint.id);
+            // Insert type requires id (generated DB-side): cast keeps the previous runtime payload.
+            ? await supabase.from('meeting_points').insert([payload as unknown as TablesInsert<'meeting_points'>])
+            : await supabase.from('meeting_points').update(payload as TablesUpdate<'meeting_points'>).eq('id', selectedMeetingPoint.id);
 
         if (error) {
             console.error('Save MP error:', error);

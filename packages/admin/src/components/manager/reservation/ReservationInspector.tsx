@@ -6,12 +6,16 @@ import { Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatDateByLanguage } from '../../../lib/dateFormatter';
 import LeaderHeader from '../../common/LeaderHeader';
+import type { ManagerBooking, ManagerBookingEditData } from '../../../hooks/useManagerReservation';
+
+/** has_luggage non e' nella select del hook ma viene letto per il badge (legacy). */
+type InspectorBooking = ManagerBooking & { has_luggage?: boolean | null };
 
 interface ReservationInspectorProps {
-    selectedBooking: any | null;
+    selectedBooking: InspectorBooking | null;
     isEditing: boolean;
-    editData: any;
-    onEditChange: (data: any) => void;
+    editData: ManagerBookingEditData | null;
+    onEditChange: (data: ManagerBookingEditData | null) => void;
 }
 
 
@@ -57,17 +61,17 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
                         bookingRef: b.booking_ref,
                         phone: b.phone_number,
                         email: leaderEmail,
-                        pax: b.pax_count,
-                        luggage: b.has_luggage,
+                        pax: b.pax_count ?? undefined,
+                        luggage: b.has_luggage ?? undefined,
                     }}
                 />
-                {isEditing ? (
+                {isEditing && editData ? (
                     <div className="space-y-4">
                         {/* Participants */}
                         <InputField
                             label={t('inspector.fieldPax')}
                             type="number"
-                            value={editData.pax_count}
+                            value={editData.pax_count ?? undefined}
                             onChange={e => onEditChange({ ...editData, pax_count: parseInt(e.target.value, 10) || 0 })}
                         />
 
@@ -82,7 +86,7 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
                         {/* Class Type */}
                         <SelectField
                             label={t('inspector.fieldClass')}
-                            value={editData.session_id}
+                            value={editData.session_id ?? ''}
                             onChange={e => onEditChange({ ...editData, session_id: e.target.value })}
                         >
                             <option value="morning_class">{t('inspector.morning')}</option>

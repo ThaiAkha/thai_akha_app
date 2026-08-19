@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { UserProfile } from '@thaiakha/shared/types';
 import InputField from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
 
@@ -8,9 +9,9 @@ interface BookingUserSearchFormProps {
   userMode: 'existing' | 'agency';
   searchTerm: string;
   onSearchTermChange: (s: string) => void;
-  searchResults: any[];
-  selectedUser: any | null;
-  onSelectedUserChange: (u: any) => void;
+  searchResults: UserProfile[];
+  selectedUser: UserProfile | null;
+  onSelectedUserChange: (u: UserProfile | null) => void;
 }
 
 const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({

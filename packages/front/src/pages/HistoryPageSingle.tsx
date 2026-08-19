@@ -11,6 +11,7 @@ import {
 import { CultureSection } from '@thaiakha/shared/types';
 import { useAudioAsset } from '../hooks/useAudioAsset';
 import { AuthorBlock, HeaderSinglePost, ContentRenderer, parseContent, slugify, ArticleBody } from '../components/blog';
+import type { ContentBlock } from '../components/blog/contentRenderer/contentParser';
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
@@ -142,13 +143,16 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
               />
 
               {section.content && (() => {
-                const tocItems = parseContent(section.content).filter((b: any) => b.type === 'heading' && b.level === 2) as any[];
+                type HeadingBlock = Extract<ContentBlock, { type: 'heading' }>;
+                const tocItems = parseContent(section.content).filter(
+                  (b): b is HeadingBlock => b.type === 'heading' && b.level === 2,
+                );
                 return (
                   <ArticleBody
                     className="pt-8 pb-6"
                     aside={tocItems.length > 0 ? (
                       <TableOfContents
-                        items={tocItems.map((block: any) => ({
+                        items={tocItems.map((block) => ({
                           id: block.anchorId || slugify(block.text),
                           label: block.text,
                         }))}

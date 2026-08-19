@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Typography } from '../Typography';
 import { Icon } from '../Icon';
 import MediaImage from '../../modal/MediaImage';
-import Button from '../navigation/Button';
+import Button, { type ButtonVariant } from '../navigation/Button';
 import { RippleLink } from '../RippleLink';
 import { cn } from '@thaiakha/shared/lib/utils';
 import AkhaPixelPattern from '../../divider/AkhaPixelPattern';
@@ -33,7 +33,7 @@ export interface InfoCardProps {
   titleVariant?: "h1" | "h2" | "h3" | "h4" | "h5" | "display1" | "display2";
   linkLabel?: string;
   buttonSize?: "xs" | "sm" | "md" | "lg";
-  buttonVariant?: any; // any to avoid importing ButtonVariant if not necessary
+  buttonVariant?: ButtonVariant;
 }
 
 // ── Componente ────────────────────────────────────────────────────────────────

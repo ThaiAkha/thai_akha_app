@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- provider + hook di contesto colocati (pattern standard) */
 // packages/admin/src/providers/CherryProvider.tsx
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useCherryChat } from '../hooks/useCherryChat';

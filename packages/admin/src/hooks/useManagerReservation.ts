@@ -1,7 +1,48 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import type { Tables } from '@thaiakha/shared/types';
 import { SessionType } from '../components/common/ClassPicker';
+
+/** Shape of the bookings select below (joins profiles + menu_selections). */
+export interface ManagerBookingProfile {
+    full_name: string | null;
+    email: string | null;
+    dietary_profile: string | null;
+    allergies: string[] | string | null;
+    avatar_url: string | null;
+}
+export interface ManagerBookingMenu {
+    curry: { name: string } | null;
+    soup: { name: string } | null;
+    stirfry: { name: string } | null;
+}
+export type ManagerBooking = Pick<Tables<'bookings'>,
+    'internal_id' | 'booking_ref' | 'pax_count' | 'status' | 'session_id' | 'booking_date' | 'pickup_time' | 'customer_note' |
+    'hotel_name' | 'pickup_zone' | 'meeting_point' | 'requires_dropoff' | 'phone_number' | 'agency_note' | 'user_id' | 'guest_name' |
+    'guest_email' | 'payment_status' | 'kitchen_id' | 'pickup_driver_uid'
+> & {
+    /** ATTENZIONE: colonna NON presente in `bookings` (schema 2026-08-17): il form la legge/scrive
+     *  ma la select non la porta e l'update potrebbe fallire. Bug preesistente da chiudere a parte. */
+    has_whatsapp?: boolean | null;
+    profiles: ManagerBookingProfile | null;
+    menu_selections: ManagerBookingMenu[] | null;
+};
+
+export interface ManagerBookingEditData {
+    booking_date: string;
+    session_id: string | null;
+    pax_count: number | string | null;
+    phone_number: string;
+    has_whatsapp: boolean;
+    payment_status: string;
+    customer_note: string;
+    full_name: string;
+    dietary_profile: string;
+    allergies: string;
+    hotel_name: string;
+    status: string | null;
+}
 
 export function useManagerReservation() {
     const { t } = useTranslation('reservation');
@@ -9,10 +50,10 @@ export function useManagerReservation() {
     const [globalSession, setGlobalSession] = useState<SessionType>('morning_class'); // MULTI-KITCHEN: la nav seleziona sempre una sessione
     const [loading, setLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [bookings, setBookings] = useState<any[]>([]);
-    const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
+    const [bookings, setBookings] = useState<ManagerBooking[]>([]);
+    const [selectedBooking, setSelectedBooking] = useState<ManagerBooking | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [editData, setEditData] = useState<any>(null);
+    const [editData, setEditData] = useState<ManagerBookingEditData | null>(null);
     // MULTI-KITCHEN — colonne teacher + nomi driver + stato move (nav giorni → useDaysOverview)
     const [kitchens, setKitchens] = useState<{ id: string; full_name: string }[]>([]);
     const [driverNames, setDriverNames] = useState<Record<string, string>>({});
@@ -53,17 +94,19 @@ export function useManagerReservation() {
                 query = query.eq('session_id', globalSession);
             }
 
-            const { data, error } = await query;
+            const { data: rawData, error } = await query;
             if (error) {
                 console.error("Fetch Error:", error);
                 throw error;
             }
+            // Nested join select is not inferable by supabase-js: one cast to the declared shape.
+            const data = rawData as unknown as ManagerBooking[] | null;
 
             console.log('Bookings loaded:', data?.length || 0, 'for date:', globalDate);
             setBookings(data || []);
 
             // MULTI-KITCHEN — nomi driver per le card delle colonne teacher
-            const driverIds = Array.from(new Set((data || []).map((b: any) => b.pickup_driver_uid).filter(Boolean)));
+            const driverIds = Array.from(new Set((data || []).map((b) => b.pickup_driver_uid).filter(Boolean)));
             if (driverIds.length) {
                 const { data: ds } = await supabase.from('profiles').select('id, full_name').in('id', driverIds as string[]);
                 const m: Record<string, string> = {};
@@ -74,7 +117,7 @@ export function useManagerReservation() {
             }
 
             if (selectedBooking) {
-                const updated = data?.find((b: any) => b.internal_id === selectedBooking.internal_id);
+                const updated = data?.find((b) => b.internal_id === selectedBooking.internal_id);
                 if (updated) setSelectedBooking(updated);
             }
         } catch (e) {
@@ -87,10 +130,11 @@ export function useManagerReservation() {
 
     useEffect(() => {
         fetchTableData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchTableData depends on selectedBooking; refetch only on date/session
     }, [globalDate, globalSession]);
 
     // --- ACTIONS ---
-    const handleSelectBooking = useCallback((booking: any) => {
+    const handleSelectBooking = useCallback((booking: ManagerBooking) => {
         if (selectedBooking?.internal_id === booking.internal_id) {
             setSelectedBooking(null);
             setIsEditing(false);
@@ -145,7 +189,7 @@ export function useManagerReservation() {
                 .update({
                     booking_date: editData.booking_date,
                     session_id: editData.session_id,
-                    pax_count: parseInt(editData.pax_count),
+                    pax_count: parseInt(String(editData.pax_count)),
                     phone_number: editData.phone_number,
                     has_whatsapp: editData.has_whatsapp,
                     payment_status: editData.payment_status,
@@ -161,10 +205,11 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Save Error:", err);
-            alert(t('alerts.saveError', { message: (err as any).message }));
+            alert(t('alerts.saveError', { message: (err as Error).message }));
         } finally {
             setIsSaving(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t only formats the alert message
     }, [selectedBooking, editData, fetchTableData]);
 
     const handleCancelBooking = useCallback(async (bookingId: string) => {
@@ -181,10 +226,11 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Cancel Error:", err);
-            alert(t('alerts.cancelError', { message: (err as any).message }));
+            alert(t('alerts.cancelError', { message: (err as Error).message }));
         } finally {
             setIsSaving(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t only formats the alert message
     }, [fetchTableData]);
 
     const handleRestoreBooking = useCallback(async (bookingId: string) => {
@@ -201,10 +247,11 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Restore Error:", err);
-            alert(t('alerts.restoreError', { message: (err as any).message }));
+            alert(t('alerts.restoreError', { message: (err as Error).message }));
         } finally {
             setIsSaving(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t only formats the alert message
     }, [fetchTableData]);
 
     const handleDeleteBooking = useCallback(async (bookingId: string) => {
@@ -223,10 +270,11 @@ export function useManagerReservation() {
             fetchTableData();
         } catch (err) {
             console.error("Delete Error:", err);
-            alert(t('alerts.deleteError', { message: (err as any).message }));
+            alert(t('alerts.deleteError', { message: (err as Error).message }));
         } finally {
             setIsSaving(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t only formats the alert message
     }, [fetchTableData]);
 
     const closeInspector = useCallback(() => {
@@ -238,8 +286,8 @@ export function useManagerReservation() {
     // (guardia is_admin) con update ottimistico; rollback via refetch in caso di errore.
     const moveKitchen = useCallback(async (internalId: string, kitchenId: string) => {
         setMovingId(internalId);
-        setBookings(prev => prev.map((b: any) => b.internal_id === internalId ? { ...b, kitchen_id: kitchenId } : b));
-        setSelectedBooking((prev: any) => prev && prev.internal_id === internalId ? { ...prev, kitchen_id: kitchenId } : prev);
+        setBookings(prev => prev.map((b) => b.internal_id === internalId ? { ...b, kitchen_id: kitchenId } : b));
+        setSelectedBooking((prev) => prev && prev.internal_id === internalId ? { ...prev, kitchen_id: kitchenId } : prev);
         // database.types.ts stale (RPC Fase 1 non rigenerata) → cast.
         const { error } = await supabase.rpc('set_booking_kitchen' as never, { p_internal_id: internalId, p_kitchen_id: kitchenId } as never);
         if (error) { console.error('moveKitchen error:', error); await fetchTableData(); }
@@ -248,9 +296,9 @@ export function useManagerReservation() {
 
     // --- COMPUTED ---
     const stats = useMemo(() => {
-        const totalPax = bookings.reduce((acc: number, b: any) => acc + (b.pax_count || 0), 0);
+        const totalPax = bookings.reduce((acc: number, b) => acc + (b.pax_count || 0), 0);
         const dietaryCounts: Record<string, number> = {};
-        bookings.forEach((b: any) => {
+        bookings.forEach((b) => {
             const diet = (b.profiles?.dietary_profile || 'diet_regular').replace('diet_', '');
             dietaryCounts[diet] = (dietaryCounts[diet] || 0) + 1;
         });

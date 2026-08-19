@@ -8,8 +8,8 @@ import type {
   NodeAudio,
   ChatOption,
 } from '@thaiakha/shared/data/chatFlowData';
-import type { MediaAssetLite } from '@thaiakha/shared/services';
-import { useMediaAssets } from '../../hooks/useMediaAssets';
+import type { MediaAsset } from '@thaiakha/shared';
+import { useMediaAssets } from '../../hooks/useMediaAsset';
 import { AudioPlayer } from '../modal/AudioPlayer';
 
 interface ResolvedImg {
@@ -29,13 +29,13 @@ interface CherryRichBlocksProps {
 }
 
 function pickImg(
-  assets: Record<string, MediaAssetLite>,
+  assets: Record<string, MediaAsset>,
   assetId?: string,
   imageUrl?: string,
 ): ResolvedImg | null {
   if (assetId && assets[assetId]) {
     const a = assets[assetId];
-    return { url: a.url, alt: a.alt, width: a.width, height: a.height };
+    return { url: a.image_url, alt: a.alt_text ?? '', width: a.width, height: a.height };
   }
   if (imageUrl) return { url: imageUrl, alt: '' };
   return null;

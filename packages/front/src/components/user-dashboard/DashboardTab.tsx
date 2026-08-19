@@ -3,12 +3,13 @@ import { Button, Icon, Badge, Typography } from '../ui';
 import { UserProfile } from '../../services/auth.service';
 import { useActiveProfile } from '../../context/ActiveProfileContext';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { UserDashboardBooking, PickupRouteStop } from '@thaiakha/shared/types';
 
 interface DashboardTabProps {
   userProfile: UserProfile | null;
-  bookings: any[];
+  bookings: UserDashboardBooking[];
   activeId: string | null;
-  routeStops: any[];
+  routeStops: PickupRouteStop[];
   onSelectBooking: (id: string) => void;
   menuStatus: boolean;
   onNavigate: (page: string) => void;
@@ -259,7 +260,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
                 </div>
                 <div className="text-left">
                   <Typography variant="paragraphS" className={cn("font-bold whitespace-nowrap", isSelected ? "text-title" : "text-sub")}>
-                    {b.session_id.includes('morning') ? 'Morning Class' : 'Evening Feast'}
+                    {b.session_id ? (b.session_id.includes('morning') ? 'Morning Class' : 'Evening Feast') : '-'}
                   </Typography>
                   <Typography variant="numericRegular" color="muted" className="text-[10px] whitespace-nowrap">
                     {d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}

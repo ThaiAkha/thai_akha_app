@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- provider + hook di contesto colocati (pattern standard) */
 import React, { createContext, useContext, useState } from 'react';
 
 interface PageHeaderContextType {

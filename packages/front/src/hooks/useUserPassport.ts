@@ -71,6 +71,7 @@ export function useUserPassport(userProfile: PassportTarget | null, onProfileUpd
       }
       // else: brand-new guest → hasExplicitPassport stays false
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- onProfileUpdate e' una callback del parent non memoizzata: si reagisce solo al profilo
   }, [userProfile]);
 
   // 2. Sincronizzazione verso Supabase (DB)
@@ -78,7 +79,7 @@ export function useUserPassport(userProfile: PassportTarget | null, onProfileUpd
     try {
       await supabase.from('profiles').update({
         dietary_profile: data.dietary_profile,
-        allergies: (data.allergies || []).filter(a => a.trim() !== '') as any,
+        allergies: (data.allergies || []).filter(a => a.trim() !== ''), // string[] e' un Json valido
         preferred_spiciness_id: data.preferred_spiciness_id,
         updated_at: new Date().toISOString(),
       }).eq('id', userId);

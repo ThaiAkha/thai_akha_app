@@ -10,7 +10,7 @@ import { mapToRecipeData } from '../lib/recipeHelpers';
 import { adaptRecipeToDiet, RawKeyIngredient } from '../lib/recipeAdapter';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../services/auth.service';
-import { useDietaryKnowledge } from '../hooks/useDietaryKnowledge';
+import { useDietaryKnowledge, type DietaryProfile } from '../hooks/useDietaryKnowledge';
 import { useUserPassport } from '../hooks/useUserPassport';
 
 
@@ -38,16 +38,17 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
       const key = ak.id.replace('allergy_', '').replace(/_/g, ' ');
       return key.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- getAllergyProfiles is a new fn every render; dietProfiles is its only input
   }, [dietProfiles]);
 
-  const activeProfileData = useMemo(() => {
+  const activeProfileData = useMemo<DietaryProfile>(() => {
     if (!passport.dietary_profile) return {
       id: '',
       name: t('recipes:defaultDietName'),
       icon: 'restaurant',
       description: t('recipes:defaultDietDesc'),
       substitutions: []
-    } as any;
+    };
 
     return dietProfiles.find(p => p.id === passport.dietary_profile) || {
       id: 'diet_regular',
@@ -55,7 +56,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
       icon: 'restaurant',
       description: t('recipes:regularDietDesc'),
       substitutions: []
-    } as any;
+    };
   }, [passport.dietary_profile, dietProfiles]);
 
   const groupedDiets = useMemo(() => ({
@@ -73,9 +74,9 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
     });
   };
 
-  const handleSelectRecipe = (rawRecipe: any) => {
+  const handleSelectRecipe = (rawRecipe: Record<string, unknown>) => {
     if (onNavigate) {
-      onNavigate('recipes', undefined, rawRecipe.slug || rawRecipe.id);
+      onNavigate('recipes', undefined, (rawRecipe.slug || rawRecipe.id) as string);
     }
   };
 
@@ -202,11 +203,14 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
 
           // Immagini del modal gallery categoria: cover di ogni ricetta (join cover:media_assets).
           const catGalleryItems = catRecipes
-            .map((r: any) => ({
-              asset_id: r.cover?.asset_id as string | undefined,
-              image_url: (r.cover?.image_url || '') as string,
-              title: (r.name || '') as string,
-            }))
+            .map((r) => {
+              const cover = r.cover as { asset_id?: string; image_url?: string | null } | null | undefined;
+              return {
+                asset_id: cover?.asset_id,
+                image_url: cover?.image_url || '',
+                title: (r.name || '') as string,
+              };
+            })
             .filter(g => g.image_url);
 
           return (
@@ -283,12 +287,12 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
       {/* FaqBottomPage: always rendered (not gated on dietary_profile) — visible to crawlers */}
       <FaqBottomPage
         slug="authentic-thai-akha-recipes"
-        onNavigate={onNavigate as any}
+        onNavigate={onNavigate}
       />
 
       <SiblingInfoSection
         currentSlug="authentic-thai-akha-recipes"
-        onNavigate={onNavigate as any}
+        onNavigate={onNavigate as (path: string) => void}
         sectionId="sibiling_info"
       />
     </PageLayout>

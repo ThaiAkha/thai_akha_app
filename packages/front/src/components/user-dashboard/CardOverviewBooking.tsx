@@ -3,11 +3,11 @@ import { CheckCircle, Circle, Copy } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Button, Icon } from '../ui';
 import Typography from '../ui/Typography';
-import type { UserProfile } from '@thaiakha/shared/types';
+import type { UserProfile, UserDashboardBooking, DashboardMenuSelection } from '@thaiakha/shared/types';
 
 interface CardOverviewBookingProps {
-  booking: any;
-  menuSelection: any | null;
+  booking: UserDashboardBooking;
+  menuSelection: DashboardMenuSelection | null;
   userProfile: UserProfile | null;
   companionCount: number;
   onChangeTab: (tab: string) => void;

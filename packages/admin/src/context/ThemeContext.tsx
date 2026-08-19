@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-refresh/only-export-components -- provider + hook di contesto colocati (pattern standard) */
 
 import type React from "react";
 import { createContext, useState, useContext, useEffect } from "react";

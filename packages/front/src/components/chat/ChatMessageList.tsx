@@ -108,7 +108,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
                 : 'bg-cherry-static/[0.06] border-2 border-cherry-static/30 rounded-tl-none'
             )}
           >
-            {(m as any).isStreaming && !m.text ? (
+            {m.isStreaming && !m.text ? (
               <div className="flex gap-1.5 py-1 px-1">
                 <div className="size-1.5 bg-cherry-ai rounded-full animate-bounce [animation-delay:0ms]" />
                 <div className="size-1.5 bg-cherry-ai rounded-full animate-bounce [animation-delay:150ms]" />
@@ -117,8 +117,8 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
             ) : m.role === 'model' ? (
               <CherryFormatter
                 text={m.text}
-                fullText={(m as any).fullText}
-                isStreaming={!!(m as any).isStreaming}
+                fullText={m.fullText}
+                isStreaming={!!m.isStreaming}
               />
             ) : (
               <Typography variant="paragraphS" className="leading-snug text-title">

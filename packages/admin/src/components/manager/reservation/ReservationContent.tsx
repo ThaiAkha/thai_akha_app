@@ -5,10 +5,11 @@ import Avatar from '../../ui/avatar/Avatar';
 import { Users } from 'lucide-react';
 import InputField from '../../form/input/InputField';
 import { useTranslation } from 'react-i18next';
+import type { ManagerBooking, ManagerBookingProfile } from '../../../hooks/useManagerReservation';
 
 interface ReservationContentProps {
     loading: boolean;
-    bookings: any[];
+    bookings: ManagerBooking[];
     selectedBookingId: string | null;
     onCancelBooking?: (bookingId: string) => void;
     onRestoreBooking?: (bookingId: string) => void;
@@ -69,7 +70,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
         );
     }
 
-    const profile = selectedBooking.profiles || {};
+    const profile: Partial<ManagerBookingProfile> = selectedBooking.profiles || {};
 
     return (
         <div className="flex flex-col h-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
@@ -78,7 +79,7 @@ const ReservationContent: React.FC<ReservationContentProps> = ({
                 <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
                         <Avatar
-                            src={profile.avatar_url}
+                            src={profile.avatar_url ?? undefined}
                             alt={profile.full_name || 'Guest'}
                             size="xxlarge"
                         />

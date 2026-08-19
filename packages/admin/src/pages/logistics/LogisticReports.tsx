@@ -65,6 +65,7 @@ const LogisticReports: React.FC = () => {
             setLoading(false);
         };
         load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loads once on mount with the scope resolved at that time
     }, []);
 
     return (

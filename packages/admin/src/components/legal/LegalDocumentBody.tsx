@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- il file esporta il componente + i suoi render helper (renderInline/renderLegalContent/renderLegalSection), stesso pattern di front inlineMarkdown */
 import React from 'react';
 import type { LegalDocument, LegalDocumentSection } from '@thaiakha/shared/types';
 

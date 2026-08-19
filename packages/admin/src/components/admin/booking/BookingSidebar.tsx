@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import DateSessionPaxPicker from '../../booking/DateSessionPaxPicker';
 import SessionBookingCard from '../calendar/SessionBookingCard';
+import type { BookingAvailability, SessionAvailability } from '../../../hooks/useAdminBooking';
 
 interface BookingSidebarProps {
     date: string;
@@ -11,11 +12,8 @@ interface BookingSidebarProps {
     pax: number;
     onPaxChange: (p: number) => void;
     maxPax: number;
-    currentSessionData: any;
-    availability?: {
-        morning: { status: string; booked: number; total: number; bookings: any[] };
-        evening: { status: string; booked: number; total: number; bookings: any[] };
-    };
+    currentSessionData: SessionAvailability;
+    availability?: BookingAvailability;
 }
 
 const BookingSidebar: React.FC<BookingSidebarProps> = ({
@@ -46,10 +44,11 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
 
             <SessionBookingCard
                 title={session === 'morning_class' ? t('session.morning') : t('session.evening')}
-                status={currentSessionData.status as any}
+                status={currentSessionData.status}
                 seats={currentSessionData.total - currentSessionData.booked}
                 capacity={currentSessionData.total}
-                bookings={currentSessionData.bookings}
+                // guest_name/pax_count sono nullable nel DB; la card li tratta come valorizzati (comportamento invariato)
+                bookings={currentSessionData.bookings as unknown as { guest_name: string; pax_count: number }[]}
             />
         </div>
     );

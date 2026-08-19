@@ -55,7 +55,7 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                         renderFields={(item) => (
                                             <DataCardContent
                                                 title={item.name}
-                                                subtitle={item.description}
+                                                subtitle={item.description ?? undefined}
                                                 badges={null}
                                                 footerLeft={
                                                     <div className="flex flex-col gap-0.5">
@@ -85,7 +85,7 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                     renderFields={(item) => (
                                         <DataCardContent
                                             title={item.name}
-                                            subtitle={item.address}
+                                            subtitle={item.address ?? undefined}
                                             badges={
                                                 <span
                                                     className="px-2 py-0.5 rounded text-xs font-bold uppercase"

@@ -215,7 +215,8 @@ export function useRecipePageData(
         const matchingKey = activeKeys.find(key => ing.dietary_adaptations![key]);
         
         if (matchingKey) {
-          const adaptation = ing.dietary_adaptations[matchingKey] as any;
+          // dietary_adaptations e' Record<string, unknown> (JSONB): shape reale { action, substitute_id? } (Sistema B).
+          const adaptation = ing.dietary_adaptations[matchingKey] as { action?: string; substitute_id?: string };
           if (adaptation.action === 'omit') {
             return acc; // Omit ingredient completely
           }

@@ -3,6 +3,7 @@ import { useFrontHomeCards } from '../../../hooks/useFrontHomeCards';
 import InfoCard from './InfoCard';
 import { SkeletonBase } from '../../skeleton/atoms';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { ButtonVariant } from '../navigation/Button';
 
 interface SmartHomeCardProps {
   cardId: string;
@@ -13,7 +14,7 @@ interface SmartHomeCardProps {
   showDivider?: boolean;
   titleVariant?: "h1" | "h2" | "h3" | "h4" | "h5" | "display1" | "display2";
   buttonSize?: "xs" | "sm" | "md" | "lg";
-  buttonVariant?: any; // any to avoid importing ButtonVariant if not necessary
+  buttonVariant?: ButtonVariant;
 }
 
 const SmartHomeCard: React.FC<SmartHomeCardProps> = ({

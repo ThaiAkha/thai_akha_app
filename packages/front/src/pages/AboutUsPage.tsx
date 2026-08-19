@@ -8,10 +8,9 @@ import { AskCherryButton } from '../components/chat';
 import { AkhaThemedLine } from '../components/blog';
 import { SkeletonBase } from '../components/skeleton/atoms';
 import { getInfoPage } from '../services/infoPages.service';
-import { usePageSection } from '../hooks/usePageSection';
+import { usePageSection, usePageSections } from '../hooks/usePageSections';
 import type { LegalDocument } from '@thaiakha/shared';
-import type { PageSectionData } from '../hooks/useHomePageSections';
-import { newsService } from '@thaiakha/shared/services';
+import type { PageSectionData } from '../hooks/usePageSections';
 
 interface AboutUsPageProps {
   onNavigate: (page: string) => void;
@@ -41,14 +40,17 @@ const KNOWN_GROUPS = ['founders', 'teacher', 'helper', 'setup', 'extra', 'driver
 
 // Header della story (page_sections) — il CORPO sta in info_page_sections (blocchi).
 const STORY_SECTION_ID = 'about-story';
+const ROLE_SECTION_IDS = [STORY_SECTION_ID, ...KNOWN_GROUPS.map(roleSectionId)];
 
 const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [story, setStory] = useState<LegalDocument | null>(null);
-  const [roleSections, setRoleSections] = useState<Record<string, PageSectionData | null>>({});
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   // Card Cherry finale: prompt/label dal nodo condiviso universal_cherry (come FAQ)
   const { section: cherrySection } = usePageSection('universal_cherry');
+  // Header story + intestazioni gruppi (page_sections) - un'unica query, cache TanStack
+  const { sections: roleSections, loading: sectionsLoading } = usePageSections(ROLE_SECTION_IDS);
+  const loading = pageLoading || sectionsLoading;
 
   useEffect(() => {
     let cancelled = false;
@@ -61,8 +63,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
         .not('staff_group', 'is', null)
         .order('display_order', { ascending: true }),
       getInfoPage('about-thai-akha-kitchen'),
-      newsService.getPageSections<PageSectionData>([STORY_SECTION_ID, ...KNOWN_GROUPS.map(roleSectionId)]),
-    ]).then(([{ data: authorsData }, storyDoc, sections]) => {
+    ]).then(([{ data: authorsData }, storyDoc]) => {
       if (cancelled) return;
       if (authorsData) {
         setTeam(
@@ -73,13 +74,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
         );
       }
       setStory(storyDoc);
-      setRoleSections(
-        sections.reduce<Record<string, PageSectionData | null>>((acc, s) => {
-          acc[s.section_id] = s;
-          return acc;
-        }, {})
-      );
-      setLoading(false);
+      setPageLoading(false);
     });
     return () => { cancelled = true; };
   }, []);

@@ -19,8 +19,8 @@ const ZoneCard: React.FC<ZoneCardProps> = ({ zone, selectedClass }) => {
     ? zone.morning_pickup_time
     : zone.evening_pickup_time;
   const endTime = selectedClass === 'morning'
-    ? (zone as any).morning_pickup_end
-    : (zone as any).evening_pickup_end;
+    ? zone.morning_pickup_end
+    : zone.evening_pickup_end;
 
   const color = zone.color_code ?? '#ffffff';
 

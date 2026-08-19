@@ -8,12 +8,22 @@ import { CHERRY_TITLE_STYLE, CHERRY_SUBTITLE_STYLE, CHERRY_AVATAR_SRC, CHERRY_CA
 
 export type CherryContextType = 'recipe-category' | 'recipe-dish' | 'class-philosophy' | 'history-general';
 
+/** Context payload: DB preset (cherry_prompt/cherry_response) and/or the entity behind the button. */
+export interface AskCherryData {
+  title?: string | null;
+  name?: string | null;
+  diet?: string | null;
+  allergies?: string | null;
+  cherry_prompt?: string | null;
+  cherry_response?: string | null;
+}
+
 interface AskCherryButtonProps {
   variant?: 'prominent' | 'inline';
   /** Il tipo di contesto predefinito */
   context?: CherryContextType;
   /** I dati necessari per quel contesto (es. il nome della categoria o del piatto) */
-  data?: any;
+  data?: AskCherryData;
   /** Fallback o manual override se non vuoi usare un contesto predefinito */
   topic?: string;
   systemContext?: string;

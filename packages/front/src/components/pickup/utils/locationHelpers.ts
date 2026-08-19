@@ -5,7 +5,7 @@
  */
 
 import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
-import type { PickupZone } from '@thaiakha/shared/types';
+import type { PickupZone, PickupGeoJsonFeature } from '@thaiakha/shared/types';
 
 // ─── Zone type (extends shared PickupZone with client-side coords) ──────────
 
@@ -42,7 +42,7 @@ const ZONE_FALLBACKS: Record<string, Partial<Zone>> = {
  */
 export function mergeZonesWithGeoJson(
   dbZones: PickupZone[],
-  geoJsonFeatures: any[],
+  geoJsonFeatures: PickupGeoJsonFeature[],
 ): Record<string, Zone> {
   const map: Record<string, Zone> = {};
 
@@ -50,9 +50,9 @@ export function mergeZonesWithGeoJson(
   dbZones.forEach(z => { map[z.id] = { ...z }; });
 
   // Attach polygon coords from GeoJSON
-  geoJsonFeatures.forEach((f: any) => {
+  geoJsonFeatures.forEach((f) => {
     if (f.geometry?.type !== 'Polygon') return;
-    const zoneId = GEOJSON_ID_MAP[f.properties?.id];
+    const zoneId = GEOJSON_ID_MAP[f.properties?.id ?? ''];
     if (!zoneId) return;
 
     // Ensure the zone exists (apply fallback if not in DB)
@@ -60,7 +60,7 @@ export function mergeZonesWithGeoJson(
       map[zoneId] = ZONE_FALLBACKS[zoneId] as Zone;
     }
     if (map[zoneId]) {
-      map[zoneId].coords = f.geometry.coordinates;
+      map[zoneId].coords = f.geometry.coordinates as number[][];
     }
   });
 

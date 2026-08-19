@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Provider + hook useActiveProfile convivono per design (context pattern) */
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { UserProfile } from '../services/auth.service';
@@ -72,7 +73,16 @@ export const useActiveProfile = (): ActiveProfileContextValue => {
   return ctx;
 };
 
-export const ActiveProfileProvider: React.FC<{ host: UserProfile | null; children: React.ReactNode }> = ({ host, children }) => {
+export const ActiveProfileProvider: React.FC<{
+  host: UserProfile | null;
+  /**
+   * Cambia quando l'utente entra in una pagina che usa il profilo attivo (user/menu/quiz):
+   * rilegge i managed al rientro, come quando il provider era montato per-route (#87).
+   * null = nessun refresh extra.
+   */
+  refreshKey?: string | null;
+  children: React.ReactNode;
+}> = ({ host, refreshKey = null, children }) => {
   const hostId = host?.id ?? null;
   const isRealHost = !!hostId && hostId !== 'guest';
 
@@ -115,6 +125,12 @@ export const ActiveProfileProvider: React.FC<{ host: UserProfile | null; childre
     setActiveProfileId(isRealHost ? readPersistedActive() ?? hostId : hostId);
     refreshManaged();
   }, [hostId, isRealHost, refreshManaged]);
+
+  // Rientro in una pagina che agisce sul profilo attivo: managed aggiornati
+  // (creati altrove: altra scheda, admin, invito accettato).
+  useEffect(() => {
+    if (refreshKey) refreshManaged();
+  }, [refreshKey, refreshManaged]);
 
   const setActiveProfile = useCallback((id: string) => {
     // Solo host o un suo managed (no id arbitrari → privacy).

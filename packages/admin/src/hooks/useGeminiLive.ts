@@ -1,6 +1,8 @@
 // packages/admin/src/hooks/useGeminiLive.ts
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { LiveServerMessage, Modality } from '@google/genai';
+import { Modality } from '@google/genai';
+import type { LiveServerMessage, LiveSendClientContentParameters, LiveSendRealtimeInputParameters, Session } from '@google/genai';
+import type { UserProfile } from '../services/auth.service';
 import { getLiveGeminiClient } from '../services/geminiClient';
 import { selectAdminAgent, buildAdminAgentPrompt } from '../prompts/adminAgents';
 import { formatScopedDataBlocks } from '../prompts/scopedData';
@@ -10,6 +12,15 @@ import { GEMINI_LIVE_MODEL } from '@thaiakha/shared/lib/cherry-prompts';
 
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'error';
 
+/**
+ * Sottoinsieme della Session di @google/genai usato da questo hook (speculare al front).
+ * `sendRealtimeInput({ clientContent })` e' un uso legacy non descritto dal d.ts dell'SDK:
+ * lo tipizziamo qui per non cambiare la logica.
+ */
+interface LiveSession extends Pick<Session, 'close'> {
+  sendRealtimeInput(params: LiveSendRealtimeInputParameters | { clientContent: LiveSendClientContentParameters }): void;
+}
+
 interface SessionState {
   status: SessionStatus;
   error: string | null;
@@ -18,7 +29,7 @@ interface SessionState {
 }
 
 export const useGeminiLive = (
-  userProfile?: any,
+  userProfile?: UserProfile | null,
   sessionId?: string | null
 ) => {
   const [state, setState] = useState<SessionState>({
@@ -33,8 +44,8 @@ export const useGeminiLive = (
   const streamRef = useRef<MediaStream | null>(null);
   const nextStartTimeRef = useRef<number>(0);
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
-  const sessionPromiseRef = useRef<Promise<any> | null>(null);
-  const sessionRef = useRef<any | null>(null);
+  const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
+  const sessionRef = useRef<LiveSession | null>(null);
   const processorRef = useRef<AudioWorkletNode | null>(null);
   const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
@@ -64,20 +75,20 @@ export const useGeminiLive = (
 
   const stopSession = useCallback(() => {
     if (processorRef.current) {
-      try { processorRef.current.disconnect(); } catch (e) {}
+      try { processorRef.current.disconnect(); } catch { /* noop: nodo gia' scollegato */ }
       processorRef.current = null;
     }
     if (micSourceRef.current) {
-      try { micSourceRef.current.disconnect(); } catch (e) {}
+      try { micSourceRef.current.disconnect(); } catch { /* noop: sorgente gia' scollegata */ }
       micSourceRef.current = null;
     }
     if (sessionRef.current) {
-      try { sessionRef.current.close(); } catch (e) {}
+      try { sessionRef.current.close(); } catch { /* noop: sessione gia' chiusa */ }
       sessionRef.current = null;
     }
     if (sessionPromiseRef.current) {
       sessionPromiseRef.current.then(session => {
-        try { session.close(); } catch (e) {}
+        try { session.close(); } catch { /* noop: sessione gia' chiusa */ }
       });
       sessionPromiseRef.current = null;
     }
@@ -93,7 +104,7 @@ export const useGeminiLive = (
       inputAudioCtxRef.current.close().catch(() => {});
       inputAudioCtxRef.current = null;
     }
-    sourcesRef.current.forEach(s => { try { s.stop(); } catch (e) {} });
+    sourcesRef.current.forEach(s => { try { s.stop(); } catch { /* noop: sorgente gia' ferma */ } });
     sourcesRef.current.clear();
     nextStartTimeRef.current = 0;
     setState(prev => ({ ...prev, status: 'idle', inputTranscript: '', outputTranscript: '' }));
@@ -120,7 +131,7 @@ export const useGeminiLive = (
 
     try {
       const ai = await getLiveGeminiClient();
-      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+      const AudioContextClass = (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
 
       audioCtxRef.current = new AudioContextClass({ sampleRate: 24000 });
       inputAudioCtxRef.current = new AudioContextClass({ sampleRate: 16000 });
@@ -173,7 +184,7 @@ export const useGeminiLive = (
                     mimeType: 'audio/pcm;rate=16000',
                   },
                 });
-              } catch (e) { /* session may be closing */ }
+              } catch { /* session may be closing */ }
             };
 
             source.connect(workletNode);
@@ -202,7 +213,7 @@ export const useGeminiLive = (
               }
             }
 
-            const base64Audio = (message.serverContent as any)?.modelTurn?.parts?.[0]?.inlineData?.data;
+            const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio && audioCtxRef.current) {
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioCtxRef.current.currentTime);
               const audioBuffer = await decodeAudioData(decode(base64Audio), audioCtxRef.current, 24000);
@@ -216,7 +227,7 @@ export const useGeminiLive = (
             }
 
             if (message.serverContent?.interrupted) {
-              sourcesRef.current.forEach(s => { try { s.stop(); } catch (e) {} });
+              sourcesRef.current.forEach(s => { try { s.stop(); } catch { /* noop: sorgente gia' ferma */ } });
               sourcesRef.current.clear();
               nextStartTimeRef.current = 0;
             }
@@ -246,9 +257,9 @@ export const useGeminiLive = (
       sessionPromiseRef.current = sessionPromise;
       sessionPromise.then(session => { sessionRef.current = session; }).catch(() => {});
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('[useGeminiLive/admin] Failed to start session:', err);
-      setState(prev => ({ ...prev, status: 'error', error: err.message || 'Microphone permission denied kha.' }));
+      setState(prev => ({ ...prev, status: 'error', error: (err as { message?: string } | null)?.message || 'Microphone permission denied kha.' }));
       stopSession();
     }
   };

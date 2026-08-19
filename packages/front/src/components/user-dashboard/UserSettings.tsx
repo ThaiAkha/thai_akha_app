@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { UserProfile } from '../../services/auth.service';
 import { contentService } from '@thaiakha/shared/services';
+import type { SpicinessLevel } from '@thaiakha/shared/types';
 
 import { Button, Icon } from '../ui';
 import { Typography } from '../ui/Typography';
@@ -13,7 +14,7 @@ import { useActiveProfile } from '../../context/ActiveProfileContext';
 
 interface UserSettingsProps {
   userProfile: UserProfile | null;
-  spicinessLevels: any[];
+  spicinessLevels: SpicinessLevel[];
   onBack: () => void;
   onUpdate: () => void;
   isStaff?: boolean;

@@ -5,15 +5,14 @@ import MediaImage from '../../modal/MediaImage';
 import { RippleLink } from '../RippleLink';
 import { SmartHeaderSection } from '../../layout';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { supabase } from '@thaiakha/shared/lib/supabase';
-import { PageSectionData } from '../../../hooks/useHomePageSections';
+import { usePageSection, type PageSectionData } from '../../../hooks/usePageSections';
 import { ButtonVariant } from '../navigation/Button';
 import { SkeletonBase } from '../../skeleton/atoms';
 
 interface GlassCardFullProps {
   sectionId: string;
   prefetchedData?: PageSectionData | null;
-  /** Controlled loading flag from a parent batch hook (e.g. useHomePageSections). */
+  /** Controlled loading flag from a parent batch hook (e.g. usePageSections). */
   loading?: boolean;
   imageAssetId?: string;
   imageAlt?: string;
@@ -50,47 +49,13 @@ export const GlassCardFull: React.FC<GlassCardFullProps> = ({
   hideSubtitle = false,
   radius,
 }) => {
-  // Controlled mode: parent batch hook owns loading + data — stay in skeleton while
-  // true, never self-fetch, never flash on a transient `null` prefetchedData.
+  // Stessa logica di SmartHeaderSection: controlled / prefetched / standalone,
+  // una sola fonte dati (usePageSection, cache TanStack condivisa).
   const controlled = loadingProp !== undefined;
-  const [data, setData] = React.useState<PageSectionData | null>(prefetchedData ?? null);
-  const [loading, setLoading] = React.useState(controlled ? loadingProp : !prefetchedData);
-
-  React.useEffect(() => {
-    if (controlled) {
-      setData(prefetchedData ?? null);
-      setLoading(loadingProp);
-      return;
-    }
-    if (prefetchedData !== undefined) {
-      setData(prefetchedData);
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    const fetchContent = async () => {
-      try {
-        setLoading(true);
-        const { data: sectionData, error } = await supabase
-          .from('page_sections')
-          .select('*')
-          .eq('section_id', sectionId)
-          .single();
-
-        if (error) throw error;
-        // jsonb (cards/bullets) → tipi dominio: narrowing al confine DB→UI
-        if (!cancelled && sectionData) setData(sectionData as unknown as PageSectionData);
-      } catch (err) {
-        console.error(`GlassCardFull fetch error [${sectionId}]:`, err);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    fetchContent();
-    return () => { cancelled = true; };
-  }, [sectionId, prefetchedData, controlled, loadingProp]);
+  const standalone = !controlled && prefetchedData === undefined;
+  const { section: fetched, loading: fetchLoading } = usePageSection(sectionId, { enabled: standalone });
+  const data = standalone ? fetched : (prefetchedData ?? null);
+  const loading = controlled ? loadingProp : standalone ? fetchLoading : false;
 
   // Use CMS data if available, fallback to props
   const imageAssetId = data?.image_asset_id || propImageAssetId || '';
@@ -182,7 +147,7 @@ export const GlassCardFull: React.FC<GlassCardFullProps> = ({
                 href={imageHref}
                 target={openInNewTab ? '_blank' : undefined}
                 rel={openInNewTab ? 'noopener noreferrer' : undefined}
-                onClick={(e: React.MouseEvent<any>) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (openInNewTab) return;
                   if (e.metaKey || e.ctrlKey) return; // new tab — let browser handle
                   e.preventDefault();

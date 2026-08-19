@@ -7,6 +7,14 @@ import { fetchWithCache } from './_cache';
  * Centralized service for fetching media assets (images/photos)
  * Supports querying by string identifier 'asset_id'.
  */
+/**
+ * Colonne = shape MediaAsset. Unica lista per la riga singola e per il batch:
+ * entrambe alimentano la stessa cache TanStack `['media_asset', id]` (front),
+ * e niente `*` cosi' semantic_vector & co. non viaggiano con ogni gallery.
+ */
+const MEDIA_ASSET_COLUMNS =
+  'id, asset_id, file_name, folder_path, image_url, title, caption, alt_text, mime_type, size_kb, width, height, created_at, updated_at, copyright, tags, is_ai_generated, ai_tool';
+
 export const mediaService = {
   /**
    * Fetch a single media asset by its unique string identifier (asset_id)
@@ -18,7 +26,7 @@ export const mediaService = {
     try {
       const { data, error } = await supabase
         .from('media_assets')
-        .select('*')
+        .select(MEDIA_ASSET_COLUMNS)
         .eq('asset_id', assetId)
         .maybeSingle();
 
@@ -33,6 +41,25 @@ export const mediaService = {
       console.error(`❌ Unexpected error fetching media asset [${assetId}]:`, e);
       return null;
     }
+  },
+
+  /**
+   * 🖼️ MEDIA ASSET ROWS: righe complete `media_assets` per un set di asset_id
+   * (una sola query `.in`). Nessuna cache qui: la possiede TanStack Query
+   * (front `useMediaAssets`, #86 F1). Gli id assenti nel DB semplicemente mancano.
+   */
+  async getMediaAssetRows(assetIds: readonly string[]): Promise<MediaAsset[]> {
+    const ids = Array.from(new Set(assetIds.filter(Boolean)));
+    if (ids.length === 0) return [];
+    const { data, error } = await supabase
+      .from('media_assets')
+      .select(MEDIA_ASSET_COLUMNS)
+      .in('asset_id', ids);
+    if (error) {
+      console.error('[mediaService] getMediaAssetRows:', error);
+      return [];
+    }
+    return (data ?? []) as MediaAsset[];
   },
 
   /** 🖼️ MEDIA ASSETS BY IDS: Fetch specific media assets by their asset_id */

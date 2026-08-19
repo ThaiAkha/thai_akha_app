@@ -85,7 +85,7 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
                 <div className="flex items-center gap-2.5">
                     {titleIcon && (
                         <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-gray-600 dark:text-gray-400">
-                            {React.isValidElement(titleIcon) ? React.cloneElement(titleIcon as React.ReactElement<any>, { size: 16 }) : titleIcon}
+                            {React.isValidElement(titleIcon) ? React.cloneElement(titleIcon as React.ReactElement<{ size?: number }>, { size: 16 }) : titleIcon}
                         </div>
                     )}
                     <SectionHeader title={title} variant="title" />
@@ -117,7 +117,7 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
                                     "transition-transform group-hover:scale-110 duration-300",
                                     isActive ? "text-orange-500" : "text-gray-400 dark:text-gray-600 group-hover:text-orange-500"
                                 )}>
-                                    {React.isValidElement(item.icon) ? React.cloneElement(item.icon as React.ReactElement<any>, { size: 18 }) : item.icon}
+                                    {React.isValidElement(item.icon) ? React.cloneElement(item.icon as React.ReactElement<{ size?: number }>, { size: 18 }) : item.icon}
                                 </div>
                             )}
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- context module: provider and its hook are exported together */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import type { i18n as I18nInstance } from 'i18next';

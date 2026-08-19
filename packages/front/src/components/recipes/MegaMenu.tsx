@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Icon, Typography } from '../ui/index';
 import { Input } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { UserProfile } from '@thaiakha/shared/types';
 
 export type MegaMenuVariant = 'diet' | 'grid' | 'search' | 'info';
 
@@ -36,7 +37,7 @@ interface MegaMenuProps {
   highlight?: boolean;
   onDietClick?: (isNewOpening: boolean) => void;
   onNavigate?: (slug: string) => void;
-  userProfile?: any | null;
+  userProfile?: UserProfile | null;
   disableOutsideClick?: boolean;
 }
 
@@ -72,10 +73,12 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
   // Register close/open fns with parent
   useEffect(() => {
     onRegisterClose?.(handleClose);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- handleClose e' ricreata a ogni render: si registra solo al cambio callback
   }, [onRegisterClose]);
 
   useEffect(() => {
     onRegisterOpen?.(() => { handleOpen(); });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- handleOpen e' ricreata a ogni render: si registra solo al cambio callback
   }, [onRegisterOpen]);
 
   useEffect(() => {
@@ -87,6 +90,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- handleClose ricreata a ogni render: listener rimontato solo su open/flag
   }, [isOpen, disableOutsideClick]);
 
   // Prevent background scrolling when open — use rAF so any pending scrollIntoView fires first

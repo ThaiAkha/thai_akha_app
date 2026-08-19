@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileRow, ProfileFooter } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
-import { searchCountries, getCountryByCode } from "@thaiakha/shared/data";
+import { searchCountries, getCountryByCode, type CountryData } from "@thaiakha/shared/data";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -27,7 +27,7 @@ export default function UserAddressCard() {
   });
 
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
-  const [countrySearchResults, setCountrySearchResults] = useState<any[]>([]);
+  const [countrySearchResults, setCountrySearchResults] = useState<CountryData[]>([]);
 
   useEffect(() => {
     if (user) {

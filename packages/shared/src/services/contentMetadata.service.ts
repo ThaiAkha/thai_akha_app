@@ -61,7 +61,10 @@ export const contentMetadataService = {
     /** 📄 METADATA PAGINE: Titoli, descrizioni e immagini header */
     async getPageMetadata(slug: string, table: 'site_metadata' | 'site_metadata_admin' = 'site_metadata', lang = 'en'): Promise<HeaderMetadata & { imageUrl: string } | null> {
         const normalizedLang = normalizeLang(lang);
-        return fetchWithCache(`meta_${table}_${slug}_${normalizedLang}_v10`, async () => {
+        // Data layer #86: nessuna cache localStorage qui. La cache la possiede TanStack
+        // (front `usePageMetadata`, admin `usePageMetadata`): stessa riga, stessa freschezza
+        // di getPageExtras. I lettori legacy (feed hook) pagano un round-trip per mount.
+        return (async () => {
             if (table === 'site_metadata_admin') {
                 const { data, error } = await supabase
                     .from(table)
@@ -173,7 +176,7 @@ export const contentMetadataService = {
                 cherryResponse: (data as Record<string, unknown>).cherry_response as string | null,
                 cherryButtonIds: (data as Record<string, unknown>).cherry_button_ids as string[] | null,
             };
-        });
+        })();
     },
 
     /**
@@ -365,65 +368,5 @@ export const contentMetadataService = {
             );
         });
         return data || [];
-    },
-
-    /**
-     * 🔄 SIBLING PAGES: Given a page_slug, reads sibling_slugs[] from site_metadata
-     * and returns the full metadata for each sibling.
-     * Returns [] if no siblings defined for this slug.
-     */
-    async getSiblingPagesBySlug(currentSlug: string): Promise<Array<{
-        page_slug: string;
-        header_title_main: string;
-        header_title_highlight: string | null;
-        page_description: string | null;
-        hero_image_url: string | null; // resolved from cover_asset_id → media_assets
-    }>> {
-        // Step 1: fetch sibling_slugs for current page
-        const { data: current, error: e1 } = await supabase
-            .from('site_metadata')
-            .select('sibling_slugs')
-            .eq('page_slug', currentSlug)
-            .single();
-
-        if (e1 || !current?.sibling_slugs?.length) return [];
-
-        const slugs: string[] = current.sibling_slugs;
-
-        // Step 2: fetch metadata + cover image for each sibling slug
-        const { data, error: e2 } = await supabase
-            .from('site_metadata')
-            .select(`
-                page_slug,
-                header_title_main,
-                header_title_highlight,
-                page_description,
-                cover_media:media_assets!cover_asset_id(image_url)
-            `)
-            .in('page_slug', slugs);
-
-        if (e2 || !data) return [];
-
-        // Preserve order defined in sibling_slugs, resolve cover_media → hero_image_url alias
-        return slugs
-            .map(s => {
-                const d = data.find(d => d.page_slug === s);
-                if (!d) return null;
-                const coverMedia = (d as Record<string, unknown>).cover_media as { image_url?: string } | null;
-                return {
-                    page_slug: d.page_slug,
-                    header_title_main: d.header_title_main,
-                    header_title_highlight: d.header_title_highlight ?? null,
-                    page_description: d.page_description ?? null,
-                    hero_image_url: coverMedia?.image_url ?? null,
-                };
-            })
-            .filter(Boolean) as Array<{
-                page_slug: string;
-                header_title_main: string;
-                header_title_highlight: string | null;
-                page_description: string | null;
-                hero_image_url: string | null;
-            }>;
-    },
+    }
 };

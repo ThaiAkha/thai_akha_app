@@ -3,15 +3,15 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { Icon, Typography } from './index';
 
 // 1. DEFINIZIONE INTERFACCE
-export interface Column<T = any> {
+export interface Column<T = Record<string, unknown>> {
   key: string;
   header: string;
   width?: string;
   align?: 'left' | 'center' | 'right';
-  render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: unknown, row: T) => React.ReactNode;
 }
 
-export interface TableProps<T = any> {
+export interface TableProps<T = Record<string, unknown>> {
   data: T[];
   columns: Column<T>[];
   keyField?: string;
@@ -24,7 +24,7 @@ export interface TableProps<T = any> {
 }
 
 // 2. COMPONENTE
-export function Table<T extends Record<string, any>>({
+export function Table<T extends Record<string, unknown>>({
   data,
   columns,
   keyField = 'id',
@@ -105,7 +105,7 @@ export function Table<T extends Record<string, any>>({
                       col.align === 'right' && "text-right"
                     )}
                   >
-                    {col.render ? col.render(val, row) : (val || '-')}
+                    {col.render ? col.render(val, row) : ((val as React.ReactNode) || '-')}
                   </td>
                 );
               })}

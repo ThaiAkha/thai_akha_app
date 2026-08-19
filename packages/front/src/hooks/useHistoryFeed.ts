@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { contentService } from '@thaiakha/shared/services';
 import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
 import { t } from '../i18n';
-import { PageMetadata } from './useHomePageSections';
+import type { PageMetadata } from './usePageSections';
 
 // URL patterns:
 //   /history                        → index, all categories

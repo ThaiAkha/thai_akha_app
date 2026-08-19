@@ -65,7 +65,8 @@ export function useContentDetail<TDetail, TListItem extends { slug: string }>(
             });
 
         return () => { mounted = false; };
-    }, [slug]); // fetcher/secondaryFetcher must be stable (use useMemo in wrapper)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetcher/secondaryFetcher must be stable (use useMemo in wrapper); refetch solo su slug
+    }, [slug]);
 
     const { previous, next } = useMemo(() => {
         const idx = listItems.findIndex(item => item.slug === slug);

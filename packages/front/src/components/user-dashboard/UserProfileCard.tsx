@@ -26,7 +26,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile: initialP
   const [uploading, setUploading] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [spicinessLevels, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
-  const [dietaryProfiles, setDietaryProfiles] = useState<any[]>([]);
+  const [dietaryProfiles, setDietaryProfiles] = useState<{ id: string; name: string }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -40,7 +40,8 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile: initialP
         recipeService.getDietaryProfiles()
       ]);
       setSpicinessLevels(spicy);
-      setDietaryProfiles(diets);
+      // getDietaryProfiles returns Record<string, unknown>[]; only id/name are read here
+      setDietaryProfiles(diets as unknown as { id: string; name: string }[]);
     };
     loadMetadata();
   }, []);

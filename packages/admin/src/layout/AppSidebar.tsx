@@ -98,6 +98,14 @@ type NavItemData = {
   allowedRoles?: string[];
 };
 
+/** Riga menu admin da contentService.getMenuItems('site_metadata_admin') (unione front/admin nel service). */
+type AdminMenuRow = {
+  page_slug: string;
+  menu_label: string;
+  header_icon?: string | null;
+  access_level?: string | null;
+};
+
 const AppSidebar: React.FC = () => {
   const { t, i18n } = useTranslation('navigation');
   const { isExpanded, isMobileOpen, toggleMobileSidebar } = useSidebar();
@@ -113,7 +121,7 @@ const AppSidebar: React.FC = () => {
     try {
       const items = await contentService.getMenuItems('site_metadata_admin', i18n.language);
       if (!items) { console.error('No menu items returned from database'); setMenuState('error'); return; }
-      setMenuItems(items.map((item: any) => ({
+      setMenuItems((items as AdminMenuRow[]).map((item) => ({
         name: item.menu_label,
         icon: item.header_icon || 'LayoutDashboard',
         path: `/${item.page_slug}`,

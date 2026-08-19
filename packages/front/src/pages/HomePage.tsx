@@ -6,7 +6,7 @@ import { SiblingInfoSection } from '../components/layout';
 import { SmartHeaderSection, ScrollEntrance } from '../components/layout/index';
 import PageEssentials from '../components/layout/PageEssentials';
 import { useFrontHomeCards } from '../hooks/useFrontHomeCards';
-import { useHomePageSections, toStatCardColor, HomeSectionId } from '../hooks/useHomePageSections';
+import { usePageSections, toStatCardColor, HOME_SECTION_IDS, HomeSectionId } from '../hooks/usePageSections';
 import AudioPlayer from '../components/modal/AudioPlayer';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../i18n';
@@ -44,7 +44,7 @@ function HomeGlassSection({
   buttonSize = 'sm',
   onNavigate,
 }: HomeGlassSectionProps) {
-  const { sections: pageSections, loading: sectionsLoading } = useHomePageSections();
+  const { sections: pageSections, loading: sectionsLoading } = usePageSections(HOME_SECTION_IDS);
 
   return (
     <section className="flex flex-col [gap:var(--space-fluid-m)]">
@@ -81,7 +81,7 @@ function HomeGlassSection({
 // ─── HomePage ─────────────────────────────────────────────────────────────────
 const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => void }> = ({ onNavigate }) => {
   const { cards, loading: cardsLoading } = useFrontHomeCards(['home-card-01', 'home-card-02', 'home-card-03', 'home-card-04', 'home-card-05']);
-  const { sections: pageSections, metadata: pageMetadata, loading: sectionsLoading } = useHomePageSections();
+  const { sections: pageSections, metadata: pageMetadata, loading: sectionsLoading } = usePageSections(HOME_SECTION_IDS, { metadataSlug: 'home' });
 
   return (
     <PageLayout

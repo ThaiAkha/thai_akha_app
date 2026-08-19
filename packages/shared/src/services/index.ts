@@ -1,6 +1,7 @@
 export * from './content.service';
 export * from './news.service';
 export * from './contentMetadata.service';
+export * from './siteMetadataExtras.service';
 export * from './recipe.service';
 export * from './culture.service';
 export * from './ingredient.service';
@@ -12,7 +13,6 @@ export * from './translatedSlug.service';
 export * from './media.service';
 export * from './audio.service';
 export * from './chatSession.service';
-export * from './cherryMedia.service';
 export * from './ai.service';
 export * from './booking.service';
 export * from './group.service';

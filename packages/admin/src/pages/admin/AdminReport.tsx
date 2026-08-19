@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import type { Tables } from '@thaiakha/shared/types';
 import PageContainer from '../../components/layout/PageContainer';
 import Badge from '../../components/ui/badge/Badge';
 import { Heading, Paragraph, SectionTitle } from '../../components/typography';
@@ -30,7 +31,7 @@ interface AdminReportCard {
 
 const AdminReport: React.FC = () => {
     const { t } = useTranslation('pages');
-    const [bookings, setBookings] = useState<any[]>([]);
+    const [bookings, setBookings] = useState<Tables<'bookings'>[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedMetric, setSelectedMetric] = useState<string>('revenue');
 

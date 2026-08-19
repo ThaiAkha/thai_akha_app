@@ -31,17 +31,17 @@ export function useDietaryKnowledge() {
         const p = await contentService.getDietaryProfiles();
         
         // Ensure type safety or mapping if needed
-        const mappedProfiles: DietaryProfile[] = (p as any[]).map(profile => ({
-          id: profile.id,
-          name: profile.name,
-          icon: profile.icon || 'restaurant',
-          description: profile.description || '',
-          description_long: profile.description_long ?? null,
-          experience: profile.experience,
-          type: profile.type,
-          image_url: profile.image_url,
-          display_order: profile.display_order,
-          substitutions: profile.substitutions || []
+        const mappedProfiles: DietaryProfile[] = p.map(profile => ({
+          id: profile.id as string,
+          name: profile.name as string,
+          icon: (profile.icon as string | null | undefined) || 'restaurant',
+          description: (profile.description as string | null | undefined) || '',
+          description_long: (profile.description_long as string | null | undefined) ?? null,
+          experience: profile.experience as string | undefined,
+          type: profile.type as string | undefined,
+          image_url: profile.image_url as string | undefined,
+          display_order: profile.display_order as number | undefined,
+          substitutions: (profile.substitutions as DietarySubstitution[] | null | undefined) || []
         }));
 
         // Explicit sorting by display_order

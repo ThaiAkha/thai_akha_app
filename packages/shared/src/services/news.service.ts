@@ -53,40 +53,33 @@ export const newsService = {
     async getPageSections<T extends { section_id: string }>(
         sectionIds: readonly string[]
     ): Promise<T[]> {
-        // v2: aggiunte colonne CMS cherry_prompt/cherry_response/bullets/cards (bump = invalida localStorage v1)
-        const key = `page_sections_${sectionIds.join('_')}_v2`;
-        const data = await fetchWithCache<T[]>(key, async () => {
-            const { data, error } = await supabase
-                .from('page_sections')
-                .select('section_id, title, subtitle, description, highlight, tag_badge, image_asset_id, button_text, button_link_url, open_in_new_tab, cherry_prompt, cherry_response, bullets, cards')
-                .in('section_id', sectionIds);
-            if (error) { console.error('[newsService] getPageSections:', error); return []; }
-            return (data ?? []) as T[];
-        });
-        return data ?? [];
+        // Data layer #86: nessuna cache qui (la possiede TanStack, front usePageSections).
+        // L'errore viene rilanciato: cosi' `error`/retry della query hanno senso.
+        if (sectionIds.length === 0) return [];
+        const { data, error } = await supabase
+            .from('page_sections')
+            .select('section_id, title, subtitle, description, highlight, tag_badge, image_asset_id, button_text, button_link_url, open_in_new_tab, cherry_prompt, cherry_response, bullets, cards')
+            .in('section_id', sectionIds);
+        if (error) { console.error('[newsService] getPageSections:', error); throw error; }
+        return (data ?? []) as T[];
     },
 
     /**
      * 🏠 FRONT HOME CARDS: Card B2C dalla tabella home_cards_front.
      * NON confondere con home_cards (B2B) usata da contentMetadataService.getHomeCards().
      */
-    async getFrontHomeCards(cardIds?: string[]): Promise<FrontHomeCard[]> {
-        const key = cardIds?.length
-            ? `front_home_cards_${cardIds.join(',')}_v2`
-            : 'front_home_cards_all_v2';
-        const data = await fetchWithCache<FrontHomeCard[]>(key, async () => {
-            let query = supabase.from('home_cards_front').select('*, cover_data:media_assets!image_asset_id(image_url, alt_text, title)').eq('is_active', true);
-            if (cardIds && cardIds.length > 0) query = query.in('card_id', cardIds);
-            const { data, error } = await query.order('display_order');
-            if (error) { console.error('[newsService] getFrontHomeCards:', error); return []; }
-            let result = (data ?? []) as FrontHomeCard[];
-            if (cardIds?.length) {
-                result = [...result].sort((a, b) =>
-                    cardIds.indexOf(a.card_id ?? '') - cardIds.indexOf(b.card_id ?? '')
-                );
-            }
-            return result;
-        });
-        return data ?? [];
+    async getFrontHomeCards(cardIds?: readonly string[]): Promise<FrontHomeCard[]> {
+        // Data layer #86: nessuna cache qui (la possiede TanStack, front useFrontHomeCards).
+        let query = supabase.from('home_cards_front').select('*, cover_data:media_assets!image_asset_id(image_url, alt_text, title)').eq('is_active', true);
+        if (cardIds && cardIds.length > 0) query = query.in('card_id', cardIds as string[]);
+        const { data, error } = await query.order('display_order');
+        if (error) { console.error('[newsService] getFrontHomeCards:', error); throw error; }
+        let result = (data ?? []) as FrontHomeCard[];
+        if (cardIds?.length) {
+            result = [...result].sort((a, b) =>
+                cardIds.indexOf(a.card_id ?? '') - cardIds.indexOf(b.card_id ?? '')
+            );
+        }
+        return result;
     },
 };

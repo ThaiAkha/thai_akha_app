@@ -8,7 +8,7 @@ import ContactHeader from '../components/contact/ContactHeader';
 import ContactChannels from '../components/contact/ContactChannels';
 import ContactForm from '../components/contact/ContactForm';
 import ContactLocation from '../components/contact/ContactLocation';
-import { usePageSection } from '../hooks/usePageSection';
+import { usePageSection } from '../hooks/usePageSections';
 import { useBusinessProfile } from '../hooks/useBusinessProfile';
 
 interface ContactUsPageProps {

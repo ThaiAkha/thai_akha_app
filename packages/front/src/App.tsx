@@ -1,35 +1,10 @@
-import React, { lazy, Suspense, useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 // Importiamo supabase per la gestione sessione
 import { supabase } from '@thaiakha/shared/lib/supabase';
-// PAGINE — lazy loaded per code splitting
-const HomePage = lazy(() => import('./pages/HomePage'));
-const QuizPage = lazy(() => import('./pages/QuizPage'));
-const QuizPageSingle = lazy(() => import('./pages/QuizPageSingle'));
-const InfoClasses = lazy(() => import('./pages/ClassOverview'));
-const MorningClassPage = lazy(() => import('./pages/ClassMorning'));
-const EveningClassPage = lazy(() => import('./pages/ClassEvening'));
-const MenuPage = lazy(() => import('./pages/UserMenu'));
-const HistoryPage = lazy(() => import('./pages/HistoryPage'));
-const IngredientsPage = lazy(() => import('./pages/IngredientsPage'));
-const LocationPage = lazy(() => import('./pages/PickUpPage'));
-const AuthPage = lazy(() => import('./pages/AuthPage'));
+// PAGINE: la tabella delle route (lazy, code splitting) vive in lib/routes.tsx (#87).
+import { findRoute, routeSlug, isBookingRedirectRole, ADMIN_ROLES, NO_BOOKING_ROLES, ADMIN_URL, type NavigateFn } from './lib/routes';
+// Recovery password: schermo a se', fuori dalla shell (non e' una route).
 const ResetPasswordRecovery = lazy(() => import('./components/auth/ResetPasswordRecovery'));
-const UserPage = lazy(() => import('./pages/UserPage'));
-const RecipesPage = lazy(() => import('./pages/Recipes'));
-const RecipeSinglePage = lazy(() => import('./pages/RecipeSingle'));
-const BookingPage = lazy(() => import('./pages/BookingPage'));
-const JoinGroupPage = lazy(() => import('./pages/JoinGroupPage'));
-// Galleria stile: strumento di sviluppo, fuori dal bundle di produzione (audit 2026-08, P8).
-// Con import.meta.env.DEV=false Vite/Rollup eliminano il ramo e non emettono il chunk.
-const StyleCards = import.meta.env.DEV ? lazy(() => import('./pages/ZZStyleCards')) : null;
-const NewsPage = lazy(() => import('./pages/NewsPage'));
-const TermsPage = lazy(() => import('./pages/TermsPage'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
-const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
-const ContactUsPage = lazy(() => import('./pages/ContactUsPage'));
-const FAQPage = lazy(() => import('./pages/FAQPage'));
-
-
 
 // LAYOUT & NAVIGATION
 import {
@@ -45,15 +20,18 @@ import { authService, UserProfile } from './services/auth.service';
 import { ActiveProfileProvider } from './context/ActiveProfileContext';
 
 
-// Staff roles that HAVE an admin booking page → booking CTA opens the admin app.
-const ADMIN_ROLES = new Set(['agency', 'admin', 'manager']);
-// Staff roles with NO booking page → booking CTA just redirects to the front home.
-const NO_BOOKING_ROLES = new Set(['kitchen', 'logistics', 'driver']);
-const ADMIN_URL = (import.meta as any).env?.VITE_ADMIN_URL ?? 'https://admin.thaiakha.com';
 
 // Canonical SEO slugs — single source in lib/pageSlugs.ts, condivisa con SEOHead.
 import { PAGE_SLUGS } from './lib/pageSlugs';
 import { LEGACY_SLUG_MAP } from './lib/legacySlugMap';
+
+// Alias interni → slug canonico inglese per handleNavigate. Nome esteso per non
+// confondersi con `slugMap` del LanguageProvider (registro delle traduzioni).
+const NAV_SLUG_ALIASES: Record<string, string> = {
+  ...PAGE_SLUGS,
+  'terms': 'booking-terms-conditions',
+  'privacy': 'privacy-policy',
+};
 import { useLanguage } from './context/LanguageContext';
 import { buildLangPath } from './lib/langRouting';
 
@@ -89,15 +67,15 @@ const App: React.FC = () => {
   // spagnoli, ma `page` resta 'authentic-thai-akha-recipes' come sempre.
   const { lang, enSegments, slugMap } = useLanguage();
 
-  const urlState = React.useMemo(() => {
+  const urlState = useMemo(() => {
     const parts = enSegments;
     const rawPage = parts[0] || 'home';
-    const rawSlug = (parts[0] === 'home' || !parts[0] || parts[0] === 'history' || parts[0] === 'akha-culture-highland-heritage' || parts[0] === 'menu' || parts[0] === 'user' || parts[0] === 'quiz' || parts[0] === 'akha-wisdom-path-quiz' || parts[0] === 'recipes' || parts[0] === 'authentic-thai-akha-recipes' || parts[0] === 'news' || parts[0] === 'thai-cooking-tips-news' || parts[0] === 'ingredients' || parts[0] === 'thai-cooking-ingredients')
-      ? (parts[0] === 'history' || parts[0] === 'akha-culture-highland-heritage' ? (parts[1] === 'category' ? null : parts[1] || null) : parts[1] || null)
-      : null;
-
+    const page = LEGACY_SLUG_MAP[rawPage] || rawPage;
+    // La tabella dice se questa route ha un sotto-slug (recipe, news, categoria...):
+    // niente piu' lista di 13 confronti qui.
+    const rawSlug = routeSlug(findRoute(page), parts[1]);
     return {
-      page: LEGACY_SLUG_MAP[rawPage] || rawPage,
+      page,
       slug: rawSlug ? (LEGACY_SLUG_MAP[rawSlug] || rawSlug) : null,
     };
   }, [enSegments]);
@@ -117,7 +95,9 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   // --- FUNZIONE DI AGGIORNAMENTO PROFILO ---
-  const fetchUser = async () => {
+  // useCallback: e' una dipendenza di handleNavigate e delle route (refreshProfile),
+  // deve avere identita' stabile per non far ri-renderizzare le pagine a ogni tick.
+  const fetchUser = useCallback(async () => {
     lastProfileFetchRef.current = Date.now();
     try {
       const profile = await authService.getCurrentUserProfile();
@@ -137,8 +117,9 @@ const App: React.FC = () => {
               allergies: storedPassport.allergies || [],
               preferred_spiciness_id: storedPassport.preferred_spiciness_id || 2,
               full_name: 'Guest',
-            } as any);
-          } catch (e) {
+              // Virtual guest has no email: partial profile by design (only passport fields)
+            } as unknown as UserProfile);
+          } catch {
             setUserProfile(null);
           }
         } else {
@@ -150,7 +131,7 @@ const App: React.FC = () => {
     } finally {
       setIsInitialLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -179,7 +160,7 @@ const App: React.FC = () => {
       await fetchUser();
     };
     bootstrap();
-  }, []);
+  }, [fetchUser]);
 
   // --- ENERGY SAVING: Visibility API ---
   // Monitoriamo la visibilità per sospendere operazioni pesanti o polling
@@ -197,36 +178,35 @@ const App: React.FC = () => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [fetchUser]);
 
   // --- NAVIGAZIONE ---
-  const handleNavigate = (targetPage: string, topic?: string, sectionId?: string) => {
+  // Memoizzata (#87): passa a Sidebar, ChatBox e a ogni pagina; senza useCallback
+  // ogni render di App creava una funzione nuova e invalidava memo/effetti a valle.
+  // Il ruolo staff si legge da un ref per non rimettere il profilo tra le dipendenze.
+  const profileRoleRef = useRef<string | null>(null);
+  useEffect(() => { profileRoleRef.current = userProfile?.role ?? null; }, [userProfile]);
+
+  const handleNavigate = useCallback<NavigateFn>((targetPage, topic, sectionId) => {
     // Handle composite paths like 'news/slug' passed as a single string
     if (!sectionId && targetPage.includes('/')) {
       const slashIdx = targetPage.indexOf('/');
       return handleNavigate(targetPage.slice(0, slashIdx), topic, targetPage.slice(slashIdx + 1));
     }
 
-    if ((targetPage === 'booking' || targetPage === 'book-cooking-class-chiang-mai') && userProfile) {
+    const role = profileRoleRef.current;
+    if ((targetPage === 'booking' || targetPage === 'book-cooking-class-chiang-mai') && role) {
       // Staff with an admin booking page → open it; other staff → front home.
-      if (ADMIN_ROLES.has(userProfile.role)) {
+      if (ADMIN_ROLES.has(role)) {
         window.open(`${ADMIN_URL}/booking`, '_blank', 'noopener,noreferrer');
         return;
       }
-      if (NO_BOOKING_ROLES.has(userProfile.role)) {
+      if (NO_BOOKING_ROLES.has(role)) {
         return handleNavigate('home');
       }
     }
 
-    // Alias interni → slug canonico inglese. Nome esteso per non confondersi con
-    // `slugMap` del LanguageProvider, che è tutt'altro: il registro delle traduzioni.
-    const slugMapPages: Record<string, string> = {
-      ...PAGE_SLUGS,
-      'terms': 'booking-terms-conditions',
-      'privacy': 'privacy-policy'
-    };
-
-    const urlPage = slugMapPages[targetPage] || targetPage;
+    const urlPage = NAV_SLUG_ALIASES[targetPage] || targetPage;
     // I link nascono SEMPRE in slug inglesi; buildLangPath li localizza e mette
     // il prefisso lingua. In inglese (o a flag spento) restituisce esattamente il
     // path di prima — nessuna differenza rispetto a oggi.
@@ -245,7 +225,7 @@ const App: React.FC = () => {
     if (topic) {
       window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));
     }
-  };
+  }, [lang, slugMap]);
 
   // ── Redirect staff su /booking (audit 2026-08 #87) ────────────────────────
   // Effetto, non render: aprire l'admin e riscrivere l'URL dentro renderPage()
@@ -254,11 +234,9 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isInitialLoading || !userProfile) return;
     if (page !== 'booking' && page !== 'book-cooking-class-chiang-mai') return;
-    const role = userProfile.role;
-    if (ADMIN_ROLES.has(role)) {
+    if (!isBookingRedirectRole(userProfile)) return;
+    if (ADMIN_ROLES.has(userProfile.role)) {
       window.open(`${ADMIN_URL}/booking`, '_blank', 'noopener,noreferrer');
-    } else if (!NO_BOOKING_ROLES.has(role)) {
-      return;
     }
     window.history.replaceState({}, '', buildLangPath(lang, [], slugMap));
     window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
@@ -287,90 +265,29 @@ const App: React.FC = () => {
   }, [page, targetSection]);
 
   // --- ROUTING ---
+  // Router puro (#87): la route viene dalla tabella; qui solo il gate profilo.
   // Le pagine PUBBLICHE si renderizzano subito: non dipendono dal profilo, quindi
-  // non aspettano fetchUser(). I flussi che dipendono dal profilo (user/booking/
-  // menu/join-group) mostrano <PageLoader/> finché isInitialLoading è true.
+  // non aspettano fetchUser(). Le route con gate 'profile' (user/booking/menu/
+  // join-group) mostrano <PageLoader/> finché isInitialLoading è true; booking
+  // per lo staff resta sul loader finche' l'effetto di redirect non ha girato.
+  const route = findRoute(page) ?? findRoute('home')!;
+  const routeCtx = useMemo(() => ({
+    slug: targetSection,
+    userProfile,
+    onNavigate: handleNavigate,
+    refreshProfile: fetchUser,
+  }), [targetSection, userProfile, handleNavigate, fetchUser]);
+
   const renderPage = () => {
-    switch (page) {
-      // Pagine Pubbliche
-      case 'home': return <HomePage onNavigate={handleNavigate} />;
-      case 'akha-wisdom-path-quiz':
-      case 'quiz':
-        return (
-          <ActiveProfileProvider host={userProfile}>
-            {targetSection
-              ? <QuizPageSingle categoryId={targetSection} onNavigate={handleNavigate} />
-              : <QuizPage onNavigate={handleNavigate} />}
-          </ActiveProfileProvider>
-        );
-      case 'thai-cooking-classes-chiang-mai':
-      case 'classes': return <InfoClasses onNavigate={handleNavigate} />;
-      case 'morning-cooking-class-market-tour':
-      case 'morning-class': return <MorningClassPage onNavigate={handleNavigate} />;
-      case 'evening-cooking-class-dinner':
-      case 'evening-class': return <EveningClassPage onNavigate={handleNavigate} />;
-      case 'authentic-thai-akha-recipes':
-      case 'recipes':
-        if (targetSection) return <RecipeSinglePage slug={targetSection} onNavigate={handleNavigate} userProfile={userProfile} />;
-        return <RecipesPage onNavigate={handleNavigate} userProfile={userProfile} onProfileUpdate={fetchUser} />;
-      case 'akha-culture-highland-heritage':
-      case 'history': return <HistoryPage key={targetSection || '__list__'} onNavigate={handleNavigate} targetSection={targetSection} />;
-      case 'thai-cooking-ingredients':
-      case 'ingredients': return <IngredientsPage key={targetSection || '__list__'} onNavigate={handleNavigate} targetSection={targetSection} />;
-      case 'thai-cooking-tips-news':
-      case 'news': return <NewsPage key={targetSection || '__list__'} onNavigate={handleNavigate} targetSection={targetSection} />;
-      case 'free-pickup-location-chiang-mai':
-      case 'location': return <LocationPage key='location' onNavigate={handleNavigate} />;
-      case 'booking-terms-conditions':
-      case 'terms-and-conditions': return <TermsPage onNavigate={handleNavigate} />;
-      case 'privacy':
-      case 'privacy-policy':
-      case 'policy-and-privacy': return <PrivacyPage onNavigate={handleNavigate} />;
-      case 'about-thai-akha-kitchen':
-      case 'about-us': return <AboutUsPage onNavigate={handleNavigate} />;
-      case 'contact-cooking-school-chiang-mai':
-      case 'contact':
-      case 'contact-us': return <ContactUsPage onNavigate={handleNavigate} />;
-      case 'cooking-class-faq-chiang-mai':
-      case 'faq': return <FAQPage onNavigate={handleNavigate} />;
-      case 'style': return StyleCards ? <StyleCards /> : <HomePage onNavigate={handleNavigate} />;
-
-      // Flows Operativi Utente — dipendono dal profilo: attendono fetchUser()
-      // per non lampeggiare lo stato sbagliato (es. redirect staff su booking).
-      case 'book-cooking-class-chiang-mai':
-      case 'booking':
-        if (isInitialLoading) return <PageLoader />;
-        // Staff: il redirect (window.open / replaceState) vive nell'effetto sotto,
-        // non nel render. Qui si mostra solo il loader finche' l'effetto non ha girato.
-        if (userProfile && (ADMIN_ROLES.has(userProfile.role) || NO_BOOKING_ROLES.has(userProfile.role))) {
-          return <PageLoader />;
-        }
-        return <BookingPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} />;
-      case 'menu':
-        if (isInitialLoading) return <PageLoader />;
-        return (
-          <ActiveProfileProvider host={userProfile}>
-            <MenuPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} sectionId={targetSection} />
-          </ActiveProfileProvider>
-        );
-      case 'auth':
-        return <AuthPage onNavigate={handleNavigate} onAuthSuccess={fetchUser} />;
-      case 'join-group':
-        if (isInitialLoading) return <PageLoader />;
-        return <JoinGroupPage onNavigate={handleNavigate} userProfile={userProfile} onAuthSuccess={fetchUser} />;
-      case 'user':
-        if (isInitialLoading) return <PageLoader />;
-        return <UserPage onNavigate={handleNavigate} userProfile={userProfile} onProfileRefresh={fetchUser} sectionId={targetSection} />;
-
-      default: return <HomePage onNavigate={handleNavigate} />;
-    }
+    if (route.gate === 'profile' && isInitialLoading) return <PageLoader />;
+    return route.render(routeCtx) ?? <PageLoader />;
   };
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await authService.signOut();
     setUserProfile(null);
     handleNavigate('home');
-  };
+  }, [handleNavigate]);
 
   // Password recovery deep-link: the reset email lands on `/reset-password?token_hash=…&type=recovery`.
   // Render a dedicated full-screen recovery screen (verifyOtp + set new password), bypassing the app shell.
@@ -433,9 +350,14 @@ const App: React.FC = () => {
           resetKey={page}
           renderFallback={(p) => <PageErrorFallback {...p} />}
         >
-          <Suspense fallback={<PageLoader />}>
-            {renderPage()}
-          </Suspense>
+          {/* ActiveProfileProvider a livello shell (#87): un solo stato "profilo attivo"
+              per tutta la sessione (prima montato per-route su quiz/menu/user →
+              una query managed_profiles a ogni cambio pagina). */}
+          <ActiveProfileProvider host={userProfile} refreshKey={route.usesActiveProfile ? page : null}>
+            <Suspense fallback={<PageLoader />}>
+              {renderPage()}
+            </Suspense>
+          </ActiveProfileProvider>
         </AppErrorBoundary>
       </main>
 

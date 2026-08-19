@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ComponentConfig } from '../../config/componentsConfig';
-import { generateDefaultProps } from '../../utils/showcaseUtils';
+import { generateDefaultProps, type ShowcaseProps } from '../../utils/showcaseUtils';
 import PropControl from './PropControl';
 import { RefreshCw, Code, Copy, Check } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -10,7 +10,7 @@ interface ViewPlaygroundProps {
 }
 
 const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
-    const [props, setProps] = useState<any>({});
+    const [props, setProps] = useState<ShowcaseProps>({});
     const [copied, setCopied] = useState(false);
     const [showCode, setShowCode] = useState(true);
 
@@ -19,8 +19,8 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
         setProps(generateDefaultProps(component));
     }, [component]);
 
-    const handlePropChange = (name: string, value: any) => {
-        setProps((prev: any) => ({ ...prev, [name]: value }));
+    const handlePropChange = (name: string, value: unknown) => {
+        setProps((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleCopyCode = () => {
@@ -30,7 +30,7 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const generateJSX = (name: string, p: any) => {
+    const generateJSX = (name: string, p: ShowcaseProps) => {
         const propsStr = Object.entries(p)
             .filter(([key, value]) => value !== undefined && value !== false && key !== 'children')
             .map(([key, value]) => {

@@ -85,9 +85,9 @@ export default function ResetPassword() {
       // Brand email lang: TH if the admin UI is Thai, otherwise EN (es/zh fall back to EN).
       await authService.resetPassword(email, resetUrl, lang === "th" ? "th" : "en");
       setDone(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Reset request failed:", err);
-      setError(err.message || t("resetPassword.error"));
+      setError((err as { message?: string } | null)?.message || t("resetPassword.error"));
     } finally {
       setLoading(false);
     }
@@ -101,9 +101,9 @@ export default function ResetPassword() {
       await authService.changePassword(password);
       clearRecoveryFlag();
       setDone(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Password update failed:", err);
-      setError(err.message || t("resetPassword.error"));
+      setError((err as { message?: string } | null)?.message || t("resetPassword.error"));
     } finally {
       setLoading(false);
     }

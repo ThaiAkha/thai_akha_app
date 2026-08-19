@@ -1,43 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import React from 'react';
 import { Typography, Icon, Badge, Tabs, Button } from '../ui'; // [Source: UI Index]
 import { MenuCard } from '../menu';
-import RecipeView, { RecipeData } from '../menu/RecipeView';
+import RecipeView from '../menu/RecipeView';
 import { cn } from '@thaiakha/shared/lib/utils';
 import AkhaPixelPattern from '../divider/AkhaPixelPattern';
-import { contentService } from '@thaiakha/shared/services';
-import { ContentCategoryDB } from '@thaiakha/shared';
 import { mapToRecipeData } from '../../lib/recipeHelpers';
+import { useMenuManager } from './menuManager/useMenuManager';
+import type { MenuManagerProps } from './menuManager/types';
 
-interface MenuManagerProps {
-  bookingId: string | null;
-  bookings: any[];
-  onSelectBooking: (id: string) => void;
-  menuSelection: any | null;
-  onNavigate: (page: string, topic?: string, sectionId?: string) => void;
-}
-
-// content_categories.id / recipes.category are SLUGS (e.g. 'authentic-akha-recipes').
-// Normalize them to the short keys the UI logic uses (akha_specialty/appetizer/dessert…).
-const normalizeCatKey = (cat: string): string => {
-  const c = (cat || '').toLowerCase();
-  if (c.includes('curry')) return 'curry';
-  if (c.includes('soup')) return 'soup';
-  if (c.includes('stir')) return 'stirfry';
-  if (c.includes('akha')) return 'akha_specialty';
-  if (c.includes('appetizer')) return 'appetizer';
-  if (c.includes('dessert')) return 'dessert';
-  return c;
-};
-
-// Legacy fallback for descriptions
-const FALLBACK_CATEGORY_INFO: Record<string, string> = {
-  akha_specialty: "Authentic Akha mountain dishes using traditional techniques and foraged ingredients.",
-  appetizer: "Handcrafted starters designed to awaken your senses with crunchy textures and fresh Thai herbs.",
-  dessert: "Traditional Thai sweets showcasing the natural sweetness of ripe tropical fruits and coconut cream."
-};
-
+// Stato e dati in ./menuManager/useMenuManager (#16 split monstre): qui solo il render.
 const MenuManager: React.FC<MenuManagerProps> = ({
   bookingId,
   bookings,
@@ -45,155 +17,8 @@ const MenuManager: React.FC<MenuManagerProps> = ({
   menuSelection,
   onNavigate
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [selectedDishes, setSelectedDishes] = useState<any[]>([]);
-  const [fixedDishes, setFixedDishes] = useState<any[]>([]);
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string>('akha_specialty');
-  const [viewingRecipe, setViewingRecipe] = useState<RecipeData | null>(null);
-
-  // --- DATA FETCHING ---
-  useEffect(() => {
-    const fetchMenuDetails = async () => {
-      // Only show top-level loading if we have no dishes yet
-      if (selectedDishes.length === 0 && fixedDishes.length === 0) {
-        setLoading(true);
-      }
-      
-      try {
-        // 0. Fetch Categories for Tabs
-        if (categories.length === 0) {
-            const cats = await contentService.getContentCategories('recipe');
-            // Filter only fixed experience categories for these tabs
-            const fixedCats = cats.filter(c => ['akha_specialty', 'appetizer', 'dessert'].includes(normalizeCatKey(c.id)));
-            setCategories(fixedCats);
-            if (fixedCats.length > 0 && !activeCategory) {
-               setActiveCategory(normalizeCatKey(fixedCats[0].id));
-            }
-        }
-
-        // 1. Fetch Fixed Dishes (Included Experience) - Fetch only once
-        if (fixedDishes.length === 0) {
-          const { data: fixed } = await supabase
-              .from('recipes')
-              .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
-              .eq('recipe_type', 'class')
-              .eq('is_fixed_dish', true)
-              .order('category');
-          
-          if (fixed) setFixedDishes(fixed);
-        }
-
-        // 2. Fetch Selected Dishes (Your Menu)
-        if (menuSelection) {
-          const ids = [
-            menuSelection.curry_id,
-            menuSelection.soup_id,
-            menuSelection.stirfry_id
-          ].filter(Boolean);
-
-          if (ids.length > 0) {
-            // Check if IDs have changed before refetching
-            const currentIds = selectedDishes.map(d => d.id).sort();
-            const newIds = [...ids].sort();
-            const hasChanged = JSON.stringify(currentIds) !== JSON.stringify(newIds);
-
-            if (hasChanged || selectedDishes.length === 0) {
-              const { data: selected } = await supabase
-                .from('recipes')
-                .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
-                .eq('recipe_type', 'class')
-                .in('id', ids);
-              const ordered = [
-                selected?.find(r => r.id === menuSelection.curry_id),
-                selected?.find(r => r.id === menuSelection.soup_id),
-                selected?.find(r => r.id === menuSelection.stirfry_id)
-              ].filter(Boolean)
-                // Resolve cover → image so the "Your Menu" hero cards (<img src={dish.image}>) render.
-                .map((r: any) => ({ ...r, image: r.cover?.image_url || r.image }));
-
-              setSelectedDishes(ordered as any[]);
-            }
-          } else {
-             setSelectedDishes([]);
-          }
-        } else {
-            setSelectedDishes([]);
-        }
-      } catch (err) {
-        console.error("Menu Fetch Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMenuDetails();
-  }, [menuSelection]);
-
-  // --- HELPERS ---
-  
-  // LOGICA CUSTOM: Unisce piatti DB e Schede Culturali
-  const getDisplayItems = (cat: string) => {
-    const dbItems = fixedDishes.filter(d => normalizeCatKey(d.category) === cat);
-
-    // 1. APPETIZER: Aggiungi scheda "Wooden Mortar"
-    if (cat === 'appetizer') {
-        const culturalCard = {
-            id: 'culture-mortar',
-            name: 'The Wooden Mortar',
-            thai_name: 'Krok Mai',
-            // Placeholder immagine Mortaio
-            image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg',
-            description: 'Why wood? We use the "Krok" to gently bruise the papaya, absorbing flavors without crushing the texture.',
-            isCultural: true,
-            icon: 'soup_kitchen'
-        };
-        return [...dbItems, culturalCard];
-    }
-
-    // 2. DESSERT: Aggiungi scheda "Magic Rice Color"
-    if (cat === 'dessert') {
-        const culturalCard = {
-            id: 'culture-rice',
-            name: 'Natural Chemistry',
-            thai_name: 'Anchan Lime',
-            // Placeholder immagine Blue Tea
-            image: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg',
-            description: 'Watch the magic! We boil Blue Pea flowers, then squeeze lime to turn the rice from blue to vibrant purple.',
-            isCultural: true,
-            icon: 'science'
-        };
-        return [...dbItems, culturalCard];
-    }
-
-    return dbItems;
-  };
-
-  // Tabs Configuration
-  const FIXED_TABS = categories.map(cat => ({
-    value: normalizeCatKey(cat.id),
-    label: cat.title,
-    icon: cat.icon_name || 'landscape',
-    activeColor: 'secondary' as const
-  }));
-
-  const getCategoryDescription = (catId: string) => {
-      const cat = categories.find(c => normalizeCatKey(c.id) === catId);
-      return cat?.description || cat?.subtitle || FALLBACK_CATEGORY_INFO[catId.toLowerCase()] || "";
-  };
-
-  const handleEditMenu = () => {
-      if (bookingId) onNavigate('menu', undefined, bookingId);
-      else onNavigate('menu');
-  };
-
-  const handleAskCherry = (dish: any) => {
-    const topic = `Tell me about the tradition of ${dish.name} kha`;
-    window.dispatchEvent(new CustomEvent('trigger-chat-topic', { detail: { topic } }));
-  };
-
-  const handlePlayMusic = (name: string) => {
-      alert(`Playing traditional song for: ${name}`);
-  };
+  const m = useMenuManager({ bookingId, menuSelection, onNavigate });
+  const { loading, selectedDishes, fixedDishes, activeCategory, setActiveCategory, viewingRecipe, setViewingRecipe, getDisplayItems, FIXED_TABS, getCategoryDescription, handleEditMenu, handleAskCherry, handlePlayMusic } = m;
 
   // --- VISTA DETTAGLIO OVERLAY ---
   if (viewingRecipe) {
@@ -231,7 +56,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
                     {bookings.map(b => {
                         const isActive = b.internal_id === bookingId;
                         const dateObj = new Date(b.booking_date);
-                        const isMorning = b.session_id.includes('morning');
+                        const isMorning = (b.session_id ?? '').includes('morning');
                         return (
                             <button
                                 key={b.internal_id}
@@ -356,7 +181,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)] animate-in slide-in-from-bottom-4 duration-700">
                     
-                    {getDisplayItems(activeCategory).map((item: any) => {
+                    {getDisplayItems(activeCategory).map((item) => {
                         const isCultural = item.isCultural === true;
 
                         return (

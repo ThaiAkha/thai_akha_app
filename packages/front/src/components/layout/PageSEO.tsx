@@ -105,7 +105,7 @@ export const PageSEO: React.FC<PageSEOProps> = ({
       document.querySelector('script[data-page-ld]')?.remove();
       document.querySelectorAll('link[rel="alternate"][data-page-hreflang]').forEach(el => el.remove());
     };
-  }, [title, description, canonical, ogImage, ogType, twitterImage, jsonLd, hreflang]);
+  }, [title, description, ogTitle, ogDescription, canonical, ogImage, ogType, twitterImage, jsonLd, hreflang]);
 
   // Questo componente non ha interfaccia grafica
   return null;

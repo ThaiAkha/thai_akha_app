@@ -3,36 +3,37 @@ import { useSidebar } from "../context/SidebarContext";
 import UserDropdown from "../components/header/UserDropdown";
 import { usePageHeader } from "../context/PageHeaderContext";
 import { useLocation } from "react-router";
-import { contentService } from "@thaiakha/shared/services";
+
 import { Menu, X } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../components/common/PageMeta";
+import { usePageMetadata } from "../hooks/usePageMetadata";
 
 const AppHeader: React.FC = () => {
-  const { t, i18n } = useTranslation('common');
+  const { t } = useTranslation('common');
   const { title, titleHighlight, setPageHeader } = usePageHeader();
   const location = useLocation();
   const [description, setDescription] = useState<string>("");
   const [browserTitle, setBrowserTitle] = useState<string>("");
 
+  // Data layer (#86): stessa query/cache di usePageMetadata(slug) usata dalle pagine.
+  const slug = location.pathname.substring(1) || "home";
+  const { pageMeta: metadata, loading: metaLoading } = usePageMetadata(slug);
+
   useEffect(() => {
-    const fetchMetadata = async () => {
-      const slug = location.pathname.substring(1) || "home";
-      const metadata = await contentService.getPageMetadata(slug, 'site_metadata_admin', i18n.language);
-      if (metadata) {
-        setPageHeader(
-          metadata.titleMain || metadata.badge || "Thai Akha Admin",
-          metadata.titleHighlight || ""
-        );
-        setDescription(metadata.description || "");
-        setBrowserTitle(metadata.seoTitle || `${metadata.titleMain} ${metadata.titleHighlight}`);
-      } else {
-        console.warn(`⚠️ No metadata found in database for route: /${slug}`);
-      }
-    };
-    fetchMetadata();
-  }, [location.pathname, setPageHeader, i18n.language]);
+    if (metaLoading) return;
+    if (metadata) {
+      setPageHeader(
+        metadata.titleMain || metadata.badge || "Thai Akha Admin",
+        metadata.titleHighlight || ""
+      );
+      setDescription(metadata.description || "");
+      setBrowserTitle(metadata.seoTitle || `${metadata.titleMain} ${metadata.titleHighlight}`);
+    } else {
+      console.warn(`⚠️ No metadata found in database for route: /${slug}`);
+    }
+  }, [metadata, metaLoading, slug, setPageHeader]);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 

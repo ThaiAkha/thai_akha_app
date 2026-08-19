@@ -8,7 +8,7 @@ const mediaCache = new Map<string, string | null>();
  * Resolves media IDs to their actual image_url from media_assets table
  * Supports single ID (string) or multiple IDs (array)
  */
-export const useMediaResolver = (value: any) => {
+export const useMediaResolver = (value: unknown) => {
     const [urls, setUrls] = useState<string | string[] | null>(null);
     const [loading, setLoading] = useState(false);
     const isMounted = useRef(true);

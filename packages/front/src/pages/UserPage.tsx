@@ -4,6 +4,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { contentService } from '@thaiakha/shared/services';
 import { PageLayout, HeaderMenu, StickyTabNav } from '../components/layout';
 import { UserProfile } from '../services/auth.service';
+import type { UserDashboardBooking, DashboardMenuSelection, MenuSelectionDish, PickupRouteStop, SpicinessLevel } from '@thaiakha/shared/types';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
 import {
   DashboardTab,
@@ -17,7 +18,6 @@ import UserProfileCard from '../components/user-dashboard/UserProfileCard';
 import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
 import InviteGroupBlock from '../components/user-dashboard/InviteGroupBlock';
 import VisitorClassBlock from '../components/user-dashboard/VisitorClassBlock';
-import { ActiveProfileProvider } from '../context/ActiveProfileContext';
 import ContextualStatsView from '../components/user-dashboard/ContextualStatsView';
 import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
 import TopWarriorsCard from '../components/user-dashboard/TopWarriorsCard';
@@ -64,11 +64,11 @@ const UserPage: React.FC<UserPageProps> = ({
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Data
-  const [bookingsList, setBookingsList] = useState<any[]>([]);
+  const [bookingsList, setBookingsList] = useState<UserDashboardBooking[]>([]);
   const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
-  const [menuSelection, setMenuSelection] = useState<any | null>(null);
-  const [spicinessLevels, setSpicinessLevels] = useState<any[]>([]);
-  const [routeStops, setRouteStops] = useState<any[]>([]);
+  const [menuSelection, setMenuSelection] = useState<DashboardMenuSelection | null>(null);
+  const [spicinessLevels, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
+  const [routeStops, setRouteStops] = useState<PickupRouteStop[]>([]);
   const [showCertificate, setShowCertificate] = useState(false);
 
   /* ── ROLE LOGIC ── */
@@ -124,11 +124,13 @@ const UserPage: React.FC<UserPageProps> = ({
         if (levels.length > 0) setSpicinessLevels(levels);
       }
 
-      const { data: bookings } = await supabase
+      const { data: bookingRows } = await supabase
         .from('bookings')
         .select(`*, class_sessions ( display_name, start_time )`)
         .eq('user_id', userProfile.id)
         .neq('status', 'cancelled');
+      // Shape della select (join class_sessions) non inferibile: cast unico alla forma dichiarata.
+      const bookings = bookingRows as unknown as UserDashboardBooking[] | null;
 
       if (bookings && bookings.length > 0) {
         const now = new Date();
@@ -165,15 +167,16 @@ const UserPage: React.FC<UserPageProps> = ({
   useEffect(() => {
     if (isStaff) { setLoading(false); return; }
     fetchBookings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchBookings e' ricreata a ogni render: deps volute = utente/refresh/ruolo
   }, [userProfile, refreshTrigger, isStaff]);
 
   /* ── FETCH ROUTE DATA ── */
-  const fetchRouteData = async (currentBooking: any) => {
+  const fetchRouteData = async (currentBooking: UserDashboardBooking) => {
     const { data: stops } = await supabase
       .from('bookings')
       .select('internal_id, hotel_name, route_order, transport_status, pickup_time')
       .eq('booking_date', currentBooking.booking_date)
-      .eq('session_id', currentBooking.session_id)
+      .eq('session_id', currentBooking.session_id as string) // sempre valorizzato per un booking reale
       .neq('status', 'cancelled')
       .order('route_order', { ascending: true });
     setRouteStops(stops || []);
@@ -191,11 +194,13 @@ const UserPage: React.FC<UserPageProps> = ({
         .eq('booking_id', activeBookingId)
         .maybeSingle();
 
-      setMenuSelection(menu);
+      // Join curry/soup/stirfry non inferibile: cast unico alla forma dichiarata.
+      setMenuSelection(menu as unknown as DashboardMenuSelection | null);
       const current = bookingsList.find(b => b.internal_id === activeBookingId);
       if (current) fetchRouteData(current);
     };
     loadDetails();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- bookingsList escluso di proposito: eviterebbe il refetch del menu durante il polling
   }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to prevent menu re-fetching during polling
 
   /* ── SMART POLLING (today only) ── */
@@ -219,13 +224,14 @@ const UserPage: React.FC<UserPageProps> = ({
     }, 20000); // 20s is enough for background sync
 
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- bookingsList/fetchBookings esclusi di proposito: il polling non deve riavviarsi a ogni fetch
   }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to stop the loop
 
   /* ── CERTIFICATE HELPER ── */
   const getCertificateDishes = (): CertificateDish[] => {
     if (!menuSelection) return [];
     return [menuSelection.curry, menuSelection.soup, menuSelection.stirfry]
-      .filter(Boolean)
+      .filter((d): d is MenuSelectionDish => Boolean(d))
       .map(d => ({
         name: d.name || 'Signature Dish',
         image: d.image || '',
@@ -241,8 +247,8 @@ const UserPage: React.FC<UserPageProps> = ({
   const activeBooking = bookingsList.find(b => b.internal_id === activeBookingId);
   const currentSlug = HEADER_SLUGS[activeTab] || 'user-dashboard';
 
+  // ActiveProfileProvider e' montato a livello shell in App.tsx (#87): qui si consuma soltanto.
   return (
-    <ActiveProfileProvider host={userProfile}>
     <PageLayout
       slug="user"
       loading={loading}
@@ -385,7 +391,6 @@ const UserPage: React.FC<UserPageProps> = ({
         />
       )}
     </PageLayout>
-    </ActiveProfileProvider>
   );
 };
 

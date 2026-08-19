@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- context module: provider and its hook are exported together */
 import { createContext, useContext, useState, useEffect } from "react";
 
 type SidebarContextType = {

@@ -20,6 +20,9 @@ export interface FileObject {
     };
 }
 
+/** StorageError o Error: entrambi espongono .message. */
+const storageErrorMessage = (e: unknown) => (e as { message?: string } | null)?.message;
+
 export const formatBytes = (bytes: number, decimals = 2) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -50,6 +53,7 @@ export const useAdminStorage = () => {
     // Load Buckets
     useEffect(() => {
         fetchBuckets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al mount: fetchBuckets non e' memoizzata
     }, []);
 
     const fetchBuckets = async () => {
@@ -84,7 +88,7 @@ export const useAdminStorage = () => {
             if (finalBuckets.length > 0 && !selectedBucket) {
                 setSelectedBucket(finalBuckets[0].id);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error fetching buckets:', error);
             const fallbackBuckets: Bucket[] = [
                 { id: 'admin', name: 'Admin', public: true },
@@ -118,9 +122,10 @@ export const useAdminStorage = () => {
         try {
             const { data, error } = await supabase.storage.from(bucketId).list();
             if (error) throw error;
-            setFiles((data as any[]) || []);
+            // FileObject di storage-js ha metadata generico: qui usiamo la shape locale (size/mimetype)
+            setFiles((data as unknown as FileObject[]) || []);
             setSelectedFile(null);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error fetching files:', error);
         } finally {
             setLoading(false);
@@ -166,8 +171,8 @@ export const useAdminStorage = () => {
             if (error) throw error;
             fetchFiles(selectedBucket);
             setIsInspectorOpen(false);
-        } catch (error: any) {
-            alert(t('alerts.deleteFailed', { message: error.message }));
+        } catch (error: unknown) {
+            alert(t('alerts.deleteFailed', { message: storageErrorMessage(error) }));
         }
     };
 
@@ -185,8 +190,8 @@ export const useAdminStorage = () => {
                         .upload(`${file.name}`, file, { upsert: true });
                 }
                 fetchFiles(selectedBucket);
-            } catch (error: any) {
-                alert(t('alerts.uploadFailed', { message: error.message }));
+            } catch (error: unknown) {
+                alert(t('alerts.uploadFailed', { message: storageErrorMessage(error) }));
             } finally {
                 setIsUploading(false);
             }
@@ -211,8 +216,8 @@ export const useAdminStorage = () => {
             setPendingFileName('');
             fetchFiles(selectedBucket);
             setIsInspectorOpen(false);
-        } catch (error: any) {
-            alert(t('alerts.uploadFailed', { message: error.message }));
+        } catch (error: unknown) {
+            alert(t('alerts.uploadFailed', { message: storageErrorMessage(error) }));
         } finally {
             setIsUploading(false);
         }
@@ -238,8 +243,8 @@ export const useAdminStorage = () => {
             alert(t('alerts.renamedSuccess'));
             fetchFiles(selectedBucket);
             setIsInspectorOpen(false);
-        } catch (error: any) {
-            alert(t('alerts.renameFailed', { message: error.message }));
+        } catch (error: unknown) {
+            alert(t('alerts.renameFailed', { message: storageErrorMessage(error) }));
         } finally {
             setIsUploading(false);
         }

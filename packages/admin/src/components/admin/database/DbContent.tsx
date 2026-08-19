@@ -5,19 +5,20 @@ import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../com
 import Badge from '../../../components/ui/badge/Badge';
 import Checkbox from '../../../components/form/input/Checkbox';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { DataRow } from '../../../components/data-explorer/GridCard';
 import { GRID_PRIMARY_FIELDS } from '../../../hooks/useAdminDatabase';
 
 interface DbContentProps {
     loading: boolean;
     viewMode: 'table' | 'grid';
     selectedTable: string;
-    filteredData: any[];
-    selectedRow: any | null;
-    onRowSelect: (row: any) => void;
+    filteredData: DataRow[];
+    selectedRow: DataRow | null;
+    onRowSelect: (row: DataRow) => void;
     columns: string[];
     selectedIds: Set<string>;
     onToggleSelectAll: () => void;
-    onToggleSelectRow: (row: any) => void;
+    onToggleSelectRow: (row: DataRow) => void;
 }
 
 const DbContent: React.FC<DbContentProps> = ({
@@ -33,7 +34,7 @@ const DbContent: React.FC<DbContentProps> = ({
     onToggleSelectRow
 }) => {
     // Grid Card field logic derived from hook config
-    const renderGridCardFields = (item: Record<string, any>) => {
+    const renderGridCardFields = (item: DataRow) => {
         const config = GRID_PRIMARY_FIELDS[selectedTable];
         const titleField = config?.title || columns[0] || 'id';
         const subtitleField = config?.subtitle || columns[1];
@@ -57,7 +58,7 @@ const DbContent: React.FC<DbContentProps> = ({
         );
     };
 
-    const getRowId = (r: any) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
+    const getRowId = (r: DataRow) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
     const selectedRowId = selectedRow ? getRowId(selectedRow) : null;
 
     return (

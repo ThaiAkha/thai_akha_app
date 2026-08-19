@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import React from 'react';
 import HeaderSection, { HeaderSectionVariant, HeaderSectionAlign, HeaderSectionProps } from './HeaderSection';
 import { SkeletonHeader } from '../skeleton';
-import type { PageSectionData } from '../../hooks/useHomePageSections';
+import { usePageSection, type PageSectionData } from '../../hooks/usePageSections';
 
 
 export interface SmartHeaderSectionProps {
@@ -23,12 +22,12 @@ export interface SmartHeaderSectionProps {
   hideDescription?: boolean;
   hideTag?: boolean;
   /**
-   * Optional pre-fetched data from useHomePageSections (or similar batch hook).
+   * Optional pre-fetched data from usePageSections (or similar batch hook).
    * When provided, the internal Supabase fetch is skipped entirely — zero extra roundtrip.
    */
   prefetchedData?: PageSectionData | null;
   /**
-   * Controlled loading flag from the parent batch hook (e.g. useHomePageSections).
+   * Controlled loading flag from the parent batch hook (e.g. usePageSections).
    * When provided it is authoritative: the component stays in skeleton while true
    * and never flashes the fallback header on a transient `null` prefetchedData.
    */
@@ -44,7 +43,7 @@ export interface SmartHeaderSectionProps {
  * Renders a skeleton loader while fetching.
  *
  * Performance tip: Pass `prefetchedData` when you already have the section
- * data from a parent batch fetch (e.g. useHomePageSections). This skips the
+ * data from a parent batch fetch (e.g. usePageSections). This skips the
  * internal query entirely.
  */
 export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
@@ -68,49 +67,16 @@ export const SmartHeaderSection: React.FC<SmartHeaderSectionProps> = ({
   loading: loadingProp,
   dividerTheme,
 }) => {
-  // Controlled mode: a parent batch hook supplies `loadingProp` and is the single
-  // source of truth — stay in skeleton while true, never self-fetch, never flash
-  // the fallback on a transient `null` prefetchedData.
+  // Tre modalita', una sola fonte dati (usePageSection, cache TanStack condivisa):
+  // - controlled: il padre (batch hook) possiede loading + data - nessuna query propria;
+  // - prefetched: il padre passa i dati gia' pronti - nessuna query propria;
+  // - standalone: query propria via usePageSection (cache: la stessa sezione
+  //   montata altrove non rifa' la chiamata).
   const controlled = loadingProp !== undefined;
-  const [data, setData] = useState<PageSectionData | null>(prefetchedData ?? null);
-  const [loading, setLoading] = useState(controlled ? loadingProp : !prefetchedData);
-
-  useEffect(() => {
-    // Controlled: parent owns loading + data. No self-fetch, no premature fallback.
-    if (controlled) {
-      setData(prefetchedData ?? null);
-      setLoading(loadingProp);
-      return;
-    }
-    // Already have data from parent batch fetch — nothing to do
-    if (prefetchedData !== undefined) {
-      setData(prefetchedData);
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    const fetchSectionContent = async () => {
-      try {
-        setLoading(true);
-        const { data: sectionData, error } = await supabase
-          .from('page_sections')
-          .select('section_id, title, subtitle, description, highlight, tag_badge')
-          .eq('section_id', sectionId)
-          .maybeSingle(); // tolerate missing section_id (no 406 / PGRST116 on 0 rows)
-
-        if (error) throw error;
-        if (!cancelled && sectionData) setData(sectionData);
-      } catch (err) {
-        console.error(`SmartHeaderSection fetch error [${sectionId}]:`, err);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    fetchSectionContent();
-    return () => { cancelled = true; };
-  }, [sectionId, prefetchedData, controlled, loadingProp]);
+  const standalone = !controlled && prefetchedData === undefined;
+  const { section: fetched, loading: fetchLoading } = usePageSection(sectionId, { enabled: standalone });
+  const data = standalone ? fetched : (prefetchedData ?? null);
+  const loading = controlled ? loadingProp : standalone ? fetchLoading : false;
 
   if (loading) {
     return (

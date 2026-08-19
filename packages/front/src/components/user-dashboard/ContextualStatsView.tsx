@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { Calendar, CheckCircle, BookOpen, Star, Award, AlertTriangle } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import type { UserDashboardBooking, DashboardMenuSelection } from '@thaiakha/shared/types';
 
 interface ContextualStatsViewProps {
   activeTab: string;
-  activeBooking: any | null;
-  menuSelection: any | null;
+  activeBooking: UserDashboardBooking | null;
+  menuSelection: DashboardMenuSelection | null;
 }
 
 function getCountdownLabel(dateStr: string): { label: string; isToday: boolean } {
@@ -97,7 +98,7 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
             <div>
               <p className="text-2xl font-black text-gray-900 dark:text-gray-100">{countdown.label}</p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {new Date(activeBooking.booking_date).toLocaleDateString('en-GB', {
+                {new Date(activeBooking!.booking_date).toLocaleDateString('en-GB', {
                   day: 'numeric', month: 'short', year: 'numeric'
                 })}
               </p>

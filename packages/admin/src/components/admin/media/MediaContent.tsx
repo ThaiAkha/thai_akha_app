@@ -66,16 +66,16 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                             isVideo ? <Video className="w-8 h-8 text-purple-500" /> :
                                                 undefined
                                     }
-                                    renderFields={(a: any) => (
+                                    renderFields={() => (
                                         <DataCardContent
-                                            title={a.file_name}
-                                            subtitle={a.asset_id || a.folder_path || 'general'}
+                                            title={asset.file_name}
+                                            subtitle={asset.asset_id || asset.folder_path || 'general'}
                                             badges={
                                                 <>
                                                     <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
-                                                        {a.mime_type?.split('/')[1] || 'asset'}
+                                                        {asset.mime_type?.split('/')[1] || 'asset'}
                                                     </Badge>
-                                                    {a.is_ai_generated && (
+                                                    {asset.is_ai_generated && (
                                                         <Badge color="primary" size="sm" className="text-xs font-black uppercase tracking-widest">
                                                             AI GEN
                                                         </Badge>
@@ -84,19 +84,19 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                             }
                                             footerLeft={
                                                 <p className="text-xs font-mono font-bold text-gray-400 tracking-tighter uppercase truncate max-w-[100px]">
-                                                    {a.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
+                                                    {asset.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
                                                 </p>
                                             }
                                             footerRight={
                                                 <button
                                                     className={`size-6 rounded-md border flex items-center justify-center transition-all
-                                                        ${isSelected(String(a.id)) ? 'bg-primary-500 border-primary-500' : 'bg-white dark:bg-gray-950 border-gray-300 dark:border-gray-600'}`}
+                                                        ${isSelected(String(asset.id)) ? 'bg-primary-500 border-primary-500' : 'bg-white dark:bg-gray-950 border-gray-300 dark:border-gray-600'}`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        onToggleSelectRow(a);
+                                                        onToggleSelectRow(asset);
                                                     }}
                                                 >
-                                                    {isSelected(String(a.id)) && <Check className="w-3.5 h-3.5 text-white" />}
+                                                    {isSelected(String(asset.id)) && <Check className="w-3.5 h-3.5 text-white" />}
                                                 </button>
                                             }
                                         />
@@ -183,15 +183,15 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                         <div className="flex items-center gap-2">
                                             <span className="text-xs font-black text-gray-600 dark:text-gray-300 italic">{asset.size_kb || 0} KB</span>
                                             <span className="text-xs text-gray-400">|</span>
-                                            <span className="text-xs font-bold text-gray-500">{(asset as any).width || '?'} × {(asset as any).height || '?'}</span>
+                                            <span className="text-xs font-bold text-gray-500">{asset.width || '?'} × {asset.height || '?'}</span>
                                         </div>
                                         <div className="flex flex-col gap-1">
                                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest truncate max-w-[150px]">
-                                                © {(asset as any).copyright || 'Thai Akha'}
+                                                © {asset.copyright || 'Thai Akha'}
                                             </p>
-                                            {(asset as any).tags?.length > 0 && (
+                                            {asset.tags && asset.tags.length > 0 && (
                                                 <div className="flex gap-1 flex-wrap">
-                                                    {(asset as any).tags.slice(0, 2).map((t: string) => (
+                                                    {asset.tags.slice(0, 2).map((t: string) => (
                                                         <span key={t} className="text-xs font-black bg-gray-100 dark:bg-white/5 px-1 rounded text-gray-400 uppercase">#{t}</span>
                                                     ))}
                                                 </div>

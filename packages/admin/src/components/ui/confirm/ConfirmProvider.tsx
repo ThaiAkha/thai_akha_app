@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- provider + hook di contesto colocati (pattern standard) */
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { Modal } from '../modal';
 import { AlertTriangle } from 'lucide-react';

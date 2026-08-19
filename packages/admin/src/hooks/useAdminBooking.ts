@@ -4,9 +4,40 @@ import { supabase, getFunctionErrorMessage } from '@thaiakha/shared/lib/supabase
 import { useAuth } from '../context/AuthContext';
 import { getSmartAvatarUrlSafe } from '@thaiakha/shared/lib/avatarSystem';
 import { getSessionCapacity, getSessionPrice } from '@thaiakha/shared/lib/sessionUtils';
+import type { Tables, UserProfile } from '@thaiakha/shared/types';
 
 export type UserMode = 'new' | 'existing' | 'agency' | 'internal';
 export type PaymentStatus = 'paid' | 'unpaid';
+export type SessionStatus = 'OPEN' | 'FULL' | 'CLOSED';
+
+/** Riga bookings letta per il calcolo disponibilita' (select session_id, pax_count, guest_name). */
+export type AvailabilityBooking = Pick<Tables<'bookings'>, 'session_id' | 'pax_count' | 'guest_name'>;
+export interface SessionAvailability {
+    status: SessionStatus;
+    booked: number;
+    total: number;
+    bookings: AvailabilityBooking[];
+}
+export interface BookingAvailability {
+    morning: SessionAvailability;
+    evening: SessionAvailability;
+}
+
+/** Shape usata dal form (BookingContent): mirror del select '*, pickup_zones(*)' su hotel_locations. */
+export interface BookingPickupZone {
+    id: string;
+    name: string;
+    morning_pickup_time: string;
+    evening_pickup_time: string;
+}
+export interface BookingHotel {
+    id: string;
+    name: string;
+    lat?: number;
+    lng?: number;
+    pickup_zones?: BookingPickupZone;
+}
+export type BookingMeetingPoint = Pick<Tables<'meeting_points'>, 'id' | 'name'>;
 
 export interface NewUser {
     fullName: string;
@@ -32,10 +63,7 @@ export const useAdminBooking = () => {
         morning_class: null,
         evening_class: null
     });
-    const [availability, setAvailability] = useState<{
-        morning: { status: string; booked: number; total: number; bookings: any[] };
-        evening: { status: string; booked: number; total: number; bookings: any[] };
-    }>({
+    const [availability, setAvailability] = useState<BookingAvailability>({
         morning: { status: 'OPEN', booked: 0, total: 0, bookings: [] },
         evening: { status: 'OPEN', booked: 0, total: 0, bookings: [] },
     });
@@ -50,16 +78,16 @@ export const useAdminBooking = () => {
         age: '',
         nationality: ''
     });
-    const [selectedUser, setSelectedUser] = useState<any | null>(null);
+    const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
 
     // Hotel Logistics
     const [hotelSearchQuery, setHotelSearchQuery] = useState('');
-    const [hotelSearchResults, setHotelSearchResults] = useState<any[]>([]);
-    const [hotel, setHotel] = useState<any | null>(null);
+    const [hotelSearchResults, setHotelSearchResults] = useState<BookingHotel[]>([]);
+    const [hotel, setHotel] = useState<BookingHotel | null>(null);
     const [isSelectingHotel, setIsSelectingHotel] = useState(false);
-    const [pickupZone, setPickupZone] = useState<any | null>(null);
+    const [pickupZone, setPickupZone] = useState<BookingPickupZone | null>(null);
     const [pickupTime, setPickupTime] = useState('');
     const [notes, setNotes] = useState('');
     const [amount, setAmount] = useState<number | null>(null);
@@ -67,7 +95,7 @@ export const useAdminBooking = () => {
     const [hasLuggage, setHasLuggage] = useState(false);
 
     // Meeting Points
-    const [meetingPoints, setMeetingPoints] = useState<any[]>([]);
+    const [meetingPoints, setMeetingPoints] = useState<BookingMeetingPoint[]>([]);
     const [meetingPoint, setMeetingPoint] = useState('');
 
     // --- LOGIC ---
@@ -78,7 +106,7 @@ export const useAdminBooking = () => {
             const { data: sData } = await supabase.from('class_sessions').select('id, max_capacity, price_thb');
             const caps: Record<string, number> = {};
             const prices: Record<string, number | null> = {};
-            sData?.forEach((s: any) => {
+            sData?.forEach((s) => {
                 caps[s.id] = getSessionCapacity(s.max_capacity) ?? 0;
                 prices[s.id] = getSessionPrice(s.price_thb);
             });
@@ -96,13 +124,13 @@ export const useAdminBooking = () => {
                 .eq('date', date);
 
             const getInfo = (sid: string) => {
-                const override = oData?.find((o: any) => o.session_id === sid);
-                const sessionBookings = bData?.filter((b: any) => b.session_id === sid) || [];
-                const booked = sessionBookings.reduce((sum: number, b: any) => sum + (b.pax_count || 0), 0) || 0;
+                const override = oData?.find((o) => o.session_id === sid);
+                const sessionBookings = bData?.filter((b) => b.session_id === sid) || [];
+                const booked = sessionBookings.reduce((sum: number, b) => sum + (b.pax_count || 0), 0) || 0;
                 const total = getSessionCapacity(override?.custom_capacity ?? caps[sid]) ?? 0;
                 const closed = override?.is_closed;
 
-                let status = 'OPEN';
+                let status: SessionStatus = 'OPEN';
                 if (closed) status = 'CLOSED';
                 else if (total === 0 || booked >= total) status = 'FULL';
 
@@ -146,7 +174,8 @@ export const useAdminBooking = () => {
                         setSearchResults([]);
                     } else {
                         console.log('[Search Users Results]', data?.length, data);
-                        setSearchResults(data || []);
+                        // Select parziale su profiles (role string): il form legge la shape UserProfile.
+                        setSearchResults((data || []) as unknown as UserProfile[]);
                     }
                 } catch (e) {
                     console.error('[Search Users Exception]', e);
@@ -167,7 +196,8 @@ export const useAdminBooking = () => {
                     .select('*, pickup_zones(*)')
                     .ilike('name', `%${hotelSearchQuery}%`)
                     .limit(4);
-                setHotelSearchResults(data || []);
+                // Join hotel_locations + pickup_zones consumato con la shape del form (BookingHotel).
+                setHotelSearchResults((data || []) as unknown as BookingHotel[]);
             } else {
                 setHotelSearchResults([]);
             }
@@ -180,6 +210,7 @@ export const useAdminBooking = () => {
         if (isSelectingHotel && hotel && hotelSearchQuery !== hotel.name) {
             setIsSelectingHotel(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deve scattare solo quando cambia la query
     }, [hotelSearchQuery]);
 
     // Fetch Meeting Points
@@ -202,7 +233,7 @@ export const useAdminBooking = () => {
     }, []);
 
     // Handle Hotel Selection
-    const handleHotelSelect = (h: any) => {
+    const handleHotelSelect = (h: BookingHotel) => {
         setIsSelectingHotel(true);
         setHotel(h);
         setHotelSearchQuery(h.name);
@@ -228,6 +259,7 @@ export const useAdminBooking = () => {
 
     useEffect(() => {
         if (maxPax > 0 && pax > maxPax) setPax(maxPax);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- clamp solo quando cambia la capienza
     }, [maxPax]);
 
     const handleCreate = async () => {
@@ -314,8 +346,9 @@ export const useAdminBooking = () => {
             setPickupTime('');
             setHasLuggage(false);
             fetchAvailability();
-        } catch (e: any) {
-            alert(t('alerts.errorPrefix', { message: e.message }));
+        } catch (e: unknown) {
+            // Error o PostgrestError: entrambi espongono .message (comportamento invariato)
+            alert(t('alerts.errorPrefix', { message: (e as { message?: string } | null)?.message }));
         } finally {
             setLoading(false);
         }

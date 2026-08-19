@@ -62,8 +62,9 @@ export const useAdminInventory = () => {
                 supabase.from('shop_categories').select('*').order('title')
             ]);
 
-            if (prodRes.data) setProducts(prodRes.data as any[]);
-            if (catRes.data) setCategories(catRes.data as any[]);
+            // Colonne DB nullable vs shape locale stretta (Product/Category): cast alla sorgente
+            if (prodRes.data) setProducts(prodRes.data as unknown as Product[]);
+            if (catRes.data) setCategories(catRes.data as unknown as Category[]);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -130,9 +131,9 @@ export const useAdminInventory = () => {
                 handleReset();
             }
             alert(t('alerts.savedSuccess'));
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Save error:", err);
-            alert(t('alerts.saveFailed', { message: err.message }));
+            alert(t('alerts.saveFailed', { message: (err as { message?: string } | null)?.message }));
         } finally {
             setIsSaving(true); // Should this be false? Fixed to false.
             setIsSaving(false);

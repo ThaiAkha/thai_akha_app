@@ -5,23 +5,37 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import TextArea from '../../../components/form/input/TextArea';
-import ZoneInfoCard from '../ZoneInfoCard';
+import ZoneInfoCard, { type ZoneInfo } from '../ZoneInfoCard';
 import SectionHeader from '../../ui/SectionHeader';
+
+/** Minimal structural shapes used by this form (parent hooks pass full DB rows). */
+export interface LogisticsHotel {
+  id: string;
+  name: string;
+  pickup_zones?: { name: string } | null;
+}
+export type LogisticsZone = Pick<ZoneInfo, 'id' | 'name'> & Partial<Omit<ZoneInfo, 'id' | 'name'>>;
+export interface LogisticsMeetingPoint {
+  id: string;
+  name: string;
+}
 
 interface BookingLogisticsFormProps {
   hotelSearchQuery: string;
   onHotelSearchQueryChange: (q: string) => void;
-  hotelSearchResults: any[];
-  onHotelSelect: (h: any) => void;
-  pickupZone: any | null;
+  hotelSearchResults: LogisticsHotel[];
+  /** Method syntax (bivariant): callers pass handlers typed on their fuller hotel row. */
+  onHotelSelect(h: LogisticsHotel): void;
+  pickupZone: LogisticsZone | null;
   notes: string;
   onNotesChange: (n: string) => void;
   hasLuggage: boolean;
   onHasLuggageChange: (l: boolean) => void;
-  meetingPoints: any[];
+  meetingPoints: LogisticsMeetingPoint[];
   meetingPoint: string;
   onMeetingPointChange: (m: string) => void;
-  onSetHotel: (h: any) => void;
+  /** Method syntax (bivariant): callers type the setter as (h: Hotel) => void, the form clears it with null. */
+  onSetHotel(h: LogisticsHotel | null): void;
   session: 'morning_class' | 'evening_class';
 }
 
@@ -188,7 +202,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
 
       {pickupZone && (
         <div className="animate-in slide-in-from-top-4 fade-in duration-500">
-          <ZoneInfoCard zone={pickupZone} session={session} />
+          <ZoneInfoCard zone={{ ...pickupZone, color_code: pickupZone.color_code ?? null }} session={session} />
         </div>
       )}
 

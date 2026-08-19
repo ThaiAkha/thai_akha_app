@@ -1,5 +1,6 @@
 
 import { RecipeData } from '../components/menu/RecipeView';
+import type { RecipeDietaryVariant } from '../components/menu/recipeView/types';
 
 /**
  * 🛠️ MASTER RECIPE MAPPER
@@ -18,9 +19,9 @@ export const mapToRecipeData = (r: Record<string, unknown>): RecipeData => {
     excerpt: (r.excerpt as string) || '',
     description: (r.description as string) || '',
     category: (r.category as string) || 'general',
-    image: ((r.cover as any)?.image_url as string)
+    image: (r.cover as { image_url?: string | null } | null)?.image_url
         || 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg',
-    coverAltText: ((r.cover as any)?.alt_text as string) || (r.name as string) || '',
+    coverAltText: (r.cover as { alt_text?: string | null } | null)?.alt_text || (r.name as string) || '',
     // Allergeni (Default a false per sicurezza)
     hasPeanuts: (r.has_peanuts as boolean) ?? false,
     hasGluten: (r.has_gluten as boolean) ?? false,
@@ -44,14 +45,14 @@ export const mapToRecipeData = (r: Record<string, unknown>): RecipeData => {
 
     // Media & UI
     galleryImages: (r.gallery_assets as Array<{ image_url: string }>)?.map(a => a.image_url) || [],
-    dietary_variants: (r.dietary_variants as Record<string, any>) || undefined,
+    dietary_variants: (r.dietary_variants as Record<string, RecipeDietaryVariant>) || undefined,
 
     // Cookbook / Recipe Detail
     servings: (r.servings as string) || undefined,
     prep_time_min: (r.prep_time_min as number) || undefined,
     cook_time_min: (r.cook_time_min as number) || undefined,
     directions: Array.isArray(r.directions) 
-      ? r.directions.map((d: any, i: number) => typeof d === 'string' ? { step: i + 1, text: d } : d) 
+      ? (r.directions.map((d: unknown, i: number) => typeof d === 'string' ? { step: i + 1, text: d } : d) as RecipeData['directions'])
       : undefined,
     garnish: (r.garnish as string) || undefined,
     cooks_tip: (r.cooks_tip as string) || undefined,

@@ -10,6 +10,7 @@ import { NewsArticle } from '../hooks/useNewsFeed';
 import { NewsHeaderSinglePost } from '../components/news/NewsHeaderSinglePost';
 import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { useAudioAsset } from '../hooks/useAudioAsset';
+import type { ContentBlock } from '../components/blog/contentRenderer/contentParser';
 import { t } from '../i18n';
 
 interface TabItem {
@@ -150,7 +151,8 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
 
           {!dataLoading && detail && (() => {
             const parsedBlocks = detail.content ? parseContent(detail.content) : [];
-            const tocItems = parsedBlocks.filter(b => b.type === 'heading' && b.level === 2) as any[];
+            type HeadingBlock = Extract<ContentBlock, { type: 'heading' }>;
+            const tocItems = parsedBlocks.filter((b): b is HeadingBlock => b.type === 'heading' && b.level === 2);
 
             return (
               <div className="flex flex-col [gap:var(--space-fluid-m)] animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -176,7 +178,7 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
                   mainGap="m"
                   aside={tocItems.length > 0 ? (
                     <TableOfContents
-                      items={tocItems.map((block: any) => ({
+                      items={tocItems.map((block) => ({
                         id: block.anchorId || slugify(block.text),
                         label: block.text,
                       }))}

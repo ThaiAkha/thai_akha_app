@@ -107,6 +107,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
       localStorage.setItem(LS_SEEN_PAID, newestPaid);
     }
     fetchedOnce.current = true;
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- t nelle deps rifarebbe il fetch al cambio lingua
   }, []);
 
   useEffect(() => {

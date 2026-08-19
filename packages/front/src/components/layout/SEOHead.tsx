@@ -185,6 +185,7 @@ export const SEOHead: React.FC = () => {
       document.head.appendChild(script);
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs on metadata only by design; sub-page cleanup is the dedicated effect below
   }, [metadata, loading]);
 
   // Entrando in una sub-page (SPA nav lista → articolo) l'effetto principale NON

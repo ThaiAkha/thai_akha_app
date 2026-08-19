@@ -49,7 +49,7 @@ export function useAvailability(
           .from('class_sessions')
           .select('id, max_capacity');
         const baseCaps: Record<string, number> = {};
-        sessionsData?.forEach((s: any) => { baseCaps[s.id] = s.max_capacity; });
+        sessionsData?.forEach((s) => { baseCaps[s.id] = s.max_capacity; });
 
         const dateStrings = dateOptions.map(toDateStr);
         const startDate   = dateStrings[0];
@@ -76,7 +76,7 @@ export function useAvailability(
         dateStrings.forEach(dateStr => {
           const calculateStatus = (sessionId: string): SessionStatus => {
             const override = overrides?.find(
-              (o: any) => o.date === dateStr && o.session_id === sessionId,
+              (o) => o.date === dateStr && o.session_id === sessionId,
             );
             if (override?.is_closed) {
               return {
@@ -88,7 +88,7 @@ export function useAvailability(
             }
 
             const max      = override?.custom_capacity ?? baseCaps[sessionId] ?? 0;
-            const row      = occupancy?.find((o: any) => o.booking_date === dateStr && o.session_id === sessionId);
+            const row      = occupancy?.find((o) => o.booking_date === dateStr && o.session_id === sessionId);
             const occupied = Number(row?.total_occupied ?? 0);
             const remaining = Math.max(0, max - occupied);
 
@@ -116,7 +116,6 @@ export function useAvailability(
 
     fetchRange();
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateOptions, configReady]);
 
   return { dailyStats, loading };

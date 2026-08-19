@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { Copy, Check, ExternalLink, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { type MediaAsset } from '@thaiakha/shared';
 
-const FRONT_URL = (import.meta as any).env?.VITE_FRONT_APP_URL ?? 'https://www.thaiakha.com';
+const FRONT_URL = import.meta.env.VITE_FRONT_APP_URL || 'https://www.thaiakha.com';
 
 interface Usage { label: string; url: string; }
 
@@ -23,14 +24,14 @@ async function findUsage(assetId: string): Promise<Usage[]> {
     supabase.from('content_categories').select('title, slug').or(`cover_asset_id.eq.${esc},avatar_asset_id.eq.${esc}`),
     supabase.from('gallery_items').select('gallery_id').eq('asset_id', esc),
   ]);
-  (rec.data || []).forEach((r: any) => out.push({ label: `Recipe · ${r.name}`, url: `${FRONT_URL}/authentic-thai-akha-recipes/${r.slug}` }));
-  (news.data || []).forEach((r: any) => out.push({ label: `News · ${r.title}`, url: `${FRONT_URL}/thai-cooking-tips-news/${r.slug}` }));
-  (cult.data || []).forEach((r: any) => out.push({ label: `Culture · ${r.title}`, url: `${FRONT_URL}/akha-culture-highland-heritage/${r.slug}` }));
-  (herb.data || []).forEach((r: any) => out.push({ label: `Herb tea · ${r.slug}`, url: `${FRONT_URL}/${r.slug}` }));
-  (pages.data || []).forEach((r: any) => out.push({ label: `Page · ${r.page_slug}`, url: `${FRONT_URL}/${r.page_slug}` }));
-  (cats.data || []).forEach((r: any) => out.push({ label: `Category · ${r.title}`, url: `${FRONT_URL}/${r.slug}` }));
+  (rec.data || []).forEach((r) => out.push({ label: `Recipe · ${r.name}`, url: `${FRONT_URL}/authentic-thai-akha-recipes/${r.slug}` }));
+  (news.data || []).forEach((r) => out.push({ label: `News · ${r.title}`, url: `${FRONT_URL}/thai-cooking-tips-news/${r.slug}` }));
+  (cult.data || []).forEach((r) => out.push({ label: `Culture · ${r.title}`, url: `${FRONT_URL}/akha-culture-highland-heritage/${r.slug}` }));
+  (herb.data || []).forEach((r) => out.push({ label: `Herb tea · ${r.slug}`, url: `${FRONT_URL}/${r.slug}` }));
+  (pages.data || []).forEach((r) => out.push({ label: `Page · ${r.page_slug}`, url: `${FRONT_URL}/${r.page_slug}` }));
+  (cats.data || []).forEach((r) => out.push({ label: `Category · ${r.title}`, url: `${FRONT_URL}/${r.slug}` }));
   // gallery_items → usage per gallery_id (convenzione: recipe_<slug>[_culture], class_*, slug raw = culture)
-  (gal.data || []).forEach((g: any) => {
+  (gal.data || []).forEach((g) => {
     const gid: string = g.gallery_id ?? '';
     if (gid.startsWith('recipe_')) {
       const rslug = gid.replace(/^recipe_/, '').replace(/_culture$/, '');
@@ -94,33 +95,31 @@ function FieldRow({ label, value, onCopy, copied, multiline, href }: FieldRowPro
 }
 
 const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
-  const a = asset as any;
-  const title: string = a.title || '';
-  const caption: string = a.caption || '';
-  const altText: string = a.alt_text || '';
-  const imageUrl: string = a.image_url || '';
-  const tags: string[] = Array.isArray(a.tags) ? a.tags : [];
-  const assetId: string = a.asset_id || '';
+  const title: string = asset.title || '';
+  const caption: string = asset.caption || '';
+  const altText: string = asset.alt_text || '';
+  const imageUrl: string = asset.image_url || '';
+  const tags: string[] = Array.isArray(asset.tags) ? asset.tags : [];
+  const assetId: string = asset.asset_id || '';
 
   const hashtags = toHashtags(tags);
   const description = [caption, hashtags].filter(Boolean).join('\n\n');
 
-  const [usages, setUsages] = useState<Usage[]>([]);
-  const [usageLoading, setUsageLoading] = useState(false);
   const [pickIdx, setPickIdx] = useState(0);
   const [copied, setCopied] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setPickIdx(0);
-    if (!assetId) { setUsages([]); return; }
-    setUsageLoading(true);
-    findUsage(assetId)
-      .then(u => { if (!cancelled) setUsages(u); })
-      .catch(() => { if (!cancelled) setUsages([]); })
-      .finally(() => { if (!cancelled) setUsageLoading(false); });
-    return () => { cancelled = true; };
-  }, [assetId]);
+  // Data layer (#86): reverse-lookup in cache per asset (7 tabelle in una Promise.all):
+  // riaprire lo stesso asset non rifa' le query, StrictMode non le raddoppia.
+  const usageQuery = useQuery({
+    queryKey: ['media_asset_usage', assetId] as const,
+    queryFn: () => findUsage(assetId).catch((): Usage[] => []),
+    enabled: assetId.length > 0,
+  });
+  const usages: Usage[] = usageQuery.data ?? [];
+  const usageLoading = assetId.length > 0 && usageQuery.isPending;
+
+  // Cambio asset: il link scelto riparte dal primo.
+  useEffect(() => { setPickIdx(0); }, [assetId]);
 
   const link = usages.length ? usages[Math.min(pickIdx, usages.length - 1)].url : FRONT_URL;
   const linkIsDerived = usages.length > 0;

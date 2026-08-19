@@ -77,7 +77,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 
           <AkhaPixelPattern
             variant="line_simple_medium"
-            size={5}
+            size={6}
             opacity={0.9}
             theme="ingredients"
             className="[margin-top:var(--space-fluid-2xs)]"

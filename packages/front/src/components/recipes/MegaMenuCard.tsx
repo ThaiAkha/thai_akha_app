@@ -81,7 +81,7 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
         />
       </div>
 
-      <AkhaPixelLine size={5} className="py-2" />
+      <AkhaPixelLine size={6} className="py-2" />
 
       {/* ── Diet Section ── */}
       <div id="diet-section" className="scroll-mt-24">
@@ -92,7 +92,7 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
         />
       </div>
 
-      <AkhaPixelLine size={5} className="py-2" />
+      <AkhaPixelLine size={6} className="py-2" />
 
       {/* ── Spiciness Section ── */}
       <div id="spiciness-section" className="scroll-mt-24">
@@ -103,7 +103,7 @@ const MegaMenuCard: React.FC<MegaMenuCardProps> = ({
         />
       </div>
 
-      <AkhaPixelLine size={5} className="py-2" />
+      <AkhaPixelLine size={6} className="py-2" />
 
       {/* ── Confirm / Close Buttons ── */}
       <div className="flex flex-col items-center gap-3">

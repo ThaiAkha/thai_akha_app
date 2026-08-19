@@ -106,7 +106,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
 
           <AkhaPixelPattern
             variant="line_simple_medium" 
-            size={5} 
+            size={6} 
             opacity={0.9} 
           />
           

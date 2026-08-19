@@ -132,7 +132,7 @@ export const SectionBlock: React.FC<{ section: LegalDocumentSection; index: numb
             {/* Divider Akha a tema — linea tra titolo e descrizione */}
             {hasBody && (
               <div className="overflow-hidden">
-                <AkhaPixelPattern variant="line_divider" size={6} opacity={0.9} theme={dividerTheme} animateInView />
+                <AkhaPixelPattern variant="line_divider" size={6} opacity={0.9} theme={dividerTheme} fill animateInView />
               </div>
             )}
           </div>

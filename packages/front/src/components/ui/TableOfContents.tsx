@@ -141,7 +141,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
           <Typography variant="microLabel" color="muted" className="uppercase tracking-widest font-black opacity-80">
             {title}
           </Typography>
-          <AkhaPixelPattern variant="line_simple_medium" size={5} opacity={0.6} theme={dividerTheme} />
+          <AkhaPixelPattern variant="line_simple_medium" size={6} opacity={0.6} theme={dividerTheme} />
         </div>
       )}
 

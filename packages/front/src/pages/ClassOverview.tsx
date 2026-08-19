@@ -184,7 +184,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
                       <Typography variant="h4" className="text-title leading-tight font-bold">
                         {asset.title}
                       </Typography>
-                      <AkhaPixelPattern variant="line_simple_medium" size={5} opacity={0.9} />
+                      <AkhaPixelPattern variant="line_simple_medium" size={6} opacity={0.9} />
                       {asset.caption && (
                         <Typography variant="paragraphM" className="text-desc line-clamp-3">
                           {asset.caption}
@@ -260,7 +260,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
                       <div className="hidden md:flex items-center justify-center py-4">
                         <AkhaPixelPattern
                           variant="news"
-                          size={4}
+                          size={6}
                           speed={20}
                           animateInView
                           expandFromCenter

@@ -1,11 +1,11 @@
 import React from 'react';
-import AkhaPixelPattern, { AkhaTheme, AnimationType } from './AkhaPixelPattern';
+import AkhaPixelPattern, { AkhaTheme, AnimationType, type AkhaPixelSize } from './AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { PatternName } from '@thaiakha/shared/data';
 
 interface AkhaPixelLineProps {
-  /** Size of each pixel in px */
-  size?: number;
+  /** Taglia del pixel (standard Akha): 10 | 8 | 6 */
+  size?: AkhaPixelSize;
   /** Opacity of the divider (0 to 1) */
   opacity?: number;
   /** Length of the divider line */

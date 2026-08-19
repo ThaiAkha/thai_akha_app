@@ -159,7 +159,7 @@ export function renderBlock(block: ContentBlock, i: number, ctx: BlockContext): 
 
             {/* ── Inner divider — matching FAQ card ───────────────────── */}
             <div style={{ margin: 'var(--space-fluid-l) var(--space-fluid-xl)' }}>
-              <AkhaPixelPattern variant="line_divider" theme={ctx.theme} size={5} opacity={0.6} fill animateInView />
+              <AkhaPixelPattern variant="line_divider" theme={ctx.theme} size={6} opacity={0.6} fill animateInView />
             </div>
 
             {/* ── Body ────────────────────────────────────────────────── */}

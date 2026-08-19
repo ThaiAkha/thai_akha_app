@@ -27,7 +27,7 @@ export const NewsGrid: React.FC<NewsGridProps> = ({ articles, onOpen }) => {
             <div className="hidden lg:flex items-center justify-center py-4">
               <AkhaPixelPattern
                 variant="news"
-                size={4}
+                size={6}
                 speed={20}
                 animateInView
                 expandFromCenter

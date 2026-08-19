@@ -44,7 +44,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, onOpen }) => {
             </Typography>
 
             <div className="w-12 h-[2px] opacity-60 [margin-bottom:var(--space-fluid-2xs)]">
-              <AkhaPixelPattern variant="line_simple" size={4} speed={40} />
+              <AkhaPixelPattern variant="line_simple" size={6} speed={40} />
             </div>
 
             <Typography

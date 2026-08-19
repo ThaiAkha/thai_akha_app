@@ -59,6 +59,8 @@ docs/               → architettura, design system
 19. **Niente file monstre** - nessun file `src` oltre ~440 LOC (esclusi tipi generati, dati, prompt copiati, galleria dev). Schema di scomposizione a comportamento invariato: `nomeFile/useXxx.ts` (stato+effetti+handler → oggetto) + viste per slot/ramo che ricevono l'oggetto + shell di sola composizione + `types.ts`; cartella camelCase accanto al file (es. `pages/manager/reports/`, `pages/market/marketShop/`). Le viste dichiarano `useTranslation(ns)` da sole; `t` non si esporta dagli hook.
 20. **Lint a zero warning** - `pnpm --filter front lint` e `--filter admin lint` sono a 0 warning dal 2026-08-19 e devono restarci: niente `any` nuovi (tipi generati `Tables<'…'>`, tipi di dominio, `unknown` + narrowing; cast unico `as unknown as Row[]` solo dove PostgREST non inferisce le select concatenate, con commento); deps degli effetti aggiunte solo se stabili, altrimenti `eslint-disable-next-line` con motivo; costanti/helper fuori dai file componente (fast refresh).
 
+21. **Divider Akha: 3 taglie + tile** - `AkhaPixelPattern/Line/ThemedLine/Loader/ButtonLine` accettano solo `size` **10 | 8 | 6** (tipo `AkhaPixelSize`): 10 = separatori di sezione e geometrie (fiore/wok/mountain), 8 = linee sotto header/intestazioni, 6 = dentro le card (titoli, footer, FAQ, essentials). Tutti scalano con `--akha-pixel-scale` (`tokens.css`, 0.5 a 375px → 1 a 1280px): mai `transform: scale` o size per breakpoint. `fill` = **tile**: pixel fissi ripetuti e tagliati alla larghezza del contenitore (mai stirati con `1fr`); usarlo per ogni linea che deve riempire una card (`line_divider`).
+
 ## Agenti Disponibili
 
 > Master in `thai_akha_brain/010_ThaiAkha_com/claude/agents/` · `.claude/` → symlink

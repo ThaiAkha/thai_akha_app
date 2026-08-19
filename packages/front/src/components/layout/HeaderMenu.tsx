@@ -73,7 +73,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ currentStep, customSlug, descri
 
         {/* Mostrato SOLO su Mobile (fino a 768px): size 5 */}
         <div className="block md:hidden">
-          <AkhaPixelPattern variant="line_simple" size={5} speed={40} />
+          <AkhaPixelPattern variant="line_simple" size={6} speed={40} />
         </div>
 
         {/* Mostrato SOLO su Desktop (da 768px in su): size 8 */}

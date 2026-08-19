@@ -313,6 +313,7 @@ const RecipePanel: React.FC<RecipePanelProps> = ({
                 variant="line_divider"
                 theme="kitchen"
                 size={6}
+                fill
                 className="[padding-block:var(--space-fluid-xs)]"
               />
               <Typography

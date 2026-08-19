@@ -123,7 +123,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
           </section>
 
           {/* Divider */}
-          <AkhaPixelLine size={5} className="py-2" />
+          <AkhaPixelLine size={6} className="py-2" />
 
           {/* 2. SPICE LEVEL */}
           <section>
@@ -135,7 +135,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
           </section>
 
           {/* Divider */}
-          <AkhaPixelLine size={5} className="py-2" />
+          <AkhaPixelLine size={6} className="py-2" />
 
           {/* 3. DIETARY STYLE */}
           <section>

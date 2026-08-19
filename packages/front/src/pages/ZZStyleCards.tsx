@@ -223,7 +223,7 @@ const StyleCards: React.FC = () => {
                   </div>
                   {/* Desktop */}
                   <div className="hidden lg:block w-max">
-                    <AkhaPixelPattern variant="line_divider" size={12} theme={t as AkhaTheme} />
+                    <AkhaPixelPattern variant="line_divider" size={10} theme={t as AkhaTheme} />
                   </div>
                 </div>
               </div>
@@ -246,12 +246,12 @@ const StyleCards: React.FC = () => {
                   <DemoBox label={`size={8} (${t})`}>
                     <AkhaPixelLine geometry="none" length="short" size={8} theme={t as AkhaTheme} />
                   </DemoBox>
-                  <DemoBox label={`size={12} (${t})`}>
-                    <AkhaPixelLine geometry="wok" length="medium" size={12} theme={t as AkhaTheme} />
+                  <DemoBox label={`size={10} wok (${t})`}>
+                    <AkhaPixelLine geometry="wok" length="medium" size={10} theme={t as AkhaTheme} />
                   </DemoBox>
-                  <DemoBox label={`size={16} (${t})`}>
+                  <DemoBox label={`size={10} flower (${t})`}>
                     <div className="flex justify-center">
-                      <AkhaPixelPattern variant="flower" size={16} theme={t as AkhaTheme} />
+                      <AkhaPixelPattern variant="flower" size={10} theme={t as AkhaTheme} />
                     </div>
                   </DemoBox>
                 </React.Fragment>
@@ -262,9 +262,9 @@ const StyleCards: React.FC = () => {
           {/* Linee semplici scalate */}
           <div className="space-y-4 mt-8">
             <Typography variant="h5" color="title">Linee Semplici (Scala Dimensioni 12 → 3)</Typography>
-            <Typography variant="paragraphS" color="sub">Esempi della variante <code>line_simple</code> (la linea sfumata usata negli header) in tutte le misurazioni per mostrare la scalabilità vettoriale del pixel pattern.</Typography>
+            <Typography variant="paragraphS" color="sub">Esempi della variante <code>line_simple</code> (la linea sfumata usata negli header) nelle 3 taglie standard (10 separatori · 8 header · 6 card), scalate da --akha-pixel-scalezioni per mostrare la scalabilità vettoriale del pixel pattern.</Typography>
             <div className="bg-surface-2 p-8 rounded-3xl space-y-6">
-              {[12, 10, 8, 6, 5, 4, 3].map((s) => (
+              {([10, 8, 6] as const).map((s) => (
                 <div key={s} className="flex items-center justify-between gap-8 border-b border-border/50 pb-4 last:border-0 last:pb-0">
                   <Typography variant="caption" color="muted" className="w-16">size={s}</Typography>
                   <div className="flex-1 overflow-hidden flex items-center justify-center">
@@ -280,14 +280,14 @@ const StyleCards: React.FC = () => {
             <Typography variant="h5" color="title">Regola Aurea della Spaziatura</Typography>
             <Typography variant="paragraphS" color="sub">La spaziatura tra i pixel non è più fissa. Abbiamo stabilito una regola geometrica per mantenere la purezza del design: <strong>Il gap è sempre esattamente la metà della dimensione del pixel (gap = size / 2)</strong>. Il componente calcola questo valore automaticamente.</Typography>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <DemoBox label="size={4} → gap 2px">
-                <AkhaPixelPattern variant="diamond" size={4} />
+              <DemoBox label="size={6} → gap 3px">
+                <AkhaPixelPattern variant="diamond" size={6} />
               </DemoBox>
               <DemoBox label="size={8} → gap 4px">
                 <AkhaPixelPattern variant="diamond" size={8} />
               </DemoBox>
-              <DemoBox label="size={12} → gap 6px">
-                <AkhaPixelPattern variant="diamond" size={12} />
+              <DemoBox label="size={10} → gap 5px">
+                <AkhaPixelPattern variant="diamond" size={10} />
               </DemoBox>
             </div>
           </div>
@@ -304,7 +304,7 @@ const StyleCards: React.FC = () => {
             length="long" 
             geometry="wok" 
             theme="kitchen" 
-            size={14} 
+            size={10} 
             interactive={true} 
           />
         </div>

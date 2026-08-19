@@ -84,7 +84,7 @@ const TheEssentialBox: React.FC<TheEssentialBoxProps> = ({ data, title = 'The Es
         <Typography variant="microLabel" className="text-pantry-4 uppercase tracking-widest font-black">
           {title}
         </Typography>
-        <AkhaPixelPattern variant="line_simple_medium" size={5} opacity={0.7} theme="ingredients" />
+        <AkhaPixelPattern variant="line_simple_medium" size={6} opacity={0.7} theme="ingredients" />
       </div>
 
       <dl className="grid grid-cols-1 sm:grid-cols-2 [gap:var(--space-fluid-s)]">

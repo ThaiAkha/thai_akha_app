@@ -111,7 +111,7 @@ const HeaderSinglePost: React.FC<HeaderSinglePostProps> = ({
 
                         <AkhaPixelLine
                             length="medium"
-                            size={7}
+                            size={8}
                             opacity={0.8}
                             animate={true}
                             theme={theme as AkhaTheme | undefined}

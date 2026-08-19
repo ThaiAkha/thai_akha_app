@@ -150,7 +150,7 @@ const MenuManager: React.FC<MenuManagerProps> = ({
             </Typography>
             
             <div className="mb-4 mx-auto opacity-90 hover:opacity-100 transition-opacity">
-                <AkhaPixelPattern variant="logo" size={4} speed={40}/>
+                <AkhaPixelPattern variant="logo" size={6} speed={40}/>
             </div>
             
             <Typography variant="paragraphL" color="sub">

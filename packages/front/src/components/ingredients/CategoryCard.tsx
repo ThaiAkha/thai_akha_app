@@ -68,7 +68,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, count, onOpen }) 
             )}
           </Typography>
 
-          <AkhaPixelPattern variant="line_simple_medium" size={5} opacity={0.9} theme="ingredients" />
+          <AkhaPixelPattern variant="line_simple_medium" size={6} opacity={0.9} theme="ingredients" />
 
           <div className="flex items-center justify-between [margin-top:var(--space-fluid-2xs)]">
             {typeof count === 'number' && count > 0 && (

@@ -1,10 +1,10 @@
 import React from 'react';
 import AkhaPixelLine from './AkhaPixelLine';
-import { AkhaTheme } from './AkhaPixelPattern';
+import { AkhaTheme, type AkhaPixelSize } from './AkhaPixelPattern';
 
 interface AkhaThemedLineProps {
   className?: string;
-  size?: number;
+  size?: AkhaPixelSize;
   animate?: boolean;
   theme?: AkhaTheme;
   opacity?: number;

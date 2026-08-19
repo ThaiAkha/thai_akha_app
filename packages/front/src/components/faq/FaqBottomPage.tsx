@@ -63,7 +63,7 @@ const FaqCard: React.FC<{ card: FaqCardUI; avatarUrl: string; onNavigate?: (path
 
       {/* ── Inner divider ───────────────────────────────────────── */}
       <div className="overflow-hidden" style={{ margin: 'var(--space-fluid-xs) var(--space-fluid-m) 0' }}>
-        <AkhaPixelPattern variant="line_divider" size={6} opacity={0.9} theme="block_faq" animateInView />
+        <AkhaPixelPattern variant="line_divider" size={6} opacity={0.9} theme="block_faq" fill animateInView />
       </div>
 
       {/* ── Answer ──────────────────────────────────────────────── */}

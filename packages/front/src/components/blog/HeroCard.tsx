@@ -112,7 +112,7 @@ const HeroCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
             "grid-rows-[1fr] md:grid-rows-[0fr] md:group-hover:grid-rows-[1fr]"
           )}>
             <div className="overflow-hidden flex flex-col [gap:var(--space-fluid-xs)] [margin-top:var(--space-fluid-2xs)]">
-              <AkhaPixelPattern variant="line_simple_medium" size={5} opacity={0.9} />
+              <AkhaPixelPattern variant="line_simple_medium" size={6} opacity={0.9} />
               <Typography
                 variant="paragraphS"
                 className="text-white/80 line-clamp-2"

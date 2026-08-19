@@ -319,3 +319,19 @@ html:lang(th) body,
 html:lang(th) * {
   line-height: 1.6;
 }
+
+/* ── Akha pixel divider scale ───────────────────────────────────────────────
+   Un solo knob per TUTTI i divider Akha (AkhaPixelPattern/Line/ThemedLine):
+   pixel, gap e colonne sono moltiplicati per questa scala. 0.5 a 375px → 1 a
+   1280px, stessa curva dei --text-fluid-*. Registrata con @property cosi' il
+   valore calcolato e' un numero leggibile anche da JS (tile dei divider fill).
+   NON in @theme: usa vw. */
+@property --akha-pixel-scale {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+:root {
+  /* tan(atan2(a, b)) = a/b ADIMENSIONALE (CSS non divide due lunghezze in calc()). */
+  --akha-pixel-scale: clamp(0.5, calc(0.5 + 0.5 * tan(atan2(100vw - 23.4375rem, 56.5625rem))), 1);
+}

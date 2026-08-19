@@ -66,7 +66,7 @@ export const ChatBoxMessageList: React.FC<ChatBoxMessageListProps> = ({ messages
           {/* Divider Akha — piccolo e tenue (80% trasparente) — stesso stile FAQ */}
           <AkhaPixelPattern
             variant="line_simple_medium"
-            size={5}
+            size={6}
             theme="akha"
             opacity={0.2}
             className="my-2"

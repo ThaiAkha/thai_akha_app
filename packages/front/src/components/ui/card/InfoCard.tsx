@@ -129,7 +129,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
             <div className="my-3 flex justify-left">
               <AkhaPixelPattern
                 variant="line_simple_medium"
-                size={5}
+                size={6}
                 opacity={0.9}
                 animateInView={true}
               />
@@ -160,7 +160,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
               "[padding-inline:var(--space-fluid-m)] w-full",
               isHorizontal ? "mt-2" : "mt-4"
             )}>
-              <AkhaPixelPattern variant="line_divider" size={2} opacity={0.8} fill={true} />
+              <AkhaPixelPattern variant="line_divider" size={6} opacity={0.8} fill={true} />
             </div>
           )}
 

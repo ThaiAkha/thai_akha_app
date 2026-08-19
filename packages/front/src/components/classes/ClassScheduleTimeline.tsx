@@ -111,7 +111,7 @@ const StepCard: React.FC<{
 
       {/* ── Divider ─────────────────────────────────────────────────────── */}
       <div className="overflow-hidden" style={{ margin: 'var(--space-fluid-xs) var(--space-fluid-m) 0' }}>
-        <AkhaPixelPattern variant="line_divider" size={8} animateInView className="opacity-50" />
+        <AkhaPixelPattern variant="line_divider" size={6} fill animateInView className="opacity-50" />
       </div>
 
       {/* ── Description ─────────────────────────────────────────────────── */}

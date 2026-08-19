@@ -1,11 +1,11 @@
 import React from 'react';
-import AkhaPixelPattern from './AkhaPixelPattern';
+import AkhaPixelPattern, { type AkhaPixelSize } from './AkhaPixelPattern';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface AkhaLoaderProps {
   /** 'spin' ruota tutto, 'bloom' usa l'effetto riempimento loop */
   variant?: 'spin' | 'bloom'; 
-  size?: number;
+  size?: AkhaPixelSize;
   className?: string;
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import AkhaPixelPattern from './AkhaPixelPattern';
+import AkhaPixelPattern, { type AkhaPixelSize } from './AkhaPixelPattern';
 import Button, { ButtonVariant } from '../ui/navigation/Button';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -18,7 +18,7 @@ interface AkhaButtonLineProps {
   className?: string;
   theme?: AkhaTheme;
   variant?: PatternName;
-  size?: number;
+  size?: AkhaPixelSize;
   animate?: boolean;
   buttonVariant?: ButtonVariant;
   buttonSize?: 'xs' | 'sm' | 'md' | 'lg';

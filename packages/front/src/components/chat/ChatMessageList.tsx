@@ -143,7 +143,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
             <div className="w-full mt-4 flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out">
               {/* Divider Akha — piccolo e tenue (80% trasparente) */}
               <div className="my-2">
-                <AkhaPixelPattern variant="line_simple_medium" size={5} theme="akha" opacity={0.2} />
+                <AkhaPixelPattern variant="line_simple_medium" size={6} theme="akha" opacity={0.2} />
               </div>
 
               {/* Title — turchese-cherry scuro, meno bold */}

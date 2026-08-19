@@ -142,7 +142,7 @@ const RecipeCategory: React.FC<RecipeCategoryProps> = ({ cat, activeDiet = '', g
               </Typography>
               <AkhaPixelLine
                 length="medium"
-                size={5}
+                size={6}
                 opacity={0.9}
                 className="justify-start !p-0"
               />
@@ -185,7 +185,7 @@ const RecipeCategory: React.FC<RecipeCategoryProps> = ({ cat, activeDiet = '', g
               <div className="flex flex-col [gap:var(--space-fluid-s)] [margin-top:var(--space-fluid-l)]">
                 <AkhaPixelLine
                   length="medium"
-                  size={5}
+                  size={6}
                   opacity={0.9}
                   className="justify-start !p-0"
                 />

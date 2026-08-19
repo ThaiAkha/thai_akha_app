@@ -22,9 +22,6 @@ export type ManagerBooking = Pick<Tables<'bookings'>,
     'hotel_name' | 'pickup_zone' | 'meeting_point' | 'requires_dropoff' | 'phone_number' | 'agency_note' | 'user_id' | 'guest_name' |
     'guest_email' | 'payment_status' | 'kitchen_id' | 'pickup_driver_uid'
 > & {
-    /** ATTENZIONE: colonna NON presente in `bookings` (schema 2026-08-17): il form la legge/scrive
-     *  ma la select non la porta e l'update potrebbe fallire. Bug preesistente da chiudere a parte. */
-    has_whatsapp?: boolean | null;
     profiles: ManagerBookingProfile | null;
     menu_selections: ManagerBookingMenu[] | null;
 };
@@ -34,7 +31,6 @@ export interface ManagerBookingEditData {
     session_id: string | null;
     pax_count: number | string | null;
     phone_number: string;
-    has_whatsapp: boolean;
     payment_status: string;
     customer_note: string;
     full_name: string;
@@ -152,7 +148,6 @@ export function useManagerReservation() {
             session_id: selectedBooking.session_id,
             pax_count: selectedBooking.pax_count,
             phone_number: selectedBooking.phone_number || '',
-            has_whatsapp: selectedBooking.has_whatsapp || false,
             payment_status: selectedBooking.payment_status || 'pending',
             customer_note: selectedBooking.customer_note || '',
             full_name: selectedBooking.profiles?.full_name || '',
@@ -191,7 +186,6 @@ export function useManagerReservation() {
                     session_id: editData.session_id,
                     pax_count: parseInt(String(editData.pax_count)),
                     phone_number: editData.phone_number,
-                    has_whatsapp: editData.has_whatsapp,
                     payment_status: editData.payment_status,
                     customer_note: editData.customer_note,
                     hotel_name: editData.hotel_name,

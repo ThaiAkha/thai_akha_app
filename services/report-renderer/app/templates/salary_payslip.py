@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 # Template "salary_payslip" — A5 bilingue TH/EN (Sarabun), greyscale, brand 2030.
-# data = { "workers": [ {employee_name, position, period, pay_date, salary, overtime, bonus,
-#   advance, ssf, other_ded, total_income, total_ded, net, ytd_income, ytd_ded, ytd_tax, ytd_ssf}, ... ] }
+# data = { "workers": [ {employee_name, position, period, pay_date, salary, overtime,
+#   ssf, other_ded, total_income, total_ded, net, ytd_income, ytd_ded, ytd_tax, ytd_ssf}, ... ] }
+#
+# SSF (ประกันสังคม): per Thai Akha NON e' una trattenuta ma una cifra AGGIUNTA al
+# pagamento, che il lavoratore riceve con lo stipendio. Per questo sta nella colonna
+# REDDITI (Income) e non in quella delle deduzioni, dove stava fino al 2026-08-24.
+# Voci "Advance" e "Bonus" rimosse: non esistono in staff_salaries, stampavano solo zeri.
 # Una pagina A5 per lavoratore → 1 PDF multipagina (stampa unica). Porting di payslip_a5_bilingual.py.
 
 GREY = {1: '#5E6464', 2: '#C6CACA', 3: '#9AA0A0'}
@@ -119,9 +124,9 @@ def _page(d):
     <table>
       <thead><tr><th>{_lbl("รายได้","Income")}</th><th class="r">{_lbl("จำนวนเงิน","Amount")}</th><th>{_lbl("รายการหัก","Deduction")}</th><th class="r">{_lbl("จำนวนเงิน","Amount")}</th></tr></thead>
       <tbody>
-        {_prow(_lbl("เงินเดือน","Salary"), _money(d.get('salary')), _lbl("ประกันสังคม","Social Security"), _money(d.get('ssf')))}
-        {_prow(_lbl("ค่าล่วงเวลา","Overtime"), _money(d.get('overtime')), _lbl("เบิกล่วงหน้า","Advance"), _money(d.get('advance')))}
-        {_prow(_lbl("โบนัส","Bonus"), _money(d.get('bonus')), _lbl("รายการหักอื่นๆ","Other"), _money(d.get('other_ded')))}
+        {_prow(_lbl("เงินเดือน","Salary"), _money(d.get('salary')), _lbl("รายการหักอื่นๆ","Other"), _money(d.get('other_ded')))}
+        {_prow(_lbl("ค่าล่วงเวลา","Overtime"), _money(d.get('overtime')), '', '')}
+        {_prow(_lbl("ประกันสังคม","Social Security"), _money(d.get('ssf')), '', '')}
         {_prow(_lbl("รวมรายได้","Total Income"), _money(d.get('total_income')), _lbl("รวมรายการหัก","Total Deduction"), _money(d.get('total_ded')), tot=True)}
       </tbody>
     </table>

@@ -286,13 +286,36 @@ Deno.serve(async (req: Request) => {
       if (!salary_id && !period) return bad('salary_id or period required')
 
       // employee_id → authors (the person); position = primary hat from worker_roles.
-      let sq = admin.from('staff_salaries').select('id, period, total_amount, overtime_note, employee_id, authors:employee_id(name, worker_roles(role, is_primary))')
+      let sq = admin.from('staff_salaries').select('id, period, base_amount, overtime_amount, ssf_amount, other_deduction, net_amount, employee_id, authors:employee_id(name, worker_roles(role, is_primary))')
       sq = salary_id ? sq.eq('id', salary_id) : sq.eq('period', period)
       const { data: srows } = await sq.order('created_at', { ascending: true })
       type WhoRow = { name: string | null; worker_roles: { role: string; is_primary: boolean }[] | null } | null
-      const list = (srows ?? []) as Array<{ period: string; total_amount: number; overtime_note: string | null; authors: WhoRow }>
+      // cast unico: PostgREST tipizza la relazione annidata come array, qui e' 1-a-1
+      const list = (srows ?? []) as unknown as Array<{
+        period: string; employee_id: string; base_amount: number; overtime_amount: number; ssf_amount: number;
+        other_deduction: number; net_amount: number | null; authors: WhoRow
+      }>
       const positionOf = (w: WhoRow) => (w?.worker_roles ?? []).find((r) => r.is_primary)?.role ?? w?.worker_roles?.[0]?.role ?? ''
       if (list.length === 0) return bad('No salary rows found', 404)
+
+      // Year to date: le righe dello stesso anno FINO al mese stampato (period e' 'YYYY-MM',
+      // quindi il confronto lessicografico e' anche cronologico). Un payslip di maggio deve
+      // mostrare i cumulati di gennaio-maggio, non quelli di dicembre.
+      const upTo = list.reduce((m, s) => (s.period > m ? s.period : m), list[0].period)
+      const { data: ytdRows } = await admin.from('staff_salaries')
+        .select('employee_id, base_amount, overtime_amount, ssf_amount, other_deduction')
+        .in('employee_id', [...new Set(list.map((s) => s.employee_id))])
+        .gte('period', `${upTo.slice(0, 4)}-01`)
+        .lte('period', upTo)
+      const ytd = new Map<string, { income: number; ded: number; ssf: number }>()
+      for (const r of (ytdRows ?? []) as Array<{ employee_id: string; base_amount: number; overtime_amount: number; ssf_amount: number; other_deduction: number }>) {
+        const cur = ytd.get(r.employee_id) ?? { income: 0, ded: 0, ssf: 0 }
+        const ssf = Number(r.ssf_amount) || 0
+        cur.income += (Number(r.base_amount) || 0) + (Number(r.overtime_amount) || 0) + ssf
+        cur.ded += Number(r.other_deduction) || 0
+        cur.ssf += ssf
+        ytd.set(r.employee_id, cur)
+      }
 
       const today = new Date()
       const payDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`
@@ -301,15 +324,25 @@ Deno.serve(async (req: Request) => {
       template = 'salary_payslip'
       data = {
         workers: list.map((s) => {
-          const amt = Math.round(Number(s.total_amount) || 0)
+          const round = (v: number | null) => Math.round(Number(v) || 0)
+          const salary = round(s.base_amount)
+          const overtime = round(s.overtime_amount)
+          // SSF (ประกันสังคม): per Thai Akha e' una cifra AGGIUNTA al pagamento, non
+          // una trattenuta → sta nei redditi, non nelle deduzioni.
+          const ssf = round(s.ssf_amount)
+          const other_ded = round(s.other_deduction)
+          const y = ytd.get(s.employee_id) ?? { income: 0, ded: 0, ssf: 0 }
           return {
             employee_name: s.authors?.name ?? '-',
             position: cap(positionOf(s.authors)),
             period: periodLabel(s.period),
             pay_date: payDate,
-            salary: amt, overtime: 0, bonus: 0, advance: 0, ssf: 0, other_ded: 0,
-            total_income: amt, total_ded: 0, net: amt,
-            ytd_income: 0, ytd_ded: 0, ytd_tax: 0, ytd_ssf: 0,
+            salary, overtime, ssf, bonus: 0, other_ded,
+            total_income: salary + overtime + ssf,
+            total_ded: other_ded,
+            net: round(s.net_amount),          // colonna generata dal DB: unica verita'
+            ytd_income: round(y.income), ytd_ded: round(y.ded), ytd_ssf: round(y.ssf),
+            ytd_tax: 0,                        // nessuna ritenuta fiscale gestita a sistema
           }
         }),
       }

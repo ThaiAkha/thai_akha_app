@@ -5734,44 +5734,51 @@ export type Database = {
       }
       staff_salaries: {
         Row: {
+          base_amount: number
           created_at: string
           created_by: string | null
           employee_id: string
           id: string
-          overtime_note: string | null
+          net_amount: number | null
+          other_deduction: number
+          overtime_amount: number
           paid_at: string | null
           pay_method: string
           period: string
+          ssf_amount: number
           status: string
-          total_amount: number
           zoho_expense_id: string | null
           zoho_synced_at: string | null
         }
         Insert: {
+          base_amount?: number
           created_at?: string
           created_by?: string | null
           employee_id: string
           id?: string
-          overtime_note?: string | null
+          other_deduction?: number
+          overtime_amount?: number
           paid_at?: string | null
           pay_method?: string
           period: string
+          ssf_amount?: number
           status?: string
-          total_amount?: number
           zoho_expense_id?: string | null
           zoho_synced_at?: string | null
         }
         Update: {
+          base_amount?: number
           created_at?: string
           created_by?: string | null
           employee_id?: string
           id?: string
-          overtime_note?: string | null
+          other_deduction?: number
+          overtime_amount?: number
           paid_at?: string | null
           pay_method?: string
           period?: string
+          ssf_amount?: number
           status?: string
-          total_amount?: number
           zoho_expense_id?: string | null
           zoho_synced_at?: string | null
         }

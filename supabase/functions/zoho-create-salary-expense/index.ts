@@ -10,9 +10,9 @@
 //   B) RAGGRUPPATO (zoho_vendor_id NULL) → max 2 spese account-only per mese:
 //      bank → 1 spesa unica "Employers - Salary - Bank"  · paid_through Bank 7502
 //      cash → 1 spesa unica "Employers - Salary - Cash"   · paid_through Black Box
-//      Nessun vendor. I lavoratori (nome + totale + eventuale nota OT) vanno tutti
-//      nella DESCRIZIONE della rispettiva spesa; amount = somma dei total_amount del gruppo
-//      (le righe individuali NON entrano nel totale).
+//      Nessun vendor. I lavoratori vanno tutti nella DESCRIZIONE della rispettiva spesa,
+//      col flusso completo di ciascuno (base, +OT, +SSF, -trattenute, = netto);
+//      amount = somma dei net_amount del gruppo (le righe individuali NON entrano nel totale).
 //
 // Idempotente: la select filtra già le righe con zoho_expense_id (per-riga sugli individuali,
 // per-gruppo sui raggruppati); write-back zoho_expense_id + status=paid.
@@ -87,8 +87,12 @@ async function zohoToken(): Promise<string> {
 }
 
 interface SalaryRow {
-  id: string; employee_id: string; period: string; total_amount: number;
-  overtime_note: string | null; pay_method: 'bank' | 'cash'; status: string;
+  id: string; employee_id: string; period: string;
+  // Breakdown dal 2026-08-24: net_amount e' GENERATA dal DB (base + OT + SSF - trattenute)
+  // ed e' l'unico importo che va in Zoho. SSF = cifra aggiunta al pagamento, non trattenuta.
+  base_amount: number; overtime_amount: number; ssf_amount: number;
+  other_deduction: number; net_amount: number;
+  pay_method: 'bank' | 'cash'; status: string;
   zoho_expense_id: string | null;
   // staff_salaries.employee_id → authors.id (the PERSON, not the login) since 2026-08-16
   authors?: { name: string | null } | { name: string | null }[] | null;
@@ -97,6 +101,19 @@ interface SalaryRow {
 const nameOf = (r: SalaryRow): string => {
   const who = Array.isArray(r.authors) ? r.authors[0] : r.authors
   return who?.name ?? 'Employee'
+}
+
+const thb = (v: number) => Number(v || 0).toLocaleString('en-US')
+
+// Il flusso completo della persona in una riga, ma solo le voci valorizzate:
+// senza extra resta "Aye: 12,000"; con extra "Aye: 12,000 +OT 1,500 +SSF 750 -200 = 14,050".
+// Serve a stare dentro il tetto di 500 caratteri della description Zoho anche con 10 persone.
+const breakdown = (r: SalaryRow): string => {
+  const parts: string[] = [thb(r.base_amount)]
+  if (Number(r.overtime_amount)) parts.push(`+OT ${thb(r.overtime_amount)}`)
+  if (Number(r.ssf_amount)) parts.push(`+SSF ${thb(r.ssf_amount)}`)
+  if (Number(r.other_deduction)) parts.push(`-${thb(r.other_deduction)}`)
+  return parts.length > 1 ? `${parts.join(' ')} = ${thb(r.net_amount)}` : parts[0]
 }
 
 Deno.serve(async (req: Request) => {
@@ -127,9 +144,9 @@ Deno.serve(async (req: Request) => {
 
     // 3) Carica le righe (draft, importo > 0, non ancora expensed)
     let q = admin.from('staff_salaries')
-      .select('id, employee_id, period, total_amount, overtime_note, pay_method, status, zoho_expense_id, authors:employee_id (name)')
+      .select('id, employee_id, period, base_amount, overtime_amount, ssf_amount, other_deduction, net_amount, pay_method, status, zoho_expense_id, authors:employee_id (name)')
       .is('zoho_expense_id', null)
-      .gt('total_amount', 0)
+      .gt('net_amount', 0)
     q = salaryIds.length > 0 ? q.in('id', salaryIds) : q.eq('period', period!)
     const { data: rowsRaw, error: rErr } = await q
     if (rErr) return json({ success: false, message: rErr.message }, 500)
@@ -194,16 +211,18 @@ Deno.serve(async (req: Request) => {
         individual: individuals.map((r) => {
           const ref = `${nameOf(r)} - salary ${per}`
           return {
-            salary_id: r.id, employee: nameOf(r), method: r.pay_method, amount: Number(r.total_amount),
+            salary_id: r.id, employee: nameOf(r), method: r.pay_method, amount: Number(r.net_amount),
+            breakdown: breakdown(r),
             // vendor_id oscurato di proposito: il valore reale non esce mai verso il client
             payload: METHOD_CFG[r.pay_method]
-              ? buildPayload(r.pay_method, Number(r.total_amount), ref.slice(0, 100), ref, '(vendor set)')
+              ? buildPayload(r.pay_method, Number(r.net_amount), ref.slice(0, 100), `${ref} - ${breakdown(r)}`, '(vendor set)')
               : { error: `Unknown pay_method "${r.pay_method}"` },
           }
         }),
         groups: Object.keys(groups).map((m) => ({
           method: m, employees: groups[m].length,
-          amount: groups[m].reduce((s, r) => s + Number(r.total_amount || 0), 0),
+          amount: groups[m].reduce((s, r) => s + Number(r.net_amount || 0), 0),
+          lines: groups[m].map((r) => `- ${nameOf(r)}: ${breakdown(r)}`),
         })),
       })
     }
@@ -213,14 +232,14 @@ Deno.serve(async (req: Request) => {
     // 6) Spese INDIVIDUALI (una per riga, col vendor della persona)
     for (const r of individuals) {
       const who = nameOf(r)
-      const amount = Number(r.total_amount || 0)
+      const amount = Number(r.net_amount || 0)
       if (amount <= 0) continue
       if (!METHOD_CFG[r.pay_method]) {
         failures.push({ method: r.pay_method, employee: who, message: `Unknown pay_method "${r.pay_method}"` })
         continue
       }
       const ref = `${who} - salary ${per}`
-      const description = (r.overtime_note ? `${ref} (OT: ${r.overtime_note})` : ref).slice(0, 500)
+      const description = `${ref} - ${breakdown(r)}`.slice(0, 500)
 
       const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${org}`, {
         method: 'POST',
@@ -251,15 +270,18 @@ Deno.serve(async (req: Request) => {
       const cfg = METHOD_CFG[method]
       if (!cfg) continue
       const g = groups[method]
-      const amount = g.reduce((s, r) => s + Number(r.total_amount || 0), 0)
+      const amount = g.reduce((s, r) => s + Number(r.net_amount || 0), 0)
       if (amount <= 0) continue
 
-      // Zoho: description max 500 caratteri (9 lavoratori + note OT possono sforare).
+      // Zoho: description max 500 caratteri. Col flusso completo (base +OT +SSF -trattenute)
+      // 10 persone che hanno tutte le voci sforano: in quel caso si degrada a nome+netto per
+      // TUTTI, che e' meglio che troncare e far sparire un lavoratore dalla nota.
+      const header = `Salaries ${per} - ${method.toUpperCase()} (${g.length}) THB ${thb(amount)}`
+      const detailed = g.map((r) => `- ${nameOf(r)}: ${breakdown(r)}`)
+      const fits = (lines: string[]) => header.length + lines.reduce((n, l) => n + l.length + 1, 0) <= 500
       const description = fitDescription(
-        `Salaries ${per} - ${method.toUpperCase()} (${g.length}) THB ${amount.toLocaleString('en-US')}`,
-        g.map((r) =>
-          `- ${nameOf(r)}: THB ${Number(r.total_amount).toLocaleString('en-US')}` + (r.overtime_note ? ` (OT: ${r.overtime_note})` : ''),
-        ),
+        header,
+        fits(detailed) ? detailed : g.map((r) => `- ${nameOf(r)}: ${thb(r.net_amount)}`),
       )
 
       const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${org}`, {

@@ -145,9 +145,33 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
+      # Auth SENZA CHIAVI (Workload Identity Federation), non piu' FIREBASE_TOKEN.
+      #
+      # Perche' non il token: quello di `firebase login:ci` e' un refresh token OAuth legato
+      # alla PERSONA (admin@thaiakhakitchen.com) e allo stesso client di firebase-tools. Un
+      # nuovo login, un logout o una revoca di Google lo uccidono: il 19/08 ha funzionato alle
+      # 08:33 e alle 10:02, ed era gia' invalido alle 10:57. Non e' scadenza, e' revoca.
+      #
+      # Perche' non una chiave JSON del service account: l'org policy
+      # constraints/iam.disableServiceAccountKeyCreation le VIETA, giustamente (una chiave
+      # non scade mai: se esce, esce per sempre).
+      #
+      # Come funziona: GitHub firma un token OIDC per QUESTO repo, Google lo scambia con un
+      # access token che vive un'ora. Niente da rubare, niente da rinnovare.
+      # Setup lato Google (2026-08-25): pool `github` + provider `github-thaiakha` (issuer
+      # token.actions.githubusercontent.com, ristretto a repository_owner == 'ThaiAkha'),
+      # SA github-hosting-deploy con firebasehosting.admin + firebase.viewer, e il principalSet
+      # del repo con roles/iam.workloadIdentityUser sul SA.
+      # Richiede `id-token: write` (gia' concesso a livello di workflow, riga 34).
+      - name: Authenticate to Google Cloud
+        if: ${{ matrix.enabled == 'true' }}
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: 'projects/213862741976/locations/global/workloadIdentityPools/github/providers/github-thaiakha'
+          service_account: 'github-hosting-deploy@thai-akha-app-2026.iam.gserviceaccount.com'
+
       - name: Deploy to Firebase Hosting
         if: ${{ matrix.enabled == 'true' }}
         run: |
           npx --yes firebase-tools deploy --only hosting:${{ matrix.target }} --project ${{ secrets.GCP_PROJECT_ID }} --non-interactive
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

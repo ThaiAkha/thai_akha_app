@@ -88,18 +88,23 @@ begin
 end; $$;
 comment on function public.translation_source_hash is 'Hash di UNA riga madre (uso puntuale). Per i batch usare translation_hash_sql.';
 
-create or replace function public.translation_mark_fresh(p_sidecar text, p_lang text default null)
+-- p_keys (2026-08-23, live come migration translation_mark_fresh_by_keys):
+-- un batch fissa l'hash SOLO sulle righe che ha caricato. Senza, caricando
+-- 2 righe se ne dichiaravano fresche 1259 - e una stale non ritradotta
+-- sarebbe sparita in silenzio. Senza p_keys = tutta la lingua (backfill).
+drop function if exists public.translation_mark_fresh(text, text);
+create or replace function public.translation_mark_fresh(p_sidecar text, p_lang text default null, p_keys text[] default null)
 returns integer language plpgsql as $$
 declare r record; n integer; h text; begin
   select * into r from public.v_translation_pairs where sidecar = p_sidecar limit 1;
   if r is null then raise exception 'sidecar % sconosciuto', p_sidecar; end if;
   h := public.translation_hash_sql(r.madre, r.sidecar);
   if h is null then return 0; end if;
-  execute format('update public.%I s set source_hash = %s from public.%I m where m.%I::text = s.%I::text and ($1 is null or s.lang = $1)',
-    r.sidecar, h, r.madre, r.madre_key_col, r.sidecar_fk_col) using p_lang;
+  execute format('update public.%I s set source_hash = %s from public.%I m where m.%I::text = s.%I::text and ($1 is null or s.lang = $1) and ($2 is null or s.%I::text = any($2))',
+    r.sidecar, h, r.madre, r.madre_key_col, r.sidecar_fk_col, r.sidecar_fk_col) using p_lang, p_keys;
   get diagnostics n = row_count; return n;
 end; $$;
-comment on function public.translation_mark_fresh is 'Dopo un batch di traduzione: fissa source_hash = hash attuale (una lingua o tutto il sidecar). Ritorna righe toccate. Set-based.';
+comment on function public.translation_mark_fresh(text, text, text[]) is 'Fissa source_hash = hash attuale. p_keys = solo le chiavi appena caricate (un batch non dichiara allineato cio'' che non ha toccato); senza = tutta la lingua/sidecar (backfill).';
 
 create or replace function public.translations_stale()
 returns table (sidecar text, madre text, lang text, madre_key text, motivo text)
@@ -129,7 +134,7 @@ from public.v_translation_pairs p;
 comment on view public.v_translation_pairs_info is 'Coppie + colonne traducibili derivate + flag sidecar_autonomo (madre senza testo: EN vive nel sidecar, staleness non applicabile).';
 
 grant select on public.v_translation_pairs, public.v_translation_pairs_info, public.v_translations_stale to authenticated;
-revoke all on function public.translation_mark_fresh(text, text) from public, anon, authenticated;
+revoke all on function public.translation_mark_fresh(text, text, text[]) from public, anon, authenticated;
 
 -- Baseline: al primo deploy fissa TUTTO come allineato ("da oggi si misura").
 -- Idempotente: mark_fresh su un hash già uguale non cambia nulla.

@@ -1,15 +1,15 @@
 // GENERATO DA legal_documents - NON EDITARE A MANO
-// doc_key: front_terms | versione: 1.5 | generato: 2026-08-02
+// doc_key: front_terms | versione: 1.6 | generato: 2026-08-26
 // Per cambiare il testo: aggiorna il DB (master nel brain), poi `pnpm gen-legal`.
 
 import type { LegalDocument } from '../../types/legal.types';
 
 export const TERMS_OF_SERVICE: LegalDocument = {
   "id": "front_terms",
-  "version": "1.5",
+  "version": "1.6",
   "title": "Terms of Service - Thai Akha Kitchen",
   "effectiveDate": "2026-01-01",
-  "lastUpdated": "2026-07-31",
+  "lastUpdated": "2026-08-26",
   "sections": [
     {
       "title": "Definitions",
@@ -127,13 +127,16 @@ export const TERMS_OF_SERVICE: LegalDocument = {
       ]
     },
     {
-      "title": "Pick-up",
+      "title": "Pickup and Drop-off",
       "anchor": "pickup",
       "content": [
         "We want your journey to the kitchen to be as smooth as the cooking itself. We offer **complimentary pick-up and drop-off** if your accommodation is within approximately a **3-kilometer radius** of the Chiang Mai Old City walls.",
         "• **Pick-up times and readiness:** Morning pick-ups run between 8:15 AM and 9:00 AM, and Evening pick-ups between 4:15 PM and 5:00 PM, according to our pick-up areas. Please be ready in your hotel lobby; out of respect for other guests, our driver can only wait for a maximum of 5 minutes.",
+        "• **Drop-off:** After class we take you back. The Morning Class finishes at 2:30 PM and the Evening Class at 9:30 PM, with drop-off at your hotel within the following half hour - by 3:00 PM and 10:00 PM respectively.",
         "• **Your responsibility:** Please double-check your hotel name and address when booking. If we cannot locate it, we will email you to confirm. If we do not receive a reply, we unfortunately cannot take responsibility for your transport.",
         "• **Outside the zone and meeting points:** Staying outside the free area? No problem. You can easily meet us at one of our designated meeting points, come directly to the school, or let us organize private transport for an extra fee. Arriving by your own transport does not reduce the class price.",
+        "**Timing and tight schedules.** These times are a commitment, not an estimate: we plan the day around them. Even so, a class moves with the people in it - a lively group, a curious question, an extra round of tasting - and Chiang Mai traffic has a mind of its own. Small shifts of a few minutes can happen, in the kitchen and on the road.",
+        "**If you have something booked right after class - a flight, a train, another tour - tell us when you book or on the day itself.** We will put you first on the drop-off run and keep an eye on the clock for you.",
         "For exact zones, meeting spots, and directions, please check our [Free Pickup & Location](/free-pickup-location-chiang-mai) page."
       ]
     },
@@ -142,7 +145,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
       "anchor": "cancellations",
       "content": [
         "Plans change, and we understand. You can cancel your experience up to **48 hours in advance for a full refund**. Cancellations made within 48 hours are strictly non-refundable. If you need to change your date or class type, just reach out. We will happily reschedule you free of charge, subject to seat availability.",
-        "**Pick-up readiness and no-shows.** To keep the class running smoothly for everyone, please be ready in your hotel lobby exactly at your specific zone's pick-up time. Out of respect for other guests in the van, our driver can only wait a maximum of 5 minutes. Missing the driver is considered a \"No-Show\" and is strictly non-refundable. Chiang Mai traffic has a mind of its own, so please forgive our driver if they arrive slightly after your scheduled time."
+        "**Pick-up readiness and no-shows.** To keep the class running smoothly for everyone, please be ready in your hotel lobby exactly at your specific zone's pick-up time. Out of respect for other guests in the van, our driver can only wait a maximum of 5 minutes. Missing the driver is considered a \"No-Show\" and is strictly non-refundable."
       ]
     },
     {

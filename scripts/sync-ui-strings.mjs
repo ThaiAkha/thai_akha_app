@@ -51,7 +51,12 @@ const APPS = {
   front: { loc: 'packages/front/src/i18n/locales', brain: '013_Ui_Strings',
            langs: ['en','es','fr','de','pt','it','ca','nl','th','zh','ko','ja'], index: '013_Ui_Strings_Index' },
   admin: { loc: 'packages/admin/src/i18n/locales', brain: '014_Ui_Strings_Admin',
-           langs: ['en','es','th','zh'], index: '014_Ui_Strings_Admin_Index' },
+           langs: ['en','es','th','zh'], index: '014_Ui_Strings_Admin_Index',
+           // POLITICA LINGUE (085_02_Flow, owner): staff = EN·TH su tutto; agenzie = EN·TH·ES·ZH
+           // SOLO sui namespace che il ruolo agency vede (route /agency-* in App.tsx + /profile,
+           // /manuals, /, auth). es/zh vengono contati/esportati SOLO su questi; il resto e' staff.
+           policyLangs: ['es','zh'],
+           agencyNs: ['auth','navigation','common','pages','booking','reservation','profile','legal','dashboard'] },
 };
 
 const args = process.argv.slice(2);
@@ -89,6 +94,8 @@ const esc = s => String(s ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, '⏎');
 const unesc = s => s.replace(/⏎/g, '\n').replace(/\\\|/g, '|').trim();
 
 const nsList = () => readdirSync(join(LOC, 'en')).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort();
+/** namespace che la politica lingue richiede per QUESTA lingua (admin es/zh = solo agency) */
+const nsFor = lang => (APP.policyLangs?.includes(lang) ? nsList().filter(ns => APP.agencyNs.includes(ns)) : nsList());
 const readJson = (lang, ns) => { const f = join(LOC, lang, `${ns}.json`); return existsSync(f) ? flat(JSON.parse(readFileSync(f, 'utf8'))) : {}; };
 
 // ── IDENTICHE ALL'EN + attestazioni ────────────────────────────────────────
@@ -110,7 +117,7 @@ function loadAttested() {
 /** celle della lingua uguali all'EN (dal REPO, che e' la sorgente), non attestate */
 function unattestedIdentical(lang, attested = loadAttested()) {
   const out = [];
-  for (const ns of nsList()) {
+  for (const ns of nsFor(lang)) {
     const en = readJson('en', ns), tr = readJson(lang, ns);
     for (const k of Object.keys(en)) {
       if (tr[k] === undefined || tr[k] !== en[k]) continue;
@@ -153,12 +160,12 @@ function doExport() {
   const nss = nsList(); let n = 0;
   for (const lang of LANGS) {
     const dir = join(BRAIN, lang.toUpperCase()); mkdirSync(dir, { recursive: true });
-    for (const ns of nss) {
+    for (const ns of nsFor(lang)) {
       const en = readJson('en', ns), tr = lang === 'en' ? en : readJson(lang, ns);
       writeFileSync(join(dir, `${ns}.md`), renderMd(ns, lang, en, tr)); n++;
     }
   }
-  console.log(`export [${appName}]: ${n} file (${LANGS.length} lingue × ${nss.length} namespace) → ${BRAIN}`);
+  console.log(`export [${appName}]: ${n} file (${LANGS.length} lingue; ${nss.length} namespace${APP.policyLangs ? `, ${APP.policyLangs.join('/')} solo ${APP.agencyNs.length} agency` : ''}) → ${BRAIN}`);
 }
 
 // ── IMPORT: brain → repo (con check) ───────────────────────────────────────
@@ -182,6 +189,7 @@ function doImport(langs) {
     let files = 0, keys = 0;
     for (const ns of nsList()) {
       const f = join(dir, `${ns}.md`); if (!existsSync(f)) continue;
+      if (!nsFor(lang).includes(ns)) { console.warn(`  ⚠️ ${ns}: namespace staff, la politica non prevede ${lang} → saltato`); continue; }
       const m = parseMd(f); if (!Object.keys(m).length) continue;
       // ARRAY: tutto o niente. i18next fa fallback per CHIAVE, non per
       // elemento: `monthsShort` con 1 mese su 12 darebbe undefined su [5].
@@ -215,10 +223,12 @@ function doStatus() {
   let open = 0;
   for (const lang of LANGS.filter(l => l !== 'en')) {
     const dir = join(BRAIN, lang.toUpperCase()); let done = 0;
-    if (existsSync(dir)) for (const ns of nss) { const f = join(dir, `${ns}.md`); if (existsSync(f)) done += Object.keys(parseMd(f)).length; }
+    const langNs = nsFor(lang); const langTotal = langNs.reduce((n, ns) => n + Object.keys(readJson('en', ns)).length, 0);
+    if (existsSync(dir)) for (const ns of langNs) { const f = join(dir, `${ns}.md`); if (existsSync(f)) done += Object.keys(parseMd(f)).length; }
     const ident = unattestedIdentical(lang, attested).length; open += ident;
-    const bar = '█'.repeat(Math.round(done / total * 20)).padEnd(20, '░');
-    console.log(`${lang}  ${bar} ${String(done).padStart(4)}/${total} (${Math.round(done / total * 100)}%)  ${ident ? `⚠ ${ident} identiche a EN non attestate` : '✓ 0 identiche non attestate'}`);
+    const bar = '█'.repeat(Math.round(done / langTotal * 20)).padEnd(20, '░');
+    const scope = langNs.length !== nss.length ? ` [${langNs.length} ns agency]` : '';
+    console.log(`${lang}  ${bar} ${String(done).padStart(4)}/${langTotal} (${Math.round(done / langTotal * 100)}%)${scope}  ${ident ? `⚠ ${ident} identiche a EN non attestate` : '✓ 0 identiche non attestate'}`);
   }
   if (open) console.log(`\n${open} celle identiche all'EN da guardare: \`--identical\` le elenca in formato riga per ${ATTESTED_FILE}`);
 }

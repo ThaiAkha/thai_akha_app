@@ -8,7 +8,15 @@
  *
  *   node scripts/sync-ui-strings.mjs --export            repo → brain (EN specchio + scheletri/valori XX)
  *   node scripts/sync-ui-strings.mjs --import es [fr…]   brain → repo, SOLO se check-ui-strings passa
- *   node scripts/sync-ui-strings.mjs --status            copertura per lingua (dal brain)
+ *   node scripts/sync-ui-strings.mjs --status            copertura per lingua (dal brain) + identiche-a-EN non attestate (dal repo)
+ *   node scripts/sync-ui-strings.mjs --identical [es…]   elenca le celle identiche all'EN NON attestate, in formato riga per _ATTESTED_IDENTICAL.md
+ *
+ * IDENTICHE ALL'INGLESE (stessa regola dei sidecar DB, 054 _ATTESTED_IDENTICAL):
+ *   una cella uguale all'EN e' o una traduzione saltata o una parola davvero
+ *   uguale (Score, WhatsApp, Sawasdee kha). Lo script non lo sa: un umano la
+ *   guarda e la registra in {brain}/{013|014}/_ATTESTED_IDENTICAL.md con il
+ *   VALORE EN. Se l'EN cambia, l'attestazione decade da sola.
+ *   100% = 0 mancanti + 0 identiche non attestate.
  *
  * Perché uno script e non un symlink: il brain non è versionato e non ha tsc.
  * Un symlink farebbe entrare in git modifiche fatte da Obsidian senza alcun
@@ -30,7 +38,7 @@ import { execSync } from 'node:child_process';
 const REPO  = new URL('..', import.meta.url).pathname;
 const BRAIN_ROOT = '/Users/svevomondino/Desktop/thai_akha_brain/010_ThaiAkha_com';
 const NATIVE = { en:'English', es:'Español', fr:'Français', de:'Deutsch', pt:'Português', it:'Italiano', ca:'Català', nl:'Nederlands', th:'ไทย', zh:'中文', ko:'한국어', ja:'日本語' };
-const today = new Date().toISOString().slice(0, 10);
+const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Bangkok' }); // MAI toISOString: dopo le 17:00 locali UTC e' ieri
 
 /**
  * DUE APP, stesso motore, stesso formato, stesso ponte — perimetri diversi:
@@ -82,6 +90,35 @@ const unesc = s => s.replace(/⏎/g, '\n').replace(/\\\|/g, '|').trim();
 
 const nsList = () => readdirSync(join(LOC, 'en')).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort();
 const readJson = (lang, ns) => { const f = join(LOC, lang, `${ns}.json`); return existsSync(f) ? flat(JSON.parse(readFileSync(f, 'utf8'))) : {}; };
+
+// ── IDENTICHE ALL'EN + attestazioni ────────────────────────────────────────
+const ATTESTED_FILE = join(BRAIN, '_ATTESTED_IDENTICAL.md');
+const splitRow = l => l.slice(1, -1).split(/(?<!\\)\|/).map(c => c.trim());
+const attestKey = (ns, lang, key, en) => `${ns}\u0000${lang}\u0000${key}\u0000${en}`;
+/** righe `| \`ns\` | \`lang\` | \`chiave\` | valore EN | perche' |` → Map(attestKey → perche') */
+function loadAttested() {
+  const m = new Map();
+  if (!existsSync(ATTESTED_FILE)) return m;
+  for (const line of readFileSync(ATTESTED_FILE, 'utf8').split('\n')) {
+    if (!line.startsWith('| `')) continue;
+    const c = splitRow(line).map(x => x.replace(/^`|`$/g, ''));
+    if (c.length < 4) continue;
+    m.set(attestKey(c[0], c[1], c[2], unesc(c[3])), c[4] ?? '');
+  }
+  return m;
+}
+/** celle della lingua uguali all'EN (dal REPO, che e' la sorgente), non attestate */
+function unattestedIdentical(lang, attested = loadAttested()) {
+  const out = [];
+  for (const ns of nsList()) {
+    const en = readJson('en', ns), tr = readJson(lang, ns);
+    for (const k of Object.keys(en)) {
+      if (tr[k] === undefined || tr[k] !== en[k]) continue;
+      if (!attested.has(attestKey(ns, lang, k, String(en[k])))) out.push({ ns, lang, key: k, en: String(en[k]) });
+    }
+  }
+  return out;
+}
 
 // ── EXPORT: repo → brain ───────────────────────────────────────────────────
 function renderMd(ns, lang, en, tr) {
@@ -173,14 +210,30 @@ function doImport(langs) {
 // ── STATUS ─────────────────────────────────────────────────────────────────
 function doStatus() {
   const nss = nsList(); const total = nss.reduce((n, ns) => n + Object.keys(readJson('en', ns)).length, 0);
-  console.log(`[${appName}] EN: ${nss.length} namespace, ${total} chiavi\n`);
+  const attested = loadAttested();
+  console.log(`[${appName}] EN: ${nss.length} namespace, ${total} chiavi · attestate: ${attested.size} (${existsSync(ATTESTED_FILE) ? '_ATTESTED_IDENTICAL.md' : 'file assente'})\n`);
+  let open = 0;
   for (const lang of LANGS.filter(l => l !== 'en')) {
     const dir = join(BRAIN, lang.toUpperCase()); let done = 0;
     if (existsSync(dir)) for (const ns of nss) { const f = join(dir, `${ns}.md`); if (existsSync(f)) done += Object.keys(parseMd(f)).length; }
+    const ident = unattestedIdentical(lang, attested).length; open += ident;
     const bar = '█'.repeat(Math.round(done / total * 20)).padEnd(20, '░');
-    console.log(`${lang}  ${bar} ${String(done).padStart(4)}/${total} (${Math.round(done / total * 100)}%)`);
+    console.log(`${lang}  ${bar} ${String(done).padStart(4)}/${total} (${Math.round(done / total * 100)}%)  ${ident ? `⚠ ${ident} identiche a EN non attestate` : '✓ 0 identiche non attestate'}`);
   }
+  if (open) console.log(`\n${open} celle identiche all'EN da guardare: \`--identical\` le elenca in formato riga per ${ATTESTED_FILE}`);
 }
 
-const run = { export: doExport, import: () => doImport(targetLangs), status: doStatus }[mode];
-if (run) run(); else console.error(`modo sconosciuto: --${mode} (usa [--app front|admin] --export | --import <lang…> | --status)`);
+// ── IDENTICAL: elenco per l'attestazione ───────────────────────────────────
+function doIdentical(langs) {
+  const target = langs.length ? langs : LANGS.filter(l => l !== 'en');
+  const attested = loadAttested(); let n = 0;
+  console.log(`| namespace | lang | chiave | valore EN | perche' |\n|---|---|---|---|---|`);
+  for (const lang of target) {
+    if (!LANGS.includes(lang) || lang === 'en') { console.error(`lingua non valida: ${lang}`); process.exit(1); }
+    for (const r of unattestedIdentical(lang, attested)) { console.log(`| \`${r.ns}\` | \`${r.lang}\` | \`${r.key}\` | ${esc(r.en)} | |`); n++; }
+  }
+  console.error(`\n${n} celle identiche all'EN non attestate (${target.join(' ')}). Guardale, compila "perche'", incolla in ${ATTESTED_FILE}.`);
+}
+
+const run = { export: doExport, import: () => doImport(targetLangs), status: doStatus, identical: () => doIdentical(targetLangs) }[mode];
+if (run) run(); else console.error(`modo sconosciuto: --${mode} (usa [--app front|admin] --export | --import <lang…> | --status | --identical [lang…])`);

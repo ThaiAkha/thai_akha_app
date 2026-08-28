@@ -26,7 +26,7 @@ const PosClassToolbar: React.FC<PosClassToolbarProps> = ({ selectedSession, onSe
                 <button
                     onClick={() => onSessionChange('morning_class')}
                     className={cn('flex items-center gap-1.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors',
-                        !isEvening ? 'bg-red-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700')}
+                        !isEvening ? 'bg-red-500 text-white' : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-700')}
                 >
                     <Sunrise className="w-3.5 h-3.5 shrink-0" />
                     {t('groupsPlanner.morningClass', { defaultValue: 'Morning' })}
@@ -34,13 +34,13 @@ const PosClassToolbar: React.FC<PosClassToolbarProps> = ({ selectedSession, onSe
                 <button
                     onClick={() => onSessionChange('evening_class')}
                     className={cn('flex items-center gap-1.5 px-3 text-xs font-bold uppercase tracking-wider transition-colors border-l border-gray-200 dark:border-gray-700',
-                        isEvening ? 'bg-green-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700')}
+                        isEvening ? 'bg-green-500 text-white' : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-700')}
                 >
                     <Sunset className="w-3.5 h-3.5 shrink-0" />
                     {t('groupsPlanner.eveningClass', { defaultValue: 'Evening' })}
                 </button>
             </div>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">{today}</span>
+            <span className="text-lg font-bold text-title">{today}</span>
         </div>
     );
 };

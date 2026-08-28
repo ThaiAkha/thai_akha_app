@@ -33,7 +33,7 @@ const DataRowText: React.FC<DataRowTextProps> = ({
                 <p className={cn(
                     layout === 'vertical' ? "text-theme-sm" : "text-theme-xs",
                     "font-bold uppercase tracking-wide",
-                    "text-gray-900 dark:text-gray-100",
+                    "text-title",
                     "leading-tight line-clamp-1",
                     titleClassName
                 )}>
@@ -44,7 +44,7 @@ const DataRowText: React.FC<DataRowTextProps> = ({
                 <p className={cn(
                     layout === 'vertical' ? "text-theme-xs" : "text-theme-xs",
                     "font-medium",
-                    "text-gray-800 dark:text-gray-400",
+                    "text-body",
                     "line-clamp-1 leading-snug",
                     descriptionClassName
                 )}>
@@ -55,7 +55,7 @@ const DataRowText: React.FC<DataRowTextProps> = ({
                 <p className={cn(
                     layout === 'vertical' ? "text-theme-xs" : "text-xs",
                     "font-semibold uppercase tracking-wider",
-                    "text-gray-600 dark:text-gray-500",
+                    "text-sub",
                     "leading-none line-clamp-1",
                     extraClassName
                 )}>

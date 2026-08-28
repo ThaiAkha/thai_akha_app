@@ -15,7 +15,7 @@ export function FieldLabel({ label, isReadOnly = false }: { label: string; isRea
         <div className="flex justify-between items-center mb-1.5">
             <SectionHeader title={label.replace(/_/g, ' ')} />
             {isReadOnly && (
-                <span className="text-xs font-black text-gray-400 uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                <span className="text-xs font-black text-sub uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                     READ ONLY
                 </span>
             )}
@@ -39,8 +39,8 @@ export function CoverImageField({ fieldKey, value, isEditing, onChange }: {
             <div className="flex items-center gap-2 mb-2">
                 <ImageIcon className="w-4 h-4 text-gray-400" />
                 <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
-                {loading && <span className="text-xs text-gray-400">resolving...</span>}
-                {displayUrl && <span className="text-xs text-gray-400 font-mono truncate">{displayUrl.substring(0, 30)}...</span>}
+                {loading && <span className="text-xs text-sub">resolving...</span>}
+                {displayUrl && <span className="text-xs text-sub font-mono truncate">{displayUrl.substring(0, 30)}...</span>}
             </div>
             {displayUrl && !imgError && !loading ? (
                 <div className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 aspect-video">
@@ -58,12 +58,12 @@ export function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                 <div className="rounded-xl bg-gray-100 dark:bg-gray-800 aspect-video flex items-center justify-center flex-col gap-2">
                     <ImageIcon className="w-10 h-10 text-gray-300" />
                     {!loading && displayUrl && imgError && (
-                        <p className="text-xs text-gray-400 font-mono text-center px-2">
+                        <p className="text-xs text-sub font-mono text-center px-2">
                             Failed to load
                         </p>
                     )}
                     {loading && (
-                        <p className="text-xs text-gray-400">Loading...</p>
+                        <p className="text-xs text-sub">Loading...</p>
                     )}
                 </div>
             )}
@@ -112,7 +112,7 @@ export function AudioField({ fieldKey, value, isEditing, onChange }: {
             ) : (
                 <div className="rounded-xl bg-purple-50/50 dark:bg-purple-900/5 border border-dashed border-purple-200 dark:border-purple-900/20 p-4 flex items-center gap-3">
                     <Volume2 className="w-6 h-6 text-purple-300" />
-                    <span className="text-xs text-gray-400 italic">
+                    <span className="text-xs text-sub italic">
                         {loading ? 'Loading audio...' : 'No audio URL set'}
                     </span>
                 </div>
@@ -172,7 +172,7 @@ export function GalleryField({ fieldKey, value, isEditing, onChange }: {
             ) : (
                 <div className="rounded-xl bg-blue-50/50 dark:bg-blue-900/5 border border-dashed border-blue-200 dark:border-blue-900/20 p-4 flex items-center gap-3">
                     <LayoutGrid className="w-6 h-6 text-blue-300" />
-                    <span className="text-xs text-gray-400 italic">
+                    <span className="text-xs text-sub italic">
                         {loading ? 'Loading gallery...' : 'Empty gallery'}
                     </span>
                 </div>

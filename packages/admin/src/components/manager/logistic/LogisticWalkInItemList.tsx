@@ -9,18 +9,18 @@ import { LogisticsItem } from '../../../hooks/useManagerLogistic';
 
 // Helper function to map zone colors to Tailwind classes
 const getZoneColorClasses = (colorCode: string | null): string => {
-    if (!colorCode) return 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300';
+    if (!colorCode) return 'border-gray-200 dark:border-gray-700 text-body';
 
     const colorMap: Record<string, string> = {
-        'yellow': 'border-yellow-400 dark:border-yellow-600 text-gray-700 dark:text-gray-300',
-        'green': 'border-green-400 dark:border-green-600 text-gray-700 dark:text-gray-300',
-        'pink': 'border-pink-400 dark:border-pink-600 text-gray-700 dark:text-gray-300',
-        'blue': 'border-blue-400 dark:border-blue-600 text-gray-700 dark:text-gray-300',
-        'purple': 'border-purple-400 dark:border-purple-600 text-gray-700 dark:text-gray-300',
-        'orange': 'border-orange-400 dark:border-orange-600 text-gray-700 dark:text-gray-300',
-        'red': 'border-red-400 dark:border-red-600 text-gray-700 dark:text-gray-300',
-        'cyan': 'border-cyan-400 dark:border-cyan-600 text-gray-700 dark:text-gray-300',
-        'gray': 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300',
+        'yellow': 'border-yellow-400 dark:border-yellow-600 text-body',
+        'green': 'border-green-400 dark:border-green-600 text-body',
+        'pink': 'border-pink-400 dark:border-pink-600 text-body',
+        'blue': 'border-blue-400 dark:border-blue-600 text-body',
+        'purple': 'border-purple-400 dark:border-purple-600 text-body',
+        'orange': 'border-orange-400 dark:border-orange-600 text-body',
+        'red': 'border-red-400 dark:border-red-600 text-body',
+        'cyan': 'border-cyan-400 dark:border-cyan-600 text-body',
+        'gray': 'border-gray-300 dark:border-gray-600 text-body',
     };
 
     return colorMap[colorCode.toLowerCase()] || colorMap['gray'];
@@ -66,7 +66,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                                 fallbackClassName="bg-orange-100 dark:bg-btn-p-900/30"
                             />
                             <div className="flex-1 min-w-0">
-                                <span className="font-bold text-base text-gray-900 dark:text-white truncate">
+                                <span className="font-bold text-base text-title truncate">
                                     {item.guest_name || 'Guest'}
                                 </span>
                             </div>
@@ -79,7 +79,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                         {/* Row 2: Location Info */}
                         {(item.hotel_name || item.meeting_point) && (
                             <div className="flex items-center gap-2 mb-2">
-                                <MapPin className="w-4 h-4 shrink-0 text-gray-500 dark:text-gray-500" />
+                                <MapPin className="w-4 h-4 shrink-0 text-sub" />
                                 <Tooltip content={item.hotel_name || item.meeting_point || 'No location'} position="bottom">
                                     <div className={cn(
                                         'flex-1 px-3 py-2 rounded-lg border-2 text-sm font-medium truncate',
@@ -93,7 +93,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
 
                         {/* Row 3: Meeting Time */}
                         {item.pickup_time && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                            <div className="text-xs text-sub font-mono">
                                 🕐 {item.pickup_time}
                             </div>
                         )}

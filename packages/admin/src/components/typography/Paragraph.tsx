@@ -19,9 +19,9 @@ const PARAGRAPH_SIZE_STYLES: Record<ParagraphSize, string> = {
 };
 
 const PARAGRAPH_COLOR_STYLES: Record<ParagraphColor, string> = {
-  primary: 'text-gray-700 dark:text-gray-200',
-  secondary: 'text-gray-600 dark:text-gray-300',
-  muted: 'text-gray-500 dark:text-gray-400',
+  primary: 'text-body',
+  secondary: 'text-sub',
+  muted: 'text-sub',
   onDark: 'text-white/70',  // for dark surfaces (banners) — same in both modes
 };
 

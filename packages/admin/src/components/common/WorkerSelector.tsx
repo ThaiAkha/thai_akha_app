@@ -72,7 +72,7 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
     return (
       <div className={cn('flex items-center gap-2', className)}>
         <Avatar src={selected.avatarUrl ?? undefined} alt={selected.name} size="small" />
-        <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{selected.name}</span>
+        <span className="text-sm font-bold text-title truncate">{selected.name}</span>
         {!disabled && (
           <button type="button" onClick={() => { setExpanded(true); setOpen(true); }}
             className="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400 hover:underline">
@@ -85,7 +85,7 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
 
   return (
     <div ref={rootRef} className={cn('relative w-full', className)}>
-      <span className="block mb-1.5 text-xs font-black uppercase tracking-widest text-gray-400">{heading}</span>
+      <span className="block mb-1.5 text-xs font-black uppercase tracking-widest text-sub">{heading}</span>
       <button
         type="button"
         disabled={disabled || loading}
@@ -102,7 +102,7 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
         {selected
           ? <Avatar src={selected.avatarUrl ?? undefined} alt={selected.name} size="small" />
           : <span className="size-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400"><UserRound className="w-4 h-4" /></span>}
-        <span className={cn('flex-1 truncate text-sm font-bold', selected ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>
+        <span className={cn('flex-1 truncate text-sm font-bold', selected ? 'text-title' : 'text-sub')}>
           {loading ? t('worker.loading', { defaultValue: 'Loading…' }) : selected ? selected.name : t('worker.select', { defaultValue: 'Select your name' })}
         </span>
         <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform', open && 'rotate-180')} />
@@ -111,7 +111,7 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
       {open && (
         <ul role="listbox" className="absolute z-30 mt-1 w-full max-h-72 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-1">
           {workers.length === 0 && (
-            <li className="px-3 py-3 text-xs font-bold uppercase text-gray-400">{t('worker.none', { defaultValue: 'No staff for this task' })}</li>
+            <li className="px-3 py-3 text-xs font-bold uppercase text-sub">{t('worker.none', { defaultValue: 'No staff for this task' })}</li>
           )}
           {workers.map(w => {
             const active = w.id === value;
@@ -122,8 +122,8 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
                     active ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50')}>
                   <Avatar src={w.avatarUrl ?? undefined} alt={w.name} size="small" />
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-bold text-gray-900 dark:text-white truncate">{w.name}</span>
-                    <span className="block text-[10px] font-black uppercase tracking-wider text-gray-400 truncate">
+                    <span className="block text-sm font-bold text-title truncate">{w.name}</span>
+                    <span className="block text-[10px] font-black uppercase tracking-wider text-sub truncate">
                       {w.roles.map(r => t(`worker.roles.${r}`, { defaultValue: r })).join(' · ')}
                     </span>
                   </span>

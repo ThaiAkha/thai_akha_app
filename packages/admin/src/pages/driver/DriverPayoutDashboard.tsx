@@ -196,10 +196,10 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
             <Card key={w.key} size="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">{fmtRange(w.start, w.end, i18n.language)}</span>
+                  <span className="text-sm font-bold text-title">{fmtRange(w.start, w.end, i18n.language)}</span>
                   <span className="ml-2 text-xs font-black uppercase tracking-widest text-green-600 dark:text-green-400">{t('payoutDashboard.paidStatus')}</span>
                 </div>
-                <span className="text-base font-bold text-gray-900 dark:text-white">{w.totalAll} Baht</span>
+                <span className="text-base font-bold text-title">{w.totalAll} Baht</span>
               </div>
             </Card>
           );
@@ -212,7 +212,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
                 <Paragraph size="sm" color="muted">{fmtRange(w.start, w.end, i18n.language)}</Paragraph>
               </div>
               <div className="text-right">
-                <span className="block text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="block text-2xl font-bold text-title">
                   {w.totalPending} <span className="text-sm font-medium opacity-70">Baht</span>
                 </span>
                 <span className="text-xs font-black uppercase tracking-widest text-amber-600">{t('payoutDashboard.pendingStatus')}</span>
@@ -234,20 +234,20 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
                     )}
                   >
                     <div className="min-w-0">
-                      <span className="block text-sm font-bold text-gray-900 dark:text-white capitalize">{fmtDay(r.run_date, i18n.language)}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="block text-sm font-bold text-title capitalize">{fmtDay(r.run_date, i18n.language)}</span>
+                      <span className="text-xs text-sub">
                         {r.session_id === 'morning_class' ? t('home.morningSession') : t('home.eveningSession')} · {r.total_stops} stop · {r.total_pax} {t('stopCard.pax')}
                       </span>
                     </div>
-                    <span className="text-sm font-bold text-gray-900 dark:text-white shrink-0">{r.payout_amount} ฿</span>
+                    <span className="text-sm font-bold text-title shrink-0">{r.payout_amount} ฿</span>
                   </button>
                 );
               })}
             </div>
 
             <div className="flex items-center justify-between mt-[var(--space-fluid-s,1rem)] pt-3 border-t border-gray-200 dark:border-gray-700">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">{t('payoutDashboard.weekTotal')}</span>
-              <span className="text-base font-bold text-gray-900 dark:text-white">{w.totalAll} Baht</span>
+              <span className="text-xs font-black uppercase tracking-widest text-sub">{t('payoutDashboard.weekTotal')}</span>
+              <span className="text-base font-bold text-title">{w.totalAll} Baht</span>
             </div>
           </Card>
         );

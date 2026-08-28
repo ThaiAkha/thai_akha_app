@@ -127,9 +127,9 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
                         : <span className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0"><User className="size-4 text-gray-400" /></span>}
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
-                            {gNo && <span className="shrink-0 text-[10px] font-black uppercase tracking-wider bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-1.5 py-0.5 rounded">G{gNo}</span>}
+                            {gNo && <span className="shrink-0 text-[10px] font-black uppercase tracking-wider bg-gray-200 dark:bg-gray-700 text-body px-1.5 py-0.5 rounded">G{gNo}</span>}
                             {g.participants.some(p => p.is_leader) && <Crown className="size-3 text-amber-500 shrink-0" />}
-                            <span className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate">{rep.name}</span>
+                            <span className="text-sm font-bold text-body truncate">{rep.name}</span>
                         </div>
                     </div>
                     <BadgePaxNumber paxCount={g.pax_count} size="sm" />
@@ -149,7 +149,7 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
                                         </button>
                                     )}
                                     <img src={avatarOf(p.full_name, p.avatar_url)} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate flex-1">{p.full_name}</span>
+                                    <span className="text-xs font-medium text-body truncate flex-1">{p.full_name}</span>
                                     {p.is_leader && <Crown className="size-3 text-amber-500 shrink-0" />}
                                 </div>
                             );
@@ -165,34 +165,34 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
                                         </button>
                                     )}
                                     <span className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0"><User className="size-3.5 text-gray-400" /></span>
-                                    <span className="text-xs font-medium text-gray-400 italic truncate flex-1">{tp('split.guest', { defaultValue: 'Guest' })} {real.length + i + 1}</span>
+                                    <span className="text-xs font-medium text-sub italic truncate flex-1">{tp('split.guest', { defaultValue: 'Guest' })} {real.length + i + 1}</span>
                                 </div>
                             );
                         })}
 
                         {/* Controlli */}
                         {child ? (
-                            <button onClick={() => onMerge(g.internal_id)} className="mt-1 inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-600 dark:text-gray-300 hover:border-amber-500 hover:text-amber-600 transition-colors">
+                            <button onClick={() => onMerge(g.internal_id)} className="mt-1 inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-sub hover:border-amber-500 hover:text-amber-600 transition-colors">
                                 <Undo2 className="size-3.5" /> {tp('split.merge', { defaultValue: 'Merge back' })}
                             </button>
                         ) : canSplit && (splitting ? (
                             <div className="mt-1.5 space-y-1.5">
-                                <div className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                                <div className="text-xs font-bold text-sub">
                                     {tp('split.preview', { defaultValue: 'New group' })}: <span className="text-primary-600 dark:text-primary-400">{seatSel.size} pax</span>
-                                    <span className="text-gray-400"> · {tp('split.classPaid', { defaultValue: 'class prepaid' })}</span>
+                                    <span className="text-sub"> · {tp('split.classPaid', { defaultValue: 'class prepaid' })}</span>
                                 </div>
                                 <div className="flex gap-1.5">
                                     <button onClick={() => confirmSplit(g)} disabled={seatSel.size < 1 || seatSel.size >= (g.pax_count || 1)}
                                         className="flex-1 h-8 rounded-lg bg-primary-500 text-white text-xs font-bold disabled:opacity-50 hover:bg-primary-600 transition-colors">
                                         {tp('split.create', { defaultValue: 'Create group' })}
                                     </button>
-                                    <button onClick={() => { setSplitMode(null); setSeatSel(new Set()); }} className="h-8 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-600 dark:text-gray-300">
+                                    <button onClick={() => { setSplitMode(null); setSeatSel(new Set()); }} className="h-8 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-sub">
                                         {tp('split.cancel', { defaultValue: 'Cancel' })}
                                     </button>
                                 </div>
                             </div>
                         ) : (
-                            <button onClick={() => startSplit(g)} className="mt-1 inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 text-xs font-bold text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-600 transition-colors">
+                            <button onClick={() => startSplit(g)} className="mt-1 inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 text-xs font-bold text-sub hover:border-primary-500 hover:text-primary-600 transition-colors">
                                 <Scissors className="size-3.5" /> {tp('split.button', { defaultValue: 'Split → new group' })}
                             </button>
                         ))}
@@ -205,25 +205,25 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
     return (
         <div className="lg:col-span-2 flex flex-col bg-white dark:bg-[#0a0a0b] border-r border-gray-100 dark:border-white/[0.05] overflow-hidden">
             <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex items-center gap-2.5 shrink-0 shadow-sm">
-                <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-gray-600 dark:text-gray-400"><Users size={16} /></div>
+                <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-sub"><Users size={16} /></div>
                 <SectionHeader title={tp('sidebar.title', { defaultValue: 'Guests' })} variant="title" />
             </div>
 
             {classes.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center p-6 text-sm text-gray-400 text-center">{tp('sidebar.noClass', { defaultValue: 'No classes to bill today.' })}</div>
+                <div className="flex-1 flex items-center justify-center p-6 text-sm text-sub text-center">{tp('sidebar.noClass', { defaultValue: 'No classes to bill today.' })}</div>
             ) : (
                 <div className="flex-1 overflow-y-auto space-y-4 no-scrollbar">
                     {/* Una card per KITCHEN: header (nome + totale clienti) + card gruppo/cliente sotto */}
                     {!focus ? (
-                        <div className="py-8 text-center text-sm text-gray-400">{tp('sidebar.noGuestsSession', { defaultValue: 'No guests for this class.' })}</div>
+                        <div className="py-8 text-center text-sm text-sub">{tp('sidebar.noGuestsSession', { defaultValue: 'No guests for this class.' })}</div>
                     ) : teachers.map(tt => (
                         <div key={tt.id}>
                             <div className="px-4 py-4 flex items-center justify-between bg-gray-50/50 dark:bg-white/[0.02]">
-                                <span className="text-base font-black tracking-tight text-gray-800 dark:text-gray-100 truncate">{tt.name}</span>
+                                <span className="text-base font-black tracking-tight text-body truncate">{tt.name}</span>
                                 <BadgePaxNumber paxCount={tt.pax} size="lg" />
                             </div>
                             <div className="px-3 py-5 space-y-4">
-                                {tt.parents.length === 0 && <div className="px-2 py-1.5 text-xs italic text-gray-400">{t('groupsPlanner.colEmpty', { defaultValue: 'No guests' })}</div>}
+                                {tt.parents.length === 0 && <div className="px-2 py-1.5 text-xs italic text-sub">{t('groupsPlanner.colEmpty', { defaultValue: 'No guests' })}</div>}
                                 {tt.parents.map(p => {
                                     const kids = tt.childrenOf.get(p.internal_id) || [];
                                     return (

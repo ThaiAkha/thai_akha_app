@@ -86,8 +86,8 @@ const StatCard: React.FC<StatCardProps> = ({
                 </div>
             </div>
             <div>
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">{title}</p>
-                <Numeric variant="stat" className="block tracking-tighter text-gray-900 dark:text-white">{value}</Numeric>
+                <p className="text-xs font-black uppercase tracking-widest text-sub mb-1">{title}</p>
+                <Numeric variant="stat" className="block tracking-tighter text-title">{value}</Numeric>
             </div>
         </Card>
     );

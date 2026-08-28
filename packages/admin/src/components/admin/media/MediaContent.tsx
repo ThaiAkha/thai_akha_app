@@ -83,7 +83,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                                 </>
                                             }
                                             footerLeft={
-                                                <p className="text-xs font-mono font-bold text-gray-400 tracking-tighter uppercase truncate max-w-[100px]">
+                                                <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate max-w-[100px]">
                                                     {asset.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
                                                 </p>
                                             }
@@ -117,15 +117,15 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                 checked={selectedIds.size === filteredAssets.length && filteredAssets.length > 0}
                                 onChange={onToggleSelectAll}
                             />
-                            <span className="text-xs font-black uppercase tracking-widest text-gray-400">{t('content.table.colMedia')}</span>
+                            <span className="text-xs font-black uppercase tracking-widest text-sub">{t('content.table.colMedia')}</span>
                         </div>
-                        <div className="px-5 py-3 text-xs font-black uppercase tracking-widest text-gray-400 border-r border-gray-100 dark:border-gray-900/50">
+                        <div className="px-5 py-3 text-xs font-black uppercase tracking-widest text-sub border-r border-gray-100 dark:border-gray-900/50">
                             {t('content.table.colIdentity')}
                         </div>
-                        <div className="px-5 py-3 text-xs font-black uppercase tracking-widest text-gray-400 border-r border-gray-100 dark:border-gray-900/50">
+                        <div className="px-5 py-3 text-xs font-black uppercase tracking-widest text-sub border-r border-gray-100 dark:border-gray-900/50">
                             {t('content.table.colSpecs')}
                         </div>
-                        <div className="px-5 py-3 text-xs font-black uppercase tracking-widest text-gray-400 text-right">
+                        <div className="px-5 py-3 text-xs font-black uppercase tracking-widest text-sub text-right">
                             {t('content.table.colContext')}
                         </div>
                     </div>
@@ -161,10 +161,10 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                     <div className="px-5 py-4 flex flex-col gap-1.5 h-full border-r border-gray-100/50 dark:border-white/5 justify-center">
                                         <span className="text-xs font-black text-primary-500 uppercase tracking-widest">Asset ID: {asset.asset_id || 'NOT_SET'}</span>
                                         <div className="flex flex-col">
-                                            <p className="text-xs font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mb-1 truncate max-w-[200px]">
+                                            <p className="text-xs font-black text-title tracking-tight leading-none mb-1 truncate max-w-[200px]">
                                                 {asset.file_name}
                                             </p>
-                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-tighter truncate max-w-[200px]">
+                                            <p className="text-xs text-sub font-bold uppercase tracking-tighter truncate max-w-[200px]">
                                                 {asset.title || t('content.table.untitledReference')}
                                             </p>
                                         </div>
@@ -172,7 +172,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                             <span className="px-1.5 py-0.5 rounded bg-emerald-500/5 border border-emerald-500/20 text-xs font-black text-emerald-600 uppercase tracking-widest">
                                                 /{asset.folder_path || 'root'}
                                             </span>
-                                            <span className="text-xs font-mono font-bold text-gray-400 uppercase tracking-tighter">
+                                            <span className="text-xs font-mono font-bold text-sub uppercase tracking-tighter">
                                                 {asset.mime_type}
                                             </span>
                                         </div>
@@ -181,18 +181,18 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                     {/* Column 3: Tech Metrics */}
                                     <div className="px-5 py-4 flex flex-col gap-2 h-full border-r border-gray-100/50 dark:border-white/5 justify-center">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-black text-gray-600 dark:text-gray-300 italic">{asset.size_kb || 0} KB</span>
-                                            <span className="text-xs text-gray-400">|</span>
-                                            <span className="text-xs font-bold text-gray-500">{asset.width || '?'} × {asset.height || '?'}</span>
+                                            <span className="text-xs font-black text-sub italic">{asset.size_kb || 0} KB</span>
+                                            <span className="text-xs text-sub">|</span>
+                                            <span className="text-xs font-bold text-sub">{asset.width || '?'} × {asset.height || '?'}</span>
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest truncate max-w-[150px]">
+                                            <p className="text-xs font-bold text-sub uppercase tracking-widest truncate max-w-[150px]">
                                                 © {asset.copyright || 'Thai Akha'}
                                             </p>
                                             {asset.tags && asset.tags.length > 0 && (
                                                 <div className="flex gap-1 flex-wrap">
                                                     {asset.tags.slice(0, 2).map((t: string) => (
-                                                        <span key={t} className="text-xs font-black bg-gray-100 dark:bg-white/5 px-1 rounded text-gray-400 uppercase">#{t}</span>
+                                                        <span key={t} className="text-xs font-black bg-gray-100 dark:bg-white/5 px-1 rounded text-sub uppercase">#{t}</span>
                                                     ))}
                                                 </div>
                                             )}
@@ -203,8 +203,8 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                     <div className="px-5 py-4 text-right flex items-center justify-end gap-6 h-full">
                                         <div className="hidden xl:flex flex-col items-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                                             <div className="flex items-center gap-1.5">
-                                                <span className="text-xs font-black text-gray-400 uppercase">Created:</span>
-                                                <span className="text-xs font-mono text-gray-500">{asset.created_at ? new Date(asset.created_at).toLocaleDateString(getLocale(i18n.language)) : 'N/A'}</span>
+                                                <span className="text-xs font-black text-sub uppercase">Created:</span>
+                                                <span className="text-xs font-mono text-sub">{asset.created_at ? new Date(asset.created_at).toLocaleDateString(getLocale(i18n.language)) : 'N/A'}</span>
                                             </div>
                                             {asset.is_ai_generated && (
                                                 <span className="text-xs font-black text-orange-500 uppercase tracking-tighter bg-orange-500/5 px-1.5 py-0.5 rounded border border-orange-500/10 flex items-center gap-1">

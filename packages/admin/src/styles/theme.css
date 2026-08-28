@@ -16,6 +16,35 @@
   --font-sans:    Roboto, 'Noto Sans Thai', sans-serif;
   --font-display: Inter, 'Noto Sans Thai', sans-serif;
   --font-accent:  Inter, 'Noto Sans Thai', sans-serif;
+
+  /* ============================================================================
+     TESTO SEMANTICO — genera text-title / text-body / text-sub / text-muted
+     ============================================================================
+     I token vivevano in tokens.css come sole variabili CSS: nessuna utility li
+     leggeva, e infatti la baseline DS ha trovato `text-title` fra le "classi morte"
+     (qualcuno ci aveva provato, non usciva CSS). Qui li si collega, come fa gia' il
+     front. Puntano a `var(--text-*)`, che html.dark ridefinisce: una classe sola
+     che si adatta al tema, invece della coppia `text-gray-600 dark:text-gray-400`
+     scritta a mano ogni volta - che e' la fonte dei fallimenti di contrasto.
+
+     Gerarchia (caso peggiore fra pagina e card):
+       text-title 17.97 · text-body 7.94 · text-sub 4.59  →  tutti AA
+       text-muted 4.10  →  AA-LARGE soltanto: testo grande o decorazione, mai
+                           testo essenziale a dimensione normale. */
+  --color-title: var(--text-title);
+  --color-body:  var(--text-body);
+  --color-sub:   var(--text-sub);
+  --color-muted: var(--text-muted);
+
+  /* Superfici e bordi, stessa logica: genera bg-background / bg-surface /
+     bg-surface-2 / border-border / border-border-2. `bg-surface` e `border-border`
+     erano gia' scritte nel codice ma non producevano nulla - erano fra le classi
+     morte trovate dalla baseline. Ora funzionano. */
+  --color-background: var(--bg);
+  --color-surface:    var(--surface);
+  --color-surface-2:  var(--surface-2);
+  --color-border:     var(--border);
+  --color-border-2:   var(--border-2);
 }
 
 /* Override for Thai language — prioritize Noto Sans Thai for better readability */

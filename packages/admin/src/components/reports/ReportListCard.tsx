@@ -28,7 +28,7 @@ const ReportListCard: React.FC<ReportListCardProps> = ({ title, amount, amountSu
         )}
     >
         <div className="flex items-center justify-between gap-2">
-            <div className="text-lg font-bold text-gray-900 dark:text-white min-w-0 truncate">{title}</div>
+            <div className="text-lg font-bold text-title min-w-0 truncate">{title}</div>
             {amount != null && (
                 <span className="font-mono text-lg font-black text-primary-600 dark:text-primary-400 shrink-0">{amount} {amountSuffix}</span>
             )}

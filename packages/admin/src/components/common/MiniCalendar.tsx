@@ -66,7 +66,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
                             ? "bg-primary-600 text-white shadow-md shadow-primary-500/20"
                             : isToday
                                 ? "bg-primary-50 text-primary-600 border border-primary-200 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800"
-                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                : "text-body hover:bg-gray-100 dark:hover:bg-gray-800"
                     )}
                 >
                     {d}
@@ -80,14 +80,14 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
     return (
         <div className={cn("p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm", className)}>
             <div className="flex items-center justify-between mb-4 px-1">
-                <h6 className="text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                <h6 className="text-xs font-black uppercase tracking-widest text-sub">
                     {viewDate.toLocaleString(getLocaleCode(i18n.language), { month: 'long', year: 'numeric' })}
                 </h6>
                 <div className="flex gap-1">
-                    <button onClick={handlePrevMonth} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors text-gray-500">
+                    <button onClick={handlePrevMonth} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors text-sub">
                         <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button onClick={handleNextMonth} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors text-gray-500">
+                    <button onClick={handleNextMonth} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors text-sub">
                         <ChevronRight className="w-4 h-4" />
                     </button>
                 </div>
@@ -95,7 +95,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
 
             <div className="grid grid-cols-7 gap-1 text-center mb-2">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                    <div key={i} className="text-xs font-black text-gray-400 uppercase">{day}</div>
+                    <div key={i} className="text-xs font-black text-sub uppercase">{day}</div>
                 ))}
             </div>
 

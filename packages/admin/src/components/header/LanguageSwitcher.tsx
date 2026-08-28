@@ -25,7 +25,7 @@ export const LanguageSwitcher: React.FC = () => {
       className="flex items-center gap-1.5 h-10 px-3 rounded-lg
                  hover:bg-gray-100 dark:hover:bg-gray-800
                  transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                 text-gray-600 dark:text-gray-400"
+                 text-sub"
       aria-label={`Switch language — current: ${lang}`}
     >
       <Globe className="w-4 h-4 shrink-0" />

@@ -31,10 +31,10 @@ const LegalModal: React.FC<LegalModalProps> = ({ document, isOpen, onClose }) =>
         {/* Header */}
         <div className="flex-none px-6 sm:px-8 py-6 border-b border-gray-200 dark:border-gray-800">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-gray-800 dark:text-white/90 uppercase tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-body uppercase tracking-tight">
               {document.title}
             </h1>
-            <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-xs sm:text-sm font-medium text-sub mt-2">
               Effective: {formatDate(document.effectiveDate)}
             </p>
           </div>

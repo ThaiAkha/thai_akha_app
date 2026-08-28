@@ -28,11 +28,11 @@ export const PackStepper: React.FC<PackStepperProps> = ({ qty, onIncrement, onDe
         aria-label="Remove one pack"
         disabled={disabled || qty <= 0}
         onClick={stop(onDecrement)}
-        className={cn(BTN, btnSize, 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-primary-400 hover:text-primary-600 active:scale-95')}
+        className={cn(BTN, btnSize, 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sub hover:border-primary-400 hover:text-primary-600 active:scale-95')}
       >
         <Minus className={icon} />
       </button>
-      <span className={cn('font-mono font-black tabular-nums text-center text-gray-900 dark:text-white', sm ? 'min-w-7 text-sm' : lg ? 'min-w-12 text-2xl' : 'min-w-9 text-xl')}>{qty}</span>
+      <span className={cn('font-mono font-black tabular-nums text-center text-title', sm ? 'min-w-7 text-sm' : lg ? 'min-w-12 text-2xl' : 'min-w-9 text-xl')}>{qty}</span>
       <button
         type="button"
         aria-label="Add one pack"

@@ -50,11 +50,11 @@ const AgencyLegalPage: React.FC<AgencyLegalPageProps> = ({ docKey, pageSlug }) =
 
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2rem] p-6 sm:p-10 shadow-sm">
           {loading && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
+            <p className="text-sm text-sub">Loading...</p>
           )}
 
           {!loading && !doc && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-sub">
               This document is not available right now. Please contact us.
             </p>
           )}
@@ -62,11 +62,11 @@ const AgencyLegalPage: React.FC<AgencyLegalPageProps> = ({ docKey, pageSlug }) =
           {!loading && doc && (
             <>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-6 mb-6 border-b border-gray-100 dark:border-gray-800">
-                <span className="text-xs font-black uppercase tracking-widest text-gray-400">
+                <span className="text-xs font-black uppercase tracking-widest text-sub">
                   Version {doc.version}
                 </span>
                 {doc.lastUpdated && (
-                  <span className="text-xs font-medium text-gray-400">
+                  <span className="text-xs font-medium text-sub">
                     Last updated: {doc.lastUpdated}
                   </span>
                 )}

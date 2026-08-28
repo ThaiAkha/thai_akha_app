@@ -45,13 +45,13 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
               className="p-2 hover:bg-white dark:hover:bg-gray-800 rounded-md cursor-pointer border-b border-gray-100 last:border-0 flex justify-between items-center group"
             >
               <div>
-                <p className="font-bold text-sm text-gray-800 dark:text-gray-200">
+                <p className="font-bold text-sm text-body">
                   {userMode === 'agency' && u.agency_company_name ? u.agency_company_name : u.full_name}
                 </p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xs text-gray-500">{u.email}</p>
+                  <p className="text-xs text-sub">{u.email}</p>
                   {userMode === 'agency' && u.agency_company_name && (
-                    <p className="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">
+                    <p className="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sub">
                       {u.full_name}
                     </p>
                   )}
@@ -63,7 +63,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
             </div>
           ))}
           {searchResults.length === 0 && (
-            <p className="text-xs text-center text-gray-400 p-2">{t('search.noUsersFound')}</p>
+            <p className="text-xs text-center text-sub p-2">{t('search.noUsersFound')}</p>
           )}
         </div>
       )}

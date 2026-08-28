@@ -17,7 +17,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
             <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 mb-4">
                     <Calendar className="w-4 h-4 text-gray-400" />
-                    <h6 className="uppercase tracking-widest text-xs font-bold text-gray-500">{t('agency.pageTitle')}</h6>
+                    <h6 className="uppercase tracking-widest text-xs font-bold text-sub">{t('agency.pageTitle')}</h6>
                 </div>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -41,7 +41,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
                             "px-3 py-1.5 rounded-full text-xs font-bold capitalize whitespace-nowrap transition-colors",
                             statusFilter === s
                                 ? "bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"
-                                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                                : "text-sub hover:bg-gray-100 dark:hover:bg-gray-700"
                         )}
                     >
                         {s}
@@ -52,7 +52,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
             {/* List */}
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
                 {loading ? (
-                    <div className="p-8 text-center text-gray-400">
+                    <div className="p-8 text-center text-sub">
                         <div className="animate-spin w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-2"></div>
                         <p className="text-xs">{t('agency.loading')}</p>
                     </div>
@@ -70,12 +70,12 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
                                 )}
                             >
                                 <div className="flex justify-between items-start mb-1">
-                                    <span className="font-bold text-gray-900 dark:text-white truncate">{b.guest_name}</span>
+                                    <span className="font-bold text-title truncate">{b.guest_name}</span>
                                     <Badge color={b.status === 'confirmed' ? 'success' : b.status === 'pending' ? 'warning' : 'error'}>
                                         {b.status}
                                     </Badge>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                <div className="flex items-center gap-2 text-xs text-sub">
                                     <Calendar className="w-3 h-3" />
                                     <span>{new Date(b.booking_date).toLocaleDateString(getLocale(i18n.language))}</span>
                                     <span>•</span>
@@ -84,7 +84,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
                             </div>
                         ))}
                         {filteredList.length === 0 && (
-                            <div className="p-8 text-center text-gray-400">
+                            <div className="p-8 text-center text-sub">
                                 <p className="text-sm">{t('agency.noBookings')}</p>
                             </div>
                         )}

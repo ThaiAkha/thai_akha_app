@@ -34,8 +34,8 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({ title, subtitl
       <div className="flex items-center gap-3 min-w-0">
         {leading}
         <div className="flex flex-col min-w-0">
-          {subtitle && <span className={cn('font-bold uppercase tracking-widest text-gray-500', lg ? 'text-sm' : 'text-xs')}>{subtitle}</span>}
-          <span className={cn('font-bold text-gray-900 dark:text-white truncate', lg ? 'text-xl' : 'text-sm')}>{title}</span>
+          {subtitle && <span className={cn('font-bold uppercase tracking-widest text-body', lg ? 'text-sm' : 'text-xs')}>{subtitle}</span>}
+          <span className={cn('font-bold text-title truncate', lg ? 'text-xl' : 'text-sm')}>{title}</span>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
@@ -44,7 +44,7 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({ title, subtitl
           <button
             onClick={onClose}
             aria-label="Close"
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            className="text-sub hover:text-body rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <X className="w-4 h-4" />
           </button>
@@ -64,8 +64,11 @@ interface InspectorEmptyProps {
   hint: string;
 }
 
+// Era grigio-300 in light, grigio-600 in dark, per giunta con opacity-60: 1.52 di
+// contrasto, cioe' un messaggio che l'utente deve poter leggere reso quasi invisibile.
+// `text-sub` e' AA in entrambi i temi e resta comunque piu' tenue del corpo.
 export const InspectorEmpty: React.FC<InspectorEmptyProps> = ({ icon, hint }) => (
-  <div className="h-full flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 opacity-60 space-y-2">
+  <div className="h-full flex flex-col items-center justify-center text-sub space-y-2">
     {icon}
     <span className="text-xs font-medium">{hint}</span>
   </div>

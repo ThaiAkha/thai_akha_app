@@ -69,10 +69,10 @@ function FieldRow({ label, value, onCopy, copied, multiline, href }: FieldRowPro
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-black uppercase tracking-widest text-gray-400">{label}</span>
+        <span className="text-xs font-black uppercase tracking-widest text-sub">{label}</span>
         <div className="flex items-center gap-1">
           {href && value && (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="p-1 text-gray-400 hover:text-primary-500 transition-colors" title="Open">
+            <a href={href} target="_blank" rel="noopener noreferrer" className="p-1 text-sub hover:text-primary-500 transition-colors" title="Open">
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
@@ -80,14 +80,14 @@ function FieldRow({ label, value, onCopy, copied, multiline, href }: FieldRowPro
             type="button"
             onClick={onCopy}
             disabled={empty}
-            className="p-1 text-gray-400 hover:text-primary-500 disabled:opacity-30 transition-colors"
+            className="p-1 text-sub hover:text-primary-500 disabled:opacity-30 transition-colors"
             title="Copy"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
-      <p className={`text-xs ${empty ? 'text-gray-300 italic dark:text-gray-600' : 'text-gray-700 dark:text-gray-200'} ${multiline ? 'whitespace-pre-wrap break-words' : 'truncate'}`}>
+      <p className={`text-xs ${empty ? 'text-gray-300 italic dark:text-gray-600' : 'text-body'} ${multiline ? 'whitespace-pre-wrap break-words' : 'truncate'}`}>
         {empty ? '— missing —' : value}
       </p>
     </div>
@@ -154,14 +154,14 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
         {/* Destination link — auto-derived from where the photo is used */}
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-widest text-gray-400 flex items-center gap-1">
+            <span className="text-xs font-black uppercase tracking-widest text-sub flex items-center gap-1">
               <LinkIcon className="w-3 h-3" /> Destination link
             </span>
             <div className="flex items-center gap-1">
-              <a href={link} target="_blank" rel="noopener noreferrer" className="p-1 text-gray-400 hover:text-primary-500 transition-colors" title="Open">
+              <a href={link} target="_blank" rel="noopener noreferrer" className="p-1 text-sub hover:text-primary-500 transition-colors" title="Open">
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
-              <button type="button" onClick={() => copy('link', link)} className="p-1 text-gray-400 hover:text-primary-500 transition-colors" title="Copy">
+              <button type="button" onClick={() => copy('link', link)} className="p-1 text-sub hover:text-primary-500 transition-colors" title="Copy">
                 {copied === 'link' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
@@ -170,14 +170,14 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
             <select
               value={pickIdx}
               onChange={e => setPickIdx(Number(e.target.value))}
-              className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+              className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-body"
             >
               {usages.map((u, i) => <option key={u.url} value={i}>{u.label}</option>)}
             </select>
           ) : (
-            <p className="text-xs text-gray-700 dark:text-gray-200 break-words">{link}</p>
+            <p className="text-xs text-body break-words">{link}</p>
           )}
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-sub">
             {usageLoading ? 'Finding pages that use this photo…'
               : linkIsDerived ? `Auto-derived · used in ${usages.length} place${usages.length > 1 ? 's' : ''}`
               : 'Not used on any page yet — falling back to the site'}

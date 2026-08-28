@@ -41,7 +41,7 @@ const PageHeaderWithBadge: React.FC<PageHeaderWithBadgeProps> = ({
       </Heading>
 
       {description && (
-        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-prose">
+        <p className="text-sub text-sm max-w-prose">
           {description}
         </p>
       )}

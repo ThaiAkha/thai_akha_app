@@ -48,7 +48,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                 <div className="flex justify-between items-center">
                                     <SectionHeader title={col.replace(/_/g, ' ')} />
                                     {isReadOnly && (
-                                        <span className="text-xs font-black text-gray-400 uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                                        <span className="text-xs font-black text-sub uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                                             READ ONLY
                                         </span>
                                     )}
@@ -80,7 +80,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                         );
                     })}
                     {(allColumns.length === 0 && Object.keys(selectedRow).length === 0) && (
-                        <p className="col-span-2 text-center text-gray-400 text-sm uppercase font-black py-12">No schema data available.</p>
+                        <p className="col-span-2 text-center text-sub text-sm uppercase font-black py-12">No schema data available.</p>
                     )}
                 </div>
             </div>
@@ -113,7 +113,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="flex-1 justify-center h-11 text-xs font-black text-gray-500 uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
+                                        className="flex-1 justify-center h-11 text-xs font-black text-sub uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
                                         onClick={() => onShowDeleteConfirm(false)}
                                     >
                                         CANCEL

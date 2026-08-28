@@ -38,7 +38,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
       <div className="flex flex-col h-full w-full">
         {/* CENTER HEADER */}
         <div className="h-16 shrink-0 flex items-center justify-between px-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-10">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-bold text-title">
             {activeTab === 'dashboard' ? t('tabs.overview') : `${t(`tabs.${activeTab}`)} View`}
           </h2>
         </div>
@@ -54,7 +54,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                     <div className="size-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-500">
                       <Truck className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">{t('tabs.logistics')}</h3>
+                    <h3 className="text-2xl font-black italic uppercase text-title">{t('tabs.logistics')}</h3>
                   </div>
                   {/* One shared list per shop day (Mon/Thu): edit it if it exists, otherwise create it. */}
                   {(() => {
@@ -63,8 +63,8 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                     return (
                       <div className="space-y-3">
                         <div className="text-center pb-1">
-                          <span className="block text-xs font-black uppercase tracking-widest text-gray-400">{t('labels.nextShopDay', { defaultValue: 'Next shopping day' })}</span>
-                          <span className="block text-lg font-bold text-gray-900 dark:text-white">{formatLongDate(targetDate, i18n.language)}</span>
+                          <span className="block text-xs font-black uppercase tracking-widest text-sub">{t('labels.nextShopDay', { defaultValue: 'Next shopping day' })}</span>
+                          <span className="block text-lg font-bold text-title">{formatLongDate(targetDate, i18n.language)}</span>
                         </div>
                         <Button variant="primary" size="md" className="w-full" startIcon={existing ? <Edit className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />} onClick={openLogisticList}>
                           {existing
@@ -85,7 +85,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                     <div className="size-16 rounded-2xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-500">
                       <GraduationCap className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black italic uppercase text-gray-900 dark:text-white">{t('tabs.teacher')}</h3>
+                    <h3 className="text-2xl font-black italic uppercase text-title">{t('tabs.teacher')}</h3>
                   </div>
                   <div className="space-y-3">
                     <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" size="md" startIcon={<Edit className="w-4 h-4" />} onClick={() => { setSelectedDate(new Date()); setActiveTab('teacher'); setViewMode('planner'); setFormState({}); }}>{t('buttons.newReportToday')}</Button>
@@ -112,7 +112,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                           "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                           activeShopTab === s
                             ? "bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm"
-                            : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                            : "text-sub hover:text-gray-900 dark:hover:text-gray-300"
                         )}
                       >
                         {s}
@@ -124,7 +124,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
 
               <div className="flex-1 p-6 bg-gray-50/50 dark:bg-gray-900/50">
                 {filteredLibrary.length === 0 ? (
-                  <div className="p-12 text-center text-gray-400">
+                  <div className="p-12 text-center text-sub">
                     <ShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-20" />
                     <p>{t('empty.noIngredients', { defaultValue: 'No ingredients match your search.' })}</p>
                   </div>

@@ -67,13 +67,13 @@ export default function MonthlyTarget() {
   }
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]">
-      <div className="px-5 pt-5 bg-white shadow-default rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6">
+      <div className="px-5 pt-5 bg-white rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6">
         <div className="flex justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            <h3 className="text-lg font-semibold text-body">
               {t('ecommerce.monthlyTarget')}
             </h3>
-            <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
+            <p className="mt-1 text-sub text-theme-sm">
               {t('ecommerce.monthlyTargetSubtitle')}
             </p>
           </div>
@@ -88,13 +88,13 @@ export default function MonthlyTarget() {
             >
               <DropdownItem
                 onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                className="flex w-full font-normal text-left text-sub rounded-lg hover:bg-gray-100 hover:text-body dark:hover:bg-white/5"
               >
                 {t('ecommerce.viewMore')}
               </DropdownItem>
               <DropdownItem
                 onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                className="flex w-full font-normal text-left text-sub rounded-lg hover:bg-gray-100 hover:text-body dark:hover:bg-white/5"
               >
                 {t('ecommerce.delete')}
               </DropdownItem>
@@ -115,17 +115,17 @@ export default function MonthlyTarget() {
             +10%
           </span>
         </div>
-        <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
+        <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-sub sm:text-base">
           {t('ecommerce.monthlyTargetMessage')}
         </p>
       </div>
 
       <div className="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
         <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
+          <p className="mb-1 text-center text-sub text-theme-xs sm:text-sm">
             {t('ecommerce.target')}
           </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+          <p className="flex items-center justify-center gap-1 text-base font-semibold text-body sm:text-lg">
             $20K
             <svg
               width="16"
@@ -147,10 +147,10 @@ export default function MonthlyTarget() {
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
 
         <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
+          <p className="mb-1 text-center text-sub text-theme-xs sm:text-sm">
             {t('ecommerce.revenue')}
           </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+          <p className="flex items-center justify-center gap-1 text-base font-semibold text-body sm:text-lg">
             $20K
             <svg
               width="16"
@@ -172,10 +172,10 @@ export default function MonthlyTarget() {
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
 
         <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
+          <p className="mb-1 text-center text-sub text-theme-xs sm:text-sm">
             {t('ecommerce.today')}
           </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+          <p className="flex items-center justify-center gap-1 text-base font-semibold text-body sm:text-lg">
             $20K
             <svg
               width="16"

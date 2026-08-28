@@ -17,8 +17,8 @@ const Caption: React.FC<CaptionProps> = ({
       className={cn(
         'text-xs leading-relaxed',
         muted
-          ? 'text-gray-400 dark:text-gray-500'
-          : 'text-gray-500 dark:text-gray-400',
+          ? 'text-muted'
+          : 'text-sub',
         className
       )}
     >

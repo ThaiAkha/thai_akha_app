@@ -57,7 +57,7 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                     <button
                         onClick={() => setProps(generateDefaultProps(component))}
-                        className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:scale-105"
+                        className="p-2 text-sub hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:scale-105"
                         title="Reset Props"
                     >
                         <RefreshCw className="w-4 h-4" />
@@ -97,23 +97,23 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
             {/* Controls Area (Right / Bottom) */}
             <div className="w-full lg:w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto custom-scrollbar shadow-xl z-20">
                 <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-10">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{component.name}</h2>
-                    <p className="text-sm text-gray-500 mt-1">{component.description}</p>
+                    <h2 className="text-xl font-bold text-title">{component.name}</h2>
+                    <p className="text-sm text-sub mt-1">{component.description}</p>
                 </div>
 
                 <div className="p-6 space-y-6">
                     {component.props.map(prop => (
                         <div key={prop.name} className="space-y-2">
                             <div className="flex items-baseline justify-between">
-                                <label className="text-xs font-bold uppercase text-gray-500 tracking-wider font-mono">{prop.name}</label>
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 font-mono">{prop.type}</span>
+                                <label className="text-xs font-bold uppercase text-sub tracking-wider font-mono">{prop.name}</label>
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-sub font-mono">{prop.type}</span>
                             </div>
                             <PropControl
                                 prop={prop}
                                 value={props[prop.name]}
                                 onChange={(val) => handlePropChange(prop.name, val)}
                             />
-                            {prop.description && <p className="text-xs text-gray-400">{prop.description}</p>}
+                            {prop.description && <p className="text-xs text-sub">{prop.description}</p>}
                         </div>
                     ))}
                 </div>

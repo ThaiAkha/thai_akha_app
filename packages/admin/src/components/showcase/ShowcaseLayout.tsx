@@ -44,10 +44,10 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
             {/* Sidebar */}
             <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col shrink-0">
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-                    <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
+                    <h1 className="text-xl font-black text-title tracking-tight">
                         UI <span className="text-primary-500">Showcase</span>
                     </h1>
-                    <p className="text-xs text-gray-400 uppercase tracking-widest mt-1">Component Library</p>
+                    <p className="text-xs text-sub uppercase tracking-widest mt-1">Component Library</p>
                 </div>
 
                 <div className="p-4">
@@ -77,7 +77,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
 
                         {categories.map(cat => (
                             <div key={cat.name}>
-                                <h3 className="px-3 text-xs font-black uppercase text-gray-400 tracking-widest mb-2">{cat.name}</h3>
+                                <h3 className="px-3 text-xs font-black uppercase text-sub tracking-widest mb-2">{cat.name}</h3>
                                 <div className="space-y-1">
                                     {cat.components.map(comp => (
                                         <button
@@ -94,7 +94,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                                                 "w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex items-center justify-between group",
                                                 activeComponent === comp.name
                                                     ? "text-primary-600 font-bold bg-primary-50 dark:bg-primary-900/10"
-                                                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+                                                    : "text-sub hover:text-title"
                                             )}
                                         >
                                             {comp.name}
@@ -118,8 +118,8 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold uppercase",
                                 currentMode === 'catalog'
-                                    ? "bg-white dark:bg-gray-800 shadow text-gray-900 dark:text-white"
-                                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                    ? "bg-white dark:bg-gray-800 shadow text-title"
+                                    : "text-sub hover:text-body"
                             )}
                         >
                             <LayoutGrid className="w-4 h-4" /> Catalog
@@ -129,8 +129,8 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold uppercase",
                                 currentMode === 'playground'
-                                    ? "bg-white dark:bg-gray-800 shadow text-gray-900 dark:text-white"
-                                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                    ? "bg-white dark:bg-gray-800 shadow text-title"
+                                    : "text-sub hover:text-body"
                             )}
                         >
                             <Play className="w-4 h-4" /> Playground
@@ -140,8 +140,8 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold uppercase",
                                 currentMode === 'grid'
-                                    ? "bg-white dark:bg-gray-800 shadow text-gray-900 dark:text-white"
-                                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                    ? "bg-white dark:bg-gray-800 shadow text-title"
+                                    : "text-sub hover:text-body"
                             )}
                         >
                             <Grid className="w-4 h-4" /> Grid
@@ -149,14 +149,14 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="hidden md:block px-3 py-1 bg-gray-100 dark:bg-gray-900 rounded-full text-xs font-bold text-gray-500 uppercase">
+                        <div className="hidden md:block px-3 py-1 bg-gray-100 dark:bg-gray-900 rounded-full text-xs font-bold text-sub uppercase">
                             {categories.reduce((acc, cat) => acc + cat.components.length, 0)} Components
                         </div>
                         <div className="w-px h-6 bg-gray-200 dark:bg-gray-800" />
-                        <button onClick={toggleTheme} className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
+                        <button onClick={toggleTheme} className="p-2 text-sub hover:text-gray-900 dark:hover:text-white transition-colors">
                             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
-                        <button onClick={handleFullscreen} className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors" title="Open Fullscreen">
+                        <button onClick={handleFullscreen} className="p-2 text-sub hover:text-gray-900 dark:hover:text-white transition-colors" title="Open Fullscreen">
                             <Maximize className="w-5 h-5" />
                         </button>
                     </div>

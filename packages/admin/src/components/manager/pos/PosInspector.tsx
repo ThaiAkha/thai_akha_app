@@ -86,8 +86,8 @@ const PosInspector: React.FC<PosInspectorProps> = ({
 
             <InspectorFooter>
                 <div className="flex justify-between items-end">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t('inspector.totalAmount')}</span>
-                    <span className="text-xl font-mono font-black text-gray-900 dark:text-white">{totalDue.toLocaleString()} <span className="text-xs text-gray-400 font-normal">THB</span></span>
+                    <span className="text-xs font-bold text-sub uppercase tracking-widest">{t('inspector.totalAmount')}</span>
+                    <span className="text-xl font-mono font-black text-title">{totalDue.toLocaleString()} <span className="text-xs text-sub font-normal">THB</span></span>
                 </div>
 
                 <div className="flex flex-col gap-3">

@@ -46,7 +46,7 @@ const PosContent: React.FC<PosContentProps> = ({
                                 "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase whitespace-nowrap transition-all border-2",
                                 activeCategory === cat.value
                                     ? "bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-500/20"
-                                    : "bg-white dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-900/30"
+                                    : "bg-white dark:bg-gray-800 text-sub border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-900/30"
                             )}
                         >
                             <ShoppingBag className="w-4 h-4" />
@@ -65,7 +65,7 @@ const PosContent: React.FC<PosContentProps> = ({
                             "px-4 py-1.5 rounded-full text-xs font-bold uppercase whitespace-nowrap transition-all border",
                             activeSubCategory === sub.value
                                 ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900 border-gray-900 dark:border-white shadow-sm"
-                                : "bg-transparent text-gray-500 border-transparent hover:bg-gray-100 dark:hover:bg-gray-800"
+                                : "bg-transparent text-sub border-transparent hover:bg-gray-100 dark:hover:bg-gray-800"
                         )}
                     >
                         {sub.label}
@@ -80,7 +80,7 @@ const PosContent: React.FC<PosContentProps> = ({
                             key={p.sku}
                             item={p}
                             imageUrl={p.image}
-                            imageIcon={<ShoppingBag className="w-8 h-8 text-gray-300" />}
+                            imageIcon={<ShoppingBag className="w-8 h-8 text-sub" />}
                             imageOverlay={
                                 <div className="absolute top-2 right-2 bg-black/60 px-1.5 py-0.5 rounded text-xs font-mono text-white backdrop-blur-sm">
                                     x{p.stock}
@@ -89,9 +89,9 @@ const PosContent: React.FC<PosContentProps> = ({
                             onClick={() => onAddToTab(p)}
                             renderFields={(item) => (
                                 <>
-                                    <h6 className="text-xs font-bold text-gray-900 dark:text-white uppercase truncate mb-1">{item.name}</h6>
+                                    <h6 className="text-xs font-bold text-title uppercase truncate mb-1">{item.name}</h6>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm font-mono font-black text-primary-600 dark:text-primary-400">{item.price} <span className="text-xs text-gray-400">THB</span></span>
+                                        <span className="text-sm font-mono font-black text-primary-600 dark:text-primary-400">{item.price} <span className="text-xs text-sub">THB</span></span>
                                     </div>
                                 </>
                             )}

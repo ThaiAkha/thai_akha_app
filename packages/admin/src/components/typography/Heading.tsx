@@ -24,10 +24,10 @@ const HEADING_STYLES: Record<HeadingLevel, string> = {
 };
 
 const HEADING_COLORS: Record<HeadingColor, string> = {
-  default: 'text-gray-900 dark:text-white',
+  default: 'text-title',
   onDark: 'text-white',                       // for dark surfaces (banners) — same in both modes
   brand: 'text-primary-600 dark:text-primary-400',
-  muted: 'text-gray-600 dark:text-gray-400',
+  muted: 'text-sub',
 };
 
 /** `display` is the visual hero size; it renders as a semantic <h1>. */

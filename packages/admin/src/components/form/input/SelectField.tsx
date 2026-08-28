@@ -30,7 +30,7 @@ const SelectField = ({
 
     const selectClasses = cn(
         "h-12 w-full rounded-xl border appearance-none px-4 shadow-theme-xs transition-all duration-300 outline-none ring-green-500/20",
-        "text-base font-bold bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white",
+        "text-base font-bold bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm border-gray-200 dark:border-gray-700/50 text-title",
         !disabled && "hover:border-green-500/30 focus:border-green-500 focus:ring-4",
         disabled && "bg-gray-50/50 dark:bg-gray-800/40 border-gray-200 dark:border-gray-700/50 cursor-default opacity-100",
         !disabled && success && "border-green-500 focus:border-green-500 focus:ring-green-500/20 dark:border-green-500",
@@ -41,11 +41,11 @@ const SelectField = ({
 
     const iconColor = cn(
         "transition-colors",
-        disabled && "text-gray-400 dark:text-gray-500",
+        disabled && "text-muted",
         !disabled && error && "text-red-500",
         !disabled && success && "text-emerald-500",
         !disabled && !error && !success && isFocused && "text-green-500",
-        !disabled && !error && !success && !isFocused && "text-gray-400 group-hover/select:text-green-500"
+        !disabled && !error && !success && !isFocused && "text-sub group-hover/select:text-green-500"
     );
 
     return (
@@ -79,7 +79,7 @@ const SelectField = ({
             {hint && (
                 <p className={cn(
                     "mt-1.5 text-xs font-black uppercase tracking-widest",
-                    error ? "text-red-500" : success ? "text-emerald-500" : "text-gray-500"
+                    error ? "text-red-500" : success ? "text-emerald-500" : "text-sub"
                 )}>
                     {hint}
                 </p>

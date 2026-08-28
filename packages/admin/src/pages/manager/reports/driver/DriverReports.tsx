@@ -40,7 +40,7 @@ const WeekCard: React.FC<{ d: DriverReportsState; driver: DriverReport; w: WeekG
             title={fmtRange(w.start, w.end)}
             amount={w.total.toLocaleString()}
             meta={<>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{w.rows.length} runs</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-sub">{w.rows.length} runs</span>
                 <ReportStatusBadge tone={w.archived ? 'green' : w.fullyPaid ? 'blue' : 'amber'}>
                     {w.archived ? t('driverPayouts.billed', { defaultValue: 'Billed' }) : w.fullyPaid ? t('driverPayouts.paid', { defaultValue: 'Paid' }) : `${w.pendingCount} ${t('driverPayouts.pending', { defaultValue: 'pending' })}`}
                 </ReportStatusBadge>
@@ -66,7 +66,7 @@ export const DriverCenter: React.FC<Props> = ({ d, view }) => {
                                 <DriverHeading>{dr.name}</DriverHeading>
                             </div>
                             {active.length === 0 ? (
-                                <div className="px-1 text-sm text-gray-400">{t('reports.nothingPending', { defaultValue: 'Nothing in progress.' })}</div>
+                                <div className="px-1 text-sm text-sub">{t('reports.nothingPending', { defaultValue: 'Nothing in progress.' })}</div>
                             ) : (
                                 <div className="space-y-2">{active.map(w => <WeekCard key={w.key} d={d} driver={dr} w={w} />)}</div>
                             )}
@@ -81,9 +81,9 @@ export const DriverCenter: React.FC<Props> = ({ d, view }) => {
     return (
         <div className="p-4">
             {!archiveDriver ? (
-                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3 py-20">
+                <div className="h-full flex flex-col items-center justify-center text-sub gap-3 py-20">
                     <Archive className="w-10 h-10 opacity-40" />
-                    <SectionTitle className="text-gray-400">{t('reports.pickDriverHint', { defaultValue: 'Select a driver to see archived reports.' })}</SectionTitle>
+                    <SectionTitle className="text-sub">{t('reports.pickDriverHint', { defaultValue: 'Select a driver to see archived reports.' })}</SectionTitle>
                 </div>
             ) : (() => {
                 const archived = archiveDriver.weeks.filter(w => w.archived);
@@ -94,7 +94,7 @@ export const DriverCenter: React.FC<Props> = ({ d, view }) => {
                             <DriverHeading>{archiveDriver.name}</DriverHeading>
                         </div>
                         {archived.length === 0 ? (
-                            <div className="px-1 text-sm text-gray-400">{t('reports.noArchive', { defaultValue: 'No archived reports.' })}</div>
+                            <div className="px-1 text-sm text-sub">{t('reports.noArchive', { defaultValue: 'No archived reports.' })}</div>
                         ) : (
                             <div className="space-y-2">{archived.map(w => <WeekCard key={w.key} d={d} driver={archiveDriver} w={w} />)}</div>
                         )}
@@ -145,12 +145,12 @@ export const DriverInspector: React.FC<{ d: DriverReportsState }> = ({ d }) => {
                                 <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
                                     <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
                                         {STOPS_RANGES.map(rg => (
-                                            <button key={rg} onClick={() => d.setEditing({ ...editing, range: rg })} className={cn('flex-1 px-2 h-8 rounded-md text-xs font-bold transition-all', editing.range === rg ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200')}>{rg === '7plus' ? '7+' : rg}</button>
+                                            <button key={rg} onClick={() => d.setEditing({ ...editing, range: rg })} className={cn('flex-1 px-2 h-8 rounded-md text-xs font-bold transition-all', editing.range === rg ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-sub hover:text-gray-900 dark:hover:text-gray-200')}>{rg === '7plus' ? '7+' : rg}</button>
                                         ))}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <label className="text-xs font-bold uppercase text-gray-400">pax</label>
-                                        <input type="number" min={0} value={editing.pax} onChange={(e) => d.setEditing({ ...editing, pax: e.target.value })} className="w-20 h-9 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" />
+                                        <label className="text-xs font-bold uppercase text-sub">pax</label>
+                                        <input type="number" min={0} value={editing.pax} onChange={(e) => d.setEditing({ ...editing, pax: e.target.value })} className="w-20 h-9 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" />
                                         <div className="flex-1" />
                                         <Button variant="primary" size="sm" disabled={busy} startIcon={<Check className="w-4 h-4" />} onClick={d.handleSaveEdit}>{t('driverPayouts.save', { defaultValue: 'Save' })}</Button>
                                         <Button variant="outline" size="sm" disabled={busy} startIcon={<X className="w-4 h-4" />} onClick={() => d.setEditing(null)}>{t('driverPayouts.cancel', { defaultValue: 'Cancel' })}</Button>
@@ -163,8 +163,8 @@ export const DriverInspector: React.FC<{ d: DriverReportsState }> = ({ d }) => {
             </InspectorBody>
             <InspectorFooter className="pb-[80px]">
                 <div className="flex justify-between items-end">
-                    <SectionTitle className="text-gray-400 mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
-                    <span className="font-mono text-2xl font-black text-gray-900 dark:text-white">{week.total.toLocaleString()} <span className="text-sm text-gray-400 font-normal">THB</span></span>
+                    <SectionTitle className="text-sub mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
+                    <span className="font-mono text-2xl font-black text-title">{week.total.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     <Button variant="outline" size="sm" disabled={reportBusy} startIcon={<Printer className="w-4 h-4" />} onClick={() => d.handleReport(selDriver.id, selDriver.name, week, 'print')}>{t('driverPayouts.print', { defaultValue: 'Print' })}</Button>

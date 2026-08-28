@@ -23,7 +23,7 @@ export default function NotFound() {
             {t("notFound.code")}
           </div>
 
-          <p className="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
+          <p className="mt-10 mb-6 text-base text-body sm:text-lg">
             {t("notFound.message")}
           </p>
 
@@ -35,7 +35,7 @@ export default function NotFound() {
           </Link>
         </div>
         {/* <!-- Footer --> */}
-        <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
+        <p className="absolute text-sm text-center text-sub -translate-x-1/2 bottom-6 left-1/2">
           &copy; {t("notFound.copyright", { year: new Date().getFullYear() })}
         </p>
       </div>

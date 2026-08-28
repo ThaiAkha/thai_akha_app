@@ -146,7 +146,7 @@ const AgencyReports: React.FC = () => {
         } finally { setBusy(false); }
     };
 
-    if (loading) return <div className="p-8 text-center uppercase font-black text-gray-400">{t('agencyReport.loading', { defaultValue: 'Loading…' })}</div>;
+    if (loading) return <div className="p-8 text-center uppercase font-black text-sub">{t('agencyReport.loading', { defaultValue: 'Loading…' })}</div>;
 
     const selectableUnpaid = invoices.filter(i => i.status === 'unpaid');
 
@@ -166,8 +166,8 @@ const AgencyReports: React.FC = () => {
                                     <div className={cn("size-12 rounded-2xl flex items-center justify-center text-white",
                                         selectedMetric === metric.id ? "bg-primary-600 shadow-lg shadow-primary-500/40" : "bg-gray-100 dark:bg-gray-800 text-gray-500")}>{metric.icon}</div>
                                 </div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{metric.title}</h4>
-                                <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">{metric.value}</p>
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-sub mb-1">{metric.title}</h4>
+                                <p className="text-3xl font-black text-title tracking-tighter">{metric.value}</p>
                             </div>
                         ))}
                     </div>
@@ -176,34 +176,34 @@ const AgencyReports: React.FC = () => {
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] p-8 shadow-sm">
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white leading-none mb-1">{t('agencyReport.tierTitle', { defaultValue: 'Commission tier' })}</h4>
-                                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{t('agencyReport.tierSub', { defaultValue: 'Rolling 3-month cycle' })}</p>
+                                <h4 className="text-xl font-black uppercase italic text-title leading-none mb-1">{t('agencyReport.tierTitle', { defaultValue: 'Commission tier' })}</h4>
+                                <p className="text-[10px] font-black uppercase text-sub tracking-widest">{t('agencyReport.tierSub', { defaultValue: 'Rolling 3-month cycle' })}</p>
                             </div>
                             {tierProgress && <Badge variant="light" color="info">{tierProgress.tier} · ฿{tierProgress.rate}/pax</Badge>}
                         </div>
                         {tierProgress ? (
                             <>
                                 <div className="flex items-end justify-between mb-2">
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{tierProgress.prior} {t('agencyReport.paxInCycle', { defaultValue: 'pax this cycle' })}</span>
+                                    <span className="text-sm font-bold text-body">{tierProgress.prior} {t('agencyReport.paxInCycle', { defaultValue: 'pax this cycle' })}</span>
                                     {tierProgress.next
-                                        ? <span className="text-xs font-black uppercase text-gray-400">{tierProgress.next.min_pax - tierProgress.prior} {t('agencyReport.toNext', { defaultValue: 'pax to' })} {tierProgress.next.tier} (฿{tierProgress.next.rate})</span>
+                                        ? <span className="text-xs font-black uppercase text-sub">{tierProgress.next.min_pax - tierProgress.prior} {t('agencyReport.toNext', { defaultValue: 'pax to' })} {tierProgress.next.tier} (฿{tierProgress.next.rate})</span>
                                         : <span className="text-xs font-black uppercase text-green-500">{t('agencyReport.topTier', { defaultValue: 'Top tier reached' })}</span>}
                                 </div>
                                 <div className="h-3 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
                                     <div className="h-full bg-primary-600 rounded-full transition-all" style={{ width: `${tierProgress.pct}%` }} />
                                 </div>
                             </>
-                        ) : <p className="text-sm text-gray-400">{t('agencyReport.noTier', { defaultValue: 'Commission tier not configured.' })}</p>}
+                        ) : <p className="text-sm text-sub">{t('agencyReport.noTier', { defaultValue: 'Commission tier not configured.' })}</p>}
                     </div>
 
                     {/* REPORT DOWNLOAD / PRINT */}
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div>
-                            <h4 className="text-lg font-black uppercase text-gray-900 dark:text-white leading-none mb-1">{t('agencyReport.statement', { defaultValue: 'Bookings statement' })}</h4>
-                            <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{t('agencyReport.statementSub', { defaultValue: 'PDF of all your bookings' })}</p>
+                            <h4 className="text-lg font-black uppercase text-title leading-none mb-1">{t('agencyReport.statement', { defaultValue: 'Bookings statement' })}</h4>
+                            <p className="text-[10px] font-black uppercase text-sub tracking-widest">{t('agencyReport.statementSub', { defaultValue: 'PDF of all your bookings' })}</p>
                         </div>
                         <div className="flex gap-3">
-                            <button disabled={reportBusy} onClick={() => handleReport('print')} className="inline-flex items-center gap-2 px-5 h-12 rounded-2xl border border-gray-200 dark:border-gray-700 font-black uppercase text-xs tracking-wider text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"><Printer className="w-4 h-4" />{t('agencyReport.print', { defaultValue: 'Print' })}</button>
+                            <button disabled={reportBusy} onClick={() => handleReport('print')} className="inline-flex items-center gap-2 px-5 h-12 rounded-2xl border border-gray-200 dark:border-gray-700 font-black uppercase text-xs tracking-wider text-body hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"><Printer className="w-4 h-4" />{t('agencyReport.print', { defaultValue: 'Print' })}</button>
                             <button disabled={reportBusy} onClick={() => handleReport('download')} className="inline-flex items-center gap-2 px-5 h-12 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black uppercase text-xs tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"><Download className="w-4 h-4" />PDF</button>
                         </div>
                     </div>
@@ -215,14 +215,14 @@ const AgencyReports: React.FC = () => {
                         <div className="flex items-center gap-4 mb-6">
                             <div className="size-14 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-lg"><FileText className="w-6 h-6" /></div>
                             <div>
-                                <h4 className="text-xl font-black uppercase text-gray-900 dark:text-white leading-none mb-1">{t('agencyReport.invoices', { defaultValue: 'Invoices' })}</h4>
-                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{t('agencyReport.invoicesSub', { defaultValue: 'Pay & track status' })}</p>
+                                <h4 className="text-xl font-black uppercase text-title leading-none mb-1">{t('agencyReport.invoices', { defaultValue: 'Invoices' })}</h4>
+                                <p className="text-[10px] text-sub font-black uppercase tracking-widest">{t('agencyReport.invoicesSub', { defaultValue: 'Pay & track status' })}</p>
                             </div>
                         </div>
 
                         <div className="flex-1 space-y-3">
                             {invoices.length === 0 ? (
-                                <div className="py-10 text-center text-[10px] font-black uppercase text-gray-400">{t('agencyReport.noInvoices', { defaultValue: 'No invoices yet.' })}</div>
+                                <div className="py-10 text-center text-[10px] font-black uppercase text-sub">{t('agencyReport.noInvoices', { defaultValue: 'No invoices yet.' })}</div>
                             ) : invoices.map((inv) => {
                                 const badge = STATUS_BADGE[inv.status];
                                 const selectable = inv.status === 'unpaid';
@@ -234,12 +234,12 @@ const AgencyReports: React.FC = () => {
                                             checked ? "border-primary-500 bg-primary-50/50 dark:bg-primary-500/5" : "bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 hover:border-primary-500/30")}>
                                         <div className="flex items-center gap-3 min-w-0">
                                             {selectable && <input type="checkbox" readOnly checked={checked} className="size-4 accent-primary-600 shrink-0" />}
-                                            <div className="size-8 rounded-xl bg-white dark:bg-gray-700 flex items-center justify-center text-gray-400 shrink-0">
+                                            <div className="size-8 rounded-xl bg-white dark:bg-gray-700 flex items-center justify-center text-sub shrink-0">
                                                 {inv.status === 'paid' ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : inv.status === 'declared' ? <Clock className="w-4 h-4 text-blue-500" /> : <TrendingUp className="w-4 h-4" />}
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="text-xs font-black uppercase text-gray-900 dark:text-white truncate">{inv.zoho_invoice_number || t('agencyReport.invoice', { defaultValue: 'Invoice' })}</div>
-                                                <div className="text-[10px] font-bold text-gray-400">฿{Number(inv.amount).toLocaleString()} · {inv.booking_ids?.length || 0} bk</div>
+                                                <div className="text-xs font-black uppercase text-title truncate">{inv.zoho_invoice_number || t('agencyReport.invoice', { defaultValue: 'Invoice' })}</div>
+                                                <div className="text-[10px] font-bold text-sub">฿{Number(inv.amount).toLocaleString()} · {inv.booking_ids?.length || 0} bk</div>
                                             </div>
                                         </div>
                                         <Badge variant="light" color={badge.color} size="sm">{badge.label}</Badge>
@@ -251,7 +251,7 @@ const AgencyReports: React.FC = () => {
                         {/* PAY FLOW — only when unpaid invoices selected */}
                         {selectableUnpaid.length > 0 && (
                             <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
-                                <label className="flex items-center gap-2 px-4 h-11 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 cursor-pointer text-xs font-bold text-gray-500 hover:border-primary-500">
+                                <label className="flex items-center gap-2 px-4 h-11 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 cursor-pointer text-xs font-bold text-sub hover:border-primary-500">
                                     <Upload className="w-4 h-4" />
                                     <span className="truncate">{proofFile ? proofFile.name : t('agencyReport.attachProof', { defaultValue: 'Attach payment screenshot' })}</span>
                                     <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => setProofFile(e.target.files?.[0] || null)} />
@@ -260,7 +260,7 @@ const AgencyReports: React.FC = () => {
                                     className="w-full bg-primary-600 text-white h-12 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:scale-100">
                                     {busy ? t('agencyReport.sending', { defaultValue: 'Sending…' }) : `${t('agencyReport.markPaid', { defaultValue: 'Mark as paid' })} (${selectedInv.length})`}
                                 </button>
-                                <p className="text-center text-[10px] font-bold text-gray-400">{t('agencyReport.payHint', { defaultValue: 'The manager confirms receipt before the invoice is closed.' })}</p>
+                                <p className="text-center text-[10px] font-bold text-sub">{t('agencyReport.payHint', { defaultValue: 'The manager confirms receipt before the invoice is closed.' })}</p>
                             </div>
                         )}
                     </div>

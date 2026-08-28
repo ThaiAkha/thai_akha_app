@@ -54,7 +54,7 @@ function NavItem({ icon, label, href, isActive, onClick, isOpen }: NavItemProps)
       <div className={`${RAIL} shrink-0 flex items-center justify-center pr-4 z-10`}>
         <IconComponent className={`
           ${ROW_ICON} transition-transform duration-300 group-active:scale-95
-          ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}
+          ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-sub'}
         `} />
       </div>
       <div className={`
@@ -62,7 +62,7 @@ function NavItem({ icon, label, href, isActive, onClick, isOpen }: NavItemProps)
         transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left
         ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-5 pointer-events-none'}
       `}>
-        <span className={`font-display font-bold tracking-wide text-base pointer-coarse:text-sm ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}`}>
+        <span className={`font-display font-bold tracking-wide text-base pointer-coarse:text-sm ${isActive ? 'text-primary-500 dark:text-primary-400' : 'text-body'}`}>
           {label}
         </span>
       </div>
@@ -189,7 +189,7 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       style={{ transitionDuration: SIDEBAR_TRANSITION }}
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen ${SIDEBAR_Z_INDEX} border-r border-gray-100
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-title h-screen ${SIDEBAR_Z_INDEX} border-r border-gray-100
         transition-all ease-[cubic-bezier(0.32,0.72,0,1)]
         ${isSidebarOpen ? "w-80 pointer-coarse:w-72" : RAIL}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -211,7 +211,7 @@ const AppSidebar: React.FC = () => {
             </Link>
           </div>
           <div className={`overflow-hidden whitespace-nowrap transition-all duration-500 ${isSidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-            <span className="font-display font-black text-2xl tracking-tighter text-gray-900 dark:text-white">
+            <span className="font-display font-black text-2xl tracking-tighter text-title">
               Thai <span className="text-primary-500">Akha</span>
             </span>
           </div>

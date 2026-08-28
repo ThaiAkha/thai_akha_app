@@ -140,14 +140,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             {/* HEADER */}
             <div className="flex items-center justify-between p-6 md:p-8 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 backdrop-blur-xl shrink-0">
                 <div>
-                    <span className="block text-xs font-black uppercase tracking-[0.3em] text-gray-400">Select Date</span>
-                    <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white italic uppercase leading-none mt-2">
+                    <span className="block text-xs font-black uppercase tracking-[0.3em] text-sub">Select Date</span>
+                    <h3 className="text-2xl md:text-3xl font-black text-title italic uppercase leading-none mt-2">
                         {MONTHS[viewDate.getMonth()]} <span className="text-primary-600 dark:text-primary-400">{viewDate.getFullYear()}</span>
                     </h3>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={handlePrev} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 transition-all active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
-                    <button onClick={handleNext} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 transition-all active:scale-95"><ChevronRight className="w-5 h-5" /></button>
+                    <button onClick={handlePrev} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
+                    <button onClick={handleNext} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronRight className="w-5 h-5" /></button>
                 </div>
             </div>
 
@@ -155,7 +155,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <div className="grid grid-cols-7 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 shrink-0">
                 {DAYS_HEADER.map(d => (
                     <div key={d} className="py-3 text-center">
-                        <span className="font-black text-gray-400 uppercase tracking-widest text-xs">{d}</span>
+                        <span className="font-black text-sub uppercase tracking-widest text-xs">{d}</span>
                     </div>
                 ))}
             </div>
@@ -203,7 +203,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                             <div className="flex justify-between items-start">
                                 <span className={cn(
                                     "text-base font-black leading-none",
-                                    isToday ? "text-primary-600 dark:text-primary-400" : "text-gray-900 dark:text-white/80 group-hover:text-gray-900 dark:group-hover:text-white",
+                                    isToday ? "text-primary-600 dark:text-primary-400" : "text-title dark:text-title/80 group-hover:text-gray-900 dark:group-hover:text-white",
                                     isSelected && "text-primary-600 dark:text-primary-400",
                                     isFullDay && "text-red-500"
                                 )}>
@@ -236,7 +236,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </div>
 
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 flex justify-center shrink-0">
-                <button onClick={onClose} className="px-6 py-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold uppercase tracking-widest text-xs transition-colors border border-gray-200 dark:border-gray-700">
+                <button onClick={onClose} className="px-6 py-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-title font-bold uppercase tracking-widest text-xs transition-colors border border-gray-200 dark:border-gray-700">
                     {t('common:buttons.cancel')}
                 </button>
             </div>

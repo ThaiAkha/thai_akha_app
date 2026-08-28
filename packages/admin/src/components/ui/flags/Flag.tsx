@@ -22,7 +22,7 @@ export default function Flag({ country, className = 'w-6 h-4' }: FlagProps) {
   if (!src) {
     return (
       <span
-        className={`${base} flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-xs font-black uppercase text-gray-500`}
+        className={`${base} flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-xs font-black uppercase text-sub`}
         aria-hidden="true"
       >
         {country}

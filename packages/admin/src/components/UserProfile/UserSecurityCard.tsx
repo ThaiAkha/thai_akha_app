@@ -127,7 +127,7 @@ export default function UserSecurityCard() {
                     </h4>
                 </div>
 
-                <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-widest font-black mb-8 leading-relaxed">
+                <p className="text-xs text-sub uppercase tracking-widest font-black mb-8 leading-relaxed">
                     {t("security.dangerZoneDesc")}
                 </p>
 

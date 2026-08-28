@@ -27,14 +27,14 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
         <div>
           <h3 className="font-bold text-lg">{t('labels.workDraft')}</h3>
         </div>
-        <button onClick={() => setActiveTab('dashboard')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-600">
+        <button onClick={() => setActiveTab('dashboard')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-sub hover:text-body">
           <X className="w-5 h-5" />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
         <div className="text-center px-4">
-          <span className="text-2xl font-black italic uppercase text-gray-900 dark:text-white tracking-widest leading-none block">
+          <span className="text-2xl font-black italic uppercase text-title tracking-widest leading-none block">
             {formatLongDate(selectedDate, i18n.language)}
           </span>
         </div>
@@ -54,10 +54,10 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
             ? "bg-purple-50 border-purple-200 dark:bg-purple-900/10 dark:border-purple-800"
             : "bg-primary-50 border-primary-200 dark:bg-primary-900/10 dark:border-primary-800"
         )}>
-          <span className="text-xs font-black uppercase text-gray-400 tracking-widest block mb-2">
+          <span className="text-xs font-black uppercase text-sub tracking-widest block mb-2">
             {activeTab === 'teacher' ? t('labels.totalExpenses') : t('labels.itemsRequired')}
           </span>
-          <span className="font-mono text-3xl font-black text-gray-900 dark:text-white block">
+          <span className="font-mono text-3xl font-black text-title block">
             {activeTab === 'teacher'
               ? `${Object.values(formState).reduce((acc, curr) => acc + curr.price, 0).toLocaleString()} THB`
               : `${Object.keys(formState).length} Items`
@@ -94,8 +94,8 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
             })}
             {Object.keys(formState).length === 0 && (
               <div className="py-12 text-center opacity-40">
-                <ShoppingCart className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-                <p className="text-xs font-bold uppercase text-gray-400">{t('empty.noContent')}</p>
+                <ShoppingCart className="w-10 h-10 mx-auto mb-2 text-muted" />
+                <p className="text-xs font-bold uppercase text-sub">{t('empty.noContent')}</p>
               </div>
             )}
           </div>

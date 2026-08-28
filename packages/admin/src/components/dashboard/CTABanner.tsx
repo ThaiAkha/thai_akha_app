@@ -42,7 +42,7 @@ const CTABanner: React.FC<CTABannerProps> = ({
   const variantStyles = {
     dark: 'bg-gray-900 dark:bg-primary-600 text-white',
     brand: 'bg-primary-500 text-white',
-    light: 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white'
+    light: 'bg-gray-50 dark:bg-gray-800 text-title'
   };
 
   const patternColors = {

@@ -103,7 +103,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                     {/* 2. Pax Count */}
                     <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
                         <SectionTitle>{t('inspector.numGuests')}</SectionTitle>
-                        <div className="text-3xl font-black text-gray-900 dark:text-white flex items-center h-10">{pax}</div>
+                        <div className="text-3xl font-black text-title flex items-center h-10">{pax}</div>
                     </div>
 
                     {/* 3. Guest Details */}
@@ -113,44 +113,44 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                             <div className="space-y-2 text-sm">
                                 {guestName && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldName')}</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{guestName}</span>
+                                        <span className="text-sub">{t('inspector.fieldName')}</span>
+                                        <span className="font-medium text-title">{guestName}</span>
                                     </div>
                                 )}
                                 {guestData.email && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldEmail')}</span>
-                                        <span className="font-medium text-gray-900 dark:text-white text-xs truncate ml-2">{guestData.email}</span>
+                                        <span className="text-sub">{t('inspector.fieldEmail')}</span>
+                                        <span className="font-medium text-title text-xs truncate ml-2">{guestData.email}</span>
                                     </div>
                                 )}
                                 {guestData.phone && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldPhone')}</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{guestData.phone}</span>
+                                        <span className="text-sub">{t('inspector.fieldPhone')}</span>
+                                        <span className="font-medium text-title">{guestData.phone}</span>
                                     </div>
                                 )}
                                 {guestData.nationality && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldNationality')}</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{guestData.nationality}</span>
+                                        <span className="text-sub">{t('inspector.fieldNationality')}</span>
+                                        <span className="font-medium text-title">{guestData.nationality}</span>
                                     </div>
                                 )}
                                 {guestData.age && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldAge')}</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{guestData.age}</span>
+                                        <span className="text-sub">{t('inspector.fieldAge')}</span>
+                                        <span className="font-medium text-title">{guestData.age}</span>
                                     </div>
                                 )}
                                 {guestData.gender && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldGender')}</span>
-                                        <span className="font-medium text-gray-900 dark:text-white capitalize">{guestData.gender}</span>
+                                        <span className="text-sub">{t('inspector.fieldGender')}</span>
+                                        <span className="font-medium text-title capitalize">{guestData.gender}</span>
                                     </div>
                                 )}
                                 {isWhatsapp !== undefined && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldWhatsapp')}</span>
-                                        <span className={cn("font-medium text-sm", isWhatsapp ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400")}>
+                                        <span className="text-sub">{t('inspector.fieldWhatsapp')}</span>
+                                        <span className={cn("font-medium text-sm", isWhatsapp ? "text-green-600 dark:text-green-400" : "text-sub")}>
                                             {isWhatsapp ? tc('yesNo.yes') : tc('yesNo.no')}
                                         </span>
                                     </div>
@@ -165,26 +165,26 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                         <div className="space-y-2 text-sm">
                             {hotel && (
                                 <div className="flex justify-between items-center">
-                                    <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldHotel')}</span>
-                                    <span className="font-medium text-gray-900 dark:text-white">{hotel}</span>
+                                    <span className="text-sub">{t('inspector.fieldHotel')}</span>
+                                    <span className="font-medium text-title">{hotel}</span>
                                 </div>
                             )}
                             {!hotel && meetingPoint && (
                                 <div className="flex justify-between items-center">
-                                    <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldMeetingPoint')}</span>
-                                    <span className="font-medium text-gray-900 dark:text-white">{meetingPoint}</span>
+                                    <span className="text-sub">{t('inspector.fieldMeetingPoint')}</span>
+                                    <span className="font-medium text-title">{meetingPoint}</span>
                                 </div>
                             )}
                             <div className="flex justify-between items-center">
-                                <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldLuggage')}</span>
-                                <span className={cn("font-medium text-sm", hasLuggage ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400")}>
+                                <span className="text-sub">{t('inspector.fieldLuggage')}</span>
+                                <span className={cn("font-medium text-sm", hasLuggage ? "text-green-600 dark:text-green-400" : "text-sub")}>
                                     {hasLuggage ? tc('yesNo.yes') : tc('yesNo.no')}
                                 </span>
                             </div>
                             {notes && (
                                 <div className="flex justify-between items-start">
-                                    <span className="text-gray-600 dark:text-gray-400">{t('inspector.fieldNotes')}</span>
-                                    <span className="font-medium text-gray-900 dark:text-white text-xs text-right line-clamp-2">{notes}</span>
+                                    <span className="text-sub">{t('inspector.fieldNotes')}</span>
+                                    <span className="font-medium text-title text-xs text-right line-clamp-2">{notes}</span>
                                 </div>
                             )}
                         </div>
@@ -195,7 +195,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                         <SectionTitle>{t('inspector.totalAmount')}</SectionTitle>
                         <div className="text-3xl font-black flex items-center gap-1 h-10">
                             {amount !== null
-                                ? <><span className="text-primary-600">{amount.toLocaleString()}</span><span className="text-gray-400 text-sm">THB</span></>
+                                ? <><span className="text-primary-600">{amount.toLocaleString()}</span><span className="text-sub text-sm">THB</span></>
                                 : <span className="text-red-500 text-lg">⚠️ Price missing</span>
                             }
                         </div>
@@ -211,7 +211,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                     "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center",
                                     paymentStatus === 'unpaid'
                                         ? "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
-                                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
                                 )}
                             >
                                 {t('inspector.unpaid')}
@@ -222,7 +222,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                     "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center gap-2",
                                     paymentStatus === 'paid'
                                         ? "border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400"
-                                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
                                 )}
                             >
                                 <Check className="w-4 h-4" />

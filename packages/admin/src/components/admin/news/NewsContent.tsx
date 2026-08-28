@@ -59,7 +59,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                 ) : (
-                    <p className="text-xs font-mono font-bold text-gray-300 uppercase tracking-tighter">
+                    <p className="text-xs font-mono font-bold text-sub uppercase tracking-tighter">
                         {String(item[columns[2]] || '—').substring(0, 12)}
                     </p>
                 )}
@@ -87,7 +87,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                                 />
                             </TableCell>
                             {columns.map(col => (
-                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">
+                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">
                                     {col}
                                 </TableCell>
                             ))}
@@ -112,7 +112,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                                         />
                                     </TableCell>
                                     {columns.map(col => (
-                                        <TableCell key={col} className="px-4 py-3 font-bold text-gray-700 dark:text-gray-300 max-w-[250px] truncate text-xs tracking-tight">
+                                        <TableCell key={col} className="px-4 py-3 font-bold text-body max-w-[250px] truncate text-xs tracking-tight">
                                             <DataRowText
                                                 title={
                                                     row[col] === null ? undefined :
@@ -121,7 +121,7 @@ const NewsContent: React.FC<NewsContentProps> = ({
                                                 }
                                                 description={
                                                     row[col] === null ? (
-                                                        <span className="text-gray-300 dark:text-gray-700 italic">null</span>
+                                                        <span className="text-muted italic">null</span>
                                                     ) : typeof row[col] === 'boolean' ? (
                                                         <Badge color={row[col] ? 'success' : 'light'} size="sm">{row[col] ? 'TRUE' : 'FALSE'}</Badge>
                                                     ) : undefined

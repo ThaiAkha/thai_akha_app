@@ -16,8 +16,8 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
         <div className="lg:col-span-3 flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center h-[73px] bg-gray-50/50 dark:bg-gray-800/50">
                 <div>
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-white uppercase tracking-tighter">{t('agency.inspectorTitle')}</h2>
-                    <p className="text-xs text-gray-500 font-mono uppercase tracking-widest">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</p>
+                    <h2 className="text-lg font-bold text-body uppercase tracking-tighter">{t('agency.inspectorTitle')}</h2>
+                    <p className="text-xs text-sub font-mono uppercase tracking-widest">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</p>
                 </div>
                 {activeBooking && (
                     <Button variant="outline" size="sm" onClick={() => setSelectedBookingId(null)} className="rounded-lg h-9 w-9 p-0 flex items-center justify-center">
@@ -47,10 +47,10 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                         {/* Guest Logistics */}
                         <div className="space-y-4">
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('agency.guestLogistics')}</h3>
+                            <h3 className="text-xs font-black text-sub uppercase tracking-widest">{t('agency.guestLogistics')}</h3>
 
                             <div>
-                                <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.hotelPickup')}</Label>
+                                <Label className="text-xs font-bold uppercase text-sub mb-1 ml-1">{t('agency.hotelPickup')}</Label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                     <input
@@ -65,7 +65,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.fieldTime')}</Label>
+                                    <Label className="text-xs font-bold uppercase text-sub mb-1 ml-1">{t('agency.fieldTime')}</Label>
                                     <div className="relative">
                                         <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                         <input
@@ -79,7 +79,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                                     </div>
                                 </div>
                                 <div>
-                                    <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.fieldPax')}</Label>
+                                    <Label className="text-xs font-bold uppercase text-sub mb-1 ml-1">{t('agency.fieldPax')}</Label>
                                     <input
                                         type="text"
                                         disabled={true}
@@ -94,10 +94,10 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                         {/* Internal Details */}
                         <div className="space-y-4">
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('agency.internalDetails')}</h3>
+                            <h3 className="text-xs font-black text-sub uppercase tracking-widest">{t('agency.internalDetails')}</h3>
 
                             <div>
-                                <Label className="text-xs font-bold uppercase text-gray-400 mb-1 ml-1">{t('agency.agencyNote')}</Label>
+                                <Label className="text-xs font-bold uppercase text-sub mb-1 ml-1">{t('agency.agencyNote')}</Label>
                                 <textarea
                                     rows={4}
                                     disabled={!isEditing}
@@ -121,7 +121,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                         {/* Status Actions (Only when editing) */}
                         {isEditing && (
                             <div className="space-y-3 pt-4 animate-in fade-in">
-                                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('agency.lifecycleStatus')}</h3>
+                                <h3 className="text-xs font-black text-sub uppercase tracking-widest">{t('agency.lifecycleStatus')}</h3>
                                 <div className="flex gap-2">
                                     {['confirmed', 'pending', 'cancelled'].map(s => (
                                         <button
@@ -132,7 +132,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                                                 "flex-1 py-3 rounded-xl text-xs font-black uppercase border transition-all tracking-widest",
                                                 editForm.status === s
                                                     ? "bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-600/20"
-                                                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500 hover:bg-gray-50"
+                                                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-sub hover:bg-gray-50"
                                             )}
                                         >
                                             {s}
@@ -144,7 +144,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-300 opacity-50">
+                    <div className="flex flex-col items-center justify-center h-full text-sub opacity-50">
                         <Edit className="w-12 h-12 mb-3" />
                         <p className="text-xs font-black uppercase tracking-widest">{t('agency.inspectorIdleMsg')}</p>
                     </div>

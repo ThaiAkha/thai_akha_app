@@ -225,7 +225,7 @@ const AgencyBooking: React.FC = () => {
                                     onChange={e => setPickupTime(e.target.value)}
                                 />
                                 <div>
-                                    <label className="text-xs uppercase font-black text-gray-500 mb-1.5 block ml-1">{t('agencyBooking.fieldZone')}</label>
+                                    <label className="text-xs uppercase font-black text-sub mb-1.5 block ml-1">{t('agencyBooking.fieldZone')}</label>
                                     <select
                                         value={zone}
                                         onChange={e => setZone(e.target.value)}
@@ -248,14 +248,14 @@ const AgencyBooking: React.FC = () => {
                     {/* RIGHT COL: SUMMARY & ACTION */}
                     <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl space-y-8">
-                            <h6 className="text-xs uppercase font-black text-gray-400 tracking-widest">{t('agencyBooking.summaryTitle')}</h6>
+                            <h6 className="text-xs uppercase font-black text-sub tracking-widest">{t('agencyBooking.summaryTitle')}</h6>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700">
-                                    <span className="text-sm font-black uppercase text-gray-400">{t('agencyBooking.summaryParticipants')}</span>
+                                    <span className="text-sm font-black uppercase text-sub">{t('agencyBooking.summaryParticipants')}</span>
                                     <div className="flex items-center gap-6">
                                         <button onClick={() => setPax(Math.max(1, pax - 1))} className="size-10 rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold">-</button>
-                                        <span className="text-3xl font-black text-gray-900 dark:text-white w-8 text-center">{pax}</span>
+                                        <span className="text-3xl font-black text-title w-8 text-center">{pax}</span>
                                         <button onClick={() => setPax(pax + 1)} className="size-10 rounded-xl bg-primary-600 text-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center font-bold">+</button>
                                     </div>
                                 </div>
@@ -267,17 +267,17 @@ const AgencyBooking: React.FC = () => {
                                     <span>{commission.ratePerPax.toLocaleString()} THB/pax{commission.tier ? ` · ${commission.tier}` : ''}</span>
                                 </div>
                                 <div className="flex justify-between items-end">
-                                    <span className="text-xs text-gray-400 line-through mb-1">{basePrice !== null ? `${(basePrice * pax).toLocaleString()} THB` : '-'}</span>
+                                    <span className="text-xs text-sub line-through mb-1">{basePrice !== null ? `${(basePrice * pax).toLocaleString()} THB` : '-'}</span>
                                     <div className="text-right">
-                                        <span className="block text-xs uppercase font-black text-gray-400 mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
+                                        <span className="block text-xs uppercase font-black text-sub mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
                                         <h3 className="text-4xl font-black text-primary-600 dark:text-primary-400 italic">
-                                            {amount.toLocaleString()} <span className="text-sm font-normal text-gray-400 not-italic uppercase">THB</span>
+                                            {amount.toLocaleString()} <span className="text-sm font-normal text-sub not-italic uppercase">THB</span>
                                         </h3>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 text-xs text-gray-400 font-bold uppercase tracking-widest px-2">
+                            <div className="flex gap-3 text-xs text-sub font-bold uppercase tracking-widest px-2">
                                 <Info className="size-4 text-primary-500 shrink-0" />
                                 <span>{t('agencyBooking.invoiceNote')}</span>
                             </div>

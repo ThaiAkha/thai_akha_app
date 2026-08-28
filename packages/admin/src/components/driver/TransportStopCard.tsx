@@ -67,7 +67,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                     <div>
                         <div className="text-gray-700 dark:text-white/80 font-semibold text-sm line-through decoration-gray-400 dark:decoration-white/30">{stop.guest_name}</div>
-                        <div className="text-xs text-gray-500 dark:text-white/40 uppercase">{displayHotel || stop.hotel_name}</div>
+                        <div className="text-xs text-sub dark:text-white/40 uppercase">{displayHotel || stop.hotel_name}</div>
                     </div>
                 </div>
                 <div className="text-gray-700 dark:text-white/60 text-lg font-black">{stop.pax_count} {t('stopCard.pax')}</div>
@@ -87,11 +87,11 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                 isOnBoard ? "bg-green-100 dark:bg-green-500/10 border-green-300 dark:border-green-500/20" : "bg-gray-100 dark:bg-white/5 border-gray-300 dark:border-white/5"
             )}>
                 <div className="px-5 py-4 flex items-center gap-3">
-                    <span className="font-mono text-2xl font-black tracking-tighter text-gray-900 dark:text-white">{stop.pickup_time?.slice(0, 5)}</span>
+                    <span className="font-mono text-2xl font-black tracking-tighter text-title">{stop.pickup_time?.slice(0, 5)}</span>
                     <Badge variant="light" color="light" className="text-xs px-2 h-5 bg-gray-200 dark:bg-white/5 text-gray-700 dark:text-white/60">{stop.pickup_zone?.toUpperCase()}</Badge>
                 </div>
                 <div className="px-5 flex items-center justify-center bg-gray-200 dark:bg-black/20 border-l border-gray-300 dark:border-white/5 min-w-[5rem]">
-                    <span className={cn("text-3xl font-black", isOnBoard ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white")}>{stop.pax_count} <span className="text-base">{t('stopCard.pax')}</span></span>
+                    <span className={cn("text-3xl font-black", isOnBoard ? "text-green-600 dark:text-green-400" : "text-title")}>{stop.pax_count} <span className="text-base">{t('stopCard.pax')}</span></span>
                 </div>
             </div>
 
@@ -99,10 +99,10 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                 <div className="flex items-center gap-4">
                     <Avatar src={stop.avatar_url} alt={stop.guest_name} size="medium" />
                     <div className="min-w-0">
-                        <h5 className="truncate leading-none mb-1 text-lg font-bold text-gray-900 dark:text-white">{stop.guest_name}</h5>
+                        <h5 className="truncate leading-none mb-1 text-lg font-bold text-title">{stop.guest_name}</h5>
                         {stop.customer_note
                             ? <p className="text-xs text-yellow-600 dark:text-yellow-500 italic truncate font-bold">⚠️ "{stop.customer_note}"</p>
-                            : <p className="text-xs text-gray-400 dark:text-white/30 font-bold uppercase">{t('stopCard.noNotes')}</p>
+                            : <p className="text-xs text-sub dark:text-white/30 font-bold uppercase">{t('stopCard.noNotes')}</p>
                         }
                     </div>
                 </div>
@@ -111,7 +111,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                     <button onClick={() => onOpenMap(displayHotel)} className="flex-1 flex items-center gap-3 p-4 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-black/40 hover:bg-gray-200 dark:hover:bg-white/5 transition-all text-left group">
                         <Map className="w-5 h-5 text-primary-500 dark:text-primary-400 shrink-0 group-hover:scale-110 transition-transform" />
                         <div className="min-w-0">
-                            <span className="text-sm font-bold truncate text-gray-900 dark:text-white/90 block">{displayHotel}</span>
+                            <span className="text-sm font-bold truncate text-title block">{displayHotel}</span>
                             {phase === 'DROPOFF' && stop.dropoff_hotel && (
                                 <span className="text-xs text-green-600 dark:text-green-400 uppercase font-bold">{t('stopCard.destination')}</span>
                             )}

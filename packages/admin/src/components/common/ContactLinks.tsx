@@ -18,7 +18,7 @@ export interface ContactLinksProps {
   className?: string;
 }
 
-const ROW = 'inline-flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors w-fit min-w-0';
+const ROW = 'inline-flex items-center gap-1.5 text-sm text-sub hover:text-primary-600 transition-colors w-fit min-w-0';
 
 const ContactLinks: React.FC<ContactLinksProps> = ({
   phone,
@@ -31,7 +31,7 @@ const ContactLinks: React.FC<ContactLinksProps> = ({
 }) => {
   const hasAny = !!(phone || agencyPhone || email || lineId);
   if (!hasAny) {
-    return emptyLabel ? <div className={cn('text-xs italic text-gray-400', className)}>{emptyLabel}</div> : null;
+    return emptyLabel ? <div className={cn('text-xs italic text-sub', className)}>{emptyLabel}</div> : null;
   }
 
   return (

@@ -50,17 +50,17 @@ const AgencyRates: React.FC = () => {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colClass')}</th>
-                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colRack')}</th>
-                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colNet')}</th>
-                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-gray-400">{t('agencyRates.colCommission')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-sub">{t('agencyRates.colClass')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-sub">{t('agencyRates.colRack')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-sub">{t('agencyRates.colNet')}</th>
+                                    <th className="pb-4 text-xs font-black uppercase tracking-widest text-sub">{t('agencyRates.colCommission')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                                 {RATES.map((rate, i) => (
                                     <tr key={i} className="group hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
-                                        <td className="py-6 font-black text-gray-900 dark:text-white uppercase italic tracking-tight">{t(rate.nameKey)}</td>
-                                        <td className="py-6 text-sm text-gray-400 line-through">{rate.rack}</td>
+                                        <td className="py-6 font-black text-title uppercase italic tracking-tight">{t(rate.nameKey)}</td>
+                                        <td className="py-6 text-sm text-sub line-through">{rate.rack}</td>
                                         <td className="py-6 text-xl font-black text-primary-600 dark:text-primary-400">{rate.net}</td>
                                         <td className="py-6">
                                             <Badge variant="light" color="info" size="sm">{rate.commission}</Badge>
@@ -75,15 +75,15 @@ const AgencyRates: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-8 rounded-[2rem] border border-primary-100 dark:border-primary-900/30 bg-primary-50/50 dark:bg-primary-500/5 space-y-4">
                         <ShieldCheck className="w-8 h-8 text-primary-600" />
-                        <h5 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">{t('agencyRates.guaranteeTitle')}</h5>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        <h5 className="text-xl font-black uppercase italic text-title">{t('agencyRates.guaranteeTitle')}</h5>
+                        <p className="text-sm text-sub leading-relaxed">
                             {t('agencyRates.guaranteeDesc')}
                         </p>
                     </div>
                     <div className="p-8 rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-4">
                         <CreditCard className="w-8 h-8 text-amber-500" />
-                        <h5 className="text-xl font-black uppercase italic text-gray-900 dark:text-white">{t('agencyRates.paymentTitle')}</h5>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                        <h5 className="text-xl font-black uppercase italic text-title">{t('agencyRates.paymentTitle')}</h5>
+                        <p className="text-sm text-sub leading-relaxed">
                             {t('agencyRates.paymentDesc')}
                         </p>
                     </div>

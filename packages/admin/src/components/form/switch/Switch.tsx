@@ -52,7 +52,7 @@ const Switch: React.FC<SwitchProps> = ({
 
   return (
     <label
-      className={`flex cursor-pointer select-none items-center gap-3 text-sm font-medium ${disabled ? "text-gray-400" : "text-gray-700 dark:text-gray-400"
+      className={`flex cursor-pointer select-none items-center gap-3 text-sm font-medium ${disabled ? "text-sub" : "text-body"
         }`}
       onClick={handleToggle} // Toggle when the label itself is clicked
     >

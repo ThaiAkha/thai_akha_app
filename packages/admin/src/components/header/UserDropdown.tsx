@@ -53,7 +53,7 @@ export default function UserDropdown() {
           className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400 group h-full focus:outline-none"
         >
           {/* Desktop Name (Left of Avatar) */}
-          <span className="hidden lg:block mr-3 font-black text-theme-sm text-gray-800 dark:text-white leading-none whitespace-nowrap">
+          <span className="hidden lg:block mr-3 font-black text-theme-sm text-body leading-none whitespace-nowrap">
             {user?.full_name || t('user.fallbackName')}
           </span>
 
@@ -86,7 +86,7 @@ export default function UserDropdown() {
             <span className="block font-black text-gray-900 text-base dark:text-white uppercase tracking-tighter leading-none truncate">
               {user?.full_name || t('user.fallbackName')}
             </span>
-            <span className="mt-1.5 block text-theme-xs text-gray-400 dark:text-gray-500 truncate font-medium">
+            <span className="mt-1.5 block text-theme-xs text-muted truncate font-medium">
               {user?.email || ""}
             </span>
           </div>
@@ -173,7 +173,7 @@ export default function UserDropdown() {
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-bold transition-colors",
                         active
                           ? "bg-primary-500/10 text-primary-600 dark:text-primary-400"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                          : "text-sub hover:bg-gray-50 dark:hover:bg-gray-800/60"
                       )}
                     >
                       <Flag country={l.country} className="w-6 h-4" />

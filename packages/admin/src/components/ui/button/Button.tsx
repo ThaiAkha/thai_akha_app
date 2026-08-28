@@ -41,8 +41,12 @@ const Button: React.FC<ButtonProps> = ({
       "bg-primary-500 text-white hover:bg-primary-600 disabled:bg-primary-300",
     outline:
       "bg-white text-gray-700 ring-1 ring-inset ring-gray-700 hover:bg-gray-50 dark:bg-gray-800/20 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-white/[0.03] dark:hover:text-gray-200",
+    // Testo SCURO, non bianco: il lime del brand e' chiaro, e bianco sopra dava
+    // 1.59 di contrasto contro i 4.5 richiesti da AA - praticamente illeggibile,
+    // sul bottone di default dell'app (18 call-site su 79). Con gray-950: 11.70
+    // a riposo, 8.95 in hover, 6.66 in active. Il colore del brand resta identico.
     olive:
-      "bg-[var(--color-button-primary)] hover:bg-[var(--color-button-primary-hover)] active:bg-[var(--color-button-primary-active)] text-white shadow-theme-xs disabled:opacity-50",
+      "bg-[var(--color-button-primary)] hover:bg-[var(--color-button-primary-hover)] active:bg-[var(--color-button-primary-active)] text-gray-950 shadow-theme-xs disabled:opacity-50",
   };
 
   const [flashes, setFlashes] = useState<FlashPoint[]>([]);

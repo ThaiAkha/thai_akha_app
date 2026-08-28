@@ -27,7 +27,7 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
     } = useSalaryRoster();
 
     const roleLabel = (r: string) => t(`salary.roles.${r}`, { defaultValue: r });
-    const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
+    const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
 
     const onCreateExpenses = () => {
         const msg = t('salary.confirmExpenses', { defaultValue: 'Create the Zoho salary expense(s) for {{p}}? Total ฿{{n}}.', p: period, n: summary.net.toLocaleString() });
@@ -38,7 +38,7 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
         <div className="p-3 sm:p-4 max-w-4xl mx-auto space-y-4">
             <div className="flex flex-wrap items-center gap-3 justify-between">
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{t('salary.month', { defaultValue: 'Month' })}</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-sub">{t('salary.month', { defaultValue: 'Month' })}</span>
                     <input type="month" value={period} onChange={(e) => setPeriod(e.target.value)} className={inputCls} />
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -64,9 +64,9 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
             )}
 
             {people === null ? (
-                <div className="p-8 text-center text-sm font-bold uppercase text-gray-400">{t('salary.loading', { defaultValue: 'Loading…' })}</div>
+                <div className="p-8 text-center text-sm font-bold uppercase text-sub">{t('salary.loading', { defaultValue: 'Loading…' })}</div>
             ) : people.length === 0 ? (
-                <div className="p-8 text-center text-sm font-bold uppercase text-gray-400">{t('salary.noStaff', { defaultValue: 'No staff found.' })}</div>
+                <div className="p-8 text-center text-sm font-bold uppercase text-sub">{t('salary.noStaff', { defaultValue: 'No staff found.' })}</div>
             ) : (
                 <>
                     <div className="space-y-5">
@@ -74,8 +74,8 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
                             <section key={g.role} className="space-y-2">
                                 <div className="flex items-center gap-2 px-1">
                                     {g.role === 'driver' && <Truck className="w-4 h-4 text-gray-400" />}
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-gray-400">{roleLabel(g.role)}</h4>
-                                    <span className="text-[10px] font-bold text-gray-300 dark:text-gray-600">{g.people.length}</span>
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-sub">{roleLabel(g.role)}</h4>
+                                    <span className="text-[10px] font-bold text-muted">{g.people.length}</span>
                                 </div>
 
                                 {g.people.map(p => p.primaryRole === 'driver' ? (
@@ -84,11 +84,11 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
                                         <div className="min-w-[140px] flex-1 flex items-center gap-3">
                                             <Avatar src={p.avatarUrl ?? undefined} alt={p.name} size="medium" />
                                             <div className="min-w-0">
-                                                <span className="block text-sm font-bold text-gray-900 dark:text-white truncate">{p.name}</span>
-                                                <span className="block text-[10px] font-black uppercase tracking-wider text-gray-400">{roleLabel(p.primaryRole)}</span>
+                                                <span className="block text-sm font-bold text-title truncate">{p.name}</span>
+                                                <span className="block text-[10px] font-black uppercase tracking-wider text-sub">{roleLabel(p.primaryRole)}</span>
                                             </div>
                                         </div>
-                                        <span className="text-xs text-gray-400">{t('salary.driverPerRide', { defaultValue: 'Paid per ride' })}</span>
+                                        <span className="text-xs text-sub">{t('salary.driverPerRide', { defaultValue: 'Paid per ride' })}</span>
                                         {onOpenDriverPayouts && (
                                             <button onClick={onOpenDriverPayouts} className="inline-flex items-center gap-1 h-9 px-3 rounded-lg text-xs font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20">
                                                 {t('salary.openPayouts', { defaultValue: 'Driver payouts' })}<ArrowRight className="w-3.5 h-3.5" />

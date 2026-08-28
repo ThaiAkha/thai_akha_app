@@ -125,17 +125,17 @@ const AgencyNews: React.FC = () => {
 
                             {/* Card Body */}
                             <div className="p-5 space-y-3">
-                                <h3 className="line-clamp-2 text-xl font-black uppercase tracking-tighter text-gray-900 dark:text-gray-100 group-hover:text-primary-600 transition-colors">
+                                <h3 className="line-clamp-2 text-xl font-black uppercase tracking-tighter text-title group-hover:text-primary-600 transition-colors">
                                     {article.title}
                                 </h3>
 
-                                <p className="line-clamp-3 text-sm font-medium text-gray-400 leading-relaxed">
+                                <p className="line-clamp-3 text-sm font-medium text-sub leading-relaxed">
                                     {article.content}
                                 </p>
 
                                 {/* Card Footer */}
                                 <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-50 dark:border-gray-800/50">
-                                    <div className="flex items-center gap-4 text-gray-400">
+                                    <div className="flex items-center gap-4 text-sub">
                                         <div className="flex items-center gap-1.5">
                                             <Calendar className="w-3.5 h-3.5" />
                                             <span className="text-xs font-bold uppercase tracking-widest">{formatDate(article.created_at)}</span>
@@ -157,7 +157,7 @@ const AgencyNews: React.FC = () => {
                 ) : (
                     <div className="col-span-full py-20 text-center">
                         <Newspaper className="w-20 h-20 mx-auto opacity-10 mb-4" />
-                        <h4 className="text-xl font-black uppercase text-gray-300">{t('agencyNews.noNews')}</h4>
+                        <h4 className="text-xl font-black uppercase text-sub">{t('agencyNews.noNews')}</h4>
                     </div>
                 )}
             </div>

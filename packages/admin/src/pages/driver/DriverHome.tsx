@@ -1,109 +1,12 @@
 /**
- * 🏠 DRIVER HOME — card dashboard (same scheme as the other roles).
- * The declare-service / payout system moved to its own page (/driver-payout),
- * reached from the "Declare service" card.
+ * 🏠 DRIVER HOME
+ *
+ * Guscio condiviso: <HomeDashboard> (components/dashboard). Qui restano solo
+ * il ruolo che filtra le card e lo slug dei metadata.
  */
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import PageContainer from '../../components/layout/PageContainer';
-import { contentService } from '@thaiakha/shared/services';
-import { usePageMetadata } from '../../hooks/usePageMetadata';
-import WelcomeHero from '../../components/dashboard/WelcomeHero';
-import FeatureCardsGrid, { type HomeCard } from '../../components/dashboard/FeatureCardsGrid';
-import DashboardNavCard from '../../components/dashboard/DashboardNavCard';
-import BasicCard from '../../components/dashboard/BasicCard';
-import CTABanner, { type CTABannerProps } from '../../components/dashboard/CTABanner';
+import React from 'react';
+import HomeDashboard from '../../components/dashboard/HomeDashboard';
 
-const DriverHome: React.FC = () => {
-    const { t, i18n } = useTranslation('common');
-    const { pageMeta } = usePageMetadata('driver-home');
-    const [homeCards, setHomeCards] = useState<HomeCard[]>([]);
-
-    useEffect(() => {
-        const loadHomeCards = async () => {
-            try {
-                const cards = await contentService.getHomeCards(i18n.language);
-                // Il service restituisce record generici: la pagina li legge con la shape HomeCard
-                setHomeCards((cards.filter((card) => card.role === 'driver') as unknown as HomeCard[]) || []);
-            } catch (error) {
-                console.error("Failed to load driver home cards:", error);
-            }
-        };
-        loadHomeCards();
-    }, [i18n.language]);
-
-    const featureCards = homeCards.filter(card => card.card_type === 'feature');
-    const ctaBanners = homeCards.filter(card => card.card_type === 'cta');
-    const leftCards = homeCards.filter(card => card.card_type === 'nav' || card.card_type === 'basic');
-
-    return (
-        <PageContainer variant="wide">
-            <div className="pb-[max(48px,env(safe-area-inset-bottom))]">
-                {/* ROW 1: HERO (full width) */}
-                {pageMeta && (
-                    <WelcomeHero
-                        badge={pageMeta.badge}
-                        titleMain={pageMeta.titleMain}
-                        titleHighlight={pageMeta.titleHighlight}
-                        description={pageMeta.description}
-                        imageUrl={pageMeta.imageUrl}
-                        icon={pageMeta.icon}
-                    />
-                )}
-
-                {/* ROW 2: MAIN (features + CTA) + SIDEBAR (nav/basic) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <div className="lg:col-span-9 min-w-0">
-                        <FeatureCardsGrid cards={featureCards} />
-                        <div className="space-y-6 mt-6">
-                            {ctaBanners.map((card) => (
-                                <CTABanner
-                                    key={card.id}
-                                    title={card.title || card.card_title || ''}
-                                    description={card.description || card.card_description || ''}
-                                    ctaLabel={card.link_label || t('fallback.viewMore')}
-                                    ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
-                                    variant={(card.variant || 'dark') as CTABannerProps['variant']}
-                                    className="flex items-center justify-between gap-6"
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="lg:col-span-3 min-w-0">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-                            {leftCards.map((card) => {
-                                const path = card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#';
-                                if (card.card_type === 'nav') {
-                                    return (
-                                        <div key={card.id}>
-                                            <DashboardNavCard
-                                                path={path}
-                                                iconName={card.icon_name ?? undefined}
-                                                label={card.title || card.card_title || ''}
-                                                description={card.description || card.card_description || undefined}
-                                                linkLabel={card.link_label ?? undefined}
-                                            />
-                                        </div>
-                                    );
-                                }
-                                return (
-                                    <div key={card.id}>
-                                        <BasicCard
-                                            path={path}
-                                            iconName={card.icon_name ?? undefined}
-                                            label={card.title || card.card_title || ''}
-                                            description={card.description || card.card_description || undefined}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </PageContainer>
-    );
-};
+const DriverHome: React.FC = () => <HomeDashboard role="driver" metaSlug="driver-home" className="pb-[max(48px,env(safe-area-inset-bottom))]" />;
 
 export default DriverHome;

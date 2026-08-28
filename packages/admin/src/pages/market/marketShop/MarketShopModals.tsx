@@ -25,7 +25,7 @@ export const MarketShopModals: React.FC<{ s: MarketShopState }> = ({ s }) => {
       className="max-w-sm p-6"
     >
       <div className="mb-6 text-center">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('modal.selectDate')}</h3>
+        <h3 className="text-xl font-bold text-title">{t('modal.selectDate')}</h3>
       </div>
       <div className="flex flex-col gap-6">
         <MiniCalendar
@@ -42,7 +42,7 @@ export const MarketShopModals: React.FC<{ s: MarketShopState }> = ({ s }) => {
       <div className="space-y-4">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border-2 border-primary-500 text-center shadow-2xl">
           <span className="uppercase font-black text-primary-600 tracking-widest mb-1 block text-xs">{t('labels.inputThb')}</span>
-          <div className="font-mono text-gray-900 dark:text-white text-4xl font-bold flex items-center justify-center gap-2">
+          <div className="font-mono text-title text-4xl font-bold flex items-center justify-center gap-2">
             {tempPrice}<span className="text-xl opacity-50">฿</span>
           </div>
         </div>

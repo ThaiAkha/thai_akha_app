@@ -125,7 +125,7 @@ export default function ResetPassword() {
                 <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
                   {isUpdate ? t("resetPassword.updateTitle") : t("resetPassword.requestTitle")}
                 </h1>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-medium text-sub">
                   {isUpdate ? t("resetPassword.updateSubtitle") : t("resetPassword.requestSubtitle")}
                 </p>
               </div>

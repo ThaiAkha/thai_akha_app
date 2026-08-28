@@ -103,7 +103,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         <div className="flex flex-col min-w-0">
           <h6 className={cn(
             "text-base font-black uppercase truncate leading-tight transition-colors",
-            isAdded ? "text-primary-600 dark:text-primary-400" : "text-gray-900 dark:text-white"
+            isAdded ? "text-primary-600 dark:text-primary-400" : "text-title"
           )}
           >
             {displayName}
@@ -114,10 +114,10 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         {!isLogistics && (
           <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
             <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-2 rounded-xl border border-transparent group-hover:border-primary-200 dark:group-hover:border-primary-700 transition-all">
-              <span className="text-xs font-black uppercase text-gray-400 tracking-widest">{t('shopItem.reportedCost')}</span>
+              <span className="text-xs font-black uppercase text-sub tracking-widest">{t('shopItem.reportedCost')}</span>
               <span className={cn(
                 "font-mono font-black text-sm",
-                price > 0 ? "text-primary-600 dark:text-primary-400" : "text-gray-300 dark:text-gray-600"
+                price > 0 ? "text-primary-600 dark:text-primary-400" : "text-muted"
               )}>
                 {price || '0'} THB
               </span>
@@ -133,7 +133,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
               {isAdded ? (
                 <span className="text-xs font-black uppercase tracking-widest text-primary-600 dark:text-primary-400 truncate">{describeQty(qty, item)}</span>
               ) : (
-                <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-gray-400 opacity-60 group-hover:opacity-100 transition-opacity">
+                <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-sub opacity-60 group-hover:opacity-100 transition-opacity">
                   <PlusCircle className="w-4 h-4" />{t('shopItem.tapToAdd', { defaultValue: 'Tap to add' })}
                 </span>
               )}

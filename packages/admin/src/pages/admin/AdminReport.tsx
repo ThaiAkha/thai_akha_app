@@ -109,7 +109,7 @@ const AdminReport: React.FC = () => {
 
     const currentMetric = METRICS.find(m => m.id === selectedMetric);
 
-    if (loading) return <div className="p-8 text-center uppercase font-black text-gray-400">{t('adminReport.loading')}</div>;
+    if (loading) return <div className="p-8 text-center uppercase font-black text-sub">{t('adminReport.loading')}</div>;
 
     return (
         <PageContainer variant="wide">
@@ -145,8 +145,8 @@ const AdminReport: React.FC = () => {
                                         {metric.change}
                                     </div>
                                 </div>
-                                <SectionTitle className="text-xs text-gray-400 mb-1">{metric.title}</SectionTitle>
-                                <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">{metric.value}</p>
+                                <SectionTitle className="text-xs text-sub mb-1">{metric.title}</SectionTitle>
+                                <p className="text-3xl font-black text-title tracking-tighter">{metric.value}</p>
                             </div>
                         ))}
                     </div>
@@ -156,14 +156,14 @@ const AdminReport: React.FC = () => {
                         <div className="flex items-center justify-between mb-8">
                             <div>
                                 <Heading level="h4" className="leading-none mb-1">{t('adminReport.globalPerformance')}</Heading>
-                                <SectionTitle className="text-xs text-gray-400">Monthly comparison of {currentMetric?.title}</SectionTitle>
+                                <SectionTitle className="text-xs text-sub">Monthly comparison of {currentMetric?.title}</SectionTitle>
                             </div>
                             <Badge variant="light" color="info">{t('adminReport.season')}</Badge>
                         </div>
                         <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-3xl bg-gray-50/50 dark:bg-black/20">
                             <div className="text-center">
                                 <BarChart3 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                <SectionTitle className="text-xs text-gray-400">{t('adminReport.analyticsComingSoon')}</SectionTitle>
+                                <SectionTitle className="text-xs text-sub">{t('adminReport.analyticsComingSoon')}</SectionTitle>
                             </div>
                         </div>
                     </div>
@@ -178,7 +178,7 @@ const AdminReport: React.FC = () => {
                             </div>
                             <div>
                                 <Heading level="h4" className="leading-none mb-1">{t('adminReport.metricDetail')}</Heading>
-                                <SectionTitle className="text-xs text-gray-400">{t('adminReport.globalAnalysis')}</SectionTitle>
+                                <SectionTitle className="text-xs text-sub">{t('adminReport.globalAnalysis')}</SectionTitle>
                             </div>
                         </div>
 
@@ -191,7 +191,7 @@ const AdminReport: React.FC = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <SectionTitle className="text-xs tracking-wider text-gray-400 px-2 leading-none mb-0">{t('adminReport.monthlySummary')}</SectionTitle>
+                                <SectionTitle className="text-xs tracking-wider text-sub px-2 leading-none mb-0">{t('adminReport.monthlySummary')}</SectionTitle>
                                 {[
                                     { month: 'January 2026', total: '฿420,400' },
                                     { month: 'December 2025', total: '฿385,200' },
@@ -199,12 +199,12 @@ const AdminReport: React.FC = () => {
                                 ].map((inv, i) => (
                                     <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 hover:border-primary-500/30 transition-all cursor-pointer group">
                                         <div className="flex items-center gap-3">
-                                            <div className="size-8 rounded-xl bg-white dark:bg-gray-700 flex items-center justify-center text-gray-400 group-hover:text-primary-500 transition-colors">
+                                            <div className="size-8 rounded-xl bg-white dark:bg-gray-700 flex items-center justify-center text-sub group-hover:text-primary-500 transition-colors">
                                                 <TrendingUp className="w-4 h-4" />
                                             </div>
                                             <div>
-                                                <div className="text-xs font-black uppercase text-gray-900 dark:text-white">{inv.month}</div>
-                                                <div className="text-xs font-bold text-gray-400">{inv.total}</div>
+                                                <div className="text-xs font-black uppercase text-title">{inv.month}</div>
+                                                <div className="text-xs font-bold text-sub">{inv.total}</div>
                                             </div>
                                         </div>
                                     </div>

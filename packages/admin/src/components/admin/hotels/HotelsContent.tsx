@@ -59,14 +59,14 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                                 badges={null}
                                                 footerLeft={
                                                     <div className="flex flex-col gap-0.5">
-                                                        <p className="text-xs font-black tracking-tight text-gray-400 uppercase">{t('content.cardMorning')}</p>
-                                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.morning_pickup_time || '--:--'}</p>
+                                                        <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardMorning')}</p>
+                                                        <p className="text-xs font-bold text-body">{item.morning_pickup_time || '--:--'}</p>
                                                     </div>
                                                 }
                                                 footerRight={
                                                     <div className="flex flex-col gap-0.5 items-end">
-                                                        <p className="text-xs font-black tracking-tight text-gray-400 uppercase">{t('content.cardEvening')}</p>
-                                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.evening_pickup_time || '--:--'}</p>
+                                                        <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardEvening')}</p>
+                                                        <p className="text-xs font-bold text-body">{item.evening_pickup_time || '--:--'}</p>
                                                     </div>
                                                 }
                                             />
@@ -95,7 +95,7 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                                 </span>
                                             }
                                             footerLeft={
-                                                <p className="text-xs font-bold text-gray-400 truncate">
+                                                <p className="text-xs font-bold text-sub truncate">
                                                     {item.phone_number || t('content.noPhone')}
                                                 </p>
                                             }
@@ -118,12 +118,12 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                     <Table className="text-xs">
                         <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
                             <TableRow>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colMeetingPoint')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colDetails')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colPickupMorning')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colPickupEvening')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colStatus')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colLinks')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colMeetingPoint')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colDetails')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colPickupMorning')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colPickupEvening')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colStatus')}</TableCell>
+                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colLinks')}</TableCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -191,10 +191,10 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                         <Table className="text-xs">
                             <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
                                 <TableRow>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colName')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colZone')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colPhone')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-gray-500 text-xs">{t('content.colStatus')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colName')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colZone')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colPhone')}</TableCell>
+                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colStatus')}</TableCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

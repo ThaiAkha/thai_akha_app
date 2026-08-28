@@ -26,19 +26,19 @@ const ViewCatalog: React.FC<ViewCatalogProps> = ({ components }) => {
                     </div>
                     <div className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors">{config.name}</h3>
-                            <span className="text-xs font-black uppercase text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
+                            <h3 className="font-bold text-title group-hover:text-primary-600 transition-colors">{config.name}</h3>
+                            <span className="text-xs font-black uppercase text-sub bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
                                 {config.props.length} Props
                             </span>
                         </div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[40px]">
+                        <p className="text-sm text-sub line-clamp-2 min-h-[40px]">
                             {config.description || 'No description available for this component.'}
                         </p>
                     </div>
                 </div>
             ))}
             {components.length === 0 && (
-                <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
+                <div className="col-span-full flex flex-col items-center justify-center py-20 text-sub">
                     <Layers className="w-12 h-12 mb-4 opacity-50" />
                     <p>No components found matching your search.</p>
                 </div>

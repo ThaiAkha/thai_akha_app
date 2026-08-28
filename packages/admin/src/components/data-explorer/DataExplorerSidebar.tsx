@@ -32,7 +32,7 @@ const Badge: React.FC<{ type: string; value: string | number; isActive?: boolean
     const variants = {
         default: cn(
             "bg-gray-100 dark:bg-gray-800",
-            "text-gray-700 dark:text-gray-300",
+            "text-body",
             isActive && "bg-orange-100 dark:bg-btn-p-900/30 text-orange-700 dark:text-orange-300"
         ),
         success: cn(
@@ -58,7 +58,7 @@ const Badge: React.FC<{ type: string; value: string | number; isActive?: boolean
         outline: cn(
             "bg-transparent border",
             "border-gray-200 dark:border-gray-700",
-            "text-gray-600 dark:text-gray-400",
+            "text-sub",
             isActive && "border-orange-200 dark:border-orange-800 text-orange-600 dark:text-orange-400"
         ),
     };
@@ -84,7 +84,7 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
             <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex items-center justify-between shrink-0 shadow-sm">
                 <div className="flex items-center gap-2.5">
                     {titleIcon && (
-                        <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-gray-600 dark:text-gray-400">
+                        <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-sub">
                             {React.isValidElement(titleIcon) ? React.cloneElement(titleIcon as React.ReactElement<{ size?: number }>, { size: 16 }) : titleIcon}
                         </div>
                     )}
@@ -115,7 +115,7 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
                             {item.icon && (
                                 <div className={cn(
                                     "transition-transform group-hover:scale-110 duration-300",
-                                    isActive ? "text-orange-500" : "text-gray-400 dark:text-gray-600 group-hover:text-orange-500"
+                                    isActive ? "text-orange-500" : "text-muted group-hover:text-orange-500"
                                 )}>
                                     {React.isValidElement(item.icon) ? React.cloneElement(item.icon as React.ReactElement<{ size?: number }>, { size: 18 }) : item.icon}
                                 </div>
@@ -124,8 +124,8 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
                             <span className={cn(
                                 "text-base truncate tracking-tight transition-colors flex-1 text-left",
                                 isActive
-                                    ? "text-gray-800 dark:text-gray-100 font-medium"
-                                    : "text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                                    ? "text-body font-medium"
+                                    : "text-sub group-hover:text-gray-900 dark:group-hover:text-white"
                             )}>
                                 {item.label}
                             </span>

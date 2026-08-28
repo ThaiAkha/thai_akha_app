@@ -25,7 +25,7 @@ export const ProfileHeader = ({ title, icon: Icon }: { title: string; icon: Luci
         <div className="p-2 rounded-xl bg-primary-500/10 text-primary-500">
             <Icon size={20} />
         </div>
-        <h4 className="text-xl font-black italic uppercase tracking-tighter text-gray-900 dark:text-white">
+        <h4 className="text-xl font-black italic uppercase tracking-tighter text-title">
             {title}
         </h4>
     </div>

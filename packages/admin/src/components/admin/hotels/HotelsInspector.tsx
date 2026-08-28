@@ -144,7 +144,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                             {selectedMeetingPoint.image_url ? (
                                 <img src={selectedMeetingPoint.image_url} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                <ImageIcon className="w-6 h-6 text-gray-300 dark:text-gray-600" />
+                                <ImageIcon className="w-6 h-6 text-muted" />
                             )}
                         </div>
                         <div className="flex-1">
@@ -185,11 +185,11 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
     if (!selectedHotel && !isCreating) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-20">
-                <Building2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
-                <p className="text-sm font-black uppercase tracking-widest text-gray-400">
+                <Building2 className="w-12 h-12 text-muted mb-4" />
+                <p className="text-sm font-black uppercase tracking-widest text-sub">
                     {t('inspector.noHotelSelected')}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-sub mt-1">
                     {t('inspector.noHotelHint')}
                 </p>
             </div>
@@ -285,8 +285,8 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
 
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
                     <div>
-                        <p className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-200">{t('inspector.fieldActiveStatus')}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">{t('inspector.showInPickup')}</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-body">{t('inspector.fieldActiveStatus')}</p>
+                        <p className="text-xs text-sub mt-0.5">{t('inspector.showInPickup')}</p>
                     </div>
                     <Switch
                         key={selectedHotel?.id || 'new'}
@@ -311,7 +311,7 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
             <div className="space-y-5">
                 <div className="space-y-1.5">
                     <SectionHeader title={t('inspector.viewFieldHotelName')} />
-                    <p className="text-base font-semibold text-gray-900 dark:text-white">{selectedHotel?.name}</p>
+                    <p className="text-base font-semibold text-title">{selectedHotel?.name}</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -332,20 +332,20 @@ const HotelsInspector: React.FC<HotelsInspectorProps> = ({
                 {selectedHotel?.address && (
                     <div className="space-y-1.5">
                         <SectionHeader title={t('inspector.viewFieldAddress')} />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{selectedHotel.address}</p>
+                        <p className="text-sm text-body">{selectedHotel.address}</p>
                     </div>
                 )}
 
                 {selectedHotel?.phone_number && (
                     <div className="space-y-1.5">
                         <SectionHeader title={t('inspector.viewFieldPhone')} />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{selectedHotel.phone_number}</p>
+                        <p className="text-sm text-body">{selectedHotel.phone_number}</p>
                     </div>
                 )}
 
                 <div className="space-y-1.5">
                     <SectionHeader title={t('inspector.viewFieldCoordinates')} />
-                    <p className="font-mono text-sm text-gray-700 dark:text-gray-300">
+                    <p className="font-mono text-sm text-body">
                         {selectedHotel?.latitude && selectedHotel?.longitude
                             ? `${selectedHotel.latitude}, ${selectedHotel.longitude}`
                             : '—'}

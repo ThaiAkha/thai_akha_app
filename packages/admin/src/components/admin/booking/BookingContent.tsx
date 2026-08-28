@@ -98,10 +98,10 @@ const BookingContent: React.FC<BookingContentProps> = ({
                                 key={mode.id}
                                 onClick={() => onUserModeChange(mode.id as UserMode)}
                                 className={cn(
-                                    "flex-1 flex items-center justify-center gap-2 px-4 py-4 text-md font-black uppercase tracking-wider transition-all border-b-2 whitespace-nowrap",
+                                    "flex-1 flex items-center justify-center gap-2 px-4 py-4 text-base font-black uppercase tracking-wider transition-all border-b-2 whitespace-nowrap",
                                     userMode === mode.id
                                         ? "border-green-500 text-green-600 dark:text-green-400 bg-white dark:bg-gray-800"
-                                        : "border-transparent text-gray-800 dark:text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800/20"
+                                        : "border-transparent text-body hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800/20"
                                 )}
                             >
                                 <mode.icon className={cn("w-4 h-4", userMode === mode.id && "text-green-500")} />
@@ -114,12 +114,12 @@ const BookingContent: React.FC<BookingContentProps> = ({
                 <div className="p-6">
                     {/* Dynamic Title based on Mode */}
                     <div className="mb-6 pb-3 border-b border-gray-200 dark:border-gray-800">
-                        <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
+                        <h2 className="text-xl font-black text-title flex items-center gap-2">
                             {userMode === 'new' && <><User className="w-5 h-5 text-green-500" /> {t('tabs.newGuest')}</>}
                             {userMode === 'existing' && <><Search className="w-5 h-5 text-green-500" /> {t('tabs.existingUser')}</>}
                             {userMode === 'agency' && <><Briefcase className="w-5 h-5 text-green-500" /> {t('tabs.agency')}</>}
                         </h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">
+                        <p className="text-sm text-sub font-medium mt-1">
                             {userMode === 'new' && t('mode.newDesc')}
                             {userMode === 'existing' && t('mode.existingDesc')}
                             {userMode === 'agency' && t('mode.agencyDesc')}

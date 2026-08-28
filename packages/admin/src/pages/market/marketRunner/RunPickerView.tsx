@@ -19,20 +19,20 @@ export const RunPickerView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
             <div className="animate-in fade-in duration-500 py-2">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-xl font-black uppercase italic text-gray-900 dark:text-white leading-none">{t('runner.pickList', { defaultValue: 'Saved shopping lists' })}</h3>
-                        <p className="text-xs font-black uppercase tracking-widest text-gray-400 mt-1">{t('runner.pickListHint', { defaultValue: 'Pick a list to start shopping' })}</p>
+                        <h3 className="text-xl font-black uppercase italic text-title leading-none">{t('runner.pickList', { defaultValue: 'Saved shopping lists' })}</h3>
+                        <p className="text-xs font-black uppercase tracking-widest text-sub mt-1">{t('runner.pickListHint', { defaultValue: 'Pick a list to start shopping' })}</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={fetchData} startIcon={<RefreshCw className="w-4 h-4" />}>{t('buttons.refresh')}</Button>
                 </div>
 
                 {runs.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 space-y-4 text-center">
-                        <div className="size-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-300 dark:text-gray-600">
+                        <div className="size-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-muted">
                             <ShoppingCart className="w-9 h-9" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-base font-black uppercase text-gray-900 dark:text-white">{t('empty.noListFound')}</h4>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">{t('runner.noListsHint', { defaultValue: 'Create a shopping list first in "Shopping List".' })}</p>
+                            <h4 className="text-base font-black uppercase text-title">{t('empty.noListFound')}</h4>
+                            <p className="text-sm text-sub max-w-xs">{t('runner.noListsHint', { defaultValue: 'Create a shopping list first in "Shopping List".' })}</p>
                         </div>
                     </div>
                 ) : (
@@ -52,8 +52,8 @@ export const RunPickerView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                         </div>
                                         <Badge variant="light" color="light" size="sm" className="uppercase">{run.status}</Badge>
                                     </div>
-                                    <div className="font-mono font-black text-gray-900 dark:text-white text-lg leading-none">{run.run_date}</div>
-                                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400 mt-2">
+                                    <div className="font-mono font-black text-title text-lg leading-none">{run.run_date}</div>
+                                    <div className="text-xs font-bold uppercase tracking-wider text-sub mt-2">
                                         {t('runner.listMeta', { defaultValue: '{{items}} items · {{shops}} shops', items: its.length, shops })}
                                     </div>
                                 </button>

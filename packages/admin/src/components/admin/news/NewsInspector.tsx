@@ -221,7 +221,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => setSystemExpanded(!systemExpanded)}
-                            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors w-full mb-3"
+                            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-sub hover:text-body transition-colors w-full mb-3"
                         >
                             {systemExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                             System Fields ({grouped.system.length})
@@ -263,7 +263,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="flex-1 justify-center h-11 text-xs font-black text-gray-500 uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
+                                    className="flex-1 justify-center h-11 text-xs font-black text-sub uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
                                     onClick={() => onShowDeleteConfirm(false)}
                                 >
                                     CANCEL

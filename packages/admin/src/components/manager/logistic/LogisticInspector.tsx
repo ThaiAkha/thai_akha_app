@@ -60,9 +60,9 @@ const SearchableHotelSelect: React.FC<SearchableHotelSelectProps> = ({
 
     return (
         <div className="space-y-1" ref={ref}>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+            <label className="block text-sm font-medium text-body">{label}</label>
             <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-sub">
                     <Building2 className="w-4 h-4" />
                 </div>
                 <input
@@ -86,7 +86,7 @@ const SearchableHotelSelect: React.FC<SearchableHotelSelectProps> = ({
                                     onChange(h.name, h.zone_id);
                                 }}
                             >
-                                <span className="text-gray-900 dark:text-white font-medium">{h.name}</span>
+                                <span className="text-title font-medium">{h.name}</span>
                                 {h.zone_id && (
                                     <span
                                         className="ml-2 flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full text-white"
@@ -150,10 +150,10 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
     if (!selectedBooking) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-400">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-sub">
                 <Search className="w-12 h-12 mb-4 opacity-50" />
-                <h5 className="uppercase font-bold text-sm text-gray-900 dark:text-white">{t('inspector.emptyTitle')}</h5>
-                <p className="text-xs mt-2 text-gray-500">{t('inspector.emptyHint')}</p>
+                <h5 className="uppercase font-bold text-sm text-title">{t('inspector.emptyTitle')}</h5>
+                <p className="text-xs mt-2 text-sub">{t('inspector.emptyHint')}</p>
             </div>
         );
     }
@@ -212,7 +212,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Route Assignment ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
-                    <h6 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
+                    <h6 className="text-sm font-bold text-sub uppercase tracking-wide flex items-center gap-2">
                         <User className="w-3.5 h-3.5" /> {t('inspector.routeAssignment')}
                     </h6>
                     <SelectField
@@ -227,7 +227,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Pickup Details ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
-                    <h6 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
+                    <h6 className="text-sm font-bold text-sub uppercase tracking-wide flex items-center gap-2">
                         <MapPin className="w-3.5 h-3.5" /> {t('inspector.pickupDetails')}
                     </h6>
 
@@ -238,7 +238,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             onClick={() => onUpdateLocal(selectedBooking.id, { meeting_point: null })}
                             className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.meeting_point
                                 ? 'bg-primary-500 text-white'
-                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
                             {t('inspector.pickupAtHotel')}
@@ -257,7 +257,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                             className={`flex-1 py-2.5 text-sm font-bold transition-colors ${selectedBooking.meeting_point
                                 ? 'bg-primary-500 text-white'
-                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
                             {t('inspector.walkInMP')}
@@ -306,7 +306,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     {/* Pickup Time */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('inspector.pickupTime')}</span>
+                            <span className="text-xs font-black text-sub uppercase tracking-widest">{t('inspector.pickupTime')}</span>
                             {zoneDefaultTime && (
                                 <button
                                     type="button"
@@ -328,7 +328,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Drop-off Management ── */}
                 <div className="p-6 space-y-4">
-                    <h6 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
+                    <h6 className="text-sm font-bold text-sub uppercase tracking-wide flex items-center gap-2">
                         <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
                     </h6>
 
@@ -339,7 +339,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: null, dropoff_zone: null, dropoff_driver_uid: null })}
                             className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.dropoff_hotel
                                 ? 'bg-primary-500 text-white'
-                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
                             {t('inspector.sameLocation')}
@@ -349,7 +349,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: selectedBooking.hotel_name || '' })}
                             className={`flex-1 py-2.5 text-sm font-bold transition-colors ${selectedBooking.dropoff_hotel
                                 ? 'bg-primary-500 text-white'
-                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                         >
                             {t('inspector.differentLocation')}

@@ -17,7 +17,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
   return (
     <p
       className={cn(
-        'text-xs font-black uppercase tracking-widest text-gray-800 dark:text-gray-400 mb-3',
+        'text-xs font-black uppercase tracking-widest text-body mb-3',
         className
       )}
     >

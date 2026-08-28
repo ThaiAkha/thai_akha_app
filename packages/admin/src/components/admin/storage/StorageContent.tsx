@@ -75,12 +75,12 @@ const StorageContent: React.FC<StorageContentProps> = ({
                                                 </Badge>
                                             }
                                             footerLeft={
-                                                <p className="text-xs font-mono font-bold text-gray-400 tracking-tighter uppercase shrink-0">
+                                                <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase shrink-0">
                                                     {formatBytes(item.metadata?.size || 0)}
                                                 </p>
                                             }
                                             footerRight={
-                                                <p className="text-xs font-bold text-gray-300">
+                                                <p className="text-xs font-bold text-sub">
                                                     {new Date(item.updated_at).toLocaleDateString(getLocale(i18n.language))}
                                                 </p>
                                             }
@@ -98,10 +98,10 @@ const StorageContent: React.FC<StorageContentProps> = ({
                     <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
                         <TableRow>
                             <TableCell isHeader className="px-4 py-3 w-10"> </TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">File Name</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Size</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Type</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Last Modified</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">File Name</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Size</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Type</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Last Modified</TableCell>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -113,7 +113,7 @@ const StorageContent: React.FC<StorageContentProps> = ({
                                 onClick={() => onFileSelect(file)}
                             >
                                 <TableCell className="px-4 py-3 text-center">
-                                    <span className="text-gray-400">{getFileIcon(file.metadata?.mimetype)}</span>
+                                    <span className="text-sub">{getFileIcon(file.metadata?.mimetype)}</span>
                                 </TableCell>
                                 <TableCell className="px-4 py-3 truncate max-w-xs">
                                     <DataRowText

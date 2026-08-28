@@ -41,7 +41,7 @@ export const AgencySearch: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
                 value={a.agencySearch}
                 onChange={(e) => { a.setAgencySearch(e.target.value); a.clearAgencySel(); }}
                 placeholder={t('reports.searchAgency', { defaultValue: 'Search agency…' })}
-                className="w-full h-9 pl-9 pr-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="w-full h-9 pl-9 pr-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             />
         </div>
     );
@@ -57,7 +57,7 @@ const PeriodCard: React.FC<{ a: AgencyReportsState; p: AgencyPeriod }> = ({ a, p
             title={p.label}
             amount={p.net.toLocaleString()}
             meta={<>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{p.count} {t('reports.bookingsShort', { defaultValue: 'bookings' })} · {p.pax} pax</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-sub">{p.count} {t('reports.bookingsShort', { defaultValue: 'bookings' })} · {p.pax} pax</span>
                 <ReportStatusBadge tone={p.invoiced ? 'green' : 'amber'}>{p.invoiced ? t('reports.invoiced', { defaultValue: 'Invoiced' }) : t('reports.toInvoice', { defaultValue: 'To invoice' })}</ReportStatusBadge>
             </>}
         />
@@ -73,7 +73,7 @@ const BookingCard: React.FC<{ a: AgencyReportsState; b: BookingRow }> = ({ a, b 
             title={`${new Date(b.booking_date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} · ${b.guest_name || b.booking_ref || '—'}`}
             amount={net.toLocaleString()}
             meta={<>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{SESSION_LABEL[b.session_id ?? ''] ?? b.session_id ?? ''} · {b.pax_count} pax</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-sub">{SESSION_LABEL[b.session_id ?? ''] ?? b.session_id ?? ''} · {b.pax_count} pax</span>
                 <ReportStatusBadge tone={b.zoho_invoice_id ? 'green' : 'amber'}>{b.zoho_invoice_id ? t('reports.invoiced', { defaultValue: 'Invoiced' }) : t('reports.toInvoice', { defaultValue: 'To invoice' })}</ReportStatusBadge>
             </>}
         />
@@ -108,14 +108,14 @@ export const AgencyCenter: React.FC<Props> = ({ a, view }) => {
                             <Avatar src={ag.avatar} name={ag.name} />
                             <div className="flex-1 text-left min-w-0">
                                 <DriverHeading>{ag.name}</DriverHeading>
-                                <span className="block text-xs font-bold uppercase tracking-wider text-gray-400">{ag.totalPax} pax · {ag.bookings.length} {t('reports.bookingsShort', { defaultValue: 'bookings' })}</span>
+                                <span className="block text-xs font-bold uppercase tracking-wider text-sub">{ag.totalPax} pax · {ag.bookings.length} {t('reports.bookingsShort', { defaultValue: 'bookings' })}</span>
                             </div>
                             <ChevronRight className={`w-5 h-5 text-gray-400 shrink-0 transition-transform ${open ? 'rotate-90' : ''}`} />
                         </button>
                         {open && (
                             <div className="px-2 pb-4 pt-2 space-y-2">
                                 <div className="flex items-center justify-between px-1 pb-1">
-                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{t('reports.autoInvoice', { defaultValue: 'Auto-invoice each booking' })}</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-sub">{t('reports.autoInvoice', { defaultValue: 'Auto-invoice each booking' })}</span>
                                     <button role="switch" aria-checked={ag.autoInvoice} onClick={(e) => { e.stopPropagation(); a.handleToggleAuto(ag.id, !ag.autoInvoice); }}
                                         className={`relative w-10 h-6 rounded-full transition-colors ${ag.autoInvoice ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'}`}>
                                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${ag.autoInvoice ? 'translate-x-4' : ''}`} />
@@ -132,7 +132,7 @@ export const AgencyCenter: React.FC<Props> = ({ a, view }) => {
                                             </div>
                                             {decl.map(inv => (
                                                 <div key={inv.id} className="flex items-center justify-between gap-2 text-sm">
-                                                    <span className="font-medium text-gray-700 dark:text-gray-200 truncate">{inv.zoho_invoice_number || t('reports.invoice', { defaultValue: 'Invoice' })} · ฿{Number(inv.amount).toLocaleString()}</span>
+                                                    <span className="font-medium text-body truncate">{inv.zoho_invoice_number || t('reports.invoice', { defaultValue: 'Invoice' })} · ฿{Number(inv.amount).toLocaleString()}</span>
                                                     <div className="flex items-center gap-2 shrink-0">
                                                         {inv.payment_proof_url && <button onClick={(e) => { e.stopPropagation(); a.viewProof(inv.payment_proof_url!); }} className="text-xs text-blue-600 hover:underline">{t('reports.viewProof', { defaultValue: 'Screenshot' })}</button>}
                                                         <button onClick={(e) => { e.stopPropagation(); a.handleConfirmPayment([inv.id]); }} disabled={invoiceBusy} className="text-xs font-bold px-2 py-1 rounded-lg border border-blue-300 dark:border-blue-500/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/10 disabled:opacity-50">{t('reports.confirm', { defaultValue: 'Confirm' })}</button>
@@ -143,7 +143,7 @@ export const AgencyCenter: React.FC<Props> = ({ a, view }) => {
                                     );
                                 })()}
                                 {count === 0 ? (
-                                    <div className="px-1 text-sm text-gray-400">{view === 'active' ? t('reports.nothingPending', { defaultValue: 'Nothing in progress.' }) : t('reports.noArchive', { defaultValue: 'No archived reports.' })}</div>
+                                    <div className="px-1 text-sm text-sub">{view === 'active' ? t('reports.nothingPending', { defaultValue: 'Nothing in progress.' }) : t('reports.noArchive', { defaultValue: 'No archived reports.' })}</div>
                                 ) : agencyGran === 'single' ? items.map(b => <BookingCard key={b.internal_id} a={a} b={b} />) : periods.map(p => <PeriodCard key={p.key} a={a} p={p} />)}
                             </div>
                         )}
@@ -157,8 +157,8 @@ export const AgencyCenter: React.FC<Props> = ({ a, view }) => {
 // Label/value row for the single-booking detail.
 const kv = (label: string, value: React.ReactNode) => value ? (
     <div className="flex justify-between gap-4 py-1.5 border-b border-gray-100 dark:border-gray-800 last:border-0">
-        <span className="text-sm text-gray-400 shrink-0">{label}</span>
-        <span className="text-sm font-bold text-gray-800 dark:text-gray-100 text-right">{value}</span>
+        <span className="text-sm text-sub shrink-0">{label}</span>
+        <span className="text-sm font-bold text-body text-right">{value}</span>
     </div>
 ) : null;
 
@@ -210,7 +210,7 @@ export const AgencyInspector: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
                             subtitle={`${b.guest_name || b.booking_ref || '—'} · ${SESSION_LABEL[b.session_id ?? ''] ?? b.session_id ?? ''} · ${b.pax_count} pax`}
                             amount={Number(b.total_price || 0).toLocaleString()}
                             actions={agencyGran === 'single' ? (
-                                <button aria-label={t('reports.remove', { defaultValue: 'Remove' })} onClick={() => a.toggleKey(b.internal_id)} className="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"><X className="w-5 h-5" /></button>
+                                <button aria-label={t('reports.remove', { defaultValue: 'Remove' })} onClick={() => a.toggleKey(b.internal_id)} className="p-1.5 rounded-lg text-sub hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"><X className="w-5 h-5" /></button>
                             ) : undefined}
                         />
                     ))}
@@ -218,11 +218,11 @@ export const AgencyInspector: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
             )}
             <InspectorFooter className="pb-[80px]">
                 <div className="space-y-1 mb-1">
-                    <div className="flex justify-between text-sm"><span className="text-gray-400">{t('reports.gross', { defaultValue: 'Gross' })}</span><span className="font-mono font-bold text-gray-700 dark:text-gray-200">{selTotals.gross.toLocaleString()}</span></div>
-                    <div className="flex justify-between text-sm"><span className="text-gray-400">{t('reports.commission', { defaultValue: 'Commission' })}</span><span className="font-mono font-bold text-amber-600 dark:text-amber-400">− {selTotals.commission.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.gross', { defaultValue: 'Gross' })}</span><span className="font-mono font-bold text-body">{selTotals.gross.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.commission', { defaultValue: 'Commission' })}</span><span className="font-mono font-bold text-amber-600 dark:text-amber-400">− {selTotals.commission.toLocaleString()}</span></div>
                     <div className="flex justify-between items-end pt-1 border-t border-gray-200 dark:border-gray-700">
-                        <SectionTitle className="text-gray-400 mb-0">{t('reports.netDue', { defaultValue: 'Net due' })}</SectionTitle>
-                        <span className="font-mono text-2xl font-black text-gray-900 dark:text-white">{selTotals.net.toLocaleString()} <span className="text-sm text-gray-400 font-normal">THB</span></span>
+                        <SectionTitle className="text-sub mb-0">{t('reports.netDue', { defaultValue: 'Net due' })}</SectionTitle>
+                        <span className="font-mono text-2xl font-black text-title">{selTotals.net.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -231,7 +231,7 @@ export const AgencyInspector: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
                 </div>
                 {/* Invoice to Zoho — crea la fattura per la selezione (solo su click + conferma) */}
                 {selectedBookings.some(b => b.zoho_invoice_id) ? (
-                    <p className="text-center text-xs text-gray-400 mt-2">{t('reports.alreadyInvoiced', { defaultValue: 'Invoiced in Zoho.' })}</p>
+                    <p className="text-center text-xs text-sub mt-2">{t('reports.alreadyInvoiced', { defaultValue: 'Invoiced in Zoho.' })}</p>
                 ) : (
                     <Button variant="primary" size="sm" className="w-full mt-2" disabled={invoiceBusy} startIcon={<Banknote className="w-4 h-4" />} onClick={a.handleAgencyInvoice}>{invoiceBusy ? t('driverPayouts.processing', { defaultValue: 'Processing…' }) : t('reports.invoiceZoho', { defaultValue: 'Invoice to Zoho' })}</Button>
                 )}

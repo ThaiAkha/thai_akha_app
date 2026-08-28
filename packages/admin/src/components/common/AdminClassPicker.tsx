@@ -46,7 +46,7 @@ const AdminClassPicker: React.FC<AdminClassPickerProps> = ({
                 onClick={() => setIsCalendarOpen(true)}
                 className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 border border-green-200 dark:border-green-500/30 rounded-2xl cursor-pointer hover:shadow-md transition-all"
             >
-                <p className="text-sm font-black text-gray-900 dark:text-white flex-1">{formatDate(date)}</p>
+                <p className="text-sm font-black text-title flex-1">{formatDate(date)}</p>
                 <CalendarIcon className="w-5 h-5 text-green-600 dark:text-green-400 ml-2 shrink-0" />
             </div>
 
@@ -68,7 +68,7 @@ const AdminClassPicker: React.FC<AdminClassPickerProps> = ({
                             ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 cursor-not-allowed opacity-60"
                             : session === 'morning_class'
                                 ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-700 dark:text-green-400 shadow-sm cursor-pointer"
-                                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 hover:border-gray-400 cursor-pointer"
+                                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-body hover:border-gray-400 cursor-pointer"
                     )}
                 >
                     <Sun className="w-4 h-4" />
@@ -83,7 +83,7 @@ const AdminClassPicker: React.FC<AdminClassPickerProps> = ({
                             ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 cursor-not-allowed opacity-60"
                             : session === 'evening_class'
                                 ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-700 dark:text-green-400 shadow-sm cursor-pointer"
-                                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 hover:border-gray-400 cursor-pointer"
+                                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-body hover:border-gray-400 cursor-pointer"
                     )}
                 >
                     <Moon className="w-4 h-4" />

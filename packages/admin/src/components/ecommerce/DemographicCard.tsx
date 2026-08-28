@@ -20,10 +20,10 @@ export default function DemographicCard() {
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
       <div className="flex justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          <h3 className="text-lg font-semibold text-body">
             {t('ecommerce.demographics')}
           </h3>
-          <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
+          <p className="mt-1 text-sub text-theme-sm">
             {t('ecommerce.demographicsSubtitle')}
           </p>
         </div>
@@ -38,13 +38,13 @@ export default function DemographicCard() {
           >
             <DropdownItem
               onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              className="flex w-full font-normal text-left text-sub rounded-lg hover:bg-gray-100 hover:text-body dark:hover:bg-white/5"
             >
               {t('ecommerce.viewMore')}
             </DropdownItem>
             <DropdownItem
               onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              className="flex w-full font-normal text-left text-sub rounded-lg hover:bg-gray-100 hover:text-body dark:hover:bg-white/5"
             >
               {t('ecommerce.delete')}
             </DropdownItem>
@@ -70,7 +70,7 @@ export default function DemographicCard() {
               <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
                 USA
               </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+              <span className="block text-sub text-theme-xs">
                 2,379 Customers
               </span>
             </div>
@@ -95,7 +95,7 @@ export default function DemographicCard() {
               <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
                 France
               </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+              <span className="block text-sub text-theme-xs">
                 589 Customers
               </span>
             </div>

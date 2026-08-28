@@ -93,19 +93,19 @@ const LogisticReports: React.FC = () => {
                                 type="date"
                                 value={planDate}
                                 onChange={(e) => setPlanDate(e.target.value)}
-                                className="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                                className="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                             />
                             <Button variant="primary" size="sm" startIcon={<Plus className="w-4 h-4" />} onClick={() => launchNew(planDate)}>{t('buttons.newPlan', { defaultValue: 'New plan' })}</Button>
                         </div>
                     </div>
 
                     {loading ? (
-                        <div className="py-20 text-center"><SectionTitle className="text-gray-400">{t('messages.loading', { defaultValue: 'Loading…' })}</SectionTitle></div>
+                        <div className="py-20 text-center"><SectionTitle className="text-sub">{t('messages.loading', { defaultValue: 'Loading…' })}</SectionTitle></div>
                     ) : runs.length === 0 ? (
-                        <div className="py-20 text-center"><SectionTitle className="text-gray-400">{t('empty.noHistory', { defaultValue: 'No reports yet.' })}</SectionTitle></div>
+                        <div className="py-20 text-center"><SectionTitle className="text-sub">{t('empty.noHistory', { defaultValue: 'No reports yet.' })}</SectionTitle></div>
                     ) : (
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 uppercase font-black text-xs">
+                            <thead className="bg-gray-50 dark:bg-gray-800/50 text-sub uppercase font-black text-xs">
                                 <tr>
                                     <th className="px-6 py-4">{t('table.date', { defaultValue: 'Date' })}</th>
                                     <th className="px-6 py-4">{t('table.shopper', { defaultValue: 'Shopper' })}</th>
@@ -125,11 +125,11 @@ const LogisticReports: React.FC = () => {
                                                 onClick={() => setOpenId(isOpen ? null : run.id)}
                                                 className={cn('cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50', isOpen && 'bg-primary-50/50 dark:bg-primary-900/10')}
                                             >
-                                                <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{run.run_date}</td>
-                                                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200">{shopperOf(run) ?? <span className="text-gray-300 dark:text-gray-600">-</span>}</td>
+                                                <td className="px-6 py-4 font-mono font-bold text-title">{run.run_date}</td>
+                                                <td className="px-6 py-4 font-medium text-body">{shopperOf(run) ?? <span className="text-muted">-</span>}</td>
                                                 <td className="px-6 py-4"><Badge variant="light" color="light" size="sm" className="uppercase">{run.status}</Badge></td>
                                                 <td className="px-6 py-4 text-center font-medium">{items.length}</td>
-                                                <td className="px-6 py-4 text-right font-mono font-black text-primary-600 dark:text-primary-400">{Number(run.total_cost || 0).toLocaleString()} <span className="text-xs text-gray-400">THB</span></td>
+                                                <td className="px-6 py-4 text-right font-mono font-black text-primary-600 dark:text-primary-400">{Number(run.total_cost || 0).toLocaleString()} <span className="text-xs text-sub">THB</span></td>
                                                 <td className="px-6 py-4 text-gray-400"><ChevronDown className={cn('w-4 h-4 transition-transform', isOpen && 'rotate-180')} /></td>
                                             </tr>
                                             {isOpen && (
@@ -140,8 +140,8 @@ const LogisticReports: React.FC = () => {
                                                                 <Paragraph size="sm" color="muted">{t('empty.noContent', { defaultValue: 'No items.' })}</Paragraph>
                                                             ) : items.map((it, i) => (
                                                                 <div key={it.id || i} className="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-gray-800 last:border-0">
-                                                                    <span className="text-xs font-bold uppercase text-gray-700 dark:text-gray-300 truncate">{it.name}</span>
-                                                                    <span className="font-mono text-xs font-black text-gray-900 dark:text-white">{Number(it.actual_price ?? it.price ?? 0).toLocaleString()} ฿</span>
+                                                                    <span className="text-xs font-bold uppercase text-body truncate">{it.name}</span>
+                                                                    <span className="font-mono text-xs font-black text-title">{Number(it.actual_price ?? it.price ?? 0).toLocaleString()} ฿</span>
                                                                 </div>
                                                             ))}
                                                         </div>

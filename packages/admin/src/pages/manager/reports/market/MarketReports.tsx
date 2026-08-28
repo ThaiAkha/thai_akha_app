@@ -38,8 +38,8 @@ const RunCard: React.FC<{ m: MarketReportsState; r: MarketRunRow }> = ({ m, r })
         title={new Date(r.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
         amount={r.total_cost.toLocaleString()}
         meta={<>
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{r.items.length} items</span>
-            {r.shopper && <span className="text-xs font-bold text-gray-500 dark:text-gray-400 truncate">· {r.shopper}</span>}
+            <span className="text-xs font-bold uppercase tracking-wider text-sub">{r.items.length} items</span>
+            {r.shopper && <span className="text-xs font-bold text-sub truncate">· {r.shopper}</span>}
             <ReportStatusBadge tone={r.archived ? 'green' : 'amber'}>{r.status}</ReportStatusBadge>
         </>}
     />
@@ -54,7 +54,7 @@ const MonthCard: React.FC<{ m: MarketReportsState; mg: MonthGroup }> = ({ m, mg 
             title={mg.label}
             amount={mg.total.toLocaleString()}
             meta={<>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{mg.days} {t('reports.days', { defaultValue: 'days' })}</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-sub">{mg.days} {t('reports.days', { defaultValue: 'days' })}</span>
                 <ReportStatusBadge tone={mg.archived ? 'green' : 'amber'}>{mg.archived ? t('reports.expensed', { defaultValue: 'Expensed' }) : t('reports.open', { defaultValue: 'Open' })}</ReportStatusBadge>
             </>}
         />
@@ -100,8 +100,8 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                 </InspectorBody>
                 <InspectorFooter className="pb-[80px]">
                     <div className="flex justify-between items-end">
-                        <SectionTitle className="text-gray-400 mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
-                        <span className="font-mono text-2xl font-black text-gray-900 dark:text-white">{selMonth.total.toLocaleString()} <span className="text-sm text-gray-400 font-normal">THB</span></span>
+                        <SectionTitle className="text-sub mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
+                        <span className="font-mono text-2xl font-black text-title">{selMonth.total.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <Button variant="outline" size="sm" disabled={reportBusy} startIcon={<Printer className="w-4 h-4" />} onClick={() => m.handleMonthlyReport(selMonth, 'print')}>{t('driverPayouts.print', { defaultValue: 'Print' })}</Button>
@@ -122,7 +122,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
             <InspectorHeader subtitle={`${isTeacher ? t('reports.typeTeacher', { defaultValue: 'Market · Kitchen' }) : t('reports.typeLogistic', { defaultValue: 'Market · Logistic' })}${selRun.shopper ? ` · ${selRun.shopper}` : ''}`} title={new Date(selRun.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} onClose={() => m.setSelectedRunId(null)} />
             <InspectorBody className="p-4 space-y-2">
                 {selRun.items.length === 0 ? (
-                    <div className="text-sm text-gray-400 px-1">{t('reports.noItems', { defaultValue: 'No items.' })}</div>
+                    <div className="text-sm text-sub px-1">{t('reports.noItems', { defaultValue: 'No items.' })}</div>
                 ) : selRun.items.map((it, i) => (
                     <ReportLineRow
                         key={it.id || i}
@@ -134,8 +134,8 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
             </InspectorBody>
             <InspectorFooter className="pb-[80px]">
                 <div className="flex justify-between items-end">
-                    <SectionTitle className="text-gray-400 mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
-                    <span className="font-mono text-2xl font-black text-gray-900 dark:text-white">{selRun.total_cost.toLocaleString()} <span className="text-sm text-gray-400 font-normal">THB</span></span>
+                    <SectionTitle className="text-sub mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
+                    <span className="font-mono text-2xl font-black text-title">{selRun.total_cost.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     <Button variant="outline" size="sm" disabled={reportBusy} startIcon={<Printer className="w-4 h-4" />} onClick={() => m.handleRunReport(selRun, 'print')}>{t('driverPayouts.print', { defaultValue: 'Print' })}</Button>

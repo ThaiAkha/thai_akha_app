@@ -65,7 +65,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                 <div className="flex items-center justify-between">
                     {/* Booked a sinistra */}
                     <div className="flex items-center gap-2">
-                        <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-400">
+                        <span className="text-xs sm:text-sm font-medium text-body">
                             {t('session.booked')}
                         </span>
                         <span className="text-base sm:text-lg font-bold text-red-500 dark:text-red-500">
@@ -75,7 +75,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
 
                     {/* Seats Left a destra */}
                     <div className="flex items-center gap-2">
-                        <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-400">
+                        <span className="text-xs sm:text-sm font-medium text-body">
                             {t('session.seatsLeft')}
                         </span>
                         <span className="text-base sm:text-lg font-bold text-green-600 dark:text-green-400">
@@ -94,10 +94,10 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                             className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 hover:border-green-500 transition-colors shadow-sm"
                         >
                             <div className="flex items-center gap-2 overflow-hidden">
-                                <div className="shrink-0 size-5 rounded-full bg-gray-20 dark:bg-white/5 border border-gray-100 dark:border-white/5 flex items-center justify-center">
+                                <div className="shrink-0 size-5 rounded-full bg-gray-25 dark:bg-white/5 border border-gray-100 dark:border-white/5 flex items-center justify-center">
                                     <User className="w-4 h-4 text-gray-400" />
                                 </div>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                                <span className="text-sm font-medium text-body truncate">
                                     {booking.guest_name}
                                 </span>
                             </div>
@@ -107,7 +107,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                 ) : (
                     <div className="h-full py-6 flex flex-col items-center justify-center opacity-30">
                         <Users className="w-10 h-10 mb-1.5 text-gray-500" />
-                        <p className="text-sm font-bold uppercase tracking-widest text-gray-500">{t('session.empty')}</p>
+                        <p className="text-sm font-bold uppercase tracking-widest text-sub">{t('session.empty')}</p>
                     </div>
                 )}
             </div>

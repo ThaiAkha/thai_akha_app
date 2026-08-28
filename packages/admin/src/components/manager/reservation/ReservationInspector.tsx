@@ -35,11 +35,11 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
     if (!selectedBooking) {
         return (
             <div className="h-full flex flex-col items-center justify-center p-8 text-center">
-                <div className="size-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center mb-4 text-gray-300 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="size-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center mb-4 text-sub shadow-sm border border-gray-100 dark:border-gray-700">
                     <Users className="w-8 h-8" />
                 </div>
-                <h5 className="text-gray-500 font-bold uppercase tracking-widest text-xs">{t('inspector.noSelection')}</h5>
-                <p className="text-gray-400 text-xs mt-2 max-w-[200px]">{t('inspector.noSelHint')}</p>
+                <h5 className="text-sub font-bold uppercase tracking-widest text-xs">{t('inspector.noSelection')}</h5>
+                <p className="text-sub text-xs mt-2 max-w-[200px]">{t('inspector.noSelHint')}</p>
             </div>
         );
     }

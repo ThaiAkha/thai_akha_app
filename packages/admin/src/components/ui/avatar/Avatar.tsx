@@ -41,7 +41,7 @@ const Avatar: React.FC<AvatarProps> = ({
   size = "medium",
   status = "none",
   fallback,
-  fallbackClassName = "bg-gray-200 dark:bg-gray-700 text-gray-400"
+  fallbackClassName = "bg-gray-200 dark:bg-gray-700 text-sub"
 }) => {
   return (
     <div className={`relative inline-flex shrink-0 rounded-full ${sizeClasses[size]}`}>

@@ -36,7 +36,7 @@ const LegalTranslationNotices: React.FC<LegalTranslationNoticesProps> = ({ docum
           Entrambi i documenti contengono una clausola di lingua in questo senso. */}
       {showingTranslation && (
         <div className="mb-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 px-4 py-3">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-300">
+          <p className="text-xs font-medium text-sub">
             {t('courtesyNotice')}
           </p>
         </div>

@@ -280,17 +280,17 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
         {/* Date — read only */}
         <div className="w-full space-y-1.5">
           <SectionHeader title={t('payoutForm.dateLabel')} variant="formfield" />
-          <div className="h-12 flex items-center px-4 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/40 text-base font-bold text-gray-900 dark:text-white">
+          <div className="h-12 flex items-center px-4 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/40 text-base font-bold text-title">
             <span className="capitalize">{fmtDate(runDate, i18n.language)}</span>
             {isToday && (
-              <span className="ml-auto text-xs font-black uppercase tracking-widest text-gray-400">{t('payoutForm.todayLabel')}</span>
+              <span className="ml-auto text-xs font-black uppercase tracking-widest text-sub">{t('payoutForm.todayLabel')}</span>
             )}
           </div>
         </div>
 
         {/* Class type — segmented (locked in edit mode) */}
         <div className="w-full space-y-1.5">
-          <span className="text-xs font-black uppercase tracking-widest text-gray-500">{t('payoutForm.classTypeLabel')}</span>
+          <span className="text-xs font-black uppercase tracking-widest text-sub">{t('payoutForm.classTypeLabel')}</span>
           <div className="grid grid-cols-2 [gap:var(--space-fluid-2xs,0.5rem)]">
             {(['morning_class', 'evening_class'] as SessionId[]).map((s) => (
               <button
@@ -302,7 +302,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
                   'h-12 rounded-xl border text-sm font-bold transition-all duration-300',
                   session === s
                     ? 'border-green-500 bg-green-500/10 text-green-700 dark:text-green-400'
-                    : 'border-gray-200 dark:border-gray-700/50 text-gray-600 dark:text-gray-300 hover:border-green-500/30',
+                    : 'border-gray-200 dark:border-gray-700/50 text-sub hover:border-green-500/30',
                   isEditMode && 'opacity-60 cursor-not-allowed'
                 )}
               >
@@ -374,8 +374,8 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
 
 const SummaryRow: React.FC<{ label: string; value: string; highlight?: boolean }> = ({ label, value, highlight }) => (
   <div className="flex items-center justify-between">
-    <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
-    <span className={cn('text-sm font-bold', highlight ? 'text-green-700 dark:text-green-400' : 'text-gray-900 dark:text-white')}>
+    <span className="text-sm text-sub">{label}</span>
+    <span className={cn('text-sm font-bold', highlight ? 'text-green-700 dark:text-green-400' : 'text-title')}>
       {value}
     </span>
   </div>

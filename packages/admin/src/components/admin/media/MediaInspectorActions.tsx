@@ -28,7 +28,7 @@ const MediaInspectorActions: React.FC<MediaInspectorActionsProps> = ({
                 <button
                     onClick={() => setIsEditing(false)}
                     disabled={isSaving}
-                    className="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-white/5 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                    className="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-white/5 text-sub hover:bg-gray-100 dark:hover:bg-white/10 transition-all shadow-lg active:scale-95 disabled:opacity-50"
                 >
                     <X size={16} />
                 </button>

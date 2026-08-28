@@ -68,7 +68,7 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                             </>
                                         }
                                         footerLeft={
-                                            <p className="text-xs font-mono font-bold text-gray-400 tracking-tighter uppercase truncate">
+                                            <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate">
                                                 ID: {String(p.id).substring(0, 8)}
                                             </p>
                                         }
@@ -94,11 +94,11 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                 onChange={onToggleSelectAll}
                             />
                         </TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">SKU</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Product Name</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500">Category</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500 text-center">Stock</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-gray-500 text-right">Price</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">SKU</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Product Name</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Category</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-center">Stock</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-right">Price</TableCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -134,7 +134,7 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                 {p.stock_quantity < 5 ? (
                                     <Badge color="error" size="sm">{p.stock_quantity}</Badge>
                                 ) : (
-                                    <span className="text-gray-600 dark:text-gray-400">{p.stock_quantity}</span>
+                                    <span className="text-sub">{p.stock_quantity}</span>
                                 )}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-right">

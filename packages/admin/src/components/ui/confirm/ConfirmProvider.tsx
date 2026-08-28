@@ -48,13 +48,13 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     <div className={cn('mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl', danger ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400' : 'bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400')}>
                         <AlertTriangle className="w-6 h-6" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{pending?.title ?? 'Confirm'}</h3>
-                    {pending?.message && <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{pending.message}</p>}
+                    <h3 className="text-lg font-bold text-title">{pending?.title ?? 'Confirm'}</h3>
+                    {pending?.message && <p className="mt-2 text-sm text-sub">{pending.message}</p>}
                     <div className="mt-6 flex gap-3">
                         <button
                             type="button"
                             onClick={() => close(false)}
-                            className="flex-1 h-11 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
+                            className="flex-1 h-11 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-body hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
                         >
                             {pending?.cancelLabel ?? 'Cancel'}
                         </button>

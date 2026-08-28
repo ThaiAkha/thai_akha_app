@@ -61,10 +61,10 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                 toolbar={
                     <div className="h-16 px-5 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 bg-gray-50/50 dark:bg-gray-900/50 shadow-sm shrink-0">
                         <Users className="w-5 h-5 text-primary-500" />
-                        <span className="text-base font-bold text-gray-900 dark:text-white">
+                        <span className="text-base font-bold text-title">
                             {dayLabel(globalDate, tm)} · {globalSession === 'evening_class' ? tm('groupsPlanner.evening', { defaultValue: 'Evening' }) : tm('groupsPlanner.morning', { defaultValue: 'Morning' })}
                         </span>
-                        <span className="ml-auto text-sm font-bold text-gray-400">{active.reduce((a: number, b) => a + (b.pax_count || 0), 0)} pax · {active.length} {tm('groupsPlanner.groups', { defaultValue: 'groups' })}</span>
+                        <span className="ml-auto text-sm font-bold text-sub">{active.reduce((a: number, b) => a + (b.pax_count || 0), 0)} pax · {active.length} {tm('groupsPlanner.groups', { defaultValue: 'groups' })}</span>
                     </div>
                 }
                 inspector={
@@ -92,9 +92,9 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
             >
                 {/* CENTRO — colonne teacher */}
                 {loading ? (
-                    <div className="p-10 text-base text-gray-400">{t('messages.loading', { defaultValue: 'Loading…' })}</div>
+                    <div className="p-10 text-base text-sub">{t('messages.loading', { defaultValue: 'Loading…' })}</div>
                 ) : active.length === 0 ? (
-                    <div className="py-20 text-center flex flex-col items-center gap-3 text-gray-400">
+                    <div className="py-20 text-center flex flex-col items-center gap-3 text-sub">
                         <CalendarDays className="w-12 h-12 opacity-40" />
                         <p className="text-base">{tm('groupsPlanner.empty', { defaultValue: 'No bookings for this session.' })}</p>
                     </div>
@@ -106,14 +106,14 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                                 <div key={col.id ?? 'unassigned'} className="flex-1 min-w-[280px] flex flex-col [gap:var(--space-fluid-2xs,0.5rem)]">
                                     <div className="flex items-center justify-between px-1 mb-1">
                                         <Heading level="h4">{col.name}</Heading>
-                                        <span className="text-xs font-black uppercase tracking-wider text-gray-400">
+                                        <span className="text-xs font-black uppercase tracking-wider text-sub">
                                             {tm('groupsPlanner.colTotal', { defaultValue: '{{count}} groups · {{pax}} pax', count: col.items.length, pax })}
                                         </span>
                                     </div>
 
                                     {col.items.length === 0 && (
                                         <div className="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-8 text-center">
-                                            <p className="text-sm text-gray-400">{tm('groupsPlanner.colEmpty', { defaultValue: 'No groups' })}</p>
+                                            <p className="text-sm text-sub">{tm('groupsPlanner.colEmpty', { defaultValue: 'No groups' })}</p>
                                         </div>
                                     )}
 
@@ -129,8 +129,8 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                                             >
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="min-w-0">
-                                                        <div className="text-base font-bold text-gray-900 dark:text-white truncate">{b.guest_name || b.profiles?.full_name || b.guest_email || b.booking_ref || '—'}</div>
-                                                        {b.booking_ref && <div className="mt-0.5 text-xs font-mono text-gray-400">{b.booking_ref}</div>}
+                                                        <div className="text-base font-bold text-title truncate">{b.guest_name || b.profiles?.full_name || b.guest_email || b.booking_ref || '—'}</div>
+                                                        {b.booking_ref && <div className="mt-0.5 text-xs font-mono text-sub">{b.booking_ref}</div>}
                                                     </div>
                                                     <span className={cn('shrink-0 text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded',
                                                         paid ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400')}>
@@ -138,7 +138,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                                                     </span>
                                                 </div>
 
-                                                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                                                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-sub">
                                                     <span className="inline-flex items-center gap-1"><Users className="size-4" />{b.pax_count ?? 0} pax</span>
                                                     {b.hotel_name && <span className="inline-flex items-center gap-1 min-w-0"><Hotel className="size-4 shrink-0" /><span className="truncate">{b.hotel_name}</span></span>}
                                                     {b.pickup_driver_uid && <span className="inline-flex items-center gap-1"><Car className="size-4" />{driverNames[b.pickup_driver_uid] || '—'}</span>}
@@ -157,7 +157,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                                                                 onClick={() => moveKitchen(b.internal_id, k.id)}
                                                                 className={cn('flex-1 h-9 rounded-lg text-sm font-bold border transition-colors inline-flex items-center justify-center gap-1',
                                                                     isCurrent ? 'bg-primary-500 text-white border-primary-500 cursor-default'
-                                                                        : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-600 disabled:opacity-50')}
+                                                                        : 'border-gray-200 dark:border-gray-700 text-sub hover:border-primary-500 hover:text-primary-600 disabled:opacity-50')}
                                                             >
                                                                 {busy && !isCurrent ? <Loader2 className="size-4 animate-spin" /> : shortKitchen(k.full_name)}
                                                             </button>

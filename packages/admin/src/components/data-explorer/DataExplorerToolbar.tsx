@@ -8,7 +8,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 type ViewMode = 'table' | 'grid';
 
 /** Shared style for all toolbar icon buttons - premium theme */
-const ICON_BTN = "h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-500/10 primary-btn-animation";
+const ICON_BTN = "h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sub hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-500/10 primary-btn-animation";
 
 /** Shared style for primary action button - premium theme */
 const PRIMARY_BTN = "h-9 px-4 inline-flex items-center gap-2 rounded-lg border border-primary-500 bg-primary-500 text-white text-xs font-black uppercase tracking-widest primary-shadow primary-btn-animation disabled:opacity-50 disabled:cursor-not-allowed";
@@ -93,7 +93,7 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
                                 "h-9 w-9 flex items-center justify-center transition-colors",
                                 viewMode === 'table'
                                     ? "bg-orange-500 text-white hover:bg-orange-600"
-                                    : "text-gray-400 hover:text-orange-600 dark:hover:text-orange-400"
+                                    : "text-sub hover:text-orange-600 dark:hover:text-orange-400"
                             )}
                         >
                             <List className="w-4 h-4" />
@@ -109,7 +109,7 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
                                 "h-9 w-9 flex items-center justify-center transition-colors",
                                 viewMode === 'grid'
                                     ? "bg-orange-500 text-white hover:bg-orange-600"
-                                    : "text-gray-400 hover:text-orange-600 dark:hover:text-orange-400"
+                                    : "text-sub hover:text-orange-600 dark:hover:text-orange-400"
                             )}
                         >
                             <LayoutGrid className="w-4 h-4" />

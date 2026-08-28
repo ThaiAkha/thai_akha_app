@@ -38,10 +38,10 @@ export const LogisticColumn: React.FC<LogisticColumnProps> = ({
                         <Avatar src={driverAvatarUrl} alt={title} size="xlarge" />
                     )}
                     <div className="flex-1 min-w-0 space-y-0.5">
-                        <div className="font-bold text-gray-900 dark:text-white uppercase text-md tracking-wider truncate leading-tight">
+                        <div className="font-bold text-title uppercase text-base tracking-wider truncate leading-tight">
                             {title}
                         </div>
-                        <div className="text-sm text-gray-500 font-mono">{t('column.hotel', { count: items.length })}</div>
+                        <div className="text-sm text-sub font-mono">{t('column.hotel', { count: items.length })}</div>
                     </div>
                 </div>
             </div>

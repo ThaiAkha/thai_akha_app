@@ -1,130 +1,14 @@
 /**
- * 🏠 LOGISTICS HOME - Editorial Storyboard Layout
+ * 🏠 LOGISTICS HOME
  *
- * Database-driven dashboard for logistics management
- * Features, navigation cards, and quick actions from contentService
+ * Guscio condiviso: <HomeDashboard> (components/dashboard). Qui restano solo
+ * il ruolo che filtra le card e lo slug dei metadata.
  */
+import React from 'react';
+import HomeDashboard from '../../components/dashboard/HomeDashboard';
 
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import PageContainer from '../../components/layout/PageContainer';
-import { contentService } from '@thaiakha/shared/services';
-import { usePageMetadata } from '../../hooks/usePageMetadata';
-import WelcomeHero from '../../components/dashboard/WelcomeHero';
-import FeatureCardsGrid, { type HomeCard } from '../../components/dashboard/FeatureCardsGrid';
-import DashboardNavCard from '../../components/dashboard/DashboardNavCard';
-import BasicCard from '../../components/dashboard/BasicCard';
-import CTABanner, { type CTABannerProps } from '../../components/dashboard/CTABanner';
-
-const LogisticHome: React.FC = () => {
-    const { t, i18n } = useTranslation('common');
-    // ✅ AppHeader handles setPageHeader automatically
-    const { pageMeta } = usePageMetadata('logistic-home');
-    const [homeCards, setHomeCards] = useState<HomeCard[]>([]);
-
-    useEffect(() => {
-        const loadHomeCards = async () => {
-            try {
-                // Load home cards from database with current language
-                const cards = await contentService.getHomeCards(i18n.language);
-                // Il service restituisce record generici: la pagina li legge con la shape HomeCard
-                const logisticsCards = cards.filter((card) => card.role === 'logistics') as unknown as HomeCard[];
-                console.log('🏠 Logistics Home Cards loaded:', logisticsCards);
-                setHomeCards(logisticsCards || []);
-            } catch (error) {
-                console.error("Failed to load logistics home cards:", error);
-            }
-        };
-        loadHomeCards();
-    }, [i18n.language]);
-
-    // Separate cards by type from database
-    const featureCards = homeCards.filter(card => card.card_type === 'feature');
-    const ctaBanners = homeCards.filter(card => card.card_type === 'cta');
-
-    // Left column: nav and basic cards
-    const leftCards = homeCards.filter(card =>
-        card.card_type === 'nav' ||
-        card.card_type === 'basic' ||
-        card.slug === 'basic' ||
-        card.card_slug === 'basic'
-    );
-
-    return (
-        <PageContainer variant="wide">
-            <div>
-                {/* ROW 1: HERO SECTION (full width) */}
-                {pageMeta && (
-                    <WelcomeHero
-                        badge={pageMeta.badge}
-                        titleMain={pageMeta.titleMain}
-                        titleHighlight={pageMeta.titleHighlight}
-                        description={pageMeta.description}
-                        imageUrl={pageMeta.imageUrl}
-                        icon={pageMeta.icon}
-                    />
-                )}
-
-                {/* ROW 2: MAIN CONTENT (Features + CTA) then SIDEBAR (Nav + Basic) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* MAIN CONTENT (9 col) - Features + CTA */}
-                    <div className="lg:col-span-9 min-w-0">
-                        {/* Features Grid */}
-                        <FeatureCardsGrid cards={featureCards} />
-
-                        {/* CTA Banners */}
-                        <div className="space-y-6 mt-6">
-                            {ctaBanners.map((card) => (
-                                <CTABanner
-                                    key={card.id}
-                                    title={card.title || card.card_title || ''}
-                                    description={card.description || card.card_description || ''}
-                                    ctaLabel={card.link_label || t('fallback.viewMore')}
-                                    ctaPath={card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#'}
-                                    variant={(card.variant || 'dark') as CTABannerProps['variant']}
-                                    className="flex items-center justify-between gap-6"
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* SIDEBAR (3 col) - Nav cards and Basic cards */}
-                    <div className="lg:col-span-3 min-w-0">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-                            {leftCards.map((card) => {
-                                const path = card.target_path || card.page_slug ? `/${card.target_path || card.page_slug}` : '#';
-                                if (card.card_type === 'nav') {
-                                    return (
-                                        <div key={card.id}>
-                                            <DashboardNavCard
-                                                path={path}
-                                                iconName={card.icon_name ?? undefined}
-                                                label={card.title || card.card_title || ''}
-                                                description={card.description || card.card_description || undefined}
-                                                linkLabel={card.link_label ?? undefined}
-                                            />
-                                        </div>
-                                    );
-                                }
-
-                                // default to BasicCard for 'basic' or other small items
-                                return (
-                                    <div key={card.id}>
-                                        <BasicCard
-                                            path={path}
-                                            iconName={card.icon_name ?? undefined}
-                                            label={card.title || card.card_title || ''}
-                                            description={card.description || card.card_description || undefined}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </PageContainer>
-    );
-};
+// Attenzione all'asimmetria, e' cosi' a database: ruolo `logistics` (plurale) in
+// `home_cards`, slug `logistic-home` (singolare) in `site_metadata_admin`.
+const LogisticHome: React.FC = () => <HomeDashboard role="logistics" metaSlug="logistic-home" />;
 
 export default LogisticHome;

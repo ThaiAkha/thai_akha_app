@@ -115,10 +115,10 @@ const KitchenBookings: React.FC = () => {
       toolbar={
         <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-2 bg-gray-50/50 dark:bg-gray-900/50 shrink-0">
           <Users className="w-4 h-4 text-primary-500" />
-          <span className="text-sm font-bold text-gray-900 dark:text-white">
+          <span className="text-sm font-bold text-title">
             {selectedDay ? `${fmtDay(selectedDay)} · ${selectedClass === 'evening_class' ? 'Evening' : 'Morning'}` : t('kitchen.participants', { defaultValue: 'Participants' })}
           </span>
-          <span className="ml-auto text-xs font-mono text-gray-400">{totalPax} pax</span>
+          <span className="ml-auto text-xs font-mono text-sub">{totalPax} pax</span>
           {/* MULTI-KITCHEN (Fase 4) — report kitchen del giorno (stampa / PDF) */}
           <div className="flex items-center gap-1.5">
             <button
@@ -126,7 +126,7 @@ const KitchenBookings: React.FC = () => {
               disabled={!selectedDay || reportBusy !== null}
               onClick={() => handleReport('print')}
               title={t('kitchen.printReport', { defaultValue: 'Print report' })}
-              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200 hover:border-primary-500 hover:text-primary-600 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-body hover:border-primary-500 hover:text-primary-600 disabled:opacity-50 transition-colors"
             >
               <Printer className="size-4" />{reportBusy === 'print' ? '…' : t('kitchen.print', { defaultValue: 'Print' })}
             </button>
@@ -135,7 +135,7 @@ const KitchenBookings: React.FC = () => {
               disabled={!selectedDay || reportBusy !== null}
               onClick={() => handleReport('download')}
               title={t('kitchen.downloadPdf', { defaultValue: 'Download PDF' })}
-              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200 hover:border-primary-500 hover:text-primary-600 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-body hover:border-primary-500 hover:text-primary-600 disabled:opacity-50 transition-colors"
             >
               <Download className="size-4" />{reportBusy === 'download' ? '…' : 'PDF'}
             </button>
@@ -161,7 +161,7 @@ const KitchenBookings: React.FC = () => {
               />
               <div className="flex flex-wrap gap-2">
                 {exploreGroup.status && (
-                  <span className="text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded">{exploreGroup.status}</span>
+                  <span className="text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-sub px-2 py-0.5 rounded">{exploreGroup.status}</span>
                 )}
                 <PaymentBadge status={exploreGroup.paymentStatus} />
               </div>
@@ -173,16 +173,16 @@ const KitchenBookings: React.FC = () => {
               </div>
             </div>
           ) : !selectedGroup ? (
-            <div className="p-6 text-sm text-gray-400 flex flex-col items-center gap-3 text-center mt-10">
+            <div className="p-6 text-sm text-sub flex flex-col items-center gap-3 text-center mt-10">
               <MapPin className="w-8 h-8 opacity-30" />
               {t('kitchen.pickParticipant', { defaultValue: 'Pick a participant to see their group.' })}
             </div>
           ) : (
             <div className="p-5 space-y-4">
               <div>
-                <div className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">{t('kitchen.groupInfo', { defaultValue: 'Group info' })}</div>
-                <div className="text-base font-black text-gray-900 dark:text-white">#{selectedGroup.id.slice(0, 8)}</div>
-                {selectedGroup.status && <span className="mt-1 inline-block text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded">{selectedGroup.status}</span>}
+                <div className="text-xs font-black uppercase tracking-widest text-sub mb-1">{t('kitchen.groupInfo', { defaultValue: 'Group info' })}</div>
+                <div className="text-base font-black text-title">#{selectedGroup.id.slice(0, 8)}</div>
+                {selectedGroup.status && <span className="mt-1 inline-block text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-sub px-2 py-0.5 rounded">{selectedGroup.status}</span>}
               </div>
               <InfoRow icon={<Users className="w-4 h-4" />} label="Pax" value={`${selectedGroup.pax_count}`} />
               {leader && <InfoRow icon={<Crown className="w-4 h-4 text-amber-500" />} label="Tour leader" value={leader.profile?.full_name || '—'} />}
@@ -204,9 +204,9 @@ const KitchenBookings: React.FC = () => {
       )}
       {/* CENTER: participants line-by-line, grouped by booking */}
       {loading ? (
-        <div className="p-10 text-sm text-gray-400">{t('messages.loading', { defaultValue: 'Loading…' })}</div>
+        <div className="p-10 text-sm text-sub">{t('messages.loading', { defaultValue: 'Loading…' })}</div>
       ) : dayGroups.length === 0 ? (
-        <div className="py-20 text-center flex flex-col items-center gap-3 text-gray-400">
+        <div className="py-20 text-center flex flex-col items-center gap-3 text-sub">
           <CalendarDays className="w-10 h-10 opacity-40" />
           <p className="text-sm">{t('empty.noParticipants', { defaultValue: 'Select a day & class.' })}</p>
         </div>
@@ -216,7 +216,7 @@ const KitchenBookings: React.FC = () => {
             <div key={g.id}>
               <div className="px-4 py-2.5 bg-gray-50/70 dark:bg-gray-800/50 flex items-center gap-2 border-y border-gray-100 dark:border-gray-800">
                 <Crown className="w-4 h-4 text-amber-500 shrink-0" />
-                <span className="text-sm font-black text-gray-800 dark:text-gray-100 truncate">{g.leaderName}</span>
+                <span className="text-sm font-black text-body truncate">{g.leaderName}</span>
                 {g.ownerRole === 'agency' && (
                   <span className="text-xs font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded shrink-0">Agency</span>
                 )}
@@ -228,7 +228,7 @@ const KitchenBookings: React.FC = () => {
                 >
                   <Compass className="w-4 h-4" />
                 </button>
-                <span className="ml-auto flex items-center gap-1 text-xs font-bold text-gray-400 whitespace-nowrap shrink-0">
+                <span className="ml-auto flex items-center gap-1 text-xs font-bold text-sub whitespace-nowrap shrink-0">
                   {g.pax_count} pax{g.hotel_name ? ` · ${g.hotel_name}` : ''}{g.pickup_time ? ` · ${g.pickup_time}` : ''}
                 </span>
               </div>
@@ -243,9 +243,9 @@ const KitchenBookings: React.FC = () => {
                     <img src={avatarSrc(p)} alt="" className="w-9 h-9 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-700" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{p.profile?.full_name || '—'}</span>
+                        <span className="text-sm font-bold text-title truncate">{p.profile?.full_name || '—'}</span>
                         {p.is_leader && <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
-                        {p.profile?.nationality && <span className="text-xs font-mono text-gray-400 uppercase">{p.profile.nationality}</span>}
+                        {p.profile?.nationality && <span className="text-xs font-mono text-sub uppercase">{p.profile.nationality}</span>}
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-1.5">
                         <span className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded">
@@ -269,7 +269,7 @@ const KitchenBookings: React.FC = () => {
               {Array.from({ length: g.placeholders }).map((_, i) => (
                 <div key={`ph-${i}`} className="flex items-center gap-3 px-4 py-3 opacity-50">
                   <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 shrink-0" />
-                  <span className="text-xs italic text-gray-400">{t('kitchen.notRegistered', { defaultValue: 'Seat not registered yet' })}</span>
+                  <span className="text-xs italic text-sub">{t('kitchen.notRegistered', { defaultValue: 'Seat not registered yet' })}</span>
                 </div>
               ))}
             </div>
@@ -283,10 +283,10 @@ const KitchenBookings: React.FC = () => {
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="text-gray-400 mt-0.5">{icon}</span>
+      <span className="text-sub mt-0.5">{icon}</span>
       <div className="min-w-0">
-        <div className="text-xs font-black uppercase tracking-widest text-gray-400">{label}</div>
-        <div className="text-sm font-bold text-gray-800 dark:text-gray-200 break-words">{value}</div>
+        <div className="text-xs font-black uppercase tracking-widest text-sub">{label}</div>
+        <div className="text-sm font-bold text-body break-words">{value}</div>
       </div>
     </div>
   );

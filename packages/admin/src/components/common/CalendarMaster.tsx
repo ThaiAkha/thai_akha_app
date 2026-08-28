@@ -128,7 +128,7 @@ const CalendarMaster: React.FC<CalendarMasterProps> = ({
       <div className="grid grid-cols-7 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 shrink-0">
         {daysHeader.map((day) => (
           <div key={day} className="py-2 text-center">
-            <span className="text-xs font-black text-gray-700 dark:text-gray-400 uppercase tracking-widest">
+            <span className="text-xs font-black text-body uppercase tracking-widest">
               {day}
             </span>
           </div>
@@ -171,8 +171,8 @@ const CalendarMaster: React.FC<CalendarMasterProps> = ({
                 className={cn(
                   'text-lg font-black tracking-tighter transition-transform',
                   isPast
-                    ? 'text-gray-300 dark:text-gray-700'
-                    : 'text-gray-900 dark:text-gray-100',
+                    ? 'text-muted'
+                    : 'text-title',
                   isSelected && 'text-primary-600 dark:text-primary-400 scale-110'
                 )}
               >
@@ -222,7 +222,7 @@ const CalendarMaster: React.FC<CalendarMasterProps> = ({
                   item.borderColor && `border ${item.borderColor}`
                 )}
               />
-              <span className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-400">
+              <span className="text-xs font-black uppercase tracking-widest text-body">
                 {item.label}
               </span>
             </div>

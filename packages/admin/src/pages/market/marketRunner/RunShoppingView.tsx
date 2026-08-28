@@ -27,7 +27,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                     <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 items-center">
                         <button
                             onClick={backToList}
-                            className="shrink-0 inline-flex items-center gap-1 px-3 h-8 rounded-full text-xs font-bold uppercase text-gray-500 border border-gray-200 dark:border-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                            className="shrink-0 inline-flex items-center gap-1 px-3 h-8 rounded-full text-xs font-bold uppercase text-sub border border-gray-200 dark:border-gray-700 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                         >
                             ← {t('buttons.lists', { defaultValue: 'Lists' })}
                         </button>
@@ -38,8 +38,8 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                 className={cn(
                                     "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase whitespace-nowrap transition-all border",
                                     activeTab === tab.value
-                                        ? "bg-primary-600 text-white border-primary-600 shadow-primary-glow"
-                                        : "bg-gray-50 dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                                        ? "bg-primary-600 text-white border-primary-600"
+                                        : "bg-gray-50 dark:bg-gray-800 text-sub border-gray-200 dark:border-gray-700 hover:border-gray-300"
                                 )}
                             >
                                 {tab.icon}
@@ -48,11 +48,11 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                         ))}
                     </div>
                     <div className="text-right flex items-center gap-4 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-2xl border border-gray-100 dark:border-gray-700 ml-auto">
-                        <div className="text-xs font-black uppercase text-gray-400 tracking-widest text-left">
+                        <div className="text-xs font-black uppercase text-sub tracking-widest text-left">
                             {t('labels.liveTotal')}
                         </div>
                         <div className="text-2xl font-mono font-black text-primary-600 dark:text-primary-400 leading-none">
-                            {liveTotal.toLocaleString()} <span className="text-xs font-sans text-gray-400 font-normal">THB</span>
+                            {liveTotal.toLocaleString()} <span className="text-xs font-sans text-sub font-normal">THB</span>
                         </div>
                     </div>
                 </div>
@@ -69,17 +69,17 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                     {typeof activeContact === 'undefined' ? <Store className="w-5 h-5" /> : getShopIcon(activeTab)}
                                 </div>
                                 <div>
-                                    <h6 className="text-gray-900 dark:text-white uppercase font-black leading-none mb-1 truncate max-w-[120px]">
+                                    <h6 className="text-title uppercase font-black leading-none mb-1 truncate max-w-[120px]">
                                         {activeTab}
                                     </h6>
-                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t('labels.vendorContact')}</p>
+                                    <p className="text-xs text-sub font-bold uppercase tracking-widest">{t('labels.vendorContact')}</p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
                                 {activeContact?.phone_number && (
                                     <button
                                         onClick={() => handleCall(activeContact.phone_number!)}
-                                        className="size-10 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center justify-center text-gray-500 transition-all border border-gray-200 dark:border-gray-600"
+                                        className="size-10 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center justify-center text-sub transition-all border border-gray-200 dark:border-gray-600"
                                     >
                                         <Phone className="w-4 h-4" />
                                     </button>
@@ -99,9 +99,9 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                 {/* ITEM LIST */}
                 <div className="p-4 space-y-3">
                     {filteredItems.length === 0 ? (
-                        <div className="py-20 text-center text-gray-300 dark:text-gray-600 flex flex-col items-center gap-3">
+                        <div className="py-20 text-center text-muted flex flex-col items-center gap-3">
                             <ShoppingCart className="w-12 h-12 opacity-50" />
-                            <p className="text-xs font-bold uppercase tracking-widest">{t('empty.noItemsForStall')}</p>
+                            <p className="text-xs font-bold uppercase tracking-widest text-body">{t('empty.noItemsForStall')}</p>
                         </div>
                     ) : (
                         filteredItems.map(item => (
@@ -117,18 +117,18 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                 {/* LEFT: INFO */}
                                 <div className="flex-1 p-4 flex flex-col justify-center min-w-0">
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="text-xs font-black uppercase text-gray-400 tracking-widest truncate max-w-[100px]">{item.target_shop}</span>
+                                        <span className="text-xs font-black uppercase text-sub tracking-widest truncate max-w-[100px]">{item.target_shop}</span>
                                         {item.is_bought && <Badge variant="solid" color="success" size="sm" className="text-xs h-4 px-1.5">BOUGHT</Badge>}
                                     </div>
                                     <h4 className={cn(
                                         "uppercase font-bold leading-tight truncate text-base",
-                                        item.is_bought ? "text-gray-400 line-through" : "text-gray-900 dark:text-white"
+                                        item.is_bought ? "text-sub line-through" : "text-title"
                                     )}>
                                         {item.name}
                                     </h4>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="font-mono text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-1.5 py-0.5 rounded">{t('labels.qty', { quantity: item.quantity })}</span>
-                                        <span className="text-xs font-medium text-gray-400 uppercase border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded">{item.unit}</span>
+                                        <span className="text-xs font-medium text-sub uppercase border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded">{item.unit}</span>
                                     </div>
                                 </div>
 
@@ -140,8 +140,8 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                         disabled={locked}
                                         className="flex-1 flex flex-col items-center justify-center p-1 bg-gray-50 dark:bg-gray-900/50 transition-colors hover:bg-primary-50 dark:hover:bg-primary-900/20 disabled:opacity-60 disabled:hover:bg-gray-50 dark:disabled:hover:bg-gray-900/50"
                                     >
-                                        <span className="font-mono font-black text-lg text-gray-900 dark:text-white">{item.actual_price ? item.actual_price.toLocaleString() : '0'}</span>
-                                        <span className="text-xs font-black text-gray-300 uppercase tracking-widest">THB</span>
+                                        <span className="font-mono font-black text-lg text-title">{item.actual_price ? item.actual_price.toLocaleString() : '0'}</span>
+                                        <span className="text-xs font-black text-sub uppercase tracking-widest">THB</span>
                                     </button>
                                     <button
                                         onClick={() => toggleBought(item.id)}
@@ -203,7 +203,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                 <div className="space-y-4">
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border-2 border-primary-500 text-center shadow-2xl">
                         <span className="uppercase font-black text-primary-600 tracking-widest mb-1 block text-xs">{t('labels.inputThb', { defaultValue: 'Price (THB)' })}</span>
-                        <div className="font-mono text-gray-900 dark:text-white text-4xl font-bold flex items-center justify-center gap-2">
+                        <div className="font-mono text-title text-4xl font-bold flex items-center justify-center gap-2">
                             {tempPrice}<span className="text-xl opacity-50">฿</span>
                         </div>
                     </div>

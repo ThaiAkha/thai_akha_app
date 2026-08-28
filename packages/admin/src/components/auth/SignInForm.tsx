@@ -51,7 +51,7 @@ export default function SignInForm() {
             <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
               {t('signIn.title')}
             </h1>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-medium text-sub">
               {t('signIn.subtitle')}
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function SignInForm() {
             </form>
 
             <div className="mt-6 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <p className="text-sm font-medium text-sub">
                 {t('signIn.noAccount')}{" "}
                 <Link
                   to="/signup"

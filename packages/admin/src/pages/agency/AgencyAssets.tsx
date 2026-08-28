@@ -52,11 +52,11 @@ const AgencyAssets: React.FC = () => {
                                     {asset.icon}
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white tracking-tight leading-tight">{t(asset.nameKey)}</h4>
-                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{asset.type} • {asset.size}</p>
+                                    <h4 className="text-xl font-black uppercase italic text-title tracking-tight leading-tight">{t(asset.nameKey)}</h4>
+                                    <p className="text-xs font-bold text-sub uppercase tracking-widest mt-1">{asset.type} • {asset.size}</p>
                                 </div>
                             </div>
-                            <button className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors border-t border-gray-50 dark:border-gray-800 pt-4">
+                            <button className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-sub hover:text-primary-600 transition-colors border-t border-gray-50 dark:border-gray-800 pt-4">
                                 <Download className="w-3 h-3" />
                                 {t('agencyAssets.downloadFile')}
                             </button>
@@ -81,8 +81,8 @@ const AgencyAssets: React.FC = () => {
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-800/50 rounded-[3rem] p-10 border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center text-center space-y-4">
                         <Share2 className="w-10 h-10 text-primary-500" />
-                        <h4 className="text-xl font-black uppercase italic text-gray-900 dark:text-white tracking-tight">{t('agencyAssets.needHelpTitle')}</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed italic">
+                        <h4 className="text-xl font-black uppercase italic text-title tracking-tight">{t('agencyAssets.needHelpTitle')}</h4>
+                        <p className="text-sm text-sub font-medium leading-relaxed italic">
                             {t('agencyAssets.needHelpDesc')}
                         </p>
                         <button className="text-xs font-black uppercase tracking-widest text-primary-600 hover:scale-105 active:scale-95 transition-all mb-4">

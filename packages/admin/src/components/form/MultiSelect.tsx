@@ -106,7 +106,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   return (
     <div className="w-full" ref={dropdownRef}>
       <label
-        className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
+        className="mb-1.5 block text-sm font-medium text-body"
         id={`${label}-label`}
       >
         {label}
@@ -150,7 +150,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                             if (!disabled) removeOption(value);
                           }}
                           disabled={disabled}
-                          className="pl-2 text-gray-500 cursor-pointer group-hover:text-gray-400 dark:text-gray-400 disabled:cursor-not-allowed"
+                          className="pl-2 text-sub cursor-pointer group-hover:text-gray-400 disabled:cursor-not-allowed"
                           aria-label={`Remove ${text}`}
                         >
                           <svg
@@ -171,7 +171,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                     );
                   })
                 ) : (
-                  <div className="w-full h-full p-1 pr-2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">
+                  <div className="w-full h-full p-1 pr-2 text-sm text-muted pointer-events-none">
                     {placeholder}
                   </div>
                 )}
@@ -231,7 +231,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                     aria-selected={isSelected}
                   >
                     <div className="relative flex w-full items-center p-2 pl-2">
-                      <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
+                      <div className="mx-2 leading-6 text-body">
                         {option.text}
                       </div>
                     </div>

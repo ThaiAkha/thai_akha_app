@@ -60,10 +60,10 @@ const LeaderHeader: React.FC<LeaderHeaderProps> = ({
         src={leader.avatarUrl || undefined}
         alt={leader.name}
         size={md ? 'xlarge' : 'large'}
-        fallback={<span className={cn('font-black text-gray-500 dark:text-gray-300', md ? 'text-base' : 'text-sm')}>{initialsOf(leader.name)}</span>}
+        fallback={<span className={cn('font-black text-sub', md ? 'text-base' : 'text-sm')}>{initialsOf(leader.name)}</span>}
       />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-gray-400">
+        <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-sub">
           <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
           {label}
           {leader.role === 'agency' && (
@@ -72,10 +72,10 @@ const LeaderHeader: React.FC<LeaderHeaderProps> = ({
             </span>
           )}
         </div>
-        <div className={cn('mt-0.5 font-black text-gray-900 dark:text-white truncate', md ? 'text-lg' : 'text-base')}>
+        <div className={cn('mt-0.5 font-black text-title truncate', md ? 'text-lg' : 'text-base')}>
           {leader.name}
         </div>
-        {leader.bookingRef && <div className="text-sm font-mono text-gray-500 dark:text-gray-400 truncate mt-1">{leader.bookingRef}</div>}
+        {leader.bookingRef && <div className="text-sm font-mono text-sub truncate mt-1">{leader.bookingRef}</div>}
         <ContactLinks
           className="mt-2"
           phone={leader.phone}

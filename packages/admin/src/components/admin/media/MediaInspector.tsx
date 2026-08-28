@@ -94,7 +94,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                     {/* File Name Field */}
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.fileName')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.fileName')}</label>
                         <input
                             type="text"
                             value={editingAsset.file_name}
@@ -107,7 +107,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                     {/* Folder Path Field */}
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.folderPath')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.folderPath')}</label>
                         <div className="relative">
                             <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
@@ -132,7 +132,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                 <div className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.publicUrl')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.publicUrl')}</label>
                         <div className="relative group/input">
                             <input
                                 type="text"
@@ -152,7 +152,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.mimeType')}</label>
+                            <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.mimeType')}</label>
                             <input
                                 type="text"
                                 value={editingAsset.mime_type || ''}
@@ -162,7 +162,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.fileSize')}</label>
+                            <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.fileSize')}</label>
                             <div className="relative">
                                 <input
                                     type="number"
@@ -171,7 +171,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                                     disabled={!isEditing}
                                     className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-xs font-bold"
                                 />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black text-gray-400">KB</span>
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black text-sub">KB</span>
                             </div>
                         </div>
                     </div>
@@ -187,7 +187,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.width')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.width')}</label>
                         <input
                             type="number"
                             value={editingAsset.width || ''}
@@ -197,7 +197,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.height')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.height')}</label>
                         <input
                             type="number"
                             value={editingAsset.height || ''}
@@ -218,7 +218,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
                 <div className="flex flex-col gap-5">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.displayTitle')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.displayTitle')}</label>
                         <input
                             type="text"
                             value={editingAsset.title || ''}
@@ -230,7 +230,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.caption')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.caption')}</label>
                         <textarea
                             value={editingAsset.caption || ''}
                             onChange={e => handleChange('caption', e.target.value)}
@@ -241,7 +241,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.altText')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.altText')}</label>
                         <textarea
                             value={editingAsset.alt_text || ''}
                             onChange={e => handleChange('alt_text', e.target.value)}
@@ -252,7 +252,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.tags')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.tags')}</label>
                         <div className="relative">
                             <Tag className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
                             <input
@@ -267,7 +267,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 italic">{t('inspector.labels.copyright')}</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.copyright')}</label>
                         <input
                             type="text"
                             value={editingAsset.copyright || ''}
@@ -293,7 +293,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     <div className="flex items-center justify-between mb-4">
                             <div className="flex flex-col">
                             <label className="text-xs font-black uppercase text-orange-600">{t('inspector.labels.aiGenerated')}</label>
-                            <p className="text-xs text-gray-400 italic">{t('inspector.labels.aiGeneratedHint')}</p>
+                            <p className="text-xs text-sub italic">{t('inspector.labels.aiGeneratedHint')}</p>
                             </div>
                             <button
                             onClick={() => isEditing && handleChange('is_ai_generated', !editingAsset.is_ai_generated)}
@@ -324,40 +324,40 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
             <section className="space-y-6 opacity-80 group">
                 <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
                     <Database className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-primary-600">{t('inspector.sections.systemProperties')}</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-sub group-hover:text-primary-600">{t('inspector.sections.systemProperties')}</h3>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-white/5 space-y-4">
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-sub">
                             <Info className="w-3.5 h-3.5" />
                             <span className="text-xs font-black uppercase tracking-widest italic">{t('inspector.labels.databaseUuid')}</span>
                         </div>
-                        <span className="text-xs font-mono font-bold text-gray-500 select-all">{editingAsset.id}</span>
+                        <span className="text-xs font-mono font-bold text-sub select-all">{editingAsset.id}</span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-sub">
                             <User className="w-3.5 h-3.5" />
                             <span className="text-xs font-black uppercase tracking-widest italic">{t('inspector.labels.uploadedBy')}</span>
                         </div>
-                        <span className="text-xs font-bold text-gray-500">{editingAsset.uploaded_by || 'System Admin'}</span>
+                        <span className="text-xs font-bold text-sub">{editingAsset.uploaded_by || 'System Admin'}</span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-sub">
                             <Clock className="w-3.5 h-3.5" />
                             <span className="text-xs font-black uppercase tracking-widest italic">{t('inspector.labels.created')}</span>
                         </div>
-                        <span className="text-xs font-bold text-gray-500">{editingAsset.created_at ? new Date(editingAsset.created_at).toLocaleString() : 'N/A'}</span>
+                        <span className="text-xs font-bold text-sub">{editingAsset.created_at ? new Date(editingAsset.created_at).toLocaleString() : 'N/A'}</span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-sub">
                             <Clock className="w-3.5 h-3.5" />
                             <span className="text-xs font-black uppercase tracking-widest italic">{t('inspector.labels.lastUpdate')}</span>
                         </div>
-                        <span className="text-xs font-bold text-gray-500">{editingAsset.updated_at ? new Date(editingAsset.updated_at).toLocaleString() : 'Just now'}</span>
+                        <span className="text-xs font-bold text-sub">{editingAsset.updated_at ? new Date(editingAsset.updated_at).toLocaleString() : 'Just now'}</span>
                     </div>
                 </div>
             </section>
@@ -372,7 +372,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         <Trash2 size={16} className="group-hover:animate-bounce" />
                         {t('inspector.buttons.deIndex')}
                     </button>
-                    <p className="mt-3 text-xs text-gray-400 text-center italic leading-relaxed px-4">
+                    <p className="mt-3 text-xs text-sub text-center italic leading-relaxed px-4">
                         {t('inspector.hints.deIndexWarning')}
                     </p>
                 </div>

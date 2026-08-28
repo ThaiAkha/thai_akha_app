@@ -32,7 +32,7 @@ interface ReportLineRowProps {
 }
 
 // Large touch targets for iPad: a ~44px square button with a big icon.
-const ICON_BTN = 'size-11 rounded-xl flex items-center justify-center text-gray-400 transition-colors focus-visible:outline-none focus-visible:ring-2';
+const ICON_BTN = 'size-11 rounded-xl flex items-center justify-center text-sub transition-colors focus-visible:outline-none focus-visible:ring-2';
 
 const ReportLineRow: React.FC<ReportLineRowProps> = ({ leading, title, subtitle, amount, amountSuffix = '฿', actions, onEdit, onDelete, confirmDelete, children, density = 'md', onClick, className }) => {
     const sm = density === 'sm';
@@ -62,8 +62,8 @@ const ReportLineRow: React.FC<ReportLineRowProps> = ({ leading, title, subtitle,
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 min-w-0">
                     <div className="min-w-0">
-                        <div className={cn('font-bold uppercase text-gray-900 dark:text-white truncate', sm ? 'text-base' : 'text-lg')}>{title}</div>
-                        {subtitle != null && <div className={cn('text-gray-400 font-medium', sm ? 'text-sm' : 'text-base')}>{subtitle}</div>}
+                        <div className={cn('font-bold uppercase text-title truncate', sm ? 'text-base' : 'text-lg')}>{title}</div>
+                        {subtitle != null && <div className={cn('text-sub font-medium', sm ? 'text-sm' : 'text-base')}>{subtitle}</div>}
                     </div>
                     {hasTrailing && (
                         <div className="flex items-center gap-1.5 shrink-0">

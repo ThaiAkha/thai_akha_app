@@ -37,28 +37,33 @@ const Badge: React.FC<BadgeProps> = ({
     md: "text-sm", // Default padding and font size
   };
 
-  // Define color styles for variants
+  // Contrasto (palette Tailwind 4.2.1 oklch, misurato sulle superfici REALI: pagina
+  // light #E6ECEC e card bianca; pagina dark #121311 e card #222827). Il token di stato
+  // puro sulla propria tinta al 10% non e' leggibile (2.0-3.3). Con testo -700 passava
+  // solo sulla card (success 4.54) e falliva sulla pagina (3.85): quindi -800 in light
+  // (5.5-6.2 ovunque) e -300 in dark (5.1-8.2; -400 dava 3.41 sull'info). Neutro:
+  // gray-700 su gray-100 = 4.34, gray-800 = 5.93. Solid: bianco su -700 = 4.9-8.1.
   const variants = {
     light: {
       primary:
-        "bg-primary-50 text-primary-500 dark:bg-primary-500/15 dark:text-primary-400",
+        "bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300",
       success:
-        "bg-sys-success/10 text-sys-success dark:bg-sys-success/15 dark:text-sys-success",
+        "bg-sys-success/10 text-green-800 dark:bg-sys-success/15 dark:text-green-300",
       error:
-        "bg-sys-error/10 text-sys-error dark:bg-sys-error/15 dark:text-sys-error",
+        "bg-sys-error/10 text-red-800 dark:bg-sys-error/15 dark:text-red-300",
       warning:
-        "bg-sys-warning/10 text-sys-warning dark:bg-sys-warning/15 dark:text-orange-400",
-      info: "bg-primary-50 text-primary-500 dark:bg-primary-500/15 dark:text-primary-400",
-      light: "bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-white/80",
+        "bg-sys-warning/10 text-amber-800 dark:bg-sys-warning/15 dark:text-orange-300",
+      info: "bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300",
+      light: "bg-gray-100 text-gray-800 dark:bg-white/5 dark:text-white/80",
       dark: "bg-gray-500 text-white dark:bg-white/5 dark:text-white",
     },
     solid: {
       primary: "bg-primary-500 text-white dark:text-white",
-      success: "bg-green-500 text-white dark:text-white",
-      error: "bg-sys-error text-white dark:text-white",
-      warning: "bg-sys-warning text-white dark:text-white",
-      info: "bg-primary-500 text-white dark:text-white",
-      light: "bg-gray-400 dark:bg-white/5 text-white dark:text-white/80",
+      success: "bg-green-700 text-white dark:text-white",
+      error: "bg-red-700 text-white dark:text-white",
+      warning: "bg-amber-700 text-white dark:text-white",
+      info: "bg-primary-700 text-white dark:text-white",
+      light: "bg-gray-600 text-white dark:bg-white/5 dark:text-white/80",
       dark: "bg-gray-700 text-white dark:text-white",
     },
   };

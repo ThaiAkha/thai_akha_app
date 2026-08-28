@@ -14,7 +14,7 @@ const ViewGrid: React.FC<ViewGridProps> = ({ components }) => {
                         key={config.name}
                         className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center gap-4 hover:border-primary-500 transition-colors"
                     >
-                        <h4 className="text-xs font-bold text-gray-500 uppercase">{config.name}</h4>
+                        <h4 className="text-xs font-bold text-sub uppercase">{config.name}</h4>
                         <div className="scale-75 origin-center pointer-events-none">
                             <config.component {...config.demoProps} />
                         </div>

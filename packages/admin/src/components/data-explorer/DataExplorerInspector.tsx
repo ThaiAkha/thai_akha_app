@@ -30,7 +30,7 @@ const DataExplorerInspector: React.FC<DataExplorerInspectorProps> = ({
             {/* Header */}
             <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50 shrink-0 shadow-sm">
                 <div className="flex items-center gap-3">
-                    <SectionHeader title={title ?? t('explorer.details')} variant="title" className="text-gray-700 dark:text-gray-300" />
+                    <SectionHeader title={title ?? t('explorer.details')} variant="title" className="text-body" />
                 </div>
                 <div className="flex items-center gap-2">
                     {headerActions}
@@ -45,7 +45,7 @@ const DataExplorerInspector: React.FC<DataExplorerInspectorProps> = ({
                                 : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                                 }`}
                         >
-                            <X className={`w-5 h-5 ${isEditing ? "text-red-600" : "text-gray-500 dark:text-gray-400"}`} />
+                            <X className={`w-5 h-5 ${isEditing ? "text-red-600" : "text-sub"}`} />
                         </Button>
                     </Tooltip>
                 </div>

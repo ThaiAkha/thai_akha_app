@@ -66,7 +66,7 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
 
                         {/* Pax Display Card */}
                         <div className="flex-1 py-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-center flex items-center justify-center">
-                            <p className="text-2xl font-black text-gray-900 dark:text-white">{pax}</p>
+                            <p className="text-2xl font-black text-title">{pax}</p>
                         </div>
 
                         {/* Plus Button */}
@@ -83,7 +83,7 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
                             <Plus className="w-5 h-5" />
                         </button>
                     </div>
-                    <p className="text-center text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mt-3 mb-0">
+                    <p className="text-center text-xs font-black uppercase tracking-widest text-sub mt-3 mb-0">
                         {t('picker.paxAvailable', { pax, max: maxPax })}
                     </p>
                 </div>

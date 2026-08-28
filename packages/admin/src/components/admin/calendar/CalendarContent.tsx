@@ -86,7 +86,7 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
                         'px-3 py-1.5 text-xs font-black uppercase tracking-widest rounded-lg transition-all',
                         bulkSessionType === type
                             ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm'
-                            : 'text-gray-900 dark:text-gray-100'
+                            : 'text-title'
                     )}
                 >
                     {type === 'morning_class' ? t('bulk.morning') : type === 'evening_class' ? t('bulk.evening') : t('bulk.allDay')}

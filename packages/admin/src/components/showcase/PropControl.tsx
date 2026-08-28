@@ -16,7 +16,7 @@ const PropControl: React.FC<PropControlProps> = ({ prop, value, onChange }) => {
             return (
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{prop.name}</span>
+                        <span className="text-sm font-medium text-body">{prop.name}</span>
                     </div>
                     <Switch
                         key={String(value)} // Force re-render when external value changes
@@ -30,7 +30,7 @@ const PropControl: React.FC<PropControlProps> = ({ prop, value, onChange }) => {
         case 'select':
             return (
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{prop.name}</label>
+                    <label className="text-sm font-medium text-body">{prop.name}</label>
                     <select
                         value={typeof value === 'string' ? value : undefined}
                         onChange={(e) => onChange(e.target.value)}

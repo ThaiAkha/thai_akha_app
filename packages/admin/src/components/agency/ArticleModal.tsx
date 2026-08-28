@@ -128,7 +128,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                     </div>
                                     
                                     {/* Quote text */}
-                                    <p className="text-2xl md:text-3xl lg:text-4xl font-light italic text-gray-900 dark:text-white leading-relaxed">
+                                    <p className="text-2xl md:text-3xl lg:text-4xl font-light italic text-title leading-relaxed">
                                         {article.excerpt}
                                     </p>
                                     
@@ -137,7 +137,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                     
                                     {/* Optional author or category */}
                                     {(article.author || article.category) && (
-                                        <p className="mt-4 text-sm uppercase tracking-widest text-gray-600 dark:text-gray-400 font-semibold">
+                                        <p className="mt-4 text-sm uppercase tracking-widest text-sub font-semibold">
                                             {article.author || article.category}
                                         </p>
                                     )}
@@ -167,7 +167,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                 
                                 {/* Date and close button at same height */}
                                 <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                                    <div className="flex items-center gap-2 text-sub">
                                         <Calendar className="w-4 h-4 text-primary-500" />
                                         <span className="text-xs font-bold uppercase tracking-widest">{formatDate(article.created_at)}</span>
                                     </div>
@@ -177,7 +177,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                         aria-label={t('common:buttons.close')}
                                         className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                     >
-                                        <X className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+                                        <X className="w-4 h-4 text-body" />
                                     </button>
                                 </div>
                             </div>
@@ -188,7 +188,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                             {/* Excerpt - hidden in photo mode since it appears as hero quote */}
                             {!isPhotoMode && article.excerpt && (
                                 <>
-                                    <p className="text-lg md:text-xl font-medium text-gray-900 dark:text-white leading-relaxed mb-6">
+                                    <p className="text-lg md:text-xl font-medium text-title leading-relaxed mb-6">
                                         {article.excerpt}
                                     </p>
                                     
@@ -199,7 +199,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                             
                             {/* Author / Read time metadata */}
                             {(article.author || article.reading_time) && (
-                                <div className="flex items-center gap-4 mb-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+                                <div className="flex items-center gap-4 mb-4 text-xs font-bold uppercase tracking-widest text-sub">
                                     {article.author && (
                                         <span>{t('pages:articleModal.author')}: {article.author}</span>
                                     )}
@@ -211,7 +211,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
 
                             {/* Content */}
                             <div className="prose prose-lg dark:prose-invert max-w-none">
-                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                <p className="text-body leading-relaxed whitespace-pre-wrap">
                                     {article.content || t('pages:articleModal.noContent')}
                                 </p>
                             </div>
@@ -227,8 +227,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                             className="group flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
                                             aria-label={t('pages:articleModal.prev')}
                                         >
-                                            <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300 group-hover:-translate-x-0.5 transition-transform" />
-                                            <span className="text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">{t('pages:articleModal.prev')}</span>
+                                            <ChevronLeft className="w-4 h-4 text-body group-hover:-translate-x-0.5 transition-transform" />
+                                            <span className="text-xs font-bold uppercase tracking-widest text-body">{t('pages:articleModal.prev')}</span>
                                         </button>
                                     )}
                                     {hasNext && (
@@ -237,8 +237,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                             className="group flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
                                             aria-label={t('pages:articleModal.next')}
                                         >
-                                            <span className="text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">{t('pages:articleModal.next')}</span>
-                                            <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300 group-hover:translate-x-0.5 transition-transform" />
+                                            <span className="text-xs font-bold uppercase tracking-widest text-body">{t('pages:articleModal.next')}</span>
+                                            <ChevronRight className="w-4 h-4 text-body group-hover:translate-x-0.5 transition-transform" />
                                         </button>
                                     )}
                                 </div>

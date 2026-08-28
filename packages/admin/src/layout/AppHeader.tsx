@@ -58,7 +58,7 @@ const AppHeader: React.FC = () => {
         <div className="flex items-center justify-start min-w-[40px] lg:w-64 shrink-0 h-full gap-2">
           <Tooltip content={t('header.toggleMenu')} position="bottom">
             <button
-              className="flex items-center justify-center w-10 h-10 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg dark:text-gray-400 transition-colors"
+              className="flex items-center justify-center w-10 h-10 text-sub hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
               onClick={handleToggle}
               aria-label={t('aria.menuToggle')}
             >
@@ -69,7 +69,7 @@ const AppHeader: React.FC = () => {
 
         {/* Center: Title (Always centered) */}
         <div className="flex-1 flex justify-center min-w-0">
-          <h1 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-gray-800 dark:text-white leading-tight truncate text-center">
+          <h1 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-body leading-tight truncate text-center">
             {title} {titleHighlight && <span className="text-primary-600 font-black">{titleHighlight}</span>}
           </h1>
         </div>

@@ -45,7 +45,7 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
       )}
 
       <div className="relative group/phone">
-        <div className="absolute left-0 top-0 flex items-center justify-center text-gray-400 transition-colors duration-300 group-hover/phone:text-primary-500 z-10 h-12 w-12 pointer-events-none">
+        <div className="absolute left-0 top-0 flex items-center justify-center text-sub transition-colors duration-300 group-hover/phone:text-primary-500 z-10 h-12 w-12 pointer-events-none">
           {country && country.code ? (
             <ReactCountryFlag
               countryCode={country.code}
@@ -76,7 +76,7 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
             autoComplete: 'tel',
             className: cn(
               "w-full rounded-xl border appearance-none transition-all duration-300 outline-none ring-green-500/20 shadow-theme-xs",
-              "h-12 px-4 text-base font-bold bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm border-gray-200 dark:border-gray-700/50 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 hover:border-green-500/30 focus:border-green-500 focus:ring-4",
+              "h-12 px-4 text-base font-bold bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm border-gray-200 dark:border-gray-700/50 text-title placeholder:text-gray-400 dark:placeholder:text-gray-500 hover:border-green-500/30 focus:border-green-500 focus:ring-4",
               "pl-12"
             )
           }}

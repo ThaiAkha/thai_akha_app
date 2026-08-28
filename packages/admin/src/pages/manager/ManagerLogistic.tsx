@@ -132,19 +132,19 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                             <button
                                 onClick={() => handleModeChange('pickup')}
                                 className={cn('flex items-center px-3 text-xs font-bold uppercase tracking-wider transition-colors',
-                                    logisticsMode === 'pickup' ? 'bg-orange-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700')}
+                                    logisticsMode === 'pickup' ? 'bg-orange-500 text-white' : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-700')}
                             >
                                 {t('inspector.pickup')}
                             </button>
                             <button
                                 onClick={() => handleModeChange('dropoff')}
                                 className={cn('flex items-center px-3 text-xs font-bold uppercase tracking-wider transition-colors border-l border-gray-200 dark:border-gray-700',
-                                    logisticsMode === 'dropoff' ? 'bg-orange-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700')}
+                                    logisticsMode === 'dropoff' ? 'bg-orange-500 text-white' : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-700')}
                             >
                                 {t('inspector.dropoff')}
                             </button>
                         </div>
-                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        <span className="text-lg font-bold text-title">
                             {t(daySession === 'evening_class' ? 'sidebar.eveningClass' : 'sidebar.morningClass', { defaultValue: daySession === 'evening_class' ? 'Evening Class' : 'Morning Class' })}
                             {' - '}
                             {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
@@ -212,7 +212,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                             <button
                                 onClick={() => setPendingReorder(null)}
                                 disabled={isSavingOrder}
-                                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xs font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-title text-xs font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 {tc('buttons.cancel')}
                             </button>

@@ -33,7 +33,7 @@ export function SegmentedToggle<T extends string>({ options, value, onChange, si
                         h,
                         value === o.id
                             ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200',
+                            : 'text-sub hover:text-gray-900 dark:hover:text-gray-200',
                     )}
                 >
                     {o.icon}{o.label}

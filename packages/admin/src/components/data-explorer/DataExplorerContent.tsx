@@ -27,7 +27,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                     loop={true}
                     loopDelay={500}
                 />
-                <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 animate-pulse">
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-sub animate-pulse">
                     {t('explorer.loading')}
                 </span>
             </div>
@@ -43,10 +43,10 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                     <div className="size-20 bg-primary-50 dark:bg-primary-500/10 rounded-2xl flex items-center justify-center text-primary-500 mb-6 drop-shadow-sm">
                         {emptyIcon || <TableIcon size={40} />}
                     </div>
-                    <h3 className="text-lg font-black text-gray-800 dark:text-gray-100 uppercase tracking-tight mb-2">
+                    <h3 className="text-lg font-black text-body uppercase tracking-tight mb-2">
                         {t('explorer.emptyTable')}
                     </h3>
-                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
+                    <p className="text-xs font-bold text-sub uppercase tracking-widest leading-relaxed">
                         {t('explorer.emptyTableHint')}
                     </p>
                     <div className="mt-8 size-1.5 rounded-full bg-primary-500 animate-pulse" />

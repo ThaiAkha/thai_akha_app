@@ -93,7 +93,7 @@ const ComponentShowcase: React.FC = () => {
                 {mode === 'playground' && (
                     activeComponentConfig
                         ? <ViewPlayground component={activeComponentConfig} />
-                        : <div className="p-10 text-center text-gray-400">Select a component to view playground.</div>
+                        : <div className="p-10 text-center text-sub">Select a component to view playground.</div>
                 )}
 
                 {mode === 'grid' && (

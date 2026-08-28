@@ -184,7 +184,7 @@ export default function SignUpForm() {
             <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
               {t('signUp.title')}
             </h1>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-medium text-sub">
               {t('signUp.subtitle')}
             </p>
           </div>
@@ -321,12 +321,12 @@ export default function SignUpForm() {
                     checked={isChecked}
                     onChange={handleAcceptChange}
                   />
-                  <p className="inline-block text-xs font-medium text-gray-500 dark:text-gray-400 leading-tight">
+                  <p className="inline-block text-xs font-medium text-sub leading-tight">
                     {t('signUp.terms')}{" "}
                     <button
                       type="button"
                       onClick={() => setLegalModalOpen('terms')}
-                      className="text-gray-800 dark:text-white/90 font-bold underline underline-offset-2 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
+                      className="text-body font-bold underline underline-offset-2 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                     >
                       {t('signUp.termsLink')}
                     </button>
@@ -334,7 +334,7 @@ export default function SignUpForm() {
                     <button
                       type="button"
                       onClick={() => setLegalModalOpen('privacy')}
-                      className="text-gray-800 dark:text-white font-bold underline underline-offset-2 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
+                      className="text-body font-bold underline underline-offset-2 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                     >
                       {t('signUp.privacyLink')}
                     </button>
@@ -350,7 +350,7 @@ export default function SignUpForm() {
             </form>
 
             <div className="mt-6 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <p className="text-sm font-medium text-sub">
                 {t('signUp.alreadyAccount')}{" "}
                 <Link
                   to="/signin"

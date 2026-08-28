@@ -60,7 +60,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
 
   return (
     <div className="mt-12 pt-12 border-t border-gray-100 dark:border-gray-800 space-y-8">
-      <h3 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900 dark:text-white flex items-center gap-3">
+      <h3 className="text-2xl font-black italic uppercase tracking-tighter text-title flex items-center gap-3">
         <div className="p-2 rounded-xl bg-primary-500/10 text-primary-500">
           <Truck size={20} />
         </div>
@@ -81,7 +81,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                 "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 needPickup === true
                   ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
-                  : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
+                  : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-sub hover:border-gray-200"
               )}
             >
               <CheckCircle2 size={14} />
@@ -94,7 +94,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                 "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 needPickup === false
                   ? "border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400 shadow-lg shadow-red-500/10 scale-[1.02]"
-                  : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
+                  : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-sub hover:border-gray-200"
               )}
             >
               {t('logistics.no')}
@@ -133,8 +133,8 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                               <MapPin className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                             </div>
                             <div>
-                              <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{h.name}</p>
-                              <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{h.pickup_zones?.name || 'No Zone'}</p>
+                              <p className="text-sm font-black text-title uppercase tracking-tight">{h.name}</p>
+                              <p className="text-xs text-sub font-bold uppercase tracking-widest">{h.pickup_zones?.name || 'No Zone'}</p>
                             </div>
                           </div>
                           <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -175,7 +175,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                     "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                     hasLuggage === true
                       ? "border-primary-500/50 bg-primary-500/10 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10 scale-[1.02]"
-                      : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
+                      : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-sub hover:border-gray-200"
                   )}
                 >
                   <Package size={14} />
@@ -188,7 +188,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                     "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                     hasLuggage === false
                       ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-500/10 scale-[1.02]"
-                      : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-gray-400 hover:border-gray-200"
+                      : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-sub hover:border-gray-200"
                   )}
                 >
                   <HelpCircle size={14} />

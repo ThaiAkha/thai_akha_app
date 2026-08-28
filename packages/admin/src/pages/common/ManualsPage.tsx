@@ -78,15 +78,15 @@ const ManualsPage: React.FC = () => {
                 )}
 
                 {loading ? (
-                    <div className="py-24 text-center"><SectionTitle className="text-gray-400">{t('manuals.loading', { defaultValue: 'Loading…' })}</SectionTitle></div>
+                    <div className="py-24 text-center"><SectionTitle className="text-sub">{t('manuals.loading', { defaultValue: 'Loading…' })}</SectionTitle></div>
                 ) : !hasContent ? (
-                    <div className="py-24 text-center"><SectionTitle className="text-gray-400">{t('manuals.empty', { defaultValue: 'No guides yet.' })}</SectionTitle></div>
+                    <div className="py-24 text-center"><SectionTitle className="text-sub">{t('manuals.empty', { defaultValue: 'No guides yet.' })}</SectionTitle></div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-2">
                         {/* TOC */}
                         <aside className="lg:col-span-3 min-w-0">
                             <div className="lg:sticky lg:top-24">
-                                <SectionTitle className="text-gray-400 mb-3">{t('manuals.contents', { defaultValue: 'Contents' })}</SectionTitle>
+                                <SectionTitle className="text-sub mb-3">{t('manuals.contents', { defaultValue: 'Contents' })}</SectionTitle>
                                 <nav className="flex flex-col gap-1">
                                     {sections.map(s => {
                                         const Icon = getIcon(s.icon || 'BookOpen');
@@ -94,7 +94,7 @@ const ManualsPage: React.FC = () => {
                                             <button
                                                 key={s.id}
                                                 onClick={() => scrollTo(s.slug)}
-                                                className="group inline-flex items-center gap-2 text-left px-3 h-10 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                                                className="group inline-flex items-center gap-2 text-left px-3 h-10 rounded-xl text-sm font-medium text-sub hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                                             >
                                                 <Icon className="w-4 h-4 shrink-0 text-gray-400 group-hover:text-primary-500" />
                                                 <span className="truncate">{s.title}</span>

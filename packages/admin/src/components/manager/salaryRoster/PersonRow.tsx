@@ -19,7 +19,7 @@ interface PersonRowProps {
     roleLabel: (r: string) => string;
 }
 
-const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
+const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
 
 /** Un campo importo con etichetta: 4 numeri in fila senza label sono illeggibili. */
 const AmountField: React.FC<{
@@ -27,7 +27,7 @@ const AmountField: React.FC<{
     disabled: boolean; onChange: (v: string) => void;
 }> = ({ label, sign, value, placeholder, disabled, onChange }) => (
     <label className="flex flex-col gap-1">
-        <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">
+        <span className="text-[10px] font-black uppercase tracking-wider text-sub">
             {sign && <span className={sign === '+' ? 'text-green-500' : 'text-red-400'}>{sign} </span>}{label}
         </span>
         <input
@@ -54,17 +54,17 @@ const PersonRow: React.FC<PersonRowProps> = ({
                     <Avatar src={person.avatarUrl ?? undefined} alt={person.name} size="medium" />
                     <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{person.name}</span>
+                            <span className="text-sm font-bold text-title truncate">{person.name}</span>
                             {individual && (
                                 <span title={t('salary.individualExpenseHint', { defaultValue: 'Its own Zoho expense, not part of the bank/cash group one.' })}
-                                    className="shrink-0 inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                    className="shrink-0 inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-sub">
                                     <Receipt className="w-3 h-3" />{t('salary.individualExpense', { defaultValue: 'Individual expense' })}
                                 </span>
                             )}
                         </div>
-                        <div className="text-[10px] font-black uppercase tracking-wider text-gray-400 truncate">
+                        <div className="text-[10px] font-black uppercase tracking-wider text-sub truncate">
                             {roleLabel(person.primaryRole)}
-                            {otherHats.length > 0 && <span className="text-gray-300 dark:text-gray-600"> · {otherHats.map(roleLabel).join(' · ')}</span>}
+                            {otherHats.length > 0 && <span className="text-muted"> · {otherHats.map(roleLabel).join(' · ')}</span>}
                         </div>
                     </div>
                 </div>
@@ -84,13 +84,13 @@ const PersonRow: React.FC<PersonRowProps> = ({
                     </span>
                 ) : (
                     <button onClick={onSave} disabled={saving}
-                        className="inline-flex items-center gap-1 h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50">
+                        className="inline-flex items-center gap-1 h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-body hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50">
                         <Save className="w-4 h-4" />{saving ? '…' : (saved ? t('salary.save', { defaultValue: 'Save' }) : t('salary.record', { defaultValue: 'Record' }))}
                     </button>
                 )}
                 <button onClick={onPayslip} disabled={!saved || printing}
                     title={t('salary.payslip', { defaultValue: 'Payslip' })}
-                    className="inline-flex items-center justify-center size-10 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-primary-600 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40">
+                    className="inline-flex items-center justify-center size-10 rounded-lg border border-gray-200 dark:border-gray-700 text-sub hover:text-primary-600 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40">
                     <Printer className="w-4 h-4" />
                 </button>
             </div>
@@ -106,8 +106,8 @@ const PersonRow: React.FC<PersonRowProps> = ({
                 <AmountField label={t('salary.deductions', { defaultValue: 'Deductions' })} sign="-" value={draft.deduction} disabled={locked}
                     onChange={(v) => onChange({ deduction: v })} />
                 <div className="flex flex-col gap-1 ml-auto text-right">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">{t('salary.net', { defaultValue: 'Net to pay' })}</span>
-                    <span className="h-10 inline-flex items-center justify-end px-2 text-base font-black text-gray-900 dark:text-white tabular-nums">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-sub">{t('salary.net', { defaultValue: 'Net to pay' })}</span>
+                    <span className="h-10 inline-flex items-center justify-end px-2 text-base font-black text-title tabular-nums">
                         ฿{net.toLocaleString()}
                     </span>
                 </div>

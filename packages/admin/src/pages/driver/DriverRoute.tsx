@@ -51,7 +51,7 @@ const DriverRoute: React.FC = () => {
                                     "flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'PICKUP'
                                         ? "bg-primary-600 text-white shadow-lg"
-                                        : "text-gray-400 dark:text-white/40 hover:text-white/60"
+                                        : "text-sub dark:text-white/40 hover:text-white/60"
                                 )}
                             >
                                 <Truck className="w-3.5 h-3.5" /> {t('phase.pickup')}
@@ -62,7 +62,7 @@ const DriverRoute: React.FC = () => {
                                     "flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     phase === 'DROPOFF'
                                         ? "bg-green-600 text-white shadow-lg"
-                                        : "text-gray-400 dark:text-white/40 hover:text-white/60"
+                                        : "text-sub dark:text-white/40 hover:text-white/60"
                                 )}
                             >
                                 <Home className="w-3.5 h-3.5" /> {t('phase.dropoff')}
@@ -127,11 +127,11 @@ const DriverRoute: React.FC = () => {
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
                                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                            <h3 className="text-2xl font-black text-title">
                                 {t('payout.allRidesCompleted')}
                             </h3>
                             <div className="bg-primary-50 dark:bg-primary-500/10 p-6 rounded-xl border border-primary-100 dark:border-primary-500/20">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('payout.dailyEarnings')}</p>
+                                <p className="text-sm text-sub mb-2">{t('payout.dailyEarnings')}</p>
                                 <p className="text-4xl font-black text-primary-600 dark:text-primary-400">
                                     {payoutAmount || 0} <span className="text-2xl">THB</span>
                                 </p>

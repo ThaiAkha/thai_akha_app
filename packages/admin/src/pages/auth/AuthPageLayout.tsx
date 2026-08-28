@@ -39,7 +39,7 @@ export default function AuthLayout({
                   alt={t("layout.logoAlt")}
                 />
               </div>
-              <p className="text-center text-gray-500 dark:text-white/80 text-base md:text-lg font-medium leading-relaxed mt-4">
+              <p className="text-center text-gray-100 dark:text-white/80 text-base md:text-lg font-medium leading-relaxed mt-4">
                 {t("layout.tagline1")} <br className="hidden md:block" />
                 {t("layout.tagline2")}
               </p>

@@ -29,10 +29,10 @@ export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
                         fallbackClassName="bg-orange-400 dark:bg-btn-p-900/30"
                     />
                     <div className="flex-1 min-w-0 space-y-0.5">
-                        <div className="font-bold text-gray-900 dark:text-white uppercase text-md tracking-wider truncate leading-tight">
+                        <div className="font-bold text-title uppercase text-base tracking-wider truncate leading-tight">
                             Walk In
                         </div>
-                        <div className="text-sm text-gray-500 font-mono">{items.length} {items.length === 1 ? 'Booking' : 'Bookings'}</div>
+                        <div className="text-sm text-sub font-mono">{items.length} {items.length === 1 ? 'Booking' : 'Bookings'}</div>
                     </div>
                 </div>
             </div>

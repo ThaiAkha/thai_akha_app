@@ -18,10 +18,15 @@
   --border:    #D6DCDC;  /* gray-100 — light borders */
   --border-2:  #C2C8C8;  /* gray-200 — standard borders */
 
-  --text-title: #121311;  /* gray-950 — H1-H3, WCAG AAA */
-  --text-body:  #4A504F;  /* gray-800 — body text, WCAG AAA */
-  --text-sub:   #727878;  /* gray-600 — secondary text, WCAG AA */
-  --text-muted: #9AA0A0;  /* gray-400 — decorative only */
+  /* Contrasto verificato sul CASO PEGGIORE fra --bg (pagina) e --surface (card).
+     AA = 4.5 per il testo normale, 3.0 per il testo grande. */
+  --text-title: #121311;  /* 17.97 — AAA */
+  --text-body:  #4A504F;  /* 7.94  — AAA */
+  --text-sub:   #6E7474;  /* 4.59  — AA. Era #727878 = 4.33: mancava AA per un soffio */
+  --text-muted: #767C7C;  /* 4.10  — AA-LARGE soltanto: usare solo per testo grande o
+                             decorazione non essenziale. Era #9AA0A0 = 2.56, illeggibile.
+                             In light non c'e' spazio per un livello piu' tenue di --text-sub
+                             che passi anche AA: questo e' il gradino dichiarato come large-only. */
 
   /* ========================================================================
      🔘 BUTTON COLORS (Admin-specific)
@@ -41,20 +46,17 @@
 /* ========================================================================
    🌑 DARK MODE — Semantic token overrides
    ======================================================================== */
-body.dark,
-@media (prefers-color-scheme: dark) {
-  :root {
+html.dark {
     --bg:        #121311;  /* gray-950 — page background */
     --surface:   #222827;  /* gray-900 — cards, modals, inputs */
     --surface-2: #1a1f1e;  /* derived — secondary surface */
     --border:    #4A504F;  /* gray-800 — light borders */
     --border-2:  #5E6464;  /* gray-700 — standard borders */
 
-    --text-title: #F6FCFC;  /* gray-25  — titles, WCAG AAA */
-    --text-body:  #D6DCDC;  /* gray-100 — body text, WCAG AAA */
-    --text-sub:   #9AA0A0;  /* gray-400 — secondary text, WCAG AA */
-    --text-muted: #727878;  /* gray-600 — decorative only */
-  }
+    --text-title: #F6FCFC;  /* 14.45 — AAA */
+    --text-body:  #D6DCDC;  /* 10.80 — AAA */
+    --text-sub:   #9AA0A0;  /* 5.65  — AA */
+    --text-muted: #8A9090;  /* 4.62  — AA. Era #727878 = 3.34 */
 }
 
 /* ========================================================================

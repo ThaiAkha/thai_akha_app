@@ -35,7 +35,7 @@ export const renderInline = (text: string, kp = 'i'): React.ReactNode => {
     if (m.index > last) nodes.push(<React.Fragment key={`${kp}-t${k}`}>{text.slice(last, m.index)}</React.Fragment>);
     if (m[1] !== undefined) {
       nodes.push(
-        <strong key={`${kp}-b${k}`} className="font-semibold text-gray-900 dark:text-white">
+        <strong key={`${kp}-b${k}`} className="font-semibold text-title">
           {renderInline(m[1], `${kp}-b${k}`)}
         </strong>,
       );
@@ -69,7 +69,7 @@ export const renderInline = (text: string, kp = 'i'): React.ReactNode => {
 export const renderLegalContent = (content: string | string[] | undefined): React.ReactNode => {
   if (!content) return null;
   if (typeof content === 'string') {
-    return <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">{renderInline(content)}</p>;
+    return <p className="text-body leading-relaxed mb-4">{renderInline(content)}</p>;
   }
 
   // Prosa e bullet convivono nello stesso array: si raggruppano i bullet consecutivi in
@@ -81,7 +81,7 @@ export const renderLegalContent = (content: string | string[] | undefined): Reac
   const flush = (key: string) => {
     if (bucket.length === 0) return;
     out.push(
-      <ul key={`ul-${key}`} className="list-disc list-inside space-y-2 mb-4 text-gray-700 dark:text-gray-300">
+      <ul key={`ul-${key}`} className="list-disc list-inside space-y-2 mb-4 text-body">
         {bucket.map((item, i) => (
           <li key={i} className="leading-relaxed">{renderInline(stripBullet(item), `li-${key}-${i}`)}</li>
         ))}
@@ -97,7 +97,7 @@ export const renderLegalContent = (content: string | string[] | undefined): Reac
     }
     flush(`b${idx}`);
     out.push(
-      <p key={`p-${idx}`} className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+      <p key={`p-${idx}`} className="text-body leading-relaxed mb-4">
         {renderInline(item, `p-${idx}`)}
       </p>,
     );
@@ -114,7 +114,7 @@ export const renderLegalSection = (section: LegalDocumentSection, index: number)
   return (
   <div key={section.anchor ?? `${section.title}-${index}`} id={section.anchor ?? undefined} className="mb-8 scroll-mt-24">
     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4 pt-4">
-      <h2 className="text-xl font-bold text-gray-800 dark:text-white">{section.title}</h2>
+      <h2 className="text-xl font-bold text-body">{section.title}</h2>
       {untranslated && (
         <span className="text-[0.65rem] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-500/30 rounded-full px-2 py-0.5">
           English
@@ -124,12 +124,12 @@ export const renderLegalSection = (section: LegalDocumentSection, index: number)
     {renderLegalContent(section.content)}
     {section.subsections?.map((sub, i) => (
       <div key={`${sub.title}-${i}`} className="ml-4 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-3">{sub.title}</h3>
+        <h3 className="text-lg font-semibold text-body mb-3">{sub.title}</h3>
         {renderLegalContent(sub.content)}
       </div>
     ))}
     {section.notes?.map((note, i) => (
-      <p key={`note-${i}`} className="text-sm italic text-gray-500 dark:text-gray-400 leading-relaxed mb-3">
+      <p key={`note-${i}`} className="text-sm italic text-sub leading-relaxed mb-3">
         {renderInline(note)}
       </p>
     ))}

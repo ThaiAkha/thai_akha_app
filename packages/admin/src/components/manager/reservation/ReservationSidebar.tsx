@@ -102,7 +102,7 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
 
     const footer = cancelledItems.length > 0 ? (
         <div className="p-4 space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
+            <h4 className="text-xs font-black uppercase tracking-widest text-sub">
                 {t('sidebar.cancelledTitle')}
             </h4>
             <div className="space-y-2">
@@ -116,15 +116,17 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
                                 "w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-sm transition-all text-left group",
                                 isActive
                                     ? "bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                                    : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-150 dark:hover:bg-gray-750"
+                                    // gray-150 e gray-750 non esistono nella palette: l'hover
+                                    // non produceva alcun CSS. Shade reali adiacenti.
+                                    : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
                             )}
                         >
                             {item.icon && (
-                                <div className="text-gray-400 transition-transform group-hover:scale-110">
+                                <div className="text-sub transition-transform group-hover:scale-110">
                                     {item.icon}
                                 </div>
                             )}
-                            <span className="text-gray-500 dark:text-gray-400 truncate flex-1">
+                            <span className="text-sub truncate flex-1">
                                 {item.label}
                             </span>
                             {item.badge && (

@@ -5,7 +5,8 @@ import {
     DataExplorerContent,
     GridCard,
     DataExplorerRow,
-    DataCardContent
+    DataCardContent,
+    CardGrid
 } from '../../../components/data-explorer';
 import Badge from '../../../components/ui/badge/Badge';
 import Checkbox from '../../../components/form/input/Checkbox';
@@ -43,72 +44,71 @@ const MediaContent: React.FC<MediaContentProps> = ({
     return (
         <DataExplorerContent
             loading={loading && filteredAssets.length === 0}
+            isEmpty={filteredAssets.length === 0}
             emptyIcon={<Grid className="w-12 h-12 opacity-10" />}
             emptyMessage={t('content.emptyMessage')}
         >
-            {filteredAssets.length > 0 && viewMode === 'grid' && (
-                <div className="p-5">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
-                        {filteredAssets.map((asset) => {
-                            const isAudio = asset.mime_type?.includes('audio') || asset.folder_path?.includes('audio');
-                            const isVideo = asset.mime_type?.includes('video');
+            {viewMode === 'grid' && (
+                <CardGrid padding={5} gap={4} className="xl:grid-cols-4">
+                    {filteredAssets.map((asset) => {
+                        const isAudio = asset.mime_type?.includes('audio') || asset.folder_path?.includes('audio');
+                        const isVideo = asset.mime_type?.includes('video');
 
-                            return (
-                                <GridCard
-                                    key={asset.id}
-                                    item={asset}
-                                    selected={editingAsset?.id === asset.id}
-                                    onClick={() => onAssetSelect(asset)}
-                                    aspectClassName="aspect-video"
-                                    imageUrl={!isAudio && !isVideo ? asset.image_url : undefined}
-                                    imageIcon={
-                                        isAudio ? <Music className="w-8 h-8 text-blue-500" /> :
-                                            isVideo ? <Video className="w-8 h-8 text-purple-500" /> :
-                                                undefined
-                                    }
-                                    renderFields={() => (
-                                        <DataCardContent
-                                            title={asset.file_name}
-                                            subtitle={asset.asset_id || asset.folder_path || 'general'}
-                                            badges={
-                                                <>
-                                                    <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
-                                                        {asset.mime_type?.split('/')[1] || 'asset'}
+                        return (
+                            <GridCard
+                                key={asset.id}
+                                item={asset}
+                                selected={editingAsset?.id === asset.id}
+                                onClick={() => onAssetSelect(asset)}
+                                aspectClassName="aspect-video"
+                                imageUrl={!isAudio && !isVideo ? asset.image_url : undefined}
+                                imageIcon={
+                                    isAudio ? <Music className="w-8 h-8 text-blue-500" /> :
+                                        isVideo ? <Video className="w-8 h-8 text-purple-500" /> :
+                                            undefined
+                                }
+                                renderFields={() => (
+                                    <DataCardContent
+                                        title={asset.file_name}
+                                        subtitle={asset.asset_id || asset.folder_path || 'general'}
+                                        badges={
+                                            <>
+                                                <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
+                                                    {asset.mime_type?.split('/')[1] || 'asset'}
+                                                </Badge>
+                                                {asset.is_ai_generated && (
+                                                    <Badge color="primary" size="sm" className="text-xs font-black uppercase tracking-widest">
+                                                        AI GEN
                                                     </Badge>
-                                                    {asset.is_ai_generated && (
-                                                        <Badge color="primary" size="sm" className="text-xs font-black uppercase tracking-widest">
-                                                            AI GEN
-                                                        </Badge>
-                                                    )}
-                                                </>
-                                            }
-                                            footerLeft={
-                                                <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate max-w-[100px]">
-                                                    {asset.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
-                                                </p>
-                                            }
-                                            footerRight={
-                                                <button
-                                                    className={`size-6 rounded-md border flex items-center justify-center transition-all
-                                                        ${isSelected(String(asset.id)) ? 'bg-primary-500 border-primary-500' : 'bg-white dark:bg-gray-950 border-gray-300 dark:border-gray-600'}`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onToggleSelectRow(asset);
-                                                    }}
-                                                >
-                                                    {isSelected(String(asset.id)) && <Check className="w-3.5 h-3.5 text-white" />}
-                                                </button>
-                                            }
-                                        />
-                                    )}
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
+                                                )}
+                                            </>
+                                        }
+                                        footerLeft={
+                                            <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate max-w-[100px]">
+                                                {asset.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
+                                            </p>
+                                        }
+                                        footerRight={
+                                            <button
+                                                className={`size-6 rounded-md border flex items-center justify-center transition-all
+                                                    ${isSelected(String(asset.id)) ? 'bg-primary-500 border-primary-500' : 'bg-white dark:bg-gray-950 border-gray-300 dark:border-gray-600'}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onToggleSelectRow(asset);
+                                                }}
+                                            >
+                                                {isSelected(String(asset.id)) && <Check className="w-3.5 h-3.5 text-white" />}
+                                            </button>
+                                        }
+                                    />
+                                )}
+                            />
+                        );
+                    })}
+                </CardGrid>
             )}
 
-            {filteredAssets.length > 0 && viewMode === 'table' && (
+            {viewMode === 'table' && (
                 <div className="w-full text-xs font-sans overflow-hidden">
                     {/* CUSTOM GRID HEADER */}
                     <div className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 grid grid-cols-[1.8fr_3.2fr_2fr_5fr] items-center">

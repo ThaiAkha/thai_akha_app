@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase, type SupabaseClient } from '@thaiakha/shared/lib/supabase';
+import { getExplorerRowId } from '../components/data-explorer';
 import {
     Users, Calendar, Package, Settings, CreditCard, Image, MapPin, Music
 } from 'lucide-react';
@@ -282,7 +283,8 @@ export const useAdminDatabase = () => {
         );
     }, [data, searchTerm]);
 
-    const getRowId = (r: Record<string, unknown>) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
+    // Stessa identita' di riga dei *Content: una sola definizione (data-explorer/rowId).
+    const getRowId = getExplorerRowId;
 
     const toggleSelectAll = () => {
         if (selectedIds.size === filteredData.length && filteredData.length > 0) {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { LogisticsItem, DriverProfile } from '../../../hooks/useManagerLogistic';
 import { useLogisticFiltering } from '../../../hooks/useLogisticFiltering';
 import { useLogisticMovement } from '../../../hooks/useLogisticMovement';
+import { ContentLoadingOverlay } from '../../data-explorer';
 import { LogisticColumn } from './LogisticColumn';
 import { LogisticWalkInColumn } from './LogisticWalkInColumn';
 
@@ -13,7 +14,6 @@ interface LogisticContentProps {
     selectedBookingId: string | null;
     onSelectBooking: (id: string) => void;
     onReorder?: (items: LogisticsItem[], mode: 'pickup' | 'dropoff') => void;
-    hasUnsavedChanges?: boolean;
     logisticsMode: 'pickup' | 'dropoff';
     selectedDriverIds: Set<string>;
     onActivateDriver?: (driverId: string) => void;
@@ -65,11 +65,7 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
     return (
         <div className="flex flex-col h-full overflow-hidden">
             {/* Loading Overlay */}
-            {loading && (
-                <div className="absolute inset-0 bg-white/50 dark:bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
-                    <div className="loader font-black uppercase text-xs tracking-widest animate-pulse">{t('content.syncing')}</div>
-                </div>
-            )}
+            {loading && <ContentLoadingOverlay label={t('content.syncing')} />}
 
             {/* Columns Grid */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden p-4 no-scrollbar">

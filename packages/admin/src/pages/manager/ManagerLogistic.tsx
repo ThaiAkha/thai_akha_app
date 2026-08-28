@@ -190,7 +190,6 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                             setLogisticsMode('pickup');
                         }}
                         onReorder={handleReorder}
-                        hasUnsavedChanges={!!pendingReorder}
                         logisticsMode={logisticsMode}
                         selectedDriverIds={selectedDriverIds}
                         onActivateDriver={handleActivateDriver}

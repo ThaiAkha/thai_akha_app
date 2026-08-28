@@ -8,7 +8,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 /**
  * LeaderHeader — header unificato della colonna destra (inspector) con le info del
  * leader di un gruppo/booking: avatar, nome, badge ruolo, booking ref e contatti.
- * Sostituisce le copie divergenti in ReservationInspector / KitchenBookings / ReservationContent.
+ * Sostituisce le copie divergenti in ReservationInspector / KitchenBookings.
  * L'avatar usa il fallback iniziali dell'Avatar canonico → niente più URL ui-avatars.
  * (Il driver in-cab — TransportStopCard — resta fuori: card a sé.)
  */

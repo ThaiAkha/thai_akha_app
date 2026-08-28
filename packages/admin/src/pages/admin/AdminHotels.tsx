@@ -105,7 +105,6 @@ const AdminHotels: React.FC = () => {
                     filteredMeetingPoints={data.filteredMeetingPoints}
                     selectedHotel={inspector.selectedHotel}
                     selectedMeetingPoint={inspector.selectedMeetingPoint}
-                    zones={data.zones}
                     onSelectHotel={inspector.selectHotel}
                     onSelectMeetingPoint={inspector.selectMeetingPoint}
                 />

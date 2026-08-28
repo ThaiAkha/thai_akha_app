@@ -1,9 +1,18 @@
 import React from 'react';
 import { Package, ShoppingBag } from 'lucide-react';
-import { DataExplorerContent, GridCard, DataExplorerRow, DataCardContent, DataRowText } from '../../../components/data-explorer';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../components/ui/table';
+import {
+    DataExplorerContent,
+    GridCard,
+    DataExplorerRow,
+    DataCardContent,
+    DataRowText,
+    DataTableHead,
+    HeaderCell,
+    SelectCell,
+    CardGrid,
+} from '../../../components/data-explorer';
+import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
-import Checkbox from '../../../components/form/input/Checkbox';
 import { Product } from '../../../hooks/useAdminInventory';
 
 interface InventoryContentProps {
@@ -36,74 +45,72 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
             loading={loading && filteredProducts.length === 0}
             emptyIcon={<ShoppingBag className="w-12 h-12 opacity-10" />}
             emptyMessage="No products found"
+            isEmpty={filteredProducts.length === 0}
         >
             {filteredProducts.length > 0 && viewMode === 'grid' && (
-                <div className="p-5">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        {filteredProducts.map((product) => (
-                            <GridCard
-                                key={product.id}
-                                item={product}
-                                selected={editingProduct.id === product.id}
-                                onClick={() => onProductSelect(product)}
-                                imageUrl={product.catalog_image_url}
-                                imageIcon={<Package className="w-8 h-8" />}
-                                renderFields={(p: Product) => (
-                                    <DataCardContent
-                                        title={p.item_name}
-                                        subtitle={p.sku}
-                                        badges={
-                                            <>
-                                                <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
-                                                    {p.category_id}
+                <CardGrid padding={5} gap={4}>
+                    {filteredProducts.map((product) => (
+                        <GridCard
+                            key={product.id}
+                            item={product}
+                            selected={editingProduct.id === product.id}
+                            onClick={() => onProductSelect(product)}
+                            imageUrl={product.catalog_image_url}
+                            imageIcon={<Package className="w-8 h-8" />}
+                            renderFields={(p: Product) => (
+                                <DataCardContent
+                                    title={p.item_name}
+                                    subtitle={p.sku}
+                                    badges={
+                                        <>
+                                            <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-100 border-gray-200">
+                                                {p.category_id}
+                                            </Badge>
+                                            {p.stock_quantity < 5 && (
+                                                <Badge color="error" size="sm" className="text-xs font-black uppercase tracking-widest animate-pulse">
+                                                    LOW STOCK: {p.stock_quantity}
                                                 </Badge>
-                                                {p.stock_quantity < 5 && (
-                                                    <Badge color="error" size="sm" className="text-xs font-black uppercase tracking-widest animate-pulse">
-                                                        LOW STOCK: {p.stock_quantity}
-                                                    </Badge>
-                                                )}
-                                                {!p.is_active && (
-                                                    <Badge color="error" size="sm" className="text-xs font-bold">INACTIVE</Badge>
-                                                )}
-                                            </>
-                                        }
-                                        footerLeft={
-                                            <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate">
-                                                ID: {String(p.id).substring(0, 8)}
-                                            </p>
-                                        }
-                                        footerRight={
-                                            <p className="text-sm font-black text-primary-600 dark:text-primary-400">
-                                                {formatCurrency(p.price_thb)}
-                                            </p>
-                                        }
-                                    />
-                                )}
-                            />
-                        ))}
-                    </div>
-                </div>
+                                            )}
+                                            {!p.is_active && (
+                                                <Badge color="error" size="sm" className="text-xs font-bold">INACTIVE</Badge>
+                                            )}
+                                        </>
+                                    }
+                                    footerLeft={
+                                        <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate">
+                                            ID: {String(p.id).substring(0, 8)}
+                                        </p>
+                                    }
+                                    footerRight={
+                                        <p className="text-sm font-black text-primary-600 dark:text-primary-400">
+                                            {formatCurrency(p.price_thb)}
+                                        </p>
+                                    }
+                                />
+                            )}
+                        />
+                    ))}
+                </CardGrid>
             )}
 
             {/* Solo in modalita' table: prima era incondizionato e in grid mode la
                 tabella compariva SOTTO la griglia (bug, deciso dall'owner 2026-08-28). */}
             {filteredProducts.length > 0 && viewMode === 'table' && (
                 <Table className="text-xs">
-                    <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
-                        <TableRow>
-                            <TableCell isHeader className="px-4 py-3 w-10">
-                                <Checkbox
-                                    checked={selectedIds.size === filteredProducts.length && filteredProducts.length > 0}
-                                    onChange={onToggleSelectAll}
-                                />
-                            </TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">SKU</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Product Name</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Category</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-center">Stock</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-right">Price</TableCell>
-                        </TableRow>
-                    </TableHeader>
+                    <DataTableHead>
+                        <HeaderCell
+                            width="w-10"
+                            selectAll={{
+                                checked: selectedIds.size === filteredProducts.length && filteredProducts.length > 0,
+                                onToggle: onToggleSelectAll,
+                            }}
+                        />
+                        <HeaderCell label="SKU" />
+                        <HeaderCell label="Product Name" />
+                        <HeaderCell label="Category" />
+                        <HeaderCell label="Stock" align="center" />
+                        <HeaderCell label="Price" align="right" />
+                    </DataTableHead>
                     <TableBody>
                         {filteredProducts.map((p, idx) => (
                             <DataExplorerRow
@@ -112,12 +119,11 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                 selected={editingProduct.id === p.id}
                                 onClick={() => onProductSelect(p)}
                             >
-                                <TableCell className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                                    <Checkbox
-                                        checked={selectedIds.has(String(p.id))}
-                                        onChange={() => onToggleSelectRow(p)}
-                                    />
-                                </TableCell>
+                                <SelectCell
+                                    className="px-4 py-3"
+                                    checked={selectedIds.has(String(p.id))}
+                                    onToggle={() => onToggleSelectRow(p)}
+                                />
                                 <TableCell className="px-4 py-3">
                                     <DataRowText
                                         description={p.sku}

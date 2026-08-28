@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ShoppingBag } from 'lucide-react';
-import { GridCard } from '../../data-explorer';
+import { ContentLoadingOverlay, GridCard } from '../../data-explorer';
 import { Product } from '../../../hooks/useManagerPos';
 
 interface PosContentProps {
@@ -29,11 +29,7 @@ const PosContent: React.FC<PosContentProps> = ({
 }) => {
     return (
         <div className="flex flex-col h-full overflow-hidden relative">
-            {loading && (
-                <div className="absolute inset-0 bg-white/50 dark:bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
-                    <div className="loader font-black uppercase text-xs tracking-widest animate-pulse">Loading...</div>
-                </div>
-            )}
+            {loading && <ContentLoadingOverlay />}
 
             <div className="px-4 pt-3 pb-2 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                 {/* Category Filters */}

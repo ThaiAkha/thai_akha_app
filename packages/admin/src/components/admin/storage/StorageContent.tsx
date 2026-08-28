@@ -1,8 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { File as FileIcon, Image as ImageIcon, Video, Music, FileText, ExternalLink, Search } from 'lucide-react';
-import { DataExplorerContent, GridCard, DataExplorerRow, DataCardContent, DataRowText } from '../../../components/data-explorer';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../components/ui/table';
+import {
+    DataExplorerContent,
+    GridCard,
+    DataExplorerRow,
+    DataCardContent,
+    DataRowText,
+    DataTableHead,
+    HeaderCell,
+    CardGrid,
+} from '../../../components/data-explorer';
+import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
 import Button from '../../../components/ui/button/Button';
 import { FileObject, formatBytes } from '../../../hooks/useAdminStorage';
@@ -43,67 +52,64 @@ const StorageContent: React.FC<StorageContentProps> = ({
             loading={loading}
             emptyIcon={<Search className="w-8 h-8 opacity-20" />}
             emptyMessage="No files found"
+            isEmpty={filteredFiles.length === 0}
         >
             {filteredFiles.length > 0 && viewMode === 'grid' && (
-                <div className="p-4">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                        {filteredFiles.map((file) => {
-                            const isImage = file.metadata?.mimetype?.startsWith('image/');
-                            return (
-                                <GridCard
-                                    key={file.id}
-                                    item={file}
-                                    selected={selectedFile?.name === file.name}
-                                    onClick={() => onFileSelect(file)}
-                                    imageUrl={isImage ? getFilePreview(file.name) : undefined}
-                                    imageIcon={getFileIcon(file.metadata?.mimetype)}
-                                    imageOverlay={isImage ? (
-                                        <Button
-                                            size="icon"
-                                            className="size-8 rounded-full shadow-lg"
-                                            onClick={() => window.open(getFilePreview(file.name), '_blank')}
-                                        >
-                                            <ExternalLink className="w-4 h-4" />
-                                        </Button>
-                                    ) : undefined}
-                                    renderFields={(item) => (
-                                        <DataCardContent
-                                            title={item.name}
-                                            badges={
-                                                <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-50 dark:bg-gray-800/40">
-                                                    {item.metadata?.mimetype?.split('/')[1] || 'FILE'}
-                                                </Badge>
-                                            }
-                                            footerLeft={
-                                                <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase shrink-0">
-                                                    {formatBytes(item.metadata?.size || 0)}
-                                                </p>
-                                            }
-                                            footerRight={
-                                                <p className="text-xs font-bold text-sub">
-                                                    {new Date(item.updated_at).toLocaleDateString(getLocale(i18n.language))}
-                                                </p>
-                                            }
-                                        />
-                                    )}
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
+                <CardGrid padding={4} gap={3}>
+                    {filteredFiles.map((file) => {
+                        const isImage = file.metadata?.mimetype?.startsWith('image/');
+                        return (
+                            <GridCard
+                                key={file.id}
+                                item={file}
+                                selected={selectedFile?.name === file.name}
+                                onClick={() => onFileSelect(file)}
+                                imageUrl={isImage ? getFilePreview(file.name) : undefined}
+                                imageIcon={getFileIcon(file.metadata?.mimetype)}
+                                imageOverlay={isImage ? (
+                                    <Button
+                                        size="icon"
+                                        className="size-8 rounded-full shadow-lg"
+                                        onClick={() => window.open(getFilePreview(file.name), '_blank')}
+                                    >
+                                        <ExternalLink className="w-4 h-4" />
+                                    </Button>
+                                ) : undefined}
+                                renderFields={(item) => (
+                                    <DataCardContent
+                                        title={item.name}
+                                        badges={
+                                            <Badge color="light" size="sm" className="text-xs font-bold uppercase tracking-widest bg-gray-50 dark:bg-gray-800/40">
+                                                {item.metadata?.mimetype?.split('/')[1] || 'FILE'}
+                                            </Badge>
+                                        }
+                                        footerLeft={
+                                            <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase shrink-0">
+                                                {formatBytes(item.metadata?.size || 0)}
+                                            </p>
+                                        }
+                                        footerRight={
+                                            <p className="text-xs font-bold text-sub">
+                                                {new Date(item.updated_at).toLocaleDateString(getLocale(i18n.language))}
+                                            </p>
+                                        }
+                                    />
+                                )}
+                            />
+                        );
+                    })}
+                </CardGrid>
             )}
 
             {filteredFiles.length > 0 && viewMode === 'table' && (
                 <Table className="text-xs">
-                    <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
-                        <TableRow>
-                            <TableCell isHeader className="px-4 py-3 w-10"> </TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">File Name</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Size</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Type</TableCell>
-                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Last Modified</TableCell>
-                        </TableRow>
-                    </TableHeader>
+                    <DataTableHead>
+                        <TableCell isHeader className="px-4 py-3 w-10"> </TableCell>
+                        <HeaderCell label="File Name" />
+                        <HeaderCell label="Size" />
+                        <HeaderCell label="Type" />
+                        <HeaderCell label="Last Modified" />
+                    </DataTableHead>
                     <TableBody>
                         {filteredFiles.map((file, idx) => (
                             <DataExplorerRow

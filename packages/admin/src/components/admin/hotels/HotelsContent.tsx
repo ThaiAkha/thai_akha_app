@@ -1,9 +1,18 @@
 import { useTranslation } from 'react-i18next';
 import { MapPin, Globe, Map as MapIcon, Home } from 'lucide-react';
-import { DataExplorerContent, GridCard, DataExplorerRow, DataCardContent, DataRowText } from '../../../components/data-explorer';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../components/ui/table';
+import {
+    DataExplorerContent,
+    GridCard,
+    DataExplorerRow,
+    DataCardContent,
+    DataRowText,
+    DataTableHead,
+    HeaderCell,
+    CardGrid
+} from '../../../components/data-explorer';
+import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
-import type { HotelLocation, MeetingPoint, PickupZone } from '../../../hooks/useAdminHotels';
+import type { HotelLocation, MeetingPoint } from '../../../hooks/useAdminHotels';
 
 interface HotelsContentProps {
     loading: boolean;
@@ -14,7 +23,6 @@ interface HotelsContentProps {
     filteredMeetingPoints: MeetingPoint[];
     selectedHotel: HotelLocation | null;
     selectedMeetingPoint: MeetingPoint | null;
-    zones: PickupZone[];
     onSelectHotel: (hotel: HotelLocation) => void;
     onSelectMeetingPoint: (mp: MeetingPoint) => void;
 }
@@ -33,99 +41,102 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
 }) => {
     const { t } = useTranslation('hotels');
 
+    // Lo stato vuoto guarda solo la lista della scheda attiva: le due entita'
+    // non si sommano mai nella stessa vista.
+    const isEmpty = activeTab === 'meeting_points'
+        ? filteredMeetingPoints.length === 0
+        : filteredHotels.length === 0;
+
     return (
         <DataExplorerContent
             loading={loading}
+            isEmpty={isEmpty}
             emptyIcon={<MapIcon className="w-12 h-12" />}
             emptyMessage={activeTab === 'meeting_points' ? t('content.noMeetingPoints') : (searchQuery ? t('content.noHotelsMatch', { query: searchQuery }) : t('content.noHotels'))}
         >
             {viewMode === 'grid' ? (
-                <div className="p-4">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                        {activeTab === 'meeting_points' ? (
-                            filteredMeetingPoints.map((mp) => {
-                                return (
-                                    <GridCard
-                                        key={mp.id}
-                                        item={mp}
-                                        selected={selectedMeetingPoint?.id === mp.id}
-                                        onClick={() => onSelectMeetingPoint(mp)}
-                                        imageUrl={mp.image_url || undefined}
-                                        imageIcon={<MapPin className="w-8 h-8" />}
-                                        renderFields={(item) => (
-                                            <DataCardContent
-                                                title={item.name}
-                                                subtitle={item.description ?? undefined}
-                                                badges={null}
-                                                footerLeft={
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardMorning')}</p>
-                                                        <p className="text-xs font-bold text-body">{item.morning_pickup_time || '--:--'}</p>
-                                                    </div>
-                                                }
-                                                footerRight={
-                                                    <div className="flex flex-col gap-0.5 items-end">
-                                                        <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardEvening')}</p>
-                                                        <p className="text-xs font-bold text-body">{item.evening_pickup_time || '--:--'}</p>
-                                                    </div>
-                                                }
-                                            />
-                                        )}
-                                    />
-                                );
-                            })
-                        ) : (
-                            filteredHotels.map((hotel) => (
+                <CardGrid>
+                    {activeTab === 'meeting_points' ? (
+                        filteredMeetingPoints.map((mp) => {
+                            return (
                                 <GridCard
-                                    key={hotel.id}
-                                    item={hotel}
-                                    selected={selectedHotel?.id === hotel.id}
-                                    onClick={() => onSelectHotel(hotel)}
-                                    imageIcon={<Home className="w-8 h-8" />}
+                                    key={mp.id}
+                                    item={mp}
+                                    selected={selectedMeetingPoint?.id === mp.id}
+                                    onClick={() => onSelectMeetingPoint(mp)}
+                                    imageUrl={mp.image_url || undefined}
+                                    imageIcon={<MapPin className="w-8 h-8" />}
                                     renderFields={(item) => (
                                         <DataCardContent
                                             title={item.name}
-                                            subtitle={item.address ?? undefined}
-                                            badges={
-                                                <span
-                                                    className="px-2 py-0.5 rounded text-xs font-bold uppercase"
-                                                    style={{ backgroundColor: (item.zone_color || '#9CA3AF') + '20', color: item.zone_color || '#9CA3AF' }}
-                                                >
-                                                    {item.zone_name}
-                                                </span>
-                                            }
+                                            subtitle={item.description ?? undefined}
+                                            badges={null}
                                             footerLeft={
-                                                <p className="text-xs font-bold text-sub truncate">
-                                                    {item.phone_number || t('content.noPhone')}
-                                                </p>
+                                                <div className="flex flex-col gap-0.5">
+                                                    <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardMorning')}</p>
+                                                    <p className="text-xs font-bold text-body">{item.morning_pickup_time || '--:--'}</p>
+                                                </div>
                                             }
                                             footerRight={
-                                                item.is_active ? (
-                                                    <Badge color="success" size="sm" className="text-xs">{t('content.active')}</Badge>
-                                                ) : (
-                                                    <Badge color="light" size="sm" className="text-xs">{t('content.inactive')}</Badge>
-                                                )
+                                                <div className="flex flex-col gap-0.5 items-end">
+                                                    <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardEvening')}</p>
+                                                    <p className="text-xs font-bold text-body">{item.evening_pickup_time || '--:--'}</p>
+                                                </div>
                                             }
                                         />
                                     )}
                                 />
-                            ))
-                        )}
-                    </div>
-                </div>
+                            );
+                        })
+                    ) : (
+                        filteredHotels.map((hotel) => (
+                            <GridCard
+                                key={hotel.id}
+                                item={hotel}
+                                selected={selectedHotel?.id === hotel.id}
+                                onClick={() => onSelectHotel(hotel)}
+                                imageIcon={<Home className="w-8 h-8" />}
+                                renderFields={(item) => (
+                                    <DataCardContent
+                                        title={item.name}
+                                        subtitle={item.address ?? undefined}
+                                        badges={
+                                            <span
+                                                className="px-2 py-0.5 rounded text-xs font-bold uppercase"
+                                                style={{ backgroundColor: (item.zone_color || '#9CA3AF') + '20', color: item.zone_color || '#9CA3AF' }}
+                                            >
+                                                {item.zone_name}
+                                            </span>
+                                        }
+                                        footerLeft={
+                                            <p className="text-xs font-bold text-sub truncate">
+                                                {item.phone_number || t('content.noPhone')}
+                                            </p>
+                                        }
+                                        footerRight={
+                                            item.is_active ? (
+                                                <Badge color="success" size="sm" className="text-xs">{t('content.active')}</Badge>
+                                            ) : (
+                                                <Badge color="light" size="sm" className="text-xs">{t('content.inactive')}</Badge>
+                                            )
+                                        }
+                                    />
+                                )}
+                            />
+                        ))
+                    )}
+                </CardGrid>
             ) : (
                 activeTab === 'meeting_points' ? (
                     <Table className="text-xs">
-                        <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
-                            <TableRow>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colMeetingPoint')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colDetails')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colPickupMorning')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colPickupEvening')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colStatus')}</TableCell>
-                                <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colLinks')}</TableCell>
-                            </TableRow>
-                        </TableHeader>
+                        <DataTableHead>
+                            <HeaderCell align="left" label={t('content.colMeetingPoint')} />
+                            <HeaderCell align="left" label={t('content.colDetails')} />
+                            <HeaderCell align="left" label={t('content.colPickupMorning')} />
+                            <HeaderCell align="left" label={t('content.colPickupEvening')} />
+                            <HeaderCell align="left" label={t('content.colStatus')} />
+                            <HeaderCell align="left" label={t('content.colLinks')} />
+                        </DataTableHead>
                         <TableBody>
                             {filteredMeetingPoints.map((mp, idx) => {
                                 return (
@@ -187,52 +198,48 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                         </TableBody>
                     </Table>
                 ) : (
-                    filteredHotels.length > 0 && (
-                        <Table className="text-xs">
-                            <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
-                                <TableRow>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colName')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colZone')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colPhone')}</TableCell>
-                                    <TableCell isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">{t('content.colStatus')}</TableCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredHotels.map((hotel, idx) => (
-                                    <DataExplorerRow
-                                        key={hotel.id}
-                                        idx={idx}
-                                        selected={selectedHotel?.id === hotel.id}
-                                        onClick={() => onSelectHotel(hotel)}
-                                    >
-                                        <TableCell className="px-4 py-3">
-                                            <DataRowText
-                                                title={hotel.name}
-                                                description={hotel.address}
-                                            />
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3">
-                                            <DataRowText
-                                                extra={hotel.zone_name}
-                                            />
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3">
-                                            <DataRowText
-                                                title={hotel.phone_number || '—'}
-                                            />
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3">
-                                            {hotel.is_active ? (
-                                                <Badge color="success" size="sm" className="text-xs">{t('content.active')}</Badge>
-                                            ) : (
-                                                <Badge color="light" size="sm" className="text-xs">{t('content.inactive')}</Badge>
-                                            )}
-                                        </TableCell>
-                                    </DataExplorerRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )
+                    <Table className="text-xs">
+                        <DataTableHead>
+                            <HeaderCell align="left" label={t('content.colName')} />
+                            <HeaderCell align="left" label={t('content.colZone')} />
+                            <HeaderCell align="left" label={t('content.colPhone')} />
+                            <HeaderCell align="left" label={t('content.colStatus')} />
+                        </DataTableHead>
+                        <TableBody>
+                            {filteredHotels.map((hotel, idx) => (
+                                <DataExplorerRow
+                                    key={hotel.id}
+                                    idx={idx}
+                                    selected={selectedHotel?.id === hotel.id}
+                                    onClick={() => onSelectHotel(hotel)}
+                                >
+                                    <TableCell className="px-4 py-3">
+                                        <DataRowText
+                                            title={hotel.name}
+                                            description={hotel.address}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="px-4 py-3">
+                                        <DataRowText
+                                            extra={hotel.zone_name}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="px-4 py-3">
+                                        <DataRowText
+                                            title={hotel.phone_number || '—'}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="px-4 py-3">
+                                        {hotel.is_active ? (
+                                            <Badge color="success" size="sm" className="text-xs">{t('content.active')}</Badge>
+                                        ) : (
+                                            <Badge color="light" size="sm" className="text-xs">{t('content.inactive')}</Badge>
+                                        )}
+                                    </TableCell>
+                                </DataExplorerRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 )
             )}
         </DataExplorerContent>

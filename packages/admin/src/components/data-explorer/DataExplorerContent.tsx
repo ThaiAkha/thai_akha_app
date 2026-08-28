@@ -7,12 +7,19 @@ interface DataExplorerContentProps {
     loading?: boolean;
     emptyIcon?: React.ReactNode;
     emptyMessage?: string;
+    /**
+     * Lo stato vuoto e' esplicito: React.Children.count non lo sa dire, perche'
+     * i chiamanti passano `{cond && <div/>}` e un figlio `false` conta 1.
+     */
+    isEmpty?: boolean;
     children: React.ReactNode;
 }
 
 const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
     loading = false,
     emptyIcon,
+    emptyMessage,
+    isEmpty = false,
     children,
 }) => {
     const { t } = useTranslation('dashboard');
@@ -34,9 +41,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
         );
     }
 
-    // Check if children is empty (for React.Children.count)
-    const childCount = React.Children.count(children);
-    if (childCount === 0) {
+    if (isEmpty) {
         return (
             <div className="flex flex-col items-center justify-center h-full p-8">
                 <div className="max-w-sm w-full bg-white dark:bg-gray-900 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-3xl p-10 flex flex-col items-center text-center shadow-xl shadow-gray-100/50 dark:shadow-none animate-in fade-in zoom-in duration-500">
@@ -47,7 +52,7 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                         {t('explorer.emptyTable')}
                     </h3>
                     <p className="text-xs font-bold text-sub uppercase tracking-widest leading-relaxed">
-                        {t('explorer.emptyTableHint')}
+                        {emptyMessage || t('explorer.emptyTableHint')}
                     </p>
                     <div className="mt-8 size-1.5 rounded-full bg-primary-500 animate-pulse" />
                 </div>

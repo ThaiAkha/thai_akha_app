@@ -1,9 +1,19 @@
 import React from 'react';
 import { Table as TableIcon } from 'lucide-react';
-import { DataExplorerContent, GridCard, DataExplorerRow, DataCardContent, DataRowText } from '../../../components/data-explorer';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../components/ui/table';
+import {
+    DataExplorerContent,
+    GridCard,
+    DataExplorerRow,
+    DataCardContent,
+    DataRowText,
+    DataTableHead,
+    HeaderCell,
+    SelectCell,
+    CardGrid,
+    getExplorerRowId,
+} from '../../../components/data-explorer';
+import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
-import Checkbox from '../../../components/form/input/Checkbox';
 import { cn } from '@thaiakha/shared/lib/utils';
 import type { DataRow } from '../../../components/data-explorer/GridCard';
 import { GRID_PRIMARY_FIELDS } from '../../../hooks/useAdminDatabase';
@@ -58,35 +68,32 @@ const DbContent: React.FC<DbContentProps> = ({
         );
     };
 
-    const getRowId = (r: DataRow) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
-    const selectedRowId = selectedRow ? getRowId(selectedRow) : null;
+    const selectedRowId = selectedRow ? getExplorerRowId(selectedRow) : null;
 
     return (
         <DataExplorerContent
             loading={loading}
             emptyIcon={<TableIcon className="w-12 h-12" />}
             emptyMessage={`No data found in ${selectedTable}`}
+            isEmpty={filteredData.length === 0}
         >
-            {filteredData.length > 0 && viewMode === 'table' && (
+            {viewMode === 'table' && (
                 <Table className="text-xs whitespace-nowrap">
-                    <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
-                        <TableRow>
-                            <TableCell isHeader className="px-4 py-3 w-10">
-                                <Checkbox
-                                    checked={selectedIds.size === filteredData.length && filteredData.length > 0}
-                                    onChange={onToggleSelectAll}
-                                />
-                            </TableCell>
-                            {columns.map(col => (
-                                <TableCell key={col} isHeader className="px-4 py-3 text-left font-black uppercase tracking-widest text-sub text-xs">
-                                    {col}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
+                    <DataTableHead>
+                        <HeaderCell
+                            width="w-10"
+                            selectAll={{
+                                checked: selectedIds.size === filteredData.length && filteredData.length > 0,
+                                onToggle: onToggleSelectAll,
+                            }}
+                        />
+                        {columns.map(col => (
+                            <HeaderCell key={col} label={col} align="left" />
+                        ))}
+                    </DataTableHead>
                     <TableBody>
                         {filteredData.map((row, idx) => {
-                            const currentRowId = getRowId(row);
+                            const currentRowId = getExplorerRowId(row);
                             const isRowSelected = currentRowId === selectedRowId;
 
                             return (
@@ -97,12 +104,11 @@ const DbContent: React.FC<DbContentProps> = ({
                                     onClick={() => onRowSelect(row)}
                                     className={cn(selectedIds.has(currentRowId) && "!bg-primary-500/5")}
                                 >
-                                    <TableCell className="px-4 w-10" onClick={(e) => e.stopPropagation()}>
-                                        <Checkbox
-                                            checked={selectedIds.has(currentRowId)}
-                                            onChange={() => onToggleSelectRow(row)}
-                                        />
-                                    </TableCell>
+                                    <SelectCell
+                                        className="px-4 w-10"
+                                        checked={selectedIds.has(currentRowId)}
+                                        onToggle={() => onToggleSelectRow(row)}
+                                    />
                                     {columns.map(col => (
                                         <TableCell key={col} className="px-4 py-3 font-bold text-body max-w-[250px] truncate text-xs tracking-tight">
                                             <DataRowText
@@ -128,24 +134,22 @@ const DbContent: React.FC<DbContentProps> = ({
                 </Table>
             )}
 
-            {filteredData.length > 0 && viewMode === 'grid' && (
-                <div className="p-4">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                        {filteredData.map((row, idx) => {
-                            const currentRowId = getRowId(row);
-                            return (
-                                <GridCard
-                                    key={idx}
-                                    item={row}
-                                    selected={currentRowId === selectedRowId}
-                                    onClick={() => onRowSelect(row)}
-                                    imageIcon={<TableIcon className="w-8 h-8" />}
-                                    renderFields={renderGridCardFields}
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
+            {viewMode === 'grid' && (
+                <CardGrid>
+                    {filteredData.map((row, idx) => {
+                        const currentRowId = getExplorerRowId(row);
+                        return (
+                            <GridCard
+                                key={idx}
+                                item={row}
+                                selected={currentRowId === selectedRowId}
+                                onClick={() => onRowSelect(row)}
+                                imageIcon={<TableIcon className="w-8 h-8" />}
+                                renderFields={renderGridCardFields}
+                            />
+                        );
+                    })}
+                </CardGrid>
             )}
         </DataExplorerContent>
     );

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { TablesInsert } from '@thaiakha/shared/types';
 import { Newspaper, BookOpen, Globe, Layout } from 'lucide-react';
+import { getExplorerRowId } from '../components/data-explorer';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIG — fully autonomous, no imports from useAdminDatabase
@@ -189,7 +190,8 @@ export const useAdminNews = () => {
         );
     }, [data, searchTerm]);
 
-    const getRowId = (r: Record<string, unknown>) => String(r.id ?? r.internal_id ?? JSON.stringify(r));
+    // Stessa identita' di riga dei *Content: una sola definizione (data-explorer/rowId).
+    const getRowId = getExplorerRowId;
 
     const toggleSelectAll = () => {
         if (selectedIds.size === filteredData.length && filteredData.length > 0) {

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import PageMeta from '../../components/common/PageMeta';
+import { Heading, Paragraph, Caption } from '../../components/typography';
 
 
 const AgencyAssets: React.FC = () => {
@@ -52,8 +53,8 @@ const AgencyAssets: React.FC = () => {
                                     {asset.icon}
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-black uppercase italic text-title tracking-tight leading-tight">{t(asset.nameKey)}</h4>
-                                    <p className="text-xs font-bold text-sub uppercase tracking-widest mt-1">{asset.type} • {asset.size}</p>
+                                    <Heading level="h4" className="font-black uppercase italic tracking-tight leading-tight">{t(asset.nameKey)}</Heading>
+                                    <Caption className="font-bold uppercase tracking-widest mt-1 leading-4">{asset.type} • {asset.size}</Caption>
                                 </div>
                             </div>
                             <button className="w-full flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-sub hover:text-primary-600 transition-colors border-t border-gray-50 dark:border-gray-800 pt-4">
@@ -72,8 +73,8 @@ const AgencyAssets: React.FC = () => {
                             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-12 flex flex-col justify-end">
-                            <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{t('agencyAssets.socialMediaTitle')}</h3>
-                            <p className="text-white/70 text-sm max-w-sm mb-6 font-medium">{t('agencyAssets.socialMediaDesc')}</p>
+                            <Heading level="h2" color="onDark" className="font-black uppercase italic tracking-tighter mb-2 leading-9">{t('agencyAssets.socialMediaTitle')}</Heading>
+                            <Paragraph size="sm" color="onDark" className="max-w-sm mb-6 font-medium leading-5">{t('agencyAssets.socialMediaDesc')}</Paragraph>
                             <button className="w-fit flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white hover:text-primary-500 transition-colors">
                                 {t('agencyAssets.accessFolder')} <ExternalLink className="w-3 h-3" />
                             </button>
@@ -81,10 +82,10 @@ const AgencyAssets: React.FC = () => {
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-800/50 rounded-[3rem] p-10 border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center text-center space-y-4">
                         <Share2 className="w-10 h-10 text-primary-500" />
-                        <h4 className="text-xl font-black uppercase italic text-title tracking-tight">{t('agencyAssets.needHelpTitle')}</h4>
-                        <p className="text-sm text-sub font-medium leading-relaxed italic">
+                        <Heading level="h4" className="font-black uppercase italic tracking-tight leading-7">{t('agencyAssets.needHelpTitle')}</Heading>
+                        <Paragraph size="sm" color="secondary" className="font-medium italic">
                             {t('agencyAssets.needHelpDesc')}
-                        </p>
+                        </Paragraph>
                         <button className="text-xs font-black uppercase tracking-widest text-primary-600 hover:scale-105 active:scale-95 transition-all mb-4">
                             {t('agencyAssets.requestAssets')}
                         </button>

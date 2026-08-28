@@ -10,6 +10,7 @@ import PageMeta from '../../components/common/PageMeta';
 import Tooltip from '../../components/ui/Tooltip';
 import { Dropdown } from '../../components/ui/dropdown/Dropdown';
 import { DropdownItem } from '../../components/ui/dropdown/DropdownItem';
+import { Caption, Paragraph, SectionTitle } from '../../components/typography';
 import {
     DataExplorerLayout,
     DataExplorerToolbar,
@@ -60,28 +61,28 @@ const AdminDatabase: React.FC = () => {
                         exportDropdown={
                             <Dropdown isOpen={ui.isExportOpen} onClose={() => ui.setIsExportOpen(false)} className="w-56 mt-2 left-0 shadow-2xl border-primary-100 dark:border-primary-500/20">
                                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800">
-                                    <p className="text-xs font-black uppercase tracking-widest text-sub">{t('actions.exportFormats')}</p>
+                                    <SectionTitle className="mb-0 text-sub">{t('actions.exportFormats')}</SectionTitle>
                                 </div>
                                 <DropdownItem onClick={ui.exportToCSV} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
                                     <FileSpreadsheet className="w-4 h-4 text-green-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-body">{t('actions.exportCsv')}</p>
-                                        <p className="text-xs text-sub">{t('actions.exportCsvDesc')}</p>
+                                        <Paragraph size="xs" className="font-bold leading-4">{t('actions.exportCsv')}</Paragraph>
+                                        <Caption className="leading-4">{t('actions.exportCsvDesc')}</Caption>
                                     </div>
                                 </DropdownItem>
                                 <DropdownItem onClick={ui.exportToJSON} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
                                     <FileJson className="w-4 h-4 text-blue-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-body">{t('actions.exportJson')}</p>
-                                        <p className="text-xs text-sub">{t('actions.exportJsonDesc')}</p>
+                                        <Paragraph size="xs" className="font-bold leading-4">{t('actions.exportJson')}</Paragraph>
+                                        <Caption className="leading-4">{t('actions.exportJsonDesc')}</Caption>
                                     </div>
                                 </DropdownItem>
                                 <div className="h-px bg-gray-100 dark:bg-gray-800 my-1" />
                                 <DropdownItem onClick={ui.copyToClipboard} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
                                     <Copy className="w-4 h-4 text-primary-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-body">{t('actions.copyClipboard')}</p>
-                                        <p className="text-xs text-sub">{t('actions.copyClipboardDesc')}</p>
+                                        <Paragraph size="xs" className="font-bold leading-4">{t('actions.copyClipboard')}</Paragraph>
+                                        <Caption className="leading-4">{t('actions.copyClipboardDesc')}</Caption>
                                     </div>
                                 </DropdownItem>
                             </Dropdown>

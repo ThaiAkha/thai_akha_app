@@ -17,6 +17,7 @@ import LogisticInspectorActions from '../../components/manager/logistic/Logistic
 import { useManagerLogistic, LogisticsItem } from '../../hooks/useManagerLogistic';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { Paragraph } from '../../components/typography';
 
 const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onNavigate: _onNavigate }) => {
     const { t } = useTranslation('logistics');
@@ -198,9 +199,9 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                     {pendingReorder && (
                         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 dark:border-gray-800 bg-yellow-50 dark:bg-yellow-900/20 flex items-center gap-3">
                             <div className="flex-1">
-                                <p className="text-xs font-bold text-yellow-900 dark:text-yellow-400">
+                                <Paragraph size="xs" className="font-bold text-yellow-900 dark:text-yellow-400 leading-4">
                                     {t('list.unsavedChanges')}
-                                </p>
+                                </Paragraph>
                             </div>
                             <button
                                 onClick={handleSaveOrder}

@@ -9,7 +9,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { Users, Hotel, Car, Loader2, CalendarDays } from 'lucide-react';
 import PageMeta from '../../components/common/PageMeta';
 import { DataExplorerLayout, DataExplorerInspector } from '../../components/data-explorer';
-import { Heading } from '../../components/typography';
+import { Heading, Paragraph } from '../../components/typography';
 import DaysSidebar, { type DaySession } from '../../components/common/DaysSidebar';
 import { dayLabel } from '../../components/common/DaysSidebar.helpers';
 import { useDaysOverview } from '../../hooks/useDaysOverview';
@@ -96,7 +96,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                 ) : active.length === 0 ? (
                     <div className="py-20 text-center flex flex-col items-center gap-3 text-sub">
                         <CalendarDays className="w-12 h-12 opacity-40" />
-                        <p className="text-base">{tm('groupsPlanner.empty', { defaultValue: 'No bookings for this session.' })}</p>
+                        <Paragraph size="base" color="secondary" className="leading-6">{tm('groupsPlanner.empty', { defaultValue: 'No bookings for this session.' })}</Paragraph>
                     </div>
                 ) : (
                     <div className="flex flex-wrap items-start [gap:var(--space-fluid-m,1.5rem)] [padding:var(--space-fluid-s,1rem)]">
@@ -113,7 +113,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
 
                                     {col.items.length === 0 && (
                                         <div className="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-8 text-center">
-                                            <p className="text-sm text-sub">{tm('groupsPlanner.colEmpty', { defaultValue: 'No groups' })}</p>
+                                            <Paragraph size="sm" color="secondary" className="leading-5">{tm('groupsPlanner.colEmpty', { defaultValue: 'No groups' })}</Paragraph>
                                         </div>
                                     )}
 

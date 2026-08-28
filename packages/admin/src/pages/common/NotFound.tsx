@@ -1,6 +1,7 @@
 import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
+import { Heading, Paragraph } from "../../components/typography";
 import { useTranslation } from "react-i18next";
 
 export default function NotFound() {
@@ -15,17 +16,17 @@ export default function NotFound() {
       <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
         <GridShape />
         <div className="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
-          <h1 className="mb-8 font-bold text-gray-800 text-title-md dark:text-white/90 xl:text-title-2xl">
+          <Heading level="h1" className="mb-8 text-title-md leading-[44px] xl:text-title-2xl xl:leading-[90px] tracking-normal">
             {t("notFound.errorLabel")}
-          </h1>
+          </Heading>
 
           <div className="text-8xl font-display font-black text-primary-500 opacity-20 my-12 tracking-tighter">
             {t("notFound.code")}
           </div>
 
-          <p className="mt-10 mb-6 text-base text-body sm:text-lg">
+          <Paragraph className="mt-10 mb-6 sm:text-lg leading-6 sm:leading-7">
             {t("notFound.message")}
-          </p>
+          </Paragraph>
 
           <Link
             to="/"
@@ -35,9 +36,9 @@ export default function NotFound() {
           </Link>
         </div>
         {/* <!-- Footer --> */}
-        <p className="absolute text-sm text-center text-sub -translate-x-1/2 bottom-6 left-1/2">
+        <Paragraph size="sm" color="secondary" className="absolute text-center -translate-x-1/2 bottom-6 left-1/2 leading-5">
           &copy; {t("notFound.copyright", { year: new Date().getFullYear() })}
-        </p>
+        </Paragraph>
       </div>
     </>
   );

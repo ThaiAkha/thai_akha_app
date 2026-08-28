@@ -6,7 +6,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/button/Button';
-import { SectionTitle } from '../../../../components/typography';
+import { Caption, SectionTitle } from '../../../../components/typography';
 import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector/InspectorShell';
 import { SegmentedToggle, ReportStatusBadge, ReportListCard, ReportLineRow } from '../../../../components/reports';
 import { Briefcase, Printer, Download, Banknote, X, CalendarRange, ChevronRight, Search, FileText } from 'lucide-react';
@@ -231,7 +231,7 @@ export const AgencyInspector: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
                 </div>
                 {/* Invoice to Zoho — crea la fattura per la selezione (solo su click + conferma) */}
                 {selectedBookings.some(b => b.zoho_invoice_id) ? (
-                    <p className="text-center text-xs text-sub mt-2">{t('reports.alreadyInvoiced', { defaultValue: 'Invoiced in Zoho.' })}</p>
+                    <Caption className="text-center mt-2 leading-4">{t('reports.alreadyInvoiced', { defaultValue: 'Invoiced in Zoho.' })}</Caption>
                 ) : (
                     <Button variant="primary" size="sm" className="w-full mt-2" disabled={invoiceBusy} startIcon={<Banknote className="w-4 h-4" />} onClick={a.handleAgencyInvoice}>{invoiceBusy ? t('driverPayouts.processing', { defaultValue: 'Processing…' }) : t('reports.invoiceZoho', { defaultValue: 'Invoice to Zoho' })}</Button>
                 )}

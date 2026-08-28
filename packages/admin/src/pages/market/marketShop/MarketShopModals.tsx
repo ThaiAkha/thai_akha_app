@@ -8,6 +8,7 @@ import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import MiniCalendar from '../../../components/common/MiniCalendar';
 import NumericKeypad from '../../../components/common/NumericKeypad';
+import { Heading } from '../../../components/typography';
 import type { MarketShopState } from './useMarketShop';
 
 export const MarketShopModals: React.FC<{ s: MarketShopState }> = ({ s }) => {
@@ -25,7 +26,7 @@ export const MarketShopModals: React.FC<{ s: MarketShopState }> = ({ s }) => {
       className="max-w-sm p-6"
     >
       <div className="mb-6 text-center">
-        <h3 className="text-xl font-bold text-title">{t('modal.selectDate')}</h3>
+        <Heading level="h4" className="leading-7">{t('modal.selectDate')}</Heading>
       </div>
       <div className="flex flex-col gap-6">
         <MiniCalendar

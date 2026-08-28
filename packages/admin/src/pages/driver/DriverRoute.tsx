@@ -10,6 +10,7 @@ import PageContainer from '../../components/layout/PageContainer';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import AdminClassPicker from '../../components/common/AdminClassPicker';
 import TransportStopCard from '../../components/driver/TransportStopCard';
+import { Heading, Paragraph } from '../../components/typography';
 import { useDriverRoute } from './driverRoute/useDriverRoute';
 import { useTranslation } from 'react-i18next';
 
@@ -127,14 +128,14 @@ const DriverRoute: React.FC = () => {
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
                                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
                             </div>
-                            <h3 className="text-2xl font-black text-title">
+                            <Heading level="h3" className="font-black tracking-normal leading-8">
                                 {t('payout.allRidesCompleted')}
-                            </h3>
+                            </Heading>
                             <div className="bg-primary-50 dark:bg-primary-500/10 p-6 rounded-xl border border-primary-100 dark:border-primary-500/20">
-                                <p className="text-sm text-sub mb-2">{t('payout.dailyEarnings')}</p>
-                                <p className="text-4xl font-black text-primary-600 dark:text-primary-400">
+                                <Paragraph size="sm" color="secondary" className="mb-2 leading-5">{t('payout.dailyEarnings')}</Paragraph>
+                                <Heading level="h2" color="brand" className="text-4xl font-black tracking-normal leading-10">
                                     {payoutAmount || 0} <span className="text-2xl">THB</span>
-                                </p>
+                                </Heading>
                             </div>
                             <Button
                                 variant="primary"

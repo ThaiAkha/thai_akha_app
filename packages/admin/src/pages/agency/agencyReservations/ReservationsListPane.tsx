@@ -4,6 +4,7 @@
  */
 import { cn } from '@thaiakha/shared/lib/utils';
 import Badge from '../../../components/ui/badge/Badge';
+import { Paragraph, Caption, SectionTitle } from '../../../components/typography';
 import { Search, Calendar } from 'lucide-react';
 import { getLocale, getDisplayId } from './types';
 import type { AgencyReservationsState } from './useAgencyReservations';
@@ -17,7 +18,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
             <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 mb-4">
                     <Calendar className="w-4 h-4 text-gray-400" />
-                    <h6 className="uppercase tracking-widest text-xs font-bold text-sub">{t('agency.pageTitle')}</h6>
+                    <SectionTitle as="h6" className="font-bold text-sub mb-0">{t('agency.pageTitle')}</SectionTitle>
                 </div>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -54,7 +55,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
                 {loading ? (
                     <div className="p-8 text-center text-sub">
                         <div className="animate-spin w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-                        <p className="text-xs">{t('agency.loading')}</p>
+                        <Caption className="leading-4">{t('agency.loading')}</Caption>
                     </div>
                 ) : (
                     <>
@@ -85,7 +86,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
                         ))}
                         {filteredList.length === 0 && (
                             <div className="p-8 text-center text-sub">
-                                <p className="text-sm">{t('agency.noBookings')}</p>
+                                <Paragraph size="sm" color="secondary" className="leading-5">{t('agency.noBookings')}</Paragraph>
                             </div>
                         )}
                     </>

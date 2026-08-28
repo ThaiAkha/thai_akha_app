@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
 import PageContainer from '../../../components/layout/PageContainer';
+import { Heading, Paragraph, SectionTitle } from '../../../components/typography';
 import { ShoppingCart, RefreshCw } from 'lucide-react';
 import type { ShoppingItem } from './types';
 import type { MarketRunnerState } from './useMarketRunner';
@@ -19,8 +20,8 @@ export const RunPickerView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
             <div className="animate-in fade-in duration-500 py-2">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-xl font-black uppercase italic text-title leading-none">{t('runner.pickList', { defaultValue: 'Saved shopping lists' })}</h3>
-                        <p className="text-xs font-black uppercase tracking-widest text-sub mt-1">{t('runner.pickListHint', { defaultValue: 'Pick a list to start shopping' })}</p>
+                        <Heading level="h4" className="font-black uppercase italic leading-none">{t('runner.pickList', { defaultValue: 'Saved shopping lists' })}</Heading>
+                        <SectionTitle className="text-sub mt-1 mb-0">{t('runner.pickListHint', { defaultValue: 'Pick a list to start shopping' })}</SectionTitle>
                     </div>
                     <Button variant="outline" size="sm" onClick={fetchData} startIcon={<RefreshCw className="w-4 h-4" />}>{t('buttons.refresh')}</Button>
                 </div>
@@ -31,8 +32,8 @@ export const RunPickerView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                             <ShoppingCart className="w-9 h-9" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-base font-black uppercase text-title">{t('empty.noListFound')}</h4>
-                            <p className="text-sm text-sub max-w-xs">{t('runner.noListsHint', { defaultValue: 'Create a shopping list first in "Shopping List".' })}</p>
+                            <Heading level="h5" className="font-black uppercase leading-6">{t('empty.noListFound')}</Heading>
+                            <Paragraph size="sm" color="secondary" className="max-w-xs leading-5">{t('runner.noListsHint', { defaultValue: 'Create a shopping list first in "Shopping List".' })}</Paragraph>
                         </div>
                     </div>
                 ) : (

@@ -9,6 +9,7 @@ import { Clock, Calendar, ChevronRight, Newspaper } from 'lucide-react';
 import ArticleModal from '../../components/agency/ArticleModal';
 import PageMeta from '../../components/common/PageMeta';
 import { formatDateByLanguage } from '../../lib/dateFormatter';
+import { Heading, Paragraph } from '../../components/typography';
 
 interface Article {
     id: string;
@@ -125,13 +126,13 @@ const AgencyNews: React.FC = () => {
 
                             {/* Card Body */}
                             <div className="p-5 space-y-3">
-                                <h3 className="line-clamp-2 text-xl font-black uppercase tracking-tighter text-title group-hover:text-primary-600 transition-colors">
+                                <Heading level="h4" className="line-clamp-2 font-black uppercase tracking-tighter leading-7 group-hover:text-primary-600 transition-colors">
                                     {article.title}
-                                </h3>
+                                </Heading>
 
-                                <p className="line-clamp-3 text-sm font-medium text-sub leading-relaxed">
+                                <Paragraph size="sm" color="secondary" className="line-clamp-3 font-medium leading-5">
                                     {article.content}
-                                </p>
+                                </Paragraph>
 
                                 {/* Card Footer */}
                                 <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-50 dark:border-gray-800/50">
@@ -157,7 +158,7 @@ const AgencyNews: React.FC = () => {
                 ) : (
                     <div className="col-span-full py-20 text-center">
                         <Newspaper className="w-20 h-20 mx-auto opacity-10 mb-4" />
-                        <h4 className="text-xl font-black uppercase text-sub">{t('agencyNews.noNews')}</h4>
+                        <Heading level="h4" color="muted" className="font-black uppercase leading-7">{t('agencyNews.noNews')}</Heading>
                     </div>
                 )}
             </div>

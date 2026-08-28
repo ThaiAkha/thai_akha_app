@@ -3,6 +3,7 @@
  * Estratto da AgencyReservations.tsx (#16 split monstre), DOM invariato.
  */
 import { FileText } from 'lucide-react';
+import { Heading, Paragraph, Caption, SectionTitle } from '../../../components/typography';
 import { getLocale, getDisplayId } from './types';
 import type { AgencyReservationsState } from './useAgencyReservations';
 
@@ -12,10 +13,10 @@ export function ReservationPreviewPane({ s }: { s: AgencyReservationsState }) {
     return (
         <div className="lg:col-span-6 flex flex-col h-full bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex justify-between items-center h-[73px]">
-                <h2 className="text-lg font-black uppercase text-title flex items-center gap-2">
+                <Heading level="h4" className="text-lg font-black uppercase flex items-center gap-2 leading-7">
                     <FileText className="w-5 h-5" />
                     {t('agency.invoiceTitle')}
-                </h2>
+                </Heading>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-100/50 dark:bg-black/20 flex justify-center">
@@ -28,28 +29,28 @@ export function ReservationPreviewPane({ s }: { s: AgencyReservationsState }) {
                                     <FileText className="w-8 h-8" />
                                 </div>
                                 <div className="text-right">
-                                    <h1 className="text-3xl font-black text-title tracking-tighter uppercase">{t('agency.invoiceLabel')}</h1>
-                                    <p className="text-sub font-mono mt-1 text-sm tracking-widest">REF: #{getDisplayId(activeBooking)}</p>
+                                    <Heading level="h2" className="font-black tracking-tighter uppercase leading-9">{t('agency.invoiceLabel')}</Heading>
+                                    <Paragraph size="sm" color="secondary" className="font-mono mt-1 tracking-widest leading-5">REF: #{getDisplayId(activeBooking)}</Paragraph>
                                 </div>
                             </div>
 
                             {/* Addresses */}
                             <div className="grid grid-cols-2 gap-8">
                                 <div>
-                                    <h3 className="text-xs font-black text-sub uppercase tracking-widest mb-2">{t('agency.billedTo')}</h3>
-                                    <p className="font-bold text-title">{user?.agency_company_name || user?.full_name}</p>
-                                    <p className="text-sm text-sub mt-1 leading-relaxed">
+                                    <SectionTitle as="h3" className="text-sub mb-2">{t('agency.billedTo')}</SectionTitle>
+                                    <Paragraph className="font-bold text-title leading-6">{user?.agency_company_name || user?.full_name}</Paragraph>
+                                    <Paragraph size="sm" color="secondary" className="mt-1 leading-5">
                                         {user?.agency_address || t('agency.partnerAddress')}<br />
                                         {user?.agency_city}
-                                    </p>
+                                    </Paragraph>
                                 </div>
                                 <div>
-                                    <h3 className="text-xs font-black text-sub uppercase tracking-widest mb-2">{t('agency.guestInfo')}</h3>
-                                    <p className="font-bold text-title">{activeBooking.guest_name}</p>
-                                    <p className="text-sm text-sub mt-1 leading-relaxed">
+                                    <SectionTitle as="h3" className="text-sub mb-2">{t('agency.guestInfo')}</SectionTitle>
+                                    <Paragraph className="font-bold text-title leading-6">{activeBooking.guest_name}</Paragraph>
+                                    <Paragraph size="sm" color="secondary" className="mt-1">
                                         {activeBooking.session_type}<br />
                                         {activeBooking.pax} {t('agency.participants')}
-                                    </p>
+                                    </Paragraph>
                                 </div>
                             </div>
 
@@ -98,7 +99,7 @@ export function ReservationPreviewPane({ s }: { s: AgencyReservationsState }) {
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-sub">
                         <FileText className="w-16 h-16 mb-4 opacity-20" />
-                        <p className="font-bold text-xs uppercase tracking-widest">{t('agency.selectBooking')}</p>
+                        <Caption className="font-bold uppercase tracking-widest leading-4">{t('agency.selectBooking')}</Caption>
                     </div>
                 )}
             </div>

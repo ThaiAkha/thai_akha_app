@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '../../../components/ui/button/Button';
 import { ShopItemCard } from '../../../components/market/ShopItemCard';
 import { CategoryHeader } from '../../../components/market/CategoryHeader';
+import { Heading, Paragraph } from '../../../components/typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Truck, GraduationCap, Calendar as CalendarIcon, Edit, ShoppingCart } from 'lucide-react';
 import { formatLongDate, toISODate, type LibraryItem } from './types';
@@ -38,9 +39,9 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
       <div className="flex flex-col h-full w-full">
         {/* CENTER HEADER */}
         <div className="h-16 shrink-0 flex items-center justify-between px-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-10">
-          <h2 className="text-xl font-bold text-title">
+          <Heading level="h4" className="leading-7">
             {activeTab === 'dashboard' ? t('tabs.overview') : `${t(`tabs.${activeTab}`)} View`}
-          </h2>
+          </Heading>
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar relative">
@@ -54,7 +55,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                     <div className="size-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-500">
                       <Truck className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black italic uppercase text-title">{t('tabs.logistics')}</h3>
+                    <Heading level="h3" className="font-black italic uppercase tracking-normal leading-8">{t('tabs.logistics')}</Heading>
                   </div>
                   {/* One shared list per shop day (Mon/Thu): edit it if it exists, otherwise create it. */}
                   {(() => {
@@ -85,7 +86,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                     <div className="size-16 rounded-2xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-500">
                       <GraduationCap className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black italic uppercase text-title">{t('tabs.teacher')}</h3>
+                    <Heading level="h3" className="font-black italic uppercase tracking-normal leading-8">{t('tabs.teacher')}</Heading>
                   </div>
                   <div className="space-y-3">
                     <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" size="md" startIcon={<Edit className="w-4 h-4" />} onClick={() => { setSelectedDate(new Date()); setActiveTab('teacher'); setViewMode('planner'); setFormState({}); }}>{t('buttons.newReportToday')}</Button>
@@ -126,7 +127,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                 {filteredLibrary.length === 0 ? (
                   <div className="p-12 text-center text-sub">
                     <ShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                    <p>{t('empty.noIngredients', { defaultValue: 'No ingredients match your search.' })}</p>
+                    <Paragraph color="secondary" className="leading-6">{t('empty.noIngredients', { defaultValue: 'No ingredients match your search.' })}</Paragraph>
                   </div>
                 ) : activeShopTab === 'All' ? (
                   // Grouped by shop/category: divider + title per section for easy scanning.

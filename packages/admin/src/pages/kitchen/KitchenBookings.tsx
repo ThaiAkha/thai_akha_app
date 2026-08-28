@@ -17,6 +17,7 @@ import { DataExplorerLayout } from '../../components/data-explorer';
 import LeaderHeader from '../../components/common/LeaderHeader';
 import DaysSidebar, { type DaySession } from '../../components/common/DaysSidebar';
 import { InspectorShell } from '../../components/ui/inspector/InspectorShell';
+import { Paragraph } from '../../components/typography';
 import { useKitchenGroups, type KitchenGroup, type KitchenParticipant } from '../../hooks/useKitchenGroups';
 
 const dietLabel = (d?: string | null) => (d || 'diet_regular').replace(/^diet_/, '').replace(/^allergy_/, '').replace(/_/g, ' ');
@@ -208,7 +209,7 @@ const KitchenBookings: React.FC = () => {
       ) : dayGroups.length === 0 ? (
         <div className="py-20 text-center flex flex-col items-center gap-3 text-sub">
           <CalendarDays className="w-10 h-10 opacity-40" />
-          <p className="text-sm">{t('empty.noParticipants', { defaultValue: 'Select a day & class.' })}</p>
+          <Paragraph size="sm" color="secondary" className="leading-5">{t('empty.noParticipants', { defaultValue: 'Select a day & class.' })}</Paragraph>
         </div>
       ) : (
         <div className="divide-y divide-gray-100 dark:divide-gray-800">

@@ -5,7 +5,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/button/Button';
-import { SectionTitle } from '../../../../components/typography';
+import { Caption, SectionTitle } from '../../../../components/typography';
 import { ReportStatusBadge } from '../../../../components/reports';
 import { Banknote, Receipt } from 'lucide-react';
 import { SESSION_LABEL } from '../shared';
@@ -62,7 +62,7 @@ export const PosCenter: React.FC<{ p: PosClassesState }> = ({ p }) => {
                     {posBusy ? t('driverPayouts.processing', { defaultValue: 'Processing…' }) : t('reports.posGenerate', { defaultValue: 'Generate Zoho invoices' })}
                 </Button>
             </div>
-            <p className="text-center text-xs text-sub">{t('reports.posHint', { defaultValue: 'Up to 4 invoices: morning/evening × cash/card. Already-invoiced groups are skipped.' })}</p>
+            <Caption className="text-center leading-4">{t('reports.posHint', { defaultValue: 'Up to 4 invoices: morning/evening × cash/card. Already-invoiced groups are skipped.' })}</Caption>
         </div>
     );
 };

@@ -10,6 +10,7 @@ import AdminClassPicker from '../../components/common/AdminClassPicker';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import PageMeta from '../../components/common/PageMeta';
+import { Heading, SectionTitle } from '../../components/typography';
 import { getSessionPrice } from '@thaiakha/shared/lib/sessionUtils';
 
 const ZONES = ['green', 'pink', 'yellow', 'outside', 'walk-in'];
@@ -177,7 +178,7 @@ const AgencyBooking: React.FC = () => {
                     <div className="lg:col-span-7 space-y-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-8">
                             <div>
-                                <h6 className="text-xs uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepGuest')}</h6>
+                                <SectionTitle as="h6" className="text-primary-600 mb-4">{t('agencyBooking.stepGuest')}</SectionTitle>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <InputField
                                         label={t('agencyBooking.fieldFullName')}
@@ -197,7 +198,7 @@ const AgencyBooking: React.FC = () => {
                             <hr className="border-gray-100 dark:border-gray-800" />
 
                             <div>
-                                <h6 className="text-xs uppercase font-black text-primary-600 tracking-widest mb-4">{t('agencyBooking.stepClass')}</h6>
+                                <SectionTitle as="h6" className="text-primary-600 mb-4">{t('agencyBooking.stepClass')}</SectionTitle>
                                 <AdminClassPicker
                                     date={date}
                                     session={session}
@@ -208,7 +209,7 @@ const AgencyBooking: React.FC = () => {
                         </div>
 
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-6">
-                            <h6 className="text-xs uppercase font-black text-primary-600 tracking-widest mb-2">{t('agencyBooking.stepPickup')}</h6>
+                            <SectionTitle as="h6" className="text-primary-600 mb-2">{t('agencyBooking.stepPickup')}</SectionTitle>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <InputField
@@ -248,7 +249,7 @@ const AgencyBooking: React.FC = () => {
                     {/* RIGHT COL: SUMMARY & ACTION */}
                     <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
                         <div className="p-8 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl space-y-8">
-                            <h6 className="text-xs uppercase font-black text-sub tracking-widest">{t('agencyBooking.summaryTitle')}</h6>
+                            <SectionTitle as="h6" className="text-sub mb-8">{t('agencyBooking.summaryTitle')}</SectionTitle>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700">
@@ -270,9 +271,9 @@ const AgencyBooking: React.FC = () => {
                                     <span className="text-xs text-sub line-through mb-1">{basePrice !== null ? `${(basePrice * pax).toLocaleString()} THB` : '-'}</span>
                                     <div className="text-right">
                                         <span className="block text-xs uppercase font-black text-sub mb-1 tracking-widest">{t('agencyBooking.summaryNetPayable')}</span>
-                                        <h3 className="text-4xl font-black text-primary-600 dark:text-primary-400 italic">
+                                        <Heading level="h2" color="brand" className="text-4xl font-black italic tracking-normal leading-10">
                                             {amount.toLocaleString()} <span className="text-sm font-normal text-sub not-italic uppercase">THB</span>
-                                        </h3>
+                                        </Heading>
                                     </div>
                                 </div>
                             </div>

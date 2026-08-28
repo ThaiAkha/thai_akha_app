@@ -145,8 +145,8 @@ const AdminReport: React.FC = () => {
                                         {metric.change}
                                     </div>
                                 </div>
-                                <SectionTitle className="text-xs text-sub mb-1">{metric.title}</SectionTitle>
-                                <p className="text-3xl font-black text-title tracking-tighter">{metric.value}</p>
+                                <SectionTitle className="text-sub mb-1">{metric.title}</SectionTitle>
+                                <Heading level="h2" className="font-black tracking-tighter leading-9">{metric.value}</Heading>
                             </div>
                         ))}
                     </div>
@@ -156,14 +156,14 @@ const AdminReport: React.FC = () => {
                         <div className="flex items-center justify-between mb-8">
                             <div>
                                 <Heading level="h4" className="leading-none mb-1">{t('adminReport.globalPerformance')}</Heading>
-                                <SectionTitle className="text-xs text-sub">Monthly comparison of {currentMetric?.title}</SectionTitle>
+                                <SectionTitle className="text-sub">Monthly comparison of {currentMetric?.title}</SectionTitle>
                             </div>
                             <Badge variant="light" color="info">{t('adminReport.season')}</Badge>
                         </div>
                         <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-3xl bg-gray-50/50 dark:bg-black/20">
                             <div className="text-center">
                                 <BarChart3 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                <SectionTitle className="text-xs text-sub">{t('adminReport.analyticsComingSoon')}</SectionTitle>
+                                <SectionTitle className="text-sub">{t('adminReport.analyticsComingSoon')}</SectionTitle>
                             </div>
                         </div>
                     </div>
@@ -178,20 +178,20 @@ const AdminReport: React.FC = () => {
                             </div>
                             <div>
                                 <Heading level="h4" className="leading-none mb-1">{t('adminReport.metricDetail')}</Heading>
-                                <SectionTitle className="text-xs text-sub">{t('adminReport.globalAnalysis')}</SectionTitle>
+                                <SectionTitle className="text-sub">{t('adminReport.globalAnalysis')}</SectionTitle>
                             </div>
                         </div>
 
                         <div className="flex-1 space-y-6">
                             <div className="p-6 bg-primary-50/50 dark:bg-primary-500/5 rounded-3xl border border-primary-100/50 dark:border-primary-500/10">
-                                <SectionTitle className="text-xs tracking-wider text-primary-600 mb-2">{t('adminReport.description')}</SectionTitle>
+                                <SectionTitle className="tracking-wider text-primary-600 mb-2">{t('adminReport.description')}</SectionTitle>
                                 <Paragraph size="sm" color="secondary" className="font-medium italic">
                                     "{currentMetric?.details}"
                                 </Paragraph>
                             </div>
 
                             <div className="space-y-4">
-                                <SectionTitle className="text-xs tracking-wider text-sub px-2 leading-none mb-0">{t('adminReport.monthlySummary')}</SectionTitle>
+                                <SectionTitle className="tracking-wider text-sub px-2 leading-none mb-0">{t('adminReport.monthlySummary')}</SectionTitle>
                                 {[
                                     { month: 'January 2026', total: '฿420,400' },
                                     { month: 'December 2025', total: '฿385,200' },

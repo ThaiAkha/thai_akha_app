@@ -9,6 +9,7 @@ import Badge from '../../../components/ui/badge/Badge';
 import { Modal } from '../../../components/ui/modal';
 import NumericKeypad from '../../../components/common/NumericKeypad';
 import PageContainer from '../../../components/layout/PageContainer';
+import { Heading, SectionTitle } from '../../../components/typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ShoppingCart, Store, Phone, MessageCircle, CheckCircle2, Circle, Plus, Check, Save, Lock } from 'lucide-react';
 import { getShopIcon, type ShoppingItem } from './types';
@@ -69,10 +70,10 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                     {typeof activeContact === 'undefined' ? <Store className="w-5 h-5" /> : getShopIcon(activeTab)}
                                 </div>
                                 <div>
-                                    <h6 className="text-title uppercase font-black leading-none mb-1 truncate max-w-[120px]">
+                                    <Heading level="h5" className="uppercase font-black leading-none mb-1 truncate max-w-[120px]">
                                         {activeTab}
-                                    </h6>
-                                    <p className="text-xs text-sub font-bold uppercase tracking-widest">{t('labels.vendorContact')}</p>
+                                    </Heading>
+                                    <SectionTitle className="text-sub font-bold mb-0">{t('labels.vendorContact')}</SectionTitle>
                                 </div>
                             </div>
                             <div className="flex gap-2">
@@ -101,7 +102,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                     {filteredItems.length === 0 ? (
                         <div className="py-20 text-center text-muted flex flex-col items-center gap-3">
                             <ShoppingCart className="w-12 h-12 opacity-50" />
-                            <p className="text-xs font-bold uppercase tracking-widest text-body">{t('empty.noItemsForStall')}</p>
+                            <SectionTitle className="font-bold mb-0">{t('empty.noItemsForStall')}</SectionTitle>
                         </div>
                     ) : (
                         filteredItems.map(item => (
@@ -120,12 +121,12 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                         <span className="text-xs font-black uppercase text-sub tracking-widest truncate max-w-[100px]">{item.target_shop}</span>
                                         {item.is_bought && <Badge variant="solid" color="success" size="sm" className="text-xs h-4 px-1.5">BOUGHT</Badge>}
                                     </div>
-                                    <h4 className={cn(
-                                        "uppercase font-bold leading-tight truncate text-base",
+                                    <Heading level="h5" className={cn(
+                                        "uppercase font-bold leading-tight truncate",
                                         item.is_bought ? "text-sub line-through" : "text-title"
                                     )}>
                                         {item.name}
-                                    </h4>
+                                    </Heading>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="font-mono text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-1.5 py-0.5 rounded">{t('labels.qty', { quantity: item.quantity })}</span>
                                         <span className="text-xs font-medium text-sub uppercase border border-gray-200 dark:border-gray-700 px-1.5 py-0.5 rounded">{item.unit}</span>

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import PageMeta from '../../components/common/PageMeta';
+import { Heading, Paragraph } from '../../components/typography';
 
 
 const AgencyRates: React.FC = () => {
@@ -75,17 +76,17 @@ const AgencyRates: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-8 rounded-[2rem] border border-primary-100 dark:border-primary-900/30 bg-primary-50/50 dark:bg-primary-500/5 space-y-4">
                         <ShieldCheck className="w-8 h-8 text-primary-600" />
-                        <h5 className="text-xl font-black uppercase italic text-title">{t('agencyRates.guaranteeTitle')}</h5>
-                        <p className="text-sm text-sub leading-relaxed">
+                        <Heading level="h4" className="font-black uppercase italic leading-7">{t('agencyRates.guaranteeTitle')}</Heading>
+                        <Paragraph size="sm" color="secondary">
                             {t('agencyRates.guaranteeDesc')}
-                        </p>
+                        </Paragraph>
                     </div>
                     <div className="p-8 rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-4">
                         <CreditCard className="w-8 h-8 text-amber-500" />
-                        <h5 className="text-xl font-black uppercase italic text-title">{t('agencyRates.paymentTitle')}</h5>
-                        <p className="text-sm text-sub leading-relaxed">
+                        <Heading level="h4" className="font-black uppercase italic leading-7">{t('agencyRates.paymentTitle')}</Heading>
+                        <Paragraph size="sm" color="secondary">
                             {t('agencyRates.paymentDesc')}
-                        </p>
+                        </Paragraph>
                     </div>
                 </div>
             </div>

@@ -9,6 +9,7 @@ import PageMeta from '../../components/common/PageMeta';
 import { PRIMARY_BTN } from '../../components/data-explorer/DataExplorerToolbar';
 import { Dropdown } from '../../components/ui/dropdown/Dropdown';
 import { DropdownItem } from '../../components/ui/dropdown/DropdownItem';
+import { Caption, Paragraph, SectionTitle } from '../../components/typography';
 import { 
     DataExplorerLayout, 
     DataExplorerToolbar, 
@@ -65,21 +66,21 @@ const AdminMedia: React.FC = () => {
                         exportDropdown={
                             <Dropdown isOpen={ui.isExportOpen} onClose={() => ui.setIsExportOpen(false)} className="w-56 mt-2 left-0 shadow-2xl border-primary-100 dark:border-primary-500/20">
                                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800">
-                                    <p className="text-xs font-black uppercase tracking-widest text-sub">Export Formats</p>
+                                    <SectionTitle className="mb-0 text-sub">Export Formats</SectionTitle>
                                 </div>
                                 <DropdownItem onClick={() => {}} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors opacity-50 cursor-not-allowed">
                                     <FileSpreadsheet className="w-4 h-4 text-green-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-body">Export CSV</p>
-                                        <p className="text-xs text-sub italic">Coming soon kha</p>
+                                        <Paragraph size="xs" className="font-bold leading-4">Export CSV</Paragraph>
+                                        <Caption className="italic leading-4">Coming soon kha</Caption>
                                     </div>
                                 </DropdownItem>
                                 <div className="h-px bg-gray-100 dark:bg-gray-800 my-1" />
                                 <DropdownItem onClick={() => {}} className="flex items-center gap-3 px-3 py-2.5 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors opacity-50 cursor-not-allowed">
                                     <Copy className="w-4 h-4 text-primary-600" />
                                     <div className="text-left">
-                                        <p className="text-xs font-bold text-body">Copy JSON</p>
-                                        <p className="text-xs text-sub italic">Available in next update</p>
+                                        <Paragraph size="xs" className="font-bold leading-4">Copy JSON</Paragraph>
+                                        <Caption className="italic leading-4">Available in next update</Caption>
                                     </div>
                                 </DropdownItem>
                             </Dropdown>

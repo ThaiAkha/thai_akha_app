@@ -5,7 +5,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/button/Button';
-import { SectionTitle } from '../../../../components/typography';
+import { Paragraph, SectionTitle } from '../../../../components/typography';
 import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector/InspectorShell';
 import { SegmentedToggle, ReportStatusBadge, ReportListCard, ReportLineRow } from '../../../../components/reports';
 import { Printer, Download, Banknote, History, Sunrise, Pencil, Trash2, CalendarRange, ChevronRight } from 'lucide-react';
@@ -154,9 +154,9 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                                     {t('reports.createZohoExpense', { defaultValue: 'Create Zoho expense' })}
                                 </Button>
                                 {selRun.status === 'planned' && (
-                                    <p className="-mt-1 text-center text-xs font-bold text-amber-600 dark:text-amber-400">
+                                    <Paragraph size="xs" className="-mt-1 text-center font-bold text-amber-600 dark:text-amber-400 leading-4">
                                         {t('reports.confirmListFirst', { defaultValue: 'Confirm the list before billing in Zoho.' })}
-                                    </p>
+                                    </Paragraph>
                                 )}
                             </>
                         )}

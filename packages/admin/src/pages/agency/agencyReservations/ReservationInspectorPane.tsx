@@ -5,6 +5,7 @@
 import { cn } from '@thaiakha/shared/lib/utils';
 import Label from '../../../components/form/Label';
 import Button from '../../../components/ui/button/Button';
+import { Heading, Caption, SectionTitle } from '../../../components/typography';
 import { MapPin, Clock, Phone, Printer, Save, Edit, MoreHorizontal } from 'lucide-react';
 import { getDisplayId, type AgencyBooking } from './types';
 import type { AgencyReservationsState } from './useAgencyReservations';
@@ -16,8 +17,8 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
         <div className="lg:col-span-3 flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center h-[73px] bg-gray-50/50 dark:bg-gray-800/50">
                 <div>
-                    <h2 className="text-lg font-bold text-body uppercase tracking-tighter">{t('agency.inspectorTitle')}</h2>
-                    <p className="text-xs text-sub font-mono uppercase tracking-widest">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</p>
+                    <Heading level="h4" className="text-lg text-body uppercase tracking-tighter leading-7">{t('agency.inspectorTitle')}</Heading>
+                    <Caption className="font-mono uppercase tracking-widest leading-4">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</Caption>
                 </div>
                 {activeBooking && (
                     <Button variant="outline" size="sm" onClick={() => setSelectedBookingId(null)} className="rounded-lg h-9 w-9 p-0 flex items-center justify-center">
@@ -47,7 +48,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                         {/* Guest Logistics */}
                         <div className="space-y-4">
-                            <h3 className="text-xs font-black text-sub uppercase tracking-widest">{t('agency.guestLogistics')}</h3>
+                            <SectionTitle as="h3" className="text-sub mb-4">{t('agency.guestLogistics')}</SectionTitle>
 
                             <div>
                                 <Label className="text-xs font-bold uppercase text-sub mb-1 ml-1">{t('agency.hotelPickup')}</Label>
@@ -94,7 +95,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                         {/* Internal Details */}
                         <div className="space-y-4">
-                            <h3 className="text-xs font-black text-sub uppercase tracking-widest">{t('agency.internalDetails')}</h3>
+                            <SectionTitle as="h3" className="text-sub mb-4">{t('agency.internalDetails')}</SectionTitle>
 
                             <div>
                                 <Label className="text-xs font-bold uppercase text-sub mb-1 ml-1">{t('agency.agencyNote')}</Label>
@@ -121,7 +122,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                         {/* Status Actions (Only when editing) */}
                         {isEditing && (
                             <div className="space-y-3 pt-4 animate-in fade-in">
-                                <h3 className="text-xs font-black text-sub uppercase tracking-widest">{t('agency.lifecycleStatus')}</h3>
+                                <SectionTitle as="h3" className="text-sub">{t('agency.lifecycleStatus')}</SectionTitle>
                                 <div className="flex gap-2">
                                     {['confirmed', 'pending', 'cancelled'].map(s => (
                                         <button
@@ -146,7 +147,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-sub opacity-50">
                         <Edit className="w-12 h-12 mb-3" />
-                        <p className="text-xs font-black uppercase tracking-widest">{t('agency.inspectorIdleMsg')}</p>
+                        <Caption className="font-black uppercase tracking-widest leading-4">{t('agency.inspectorIdleMsg')}</Caption>
                     </div>
                 )}
             </div>

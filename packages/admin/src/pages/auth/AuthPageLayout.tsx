@@ -2,6 +2,7 @@ import React from "react";
 import GridShape from "../../components/common/GridShape";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
 import { LanguageSwitcher } from "../../components/header/LanguageSwitcher";
+import { Paragraph } from "../../components/typography";
 import { LogoAuth } from "@thaiakha/shared";
 import { useTranslation } from "react-i18next";
 
@@ -39,10 +40,10 @@ export default function AuthLayout({
                   alt={t("layout.logoAlt")}
                 />
               </div>
-              <p className="text-center text-gray-100 dark:text-white/80 text-base md:text-lg font-medium leading-relaxed mt-4">
+              <Paragraph className="text-center text-gray-100 dark:text-white/80 md:text-lg font-medium mt-4">
                 {t("layout.tagline1")} <br className="hidden md:block" />
                 {t("layout.tagline2")}
-              </p>
+              </Paragraph>
             </div>
           </div>
         </div>

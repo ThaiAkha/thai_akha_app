@@ -9,6 +9,7 @@ import PageMeta from "../../components/common/PageMeta";
 import AuthLayout from "./AuthPageLayout";
 import Label from "../../components/form/Label";
 import Input from "../../components/form/input/InputField";
+import { Heading, Paragraph } from "../../components/typography";
 
 /**
  * ResetPassword — dual-mode page.
@@ -122,18 +123,18 @@ export default function ResetPassword() {
           <div className="flex flex-col justify-center flex-1 w-full max-w-lg mx-auto">
             <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
               <div className="mb-5 sm:mb-8">
-                <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
+                <Heading level="h1" className="mb-2 font-black text-title-sm leading-[38px] sm:text-title-md sm:leading-[44px] uppercase">
                   {isUpdate ? t("resetPassword.updateTitle") : t("resetPassword.requestTitle")}
-                </h1>
-                <p className="text-sm font-medium text-sub">
+                </Heading>
+                <Paragraph size="sm" color="secondary" className="font-medium leading-5">
                   {isUpdate ? t("resetPassword.updateSubtitle") : t("resetPassword.requestSubtitle")}
-                </p>
+                </Paragraph>
               </div>
 
               {done ? (
-                <p className="text-sm text-green-700 dark:text-green-400 font-bold bg-green-500/10 p-3 rounded-lg border border-green-500/15">
+                <Paragraph size="sm" className="text-green-700 dark:text-green-400 font-bold bg-green-500/10 p-3 rounded-lg border border-green-500/15 leading-5">
                   {isUpdate ? t("resetPassword.updatedMessage") : t("resetPassword.sentMessage")}
-                </p>
+                </Paragraph>
               ) : isUpdate ? (
                 <form onSubmit={handleUpdate}>
                   <div className="space-y-5">
@@ -167,9 +168,9 @@ export default function ResetPassword() {
                     </div>
 
                     {error && (
-                      <p className="text-sm text-sys-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">
+                      <Paragraph size="sm" className="text-sys-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 leading-5">
                         {error}
-                      </p>
+                      </Paragraph>
                     )}
 
                     <div className="pt-2">
@@ -202,9 +203,9 @@ export default function ResetPassword() {
                     </div>
 
                     {error && (
-                      <p className="text-sm text-sys-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">
+                      <Paragraph size="sm" className="text-sys-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 leading-5">
                         {error}
-                      </p>
+                      </Paragraph>
                     )}
 
                     <div className="pt-2">

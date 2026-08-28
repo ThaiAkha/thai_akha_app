@@ -4,6 +4,7 @@ import PageHeaderWithBadge from '../../components/common/PageHeaderWithBadge';
 import PageMeta from '../../components/common/PageMeta';
 import LegalDocumentBody from '../../components/legal/LegalDocumentBody';
 import LegalTranslationNotices from '../../components/legal/LegalTranslationNotices';
+import { Paragraph } from '../../components/typography';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import { useI18n } from '../../context/I18nContext';
 import { useLegalDocument } from '@thaiakha/shared/hooks/useLegalDocument';
@@ -50,13 +51,13 @@ const AgencyLegalPage: React.FC<AgencyLegalPageProps> = ({ docKey, pageSlug }) =
 
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2rem] p-6 sm:p-10 shadow-sm">
           {loading && (
-            <p className="text-sm text-sub">Loading...</p>
+            <Paragraph size="sm" color="secondary" className="leading-5">Loading...</Paragraph>
           )}
 
           {!loading && !doc && (
-            <p className="text-sm text-sub">
+            <Paragraph size="sm" color="secondary" className="leading-5">
               This document is not available right now. Please contact us.
-            </p>
+            </Paragraph>
           )}
 
           {!loading && doc && (

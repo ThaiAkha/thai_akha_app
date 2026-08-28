@@ -9,6 +9,7 @@ import { ReportLineRow, ReportLineMedia } from '../../../components/reports';
 import { PackStepper } from '../../../components/market/PackStepper';
 import { describeQty } from '../../../components/market/packUtils';
 import WorkerSelector from '../../../components/common/WorkerSelector';
+import { Heading, Caption } from '../../../components/typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { X, ShoppingCart, CheckCircle2 } from 'lucide-react';
 import { WORKER_ROLES_BY_SCOPE, normalizeEntry, formatLongDate, type DraftItem } from './types';
@@ -25,7 +26,7 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
     <div className="h-full flex flex-col">
       <div className="h-16 shrink-0 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
         <div>
-          <h3 className="font-bold text-lg">{t('labels.workDraft')}</h3>
+          <Heading level="h4" className="text-lg text-inherit leading-7">{t('labels.workDraft')}</Heading>
         </div>
         <button onClick={() => setActiveTab('dashboard')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-sub hover:text-body">
           <X className="w-5 h-5" />
@@ -95,7 +96,7 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
             {Object.keys(formState).length === 0 && (
               <div className="py-12 text-center opacity-40">
                 <ShoppingCart className="w-10 h-10 mx-auto mb-2 text-muted" />
-                <p className="text-xs font-bold uppercase text-sub">{t('empty.noContent')}</p>
+                <Caption className="font-bold uppercase leading-4">{t('empty.noContent')}</Caption>
               </div>
             )}
           </div>

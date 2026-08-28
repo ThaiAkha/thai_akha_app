@@ -3,28 +3,16 @@ import { cn } from '@thaiakha/shared/lib/utils';
 
 interface CaptionProps {
   children: React.ReactNode;
-  muted?: boolean;
   className?: string;
 }
 
-const Caption: React.FC<CaptionProps> = ({
-  children,
-  muted = false,
-  className,
-}) => {
-  return (
-    <p
-      className={cn(
-        'text-xs leading-relaxed',
-        muted
-          ? 'text-muted'
-          : 'text-sub',
-        className
-      )}
-    >
-      {children}
-    </p>
-  );
-};
+/**
+ * Testo di contorno a 12px (timestamp, note, meta). Sempre `text-sub`: e' il livello
+ * piu' tenue che passa AA a questa taglia. La vecchia prop `muted` (text-muted, 4.10 =
+ * solo AA-large) e' stata rimossa il 2026-08-28: a 12px non poteva mai essere a norma.
+ */
+const Caption: React.FC<CaptionProps> = ({ children, className }) => (
+  <p className={cn('text-xs leading-relaxed text-sub', className)}>{children}</p>
+);
 
 export default Caption;

@@ -11,6 +11,7 @@ import {
     Printer, Download, Upload, CheckCircle2, Clock, TrendingUp,
 } from 'lucide-react';
 import PageMeta from '../../components/common/PageMeta';
+import { Heading, Paragraph, Caption, SectionTitle } from '../../components/typography';
 
 interface AgencyInvoice {
     id: string;
@@ -166,8 +167,8 @@ const AgencyReports: React.FC = () => {
                                     <div className={cn("size-12 rounded-2xl flex items-center justify-center text-white",
                                         selectedMetric === metric.id ? "bg-primary-600 shadow-lg shadow-primary-500/40" : "bg-gray-100 dark:bg-gray-800 text-gray-500")}>{metric.icon}</div>
                                 </div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-sub mb-1">{metric.title}</h4>
-                                <p className="text-3xl font-black text-title tracking-tighter">{metric.value}</p>
+                                <SectionTitle as="h4" className="text-sub mb-1">{metric.title}</SectionTitle>
+                                <Heading level="h2" className="font-black tracking-tighter leading-9">{metric.value}</Heading>
                             </div>
                         ))}
                     </div>
@@ -176,8 +177,8 @@ const AgencyReports: React.FC = () => {
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] p-8 shadow-sm">
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h4 className="text-xl font-black uppercase italic text-title leading-none mb-1">{t('agencyReport.tierTitle', { defaultValue: 'Commission tier' })}</h4>
-                                <p className="text-[10px] font-black uppercase text-sub tracking-widest">{t('agencyReport.tierSub', { defaultValue: 'Rolling 3-month cycle' })}</p>
+                                <Heading level="h4" className="font-black uppercase italic leading-none mb-1">{t('agencyReport.tierTitle', { defaultValue: 'Commission tier' })}</Heading>
+                                <SectionTitle as="p" className="text-sub mb-0">{t('agencyReport.tierSub', { defaultValue: 'Rolling 3-month cycle' })}</SectionTitle>
                             </div>
                             {tierProgress && <Badge variant="light" color="info">{tierProgress.tier} · ฿{tierProgress.rate}/pax</Badge>}
                         </div>
@@ -193,14 +194,14 @@ const AgencyReports: React.FC = () => {
                                     <div className="h-full bg-primary-600 rounded-full transition-all" style={{ width: `${tierProgress.pct}%` }} />
                                 </div>
                             </>
-                        ) : <p className="text-sm text-sub">{t('agencyReport.noTier', { defaultValue: 'Commission tier not configured.' })}</p>}
+                        ) : <Paragraph size="sm" color="secondary" className="leading-5">{t('agencyReport.noTier', { defaultValue: 'Commission tier not configured.' })}</Paragraph>}
                     </div>
 
                     {/* REPORT DOWNLOAD / PRINT */}
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div>
-                            <h4 className="text-lg font-black uppercase text-title leading-none mb-1">{t('agencyReport.statement', { defaultValue: 'Bookings statement' })}</h4>
-                            <p className="text-[10px] font-black uppercase text-sub tracking-widest">{t('agencyReport.statementSub', { defaultValue: 'PDF of all your bookings' })}</p>
+                            <Heading level="h4" className="text-lg font-black uppercase leading-none mb-1">{t('agencyReport.statement', { defaultValue: 'Bookings statement' })}</Heading>
+                            <SectionTitle as="p" className="text-sub mb-0">{t('agencyReport.statementSub', { defaultValue: 'PDF of all your bookings' })}</SectionTitle>
                         </div>
                         <div className="flex gap-3">
                             <button disabled={reportBusy} onClick={() => handleReport('print')} className="inline-flex items-center gap-2 px-5 h-12 rounded-2xl border border-gray-200 dark:border-gray-700 font-black uppercase text-xs tracking-wider text-body hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"><Printer className="w-4 h-4" />{t('agencyReport.print', { defaultValue: 'Print' })}</button>
@@ -215,8 +216,8 @@ const AgencyReports: React.FC = () => {
                         <div className="flex items-center gap-4 mb-6">
                             <div className="size-14 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-lg"><FileText className="w-6 h-6" /></div>
                             <div>
-                                <h4 className="text-xl font-black uppercase text-title leading-none mb-1">{t('agencyReport.invoices', { defaultValue: 'Invoices' })}</h4>
-                                <p className="text-[10px] text-sub font-black uppercase tracking-widest">{t('agencyReport.invoicesSub', { defaultValue: 'Pay & track status' })}</p>
+                                <Heading level="h4" className="font-black uppercase leading-none mb-1">{t('agencyReport.invoices', { defaultValue: 'Invoices' })}</Heading>
+                                <SectionTitle as="p" className="text-sub mb-0">{t('agencyReport.invoicesSub', { defaultValue: 'Pay & track status' })}</SectionTitle>
                             </div>
                         </div>
 
@@ -260,7 +261,7 @@ const AgencyReports: React.FC = () => {
                                     className="w-full bg-primary-600 text-white h-12 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:scale-100">
                                     {busy ? t('agencyReport.sending', { defaultValue: 'Sending…' }) : `${t('agencyReport.markPaid', { defaultValue: 'Mark as paid' })} (${selectedInv.length})`}
                                 </button>
-                                <p className="text-center text-[10px] font-bold text-sub">{t('agencyReport.payHint', { defaultValue: 'The manager confirms receipt before the invoice is closed.' })}</p>
+                                <Caption className="text-center text-[10px] font-bold leading-normal">{t('agencyReport.payHint', { defaultValue: 'The manager confirms receipt before the invoice is closed.' })}</Caption>
                             </div>
                         )}
                     </div>

@@ -5,6 +5,7 @@ import Input from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
 import DeleteZone from '../../../components/ui/DeleteZone';
 import Tooltip from '../../../components/ui/Tooltip';
+import { InspectorEmpty } from '../../ui/inspector';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { FileObject, formatBytes } from '../../../hooks/useAdminStorage';
 
@@ -54,15 +55,11 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
     const { t } = useTranslation('storage');
     if (!selectedFile && !pendingFile) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-center px-6 py-20">
-                <FileIcon className="w-12 h-12 text-muted mb-4" />
-                <p className="text-sm font-black uppercase tracking-widest text-sub">
-                    {t('inspector.noFile')}
-                </p>
-                <p className="text-xs text-sub mt-1">
-                    {t('inspector.noFileHint')}
-                </p>
-            </div>
+            <InspectorEmpty
+                icon={<FileIcon className="w-12 h-12 text-muted" />}
+                title={t('inspector.noFile')}
+                hint={t('inspector.noFileHint')}
+            />
         );
     }
 
@@ -265,6 +262,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                 {new Date(selectedFile.created_at).toLocaleString()}
                             </div>
                         </div>
+                        {/* pb-10: aria sotto l'ultimo campo perche' il corpo scrolla fino in fondo; resta
+                            finche' Save/Delete non passano a InspectorFooter sticky (task #93, ticket a parte). */}
                         <div className="space-y-2 pb-10">
                             <SectionHeader title={t('inspector.lastSynced')} variant="inspector" />
                             <div className={cn(

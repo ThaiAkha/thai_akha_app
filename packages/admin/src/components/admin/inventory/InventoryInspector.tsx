@@ -18,6 +18,11 @@ interface InventoryInspectorProps {
     onDelete: () => void;
 }
 
+/**
+ * Corpo dell'inspector Inventory: vive dentro il Body di DataExplorerInspector, che e'
+ * l'unico proprietario dello scroll (#93 B3). Niente contenitore scrollabile annidato.
+ * La DeleteZone a 1 step resta (stesso chrome di InspectorDeleteZone, senza conferma).
+ */
 const InventoryInspector: React.FC<InventoryInspectorProps> = ({
     editingProduct,
     onEditingProductChange,
@@ -32,7 +37,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
     };
 
     return (
-        <div className="flex-1 overflow-auto no-scrollbar">
+        <>
             <div className="px-6 py-6 bg-gray-50/10">
                 <div className="space-y-8">
                     {/* Media Section */}
@@ -189,7 +194,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
             {isEditing && !isNew && editingProduct.id && (
                 <DeleteZone label={t('inspector.deleteProduct')} onDelete={onDelete} />
             )}
-        </div>
+        </>
     );
 };
 

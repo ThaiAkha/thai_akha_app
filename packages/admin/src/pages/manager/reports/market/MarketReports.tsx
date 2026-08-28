@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/button/Button';
 import { Paragraph, SectionTitle } from '../../../../components/typography';
-import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector/InspectorShell';
+import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector';
 import { SegmentedToggle, ReportStatusBadge, ReportListCard, ReportLineRow } from '../../../../components/reports';
 import { Printer, Download, Banknote, History, Sunrise, Pencil, Trash2, CalendarRange, ChevronRight } from 'lucide-react';
 import { type DriverView } from '../shared';
@@ -98,7 +98,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                         />
                     ))}
                 </InspectorBody>
-                <InspectorFooter className="pb-[80px]">
+                <InspectorFooter bottomOffset={80}>
                     <div className="flex justify-between items-end">
                         <SectionTitle className="text-sub mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
                         <span className="font-mono text-2xl font-black text-title">{selMonth.total.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>
@@ -132,7 +132,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                     />
                 ))}
             </InspectorBody>
-            <InspectorFooter className="pb-[80px]">
+            <InspectorFooter bottomOffset={80}>
                 <div className="flex justify-between items-end">
                     <SectionTitle className="text-sub mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
                     <span className="font-mono text-2xl font-black text-title">{selRun.total_cost.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>

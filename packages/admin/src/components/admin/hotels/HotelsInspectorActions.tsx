@@ -1,8 +1,6 @@
 import React from 'react';
-import { Edit, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import Tooltip from '../../ui/Tooltip';
-import Button from '../../ui/button/Button';
+import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector';
 import type { HotelLocation, MeetingPoint } from '@thaiakha/shared/types';
 
 interface HotelsInspectorActionsProps {
@@ -16,6 +14,8 @@ interface HotelsInspectorActionsProps {
     onSaveMeetingPoint: () => void;
 }
 
+// Edit/Save sui primitivi inspector (task #93, B2): stesse classi pill del Button+Tooltip
+// scritto a mano prima, stessi tooltip e stesso handler (meeting point vs hotel).
 const HotelsInspectorActions: React.FC<HotelsInspectorActionsProps> = ({
     selectedHotel,
     selectedMeetingPoint,
@@ -32,35 +32,23 @@ const HotelsInspectorActions: React.FC<HotelsInspectorActionsProps> = ({
 
     if (!isEditing) {
         return (
-            <Tooltip content={selectedMeetingPoint ? t('actions.editMeetingPoint') : t('actions.editHotel')} position="left">
-                <Button
-                    type="button"
-                    onClick={() => setIsEditing(true)}
-                    variant="outline"
-                    size="md"
-                    className="h-9 px-4 text-xs font-black uppercase tracking-widest active:scale-95 transition-all"
-                    startIcon={<Edit className="w-4 h-4" />}
-                >
-                    {t('actions.edit')}
-                </Button>
-            </Tooltip>
+            <InspectorEditButton
+                tooltip={selectedMeetingPoint ? t('actions.editMeetingPoint') : t('actions.editHotel')}
+                onClick={() => setIsEditing(true)}
+            >
+                {t('actions.edit')}
+            </InspectorEditButton>
         );
     }
 
     return (
-        <Tooltip content={t('actions.saveModifications')} position="left">
-            <Button
-                type="button"
-                onClick={selectedMeetingPoint ? onSaveMeetingPoint : onSave}
-                disabled={saving}
-                variant="primary"
-                size="md"
-                className="h-9 px-4 text-xs font-black uppercase tracking-widest transition-all"
-                startIcon={<Save className="w-4 h-4" />}
-            >
-                {saving ? t('actions.saving') : t('actions.save')}
-            </Button>
-        </Tooltip>
+        <InspectorSaveButton
+            tooltip={t('actions.saveModifications')}
+            onClick={selectedMeetingPoint ? onSaveMeetingPoint : onSave}
+            disabled={saving}
+        >
+            {saving ? t('actions.saving') : t('actions.save')}
+        </InspectorSaveButton>
     );
 };
 

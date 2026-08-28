@@ -1,5 +1,5 @@
 /**
- * 🛒 MARKET SHOP - planner spese mercato (Logistics Mon/Thu · Teacher/Kitchen giornaliero).
+ * 🛒 MARKET SHOP - planner spese mercato (Logistics nei giorni di LOGISTIC_SHOP_DAYS · Teacher/Kitchen giornaliero).
  * Shell (#16 split monstre): stato e azioni in ./marketShop/useMarketShop, colonna centrale,
  * pannello bozza e modali nei componenti della stessa cartella. Qui solo la composizione.
  */

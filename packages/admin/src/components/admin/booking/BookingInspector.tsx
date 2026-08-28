@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Card from '../../ui/Card';
+import { InspectorShell, InspectorFooter } from '../../ui/inspector';
 import { PaymentStatus } from '../../../hooks/useAdminBooking';
 import SectionTitle from '../../typography/SectionTitle';
 
@@ -85,166 +86,172 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
     return (
         <div className="lg:col-span-3 space-y-6">
             <Card className="sticky top-6">
-                <Card.Content className="space-y-6">
+                {/* Primitivi inspector (#93 B10): la Shell vive dentro la Card sticky. overflow-visible
+                    annulla l'overflow-hidden di default: lo scroll resta della pagina (griglia 12 col
+                    di ManagerBooking) e l'ombra del bottone Confirm non viene tagliata. */}
+                <InspectorShell className="overflow-visible">
+                    <Card.Content className="space-y-6">
 
-                    {/* 1. Class Selection - PROMINENT */}
-                    <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                        <SectionTitle>{t('inspector.selectedClass')}</SectionTitle>
-                        <div className={cn(
-                            "p-3 rounded-lg font-black text-lg uppercase tracking-wide text-center",
-                            session === 'morning_class'
-                                ? "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30"
-                                : "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30"
-                        )}>
-                            {sessionLabel}
-                        </div>
-                    </div>
-
-                    {/* 2. Pax Count */}
-                    <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
-                        <SectionTitle>{t('inspector.numGuests')}</SectionTitle>
-                        <div className="text-3xl font-black text-title flex items-center h-10">{pax}</div>
-                    </div>
-
-                    {/* 3. Guest Details */}
-                    {guestData && (
+                        {/* 1. Class Selection - PROMINENT */}
                         <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                            <SectionTitle>{t('inspector.guestDetails')}</SectionTitle>
+                            <SectionTitle>{t('inspector.selectedClass')}</SectionTitle>
+                            <div className={cn(
+                                "p-3 rounded-lg font-black text-lg uppercase tracking-wide text-center",
+                                session === 'morning_class'
+                                    ? "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30"
+                                    : "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30"
+                            )}>
+                                {sessionLabel}
+                            </div>
+                        </div>
+
+                        {/* 2. Pax Count */}
+                        <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
+                            <SectionTitle>{t('inspector.numGuests')}</SectionTitle>
+                            <div className="text-3xl font-black text-title flex items-center h-10">{pax}</div>
+                        </div>
+
+                        {/* 3. Guest Details */}
+                        {guestData && (
+                            <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
+                                <SectionTitle>{t('inspector.guestDetails')}</SectionTitle>
+                                <div className="space-y-2 text-sm">
+                                    {guestName && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldName')}</span>
+                                            <span className="font-medium text-title">{guestName}</span>
+                                        </div>
+                                    )}
+                                    {guestData.email && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldEmail')}</span>
+                                            <span className="font-medium text-title text-xs truncate ml-2">{guestData.email}</span>
+                                        </div>
+                                    )}
+                                    {guestData.phone && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldPhone')}</span>
+                                            <span className="font-medium text-title">{guestData.phone}</span>
+                                        </div>
+                                    )}
+                                    {guestData.nationality && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldNationality')}</span>
+                                            <span className="font-medium text-title">{guestData.nationality}</span>
+                                        </div>
+                                    )}
+                                    {guestData.age && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldAge')}</span>
+                                            <span className="font-medium text-title">{guestData.age}</span>
+                                        </div>
+                                    )}
+                                    {guestData.gender && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldGender')}</span>
+                                            <span className="font-medium text-title capitalize">{guestData.gender}</span>
+                                        </div>
+                                    )}
+                                    {isWhatsapp !== undefined && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sub">{t('inspector.fieldWhatsapp')}</span>
+                                            <span className={cn("font-medium text-sm", isWhatsapp ? "text-green-600 dark:text-green-400" : "text-sub")}>
+                                                {isWhatsapp ? tc('yesNo.yes') : tc('yesNo.no')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 4. Hotel & Logistics */}
+                        <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
+                            <SectionTitle>{t('inspector.logistics')}</SectionTitle>
                             <div className="space-y-2 text-sm">
-                                {guestName && (
+                                {hotel && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldName')}</span>
-                                        <span className="font-medium text-title">{guestName}</span>
+                                        <span className="text-sub">{t('inspector.fieldHotel')}</span>
+                                        <span className="font-medium text-title">{hotel}</span>
                                     </div>
                                 )}
-                                {guestData.email && (
+                                {!hotel && meetingPoint && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldEmail')}</span>
-                                        <span className="font-medium text-title text-xs truncate ml-2">{guestData.email}</span>
+                                        <span className="text-sub">{t('inspector.fieldMeetingPoint')}</span>
+                                        <span className="font-medium text-title">{meetingPoint}</span>
                                     </div>
                                 )}
-                                {guestData.phone && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldPhone')}</span>
-                                        <span className="font-medium text-title">{guestData.phone}</span>
-                                    </div>
-                                )}
-                                {guestData.nationality && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldNationality')}</span>
-                                        <span className="font-medium text-title">{guestData.nationality}</span>
-                                    </div>
-                                )}
-                                {guestData.age && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldAge')}</span>
-                                        <span className="font-medium text-title">{guestData.age}</span>
-                                    </div>
-                                )}
-                                {guestData.gender && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldGender')}</span>
-                                        <span className="font-medium text-title capitalize">{guestData.gender}</span>
-                                    </div>
-                                )}
-                                {isWhatsapp !== undefined && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sub">{t('inspector.fieldWhatsapp')}</span>
-                                        <span className={cn("font-medium text-sm", isWhatsapp ? "text-green-600 dark:text-green-400" : "text-sub")}>
-                                            {isWhatsapp ? tc('yesNo.yes') : tc('yesNo.no')}
-                                        </span>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sub">{t('inspector.fieldLuggage')}</span>
+                                    <span className={cn("font-medium text-sm", hasLuggage ? "text-green-600 dark:text-green-400" : "text-sub")}>
+                                        {hasLuggage ? tc('yesNo.yes') : tc('yesNo.no')}
+                                    </span>
+                                </div>
+                                {notes && (
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-sub">{t('inspector.fieldNotes')}</span>
+                                        <span className="font-medium text-title text-xs text-right line-clamp-2">{notes}</span>
                                     </div>
                                 )}
                             </div>
                         </div>
-                    )}
 
-                    {/* 4. Hotel & Logistics */}
-                    <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                        <SectionTitle>{t('inspector.logistics')}</SectionTitle>
-                        <div className="space-y-2 text-sm">
-                            {hotel && (
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sub">{t('inspector.fieldHotel')}</span>
-                                    <span className="font-medium text-title">{hotel}</span>
-                                </div>
-                            )}
-                            {!hotel && meetingPoint && (
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sub">{t('inspector.fieldMeetingPoint')}</span>
-                                    <span className="font-medium text-title">{meetingPoint}</span>
-                                </div>
-                            )}
-                            <div className="flex justify-between items-center">
-                                <span className="text-sub">{t('inspector.fieldLuggage')}</span>
-                                <span className={cn("font-medium text-sm", hasLuggage ? "text-green-600 dark:text-green-400" : "text-sub")}>
-                                    {hasLuggage ? tc('yesNo.yes') : tc('yesNo.no')}
-                                </span>
+                        {/* 5. Total Amount - PROMINENT */}
+                        <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
+                            <SectionTitle>{t('inspector.totalAmount')}</SectionTitle>
+                            <div className="text-3xl font-black flex items-center gap-1 h-10">
+                                {amount !== null
+                                    ? <><span className="text-primary-600">{amount.toLocaleString()}</span><span className="text-sub text-sm">THB</span></>
+                                    : <span className="text-red-500 text-lg">⚠️ Price missing</span>
+                                }
                             </div>
-                            {notes && (
-                                <div className="flex justify-between items-start">
-                                    <span className="text-sub">{t('inspector.fieldNotes')}</span>
-                                    <span className="font-medium text-title text-xs text-right line-clamp-2">{notes}</span>
-                                </div>
-                            )}
                         </div>
-                    </div>
 
-                    {/* 5. Total Amount - PROMINENT */}
-                    <div className="pb-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center gap-4">
-                        <SectionTitle>{t('inspector.totalAmount')}</SectionTitle>
-                        <div className="text-3xl font-black flex items-center gap-1 h-10">
-                            {amount !== null
-                                ? <><span className="text-primary-600">{amount.toLocaleString()}</span><span className="text-sub text-sm">THB</span></>
-                                : <span className="text-red-500 text-lg">⚠️ Price missing</span>
-                            }
+                        {/* 6. Payment Status Toggle */}
+                        <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
+                            <SectionTitle>{t('inspector.payment')}</SectionTitle>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={() => onPaymentStatusChange('unpaid')}
+                                    className={cn(
+                                        "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center",
+                                        paymentStatus === 'unpaid'
+                                            ? "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
+                                            : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
+                                    )}
+                                >
+                                    {t('inspector.unpaid')}
+                                </button>
+                                <button
+                                    onClick={() => onPaymentStatusChange('paid')}
+                                    className={cn(
+                                        "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center gap-2",
+                                        paymentStatus === 'paid'
+                                            ? "border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400"
+                                            : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
+                                    )}
+                                >
+                                    <Check className="w-4 h-4" />
+                                    {t('inspector.paid')}
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* 6. Payment Status Toggle */}
-                    <div className="pb-6 border-b border-gray-100 dark:border-gray-800">
-                        <SectionTitle>{t('inspector.payment')}</SectionTitle>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                onClick={() => onPaymentStatusChange('unpaid')}
-                                className={cn(
-                                    "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center",
-                                    paymentStatus === 'unpaid'
-                                        ? "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
-                                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
-                                )}
-                            >
-                                {t('inspector.unpaid')}
-                            </button>
-                            <button
-                                onClick={() => onPaymentStatusChange('paid')}
-                                className={cn(
-                                    "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center gap-2",
-                                    paymentStatus === 'paid'
-                                        ? "border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400"
-                                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
-                                )}
-                            >
-                                <Check className="w-4 h-4" />
-                                {t('inspector.paid')}
-                            </button>
-                        </div>
-                    </div>
+                    </Card.Content>
 
-                </Card.Content>
-
-                {/* Confirm Button */}
-                <Card.Footer className="flex-col gap-0 pt-6">
-                    <Button
-                        variant="primary"
-                        className="w-full py-4 text-xs font-black uppercase tracking-widest shadow-lg shadow-primary-500/20"
-                        onClick={onConfirm}
-                        isLoading={loading}
-                        startIcon={<Rocket className="w-4 h-4" />}
-                    >
-                        {t('inspector.confirmBtn')}
-                    </Button>
-                </Card.Footer>
+                    {/* Confirm Button - stesse classi del vecchio Card.Footer (border-t pt-6, nessun
+                        padding ne' sfondo): le sovrascritture azzerano il chrome di default del footer */}
+                    <InspectorFooter className="p-0 pt-6 bg-transparent dark:bg-transparent space-y-0 flex flex-col gap-0 justify-end">
+                        <Button
+                            variant="primary"
+                            className="w-full py-4 text-xs font-black uppercase tracking-widest shadow-lg shadow-primary-500/20"
+                            onClick={onConfirm}
+                            isLoading={loading}
+                            startIcon={<Rocket className="w-4 h-4" />}
+                        >
+                            {t('inspector.confirmBtn')}
+                        </Button>
+                    </InspectorFooter>
+                </InspectorShell>
             </Card>
         </div>
     );

@@ -26,11 +26,17 @@ export interface InspectorBodyProps {
    * Opt-in finche' non e' verificato sui 4 Body attuali.
    */
   fill?: boolean;
+  /**
+   * Opt-in: lascia visibile la scrollbar. Di default e' nascosta (`no-scrollbar`), com'e'
+   * nella maggior parte degli inspector; il pane agency invece la mostrava, e i suoi
+   * vicini sulla stessa pagina continuano a mostrarla.
+   */
+  scrollbar?: boolean;
 }
 
 /** Scrollable body. Pass padding via className (e.g. "p-4 space-y-3") - inspectors vary. */
-export const InspectorBody: React.FC<InspectorBodyProps> = ({ className, children, fill }) => (
-  <div className={cn('flex-1 overflow-y-auto no-scrollbar', fill && 'min-h-0', className)}>{children}</div>
+export const InspectorBody: React.FC<InspectorBodyProps> = ({ className, children, fill, scrollbar }) => (
+  <div className={cn('flex-1 overflow-y-auto', !scrollbar && 'no-scrollbar', fill && 'min-h-0', className)}>{children}</div>
 );
 
 export { InspectorHeader } from './InspectorHeader';

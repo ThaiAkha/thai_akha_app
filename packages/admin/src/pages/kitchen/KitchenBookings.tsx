@@ -16,7 +16,7 @@ import {
 import { DataExplorerLayout } from '../../components/data-explorer';
 import LeaderHeader from '../../components/common/LeaderHeader';
 import DaysSidebar, { type DaySession } from '../../components/common/DaysSidebar';
-import { InspectorShell } from '../../components/ui/inspector/InspectorShell';
+import { InspectorShell, InspectorBody, InspectorEmpty, InspectorLeader } from '../../components/ui/inspector';
 import { Paragraph } from '../../components/typography';
 import { useKitchenGroups, type KitchenGroup, type KitchenParticipant } from '../../hooks/useKitchenGroups';
 
@@ -146,40 +146,45 @@ const KitchenBookings: React.FC = () => {
       inspector={
         <InspectorShell>
           {exploreGroup ? (
-            <div className="p-5 space-y-4">
-              <LeaderHeader
-                label={t('kitchen.bookingDetails', { defaultValue: 'Booking details' })}
-                leader={{
-                  name: exploreGroup.leaderName,
-                  role: exploreGroup.ownerRole,
-                  phone: exploreGroup.phone,
-                  agencyPhone: exploreGroup.ownerPhone,
-                  email: exploreGroup.ownerEmail,
-                  lineId: exploreGroup.ownerLineId,
-                  pax: exploreGroup.pax_count,
-                }}
-                emptyContactsLabel={t('kitchen.noContacts', { defaultValue: 'No contacts on file.' })}
-              />
-              <div className="flex flex-wrap gap-2">
-                {exploreGroup.status && (
-                  <span className="text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-sub px-2 py-0.5 rounded">{exploreGroup.status}</span>
-                )}
-                <PaymentBadge status={exploreGroup.paymentStatus} />
-              </div>
-              <div className="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
-                <InfoRow icon={<Users className="w-4 h-4" />} label="Pax" value={`${exploreGroup.pax_count}`} />
-                <InfoRow icon={<Hotel className="w-4 h-4" />} label="Hotel" value={exploreGroup.hotel_name || '—'} />
-                <InfoRow icon={<Clock className="w-4 h-4" />} label="Pickup" value={exploreGroup.pickup_time || '—'} />
-                <InfoRow icon={<MapPin className="w-4 h-4" />} label="Zone" value={exploreGroup.pickup_zone || exploreGroup.meeting_point || '—'} />
-              </div>
-            </div>
+            <>
+              {/* #93 B8 - il LeaderHeader esce dal corpo scrollabile. Chrome invariato: p-5,
+                  senza tinta (opt-in); il pt-4 del corpo riproduce lo space-y-4 che c'era
+                  tra header e badge. */}
+              <InspectorLeader className="p-5 pb-0">
+                <LeaderHeader
+                  label={t('kitchen.bookingDetails', { defaultValue: 'Booking details' })}
+                  leader={{
+                    name: exploreGroup.leaderName,
+                    role: exploreGroup.ownerRole,
+                    phone: exploreGroup.phone,
+                    agencyPhone: exploreGroup.ownerPhone,
+                    email: exploreGroup.ownerEmail,
+                    lineId: exploreGroup.ownerLineId,
+                    pax: exploreGroup.pax_count,
+                  }}
+                  emptyContactsLabel={t('kitchen.noContacts', { defaultValue: 'No contacts on file.' })}
+                />
+              </InspectorLeader>
+              <InspectorBody className="p-5 pt-4 space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {exploreGroup.status && (
+                    <span className="text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-sub px-2 py-0.5 rounded">{exploreGroup.status}</span>
+                  )}
+                  <PaymentBadge status={exploreGroup.paymentStatus} />
+                </div>
+                <div className="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
+                  <InfoRow icon={<Users className="w-4 h-4" />} label="Pax" value={`${exploreGroup.pax_count}`} />
+                  <InfoRow icon={<Hotel className="w-4 h-4" />} label="Hotel" value={exploreGroup.hotel_name || '—'} />
+                  <InfoRow icon={<Clock className="w-4 h-4" />} label="Pickup" value={exploreGroup.pickup_time || '—'} />
+                  <InfoRow icon={<MapPin className="w-4 h-4" />} label="Zone" value={exploreGroup.pickup_zone || exploreGroup.meeting_point || '—'} />
+                </div>
+              </InspectorBody>
+            </>
           ) : !selectedGroup ? (
-            <div className="p-6 text-sm text-sub flex flex-col items-center gap-3 text-center mt-10">
-              <MapPin className="w-8 h-8 opacity-30" />
-              {t('kitchen.pickParticipant', { defaultValue: 'Pick a participant to see their group.' })}
-            </div>
+            // opacity-30 sull'icona tenuta apposta (invariante): il contrasto e' un ticket a parte.
+            <InspectorEmpty icon={<MapPin className="w-8 h-8 opacity-30" />} hint={t('kitchen.pickParticipant', { defaultValue: 'Pick a participant to see their group.' })} />
           ) : (
-            <div className="p-5 space-y-4">
+            <InspectorBody className="p-5 space-y-4">
               <div>
                 <div className="text-xs font-black uppercase tracking-widest text-sub mb-1">{t('kitchen.groupInfo', { defaultValue: 'Group info' })}</div>
                 <div className="text-base font-black text-title">#{selectedGroup.id.slice(0, 8)}</div>
@@ -192,7 +197,7 @@ const KitchenBookings: React.FC = () => {
               <InfoRow icon={<MapPin className="w-4 h-4" />} label="Zone" value={selectedGroup.pickup_zone || selectedGroup.meeting_point || '—'} />
               <InfoRow icon={<Globe2 className="w-4 h-4" />} label="Diets" value={summariseDiets(selectedGroup)} />
               <InfoRow icon={<Flame className="w-4 h-4 text-red-500" />} label="Allergies" value={summariseAllergies(selectedGroup) || 'none'} />
-            </div>
+            </InspectorBody>
           )}
         </InspectorShell>
       }

@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { type MediaAsset } from '@thaiakha/shared';
 import MediaPinterestCard from './MediaPinterestCard';
+import MediaSection from './mediaInspector/MediaSection';
 
 interface MediaInspectorProps {
     editingAsset: MediaAsset;
@@ -66,18 +67,17 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                 </div>
             )}
 
-            {/* Pinterest-ready card — only for images (not audio assets) */}
+            {/* Pinterest-ready card - only for images (not audio assets) */}
             {editingAsset.image_url && !editingAsset.mime_type?.includes('audio') && !editingAsset.folder_path?.includes('audio') && (
                 <MediaPinterestCard asset={editingAsset} />
             )}
 
             {/* 1. CORE IDENTITY & HIERARCHY */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
-                    <Settings className="w-4 h-4 text-primary-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary-600">{t('inspector.sections.coreIdentity')}</h3>
-                </div>
-
+            <MediaSection
+                icon={<Settings className="w-4 h-4 text-primary-500" />}
+                title={t('inspector.sections.coreIdentity')}
+                titleClassName="text-primary-600"
+            >
                 <div className="flex flex-col gap-6">
                     {/* Asset ID (NEW) */}
                     <div className="space-y-1.5">
@@ -121,15 +121,14 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         </div>
                     </div>
                 </div>
-            </section>
+            </MediaSection>
 
             {/* 2. ASSET ACCESS (URL & MIME) */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
-                    <LinkIcon className="w-4 h-4 text-blue-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600">{t('inspector.sections.accessFormat')}</h3>
-                </div>
-
+            <MediaSection
+                icon={<LinkIcon className="w-4 h-4 text-blue-500" />}
+                title={t('inspector.sections.accessFormat')}
+                titleClassName="text-blue-600"
+            >
                 <div className="space-y-4">
                     <div className="space-y-1.5">
                         <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.publicUrl')}</label>
@@ -176,15 +175,14 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         </div>
                     </div>
                 </div>
-            </section>
+            </MediaSection>
 
             {/* 3. VISUAL DIMENSIONS */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
-                    <Monitor className="w-4 h-4 text-purple-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-purple-600">{t('inspector.sections.visualMetrics')}</h3>
-                </div>
-
+            <MediaSection
+                icon={<Monitor className="w-4 h-4 text-purple-500" />}
+                title={t('inspector.sections.visualMetrics')}
+                titleClassName="text-purple-600"
+            >
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                         <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.width')}</label>
@@ -207,15 +205,14 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         />
                     </div>
                 </div>
-            </section>
+            </MediaSection>
 
             {/* 4. SEO, ACCESSIBILITY & CONTENT */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
-                    <FileText className="w-4 h-4 text-emerald-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-600">{t('inspector.sections.contentSeo')}</h3>
-                </div>
-
+            <MediaSection
+                icon={<FileText className="w-4 h-4 text-emerald-500" />}
+                title={t('inspector.sections.contentSeo')}
+                titleClassName="text-emerald-600"
+            >
                 <div className="flex flex-col gap-5">
                     <div className="space-y-1.5">
                         <label className="text-xs font-black uppercase tracking-widest text-sub italic">{t('inspector.labels.displayTitle')}</label>
@@ -278,15 +275,14 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         />
                     </div>
                 </div>
-            </section>
+            </MediaSection>
 
             {/* 5. AI INTELLIGENCE */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
-                    <Zap className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-orange-600">{t('inspector.sections.aiMetadata')}</h3>
-                </div>
-
+            <MediaSection
+                icon={<Zap className="w-4 h-4 text-orange-500" />}
+                title={t('inspector.sections.aiMetadata')}
+                titleClassName="text-orange-600"
+            >
                 <div className={`p-5 rounded-2xl border transition-all duration-500 
                     ${editingAsset.is_ai_generated ? 'bg-orange-500/5 border-orange-500/20 shadow-glow-orange/5' : 'bg-gray-50 dark:bg-gray-800/50 border-transparent opacity-60'}`}
                 >
@@ -318,15 +314,15 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                             </div>
                     )}
                 </div>
-            </section>
+            </MediaSection>
 
             {/* 6. STATIC SYSTEM PROPERTIES (Read-Only) */}
-            <section className="space-y-6 opacity-80 group">
-                <div className="flex items-center gap-2 mb-2 p-1 border-b border-gray-100 dark:border-gray-800">
-                    <Database className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-sub group-hover:text-primary-600">{t('inspector.sections.systemProperties')}</h3>
-                </div>
-
+            <MediaSection
+                icon={<Database className="w-4 h-4 text-gray-400 group-hover:text-primary-500" />}
+                title={t('inspector.sections.systemProperties')}
+                titleClassName="text-sub group-hover:text-primary-600"
+                className="opacity-80 group"
+            >
                 <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-white/5 space-y-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 text-sub">
@@ -360,9 +356,11 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         <span className="text-xs font-bold text-sub">{editingAsset.updated_at ? new Date(editingAsset.updated_at).toLocaleString() : 'Just now'}</span>
                     </div>
                 </div>
-            </section>
+            </MediaSection>
 
-            {/* Dangerous Zone */}
+            {/* Dangerous Zone - resta a 1 step e con il suo chrome rosso: useAdminMedia.handleDelete
+                apre gia' window.confirm, quindi InspectorDeleteZone (2 step) confermerebbe due volte.
+                Adozione = cambio visibile, ticket a parte (task #93, B4). */}
             {!isNew && (
                 <div className="pt-10">
                     <button 

@@ -6,15 +6,17 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import Label from '../../../components/form/Label';
 import Button from '../../../components/ui/button/Button';
 import { Heading, Caption, SectionTitle } from '../../../components/typography';
+import { InspectorShell, InspectorBody } from '../../../components/ui/inspector';
 import { MapPin, Clock, Phone, Printer, Save, Edit, MoreHorizontal } from 'lucide-react';
 import { getDisplayId, type AgencyBooking } from './types';
 import type { AgencyReservationsState } from './useAgencyReservations';
 
 export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) {
     const { t, setSelectedBookingId, isEditing, setIsEditing, editForm, setEditForm, isSaving, activeBooking, handleSave } = s;
-    // 3. RIGHT PANE (Inspector) - Grid Col 3
+    // 3. RIGHT PANE (Inspector) - Grid Col 3. Shell = card (grid item: il flex-1 del primitivo e' inerte),
+    // header tenuto verbatim (gerarchia invertita rispetto a InspectorHeader), Body = scroll owner.
     return (
-        <div className="lg:col-span-3 flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
+        <InspectorShell className="lg:col-span-3 h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center h-[73px] bg-gray-50/50 dark:bg-gray-800/50">
                 <div>
                     <Heading level="h4" className="text-lg text-body uppercase tracking-tighter leading-7">{t('agency.inspectorTitle')}</Heading>
@@ -27,7 +29,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                 )}
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
+            <InspectorBody scrollbar className="p-4">
                 {activeBooking ? (
                     <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                         {/* Actions */}
@@ -150,7 +152,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                         <Caption className="font-black uppercase tracking-widest leading-4">{t('agency.inspectorIdleMsg')}</Caption>
                     </div>
                 )}
-            </div>
-        </div>
+            </InspectorBody>
+        </InspectorShell>
     );
 }

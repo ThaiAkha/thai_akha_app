@@ -57,7 +57,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
                     </div>
                     <Heading level="h3" className="font-black italic uppercase tracking-normal leading-8">{t('tabs.logistics')}</Heading>
                   </div>
-                  {/* One shared list per shop day (Mon/Thu): edit it if it exists, otherwise create it. */}
+                  {/* One shared list per shop day (vedi LOGISTIC_SHOP_DAYS in useMarketShop): edit it if it exists, otherwise create it. */}
                   {(() => {
                     const targetDate = nextLogisticShopDate();
                     const existing = history.find(r => r.shopper_role === 'logistics' && r.run_date === toISODate(targetDate)) || null;

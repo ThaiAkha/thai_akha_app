@@ -7,7 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/button/Button';
 import { Caption, SectionTitle } from '../../../../components/typography';
-import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector/InspectorShell';
+import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector';
 import { SegmentedToggle, ReportStatusBadge, ReportListCard, ReportLineRow } from '../../../../components/reports';
 import { Briefcase, Printer, Download, Banknote, X, CalendarRange, ChevronRight, Search, FileText } from 'lucide-react';
 import { SESSION_LABEL, cap, type DriverView } from '../shared';
@@ -216,7 +216,7 @@ export const AgencyInspector: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
                     ))}
                 </InspectorBody>
             )}
-            <InspectorFooter className="pb-[80px]">
+            <InspectorFooter bottomOffset={80}>
                 <div className="space-y-1 mb-1">
                     <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.gross', { defaultValue: 'Gross' })}</span><span className="font-mono font-bold text-body">{selTotals.gross.toLocaleString()}</span></div>
                     <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.commission', { defaultValue: 'Commission' })}</span><span className="font-mono font-bold text-amber-600 dark:text-amber-400">− {selTotals.commission.toLocaleString()}</span></div>

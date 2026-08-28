@@ -14,6 +14,17 @@ import {
   type LibraryItem, type MarketRun, type TabType, type ViewMode,
 } from './types';
 
+/**
+ * Giorni di spesa logistics, in numerazione JS (0 = domenica): **1 = lunedi', 5 = venerdi'**.
+ * Fonte UNICA: chi cambia il calendario tocca questa riga e nient'altro nel codice.
+ * Cambiato il 2026-08-28 da lunedi'+giovedi' a lunedi'+venerdi' (decisione owner).
+ *
+ * ⚠️ La stessa informazione compare anche in `home_cards_translations` (card 26, EN):
+ * il testo che il logistics legge nell'app. Se un giorno riappare li' un nome di giorno,
+ * torna a essere una seconda fonte che diverge in silenzio.
+ */
+const LOGISTIC_SHOP_DAYS: readonly number[] = [1, 5];
+
 export function useMarketShop() {
   const { t } = useTranslation('market');
   const { user } = useAuth();
@@ -103,22 +114,26 @@ export function useMarketShop() {
     setIsCalendarModalOpen(false);
   };
 
-  // Logistics shops Monday & Thursday morning only. No date picker: the target is
-  // today if today is a shopping day, otherwise the next Mon/Thu.
-  // Shop days = Monday (1) and Thursday (4). The next shop day is today if today is
-  // a shop day, otherwise the nearest upcoming one. A day whose logistic list is
-  // already CONFIRMED/locked (approved/completed/expensed) is "done" → roll forward
-  // to the next shop day (so confirming Thu's list and starting again targets Mon).
+  // I giorni di spesa logistics vivono QUI e in nessun altro posto (LOGISTIC_SHOP_DAYS,
+  // in cima al file). Prima erano scritti sei volte fra commenti e codice: il 2026-08-28,
+  // spostando il giro dal giovedi al venerdi, ne sarebbero rimasti indietro cinque.
+  // Non c'e' date picker: la lista punta a oggi se oggi e' un giorno di spesa, altrimenti
+  // al prossimo. Un giorno gia' CONFERMATO (approved/completed/expensed) e' "fatto" e si
+  // rotola al successivo.
+  //
+  // ⚠️ Conseguenza da conoscere: `run_date` e' il giorno PIANIFICATO, non il giorno in cui
+  // i soldi sono usciti. Chi fa la spesa fuori calendario se la vede registrata sul
+  // prossimo giorno utile - e' cosi' che il 28/08 una spesa da 2.146 THB e' finita sul 31.
   const LOGISTIC_LOCKED = new Set(['approved', 'completed', 'expensed']);
   const nextShopDayAfter = (d: Date): Date => {
     const dow = d.getDay();
-    const diff = Math.min(...[1, 4].map(tt => ((tt - dow + 7) % 7) || 7));
+    const diff = Math.min(...LOGISTIC_SHOP_DAYS.map(tt => ((tt - dow + 7) % 7) || 7));
     const n = new Date(d); n.setDate(d.getDate() + diff); return n;
   };
   const nextLogisticShopDate = (): Date => {
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const dow = today.getDay();
-    let candidate = (dow === 1 || dow === 4) ? new Date(today) : nextShopDayAfter(today);
+    let candidate = LOGISTIC_SHOP_DAYS.includes(dow) ? new Date(today) : nextShopDayAfter(today);
     for (let i = 0; i < 8; i++) {
       const run = history.find(r => r.shopper_role === 'logistics' && r.run_date === toISODate(candidate));
       if (!run || !LOGISTIC_LOCKED.has(run.status)) break; // available (free or editable draft)

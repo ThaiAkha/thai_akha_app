@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector/InspectorActionButtons';
+import { InspectorEditButton, InspectorSaveButton } from '../../ui/inspector';
 import type { ManagerBooking } from '../../../hooks/useManagerReservation';
 
 interface ReservationInspectorActionsProps {
@@ -18,13 +18,15 @@ const ReservationInspectorActions: React.FC<ReservationInspectorActionsProps> = 
     isSaving,
     selectedBooking
 }) => {
-    const { t } = useTranslation('reservation');
+    const { t } = useTranslation(['reservation', 'common']);
     if (!selectedBooking || !selectedBooking.internal_id) return null;
 
     if (!isEditing) {
+        // Era il literal "EDIT": in EN il testo resta identico (common actions.edit = "EDIT",
+        // e il pill applica comunque `uppercase`); nelle altre lingue ora segue il locale.
         return (
             <InspectorEditButton tooltip={t('actions.tooltipEdit')} onClick={handleEditStart}>
-                EDIT
+                {t('common:actions.edit')}
             </InspectorEditButton>
         );
     }

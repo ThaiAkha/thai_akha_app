@@ -6,6 +6,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
 import Card from '../../ui/Card';
+import { InspectorShell, InspectorBody, InspectorFooter } from '../../ui/inspector';
 import { DayData, EditSessionState, BulkSessionType } from '../../../hooks/useAdminCalendar';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 
@@ -52,7 +53,10 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
 
     return (
         <Card className="hidden lg:flex lg:col-span-3 flex-col h-full overflow-hidden !p-0">
-            <div className="flex flex-col h-full overflow-hidden p-6 gap-6">
+            {/* Primitivi inspector (#93 B10): la Card resta il wrapper hidden lg:flex, la Shell
+                prende il posto del div interno (h-full p-6 gap-6 invariati); l'header e' proprio
+                (h3 + sottotitolo, non mappabile sull'InspectorHeader a altezza fissa). */}
+            <InspectorShell className="h-full p-6 gap-6">
                 <div className="shrink-0">
                     <h3 className="text-xl font-black text-title leading-tight">
                         {isBulkMode ? t('inspector.bulkDays', { count: selectedDates.size }) : formatDateByLanguage(selectedDate!, i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -63,7 +67,8 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                             : (isEditing ? t('inspector.editingDay') : t('inspector.quickPreview'))}
                     </p>
                 </div>
-                <div className="flex-1 flex flex-col min-h-0 overflow-y-auto pr-1">
+                {/* fill = min-h-0, flex flex-col come prima: i rami view/edit sono figli flex-1 */}
+                <InspectorBody fill className="flex flex-col pr-1">
                     {!isEditing && !isBulkMode ? (
                         <div className="flex-1 flex flex-col gap-4 animate-in fade-in slide-in-from-right-4">
                             {['morning_class', 'evening_class'].map(s => {
@@ -180,7 +185,10 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                     );
                                 });
                             })()}
-                            <div className="space-y-4 pt-6 sticky bottom-0 bg-white dark:bg-gray-900 z-30 border-t border-gray-100 dark:border-gray-800">
+                            {/* Footer solo in edit: resta DENTRO l'area scrollabile (sticky) come prima,
+                                cosi' con poco contenuto siede sotto i campi e con molto si incolla in basso.
+                                Le classi sovrascrivono il chrome di default (p-4, sfondo grigio). */}
+                            <InspectorFooter sticky className="p-0 pt-6 bg-white dark:bg-gray-900 z-30">
                                 <Button
                                     variant="primary"
                                     className="w-full py-4 text-sm font-black tracking-widest uppercase"
@@ -196,11 +204,11 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                 >
                                     {t('inspector.cancel')}
                                 </Button>
-                            </div>
+                            </InspectorFooter>
                         </div>
                     )}
-                </div>
-            </div>
+                </InspectorBody>
+            </InspectorShell>
         </Card>
     );
 };

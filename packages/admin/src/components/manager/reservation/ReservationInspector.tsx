@@ -6,6 +6,7 @@ import { Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatDateByLanguage } from '../../../lib/dateFormatter';
 import LeaderHeader from '../../common/LeaderHeader';
+import { InspectorShell, InspectorBody, InspectorLeader, InspectorEmpty } from '../../ui/inspector';
 import type { ManagerBooking, ManagerBookingEditData } from '../../../hooks/useManagerReservation';
 
 /** has_luggage non e' nella select del hook ma viene letto per il badge (legacy). */
@@ -18,8 +19,15 @@ interface ReservationInspectorProps {
     onEditChange: (data: ManagerBookingEditData | null) => void;
 }
 
+/** Tile dell'icona nello stato vuoto: era il div scritto a mano, ora passa da InspectorEmpty. */
+const EMPTY_ICON_TILE = 'size-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center text-sub shadow-sm border border-gray-100 dark:border-gray-700';
 
-
+/**
+ * Pannello destro di ManagerReservation (task #93, B6): sui primitivi `ui/inspector`.
+ * Il LeaderHeader esce dal corpo scrollabile e vive in InspectorLeader (pb-0: il gap
+ * di 24px verso i campi lo da' il p-6 del corpo, come lo space-y-6 di prima); il corpo
+ * scrolla da solo. Nessun footer: le azioni restano nell'header dell'host.
+ */
 const ReservationInspector: React.FC<ReservationInspectorProps> = ({
     selectedBooking,
     isEditing,
@@ -34,13 +42,12 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
 
     if (!selectedBooking) {
         return (
-            <div className="h-full flex flex-col items-center justify-center p-8 text-center">
-                <div className="size-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center mb-4 text-sub shadow-sm border border-gray-100 dark:border-gray-700">
-                    <Users className="w-8 h-8" />
-                </div>
-                <h5 className="text-sub font-bold uppercase tracking-widest text-xs">{t('inspector.noSelection')}</h5>
-                <p className="text-sub text-xs mt-2 max-w-[200px]">{t('inspector.noSelHint')}</p>
-            </div>
+            <InspectorEmpty
+                icon={<Users className="w-8 h-8" />}
+                iconClassName={EMPTY_ICON_TILE}
+                title={t('inspector.noSelection')}
+                hint={t('inspector.noSelHint')}
+            />
         );
     }
 
@@ -49,10 +56,9 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
     const leaderEmail = b.guest_email || b.profiles?.email || '';
 
     return (
-        <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500 overflow-hidden">
-            {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
-                {/* Header leader gruppo — avatar, nome, contatti (componente unificato) */}
+        <InspectorShell className="animate-in fade-in slide-in-from-right-4 duration-500">
+            {/* Header leader gruppo - avatar, nome, contatti (componente unificato) */}
+            <InspectorLeader className="pb-0">
                 <LeaderHeader
                     label={t('inspector.groupLeader', { defaultValue: 'Group leader' })}
                     leader={{
@@ -65,6 +71,9 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
                         luggage: b.has_luggage ?? undefined,
                     }}
                 />
+            </InspectorLeader>
+            {/* Content Area */}
+            <InspectorBody className="p-6 space-y-6">
                 {isEditing && editData ? (
                     <div className="space-y-4">
                         {/* Participants */}
@@ -181,8 +190,8 @@ const ReservationInspector: React.FC<ReservationInspectorProps> = ({
                         />
                     </div>
                 )}
-            </div>
-        </div>
+            </InspectorBody>
+        </InspectorShell>
     );
 };
 

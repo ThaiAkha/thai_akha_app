@@ -1,8 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
-import Button from '../ui/button/Button';
-import Tooltip from '../ui/Tooltip';
+import { InspectorShell, InspectorHeader, InspectorBody } from '../ui/inspector';
 
 import SectionHeader from '../ui/SectionHeader';
 
@@ -15,6 +13,14 @@ interface DataExplorerInspectorProps {
     isEditing?: boolean;
 }
 
+/**
+ * Adapter sui primitivi `ui/inspector` (task #93, B1): stesse props e stesso DOM di prima
+ * per le 8 pagine host (Storage, Inventory, Media, Hotels, Database, News, Logistic,
+ * Reservation). Il titolo passa dallo slot `heading` (SectionHeader variant="title",
+ * non lo span dell'header nudo); `isEditing` attiva il close ricco (Button 36px +
+ * Tooltip, rosso in edit); `closeTooltip` resta undefined cosi' il testo del tooltip
+ * viene dall'header (explorer.close / explorer.closeCancel, ns dashboard) come oggi.
+ */
 const DataExplorerInspector: React.FC<DataExplorerInspectorProps> = ({
     title,
     headerActions,
@@ -26,36 +32,18 @@ const DataExplorerInspector: React.FC<DataExplorerInspectorProps> = ({
     const { t } = useTranslation('dashboard');
 
     return (
-        <div className={`flex-1 flex flex-col overflow-hidden ${className}`}>
-            {/* Header */}
-            <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50 shrink-0 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <SectionHeader title={title ?? t('explorer.details')} variant="title" className="text-body" />
-                </div>
-                <div className="flex items-center gap-2">
-                    {headerActions}
-                    <Tooltip content={isEditing ? t('explorer.closeCancel') : t('explorer.close')} position="left">
-                        <Button
-                            type="button"
-                            onClick={onClose}
-                            variant="outline"
-                            size="icon"
-                            className={`h-9 w-9 p-0 shadow-sm transition-all active:scale-95 flex items-center justify-center ${isEditing
-                                ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/40"
-                                : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                                }`}
-                        >
-                            <X className={`w-5 h-5 ${isEditing ? "text-red-600" : "text-sub"}`} />
-                        </Button>
-                    </Tooltip>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto no-scrollbar min-h-0">
+        <InspectorShell className={className}>
+            <InspectorHeader
+                heading={<SectionHeader title={title ?? t('explorer.details')} variant="title" className="text-body" />}
+                actions={headerActions}
+                onClose={onClose}
+                isEditing={isEditing}
+                shadow
+            />
+            <InspectorBody fill>
                 {children}
-            </div>
-        </div>
+            </InspectorBody>
+        </InspectorShell>
     );
 };
 

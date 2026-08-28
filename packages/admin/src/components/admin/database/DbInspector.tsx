@@ -1,7 +1,6 @@
-import { Trash2 } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
-import Button from '../../../components/ui/button/Button';
+import { InspectorDeleteZone } from '../../ui/inspector';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { READ_ONLY_COLUMNS } from '../../../hooks/useAdminDatabase';
 
@@ -10,24 +9,30 @@ interface DbInspectorProps {
     onRowChange: (row: Record<string, unknown>) => void;
     allColumns: string[];
     isEditing: boolean;
-    showDeleteConfirm: boolean;
-    onShowDeleteConfirm: (show: boolean) => void;
+    /**
+     * Ignorate da #93 B3: lo stato del 2-step (DELETE -> CONFIRM / CANCEL) vive dentro
+     * InspectorDeleteZone. Restano nel tipo perche' AdminDatabase le passa ancora.
+     */
+    showDeleteConfirm?: boolean;
+    onShowDeleteConfirm?: (show: boolean) => void;
     onDelete: () => void;
 }
 
+/**
+ * Corpo dell'inspector Database: vive dentro il Body di DataExplorerInspector, che e'
+ * l'unico proprietario dello scroll (#93 B3). Niente contenitore scrollabile annidato.
+ */
 const DbInspector: React.FC<DbInspectorProps> = ({
     selectedRow,
     onRowChange,
     allColumns,
     isEditing,
-    showDeleteConfirm,
-    onShowDeleteConfirm,
     onDelete
 }) => {
     if (!selectedRow) return null;
 
     return (
-        <div className="flex-1 overflow-auto no-scrollbar">
+        <>
             {/* Form Content - 2 COLUMNS GRID */}
             <div className="px-6 py-6 bg-gray-50/10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -85,46 +90,22 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                 </div>
             </div>
 
-            {/* Delete Zone */}
+            {/* Delete Zone: etichette EN letterali come prima (le chiavi common esistono, adottarle e' una scelta i18n a parte) */}
             {isEditing && (
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/20 shrink-0">
-                    {Boolean(selectedRow.id || selectedRow.internal_id) && (
-                        <div className="flex flex-col gap-2 max-w-sm mx-auto">
-                            {!showDeleteConfirm ? (
-                                <Button
-                                    type="button"
-                                    variant="olive"
-                                    size="md"
-                                    className="w-full justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
-                                    startIcon={<Trash2 className="w-5 h-5 text-white" />}
-                                    onClick={() => onShowDeleteConfirm(true)}
-                                >
-                                    DELETE RECORD
-                                </Button>
-                            ) : (
-                                <div className="flex gap-3">
-                                    <Button
-                                        type="button"
-                                        className="flex-1 justify-center h-11 text-xs font-black border-none uppercase tracking-widest animate-in fade-in slide-in-from-bottom-1 shadow-lg shadow-red-500/20"
-                                        onClick={onDelete}
-                                    >
-                                        CONFIRM
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="flex-1 justify-center h-11 text-xs font-black text-sub uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
-                                        onClick={() => onShowDeleteConfirm(false)}
-                                    >
-                                        CANCEL
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
+                (selectedRow.id || selectedRow.internal_id) ? (
+                    <InspectorDeleteZone
+                        onDelete={onDelete}
+                        label="DELETE RECORD"
+                        confirmLabel="CONFIRM"
+                        cancelLabel="CANCEL"
+                    />
+                ) : (
+                    // Riga nuova senza chiave: il chrome del footer restava vuoto sotto il form.
+                    // Tenuto per invarianza; toglierlo e' una modifica visibile da decidere a parte.
+                    <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/20 shrink-0" />
+                )
             )}
-        </div>
+        </>
     );
 };
 

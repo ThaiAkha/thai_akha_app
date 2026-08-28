@@ -8,7 +8,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import SelectField from '../../../../components/form/input/SelectField';
 import Button from '../../../../components/ui/button/Button';
 import { SectionTitle } from '../../../../components/typography';
-import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector/InspectorShell';
+import { InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../../../components/ui/inspector';
 import { ReportStatusBadge, ReportListCard, ReportLineRow } from '../../../../components/reports';
 import { Printer, Download, Banknote, History, Archive, Sunrise, Sunset, Check, X } from 'lucide-react';
 import { SESSION_LABEL, fmtRange, type DriverView } from '../shared';
@@ -161,7 +161,7 @@ export const DriverInspector: React.FC<{ d: DriverReportsState }> = ({ d }) => {
                     );
                 })}
             </InspectorBody>
-            <InspectorFooter className="pb-[80px]">
+            <InspectorFooter bottomOffset={80}>
                 <div className="flex justify-between items-end">
                     <SectionTitle className="text-sub mb-0">{t('driverPayouts.total', { defaultValue: 'Total' })}</SectionTitle>
                     <span className="font-mono text-2xl font-black text-title">{week.total.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>

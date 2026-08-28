@@ -1,11 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-    Edit3,
-    Check,
-    X,
-    Loader2
-} from 'lucide-react';
+import { InspectorCancelButton, InspectorEditButton, InspectorSaveButton } from '../../ui/inspector';
 
 interface MediaInspectorActionsProps {
     isEditing: boolean;
@@ -14,53 +9,50 @@ interface MediaInspectorActionsProps {
     isSaving: boolean;
 }
 
+/**
+ * Azioni dell'inspector media sui primitivi inspector (task #93, B2). Le etichette restano
+ * quelle del namespace media (editProperties / deploy / syncing); i tooltip vengono dalle
+ * chiavi common gia' esistenti. Il Cancel resta solo-icona (X) come prima: l'etichetta
+ * e' sr-only. Lo slot azioni dell'header e' content-sized, quindi `w-full` risolve alla
+ * larghezza del contenuto esattamente come faceva il <button> scritto a mano.
+ */
 const MediaInspectorActions: React.FC<MediaInspectorActionsProps> = ({
     isEditing,
     setIsEditing,
     handleSave,
     isSaving,
 }) => {
-    const { t } = useTranslation('media');
+    const { t } = useTranslation(['media', 'common']);
 
     if (isEditing) {
         return (
             <div className="flex items-center gap-3">
-                <button
+                <InspectorCancelButton
+                    tooltip={t('common:actions.cancel')}
                     onClick={() => setIsEditing(false)}
                     disabled={isSaving}
-                    className="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-white/5 text-sub hover:bg-gray-100 dark:hover:bg-white/10 transition-all shadow-lg active:scale-95 disabled:opacity-50"
                 >
-                    <X size={16} />
-                </button>
-                <button
+                    <span className="sr-only">{t('common:actions.cancel')}</span>
+                </InspectorCancelButton>
+                <InspectorSaveButton
+                    tooltip={t('common:actions.saveChanges')}
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 flex items-center justify-center gap-2 p-3 px-6 rounded-xl bg-primary-500 text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-primary-500/20 hover:bg-primary-600 active:scale-[0.98] disabled:opacity-50"
                 >
-                    {isSaving ? (
-                        <>
-                            <Loader2 size={14} className="animate-spin" />
-                            {t('actions.syncing')}
-                        </>
-                    ) : (
-                        <>
-                            <Check size={14} />
-                            {t('actions.deploy')}
-                        </>
-                    )}
-                </button>
+                    {isSaving ? t('actions.syncing') : t('actions.deploy')}
+                </InspectorSaveButton>
             </div>
         );
     }
 
     return (
-        <button
+        <InspectorEditButton
+            tooltip={t('common:actions.editFileMetadata')}
             onClick={() => setIsEditing(true)}
-            className="w-full flex items-center justify-center gap-3 p-3 px-6 rounded-xl bg-surface dark:bg-gray-800 border border-border text-title font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:shadow-primary-500/10 hover:border-primary-500/50 active:scale-[0.98]"
+            className="w-full"
         >
-            <Edit3 size={14} className="text-primary-500" />
             {t('actions.editProperties')}
-        </button>
+        </InspectorEditButton>
     );
 };
 

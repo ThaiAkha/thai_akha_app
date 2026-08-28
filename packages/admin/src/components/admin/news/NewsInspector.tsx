@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import Input from '../../../components/form/input/InputField';
-import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
+import { InspectorDeleteZone } from '../../ui/inspector';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { NEWS_READ_ONLY_COLUMNS } from '../../../hooks/useAdminNews';
 import { categorizeField, type FieldCategory } from './newsFieldUtils';
@@ -13,18 +13,24 @@ interface NewsInspectorProps {
     onRowChange: (row: Record<string, unknown>) => void;
     allColumns: string[];
     isEditing: boolean;
-    showDeleteConfirm: boolean;
-    onShowDeleteConfirm: (show: boolean) => void;
+    /**
+     * Ignorate da #93 B3: lo stato del 2-step (DELETE -> CONFIRM / CANCEL) vive dentro
+     * InspectorDeleteZone. Restano nel tipo perche' AdminNews le passa ancora.
+     */
+    showDeleteConfirm?: boolean;
+    onShowDeleteConfirm?: (show: boolean) => void;
     onDelete: () => void;
 }
 
+/**
+ * Corpo dell'inspector News: vive dentro il Body di DataExplorerInspector, che e'
+ * l'unico proprietario dello scroll (#93 B3). Niente contenitore scrollabile annidato.
+ */
 const NewsInspector: React.FC<NewsInspectorProps> = ({
     selectedRow,
     onRowChange,
     allColumns,
     isEditing,
-    showDeleteConfirm,
-    onShowDeleteConfirm,
     onDelete,
 }) => {
     const [systemExpanded, setSystemExpanded] = useState(false);
@@ -150,7 +156,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
     };
 
     return (
-        <div className="flex-1 overflow-auto no-scrollbar">
+        <>
             <div className="px-6 py-6 space-y-8">
 
                 {/* COVER IMAGES */}
@@ -236,44 +242,18 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
 
             </div>
 
-            {/* DELETE ZONE */}
+            {/* DELETE ZONE: etichette EN letterali come prima (le chiavi common esistono, adottarle e' una scelta i18n a parte) */}
             {isEditing && Boolean(selectedRow.id || selectedRow.internal_id) && (
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/20">
-                    <div className="flex flex-col gap-2">
-                        {!showDeleteConfirm ? (
-                            <Button
-                                type="button"
-                                variant="olive"
-                                size="md"
-                                className="w-full justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
-                                startIcon={<Trash2 className="w-5 h-5 text-white" />}
-                                onClick={() => onShowDeleteConfirm(true)}
-                            >
-                                DELETE RECORD
-                            </Button>
-                        ) : (
-                            <div className="flex gap-3">
-                                <Button
-                                    type="button"
-                                    className="flex-1 justify-center h-11 text-xs font-black border-none uppercase tracking-widest shadow-lg shadow-red-500/20"
-                                    onClick={onDelete}
-                                >
-                                    CONFIRM
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="flex-1 justify-center h-11 text-xs font-black text-sub uppercase tracking-widest border-gray-200 dark:border-gray-700 bg-white"
-                                    onClick={() => onShowDeleteConfirm(false)}
-                                >
-                                    CANCEL
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <InspectorDeleteZone
+                    onDelete={onDelete}
+                    label="DELETE RECORD"
+                    confirmLabel="CONFIRM"
+                    cancelLabel="CANCEL"
+                    contentClassName="flex flex-col gap-2"
+                    animate={false}
+                />
             )}
-        </div>
+        </>
     );
 };
 

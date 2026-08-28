@@ -223,7 +223,7 @@ const AgencyReports: React.FC = () => {
 
                         <div className="flex-1 space-y-3">
                             {invoices.length === 0 ? (
-                                <div className="py-10 text-center text-[10px] font-black uppercase text-sub">{t('agencyReport.noInvoices', { defaultValue: 'No invoices yet.' })}</div>
+                                <div className="py-10 text-center text-xs font-black uppercase text-sub">{t('agencyReport.noInvoices', { defaultValue: 'No invoices yet.' })}</div>
                             ) : invoices.map((inv) => {
                                 const badge = STATUS_BADGE[inv.status];
                                 const selectable = inv.status === 'unpaid';
@@ -240,7 +240,7 @@ const AgencyReports: React.FC = () => {
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="text-xs font-black uppercase text-title truncate">{inv.zoho_invoice_number || t('agencyReport.invoice', { defaultValue: 'Invoice' })}</div>
-                                                <div className="text-[10px] font-bold text-sub">฿{Number(inv.amount).toLocaleString()} · {inv.booking_ids?.length || 0} bk</div>
+                                                <div className="text-xs font-bold text-sub">฿{Number(inv.amount).toLocaleString()} · {inv.booking_ids?.length || 0} bk</div>
                                             </div>
                                         </div>
                                         <Badge variant="light" color={badge.color} size="sm">{badge.label}</Badge>
@@ -261,7 +261,7 @@ const AgencyReports: React.FC = () => {
                                     className="w-full bg-primary-600 text-white h-12 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:scale-100">
                                     {busy ? t('agencyReport.sending', { defaultValue: 'Sending…' }) : `${t('agencyReport.markPaid', { defaultValue: 'Mark as paid' })} (${selectedInv.length})`}
                                 </button>
-                                <Caption className="text-center text-[10px] font-bold leading-normal">{t('agencyReport.payHint', { defaultValue: 'The manager confirms receipt before the invoice is closed.' })}</Caption>
+                                <Caption className="text-center font-bold leading-normal">{t('agencyReport.payHint', { defaultValue: 'The manager confirms receipt before the invoice is closed.' })}</Caption>
                             </div>
                         )}
                     </div>

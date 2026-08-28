@@ -37,22 +37,27 @@ const Badge: React.FC<BadgeProps> = ({
     md: "text-sm", // Default padding and font size
   };
 
-  // Contrasto (palette Tailwind 4.2.1 oklch, misurato sulle superfici REALI: pagina
-  // light #E6ECEC e card bianca; pagina dark #121311 e card #222827). Il token di stato
-  // puro sulla propria tinta al 10% non e' leggibile (2.0-3.3). Con testo -700 passava
-  // solo sulla card (success 4.54) e falliva sulla pagina (3.85): quindi -800 in light
-  // (5.5-6.2 ovunque) e -300 in dark (5.1-8.2; -400 dava 3.41 sull'info). Neutro:
-  // gray-700 su gray-100 = 4.34, gray-800 = 5.93. Solid: bianco su -700 = 4.9-8.1.
+  // Il testo di stato passa dalle classi semantiche (text-success / text-error /
+  // text-warning), che si adattano al tema; i fondi restano le tinte sys, che sono
+  // superfici e hanno regola propria. Contrasto misurato sul caso peggiore fra pagina
+  // (#F6FCFC light, #121311 dark) e card (#FFFFFF, #222827), palette Tailwind 4.2.1:
+  // light success 4.38 pagina / 4.54 card, warning 4.52 / 4.65, error 5.45 / 5.62;
+  // dark success 6.41 e warning 6.55 sulla card. L'error in dark scendeva a 4.49 con
+  // la tinta al 15 per cento: red-400 e' la piu' scura delle quattro tinte dark e non
+  // se lo puo' permettere, quindi la sua riga resta al 10 anche in dark (4.73). E' una
+  // asimmetria voluta. Resta aperta una riga: success in light sulla pagina e' 4.38,
+  // sotto AA per un soffio, e la tinta e' gia' al minimo - va risolto sul token, non qui.
+  // Neutro: gray-700 su gray-100 = 4.34, gray-800 = 5.93. Solid: bianco su -700 = 4.9-8.1.
   const variants = {
     light: {
       primary:
         "bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300",
       success:
-        "bg-sys-success/10 text-green-800 dark:bg-sys-success/15 dark:text-green-300",
+        "bg-sys-success/10 text-success dark:bg-sys-success/15",
       error:
-        "bg-sys-error/10 text-red-800 dark:bg-sys-error/15 dark:text-red-300",
+        "bg-sys-error/10 text-error",
       warning:
-        "bg-sys-warning/10 text-amber-800 dark:bg-sys-warning/15 dark:text-orange-300",
+        "bg-sys-warning/10 text-warning dark:bg-sys-warning/15",
       info: "bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300",
       light: "bg-gray-100 text-gray-800 dark:bg-white/5 dark:text-white/80",
       dark: "bg-gray-500 text-white dark:bg-white/5 dark:text-white",

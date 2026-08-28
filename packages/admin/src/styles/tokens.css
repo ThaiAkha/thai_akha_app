@@ -29,6 +29,33 @@
                              che passi anche AA: questo e' il gradino dichiarato come large-only. */
 
   /* ========================================================================
+     🚦 TESTO DI STATO - success / warning / error / info
+     ========================================================================
+     Stessa logica del testo semantico, stessa ragione: la tonalita' che passa
+     AA in light fallisce in dark e viceversa (red-600 = 4.76 light ma 3.15 dark;
+     red-400 = 2.89 light ma 5.18 dark). Un token unico non puo' servire due temi:
+     qui light usa le -700, dark le -400, e la classe si adatta da sola.
+     Contrasto sul caso peggiore fra pagina e card, palette Tailwind 4.2.1 oklch. */
+  --state-success: #016630;  /* green-800 · 6.84 AA. Era green-700 #008236 = 4.77: passava
+                                sul fondo pagina ma NON sulla propria tinta (4.39), e il
+                                verde di stato sta quasi sempre su bg-sys-success/10.
+                                Con green-800 la tinta da' 6.30. Un token, nove punti. */
+  --state-warning: #BB4D00;  /* amber-700 · 4.87 AA */
+  --state-error:   #C10007;  /* red-700   · 6.19 AA */
+  --state-info:    #1447E6;  /* blue-700  · 6.58 AA */
+
+  /* ========================================================================
+     🟠 ACCENTO DI MARCA - selezione, hover, stato attivo
+     ========================================================================
+     NON e' uno stato: vive sulla rampa btn-p (l'arancio della dashboard), non su
+     --state-warning. Ha bisogno di una coppia propria per due ragioni: sta accanto
+     a fondi e bordi che restano orange- (bg-orange-500, border-orange-200) e deve
+     restare nella stessa famiglia; e orange-500 in light da' 2.78 sulla pagina,
+     sotto la soglia 3.0 degli oggetti grafici, quindi non si poteva lasciare com'era.
+     Light 5.27 pagina / 5.46 card / 4.77 su bg-orange-100. */
+  --accent: #b34800;  /* btn-p-700 */
+
+  /* ========================================================================
      🔘 BUTTON COLORS (Admin-specific)
      ======================================================================== */
   --color-button-primary:        #BAD879;  /* lime-500 */
@@ -57,6 +84,13 @@ html.dark {
     --text-body:  #D6DCDC;  /* 10.80 — AAA */
     --text-sub:   #9AA0A0;  /* 5.65  — AA */
     --text-muted: #8A9090;  /* 4.62  — AA. Era #727878 = 3.34 */
+
+    --state-success: #05DF72;  /* green-400 · 8.44 AA */
+    --state-warning: #FFB900;  /* amber-400 · 8.73 AA */
+    --state-error:   #FF6467;  /* red-400   · 5.18 AA */
+    --state-info:    #51A2FF;  /* blue-400  · 5.68 AA */
+
+    --accent:        #ffa040;  /* btn-p-300 · 9.19 pagina / 7.39 card / 7.72 su orange-950 */
 }
 
 /* ========================================================================

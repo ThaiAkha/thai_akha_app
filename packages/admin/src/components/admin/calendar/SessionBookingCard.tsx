@@ -50,7 +50,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                 <div className="text-center mb-1">
                     <h5 className={cn(
                         "text-base sm:text-xl font-bold capitalize inline",
-                        isClosed ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"
+                        isClosed ? "text-error" : "text-success"
                     )}>
                         {title}
                         {showStatus && (
@@ -68,7 +68,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                         <span className="text-xs sm:text-sm font-medium text-body">
                             {t('session.booked')}
                         </span>
-                        <span className="text-base sm:text-lg font-bold text-red-500 dark:text-red-500">
+                        <span className="text-base sm:text-lg font-bold text-error">
                             {bookedPax}
                         </span>
                     </div>
@@ -78,7 +78,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                         <span className="text-xs sm:text-sm font-medium text-body">
                             {t('session.seatsLeft')}
                         </span>
-                        <span className="text-base sm:text-lg font-bold text-green-600 dark:text-green-400">
+                        <span className="text-base sm:text-lg font-bold text-success">
                             {validSeats}
                         </span>
                     </div>

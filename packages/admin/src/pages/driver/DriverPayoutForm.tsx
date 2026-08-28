@@ -261,7 +261,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
       {/* Banner stato esistente */}
       {isPaid && (
         <div className="mb-[var(--space-fluid-s,1rem)] rounded-xl border border-green-500/30 bg-green-500/10 [padding:var(--space-fluid-s,1rem)]">
-          <Paragraph size="sm" className="text-green-700 dark:text-green-400 font-bold">
+          <Paragraph size="sm" className="text-success font-bold">
             {t('payoutForm.paidBannerTitle')}
           </Paragraph>
           <Paragraph size="xs" color="muted">{t('payoutForm.paidBannerMessage')}</Paragraph>
@@ -269,7 +269,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
       )}
       {isExistingPending && (
         <div className="mb-[var(--space-fluid-s,1rem)] rounded-xl border border-amber-500/30 bg-amber-500/10 [padding:var(--space-fluid-s,1rem)]">
-          <Paragraph size="sm" className="text-amber-700 dark:text-amber-400 font-bold">
+          <Paragraph size="sm" className="text-warning font-bold">
             {t('payoutForm.pendingBannerTitle')}
           </Paragraph>
           <Paragraph size="xs" color="muted">{t('payoutForm.pendingBannerMessage')}</Paragraph>
@@ -301,7 +301,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
                 className={cn(
                   'h-12 rounded-xl border text-sm font-bold transition-all duration-300',
                   session === s
-                    ? 'border-green-500 bg-green-500/10 text-green-700 dark:text-green-400'
+                    ? 'border-green-500 bg-green-500/10 text-success'
                     : 'border-gray-200 dark:border-gray-700/50 text-sub hover:border-green-500/30',
                   isEditMode && 'opacity-60 cursor-not-allowed'
                 )}
@@ -346,7 +346,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
         </SelectField>
 
         {error && (
-          <Paragraph size="sm" className="text-red-600 dark:text-red-400">{error}</Paragraph>
+          <Paragraph size="sm" className="text-error">{error}</Paragraph>
         )}
 
         {!isPaid && (
@@ -375,7 +375,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
 const SummaryRow: React.FC<{ label: string; value: string; highlight?: boolean }> = ({ label, value, highlight }) => (
   <div className="flex items-center justify-between">
     <span className="text-sm text-sub">{label}</span>
-    <span className={cn('text-sm font-bold', highlight ? 'text-green-700 dark:text-green-400' : 'text-title')}>
+    <span className={cn('text-sm font-bold', highlight ? 'text-success' : 'text-title')}>
       {value}
     </span>
   </div>

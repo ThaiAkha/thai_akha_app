@@ -133,7 +133,7 @@ const ManagerReservation: React.FC<{ onNavigate?: (page: string) => void }> = ({
                                                         {b.booking_ref && <div className="mt-0.5 text-xs font-mono text-sub">{b.booking_ref}</div>}
                                                     </div>
                                                     <span className={cn('shrink-0 text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded',
-                                                        paid ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400')}>
+                                                        paid ? 'bg-green-50 dark:bg-green-900/20 text-success' : 'bg-amber-50 dark:bg-amber-900/20 text-warning')}>
                                                         {paid ? 'Paid' : (b.payment_status || 'Unpaid')}
                                                     </span>
                                                 </div>

@@ -194,7 +194,7 @@ export default function SignUpForm() {
                 {/* <!-- Company Name --> */}
                 <div>
                   <Label htmlFor="companyName">
-                    {t('signUp.fields.companyName')}<span className="text-sys-error">*</span>
+                    {t('signUp.fields.companyName')}<span className="text-error">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -210,7 +210,7 @@ export default function SignUpForm() {
                 {/* <!-- Contact Name --> */}
                 <div>
                   <Label htmlFor="contactName">
-                    {t('signUp.fields.contactName')}<span className="text-sys-error">*</span>
+                    {t('signUp.fields.contactName')}<span className="text-error">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -226,7 +226,7 @@ export default function SignUpForm() {
                 {/* <!-- Tax ID --> */}
                 <div>
                   <Label htmlFor="taxId">
-                    {t('signUp.fields.taxId')}<span className="text-sys-error">*</span>
+                    {t('signUp.fields.taxId')}<span className="text-error">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -242,7 +242,7 @@ export default function SignUpForm() {
                 {/* <!-- Email --> */}
                 <div>
                   <Label htmlFor="email">
-                    {t('signUp.fields.email')}<span className="text-sys-error">*</span>
+                    {t('signUp.fields.email')}<span className="text-error">*</span>
                   </Label>
                   <Input
                     type="email"
@@ -258,7 +258,7 @@ export default function SignUpForm() {
                 {/* <!-- Password --> */}
                 <div>
                   <Label htmlFor="password">
-                    {t('signUp.fields.password')}<span className="text-sys-error">*</span>
+                    {t('signUp.fields.password')}<span className="text-error">*</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -290,7 +290,7 @@ export default function SignUpForm() {
                   {/* <!-- Phone --> */}
                   <div className="sm:col-span-1">
                     <Label htmlFor="phone">
-                      {t('signUp.fields.phone')}<span className="text-sys-error">*</span>
+                      {t('signUp.fields.phone')}<span className="text-error">*</span>
                     </Label>
                     <PhoneCountryInput
                       value={phone}
@@ -313,7 +313,7 @@ export default function SignUpForm() {
                     />
                   </div>
                 </div>
-                {error && <p className="text-sm text-sys-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">{error}</p>}
+                {error && <p className="text-sm text-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">{error}</p>}
                 {/* <!-- Checkbox --> */}
                 <div className="flex items-center gap-3">
                   <Checkbox

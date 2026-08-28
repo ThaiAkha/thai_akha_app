@@ -42,8 +42,10 @@ const SelectField = ({
     const iconColor = cn(
         "transition-colors",
         disabled && "text-muted",
-        !disabled && error && "text-red-500",
-        !disabled && success && "text-emerald-500",
+        !disabled && error && "text-error",
+        !disabled && success && "text-success",
+        // verde di fuoco del campo, NON uno stato: si accorda a focus:border-green-500
+        // e ring-green-500/20 dello stesso controllo, che restano crudi
         !disabled && !error && !success && isFocused && "text-green-500",
         !disabled && !error && !success && !isFocused && "text-sub group-hover/select:text-green-500"
     );
@@ -79,7 +81,7 @@ const SelectField = ({
             {hint && (
                 <p className={cn(
                     "mt-1.5 text-xs font-black uppercase tracking-widest",
-                    error ? "text-red-500" : success ? "text-emerald-500" : "text-sub"
+                    error ? "text-error" : success ? "text-success" : "text-sub"
                 )}>
                     {hint}
                 </p>

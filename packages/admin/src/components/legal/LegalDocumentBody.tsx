@@ -116,7 +116,7 @@ export const renderLegalSection = (section: LegalDocumentSection, index: number)
     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4 pt-4">
       <h2 className="text-xl font-bold text-body">{section.title}</h2>
       {untranslated && (
-        <span className="text-[0.65rem] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-500/30 rounded-full px-2 py-0.5">
+        <span className="text-[0.65rem] font-bold uppercase tracking-wider text-warning border border-amber-300/60 dark:border-amber-500/30 rounded-full px-2 py-0.5">
           English
         </span>
       )}

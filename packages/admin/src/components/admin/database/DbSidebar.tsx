@@ -25,8 +25,8 @@ const DbSidebar: React.FC<DbSidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-amber-50 dark:bg-amber-900/10 border-t border-amber-100 dark:border-amber-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title={t('sidebar.statusLabel')} variant="sidebar" className="text-amber-600 mb-0 ml-0" />
-                        <p className="text-xs text-amber-700 dark:text-amber-400 font-bold leading-tight uppercase">
+                        <SectionHeader title={t('sidebar.statusLabel')} variant="sidebar" className="text-warning mb-0 ml-0" />
+                        <p className="text-xs text-warning font-bold leading-tight uppercase">
                             {t('sidebar.status')}
                         </p>
                     </div>

@@ -145,7 +145,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                     <>
                         <div className="grid grid-cols-2 gap-2">
                             <Button variant="outline" size="sm" disabled={busy} startIcon={<Pencil className="w-4 h-4" />} onClick={() => m.handleEditRun(selRun)}>{t('reports.editList', { defaultValue: 'Edit list' })}</Button>
-                            <button disabled={busy} onClick={() => m.handleDeleteRun(selRun)} className="inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-red-200 dark:border-red-500/30 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"><Trash2 className="w-4 h-4" /> {t('reports.delete', { defaultValue: 'Delete' })}</button>
+                            <button disabled={busy} onClick={() => m.handleDeleteRun(selRun)} className="inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-red-200 dark:border-red-500/30 text-sm font-bold text-error hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"><Trash2 className="w-4 h-4" /> {t('reports.delete', { defaultValue: 'Delete' })}</button>
                         </div>
                         {/* BYPASS-PAYOUT — Crea Zoho Expense: SOLO logistics, e SOLO se la lista è confermata (status != 'planned') */}
                         {!isTeacher && (
@@ -154,7 +154,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                                     {t('reports.createZohoExpense', { defaultValue: 'Create Zoho expense' })}
                                 </Button>
                                 {selRun.status === 'planned' && (
-                                    <Paragraph size="xs" className="-mt-1 text-center font-bold text-amber-600 dark:text-amber-400 leading-4">
+                                    <Paragraph size="xs" className="-mt-1 text-center font-bold text-warning leading-4">
                                         {t('reports.confirmListFirst', { defaultValue: 'Confirm the list before billing in Zoho.' })}
                                     </Paragraph>
                                 )}

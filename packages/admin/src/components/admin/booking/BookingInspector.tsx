@@ -98,7 +98,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                             <div className={cn(
                                 "p-3 rounded-lg font-black text-lg uppercase tracking-wide text-center",
                                 session === 'morning_class'
-                                    ? "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30"
+                                    ? "bg-amber-50 dark:bg-amber-500/10 text-warning border border-amber-200 dark:border-amber-500/30"
                                     : "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30"
                             )}>
                                 {sessionLabel}
@@ -155,7 +155,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                     {isWhatsapp !== undefined && (
                                         <div className="flex justify-between items-center">
                                             <span className="text-sub">{t('inspector.fieldWhatsapp')}</span>
-                                            <span className={cn("font-medium text-sm", isWhatsapp ? "text-green-600 dark:text-green-400" : "text-sub")}>
+                                            <span className={cn("font-medium text-sm", isWhatsapp ? "text-success" : "text-sub")}>
                                                 {isWhatsapp ? tc('yesNo.yes') : tc('yesNo.no')}
                                             </span>
                                         </div>
@@ -182,7 +182,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                 )}
                                 <div className="flex justify-between items-center">
                                     <span className="text-sub">{t('inspector.fieldLuggage')}</span>
-                                    <span className={cn("font-medium text-sm", hasLuggage ? "text-green-600 dark:text-green-400" : "text-sub")}>
+                                    <span className={cn("font-medium text-sm", hasLuggage ? "text-success" : "text-sub")}>
                                         {hasLuggage ? tc('yesNo.yes') : tc('yesNo.no')}
                                     </span>
                                 </div>
@@ -201,7 +201,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                             <div className="text-3xl font-black flex items-center gap-1 h-10">
                                 {amount !== null
                                     ? <><span className="text-primary-600">{amount.toLocaleString()}</span><span className="text-sub text-sm">THB</span></>
-                                    : <span className="text-red-500 text-lg">⚠️ Price missing</span>
+                                    : <span className="text-error text-lg">⚠️ Price missing</span>
                                 }
                             </div>
                         </div>
@@ -215,7 +215,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                     className={cn(
                                         "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center",
                                         paymentStatus === 'unpaid'
-                                            ? "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
+                                            ? "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-error"
                                             : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
                                     )}
                                 >
@@ -226,7 +226,7 @@ const BookingInspector: React.FC<BookingInspectorProps> = ({
                                     className={cn(
                                         "h-11 rounded-lg border font-black text-sm uppercase transition-all flex items-center justify-center gap-2",
                                         paymentStatus === 'paid'
-                                            ? "border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400"
+                                            ? "border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-success"
                                             : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-body hover:border-gray-300"
                                     )}
                                 >

@@ -93,7 +93,7 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
                                 "h-9 w-9 flex items-center justify-center transition-colors",
                                 viewMode === 'table'
                                     ? "bg-orange-500 text-white hover:bg-orange-600"
-                                    : "text-sub hover:text-orange-600 dark:hover:text-orange-400"
+                                    : "text-sub hover:text-accent"
                             )}
                         >
                             <List className="w-4 h-4" />
@@ -109,7 +109,7 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
                                 "h-9 w-9 flex items-center justify-center transition-colors",
                                 viewMode === 'grid'
                                     ? "bg-orange-500 text-white hover:bg-orange-600"
-                                    : "text-sub hover:text-orange-600 dark:hover:text-orange-400"
+                                    : "text-sub hover:text-accent"
                             )}
                         >
                             <LayoutGrid className="w-4 h-4" />

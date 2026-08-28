@@ -46,13 +46,13 @@ const StatCard: React.FC<StatCardProps> = ({
         warning: {
             bg: 'bg-sys-warning/10',
             icon: 'bg-sys-warning text-white',
-            text: 'text-sys-warning',
+            text: 'text-warning',
             border: 'border-sys-warning/20'
         },
         success: {
             bg: 'bg-sys-success/10',
             icon: 'bg-sys-success text-white',
-            text: 'text-sys-success',
+            text: 'text-success',
             border: 'border-sys-success/20'
         },
         action: {
@@ -64,7 +64,7 @@ const StatCard: React.FC<StatCardProps> = ({
         error: {
             bg: 'bg-sys-error/10',
             icon: 'bg-sys-error text-white',
-            text: 'text-sys-error',
+            text: 'text-error',
             border: 'border-sys-error/20'
         }
     };

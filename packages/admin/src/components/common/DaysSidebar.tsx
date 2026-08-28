@@ -23,10 +23,10 @@ const SESSION_TONE = {
         barHover: 'group-hover:bg-red-500',
         iconOn: 'text-red-500 border-red-400 dark:border-red-500/50',
         iconOff: 'text-red-500/80 dark:text-red-400/70 border-red-200 dark:border-red-500/25 group-hover:text-red-500 group-hover:border-red-400 dark:group-hover:border-red-500/50',
-        labelOn: 'text-red-700 dark:text-red-300',
-        labelOff: 'text-body group-hover:text-red-700 dark:group-hover:text-red-300',
-        badgeOn: 'bg-red-500/20 text-red-700 dark:text-red-300',
-        badgeOff: 'bg-white/70 dark:bg-gray-800/60 text-red-600 dark:text-red-300 group-hover:bg-red-500/20 group-hover:text-red-700 dark:group-hover:text-red-300',
+        labelOn: 'text-error',
+        labelOff: 'text-body group-hover:text-error',
+        badgeOn: 'bg-red-500/20 text-error',
+        badgeOff: 'bg-white/70 dark:bg-gray-800/60 text-error group-hover:bg-red-500/20 group-hover:text-error',
     },
     evening_class: {
         rowOn: 'bg-green-500/15 border-green-500/40',
@@ -35,10 +35,10 @@ const SESSION_TONE = {
         barHover: 'group-hover:bg-green-500',
         iconOn: 'text-green-600 border-green-400 dark:border-green-500/50',
         iconOff: 'text-green-600/80 dark:text-green-400/70 border-green-200 dark:border-green-500/25 group-hover:text-green-600 group-hover:border-green-400 dark:group-hover:border-green-500/50',
-        labelOn: 'text-green-700 dark:text-green-300',
-        labelOff: 'text-body group-hover:text-green-700 dark:group-hover:text-green-300',
-        badgeOn: 'bg-green-500/20 text-green-700 dark:text-green-300',
-        badgeOff: 'bg-white/70 dark:bg-gray-800/60 text-green-600 dark:text-green-300 group-hover:bg-green-500/20 group-hover:text-green-700 dark:group-hover:text-green-300',
+        labelOn: 'text-success',
+        labelOff: 'text-body group-hover:text-success',
+        badgeOn: 'bg-green-500/20 text-success',
+        badgeOff: 'bg-white/70 dark:bg-gray-800/60 text-success group-hover:bg-green-500/20 group-hover:text-success',
     },
 } as const;
 
@@ -83,7 +83,7 @@ const DaysSidebar: React.FC<DaysSidebarProps> = ({ days, selectedDate, selectedS
                         <div key={d.date}>
                             <div className={cn('px-4 py-4 flex items-center justify-between',
                                 dayActive ? 'bg-orange-500/10' : 'bg-gray-50/50 dark:bg-white/[0.02]')}>
-                                <span className={cn('text-base font-black tracking-tight', dayActive ? 'text-orange-700 dark:text-orange-300' : 'text-body')}>{dayLabel(d.date, t)}</span>
+                                <span className={cn('text-base font-black tracking-tight', dayActive ? 'text-warning' : 'text-body')}>{dayLabel(d.date, t)}</span>
                                 <BadgePaxNumber paxCount={d.morning + d.evening} size="lg" />
                             </div>
                             <div className="px-3 py-5 space-y-4">
@@ -115,7 +115,7 @@ const DaysSidebar: React.FC<DaysSidebarProps> = ({ days, selectedDate, selectedS
                             <button
                                 type="button"
                                 onClick={() => setVisibleCount(c => c + 1)}
-                                className="inline-flex items-center justify-center gap-2 h-11 px-7 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 text-sm font-bold text-sub hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+                                className="inline-flex items-center justify-center gap-2 h-11 px-7 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 text-sm font-bold text-sub hover:border-orange-400 hover:text-warning transition-colors"
                             >
                                 <Plus size={18} /> {t('groupsPlanner.addDay', { defaultValue: 'Next Days' })}
                             </button>

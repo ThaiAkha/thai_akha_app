@@ -191,7 +191,7 @@ export default function UserDropdown() {
         <div className="mt-2 pt-2 border-t border-gray-50 dark:border-gray-800/50 px-1 pb-1">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-3 py-2.5 font-bold text-gray-500 rounded-xl group text-theme-sm hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 w-full text-left transition-all"
+            className="flex items-center gap-3 px-3 py-2.5 font-bold text-gray-500 rounded-xl group text-theme-sm hover:bg-red-50 hover:text-error dark:hover:bg-red-500/10 w-full text-left transition-all"
           >
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition-colors">
               <LogOut size={18} className="text-gray-400 group-hover:text-red-500 transition-colors" />

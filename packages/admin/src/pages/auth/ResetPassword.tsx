@@ -132,7 +132,7 @@ export default function ResetPassword() {
               </div>
 
               {done ? (
-                <Paragraph size="sm" className="text-green-700 dark:text-green-400 font-bold bg-green-500/10 p-3 rounded-lg border border-green-500/15 leading-5">
+                <Paragraph size="sm" className="text-success font-bold bg-green-500/10 p-3 rounded-lg border border-green-500/15 leading-5">
                   {isUpdate ? t("resetPassword.updatedMessage") : t("resetPassword.sentMessage")}
                 </Paragraph>
               ) : isUpdate ? (
@@ -140,7 +140,7 @@ export default function ResetPassword() {
                   <div className="space-y-5">
                     <div>
                       <Label htmlFor="new-password">
-                        {t("resetPassword.newPasswordLabel")}<span className="text-sys-error">*</span>
+                        {t("resetPassword.newPasswordLabel")}<span className="text-error">*</span>
                       </Label>
                       <div className="relative">
                         <Input
@@ -168,7 +168,7 @@ export default function ResetPassword() {
                     </div>
 
                     {error && (
-                      <Paragraph size="sm" className="text-sys-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 leading-5">
+                      <Paragraph size="sm" className="text-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 leading-5">
                         {error}
                       </Paragraph>
                     )}
@@ -189,7 +189,7 @@ export default function ResetPassword() {
                   <div className="space-y-5">
                     <div>
                       <Label htmlFor="email">
-                        {t("resetPassword.emailLabel")}<span className="text-sys-error">*</span>
+                        {t("resetPassword.emailLabel")}<span className="text-error">*</span>
                       </Label>
                       <Input
                         type="email"
@@ -203,7 +203,7 @@ export default function ResetPassword() {
                     </div>
 
                     {error && (
-                      <Paragraph size="sm" className="text-sys-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 leading-5">
+                      <Paragraph size="sm" className="text-error font-bold bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 leading-5">
                         {error}
                       </Paragraph>
                     )}

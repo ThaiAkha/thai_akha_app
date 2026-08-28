@@ -191,7 +191,7 @@ const KitchenBookings: React.FC = () => {
                 {selectedGroup.status && <span className="mt-1 inline-block text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 text-sub px-2 py-0.5 rounded">{selectedGroup.status}</span>}
               </div>
               <InfoRow icon={<Users className="w-4 h-4" />} label="Pax" value={`${selectedGroup.pax_count}`} />
-              {leader && <InfoRow icon={<Crown className="w-4 h-4 text-amber-500" />} label="Tour leader" value={leader.profile?.full_name || '—'} />}
+              {leader && <InfoRow icon={<Crown className="w-4 h-4 text-warning" />} label="Tour leader" value={leader.profile?.full_name || '—'} />}
               <InfoRow icon={<Hotel className="w-4 h-4" />} label="Hotel" value={selectedGroup.hotel_name || '—'} />
               <InfoRow icon={<Clock className="w-4 h-4" />} label="Pickup" value={selectedGroup.pickup_time || '—'} />
               <InfoRow icon={<MapPin className="w-4 h-4" />} label="Zone" value={selectedGroup.pickup_zone || selectedGroup.meeting_point || '—'} />
@@ -204,7 +204,7 @@ const KitchenBookings: React.FC = () => {
     >
       {/* MULTI-KITCHEN (Fase 4) — errore generazione report */}
       {reportError && (
-        <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-xs font-bold text-red-700 dark:text-red-400 border-b border-red-100 dark:border-red-900/40">
+        <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-xs font-bold text-error border-b border-red-100 dark:border-red-900/40">
           {reportError}
         </div>
       )}
@@ -221,10 +221,10 @@ const KitchenBookings: React.FC = () => {
           {dayGroups.map(g => (
             <div key={g.id}>
               <div className="px-4 py-2.5 bg-gray-50/70 dark:bg-gray-800/50 flex items-center gap-2 border-y border-gray-100 dark:border-gray-800">
-                <Crown className="w-4 h-4 text-amber-500 shrink-0" />
+                <Crown className="w-4 h-4 text-warning shrink-0" />
                 <span className="text-sm font-black text-body truncate">{g.leaderName}</span>
                 {g.ownerRole === 'agency' && (
-                  <span className="text-xs font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded shrink-0">Agency</span>
+                  <span className="text-xs font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-info px-1.5 py-0.5 rounded shrink-0">Agency</span>
                 )}
                 <button
                   onClick={() => { setExploreId(g.id); setSelectedPid(null); }}
@@ -250,15 +250,15 @@ const KitchenBookings: React.FC = () => {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-title truncate">{p.profile?.full_name || '—'}</span>
-                        {p.is_leader && <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
+                        {p.is_leader && <Crown className="w-3.5 h-3.5 text-warning shrink-0" />}
                         {p.profile?.nationality && <span className="text-xs font-mono text-sub uppercase">{p.profile.nationality}</span>}
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded">
+                        <span className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide bg-green-50 dark:bg-green-900/20 text-success px-1.5 py-0.5 rounded">
                           <Leaf className="w-3 h-3" />{dietLabel(p.menu?.profile || p.profile?.dietary_profile)}
                         </span>
                         {(p.menu?.allergies.length ? p.menu.allergies : p.profile?.allergies || []).slice(0, 3).map((a, i) => (
-                          <span key={i} className="inline-flex items-center gap-0.5 text-xs font-bold uppercase bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded">
+                          <span key={i} className="inline-flex items-center gap-0.5 text-xs font-bold uppercase bg-amber-50 dark:bg-amber-900/20 text-warning px-1.5 py-0.5 rounded">
                             <AlertTriangle className="w-2.5 h-2.5" />{a}
                           </span>
                         ))}
@@ -302,8 +302,8 @@ function PaymentBadge({ status }: { status: string | null }) {
   const paid = status === 'paid' || status === 'completed' || status === 'succeeded';
   return (
     <span className={cn('inline-flex items-center gap-1 text-xs font-bold uppercase px-2 py-0.5 rounded',
-      paid ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-           : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400')}>
+      paid ? 'bg-green-50 dark:bg-green-900/20 text-success'
+           : 'bg-amber-50 dark:bg-amber-900/20 text-warning')}>
       <CreditCard className="w-3 h-3" />{paid ? 'Paid' : (status || 'Unpaid')}
     </span>
   );

@@ -45,7 +45,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
             {children}
             <Modal isOpen={!!pending} onClose={() => close(false)} showCloseButton={false} className="max-w-sm p-6">
                 <div className="text-center">
-                    <div className={cn('mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl', danger ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400' : 'bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400')}>
+                    <div className={cn('mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl', danger ? 'bg-red-50 text-error dark:bg-red-900/20' : 'bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400')}>
                         <AlertTriangle className="w-6 h-6" />
                     </div>
                     <h3 className="text-lg font-bold text-title">{pending?.title ?? 'Confirm'}</h3>

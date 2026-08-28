@@ -36,6 +36,26 @@
   --color-sub:   var(--text-sub);
   --color-muted: var(--text-muted);
 
+  /* Stato semantico: genera text-success / text-warning / text-error / text-info.
+     Da usare per il TESTO e le icone di stato al posto delle coppie
+     `text-red-600 dark:text-red-400` scritte a mano, che sono la fonte dei 38
+     testi sotto AA trovati il 2026-08-28. I FONDI restano le tinte sys al 10 per
+     cento: sono superfici, non testo, e hanno una regola propria (vedi Badge).
+     La coppia -700/-400 e' tarata su pagina e card: se l'elemento si dipinge una
+     tinta propria (chip, pill, bottone colorato) quel fondo va misurato a parte,
+     e se non ha un dark: la classe semantica NON puo' funzionare. */
+  --color-success: var(--state-success);
+  --color-warning: var(--state-warning);
+  --color-error:   var(--state-error);
+  --color-info:    var(--state-info);
+
+  /* Accento di marca: genera text-accent. E' l'arancio btn-p della dashboard
+     (selezione, hover e stato attivo del Data Explorer, sezione AI del media
+     inspector), NON un warning: tenerlo su --state-warning faceva leggere
+     "attenzione" dove c'e' solo una riga selezionata, e staccava il testo dai
+     fondi e dai bordi orange- che gli stanno accanto e che sono rimasti tali. */
+  --color-accent: var(--accent);
+
   /* Superfici e bordi, stessa logica: genera bg-background / bg-surface /
      bg-surface-2 / border-border / border-border-2. `bg-surface` e `border-border`
      erano gia' scritte nel codice ma non producevano nulla - erano fra le classi

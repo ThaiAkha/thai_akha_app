@@ -151,7 +151,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                             "w-12 flex items-center justify-center transition-all active:scale-95 border-l border-gray-100 dark:border-gray-700 disabled:opacity-60",
                                             item.is_bought
                                                 ? "bg-green-500 text-white"
-                                                : "bg-white dark:bg-gray-800 text-gray-300 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                                : "bg-white dark:bg-gray-800 text-gray-300 hover:text-success hover:bg-green-50 dark:hover:bg-green-900/20"
                                         )}
                                     >
                                         {item.is_bought ? <CheckCircle2 className="w-6 h-6 animate-in zoom-in duration-300" /> : <Circle className="w-6 h-6" />}
@@ -166,7 +166,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
             {/* ================= FIXED FOOTER ================= */}
             <div className="absolute bottom-4 left-4 right-4 z-40 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-2 shadow-xl flex gap-2">
                 {locked ? (
-                    <div className="flex-1 h-12 flex items-center justify-center gap-2 text-green-600 dark:text-green-400 font-black uppercase text-xs tracking-widest">
+                    <div className="flex-1 h-12 flex items-center justify-center gap-2 text-success font-black uppercase text-xs tracking-widest">
                         <Lock className="w-4 h-4" /> {t('labels.confirmedLocked', { defaultValue: 'Shopping confirmed — locked' })}
                     </div>
                 ) : (

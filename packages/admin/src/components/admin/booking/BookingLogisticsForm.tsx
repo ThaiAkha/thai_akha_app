@@ -93,7 +93,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
               className={cn(
                 "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                 needPickup === false
-                  ? "border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400 shadow-lg shadow-red-500/10 scale-[1.02]"
+                  ? "border-red-500/50 bg-red-500/10 text-error shadow-lg shadow-red-500/10 scale-[1.02]"
                   : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-sub hover:border-gray-200"
               )}
             >
@@ -187,7 +187,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                   className={cn(
                     "h-full rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2",
                     hasLuggage === false
-                      ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-500/10 scale-[1.02]"
+                      ? "border-emerald-500/50 bg-emerald-500/10 text-success shadow-lg shadow-emerald-500/10 scale-[1.02]"
                       : "border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/10 text-sub hover:border-gray-200"
                   )}
                 >

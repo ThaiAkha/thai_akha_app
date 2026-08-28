@@ -22,17 +22,17 @@ const Alert: React.FC<AlertProps> = ({
     success: {
       container:
         "border-sys-success bg-sys-success/10 dark:border-sys-success/30 dark:bg-sys-success/15",
-      icon: "text-sys-success",
+      icon: "text-success",
     },
     error: {
       container:
         "border-sys-error bg-sys-error/10 dark:border-sys-error/30 dark:bg-sys-error/15",
-      icon: "text-sys-error",
+      icon: "text-error",
     },
     warning: {
       container:
         "border-sys-warning bg-sys-warning/10 dark:border-sys-warning/30 dark:bg-sys-warning/15",
-      icon: "text-sys-warning",
+      icon: "text-warning",
     },
     info: {
       container:

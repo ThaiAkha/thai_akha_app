@@ -285,7 +285,7 @@ const AgencyBooking: React.FC = () => {
 
                             {/* #37 - prezzo assente in class_sessions: avvisa e blocca, mai indovinare */}
                             {priceMissing && (
-                                <div className="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400">
+                                <div className="flex items-center gap-2 text-xs font-bold text-error">
                                     <Info className="size-4 shrink-0" />
                                     <span>Class price missing in the database - booking disabled.</span>
                                 </div>

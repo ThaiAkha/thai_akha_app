@@ -82,7 +82,7 @@ const AgencyRates: React.FC = () => {
                         </Paragraph>
                     </div>
                     <div className="p-8 rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-4">
-                        <CreditCard className="w-8 h-8 text-amber-500" />
+                        <CreditCard className="w-8 h-8 text-warning" />
                         <Heading level="h4" className="font-black uppercase italic leading-7">{t('agencyRates.paymentTitle')}</Heading>
                         <Paragraph size="sm" color="secondary">
                             {t('agencyRates.paymentDesc')}

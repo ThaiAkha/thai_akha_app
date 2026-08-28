@@ -28,7 +28,7 @@ const AmountField: React.FC<{
 }> = ({ label, sign, value, placeholder, disabled, onChange }) => (
     <label className="flex flex-col gap-1">
         <span className="text-[10px] font-black uppercase tracking-wider text-sub">
-            {sign && <span className={sign === '+' ? 'text-green-500' : 'text-red-400'}>{sign} </span>}{label}
+            {sign && <span className={sign === '+' ? 'text-success' : 'text-error'}>{sign} </span>}{label}
         </span>
         <input
             type="number" inputMode="numeric" value={value} disabled={disabled}
@@ -79,7 +79,7 @@ const PersonRow: React.FC<PersonRowProps> = ({
                 </div>
 
                 {locked ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400 px-2">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-success px-2">
                         <Check className="w-4 h-4" />{t('salary.paid', { defaultValue: 'Paid' })}
                     </span>
                 ) : (

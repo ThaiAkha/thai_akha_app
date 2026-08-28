@@ -38,7 +38,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
 
     return (
         <>
-            <div className="px-6 py-6 bg-gray-50/10">
+            <div className="px-6 py-6 bg-gray-50/10 dark:bg-white/[0.02]">
                 <div className="space-y-8">
                     {/* Media Section */}
                     <div className="aspect-video bg-gray-50/50 dark:bg-white/[0.02] rounded-3xl overflow-hidden relative group border border-gray-100 dark:border-white/[0.05] shadow-inner transition-transform duration-500 hover:scale-[1.02]">
@@ -155,17 +155,19 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 disabled={!isEditing && !isNew}
                                 className={cn(
                                     "p-4 rounded-2xl border transition-all flex flex-col gap-1 items-start",
+                                    // le tinte -50/50 non avevano un dark:, quindi in dark il fondo
+                                    // restava chiaro e nessun testo ci passava: prima la superficie, poi il token
                                     editingProduct.is_active
-                                        ? "bg-green-50/50 border-green-100"
-                                        : "bg-red-50/50 border-red-100",
+                                        ? "bg-green-50/50 border-green-100 dark:bg-green-500/10 dark:border-green-500/25"
+                                        : "bg-red-50/50 border-red-100 dark:bg-red-500/10 dark:border-red-500/25",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed"
                                 )}
                             >
                                 <div className="flex items-center gap-2">
-                                    {editingProduct.is_active ? <Eye className="w-3 h-3 text-green-600" /> : <EyeOff className="w-3 h-3 text-red-600" />}
+                                    {editingProduct.is_active ? <Eye className="w-3 h-3 text-success" /> : <EyeOff className="w-3 h-3 text-error" />}
                                     <span className="text-xs font-black uppercase tracking-widest text-sub">{t('inspector.statusLabel')}</span>
                                 </div>
-                                <span className={cn("text-xs font-bold", editingProduct.is_active ? "text-green-600" : "text-red-600")}>
+                                <span className={cn("text-xs font-bold", editingProduct.is_active ? "text-success" : "text-error")}>
                                     {editingProduct.is_active ? t('inspector.active') : t('inspector.inactive')}
                                 </span>
                             </button>
@@ -175,13 +177,14 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                                 className={cn(
                                     "p-4 rounded-2xl border transition-all flex flex-col gap-1 items-start",
                                     editingProduct.is_visible_online
-                                        ? "bg-blue-50/50 border-blue-100"
-                                        : "bg-gray-50/50 border-gray-100",
+                                        ? "bg-blue-50/50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/25"
+                                        : "bg-gray-50/50 border-gray-100 dark:bg-white/[0.05] dark:border-gray-700",
                                     (!isEditing && !isNew) && "opacity-60 cursor-not-allowed"
                                 )}
                             >
                                 <span className="text-xs font-black uppercase tracking-widest text-sub">{t('inspector.visibilityLabel')}</span>
-                                <span className={cn("text-xs font-bold", editingProduct.is_visible_online ? "text-blue-600" : "text-gray-600")}>
+                                {/* il ramo "nascosto" e' neutro, non un errore: text-body, non text-sub (4.30 sulla tinta) */}
+                                <span className={cn("text-xs font-bold", editingProduct.is_visible_online ? "text-info" : "text-body")}>
                                     {editingProduct.is_visible_online ? t('inspector.visOnline') : t('inspector.visHidden')}
                                 </span>
                             </button>

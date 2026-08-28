@@ -127,15 +127,15 @@ export const AgencyCenter: React.FC<Props> = ({ a, view }) => {
                                     return (
                                         <div className="mb-3 rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-500/5 p-3 space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">{t('reports.toConfirm', { defaultValue: 'Payments to confirm' })}</span>
+                                                <span className="text-xs font-bold uppercase tracking-wider text-info">{t('reports.toConfirm', { defaultValue: 'Payments to confirm' })}</span>
                                                 <button onClick={(e) => { e.stopPropagation(); a.handleConfirmPayment(decl.map(i => i.id)); }} disabled={invoiceBusy} className="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50">{t('reports.confirmAll', { defaultValue: 'Confirm all' })}</button>
                                             </div>
                                             {decl.map(inv => (
                                                 <div key={inv.id} className="flex items-center justify-between gap-2 text-sm">
                                                     <span className="font-medium text-body truncate">{inv.zoho_invoice_number || t('reports.invoice', { defaultValue: 'Invoice' })} · ฿{Number(inv.amount).toLocaleString()}</span>
                                                     <div className="flex items-center gap-2 shrink-0">
-                                                        {inv.payment_proof_url && <button onClick={(e) => { e.stopPropagation(); a.viewProof(inv.payment_proof_url!); }} className="text-xs text-blue-600 hover:underline">{t('reports.viewProof', { defaultValue: 'Screenshot' })}</button>}
-                                                        <button onClick={(e) => { e.stopPropagation(); a.handleConfirmPayment([inv.id]); }} disabled={invoiceBusy} className="text-xs font-bold px-2 py-1 rounded-lg border border-blue-300 dark:border-blue-500/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/10 disabled:opacity-50">{t('reports.confirm', { defaultValue: 'Confirm' })}</button>
+                                                        {inv.payment_proof_url && <button onClick={(e) => { e.stopPropagation(); a.viewProof(inv.payment_proof_url!); }} className="text-xs text-info hover:underline">{t('reports.viewProof', { defaultValue: 'Screenshot' })}</button>}
+                                                        <button onClick={(e) => { e.stopPropagation(); a.handleConfirmPayment([inv.id]); }} disabled={invoiceBusy} className="text-xs font-bold px-2 py-1 rounded-lg border border-blue-300 dark:border-blue-500/40 text-info hover:bg-blue-100 dark:hover:bg-blue-500/10 disabled:opacity-50">{t('reports.confirm', { defaultValue: 'Confirm' })}</button>
                                                     </div>
                                                 </div>
                                             ))}
@@ -219,7 +219,7 @@ export const AgencyInspector: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
             <InspectorFooter bottomOffset={80}>
                 <div className="space-y-1 mb-1">
                     <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.gross', { defaultValue: 'Gross' })}</span><span className="font-mono font-bold text-body">{selTotals.gross.toLocaleString()}</span></div>
-                    <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.commission', { defaultValue: 'Commission' })}</span><span className="font-mono font-bold text-amber-600 dark:text-amber-400">− {selTotals.commission.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-sm"><span className="text-sub">{t('reports.commission', { defaultValue: 'Commission' })}</span><span className="font-mono font-bold text-warning">− {selTotals.commission.toLocaleString()}</span></div>
                     <div className="flex justify-between items-end pt-1 border-t border-gray-200 dark:border-gray-700">
                         <SectionTitle className="text-sub mb-0">{t('reports.netDue', { defaultValue: 'Net due' })}</SectionTitle>
                         <span className="font-mono text-2xl font-black text-title">{selTotals.net.toLocaleString()} <span className="text-sm text-sub font-normal">THB</span></span>

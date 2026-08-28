@@ -143,11 +143,11 @@ export function GalleryField({ fieldKey, value, isEditing, onChange }: {
     return (
         <div className="space-y-2">
             <div className="flex items-center gap-2 mb-2">
-                <LayoutGrid className="w-4 h-4 text-blue-400" />
+                <LayoutGrid className="w-4 h-4 text-info" />
                 <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
-                {loading && <span className="text-xs text-blue-400">resolving...</span>}
+                {loading && <span className="text-xs text-info">resolving...</span>}
                 {displayUrls.length > 0 && (
-                    <span className="text-xs font-black text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    <span className="text-xs font-black text-info bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-wider">
                         {displayUrls.length} items
                     </span>
                 )}

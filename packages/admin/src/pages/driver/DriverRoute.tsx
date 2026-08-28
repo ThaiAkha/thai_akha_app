@@ -126,7 +126,7 @@ const DriverRoute: React.FC = () => {
                     <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200 dark:border-white/10">
                         <div className="text-center space-y-4">
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
-                                <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+                                <CheckCircle2 className="w-10 h-10 text-success" />
                             </div>
                             <Heading level="h3" className="font-black tracking-normal leading-8">
                                 {t('payout.allRidesCompleted')}

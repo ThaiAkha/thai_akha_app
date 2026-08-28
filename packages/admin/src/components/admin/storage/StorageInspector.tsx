@@ -72,7 +72,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="size-20 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
                             <Plus className="w-10 h-10" />
                         </div>
-                        <p className="text-xs font-black uppercase text-amber-600 tracking-tighter">{t('inspector.stagingAsset')}</p>
+                        <p className="text-xs font-black uppercase text-warning tracking-tighter">{t('inspector.stagingAsset')}</p>
                         <p className="text-xs font-bold text-sub mt-2 max-w-[180px] break-all">{pendingFile.name}</p>
                     </div>
                 ) : (selectedFile && selectedFile.metadata?.mimetype?.startsWith('image/')) ? (

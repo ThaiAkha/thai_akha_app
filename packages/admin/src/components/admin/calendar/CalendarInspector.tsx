@@ -95,7 +95,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                                 <span className="text-xl font-black text-primary-600 dark:text-primary-400">{safeSeats}</span>
                                             </div>
                                         </div>
-                                        {sess.status === 'CLOSED' && <div className="mt-3 p-3 bg-red-50/50 dark:bg-red-900/20 rounded-xl text-sm font-bold text-red-600 dark:text-red-300 border border-red-100 dark:border-red-900">{sess.reason || t('inspector.classClose')}</div>}
+                                        {sess.status === 'CLOSED' && <div className="mt-3 p-3 bg-red-50/50 dark:bg-red-900/20 rounded-xl text-sm font-bold text-error border border-red-100 dark:border-red-900">{sess.reason || t('inspector.classClose')}</div>}
                                     </div>
                                 );
                             })}

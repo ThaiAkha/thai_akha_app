@@ -83,7 +83,7 @@ function FieldRow({ label, value, onCopy, copied, multiline, href }: FieldRowPro
             className="p-1 text-sub hover:text-primary-500 disabled:opacity-30 transition-colors"
             title="Copy"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
@@ -162,7 +162,7 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
               <button type="button" onClick={() => copy('link', link)} className="p-1 text-sub hover:text-primary-500 transition-colors" title="Copy">
-                {copied === 'link' ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied === 'link' ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
           </div>
@@ -185,7 +185,7 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
         </div>
 
         {missing.length > 0 && (
-          <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 rounded-lg px-2 py-1.5">
+          <p className="text-xs text-warning bg-amber-50 dark:bg-amber-500/10 rounded-lg px-2 py-1.5">
             For a stronger pin, add: {missing.join(', ')}.
           </p>
         )}

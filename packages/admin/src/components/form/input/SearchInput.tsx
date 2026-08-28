@@ -20,6 +20,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     const { t } = useTranslation('common');
     return (
         <div className={cn("relative group", containerClassName)}>
+            {/* verde di fuoco, non uno stato: si accorda a focus:border-green-500 dell'input qui sotto */}
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
             <input
                 type="text"

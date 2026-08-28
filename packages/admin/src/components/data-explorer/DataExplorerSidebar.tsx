@@ -33,21 +33,21 @@ const Badge: React.FC<{ type: string; value: string | number; isActive?: boolean
         default: cn(
             "bg-gray-100 dark:bg-gray-800",
             "text-body",
-            isActive && "bg-orange-100 dark:bg-btn-p-900/30 text-orange-700 dark:text-orange-300"
+            isActive && "bg-orange-100 dark:bg-btn-p-900/30 text-accent"
         ),
         success: cn(
             "bg-sys-success/10 dark:bg-sys-success/20",
-            "text-sys-success dark:text-sys-success",
+            "text-success",
             isActive && "bg-sys-success/15 dark:bg-sys-success/30"
         ),
         warning: cn(
             "bg-sys-warning/10 dark:bg-sys-warning/20",
-            "text-sys-warning dark:text-sys-warning",
+            "text-warning",
             isActive && "bg-sys-warning/15 dark:bg-sys-warning/30"
         ),
         error: cn(
             "bg-sys-error/10 dark:bg-sys-error/20",
-            "text-sys-error dark:text-sys-error",
+            "text-error",
             isActive && "bg-sys-error/15 dark:bg-sys-error/30"
         ),
         info: cn(
@@ -59,7 +59,7 @@ const Badge: React.FC<{ type: string; value: string | number; isActive?: boolean
             "bg-transparent border",
             "border-gray-200 dark:border-gray-700",
             "text-sub",
-            isActive && "border-orange-200 dark:border-orange-800 text-orange-600 dark:text-orange-400"
+            isActive && "border-orange-200 dark:border-orange-800 text-accent"
         ),
     };
 
@@ -115,7 +115,7 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
                             {item.icon && (
                                 <div className={cn(
                                     "transition-transform group-hover:scale-110 duration-300",
-                                    isActive ? "text-orange-500" : "text-muted group-hover:text-orange-500"
+                                    isActive ? "text-accent" : "text-muted group-hover:text-accent"
                                 )}>
                                     {React.isValidElement(item.icon) ? React.cloneElement(item.icon as React.ReactElement<{ size?: number }>, { size: 18 }) : item.icon}
                                 </div>

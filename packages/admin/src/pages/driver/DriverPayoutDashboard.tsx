@@ -157,7 +157,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
     [weeks, monthKey]
   );
 
-  if (error) return <Paragraph size="sm" className="text-red-600 dark:text-red-400">{t('payoutDashboard.errorPrefix')} {error}</Paragraph>;
+  if (error) return <Paragraph size="sm" className="text-error">{t('payoutDashboard.errorPrefix')} {error}</Paragraph>;
   if (rows === null) return <Paragraph size="sm" color="muted">{t('payoutDashboard.loading')}</Paragraph>;
 
   return (
@@ -166,9 +166,9 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
       {paidPopup && (
         <div className="rounded-xl border border-green-500/40 bg-green-500/10 [padding:var(--space-fluid-s,1rem)] flex items-center justify-between gap-3">
           <div>
-            <Paragraph size="sm" className="text-green-700 dark:text-green-400 font-bold">💸 {paidPopup}</Paragraph>
+            <Paragraph size="sm" className="text-success font-bold">💸 {paidPopup}</Paragraph>
           </div>
-          <button type="button" onClick={() => setPaidPopup(null)} className="text-green-700 dark:text-green-400 text-sm font-bold">{t('payoutDashboard.ok')}</button>
+          <button type="button" onClick={() => setPaidPopup(null)} className="text-success text-sm font-bold">{t('payoutDashboard.ok')}</button>
         </div>
       )}
 
@@ -197,7 +197,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-sm font-bold text-title">{fmtRange(w.start, w.end, i18n.language)}</span>
-                  <span className="ml-2 text-xs font-black uppercase tracking-widest text-green-600 dark:text-green-400">{t('payoutDashboard.paidStatus')}</span>
+                  <span className="ml-2 text-xs font-black uppercase tracking-widest text-success">{t('payoutDashboard.paidStatus')}</span>
                 </div>
                 <span className="text-base font-bold text-title">{w.totalAll} Baht</span>
               </div>
@@ -215,7 +215,7 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
                 <span className="block text-2xl font-bold text-title">
                   {w.totalPending} <span className="text-sm font-medium opacity-70">Baht</span>
                 </span>
-                <span className="text-xs font-black uppercase tracking-widest text-amber-600">{t('payoutDashboard.pendingStatus')}</span>
+                <span className="text-xs font-black uppercase tracking-widest text-warning">{t('payoutDashboard.pendingStatus')}</span>
               </div>
             </div>
 

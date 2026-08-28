@@ -12,7 +12,7 @@ const SalarySummary: React.FC<SalarySummaryProps> = ({ summary }) => {
     const line = (label: string, value: number, sign?: '+' | '-') => (
         <div className="flex items-center justify-between gap-4 py-1">
             <span className="text-xs font-bold uppercase tracking-wider text-sub">
-                {sign && <span className={sign === '+' ? 'text-green-500' : 'text-red-400'}>{sign} </span>}{label}
+                {sign && <span className={sign === '+' ? 'text-success' : 'text-error'}>{sign} </span>}{label}
             </span>
             <span className="text-sm font-bold text-body tabular-nums">฿{value.toLocaleString()}</span>
         </div>

@@ -57,8 +57,8 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
                             className={cn(
                                 "size-10 rounded-xl border transition-all flex items-center justify-center shrink-0",
                                 pax <= 1
-                                    ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 cursor-not-allowed opacity-60"
-                                    : "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400 hover:shadow-sm cursor-pointer"
+                                    ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-error cursor-not-allowed opacity-60"
+                                    : "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-success hover:shadow-sm cursor-pointer"
                             )}
                         >
                             <Minus className="w-5 h-5" />
@@ -76,8 +76,8 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
                             className={cn(
                                 "size-10 rounded-xl border transition-all flex items-center justify-center shrink-0",
                                 pax >= maxPax || maxPax === 0
-                                    ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 cursor-not-allowed opacity-60"
-                                    : "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400 hover:shadow-sm cursor-pointer"
+                                    ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-error cursor-not-allowed opacity-60"
+                                    : "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-success hover:shadow-sm cursor-pointer"
                             )}
                         >
                             <Plus className="w-5 h-5" />

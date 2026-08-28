@@ -33,10 +33,10 @@ const SessionStatusBadge: React.FC<SessionStatusBadgeProps> = ({
     'flex items-center justify-between rounded border font-bold transition-all',
     size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2 py-1 text-xs',
     isOpen
-      ? 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-300 border-green-200 dark:border-green-500/40'
+      ? 'bg-green-50 dark:bg-green-500/15 text-success border-green-200 dark:border-green-500/40'
       : isFull
-        ? 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/40'
-        : 'bg-orange-50 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-500/40'
+        ? 'bg-red-50 dark:bg-red-500/15 text-error border-red-200 dark:border-red-500/40'
+        : 'bg-orange-50 dark:bg-orange-500/15 text-warning border-orange-200 dark:border-orange-500/40'
   );
 
   const displayValue = isOpen ? seats : isFull ? '0' : 'X';

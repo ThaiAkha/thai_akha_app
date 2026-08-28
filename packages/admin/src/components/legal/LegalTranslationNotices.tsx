@@ -45,7 +45,7 @@ const LegalTranslationNotices: React.FC<LegalTranslationNoticesProps> = ({ docum
       {/* Traduzione parziale: si dichiara PRIMA del testo, non dopo. */}
       {showingTranslation && doc.isPartialTranslation && (
         <div className="mb-6 rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+          <p className="text-xs font-bold uppercase tracking-wide text-warning">
             {t('partialNotice', { done: doc.translatedCount, total: doc.sections.length })}
           </p>
         </div>
@@ -54,7 +54,7 @@ const LegalTranslationNotices: React.FC<LegalTranslationNoticesProps> = ({ docum
       {/* La traduzione esisteva ma era riferita a una versione precedente: scartata. */}
       {doc.isStaleTranslation && (
         <div className="mb-6 rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+          <p className="text-xs font-bold uppercase tracking-wide text-warning">
             {t('staleNotice')}
           </p>
         </div>

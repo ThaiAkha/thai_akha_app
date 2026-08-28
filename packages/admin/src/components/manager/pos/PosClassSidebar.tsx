@@ -128,7 +128,7 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                             {gNo && <span className="shrink-0 text-[10px] font-black uppercase tracking-wider bg-gray-200 dark:bg-gray-700 text-body px-1.5 py-0.5 rounded">G{gNo}</span>}
-                            {g.participants.some(p => p.is_leader) && <Crown className="size-3 text-amber-500 shrink-0" />}
+                            {g.participants.some(p => p.is_leader) && <Crown className="size-3 text-warning shrink-0" />}
                             <span className="text-sm font-bold text-body truncate">{rep.name}</span>
                         </div>
                     </div>
@@ -150,7 +150,7 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
                                     )}
                                     <img src={avatarOf(p.full_name, p.avatar_url)} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
                                     <span className="text-xs font-medium text-body truncate flex-1">{p.full_name}</span>
-                                    {p.is_leader && <Crown className="size-3 text-amber-500 shrink-0" />}
+                                    {p.is_leader && <Crown className="size-3 text-warning shrink-0" />}
                                 </div>
                             );
                         })}
@@ -172,7 +172,7 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
 
                         {/* Controlli */}
                         {child ? (
-                            <button onClick={() => onMerge(g.internal_id)} className="mt-1 inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-sub hover:border-amber-500 hover:text-amber-600 transition-colors">
+                            <button onClick={() => onMerge(g.internal_id)} className="mt-1 inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-sub hover:border-amber-500 hover:text-warning transition-colors">
                                 <Undo2 className="size-3.5" /> {tp('split.merge', { defaultValue: 'Merge back' })}
                             </button>
                         ) : canSplit && (splitting ? (

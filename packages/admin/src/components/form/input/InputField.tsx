@@ -78,7 +78,7 @@ const Input: FC<InputProps> = ({
       {hint && (
         <p className={cn(
           "mt-1.5 text-xs font-black uppercase tracking-widest",
-          error ? "text-red-500" : success ? "text-emerald-500" : "text-sub"
+          error ? "text-error" : success ? "text-success" : "text-sub"
         )}>
           {hint}
         </p>

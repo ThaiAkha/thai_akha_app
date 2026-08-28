@@ -207,7 +207,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                                 <span className="text-xs font-mono text-sub">{asset.created_at ? new Date(asset.created_at).toLocaleDateString(getLocale(i18n.language)) : 'N/A'}</span>
                                             </div>
                                             {asset.is_ai_generated && (
-                                                <span className="text-xs font-black text-orange-500 uppercase tracking-tighter bg-orange-500/5 px-1.5 py-0.5 rounded border border-orange-500/10 flex items-center gap-1">
+                                                <span className="text-xs font-black text-warning uppercase tracking-tighter bg-orange-500/5 px-1.5 py-0.5 rounded border border-orange-500/10 flex items-center gap-1">
                                                     AI: {asset.ai_tool || 'GENERIC'}
                                                 </span>
                                             )}

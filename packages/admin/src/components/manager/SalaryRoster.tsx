@@ -52,13 +52,13 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
             </div>
 
             {!baseVisible && people && people.length > 0 && (
-                <div className="flex items-start gap-2 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-500/5 p-3 text-xs text-amber-800 dark:text-amber-300">
+                <div className="flex items-start gap-2 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-500/5 p-3 text-xs text-warning">
                     <EyeOff className="w-4 h-4 shrink-0 mt-0.5" />
                     <span>{t('salary.baseHidden', { defaultValue: 'Base salaries are visible to managers only.' })}</span>
                 </div>
             )}
             {(loadError || actionError) && (
-                <div className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50/60 dark:bg-red-500/5 p-3 text-xs text-red-700 dark:text-red-300">
+                <div className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50/60 dark:bg-red-500/5 p-3 text-xs text-error">
                     {loadError ?? actionError}
                 </div>
             )}

@@ -64,7 +64,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
         return (
             <div className="flex items-center justify-between p-3 bg-white/5 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl opacity-60">
                 <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <CheckCircle2 className="w-5 h-5 text-success" />
                     <div>
                         <div className="text-gray-700 dark:text-white/80 font-semibold text-sm line-through decoration-gray-400 dark:decoration-white/30">{stop.guest_name}</div>
                         <div className="text-xs text-sub dark:text-white/40 uppercase">{displayHotel || stop.hotel_name}</div>
@@ -91,7 +91,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                     <Badge variant="light" color="light" className="text-xs px-2 h-5 bg-gray-200 dark:bg-white/5 text-gray-700 dark:text-white/60">{stop.pickup_zone?.toUpperCase()}</Badge>
                 </div>
                 <div className="px-5 flex items-center justify-center bg-gray-200 dark:bg-black/20 border-l border-gray-300 dark:border-white/5 min-w-[5rem]">
-                    <span className={cn("text-3xl font-black", isOnBoard ? "text-green-600 dark:text-green-400" : "text-title")}>{stop.pax_count} <span className="text-base">{t('stopCard.pax')}</span></span>
+                    <span className={cn("text-3xl font-black", isOnBoard ? "text-success" : "text-title")}>{stop.pax_count} <span className="text-base">{t('stopCard.pax')}</span></span>
                 </div>
             </div>
 
@@ -101,7 +101,7 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                     <div className="min-w-0">
                         <h5 className="truncate leading-none mb-1 text-lg font-bold text-title">{stop.guest_name}</h5>
                         {stop.customer_note
-                            ? <p className="text-xs text-yellow-600 dark:text-yellow-500 italic truncate font-bold">⚠️ "{stop.customer_note}"</p>
+                            ? <p className="text-xs text-warning italic truncate font-bold">⚠️ "{stop.customer_note}"</p>
                             : <p className="text-xs text-sub dark:text-white/30 font-bold uppercase">{t('stopCard.noNotes')}</p>
                         }
                     </div>
@@ -113,11 +113,11 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                         <div className="min-w-0">
                             <span className="text-sm font-bold truncate text-title block">{displayHotel}</span>
                             {phase === 'DROPOFF' && stop.dropoff_hotel && (
-                                <span className="text-xs text-green-600 dark:text-green-400 uppercase font-bold">{t('stopCard.destination')}</span>
+                                <span className="text-xs text-success uppercase font-bold">{t('stopCard.destination')}</span>
                             )}
                         </div>
                     </button>
-                    <button onClick={() => onWhatsApp(stop.phone_number)} className="size-14 rounded-xl bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-500/30 flex items-center justify-center text-green-600 dark:text-green-500 hover:bg-green-200 dark:hover:bg-green-900/40 transition-all">
+                    <button onClick={() => onWhatsApp(stop.phone_number)} className="size-14 rounded-xl bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-500/30 flex items-center justify-center text-success hover:bg-green-200 dark:hover:bg-green-900/40 transition-all">
                         <MessageSquare className="w-6 h-6" />
                     </button>
                 </div>

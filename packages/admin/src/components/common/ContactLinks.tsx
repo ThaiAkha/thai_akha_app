@@ -47,7 +47,7 @@ const ContactLinks: React.FC<ContactLinksProps> = ({
               type="button"
               onClick={() => onWhatsApp(phone)}
               aria-label="WhatsApp"
-              className="text-green-600 dark:text-green-500 hover:opacity-70 transition-opacity shrink-0"
+              className="text-success hover:opacity-70 transition-opacity shrink-0"
             >
               <MessageSquare className="w-4 h-4" />
             </button>
@@ -68,7 +68,7 @@ const ContactLinks: React.FC<ContactLinksProps> = ({
       )}
       {lineId && (
         <span className={ROW}>
-          <MessageCircle className="w-4 h-4 text-green-500 shrink-0" />
+          <MessageCircle className="w-4 h-4 text-success shrink-0" />
           <span className="truncate">{lineId}</span>
         </span>
       )}

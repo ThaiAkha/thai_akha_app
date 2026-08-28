@@ -84,7 +84,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
               className={cn(
                 "font-black",
                 userMode === 'existing'
-                  ? "text-green-800 dark:text-green-300"
+                  ? "text-success"
                   : "text-purple-800 dark:text-purple-300"
               )}
             >
@@ -96,7 +96,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
               className={cn(
                 "text-xs",
                 userMode === 'existing'
-                  ? "text-green-600 dark:text-green-400"
+                  ? "text-success"
                   : "text-purple-600 dark:text-purple-400"
               )}
             >
@@ -106,7 +106,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="ml-auto text-red-500 border-red-200 hover:bg-red-50"
+            className="ml-auto text-error border-red-200 hover:bg-red-50"
             onClick={() => onSelectedUserChange(null)}
           >
             {t('search.removeBtn')}

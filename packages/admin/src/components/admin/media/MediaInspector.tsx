@@ -57,7 +57,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                                 <div className="p-6 rounded-full bg-blue-500 text-white shadow-glow-blue animate-pulse">
                                     <Info className="w-8 h-8" />
                                 </div>
-                                <p className="text-sm font-bold text-blue-500 uppercase tracking-widest italic font-display">Audio Story Mode</p>
+                                <p className="text-sm font-bold text-info uppercase tracking-widest italic font-display">Audio Story Mode</p>
                                 <audio controls className="w-[80%] opacity-80" src={editingAsset.image_url} />
                             </div>
                         ) : (
@@ -279,16 +279,16 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
 
             {/* 5. AI INTELLIGENCE */}
             <MediaSection
-                icon={<Zap className="w-4 h-4 text-orange-500" />}
+                icon={<Zap className="w-4 h-4 text-accent" />}
                 title={t('inspector.sections.aiMetadata')}
-                titleClassName="text-orange-600"
+                titleClassName="text-accent"
             >
                 <div className={`p-5 rounded-2xl border transition-all duration-500 
                     ${editingAsset.is_ai_generated ? 'bg-orange-500/5 border-orange-500/20 shadow-glow-orange/5' : 'bg-gray-50 dark:bg-gray-800/50 border-transparent opacity-60'}`}
                 >
                     <div className="flex items-center justify-between mb-4">
                             <div className="flex flex-col">
-                            <label className="text-xs font-black uppercase text-orange-600">{t('inspector.labels.aiGenerated')}</label>
+                            <label className="text-xs font-black uppercase text-accent">{t('inspector.labels.aiGenerated')}</label>
                             <p className="text-xs text-sub italic">{t('inspector.labels.aiGeneratedHint')}</p>
                             </div>
                             <button
@@ -302,13 +302,14 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     </div>
                     {editingAsset.is_ai_generated && (
                             <div className="relative">
-                            <label className="absolute -top-2 left-2 px-1 bg-orange-100 dark:bg-orange-950 text-xs font-black text-orange-600 uppercase rounded">{t('inspector.labels.toolEngine')}</label>
+                            {/* text-accent, non text-warning: sull'etichetta con fondo orange-100 il warning dava 4.39, sotto AA */}
+                            <label className="absolute -top-2 left-2 px-1 bg-orange-100 dark:bg-orange-950 text-xs font-black text-accent uppercase rounded">{t('inspector.labels.toolEngine')}</label>
                             <input
                                 type="text"
                                 value={editingAsset.ai_tool || ''}
                                 onChange={e => handleChange('ai_tool', e.target.value)}
                                 disabled={!isEditing}
-                                className="w-full px-4 py-3 bg-white dark:bg-black/20 border border-orange-500/20 rounded-lg text-xs font-bold text-orange-600 outline-none"
+                                className="w-full px-4 py-3 bg-white dark:bg-black/20 border border-orange-500/20 rounded-lg text-xs font-bold text-accent outline-none"
                                 placeholder="e.g. Midjourney"
                             />
                             </div>
@@ -365,7 +366,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                 <div className="pt-10">
                     <button 
                         onClick={onDelete}
-                        className="w-full flex items-center justify-center gap-3 p-5 rounded-2xl bg-red-500/5 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-xs uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] group"
+                        className="w-full flex items-center justify-center gap-3 p-5 rounded-2xl bg-red-500/5 border border-red-500/20 text-error hover:bg-red-500 hover:text-white transition-all font-black text-xs uppercase tracking-[0.2em] shadow-xl active:scale-[0.98] group"
                     >
                         <Trash2 size={16} className="group-hover:animate-bounce" />
                         {t('inspector.buttons.deIndex')}

@@ -61,7 +61,7 @@ export default function SignInForm() {
               <div className="space-y-5">
                 <div>
                   <Label htmlFor="email">
-                    {t('signIn.emailLabel')}<span className="text-sys-error">*</span>
+                    {t('signIn.emailLabel')}<span className="text-error">*</span>
                   </Label>
                   <Input
                     type="email"
@@ -76,7 +76,7 @@ export default function SignInForm() {
 
                 <div>
                   <Label htmlFor="password">
-                    {t('signIn.passwordLabel')}<span className="text-sys-error">*</span>
+                    {t('signIn.passwordLabel')}<span className="text-error">*</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -104,7 +104,7 @@ export default function SignInForm() {
                 </div>
 
                 {error && (
-                  <p className="text-sm text-sys-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">
+                  <p className="text-sm text-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">
                     {error}
                   </p>
                 )}

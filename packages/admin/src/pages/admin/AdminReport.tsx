@@ -140,7 +140,7 @@ const AdminReport: React.FC = () => {
                                     )}>
                                         {metric.icon}
                                     </div>
-                                    <div className={cn("flex items-center gap-1 text-xs font-black", metric.isPositive ? "text-green-500" : "text-amber-500")}>
+                                    <div className={cn("flex items-center gap-1 text-xs font-black", metric.isPositive ? "text-success" : "text-warning")}>
                                         {metric.isPositive ? <ArrowUpRight className="w-3" /> : <ArrowDownRight className="w-3" />}
                                         {metric.change}
                                     </div>

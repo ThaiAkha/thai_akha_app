@@ -188,7 +188,7 @@ const AgencyReports: React.FC = () => {
                                     <span className="text-sm font-bold text-body">{tierProgress.prior} {t('agencyReport.paxInCycle', { defaultValue: 'pax this cycle' })}</span>
                                     {tierProgress.next
                                         ? <span className="text-xs font-black uppercase text-sub">{tierProgress.next.min_pax - tierProgress.prior} {t('agencyReport.toNext', { defaultValue: 'pax to' })} {tierProgress.next.tier} (฿{tierProgress.next.rate})</span>
-                                        : <span className="text-xs font-black uppercase text-green-500">{t('agencyReport.topTier', { defaultValue: 'Top tier reached' })}</span>}
+                                        : <span className="text-xs font-black uppercase text-success">{t('agencyReport.topTier', { defaultValue: 'Top tier reached' })}</span>}
                                 </div>
                                 <div className="h-3 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
                                     <div className="h-full bg-primary-600 rounded-full transition-all" style={{ width: `${tierProgress.pct}%` }} />
@@ -236,7 +236,7 @@ const AgencyReports: React.FC = () => {
                                         <div className="flex items-center gap-3 min-w-0">
                                             {selectable && <input type="checkbox" readOnly checked={checked} className="size-4 accent-primary-600 shrink-0" />}
                                             <div className="size-8 rounded-xl bg-white dark:bg-gray-700 flex items-center justify-center text-sub shrink-0">
-                                                {inv.status === 'paid' ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : inv.status === 'declared' ? <Clock className="w-4 h-4 text-blue-500" /> : <TrendingUp className="w-4 h-4" />}
+                                                {inv.status === 'paid' ? <CheckCircle2 className="w-4 h-4 text-success" /> : inv.status === 'declared' ? <Clock className="w-4 h-4 text-info" /> : <TrendingUp className="w-4 h-4" />}
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="text-xs font-black uppercase text-title truncate">{inv.zoho_invoice_number || t('agencyReport.invoice', { defaultValue: 'Invoice' })}</div>

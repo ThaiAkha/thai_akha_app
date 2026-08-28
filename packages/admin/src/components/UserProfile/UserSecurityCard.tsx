@@ -94,8 +94,8 @@ export default function UserSecurityCard() {
                         <div className={cn(
                             "flex items-center gap-2 p-3 rounded-xl border animate-in fade-in slide-in-from-top-1",
                             message.type === "success"
-                                ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                                : "bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400"
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-success"
+                                : "bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-error"
                         )}>
                             {message.type === "success" ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                             <span className="text-xs font-bold uppercase tracking-widest leading-none">{message.text}</span>
@@ -122,7 +122,7 @@ export default function UserSecurityCard() {
                     <div className="p-2 rounded-xl bg-red-500/10 text-red-500">
                         <Trash2 size={20} />
                     </div>
-                    <h4 className="text-xl font-black italic uppercase tracking-tighter text-red-600 dark:text-red-400">
+                    <h4 className="text-xl font-black italic uppercase tracking-tighter text-error">
                         {t("security.dangerZoneTitle")}
                     </h4>
                 </div>
@@ -135,7 +135,7 @@ export default function UserSecurityCard() {
                     {deactivateStep === 0 ? (
                         <button
                             onClick={() => setDeactivateStep(1)}
-                            className="w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-red-500 border-2 border-red-500/10 bg-white/50 dark:bg-red-900/5 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-all active:scale-95"
+                            className="w-full px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs text-error border-2 border-red-500/10 bg-white/50 dark:bg-red-900/5 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-all active:scale-95"
                         >
                             {t("security.btnDeactivate")}
                         </button>

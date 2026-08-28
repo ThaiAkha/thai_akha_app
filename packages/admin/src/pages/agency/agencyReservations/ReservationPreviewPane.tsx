@@ -81,7 +81,7 @@ export function ReservationPreviewPane({ s }: { s: AgencyReservationsState }) {
                                         <span className="font-medium">{t('agency.grossSubtotal')}</span>
                                         <span className="font-mono">{activeBooking.total_price.toLocaleString()} THB</span>
                                     </div>
-                                    <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+                                    <div className="flex justify-between text-sm text-success">
                                         <span className="font-medium">{t('agency.fieldCommission')}{user?.commission_config?.tiers?.[0] ? ` · ${user.commission_config.tiers[0].tier} ${user.commission_config.tiers[0].rate} ${user.commission_config.currency ?? 'THB'}/pax` : ''}</span>
                                         <span className="font-mono">-{activeBooking.commission.toLocaleString()} THB</span>
                                     </div>

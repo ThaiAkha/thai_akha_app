@@ -38,8 +38,8 @@ const InventorySidebar: React.FC<InventorySidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-green-50 dark:bg-green-900/10 border-t border-green-100 dark:border-green-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title={t('inspector.statusLabel')} variant="sidebar" className="text-green-600 mb-0 ml-0" />
-                        <p className="text-xs text-green-700 dark:text-green-400 font-bold leading-tight uppercase">
+                        <SectionHeader title={t('inspector.statusLabel')} variant="sidebar" className="text-success mb-0 ml-0" />
+                        <p className="text-xs text-success font-bold leading-tight uppercase">
                             Live Inventory
                         </p>
                     </div>

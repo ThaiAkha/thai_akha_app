@@ -205,7 +205,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                     "text-base font-black leading-none",
                                     isToday ? "text-primary-600 dark:text-primary-400" : "text-title dark:text-title/80 group-hover:text-gray-900 dark:group-hover:text-white",
                                     isSelected && "text-primary-600 dark:text-primary-400",
-                                    isFullDay && "text-red-500"
+                                    isFullDay && "text-error"
                                 )}>
                                     {date.getDate()}
                                 </span>

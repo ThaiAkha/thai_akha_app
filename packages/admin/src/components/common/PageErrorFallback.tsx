@@ -19,7 +19,7 @@ const PageErrorFallback: React.FC<AppErrorFallbackProps> = ({ error, isChunkErro
         <div className="flex items-start gap-4">
           <AlertTriangle className="mt-0.5 h-6 w-6 shrink-0 text-red-500" />
           <div className="space-y-3">
-            <h2 className="text-lg font-bold text-red-700 dark:text-red-400">
+            <h2 className="text-lg font-bold text-error">
               {t('common:feedback.error')}
             </h2>
             {import.meta.env.DEV && (

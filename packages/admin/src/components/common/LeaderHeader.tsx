@@ -64,10 +64,10 @@ const LeaderHeader: React.FC<LeaderHeaderProps> = ({
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-sub">
-          <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+          <Crown className="w-3.5 h-3.5 text-warning shrink-0" />
           {label}
           {leader.role === 'agency' && (
-            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded shrink-0">
+            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-info px-1.5 py-0.5 rounded shrink-0">
               Agency
             </span>
           )}
@@ -91,7 +91,7 @@ const LeaderHeader: React.FC<LeaderHeaderProps> = ({
         <div className="flex flex-col items-end gap-1.5 shrink-0">
           {leader.pax != null && <BadgePaxNumber paxCount={leader.pax} size="md" />}
           {leader.luggage ? (
-            <span className="inline-flex items-center gap-1.5 h-6 px-2 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-400 dark:border-amber-500 text-amber-600 dark:text-amber-400">
+            <span className="inline-flex items-center gap-1.5 h-6 px-2 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-400 dark:border-amber-500 text-warning">
               <Luggage className="w-4 h-4" />
               {typeof leader.luggage === 'number' && <span className="text-sm font-black tabular-nums">{leader.luggage}</span>}
             </span>

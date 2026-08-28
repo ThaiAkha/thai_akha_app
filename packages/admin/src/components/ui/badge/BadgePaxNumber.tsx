@@ -33,8 +33,8 @@ const BadgePaxNumber: React.FC<BadgePaxNumberProps> = ({ paxCount, size = 'md' }
     return (
         <Tooltip content={tooltipText} position="top">
             <div className={`flex items-center justify-center ${sizeClasses} bg-green-50 dark:bg-green-900/20 rounded-md border border-green-500 dark:border-green-500 shrink-0`}>
-                <Users className={`${iconSize} text-green-500`} />
-                <span className={`${textSize} font-black text-green-600 dark:text-green-400 tabular-nums`}>
+                <Users className={`${iconSize} text-success`} />
+                <span className={`${textSize} font-black text-success tabular-nums`}>
                     {paxCount}
                 </span>
             </div>

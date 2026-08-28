@@ -48,7 +48,7 @@ function GridCard<T>({
                         loading="lazy"
                     />
                 ) : (
-                    <div className="text-sub group-hover:text-orange-500 transition-colors">
+                    <div className="text-sub group-hover:text-accent transition-colors">
                         {imageIcon}
                     </div>
                 )}

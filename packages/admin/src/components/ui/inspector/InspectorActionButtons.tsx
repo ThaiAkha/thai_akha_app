@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Save } from 'lucide-react';
+import { Edit, Save, X } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../button/Button';
 import Tooltip from '../Tooltip';
@@ -69,4 +69,66 @@ export const InspectorSaveButton: React.FC<InspectorSaveButtonProps> = ({ onClic
             {children}
         </Button>
     </Tooltip>
+);
+
+interface InspectorCancelButtonProps {
+    onClick: () => void;
+    /** Tooltip copy (i18n string). */
+    tooltip: string;
+    children: React.ReactNode;
+    disabled?: boolean;
+    className?: string;
+}
+
+/**
+ * "Cancel" (X) accanto a Save in edit mode: stesso chrome pill di Edit/Save.
+ * Prima non esisteva e Media/Calendar lo scrivevano a mano con raw <button>.
+ */
+export const InspectorCancelButton: React.FC<InspectorCancelButtonProps> = ({ onClick, tooltip, children, disabled, className }) => (
+    <Tooltip content={tooltip} position="left">
+        <Button
+            type="button"
+            onClick={onClick}
+            disabled={disabled}
+            variant="outline"
+            size="md"
+            className={cn(ACTION_BTN, 'active:scale-95', className)}
+            startIcon={<X className="w-4 h-4" />}
+        >
+            {children}
+        </Button>
+    </Tooltip>
+);
+
+interface InspectorPrimaryButtonProps {
+    onClick?: () => void;
+    children: React.ReactNode;
+    disabled?: boolean;
+    isLoading?: boolean;
+    /** 'submit' quando il bottone chiude un <form> (Logistic: Enter-submit deve restare). */
+    type?: 'button' | 'submit';
+    startIcon?: React.ReactNode;
+    className?: string;
+}
+
+/**
+ * Azione primaria a tutta larghezza del footer (h-12, text-base): il target del planner
+ * per Save/Confirm in Logistic, Reservation, Pos e Storage (che gia' usa h-12 nel corpo).
+ * Variante olive del brand, non il pill h-9 dell'header.
+ */
+export const InspectorPrimaryButton: React.FC<InspectorPrimaryButtonProps> = ({
+    onClick, children, disabled, isLoading, type = 'button', startIcon, className,
+}) => (
+    <Button
+        type={type}
+        onClick={onClick}
+        disabled={disabled}
+        isLoading={isLoading}
+        variant="olive"
+        size="md"
+        className={cn('w-full justify-center h-12 text-base font-bold rounded-xl', className)}
+        startIcon={startIcon}
+    >
+        {children}
+    </Button>
 );

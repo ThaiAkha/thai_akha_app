@@ -85,68 +85,72 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                 </div>
             )}
 
-            <Table className="text-xs">
-                <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
-                    <TableRow>
-                        <TableCell isHeader className="px-4 py-3 w-10">
-                            <Checkbox
-                                checked={selectedIds.size === filteredProducts.length && filteredProducts.length > 0}
-                                onChange={onToggleSelectAll}
-                            />
-                        </TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">SKU</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Product Name</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Category</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-center">Stock</TableCell>
-                        <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-right">Price</TableCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredProducts.map((p, idx) => (
-                        <DataExplorerRow
-                            key={p.id}
-                            idx={idx}
-                            selected={editingProduct.id === p.id}
-                            onClick={() => onProductSelect(p)}
-                        >
-                            <TableCell className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+            {/* Solo in modalita' table: prima era incondizionato e in grid mode la
+                tabella compariva SOTTO la griglia (bug, deciso dall'owner 2026-08-28). */}
+            {filteredProducts.length > 0 && viewMode === 'table' && (
+                <Table className="text-xs">
+                    <TableHeader className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
+                        <TableRow>
+                            <TableCell isHeader className="px-4 py-3 w-10">
                                 <Checkbox
-                                    checked={selectedIds.has(String(p.id))}
-                                    onChange={() => onToggleSelectRow(p)}
+                                    checked={selectedIds.size === filteredProducts.length && filteredProducts.length > 0}
+                                    onChange={onToggleSelectAll}
                                 />
                             </TableCell>
-                            <TableCell className="px-4 py-3">
-                                <DataRowText
-                                    description={p.sku}
-                                />
-                            </TableCell>
-                            <TableCell className="px-4 py-3">
-                                <DataRowText
-                                    title={p.item_name}
-                                />
-                            </TableCell>
-                            <TableCell className="px-4 py-3">
-                                <DataRowText
-                                    extra={p.category_id}
-                                />
-                            </TableCell>
-                            <TableCell className="px-4 py-3 text-center text-xs font-black uppercase tracking-tighter">
-                                {p.stock_quantity < 5 ? (
-                                    <Badge color="error" size="sm">{p.stock_quantity}</Badge>
-                                ) : (
-                                    <span className="text-sub">{p.stock_quantity}</span>
-                                )}
-                            </TableCell>
-                            <TableCell className="px-4 py-3 text-right">
-                                <DataRowText
-                                    title={formatCurrency(p.price_thb)}
-                                    className="text-primary-600 dark:text-primary-400"
-                                />
-                            </TableCell>
-                        </DataExplorerRow>
-                    ))}
-                </TableBody>
-            </Table>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">SKU</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Product Name</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub">Category</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-center">Stock</TableCell>
+                            <TableCell isHeader className="px-4 py-3 text-xs font-black uppercase tracking-widest text-sub text-right">Price</TableCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredProducts.map((p, idx) => (
+                            <DataExplorerRow
+                                key={p.id}
+                                idx={idx}
+                                selected={editingProduct.id === p.id}
+                                onClick={() => onProductSelect(p)}
+                            >
+                                <TableCell className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                        checked={selectedIds.has(String(p.id))}
+                                        onChange={() => onToggleSelectRow(p)}
+                                    />
+                                </TableCell>
+                                <TableCell className="px-4 py-3">
+                                    <DataRowText
+                                        description={p.sku}
+                                    />
+                                </TableCell>
+                                <TableCell className="px-4 py-3">
+                                    <DataRowText
+                                        title={p.item_name}
+                                    />
+                                </TableCell>
+                                <TableCell className="px-4 py-3">
+                                    <DataRowText
+                                        extra={p.category_id}
+                                    />
+                                </TableCell>
+                                <TableCell className="px-4 py-3 text-center text-xs font-black uppercase tracking-tighter">
+                                    {p.stock_quantity < 5 ? (
+                                        <Badge color="error" size="sm">{p.stock_quantity}</Badge>
+                                    ) : (
+                                        <span className="text-sub">{p.stock_quantity}</span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="px-4 py-3 text-right">
+                                    <DataRowText
+                                        title={formatCurrency(p.price_thb)}
+                                        className="text-primary-600 dark:text-primary-400"
+                                    />
+                                </TableCell>
+                            </DataExplorerRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
         </DataExplorerContent>
     );
 };

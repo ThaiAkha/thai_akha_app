@@ -81,8 +81,6 @@ const AdminStorage: React.FC = () => {
                                 isEditing={inspector.isEditing}
                                 setIsEditing={inspector.setIsEditing}
                                 setEditingNameValue={inspector.setEditingNameValue}
-                                handleRename={inspector.handleRename}
-                                isUploading={inspector.isUploading}
                             />
                         }
                     >

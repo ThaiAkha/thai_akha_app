@@ -246,8 +246,11 @@ export function useManagerLogistic() {
         if (!error) fetchData();
     }, [fetchData]);
 
-    const handleUpdateBooking = useCallback(async (e: React.FormEvent) => {
-        e.preventDefault();
+    // L'evento serve SOLO per preventDefault, quindi e' opzionale: chi salva da un
+    // bottone (non da un submit) chiama senza argomenti. Prima ManagerLogistic
+    // fabbricava un `new Event('submit') as unknown as React.FormEvent` per farlo.
+    const handleUpdateBooking = useCallback(async (e?: React.FormEvent) => {
+        e?.preventDefault();
         if (!selectedBookingId) return;
         setIsSaving(true);
 

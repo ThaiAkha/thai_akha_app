@@ -105,8 +105,10 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                         </div>
                     ))
                 ) : (
-                    <div className="h-full py-6 flex flex-col items-center justify-center opacity-30">
-                        <Users className="w-10 h-10 mb-1.5 text-gray-500" />
+                    <div className="h-full py-6 flex flex-col items-center justify-center">
+                        {/* Opacita' sull'ICONA, non sul contenitore: li' la ereditava anche
+                            il testo e lo portava a 1.47 di contrasto. */}
+                        <Users className="w-10 h-10 mb-1.5 text-gray-500 opacity-30" />
                         <p className="text-sm font-bold uppercase tracking-widest text-sub">{t('session.empty')}</p>
                     </div>
                 )}

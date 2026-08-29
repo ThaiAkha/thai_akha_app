@@ -47,7 +47,7 @@ export const renderInline = (text: string, kp = 'i'): React.ReactNode => {
           key={`${kp}-l${k}`}
           href={href}
           {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          className="font-semibold text-brand-500 hover:underline"
+          className="font-semibold text-primary-500 hover:underline"
         >
           {m[2]}
         </a>,

@@ -32,6 +32,10 @@ const SoundWave: React.FC = () => (
   </div>
 );
 
+// Il colore del brand in questa app si chiama `primary-*` (--color-primary-500 #E31F33).
+// Fino al 2026-08-29 questo file usava `brand-*`, che NON esiste: le classi non
+// generavano CSS e il bottone flottante era un'icona bianca su fondo trasparente,
+// su ogni pagina admin (AdminChatBox e' montato in AppLayout).
 export const AdminChatBox: React.FC = () => {
   const { t } = useTranslation('common');
   const [chatState, setChatState] = useState<ChatState>(() => {
@@ -98,7 +102,7 @@ export const AdminChatBox: React.FC = () => {
       <div className="fixed bottom-6 right-6 z-[999]">
         <button
           onClick={() => persistState('expanded')}
-          className="size-14 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+          className="size-14 rounded-2xl bg-primary-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
           aria-label={t('aria.openCherry')}
         >
           <Bot size={24} />
@@ -111,7 +115,7 @@ export const AdminChatBox: React.FC = () => {
   if (chatState === 'minimized') {
     return (
       <div
-        className="fixed bottom-6 right-6 z-[999] rounded-3xl bg-brand-500 shadow-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105"
+        className="fixed bottom-6 right-6 z-[999] rounded-3xl bg-primary-500 shadow-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105"
         style={{ width: 120, height: 120 }}
       >
         {isVoiceActive ? (
@@ -161,7 +165,7 @@ export const AdminChatBox: React.FC = () => {
       {/* Header */}
       <div className={cn(
         'h-16 flex items-center justify-between px-5 shrink-0 transition-colors duration-500',
-        isVoiceActive ? 'bg-red-600' : 'bg-brand-500'
+        isVoiceActive ? 'bg-red-600' : 'bg-primary-500'
       )}>
         <div className="flex items-center gap-3 text-white">
           <div className={cn(
@@ -221,7 +225,7 @@ export const AdminChatBox: React.FC = () => {
             <div className={cn(
               'max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed',
               m.role === 'user'
-                ? 'bg-brand-500 text-white rounded-tr-none'
+                ? 'bg-primary-500 text-white rounded-tr-none'
                 : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none'
             )}>
               {m.text}
@@ -244,7 +248,7 @@ export const AdminChatBox: React.FC = () => {
             )}
             {outputTranscript && (
               <div className="flex justify-start">
-                <div className="bg-brand-500/20 p-3 rounded-xl text-xs text-white border border-brand-500/30">
+                <div className="bg-primary-500/20 p-3 rounded-xl text-xs text-white border border-primary-500/30">
                   Cherry: {outputTranscript}
                 </div>
               </div>
@@ -254,9 +258,9 @@ export const AdminChatBox: React.FC = () => {
 
         {(isLoading || isConnecting) && (
           <div className="flex gap-1.5 py-2 px-4 rounded-full bg-white/5 w-fit animate-pulse">
-            <div className="size-1.5 bg-brand-400 rounded-full" />
-            <div className="size-1.5 bg-brand-400 rounded-full" />
-            <div className="size-1.5 bg-brand-400 rounded-full" />
+            <div className="size-1.5 bg-primary-400 rounded-full" />
+            <div className="size-1.5 bg-primary-400 rounded-full" />
+            <div className="size-1.5 bg-primary-400 rounded-full" />
           </div>
         )}
 
@@ -273,12 +277,12 @@ export const AdminChatBox: React.FC = () => {
             onKeyDown={e => e.key === 'Enter' && processUserMessage(input)}
             placeholder={isVoiceActive ? 'Cherry is listening...' : 'Ask Cherry kha...'}
             disabled={isLoading || isConnecting || isVoiceActive}
-            className="w-full bg-white/5 border border-white/10 rounded-xl text-sm py-3 pl-4 pr-12 text-white placeholder:text-white/30 focus:border-brand-400/50 transition-colors outline-none"
+            className="w-full bg-white/5 border border-white/10 rounded-xl text-sm py-3 pl-4 pr-12 text-white placeholder:text-white/30 focus:border-primary-400/50 transition-colors outline-none"
           />
           <button
             onClick={() => processUserMessage(input)}
             disabled={!input.trim() || isLoading || isConnecting || isVoiceActive}
-            className="absolute right-2 top-1/2 -translate-y-1/2 size-8 rounded-lg bg-brand-500 text-white flex items-center justify-center hover:scale-105 active:scale-95 disabled:opacity-20 transition-all"
+            className="absolute right-2 top-1/2 -translate-y-1/2 size-8 rounded-lg bg-primary-500 text-white flex items-center justify-center hover:scale-105 active:scale-95 disabled:opacity-20 transition-all"
           >
             <Send size={14} />
           </button>

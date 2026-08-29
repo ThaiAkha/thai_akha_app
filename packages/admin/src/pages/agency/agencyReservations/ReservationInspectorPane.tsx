@@ -147,8 +147,10 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
 
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-sub opacity-50">
-                        <Edit className="w-12 h-12 mb-3" />
+                    <div className="flex flex-col items-center justify-center h-full text-sub">
+                        {/* Opacita' sull'ICONA, non sul contenitore: li' la ereditava anche
+                            il testo e lo portava a 1.96 di contrasto. */}
+                        <Edit className="w-12 h-12 mb-3 opacity-50" />
                         <Caption className="font-black uppercase tracking-widest leading-4">{t('agency.inspectorIdleMsg')}</Caption>
                     </div>
                 )}

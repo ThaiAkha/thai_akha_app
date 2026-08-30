@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Ban } from 'lucide-react';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
 import SessionStatusBadge from '../admin/calendar/SessionStatusBadge';
+import { Heading } from '../typography';
 
 interface CalendarViewProps {
     currentDate: Date;
@@ -141,9 +142,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <div className="flex items-center justify-between p-6 md:p-8 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 backdrop-blur-xl shrink-0">
                 <div>
                     <span className="block text-xs font-black uppercase tracking-[0.3em] text-sub">Select Date</span>
-                    <h3 className="text-2xl md:text-3xl font-black text-title italic uppercase leading-none mt-2">
+                    <Heading level="h3" className="md:text-3xl italic mt-2 text-title uppercase">
                         {MONTHS[viewDate.getMonth()]} <span className="text-primary-600 dark:text-primary-400">{viewDate.getFullYear()}</span>
-                    </h3>
+                    </Heading>
                 </div>
                 <div className="flex gap-2">
                     <button onClick={handlePrev} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronLeft className="w-5 h-5" /></button>

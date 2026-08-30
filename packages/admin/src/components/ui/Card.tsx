@@ -1,4 +1,5 @@
 import React from 'react';
+import { Heading, Paragraph } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 export type CardSize = 'sm' | 'md' | 'lg';
@@ -45,13 +46,13 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, subtitle, action, classN
   )}>
     <div className="flex items-start justify-between gap-4">
       <div>
-        <h3 className="text-lg font-black text-title">
+        <Heading level="h4" className="text-title">
           {title}
-        </h3>
+        </Heading>
         {subtitle && (
-          <p className="text-sm text-sub mt-1">
+          <Paragraph size="sm" color="secondary" className="mt-1">
             {subtitle}
-          </p>
+          </Paragraph>
         )}
       </div>
       {action && <div className="shrink-0">{action}</div>}

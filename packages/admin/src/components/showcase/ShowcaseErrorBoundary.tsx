@@ -1,3 +1,4 @@
+import { Heading, Paragraph } from '../typography';
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
@@ -30,10 +31,10 @@ class ShowcaseErrorBoundary extends Component<Props, State> {
                 <div className="p-6 m-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-4">
                     <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
                     <div className="space-y-2">
-                        <h3 className="text-lg font-bold text-error">Component Error</h3>
-                        <p className="text-sm text-error">
+                        <Heading level="h4" className="text-error">Component Error</Heading>
+                        <Paragraph size="sm" className="text-error">
                             Something went wrong while rendering this component.
-                        </p>
+                        </Paragraph>
                         <pre className="text-xs font-mono bg-red-100 dark:bg-red-950 p-3 rounded text-red-800 dark:text-red-200 overflow-auto max-w-full">
                             {this.state.error?.message}
                         </pre>

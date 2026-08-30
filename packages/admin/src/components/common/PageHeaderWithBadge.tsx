@@ -1,6 +1,6 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
-import { Heading } from '../typography';
+import { Heading, Paragraph } from '../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 export interface PageHeaderWithBadgeProps {
@@ -41,9 +41,9 @@ const PageHeaderWithBadge: React.FC<PageHeaderWithBadgeProps> = ({
       </Heading>
 
       {description && (
-        <p className="text-sub text-sm max-w-prose">
+        <Paragraph size="sm" color="secondary" className="max-w-prose">
           {description}
-        </p>
+        </Paragraph>
       )}
     </div>
   );

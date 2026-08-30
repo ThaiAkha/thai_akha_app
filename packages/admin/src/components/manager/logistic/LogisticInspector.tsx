@@ -17,6 +17,7 @@ import {
     MeetingPointOption,
     PickupZoneOption,
 } from '../../../hooks/useManagerLogistic';
+import { Caption, SectionTitle } from '../../typography';
 
 // ---------- Main Inspector ----------
 interface LogisticInspectorProps {
@@ -46,8 +47,8 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
         return (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-sub">
                 <Search className="w-12 h-12 mb-4 opacity-50" />
-                <h5 className="uppercase font-bold text-sm text-title">{t('inspector.emptyTitle')}</h5>
-                <p className="text-xs mt-2 text-sub">{t('inspector.emptyHint')}</p>
+                <SectionTitle as="h5" className="text-title">{t('inspector.emptyTitle')}</SectionTitle>
+                <Caption className="mt-2">{t('inspector.emptyHint')}</Caption>
             </div>
         );
     }
@@ -111,9 +112,9 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Route Assignment ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
-                    <h6 className="text-sm font-bold text-sub uppercase tracking-wide flex items-center gap-2">
+                    <SectionTitle as="h6" tone="sub" className="tracking-wide flex items-center gap-2">
                         <User className="w-3.5 h-3.5" /> {t('inspector.routeAssignment')}
-                    </h6>
+                    </SectionTitle>
                     <SelectField
                         label={t('inspector.fieldPickupDriver')}
                         value={selectedBooking.pickup_driver_uid || ''}
@@ -126,9 +127,9 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Pickup Details ── */}
                 <div className="p-6 space-y-4 border-b border-gray-100 dark:border-gray-800">
-                    <h6 className="text-sm font-bold text-sub uppercase tracking-wide flex items-center gap-2">
+                    <SectionTitle as="h6" tone="sub" className="tracking-wide flex items-center gap-2">
                         <MapPin className="w-3.5 h-3.5" /> {t('inspector.pickupDetails')}
-                    </h6>
+                    </SectionTitle>
 
                     {/* Pickup / Walk-in toggle */}
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -227,9 +228,9 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                 {/* ── Drop-off Management ── */}
                 <div className="p-6 space-y-4">
-                    <h6 className="text-sm font-bold text-sub uppercase tracking-wide flex items-center gap-2">
+                    <SectionTitle as="h6" tone="sub" className="tracking-wide flex items-center gap-2">
                         <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
-                    </h6>
+                    </SectionTitle>
 
                     {/* Same / Different Location toggle */}
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">

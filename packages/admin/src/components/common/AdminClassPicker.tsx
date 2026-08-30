@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Sun, Moon, Calendar as CalendarIcon } from 'lucide-react';
 import BookingCalendarModal from '../booking/BookingCalendarModal';
+import { Paragraph } from '../typography';
 import { useTranslation } from 'react-i18next';
 import { formatDateByLanguage } from '../../lib/dateFormatter';
 
@@ -46,7 +47,7 @@ const AdminClassPicker: React.FC<AdminClassPickerProps> = ({
                 onClick={() => setIsCalendarOpen(true)}
                 className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 border border-green-200 dark:border-green-500/30 rounded-2xl cursor-pointer hover:shadow-md transition-all"
             >
-                <p className="text-sm font-black text-title flex-1">{formatDate(date)}</p>
+                <Paragraph size="sm" className="flex-1 text-title font-black">{formatDate(date)}</Paragraph>
                 <CalendarIcon className="w-5 h-5 text-success ml-2 shrink-0" />
             </div>
 

@@ -7,6 +7,7 @@ import {
     TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
+import { Heading, Paragraph } from '../typography';
 import { supabase } from "@thaiakha/shared/lib/supabase";
 import { useTranslation } from "react-i18next";
 import { formatDateByLanguage } from '../../lib/dateFormatter';
@@ -72,9 +73,9 @@ export default function RecentBookings() {
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
             <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h3 className="text-lg font-semibold text-body">
+                    <Heading level="h4" className="text-body">
                         {t('recentBookings.title')}
-                    </h3>
+                    </Heading>
                 </div>
             </div>
             <div className="max-w-full overflow-x-auto">
@@ -97,9 +98,9 @@ export default function RecentBookings() {
                                             {booking.guest_name?.substring(0, 2) || 'GU'}
                                         </div>
                                         <div>
-                                            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                            <Paragraph size="sm" className="text-gray-800 dark:text-white/90 font-medium">
                                                 {booking.guest_name || t('recentBookings.guestDefault')}
-                                            </p>
+                                            </Paragraph>
                                         </div>
                                     </div>
                                 </TableCell>

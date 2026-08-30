@@ -5,6 +5,7 @@ import {
   Users,
 } from "lucide-react";
 import Badge from "../ui/badge/Badge";
+import { Heading } from '../typography';
 import { useTranslation } from "react-i18next";
 
 export default function EcommerceMetrics() {
@@ -22,9 +23,9 @@ export default function EcommerceMetrics() {
             <span className="text-sm text-sub">
               {t('metrics.customers')}
             </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+            <Heading level="h2" className="mt-2">
               3,782
-            </h4>
+            </Heading>
           </div>
           <Badge color="success">
             <ArrowUp />
@@ -44,9 +45,9 @@ export default function EcommerceMetrics() {
             <span className="text-sm text-sub">
               {t('metrics.orders')}
             </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+            <Heading level="h2" className="mt-2">
               5,359
-            </h4>
+            </Heading>
           </div>
 
           <Badge color="error">

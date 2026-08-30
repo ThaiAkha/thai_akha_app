@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../ui/button/Button';
+import { Heading, SectionTitle } from '../../typography';
 
 interface CalendarHeaderProps {
   viewDate: Date;
@@ -35,13 +36,13 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
       <div className="space-y-0.5">
-        <h3 className="text-xl font-black uppercase text-title">
+        <Heading level="h4" className="text-title uppercase">
           {months[viewDate.getMonth()]} <span className="text-primary-500">{viewDate.getFullYear()}</span>
-        </h3>
+        </Heading>
         {subtitle && (
-          <p className="text-xs font-black uppercase tracking-widest text-body">
+          <SectionTitle className="tracking-widest text-body">
             {subtitle}
-          </p>
+          </SectionTitle>
         )}
       </div>
 

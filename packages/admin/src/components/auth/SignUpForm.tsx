@@ -16,6 +16,7 @@ import {
   AGENCY_TERMS, AGENCY_TERMS_TH, AGENCY_TERMS_ZH, AGENCY_TERMS_ES,
   AGENCY_PRIVACY, AGENCY_PRIVACY_TH, AGENCY_PRIVACY_ZH, AGENCY_PRIVACY_ES,
 } from "@thaiakha/shared/data";
+import { Caption, Heading, Paragraph } from '../typography';
 import type { LegalDocument } from "@thaiakha/shared/types";
 import { mergeLegalTranslation } from "@thaiakha/shared/lib/mergeLegalTranslation";
 
@@ -181,12 +182,12 @@ export default function SignUpForm() {
       <div className="flex flex-col justify-center flex-1 w-full max-w-lg mx-auto">
         <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
           <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
+            <Heading level="h2" className="mb-2 sm:text-4xl uppercase tracking-tight">
               {t('signUp.title')}
-            </h1>
-            <p className="text-sm font-medium text-sub">
+            </Heading>
+            <Paragraph size="sm" color="secondary" className="font-medium">
               {t('signUp.subtitle')}
-            </p>
+            </Paragraph>
           </div>
           <div>
             <form onSubmit={handleSubmit}>
@@ -313,7 +314,7 @@ export default function SignUpForm() {
                     />
                   </div>
                 </div>
-                {error && <p className="text-sm text-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">{error}</p>}
+                {error && <Paragraph size="sm" className="bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 text-error font-bold">{error}</Paragraph>}
                 {/* <!-- Checkbox --> */}
                 <div className="flex items-center gap-3">
                   <Checkbox
@@ -321,7 +322,7 @@ export default function SignUpForm() {
                     checked={isChecked}
                     onChange={handleAcceptChange}
                   />
-                  <p className="inline-block text-xs font-medium text-sub leading-tight">
+                  <Caption className="inline-block">
                     {t('signUp.terms')}{" "}
                     <button
                       type="button"
@@ -338,7 +339,7 @@ export default function SignUpForm() {
                     >
                       {t('signUp.privacyLink')}
                     </button>
-                  </p>
+                  </Caption>
                 </div>
                 {/* <!-- Button --> */}
                 <div className="pt-2">
@@ -350,7 +351,7 @@ export default function SignUpForm() {
             </form>
 
             <div className="mt-6 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
-              <p className="text-sm font-medium text-sub">
+              <Paragraph size="sm" color="secondary" className="font-medium">
                 {t('signUp.alreadyAccount')}{" "}
                 <Link
                   to="/signin"
@@ -358,7 +359,7 @@ export default function SignUpForm() {
                 >
                   {t('signUp.signInLink')}
                 </Link>
-              </p>
+              </Paragraph>
             </div>
           </div>
         </div>

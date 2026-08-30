@@ -1,3 +1,4 @@
+import { Heading, Paragraph } from '../../typography';
 import { Link } from "react-router";
 
 interface AlertProps {
@@ -121,11 +122,11 @@ const Alert: React.FC<AlertProps> = ({
         </div>
 
         <div>
-          <h4 className="mb-1 text-sm font-semibold text-body">
+          <Heading level="h6" className="mb-1 text-body">
             {title}
-          </h4>
+          </Heading>
 
-          <p className="text-sm text-sub">{message}</p>
+          <Paragraph size="sm" color="secondary">{message}</Paragraph>
 
           {showLink && (
             <Link

@@ -1,3 +1,4 @@
+import { SectionTitle } from '../typography';
 import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -80,9 +81,9 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ value, onChange, className,
     return (
         <div className={cn("p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm", className)}>
             <div className="flex items-center justify-between mb-4 px-1">
-                <h6 className="text-xs font-black uppercase tracking-widest text-sub">
+                <SectionTitle as="h6" tone="sub" className="tracking-widest">
                     {viewDate.toLocaleString(getLocaleCode(i18n.language), { month: 'long', year: 'numeric' })}
-                </h6>
+                </SectionTitle>
                 <div className="flex gap-1">
                     <button onClick={handlePrevMonth} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors text-sub">
                         <ChevronLeft className="w-4 h-4" />

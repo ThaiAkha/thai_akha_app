@@ -1,5 +1,6 @@
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
+import { SectionTitle } from '../../typography';
 import { InspectorDeleteZone } from '../../ui/inspector';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { READ_ONLY_COLUMNS } from '../../../hooks/useAdminDatabase';
@@ -85,7 +86,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                         );
                     })}
                     {(allColumns.length === 0 && Object.keys(selectedRow).length === 0) && (
-                        <p className="col-span-2 text-center text-sub text-sm uppercase font-black py-12">No schema data available.</p>
+                        <SectionTitle tone="sub" className="col-span-2 text-center py-12">No schema data available.</SectionTitle>
                     )}
                 </div>
             </div>

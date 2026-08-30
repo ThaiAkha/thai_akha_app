@@ -1,4 +1,5 @@
 import React from "react";
+import { Paragraph } from '../typography';
 import { cn } from "@thaiakha/shared/lib/utils";
 import { Heading } from "../typography";
 
@@ -27,9 +28,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
                     {title}
                 </Heading>
                 {subtitle && (
-                    <p className="mt-1 text-sm font-medium text-sub hidden sm:block">
+                    <Paragraph size="sm" color="secondary" className="mt-1 hidden sm:block font-medium">
                         {subtitle}
-                    </p>
+                    </Paragraph>
                 )}
             </div>
             <div className="flex items-center gap-3">

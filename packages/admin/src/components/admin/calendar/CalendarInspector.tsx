@@ -6,6 +6,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
 import Card from '../../ui/Card';
+import { Heading, SectionTitle } from '../../typography';
 import { InspectorShell, InspectorBody, InspectorFooter } from '../../ui/inspector';
 import { DayData, EditSessionState, BulkSessionType } from '../../../hooks/useAdminCalendar';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
@@ -44,7 +45,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
         return (
             <Card className="hidden lg:flex lg:col-span-3 flex-col h-full items-center justify-center text-center text-sub">
                 <Lock className="w-10 h-10 mb-6 opacity-30" />
-                <p className="text-xs font-black uppercase tracking-widest max-w-[160px]">{isBulkMode ? t('inspector.emptyBulk') : t('inspector.emptySelect')}</p>
+                <SectionTitle className="tracking-widest max-w-[160px]">{isBulkMode ? t('inspector.emptyBulk') : t('inspector.emptySelect')}</SectionTitle>
             </Card>
         );
     }
@@ -58,14 +59,14 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                 (h3 + sottotitolo, non mappabile sull'InspectorHeader a altezza fissa). */}
             <InspectorShell className="h-full p-6 gap-6">
                 <div className="shrink-0">
-                    <h3 className="text-xl font-black text-title leading-tight">
+                    <Heading level="h4" className="text-title">
                         {isBulkMode ? t('inspector.bulkDays', { count: selectedDates.size }) : formatDateByLanguage(selectedDate!, i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </h3>
-                    <p className="text-sm text-primary-600 dark:text-primary-400 mt-1 uppercase font-black tracking-widest">
+                    </Heading>
+                    <SectionTitle className="text-primary-600 dark:text-primary-400 mt-1 tracking-widest">
                         {isBulkMode
                             ? (bulkSessionType === 'all' ? t('inspector.bulkUpdateAll') : bulkSessionType === 'morning_class' ? t('inspector.bulkUpdateMorning') : t('inspector.bulkUpdateEvening'))
                             : (isEditing ? t('inspector.editingDay') : t('inspector.quickPreview'))}
-                    </p>
+                    </SectionTitle>
                 </div>
                 {/* fill = min-h-0, flex flex-col come prima: i rami view/edit sono figli flex-1 */}
                 <InspectorBody fill className="flex flex-col pr-1">
@@ -87,11 +88,11 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl">
-                                                <p className="text-sm font-black uppercase text-sub mb-1">{t('inspector.booked')}</p>
+                                                <SectionTitle tone="sub" className="mb-1">{t('inspector.booked')}</SectionTitle>
                                                 <span className="text-xl font-black text-title">{Math.max(0, safeCapacity - safeSeats)}</span>
                                             </div>
                                             <div className="p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl">
-                                                <p className="text-sm font-black uppercase text-sub mb-1">{t('inspector.available')}</p>
+                                                <SectionTitle tone="sub" className="mb-1">{t('inspector.available')}</SectionTitle>
                                                 <span className="text-xl font-black text-primary-600 dark:text-primary-400">{safeSeats}</span>
                                             </div>
                                         </div>
@@ -176,9 +177,9 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                                             <Plus className="w-3 h-3" />
                                                         </button>
                                                     </div>
-                                                    <p className="mt-2 text-sm font-bold text-sub uppercase tracking-widest text-center">
+                                                    <SectionTitle tone="sub" className="mt-2 tracking-widest text-center">
                                                         {isBulkMode ? t('inspector.bulkModHint') : t('inspector.totalCapacity', { count: safeSeats + safeOccupied })}
-                                                    </p>
+                                                    </SectionTitle>
                                                 </div>
                                             )}
                                         </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table as TableIcon } from 'lucide-react';
 import AkhaPixelPattern from '../ui/AkhaPixelPattern';
+import { Heading, SectionTitle } from '../typography';
 
 interface DataExplorerContentProps {
     loading?: boolean;
@@ -48,12 +49,12 @@ const DataExplorerContent: React.FC<DataExplorerContentProps> = ({
                     <div className="size-20 bg-primary-50 dark:bg-primary-500/10 rounded-2xl flex items-center justify-center text-primary-500 mb-6 drop-shadow-sm">
                         {emptyIcon || <TableIcon size={40} />}
                     </div>
-                    <h3 className="text-lg font-black text-body uppercase tracking-tight mb-2">
+                    <Heading level="h4" className="tracking-tight mb-2 text-body uppercase">
                         {t('explorer.emptyTable')}
-                    </h3>
-                    <p className="text-xs font-bold text-sub uppercase tracking-widest leading-relaxed">
+                    </Heading>
+                    <SectionTitle tone="sub" className="tracking-widest">
                         {emptyMessage || t('explorer.emptyTableHint')}
-                    </p>
+                    </SectionTitle>
                     <div className="mt-8 size-1.5 rounded-full bg-primary-500 animate-pulse" />
                 </div>
             </div>

@@ -6,6 +6,7 @@ import {
     TableHeader,
     TableRow,
 } from "../ui/table";
+import { Heading, Paragraph } from '../typography';
 import Badge from "../ui/badge/Badge"; // Default import assuming Badge.tsx has export default
 import { supabase } from "@thaiakha/shared/lib/supabase";
 import { useTranslation } from "react-i18next";
@@ -63,9 +64,9 @@ export default function AgencyRecentBookings() {
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
             <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h3 className="text-lg font-semibold text-body">
+                    <Heading level="h4" className="text-body">
                         {t('agencyBookings.title')}
-                    </h3>
+                    </Heading>
                 </div>
             </div>
             <div className="max-w-full overflow-x-auto">
@@ -87,9 +88,9 @@ export default function AgencyRecentBookings() {
                                             {booking.guest_name?.substring(0, 2).toUpperCase() || 'AG'}
                                         </div>
                                         <div>
-                                            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90 truncate max-w-[120px]">
+                                            <Paragraph size="sm" className="text-gray-800 dark:text-white/90 truncate max-w-[120px] font-medium">
                                                 {booking.guest_name || t('agencyBookings.guest')}
-                                            </p>
+                                            </Paragraph>
                                         </div>
                                     </div>
                                 </TableCell>

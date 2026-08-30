@@ -3,6 +3,7 @@ import { Modal } from '../ui/modal';
 import type { MergedLegalDocument } from '@thaiakha/shared/lib/mergeLegalTranslation';
 import LegalDocumentBody from './LegalDocumentBody';
 import LegalTranslationNotices from './LegalTranslationNotices';
+import { Caption, Heading } from '../typography';
 import { useTranslation } from 'react-i18next';
 import { formatDateByLanguage } from '../../lib/dateFormatter';
 
@@ -31,12 +32,12 @@ const LegalModal: React.FC<LegalModalProps> = ({ document, isOpen, onClose }) =>
         {/* Header */}
         <div className="flex-none px-6 sm:px-8 py-6 border-b border-gray-200 dark:border-gray-800">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-body uppercase tracking-tight">
+            <Heading level="h3" className="sm:text-3xl tracking-tight text-body uppercase">
               {document.title}
-            </h1>
-            <p className="text-xs sm:text-sm font-medium text-sub mt-2">
+            </Heading>
+            <Caption className="sm:text-sm mt-2">
               Effective: {formatDate(document.effectiveDate)}
-            </p>
+            </Caption>
           </div>
         </div>
 

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@thaiakha/shared/lib/utils";
 import Button from "../../ui/button/Button";
 import InputField from "../../form/input/InputField";
+import { Heading } from '../../typography';
 import { LucideIcon } from "lucide-react";
 
 /**
@@ -25,9 +26,9 @@ export const ProfileHeader = ({ title, icon: Icon }: { title: string; icon: Luci
         <div className="p-2 rounded-xl bg-primary-500/10 text-primary-500">
             <Icon size={20} />
         </div>
-        <h4 className="text-xl font-black italic uppercase tracking-tighter text-title">
+        <Heading level="h4" className="italic tracking-tighter text-title uppercase">
             {title}
-        </h4>
+        </Heading>
     </div>
 );
 

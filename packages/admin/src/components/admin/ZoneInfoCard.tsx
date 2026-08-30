@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import Card from '../ui/Card';
+import { Heading, Paragraph } from '../typography';
 
 export interface ZoneInfo {
     id: string;
@@ -37,7 +38,7 @@ const ZoneInfoCard: React.FC<ZoneInfoCardProps> = ({ zone, session = 'morning_cl
                 <div className="grid grid-cols-2 gap-6 items-start">
                     {/* Left: Title with Icon */}
                     <div>
-                        <h3 className="text-xl font-black text-title flex items-center gap-2">
+                        <Heading level="h4" className="flex items-center gap-2 text-title">
                             <div
                                 className="p-1.5 rounded-lg shrink-0"
                                 style={{ backgroundColor: color + '15' }}
@@ -45,11 +46,11 @@ const ZoneInfoCard: React.FC<ZoneInfoCardProps> = ({ zone, session = 'morning_cl
                                 <MapPin className="w-5 h-5" style={{ color }} />
                             </div>
                             <span className="truncate">{zone.name}</span>
-                        </h3>
+                        </Heading>
                         {zone.description && (
-                            <p className="text-sm text-sub font-medium mt-1 line-clamp-1">
+                            <Paragraph size="sm" color="secondary" className="mt-1 line-clamp-1 font-medium">
                                 {zone.description}
-                            </p>
+                            </Paragraph>
                         )}
                     </div>
 

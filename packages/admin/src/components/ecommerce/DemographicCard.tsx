@@ -4,6 +4,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreVertical } from "lucide-react";
 import CountryMap from "./CountryMap";
+import { Heading, Paragraph } from '../typography';
 
 export default function DemographicCard() {
   const { t } = useTranslation('dashboard');
@@ -20,12 +21,12 @@ export default function DemographicCard() {
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
       <div className="flex justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-body">
+          <Heading level="h4" className="text-body">
             {t('ecommerce.demographics')}
-          </h3>
-          <p className="mt-1 text-sub text-theme-sm">
+          </Heading>
+          <Paragraph size="sm" color="secondary" className="mt-1">
             {t('ecommerce.demographicsSubtitle')}
-          </p>
+          </Paragraph>
         </div>
         <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
@@ -67,9 +68,9 @@ export default function DemographicCard() {
               <img src="https://flagcdn.com/us.svg" alt="usa" className="w-6 h-auto" />
             </div>
             <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
+              <Paragraph size="sm" className="text-gray-800 dark:text-white/90 font-semibold">
                 USA
-              </p>
+              </Paragraph>
               <span className="block text-sub text-theme-xs">
                 2,379 Customers
               </span>
@@ -80,9 +81,9 @@ export default function DemographicCard() {
             <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
               <div className="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded-sm bg-primary-500 text-xs font-medium text-white"></div>
             </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+            <Paragraph size="sm" className="text-gray-800 dark:text-white/90 font-medium">
               79%
-            </p>
+            </Paragraph>
           </div>
         </div>
 
@@ -92,9 +93,9 @@ export default function DemographicCard() {
               <img src="https://flagcdn.com/fr.svg" alt="france" className="w-6 h-auto" />
             </div>
             <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
+              <Paragraph size="sm" className="text-gray-800 dark:text-white/90 font-semibold">
                 France
-              </p>
+              </Paragraph>
               <span className="block text-sub text-theme-xs">
                 589 Customers
               </span>
@@ -105,9 +106,9 @@ export default function DemographicCard() {
             <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
               <div className="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded-sm bg-primary-500 text-xs font-medium text-white"></div>
             </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+            <Paragraph size="sm" className="text-gray-800 dark:text-white/90 font-medium">
               23%
-            </p>
+            </Paragraph>
           </div>
         </div>
       </div>

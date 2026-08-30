@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Image as ImageIcon, Volume2, LayoutGrid } from 'lucide-react';
 import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
+import { Caption } from '../../typography';
 import { useMediaResolver } from '../../../hooks/useMediaResolver';
 import { parseGallery } from './newsFieldUtils';
 
@@ -58,12 +59,12 @@ export function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                 <div className="rounded-xl bg-gray-100 dark:bg-gray-800 aspect-video flex items-center justify-center flex-col gap-2">
                     <ImageIcon className="w-10 h-10 text-gray-300" />
                     {!loading && displayUrl && imgError && (
-                        <p className="text-xs text-sub font-mono text-center px-2">
+                        <Caption className="font-mono text-center px-2">
                             Failed to load
-                        </p>
+                        </Caption>
                     )}
                     {loading && (
-                        <p className="text-xs text-sub">Loading...</p>
+                        <Caption>Loading...</Caption>
                     )}
                 </div>
             )}

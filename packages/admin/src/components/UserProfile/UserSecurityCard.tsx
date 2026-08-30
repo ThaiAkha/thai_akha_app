@@ -4,6 +4,7 @@ import { Trash2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@thaiakha/shared/lib/utils";
 import { ProfileCard, ProfileRow } from "./components/ProfileUI";
 import Button from "../ui/button/Button";
+import { Heading, SectionTitle } from '../typography';
 import { useTranslation } from "react-i18next";
 
 /**
@@ -122,14 +123,14 @@ export default function UserSecurityCard() {
                     <div className="p-2 rounded-xl bg-red-500/10 text-red-500">
                         <Trash2 size={20} />
                     </div>
-                    <h4 className="text-xl font-black italic uppercase tracking-tighter text-error">
+                    <Heading level="h4" className="italic tracking-tighter text-error uppercase">
                         {t("security.dangerZoneTitle")}
-                    </h4>
+                    </Heading>
                 </div>
 
-                <p className="text-xs text-sub uppercase tracking-widest font-black mb-8 leading-relaxed">
+                <SectionTitle tone="sub" className="tracking-widest mb-8">
                     {t("security.dangerZoneDesc")}
-                </p>
+                </SectionTitle>
 
                 <div className="flex flex-col gap-4">
                     {deactivateStep === 0 ? (

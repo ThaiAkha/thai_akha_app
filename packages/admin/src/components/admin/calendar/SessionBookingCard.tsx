@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { User, Users } from 'lucide-react';
 import Card from '../../ui/Card';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
+import { SectionTitle } from '../../typography';
 import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 
 interface BookingMember {
@@ -109,7 +110,7 @@ const SessionBookingCard: React.FC<SessionBookingCardProps> = ({
                         {/* Opacita' sull'ICONA, non sul contenitore: li' la ereditava anche
                             il testo e lo portava a 1.47 di contrasto. */}
                         <Users className="w-10 h-10 mb-1.5 text-gray-500 opacity-30" />
-                        <p className="text-sm font-bold uppercase tracking-widest text-sub">{t('session.empty')}</p>
+                        <SectionTitle tone="sub" className="tracking-widest">{t('session.empty')}</SectionTitle>
                     </div>
                 )}
             </div>

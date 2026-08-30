@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/modal';
 import Badge from '../ui/badge/Badge';
+import { Heading, Paragraph } from '../typography';
 import { Calendar, X, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
 import { formatDateByLanguage } from '../../lib/dateFormatter';
 
@@ -93,9 +94,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                             transition-opacity duration-500
                             ${isPhotoMode ? 'opacity-0' : 'opacity-100'}
                         `}>
-                            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white leading-tight">
+                            <Heading level="h1" color="onDark" className="md:text-5xl tracking-tighter uppercase">
                                 {article.title}
-                            </h2>
+                            </Heading>
                         </div>
 
                         {/* Photo mode toggle button - top left */}
@@ -128,18 +129,18 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                                     </div>
                                     
                                     {/* Quote text */}
-                                    <p className="text-2xl md:text-3xl lg:text-4xl font-light italic text-title leading-relaxed">
+                                    <Heading level="h3" className="md:text-3xl lg:text-4xl font-light italic">
                                         {article.excerpt}
-                                    </p>
+                                    </Heading>
                                     
                                     {/* Decorative line */}
                                     <div className="w-24 h-0.5 bg-gradient-to-r from-primary-500/50 to-primary-600/50 mx-auto mt-6" />
                                     
                                     {/* Optional author or category */}
                                     {(article.author || article.category) && (
-                                        <p className="mt-4 text-sm uppercase tracking-widest text-sub font-semibold">
+                                        <Paragraph size="sm" color="secondary" className="mt-4 tracking-widest uppercase font-semibold">
                                             {article.author || article.category}
-                                        </p>
+                                        </Paragraph>
                                     )}
                                 </div>
                             </div>
@@ -188,9 +189,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
                             {/* Excerpt - hidden in photo mode since it appears as hero quote */}
                             {!isPhotoMode && article.excerpt && (
                                 <>
-                                    <p className="text-lg md:text-xl font-medium text-title leading-relaxed mb-6">
+                                    <Paragraph size="lg" className="md:text-xl mb-6 text-title font-medium">
                                         {article.excerpt}
-                                    </p>
+                                    </Paragraph>
                                     
                                     {/* Divider line */}
                                     <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent my-6" />
@@ -211,9 +212,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({
 
                             {/* Content */}
                             <div className="prose prose-lg dark:prose-invert max-w-none">
-                                <p className="text-body leading-relaxed whitespace-pre-wrap">
+                                <Paragraph className="whitespace-pre-wrap text-body">
                                     {article.content || t('pages:articleModal.noContent')}
-                                </p>
+                                </Paragraph>
                             </div>
                         </div>
 

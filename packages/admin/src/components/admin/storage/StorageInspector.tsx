@@ -5,6 +5,7 @@ import Input from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
 import DeleteZone from '../../../components/ui/DeleteZone';
 import Tooltip from '../../../components/ui/Tooltip';
+import { Caption, Paragraph, SectionTitle } from '../../typography';
 import { InspectorEmpty } from '../../ui/inspector';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { FileObject, formatBytes } from '../../../hooks/useAdminStorage';
@@ -72,8 +73,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="size-20 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
                             <Plus className="w-10 h-10" />
                         </div>
-                        <p className="text-xs font-black uppercase text-warning tracking-tighter">{t('inspector.stagingAsset')}</p>
-                        <p className="text-xs font-bold text-sub mt-2 max-w-[180px] break-all">{pendingFile.name}</p>
+                        <SectionTitle className="tracking-tighter text-warning">{t('inspector.stagingAsset')}</SectionTitle>
+                        <Caption className="mt-2 max-w-[180px] break-all">{pendingFile.name}</Caption>
                     </div>
                 ) : (selectedFile && selectedFile.metadata?.mimetype?.startsWith('image/')) ? (
                     <img
@@ -97,7 +98,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         <div className="size-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
                             {selectedFile && getFileIcon(selectedFile.metadata?.mimetype)}
                         </div>
-                        <p className="text-xs font-black uppercase tracking-widest text-center">{selectedFile?.metadata?.mimetype || t('inspector.unknownFile')}</p>
+                        <SectionTitle className="tracking-widest text-center">{selectedFile?.metadata?.mimetype || t('inspector.unknownFile')}</SectionTitle>
                     </div>
                 )}
             </div>
@@ -141,8 +142,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                             <div className="flex items-center gap-3">
                                                 <ImageIcon className="w-4 h-4 text-primary-500" />
                                                 <div className="text-left">
-                                                    <p className="text-xs font-bold text-body">{t('inspector.origQuality')}</p>
-                                                    <p className="text-xs text-sub tracking-tight">{t('inspector.origQualityDesc')}</p>
+                                                    <Paragraph size="xs" className="text-body font-bold">{t('inspector.origQuality')}</Paragraph>
+                                                    <Caption className="tracking-tight">{t('inspector.origQualityDesc')}</Caption>
                                                 </div>
                                             </div>
                                             <Check className="w-3 h-3 text-gray-300 group-hover:text-primary-500" />
@@ -154,8 +155,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                             <div className="flex items-center gap-3">
                                                 <Music className="w-4 h-4 text-purple-500" />
                                                 <div className="text-left">
-                                                    <p className="text-xs font-bold text-body">{t('inspector.standardMp3')}</p>
-                                                    <p className="text-xs text-sub tracking-tight">{t('inspector.mp3Desc')}</p>
+                                                    <Paragraph size="xs" className="text-body font-bold">{t('inspector.standardMp3')}</Paragraph>
+                                                    <Caption className="tracking-tight">{t('inspector.mp3Desc')}</Caption>
                                                 </div>
                                             </div>
                                             <Check className="w-3 h-3 text-gray-300 group-hover:text-purple-500" />
@@ -166,8 +167,8 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                         <div className="flex items-center gap-3">
                                             <FileText className="w-4 h-4 text-gray-500" />
                                             <div className="text-left">
-                                                <p className="text-xs font-bold text-body">{t('inspector.rawDocument')}</p>
-                                                <p className="text-xs text-sub tracking-tight">{t('inspector.rawDocDesc')}</p>
+                                                <Paragraph size="xs" className="text-body font-bold">{t('inspector.rawDocument')}</Paragraph>
+                                                <Caption className="tracking-tight">{t('inspector.rawDocDesc')}</Caption>
                                             </div>
                                         </div>
                                         <Check className="w-3 h-3 text-gray-300 group-hover:text-gray-500" />

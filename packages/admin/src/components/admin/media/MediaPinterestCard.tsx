@@ -1,3 +1,4 @@
+import { Caption, Paragraph, SectionTitle } from '../../typography';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { Copy, Check, ExternalLink, Link as LinkIcon } from 'lucide-react';
@@ -142,7 +143,7 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
     <section className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50/40 dark:bg-red-500/5 overflow-hidden">
       <div className="flex items-center gap-2 px-4 py-2.5 bg-red-500 text-white">
         <span className="text-base leading-none">📌</span>
-        <h3 className="text-xs font-black uppercase tracking-[0.2em]">Pinterest — ready to share</h3>
+        <SectionTitle as="h3" className="tracking-[0.2em]">Pinterest — ready to share</SectionTitle>
       </div>
 
       <div className="p-4 space-y-4">
@@ -175,19 +176,19 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
               {usages.map((u, i) => <option key={u.url} value={i}>{u.label}</option>)}
             </select>
           ) : (
-            <p className="text-xs text-body break-words">{link}</p>
+            <Paragraph size="xs" className="break-words text-body">{link}</Paragraph>
           )}
-          <p className="text-xs text-sub">
+          <Caption>
             {usageLoading ? 'Finding pages that use this photo…'
               : linkIsDerived ? `Auto-derived · used in ${usages.length} place${usages.length > 1 ? 's' : ''}`
               : 'Not used on any page yet — falling back to the site'}
-          </p>
+          </Caption>
         </div>
 
         {missing.length > 0 && (
-          <p className="text-xs text-warning bg-amber-50 dark:bg-amber-500/10 rounded-lg px-2 py-1.5">
+          <Paragraph size="xs" className="bg-amber-50 dark:bg-amber-500/10 rounded-lg px-2 py-1.5 text-warning">
             For a stronger pin, add: {missing.join(', ')}.
-          </p>
+          </Paragraph>
         )}
 
         <button

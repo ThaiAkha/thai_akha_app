@@ -5,7 +5,7 @@ import {
     ShoppingCart, Truck, ChefHat, Package, Star, Clock, type LucideIcon,
 } from 'lucide-react';
 import Card from './Card';
-import { Numeric } from '../typography';
+import { Numeric, SectionTitle } from '../typography';
 
 // Mappa STATICA nome → icona (audit 2026-08, P7). Prima c'era `import * as LucideIcons`
 // + accesso dinamico: annullava il tree-shaking e portava TUTTO lucide-react (~775 KB)
@@ -86,7 +86,7 @@ const StatCard: React.FC<StatCardProps> = ({
                 </div>
             </div>
             <div>
-                <p className="text-xs font-black uppercase tracking-widest text-sub mb-1">{title}</p>
+                <SectionTitle tone="sub" className="tracking-widest mb-1">{title}</SectionTitle>
                 <Numeric variant="stat" className="block tracking-tighter text-title">{value}</Numeric>
             </div>
         </Card>

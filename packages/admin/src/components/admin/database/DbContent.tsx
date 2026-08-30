@@ -14,6 +14,7 @@ import {
 } from '../../../components/data-explorer';
 import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
+import { SectionTitle } from '../../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import type { DataRow } from '../../../components/data-explorer/GridCard';
 import { GRID_PRIMARY_FIELDS } from '../../../hooks/useAdminDatabase';
@@ -60,9 +61,9 @@ const DbContent: React.FC<DbContentProps> = ({
                     </Badge>
                 ) : undefined}
                 footerLeft={
-                    <p className="text-xs font-mono font-bold text-sub uppercase tracking-tighter">
+                    <SectionTitle tone="sub" className="font-mono tracking-tighter">
                         VAL: {String(item[columns[2]] || '—').substring(0, 10)}
-                    </p>
+                    </SectionTitle>
                 }
             />
         );

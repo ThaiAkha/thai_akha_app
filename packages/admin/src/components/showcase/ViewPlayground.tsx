@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ComponentConfig } from '../../config/componentsConfig';
 import { generateDefaultProps, type ShowcaseProps } from '../../utils/showcaseUtils';
 import PropControl from './PropControl';
+import { Caption, Heading, Paragraph } from '../typography';
 import { RefreshCw, Code, Copy, Check } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
@@ -97,8 +98,8 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
             {/* Controls Area (Right / Bottom) */}
             <div className="w-full lg:w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto custom-scrollbar shadow-xl z-20">
                 <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-10">
-                    <h2 className="text-xl font-bold text-title">{component.name}</h2>
-                    <p className="text-sm text-sub mt-1">{component.description}</p>
+                    <Heading level="h4" className="text-title">{component.name}</Heading>
+                    <Paragraph size="sm" color="secondary" className="mt-1">{component.description}</Paragraph>
                 </div>
 
                 <div className="p-6 space-y-6">
@@ -113,7 +114,7 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
                                 value={props[prop.name]}
                                 onChange={(val) => handlePropChange(prop.name, val)}
                             />
-                            {prop.description && <p className="text-xs text-sub">{prop.description}</p>}
+                            {prop.description && <Caption>{prop.description}</Caption>}
                         </div>
                     ))}
                 </div>

@@ -4,6 +4,7 @@ import InputField from '../../../../components/form/input/InputField';
 import SelectField from '../../../../components/form/input/SelectField';
 import Switch from '../../../../components/form/switch/Switch';
 import SectionHeader from '../../../ui/SectionHeader';
+import { Caption, SectionTitle } from '../../../typography';
 import type { HotelEditFormProps } from './types';
 
 // Form hotel in edit/create: il link mappa mostra le GPS risolte come hint e passa a `success`
@@ -105,8 +106,8 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
 
             <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
                 <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-body">{t('inspector.fieldActiveStatus')}</p>
-                    <p className="text-xs text-sub mt-0.5">{t('inspector.showInPickup')}</p>
+                    <SectionTitle className="tracking-widest text-body">{t('inspector.fieldActiveStatus')}</SectionTitle>
+                    <Caption className="mt-0.5">{t('inspector.showInPickup')}</Caption>
                 </div>
                 {/* key: lo Switch va rimontato quando cambia l'hotel selezionato (o si passa a 'new') */}
                 <Switch

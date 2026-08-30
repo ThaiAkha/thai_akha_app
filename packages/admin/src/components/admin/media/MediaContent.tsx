@@ -10,6 +10,7 @@ import {
 } from '../../../components/data-explorer';
 import Badge from '../../../components/ui/badge/Badge';
 import Checkbox from '../../../components/form/input/Checkbox';
+import { Paragraph, SectionTitle } from '../../typography';
 import { type MediaAsset } from '@thaiakha/shared';
 import { getLocaleCode } from '../../../lib/dateFormatter';
 
@@ -84,9 +85,9 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                             </>
                                         }
                                         footerLeft={
-                                            <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate max-w-[100px]">
+                                            <SectionTitle tone="sub" className="font-mono tracking-tighter truncate max-w-[100px]">
                                                 {asset.asset_id || 'NO-DB-SLUG'} {/* intentional technical fallback, not translated */}
-                                            </p>
+                                            </SectionTitle>
                                         }
                                         footerRight={
                                             <button
@@ -161,12 +162,12 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                     <div className="px-5 py-4 flex flex-col gap-1.5 h-full border-r border-gray-100/50 dark:border-white/5 justify-center">
                                         <span className="text-xs font-black text-primary-500 uppercase tracking-widest">Asset ID: {asset.asset_id || 'NOT_SET'}</span>
                                         <div className="flex flex-col">
-                                            <p className="text-xs font-black text-title tracking-tight leading-none mb-1 truncate max-w-[200px]">
+                                            <Paragraph size="xs" className="tracking-tight mb-1 truncate max-w-[200px] text-title font-black">
                                                 {asset.file_name}
-                                            </p>
-                                            <p className="text-xs text-sub font-bold uppercase tracking-tighter truncate max-w-[200px]">
+                                            </Paragraph>
+                                            <SectionTitle tone="sub" className="tracking-tighter truncate max-w-[200px]">
                                                 {asset.title || t('content.table.untitledReference')}
-                                            </p>
+                                            </SectionTitle>
                                         </div>
                                         <div className="flex gap-2 items-center mt-1">
                                             <span className="px-1.5 py-0.5 rounded bg-emerald-500/5 border border-emerald-500/20 text-xs font-black text-emerald-600 uppercase tracking-widest">
@@ -186,9 +187,9 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                             <span className="text-xs font-bold text-sub">{asset.width || '?'} × {asset.height || '?'}</span>
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <p className="text-xs font-bold text-sub uppercase tracking-widest truncate max-w-[150px]">
+                                            <SectionTitle tone="sub" className="tracking-widest truncate max-w-[150px]">
                                                 © {asset.copyright || 'Thai Akha'}
-                                            </p>
+                                            </SectionTitle>
                                             {asset.tags && asset.tags.length > 0 && (
                                                 <div className="flex gap-1 flex-wrap">
                                                     {asset.tags.slice(0, 2).map((t: string) => (

@@ -1,4 +1,5 @@
 import Chart from "react-apexcharts";
+import { Caption, Heading, Paragraph } from '../typography';
 import { ApexOptions } from "apexcharts";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -70,12 +71,12 @@ export default function MonthlyTarget() {
       <div className="px-5 pt-5 bg-white rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6">
         <div className="flex justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-body">
+            <Heading level="h4" className="text-body">
               {t('ecommerce.monthlyTarget')}
-            </h3>
-            <p className="mt-1 text-sub text-theme-sm">
+            </Heading>
+            <Paragraph size="sm" color="secondary" className="mt-1">
               {t('ecommerce.monthlyTargetSubtitle')}
-            </p>
+            </Paragraph>
           </div>
           <div className="relative inline-block">
             <button className="dropdown-toggle" onClick={toggleDropdown}>
@@ -115,17 +116,17 @@ export default function MonthlyTarget() {
             +10%
           </span>
         </div>
-        <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-sub sm:text-base">
+        <Paragraph size="sm" color="secondary" className="mx-auto mt-10 w-full max-w-[380px] text-center sm:text-base">
           {t('ecommerce.monthlyTargetMessage')}
-        </p>
+        </Paragraph>
       </div>
 
       <div className="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
         <div>
-          <p className="mb-1 text-center text-sub text-theme-xs sm:text-sm">
+          <Caption className="mb-1 text-center sm:text-sm">
             {t('ecommerce.target')}
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-body sm:text-lg">
+          </Caption>
+          <Paragraph size="base" className="flex items-center justify-center gap-1 sm:text-lg text-body font-semibold">
             $20K
             <svg
               width="16"
@@ -141,16 +142,16 @@ export default function MonthlyTarget() {
                 fill="#D92D20"
               />
             </svg>
-          </p>
+          </Paragraph>
         </div>
 
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
 
         <div>
-          <p className="mb-1 text-center text-sub text-theme-xs sm:text-sm">
+          <Caption className="mb-1 text-center sm:text-sm">
             {t('ecommerce.revenue')}
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-body sm:text-lg">
+          </Caption>
+          <Paragraph size="base" className="flex items-center justify-center gap-1 sm:text-lg text-body font-semibold">
             $20K
             <svg
               width="16"
@@ -166,16 +167,16 @@ export default function MonthlyTarget() {
                 fill="#039855"
               />
             </svg>
-          </p>
+          </Paragraph>
         </div>
 
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
 
         <div>
-          <p className="mb-1 text-center text-sub text-theme-xs sm:text-sm">
+          <Caption className="mb-1 text-center sm:text-sm">
             {t('ecommerce.today')}
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-body sm:text-lg">
+          </Caption>
+          <Paragraph size="base" className="flex items-center justify-center gap-1 sm:text-lg text-body font-semibold">
             $20K
             <svg
               width="16"
@@ -191,7 +192,7 @@ export default function MonthlyTarget() {
                 fill="#039855"
               />
             </svg>
-          </p>
+          </Paragraph>
         </div>
       </div>
     </div>

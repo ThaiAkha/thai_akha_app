@@ -14,6 +14,7 @@ import {
 import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
 import Button from '../../../components/ui/button/Button';
+import { Caption, SectionTitle } from '../../typography';
 import { FileObject, formatBytes } from '../../../hooks/useAdminStorage';
 import { getLocaleCode } from '../../../lib/dateFormatter';
 
@@ -84,14 +85,14 @@ const StorageContent: React.FC<StorageContentProps> = ({
                                             </Badge>
                                         }
                                         footerLeft={
-                                            <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase shrink-0">
+                                            <SectionTitle tone="sub" className="font-mono tracking-tighter shrink-0">
                                                 {formatBytes(item.metadata?.size || 0)}
-                                            </p>
+                                            </SectionTitle>
                                         }
                                         footerRight={
-                                            <p className="text-xs font-bold text-sub">
+                                            <Caption>
                                                 {new Date(item.updated_at).toLocaleDateString(getLocale(i18n.language))}
-                                            </p>
+                                            </Caption>
                                         }
                                     />
                                 )}

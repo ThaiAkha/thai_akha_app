@@ -7,6 +7,7 @@ import SelectField from '../../../components/form/input/SelectField';
 import TextArea from '../../../components/form/input/TextArea';
 import ZoneInfoCard, { type ZoneInfo } from '../ZoneInfoCard';
 import SectionHeader from '../../ui/SectionHeader';
+import { Heading, SectionTitle } from '../../typography';
 
 /** Minimal structural shapes used by this form (parent hooks pass full DB rows). */
 export interface LogisticsHotel {
@@ -60,12 +61,12 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
 
   return (
     <div className="mt-12 pt-12 border-t border-gray-100 dark:border-gray-800 space-y-8">
-      <h3 className="text-2xl font-black italic uppercase tracking-tighter text-title flex items-center gap-3">
+      <Heading level="h3" className="italic tracking-tighter flex items-center gap-3 text-title uppercase">
         <div className="p-2 rounded-xl bg-primary-500/10 text-primary-500">
           <Truck size={20} />
         </div>
         {t('logistics.sectionTitle')}
-      </h3>
+      </Heading>
 
       {/* Logistics Layout - Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start animate-in fade-in duration-500">
@@ -133,8 +134,8 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                               <MapPin className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                             </div>
                             <div>
-                              <p className="text-sm font-black text-title uppercase tracking-tight">{h.name}</p>
-                              <p className="text-xs text-sub font-bold uppercase tracking-widest">{h.pickup_zones?.name || 'No Zone'}</p>
+                              <SectionTitle className="tracking-tight text-title">{h.name}</SectionTitle>
+                              <SectionTitle tone="sub" className="tracking-widest">{h.pickup_zones?.name || 'No Zone'}</SectionTitle>
                             </div>
                           </div>
                           <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />

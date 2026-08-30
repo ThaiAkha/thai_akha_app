@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileRow, ProfileFooter } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
+import { SectionTitle } from '../typography';
 import { searchCountries, getCountryByCode, type CountryData } from "@thaiakha/shared/data";
 import { useTranslation } from "react-i18next";
 
@@ -141,8 +142,8 @@ export default function UserAddressCard() {
                         <Globe className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                       </div>
                       <div>
-                        <p className="text-sm font-black text-title uppercase tracking-tight">{country.name}</p>
-                        <p className="text-xs text-sub font-bold uppercase tracking-widest">{country.code}</p>
+                        <SectionTitle className="tracking-tight text-title">{country.name}</SectionTitle>
+                        <SectionTitle tone="sub" className="tracking-widest">{country.code}</SectionTitle>
                       </div>
                     </div>
                     <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />

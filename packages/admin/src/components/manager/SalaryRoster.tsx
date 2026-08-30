@@ -6,6 +6,7 @@ import Avatar from '../ui/avatar/Avatar';
 import { useSalaryRoster } from './salaryRoster/useSalaryRoster';
 import PersonRow from './salaryRoster/PersonRow';
 import SalarySummary from './salaryRoster/SalarySummary';
+import { SectionTitle } from '../typography';
 
 /**
  * Salary roster - PERSONE, non login.
@@ -74,7 +75,7 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
                             <section key={g.role} className="space-y-2">
                                 <div className="flex items-center gap-2 px-1">
                                     {g.role === 'driver' && <Truck className="w-4 h-4 text-gray-400" />}
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-sub">{roleLabel(g.role)}</h4>
+                                    <SectionTitle as="h4" tone="sub" className="tracking-widest">{roleLabel(g.role)}</SectionTitle>
                                     <span className="text-[10px] font-bold text-muted">{g.people.length}</span>
                                 </div>
 

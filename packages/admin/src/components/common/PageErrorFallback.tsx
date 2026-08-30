@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import type { AppErrorFallbackProps } from '@thaiakha/shared/components/AppErrorBoundary';
 import Button from '../ui/button/Button';
+import { Heading } from '../typography';
 
 /**
  * Fallback visivo del boundary di pagina (admin, idioma gray/dark lecito).
@@ -19,9 +20,9 @@ const PageErrorFallback: React.FC<AppErrorFallbackProps> = ({ error, isChunkErro
         <div className="flex items-start gap-4">
           <AlertTriangle className="mt-0.5 h-6 w-6 shrink-0 text-red-500" />
           <div className="space-y-3">
-            <h2 className="text-lg font-bold text-error">
+            <Heading level="h4" className="text-error">
               {t('common:feedback.error')}
-            </h2>
+            </Heading>
             {import.meta.env.DEV && (
               <pre className="max-w-full overflow-auto rounded bg-red-100 p-3 text-xs font-mono text-red-800 dark:bg-red-950 dark:text-red-200">
                 {error.message}

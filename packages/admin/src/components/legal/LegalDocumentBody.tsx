@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components -- il file esporta il componente + i suoi render helper (renderInline/renderLegalContent/renderLegalSection), stesso pattern di front inlineMarkdown */
 import React from 'react';
+import { Heading, Paragraph } from '../typography';
 import type { LegalDocument, LegalDocumentSection } from '@thaiakha/shared/types';
 
 /**
@@ -69,7 +70,7 @@ export const renderInline = (text: string, kp = 'i'): React.ReactNode => {
 export const renderLegalContent = (content: string | string[] | undefined): React.ReactNode => {
   if (!content) return null;
   if (typeof content === 'string') {
-    return <p className="text-body leading-relaxed mb-4">{renderInline(content)}</p>;
+    return <Paragraph className="mb-4 text-body">{renderInline(content)}</Paragraph>;
   }
 
   // Prosa e bullet convivono nello stesso array: si raggruppano i bullet consecutivi in
@@ -97,9 +98,9 @@ export const renderLegalContent = (content: string | string[] | undefined): Reac
     }
     flush(`b${idx}`);
     out.push(
-      <p key={`p-${idx}`} className="text-body leading-relaxed mb-4">
+      <Paragraph className="mb-4 text-body" key={`p-${idx}`}>
         {renderInline(item, `p-${idx}`)}
-      </p>,
+      </Paragraph>,
     );
   });
   flush('end');
@@ -114,7 +115,7 @@ export const renderLegalSection = (section: LegalDocumentSection, index: number)
   return (
   <div key={section.anchor ?? `${section.title}-${index}`} id={section.anchor ?? undefined} className="mb-8 scroll-mt-24">
     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4 pt-4">
-      <h2 className="text-xl font-bold text-body">{section.title}</h2>
+      <Heading level="h4" className="text-body">{section.title}</Heading>
       {untranslated && (
         <span className="text-[0.65rem] font-bold uppercase tracking-wider text-warning border border-amber-300/60 dark:border-amber-500/30 rounded-full px-2 py-0.5">
           English
@@ -124,14 +125,14 @@ export const renderLegalSection = (section: LegalDocumentSection, index: number)
     {renderLegalContent(section.content)}
     {section.subsections?.map((sub, i) => (
       <div key={`${sub.title}-${i}`} className="ml-4 mb-6">
-        <h3 className="text-lg font-semibold text-body mb-3">{sub.title}</h3>
+        <Heading level="h4" className="mb-3 text-body">{sub.title}</Heading>
         {renderLegalContent(sub.content)}
       </div>
     ))}
     {section.notes?.map((note, i) => (
-      <p key={`note-${i}`} className="text-sm italic text-sub leading-relaxed mb-3">
+      <Paragraph size="sm" color="secondary" className="italic mb-3" key={`note-${i}`}>
         {renderInline(note)}
-      </p>
+      </Paragraph>
     ))}
   </div>
   );

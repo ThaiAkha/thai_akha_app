@@ -4,6 +4,7 @@ import { EyeOff, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
+import { Heading, Paragraph } from '../typography';
 import { useAuth } from "../../context/AuthContext";
 
 export default function SignInForm() {
@@ -48,12 +49,12 @@ export default function SignInForm() {
       <div className="flex flex-col justify-center flex-1 w-full max-w-lg mx-auto">
         <div className="glass-card p-6 sm:p-10 rounded-3xl border border-white/20 dark:border-white/10 shadow-brand">
           <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 font-black text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md uppercase tracking-tight">
+            <Heading level="h2" className="mb-2 sm:text-4xl uppercase tracking-tight">
               {t('signIn.title')}
-            </h1>
-            <p className="text-sm font-medium text-sub">
+            </Heading>
+            <Paragraph size="sm" color="secondary" className="font-medium">
               {t('signIn.subtitle')}
-            </p>
+            </Paragraph>
           </div>
 
           <div>
@@ -104,9 +105,9 @@ export default function SignInForm() {
                 </div>
 
                 {error && (
-                  <p className="text-sm text-error font-bold bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20">
+                  <Paragraph size="sm" className="bg-sys-error/10 dark:bg-sys-error/10 p-3 rounded-lg border border-sys-error/15 dark:border-sys-error/20 text-error font-bold">
                     {error}
-                  </p>
+                  </Paragraph>
                 )}
 
                 <div className="text-right">
@@ -131,7 +132,7 @@ export default function SignInForm() {
             </form>
 
             <div className="mt-6 border-t border-gray-100 dark:border-white/5 pt-6 text-center">
-              <p className="text-sm font-medium text-sub">
+              <Paragraph size="sm" color="secondary" className="font-medium">
                 {t('signIn.noAccount')}{" "}
                 <Link
                   to="/signup"
@@ -139,7 +140,7 @@ export default function SignInForm() {
                 >
                   {t('signIn.signUpLink')}
                 </Link>
-              </p>
+              </Paragraph>
             </div>
           </div>
         </div>

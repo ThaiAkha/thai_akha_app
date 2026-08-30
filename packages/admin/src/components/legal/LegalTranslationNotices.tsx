@@ -1,4 +1,5 @@
 import React from 'react';
+import { Caption, SectionTitle } from '../typography';
 import { useTranslation } from 'react-i18next';
 import type { MergedLegalDocument } from '@thaiakha/shared/lib/mergeLegalTranslation';
 
@@ -36,27 +37,27 @@ const LegalTranslationNotices: React.FC<LegalTranslationNoticesProps> = ({ docum
           Entrambi i documenti contengono una clausola di lingua in questo senso. */}
       {showingTranslation && (
         <div className="mb-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 px-4 py-3">
-          <p className="text-xs font-medium text-sub">
+          <Caption>
             {t('courtesyNotice')}
-          </p>
+          </Caption>
         </div>
       )}
 
       {/* Traduzione parziale: si dichiara PRIMA del testo, non dopo. */}
       {showingTranslation && doc.isPartialTranslation && (
         <div className="mb-6 rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-warning">
+          <SectionTitle className="tracking-wide text-warning">
             {t('partialNotice', { done: doc.translatedCount, total: doc.sections.length })}
-          </p>
+          </SectionTitle>
         </div>
       )}
 
       {/* La traduzione esisteva ma era riferita a una versione precedente: scartata. */}
       {doc.isStaleTranslation && (
         <div className="mb-6 rounded-2xl border border-amber-300/60 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-warning">
+          <SectionTitle className="tracking-wide text-warning">
             {t('staleNotice')}
-          </p>
+          </SectionTitle>
         </div>
       )}
     </>

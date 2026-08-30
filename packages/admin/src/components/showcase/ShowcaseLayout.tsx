@@ -1,3 +1,4 @@
+import { Heading, Paragraph, SectionTitle } from '../typography';
 import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ComponentCategory } from '../../config/componentsConfig';
@@ -44,10 +45,10 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
             {/* Sidebar */}
             <aside className="w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col shrink-0">
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-                    <h1 className="text-xl font-black text-title tracking-tight">
+                    <Heading level="h4" className="tracking-tight text-title">
                         UI <span className="text-primary-500">Showcase</span>
-                    </h1>
-                    <p className="text-xs text-sub uppercase tracking-widest mt-1">Component Library</p>
+                    </Heading>
+                    <Paragraph size="xs" color="secondary" className="tracking-widest mt-1 uppercase">Component Library</Paragraph>
                 </div>
 
                 <div className="p-4">
@@ -77,7 +78,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
 
                         {categories.map(cat => (
                             <div key={cat.name}>
-                                <h3 className="px-3 text-xs font-black uppercase text-sub tracking-widest mb-2">{cat.name}</h3>
+                                <SectionTitle as="h3" tone="sub" className="px-3 tracking-widest mb-2">{cat.name}</SectionTitle>
                                 <div className="space-y-1">
                                     {cat.components.map(comp => (
                                         <button

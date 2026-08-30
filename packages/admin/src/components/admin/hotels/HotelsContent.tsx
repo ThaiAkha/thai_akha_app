@@ -12,6 +12,7 @@ import {
 } from '../../../components/data-explorer';
 import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
+import { Caption, Paragraph, SectionTitle } from '../../typography';
 import type { HotelLocation, MeetingPoint } from '../../../hooks/useAdminHotels';
 
 interface HotelsContentProps {
@@ -73,14 +74,14 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                             badges={null}
                                             footerLeft={
                                                 <div className="flex flex-col gap-0.5">
-                                                    <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardMorning')}</p>
-                                                    <p className="text-xs font-bold text-body">{item.morning_pickup_time || '--:--'}</p>
+                                                    <SectionTitle tone="sub" className="tracking-tight">{t('content.cardMorning')}</SectionTitle>
+                                                    <Paragraph size="xs" className="text-body font-bold">{item.morning_pickup_time || '--:--'}</Paragraph>
                                                 </div>
                                             }
                                             footerRight={
                                                 <div className="flex flex-col gap-0.5 items-end">
-                                                    <p className="text-xs font-black tracking-tight text-sub uppercase">{t('content.cardEvening')}</p>
-                                                    <p className="text-xs font-bold text-body">{item.evening_pickup_time || '--:--'}</p>
+                                                    <SectionTitle tone="sub" className="tracking-tight">{t('content.cardEvening')}</SectionTitle>
+                                                    <Paragraph size="xs" className="text-body font-bold">{item.evening_pickup_time || '--:--'}</Paragraph>
                                                 </div>
                                             }
                                         />
@@ -109,9 +110,9 @@ const HotelsContent: React.FC<HotelsContentProps> = ({
                                             </span>
                                         }
                                         footerLeft={
-                                            <p className="text-xs font-bold text-sub truncate">
+                                            <Caption className="truncate">
                                                 {item.phone_number || t('content.noPhone')}
-                                            </p>
+                                            </Caption>
                                         }
                                         footerRight={
                                             item.is_active ? (

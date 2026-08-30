@@ -1,4 +1,5 @@
 import React from 'react';
+import { SectionTitle } from '../typography';
 import { ComponentConfig } from '../../config/componentsConfig';
 
 interface ViewGridProps {
@@ -14,7 +15,7 @@ const ViewGrid: React.FC<ViewGridProps> = ({ components }) => {
                         key={config.name}
                         className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center gap-4 hover:border-primary-500 transition-colors"
                     >
-                        <h4 className="text-xs font-bold text-sub uppercase">{config.name}</h4>
+                        <SectionTitle as="h4" tone="sub">{config.name}</SectionTitle>
                         <div className="scale-75 origin-center pointer-events-none">
                             <config.component {...config.demoProps} />
                         </div>

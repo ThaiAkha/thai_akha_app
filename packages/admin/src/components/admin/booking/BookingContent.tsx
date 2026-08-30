@@ -8,6 +8,7 @@ import { UserMode, NewUser } from '../../../hooks/useAdminBooking';
 import BookingNewUserForm from './BookingNewUserForm';
 import BookingUserSearchForm from './BookingUserSearchForm';
 import BookingLogisticsForm from './BookingLogisticsForm';
+import { Heading, Paragraph } from '../../typography';
 
 interface PickupZone {
     id: string;
@@ -114,16 +115,16 @@ const BookingContent: React.FC<BookingContentProps> = ({
                 <div className="p-6">
                     {/* Dynamic Title based on Mode */}
                     <div className="mb-6 pb-3 border-b border-gray-200 dark:border-gray-800">
-                        <h2 className="text-xl font-black text-title flex items-center gap-2">
+                        <Heading level="h4" className="flex items-center gap-2 text-title">
                             {userMode === 'new' && <><User className="w-5 h-5 text-success" /> {t('tabs.newGuest')}</>}
                             {userMode === 'existing' && <><Search className="w-5 h-5 text-success" /> {t('tabs.existingUser')}</>}
                             {userMode === 'agency' && <><Briefcase className="w-5 h-5 text-success" /> {t('tabs.agency')}</>}
-                        </h2>
-                        <p className="text-sm text-sub font-medium mt-1">
+                        </Heading>
+                        <Paragraph size="sm" color="secondary" className="mt-1 font-medium">
                             {userMode === 'new' && t('mode.newDesc')}
                             {userMode === 'existing' && t('mode.existingDesc')}
                             {userMode === 'agency' && t('mode.agencyDesc')}
-                        </p>
+                        </Paragraph>
                     </div>
 
                     {/* MODE: NEW */}

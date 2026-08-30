@@ -1,3 +1,4 @@
+import { Heading, Paragraph } from '../typography';
 interface ComponentCardProps {
   title: string;
   children: React.ReactNode;
@@ -17,13 +18,13 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     >
       {/* Card Header */}
       <div className="px-6 py-5">
-        <h3 className="text-base font-medium text-body">
+        <Heading level="h5" className="text-body">
           {title}
-        </h3>
+        </Heading>
         {desc && (
-          <p className="mt-1 text-sm text-sub">
+          <Paragraph size="sm" color="secondary" className="mt-1">
             {desc}
-          </p>
+          </Paragraph>
         )}
       </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Paragraph } from '../typography';
 import { ComponentConfig } from '../../config/componentsConfig';
 import { useNavigate } from 'react-router';
 import { Layers } from 'lucide-react';
@@ -31,16 +32,16 @@ const ViewCatalog: React.FC<ViewCatalogProps> = ({ components }) => {
                                 {config.props.length} Props
                             </span>
                         </div>
-                        <p className="text-sm text-sub line-clamp-2 min-h-[40px]">
+                        <Paragraph size="sm" color="secondary" className="line-clamp-2 min-h-[40px]">
                             {config.description || 'No description available for this component.'}
-                        </p>
+                        </Paragraph>
                     </div>
                 </div>
             ))}
             {components.length === 0 && (
                 <div className="col-span-full flex flex-col items-center justify-center py-20 text-sub">
                     <Layers className="w-12 h-12 mb-4 opacity-50" />
-                    <p>No components found matching your search.</p>
+                    <Paragraph>No components found matching your search.</Paragraph>
                 </div>
             )}
         </div>

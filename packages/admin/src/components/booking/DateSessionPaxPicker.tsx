@@ -83,9 +83,9 @@ const DateSessionPaxPicker: React.FC<DateSessionPaxPickerProps> = ({
                             <Plus className="w-5 h-5" />
                         </button>
                     </div>
-                    <p className="text-center text-xs font-black uppercase tracking-widest text-sub mt-3 mb-0">
+                    <SectionTitle tone="sub" className="text-center tracking-widest mt-3 mb-0">
                         {t('picker.paxAvailable', { pax, max: maxPax })}
-                    </p>
+                    </SectionTitle>
                 </div>
             </Card.Content>
         </Card>

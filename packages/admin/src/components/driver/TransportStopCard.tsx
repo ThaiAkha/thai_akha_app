@@ -3,6 +3,7 @@ import { CheckCircle2, Map, MessageSquare, ArrowRight } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Badge from '../ui/badge/Badge';
 import Avatar from '../ui/avatar/Avatar';
+import { Heading, Paragraph, SectionTitle } from '../typography';
 import { useTranslation } from 'react-i18next';
 
 export type TransportStatus = 'waiting' | 'driver_en_route' | 'driver_arrived' | 'on_board' | 'dropped_off';
@@ -99,10 +100,10 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                 <div className="flex items-center gap-4">
                     <Avatar src={stop.avatar_url} alt={stop.guest_name} size="medium" />
                     <div className="min-w-0">
-                        <h5 className="truncate leading-none mb-1 text-lg font-bold text-title">{stop.guest_name}</h5>
+                        <Heading level="h4" className="truncate mb-1 text-title">{stop.guest_name}</Heading>
                         {stop.customer_note
-                            ? <p className="text-xs text-warning italic truncate font-bold">⚠️ "{stop.customer_note}"</p>
-                            : <p className="text-xs text-sub dark:text-white/30 font-bold uppercase">{t('stopCard.noNotes')}</p>
+                            ? <Paragraph size="xs" className="italic truncate text-warning font-bold">⚠️ "{stop.customer_note}"</Paragraph>
+                            : <SectionTitle tone="sub" className="dark:text-white/30">{t('stopCard.noNotes')}</SectionTitle>
                         }
                     </div>
                 </div>

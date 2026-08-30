@@ -1,3 +1,4 @@
+import { Heading, Paragraph } from '../../typography';
 /* eslint-disable react-refresh/only-export-components -- provider + hook di contesto colocati (pattern standard) */
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { Modal } from '../modal';
@@ -48,8 +49,8 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     <div className={cn('mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl', danger ? 'bg-red-50 text-error dark:bg-red-900/20' : 'bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400')}>
                         <AlertTriangle className="w-6 h-6" />
                     </div>
-                    <h3 className="text-lg font-bold text-title">{pending?.title ?? 'Confirm'}</h3>
-                    {pending?.message && <p className="mt-2 text-sm text-sub">{pending.message}</p>}
+                    <Heading level="h4" className="text-title">{pending?.title ?? 'Confirm'}</Heading>
+                    {pending?.message && <Paragraph size="sm" color="secondary" className="mt-2">{pending.message}</Paragraph>}
                     <div className="mt-6 flex gap-3">
                         <button
                             type="button"

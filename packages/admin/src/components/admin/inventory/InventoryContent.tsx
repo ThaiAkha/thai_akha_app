@@ -13,6 +13,7 @@ import {
 } from '../../../components/data-explorer';
 import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
+import { Paragraph, SectionTitle } from '../../typography';
 import { Product } from '../../../hooks/useAdminInventory';
 
 interface InventoryContentProps {
@@ -77,14 +78,14 @@ const InventoryContent: React.FC<InventoryContentProps> = ({
                                         </>
                                     }
                                     footerLeft={
-                                        <p className="text-xs font-mono font-bold text-sub tracking-tighter uppercase truncate">
+                                        <SectionTitle tone="sub" className="font-mono tracking-tighter truncate">
                                             ID: {String(p.id).substring(0, 8)}
-                                        </p>
+                                        </SectionTitle>
                                     }
                                     footerRight={
-                                        <p className="text-sm font-black text-primary-600 dark:text-primary-400">
+                                        <Paragraph size="sm" className="text-primary-600 dark:text-primary-400 font-black">
                                             {formatCurrency(p.price_thb)}
-                                        </p>
+                                        </Paragraph>
                                     }
                                 />
                             )}

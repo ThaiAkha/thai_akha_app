@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { type MediaAsset } from '@thaiakha/shared';
 import MediaPinterestCard from './MediaPinterestCard';
 import MediaSection from './mediaInspector/MediaSection';
+import { Caption, SectionTitle } from '../../typography';
 
 interface MediaInspectorProps {
     editingAsset: MediaAsset;
@@ -57,7 +58,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                                 <div className="p-6 rounded-full bg-blue-500 text-white shadow-glow-blue animate-pulse">
                                     <Info className="w-8 h-8" />
                                 </div>
-                                <p className="text-sm font-bold text-info uppercase tracking-widest italic font-display">Audio Story Mode</p>
+                                <SectionTitle className="tracking-widest italic font-display text-info">Audio Story Mode</SectionTitle>
                                 <audio controls className="w-[80%] opacity-80" src={editingAsset.image_url} />
                             </div>
                         ) : (
@@ -289,7 +290,7 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                     <div className="flex items-center justify-between mb-4">
                             <div className="flex flex-col">
                             <label className="text-xs font-black uppercase text-accent">{t('inspector.labels.aiGenerated')}</label>
-                            <p className="text-xs text-sub italic">{t('inspector.labels.aiGeneratedHint')}</p>
+                            <Caption className="italic">{t('inspector.labels.aiGeneratedHint')}</Caption>
                             </div>
                             <button
                             onClick={() => isEditing && handleChange('is_ai_generated', !editingAsset.is_ai_generated)}
@@ -371,9 +372,9 @@ const MediaInspector: React.FC<MediaInspectorProps> = ({
                         <Trash2 size={16} className="group-hover:animate-bounce" />
                         {t('inspector.buttons.deIndex')}
                     </button>
-                    <p className="mt-3 text-xs text-sub text-center italic leading-relaxed px-4">
+                    <Caption className="mt-3 text-center italic px-4">
                         {t('inspector.hints.deIndexWarning')}
-                    </p>
+                    </Caption>
                 </div>
             )}
         </div>

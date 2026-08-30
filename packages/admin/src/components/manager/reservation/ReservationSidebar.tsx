@@ -3,6 +3,7 @@ import { Users, Sun, Moon } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
+import { SectionTitle } from '../../typography';
 import { useTranslation } from 'react-i18next';
 
 interface BookingItem {
@@ -102,9 +103,9 @@ const ReservationSidebar: React.FC<ReservationSidebarProps> = ({
 
     const footer = cancelledItems.length > 0 ? (
         <div className="p-4 space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-widest text-sub">
+            <SectionTitle as="h4" tone="sub" className="tracking-widest">
                 {t('sidebar.cancelledTitle')}
-            </h4>
+            </SectionTitle>
             <div className="space-y-2">
                 {cancelledItems.map((item) => {
                     const isActive = activeBookingId === item.id;

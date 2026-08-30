@@ -7,6 +7,7 @@ import PhoneCountryInput from '../../common/PhoneCountryInput';
 import { searchCountries, getCountryByCode, type CountryData } from '@thaiakha/shared/data';
 import { NewUser } from '../../../hooks/useAdminBooking';
 import SectionHeader from '../../ui/SectionHeader';
+import { SectionTitle } from '../../typography';
 
 interface BookingNewUserFormProps {
   newUser: NewUser;
@@ -126,8 +127,8 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm font-black text-title uppercase tracking-tight">{country.name}</p>
-                      <p className="text-xs text-sub font-bold uppercase tracking-widest">{country.code}</p>
+                      <SectionTitle className="tracking-tight text-title">{country.name}</SectionTitle>
+                      <SectionTitle tone="sub" className="tracking-widest">{country.code}</SectionTitle>
                     </div>
                   </div>
                   <span className="text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">✓</span>

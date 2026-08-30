@@ -12,6 +12,7 @@ import {
   Send,
   AudioLines,
 } from 'lucide-react';
+import { Heading, Paragraph } from '../typography';
 
 type ChatState = 'closed' | 'minimized' | 'expanded';
 const STORAGE_KEY = 'cherry_admin_chat_state';
@@ -175,14 +176,14 @@ export const AdminChatBox: React.FC = () => {
             {isVoiceActive ? <AudioLines size={20} /> : <Bot size={20} />}
           </div>
           <div>
-            <h4 className="font-bold text-sm tracking-wide">Cherry</h4>
-            <p className="text-xs opacity-60 uppercase tracking-widest">
+            <Heading level="h6" className="tracking-wide">Cherry</Heading>
+            <Paragraph size="xs" className="opacity-60 tracking-widest uppercase">
               {activeError
                 ? <span className="normal-case opacity-80">{activeError}</span>
                 : isConnecting ? 'Connecting...'
                 : isVoiceActive ? 'Voice Active'
                 : 'Admin Copilot'}
-            </p>
+            </Paragraph>
           </div>
         </div>
 

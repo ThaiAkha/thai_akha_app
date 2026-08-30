@@ -1,4 +1,5 @@
 import React from 'react';
+import { SectionTitle } from '../../typography';
 import { useTranslation } from 'react-i18next';
 import { Landmark, Wallet } from 'lucide-react';
 
@@ -21,9 +22,9 @@ const SalarySummary: React.FC<SalarySummaryProps> = ({ summary }) => {
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/60 p-4">
             <div className="flex items-baseline justify-between gap-3 mb-2">
-                <h4 className="text-xs font-black uppercase tracking-widest text-sub">
+                <SectionTitle as="h4" tone="sub" className="tracking-widest">
                     {t('salary.summary', { defaultValue: 'Summary' })}
-                </h4>
+                </SectionTitle>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-sub">
                     {t('salary.summaryStaff', { defaultValue: '{{n}} staff', n: summary.staff })}
                 </span>

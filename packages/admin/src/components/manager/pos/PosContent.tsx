@@ -1,4 +1,5 @@
 import React from 'react';
+import { SectionTitle } from '../../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ShoppingBag } from 'lucide-react';
 import { ContentLoadingOverlay, GridCard } from '../../data-explorer';
@@ -85,7 +86,7 @@ const PosContent: React.FC<PosContentProps> = ({
                             onClick={() => onAddToTab(p)}
                             renderFields={(item) => (
                                 <>
-                                    <h6 className="text-xs font-bold text-title uppercase truncate mb-1">{item.name}</h6>
+                                    <SectionTitle as="h6" className="truncate mb-1 text-title">{item.name}</SectionTitle>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-mono font-black text-primary-600 dark:text-primary-400">{item.price} <span className="text-xs text-sub">THB</span></span>
                                     </div>

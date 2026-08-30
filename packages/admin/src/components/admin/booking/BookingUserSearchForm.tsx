@@ -4,6 +4,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import type { UserProfile } from '@thaiakha/shared/types';
 import InputField from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
+import { Caption, Paragraph } from '../../typography';
 
 interface BookingUserSearchFormProps {
   userMode: 'existing' | 'agency';
@@ -45,15 +46,15 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
               className="p-2 hover:bg-white dark:hover:bg-gray-800 rounded-md cursor-pointer border-b border-gray-100 last:border-0 flex justify-between items-center group"
             >
               <div>
-                <p className="font-bold text-sm text-body">
+                <Paragraph size="sm" className="text-body font-bold">
                   {userMode === 'agency' && u.agency_company_name ? u.agency_company_name : u.full_name}
-                </p>
+                </Paragraph>
                 <div className="flex items-center gap-2">
-                  <p className="text-xs text-sub">{u.email}</p>
+                  <Caption>{u.email}</Caption>
                   {userMode === 'agency' && u.agency_company_name && (
-                    <p className="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sub">
+                    <Caption className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                       {u.full_name}
-                    </p>
+                    </Caption>
                   )}
                 </div>
               </div>
@@ -63,7 +64,7 @@ const BookingUserSearchForm: React.FC<BookingUserSearchFormProps> = ({
             </div>
           ))}
           {searchResults.length === 0 && (
-            <p className="text-xs text-center text-sub p-2">{t('search.noUsersFound')}</p>
+            <Caption className="text-center p-2">{t('search.noUsersFound')}</Caption>
           )}
         </div>
       )}

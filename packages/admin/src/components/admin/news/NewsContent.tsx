@@ -14,6 +14,7 @@ import {
 } from '../../../components/data-explorer';
 import { Table, TableBody, TableCell } from '../../../components/ui/table';
 import Badge from '../../../components/ui/badge/Badge';
+import { SectionTitle } from '../../typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import type { DataRow } from '../../../components/data-explorer/GridCard';
 import { NEWS_GRID_PRIMARY_FIELDS } from '../../../hooks/useAdminNews';
@@ -69,9 +70,9 @@ const NewsContent: React.FC<NewsContentProps> = ({
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                 ) : (
-                    <p className="text-xs font-mono font-bold text-sub uppercase tracking-tighter">
+                    <SectionTitle tone="sub" className="font-mono tracking-tighter">
                         {String(item[columns[2]] || '—').substring(0, 12)}
-                    </p>
+                    </SectionTitle>
                 )}
             />
         );

@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Camera, BadgeCheck, Mail, Loader2, Globe, CheckCircle2 } from "lucide-react";
 import { ProfileCard, ProfileFooter, ProfileRow } from "./components/ProfileUI";
 import InputField from "../form/input/InputField";
+import { Heading, SectionTitle } from '../typography';
 import { getSmartAvatarUrl, type AvatarGender } from "@thaiakha/shared/lib/avatarSystem";
 import { searchCountries, getCountryByCode, type CountryData } from "@thaiakha/shared/data";
 import { useTranslation } from "react-i18next";
@@ -152,9 +153,9 @@ export default function UserMetaCard() {
             </div>
 
             <div className="flex flex-col items-center lg:items-start gap-1">
-              <h1 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-title leading-tight">
+              <Heading level="h2" className="lg:text-4xl italic tracking-tighter text-title uppercase">
                 {user?.full_name || t("personal.title")}
-              </h1>
+              </Heading>
               <div className="flex items-center gap-2 text-sub">
                 <Mail size={18} className="text-primary-500/50" />
                 <span className="text-base font-medium">{user?.email}</span>
@@ -212,8 +213,8 @@ export default function UserMetaCard() {
                           <Globe className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                         </div>
                         <div>
-                          <p className="text-sm font-black text-title uppercase tracking-tight">{country.name}</p>
-                          <p className="text-xs text-sub font-bold uppercase tracking-widest">{country.code}</p>
+                          <SectionTitle className="tracking-tight text-title">{country.name}</SectionTitle>
+                          <SectionTitle tone="sub" className="tracking-widest">{country.code}</SectionTitle>
                         </div>
                       </div>
                       <CheckCircle2 className="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -56,7 +56,7 @@ const StepPhoto: React.FC<{
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-105"
       />
       <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-        <span className="opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 bg-black/50 rounded-full p-2">
+        <span className="opacity-0 pointer-coarse:opacity-70 group-hover/photo:opacity-100 transition-opacity duration-300 bg-black/50 rounded-full p-2">
           <Icon name="zoom_in" size="sm" className="text-white" />
         </span>
       </div>
@@ -136,6 +136,8 @@ const StepCard: React.FC<{
             }}
             className={cn(
               'group/cta mt-auto inline-flex items-center [gap:var(--space-fluid-2xs)] self-start',
+              // target touch: da solo il link e' alto ~20px, sotto i 44 dello standard
+              'pointer-coarse:min-h-11',
               'text-action font-bold text-sm rounded-lg transition-colors duration-200',
               'hover:text-action-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-action',
               align === 'right' && 'md:self-end'

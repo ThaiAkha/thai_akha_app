@@ -160,10 +160,17 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
               gradientTo="action"
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)]">
+            {/* Su mobile le 6 card in colonna singola facevano ~6 schermate di scroll
+                prima di arrivare a video, menu e prenotazione. Qui diventano un carosello
+                orizzontale con snap: la card successiva sporge, ed e' quello il segnale
+                che si scorre (niente frecce o puntini da mantenere). Da `sm` in su la
+                griglia resta identica a prima. */}
+            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)]
+                            overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar
+                            [scroll-padding-inline:var(--space-fluid-m)] pb-2 sm:pb-0">
               {loading ? (
                 Array(6).fill(0).map((_, i) => (
-                  <MediaCardSkeleton key={i} lines={3} />
+                  <MediaCardSkeleton key={i} lines={3} className="snap-center shrink-0 w-[85%] sm:w-auto" />
                 ))
               ) : (
                 reasons.map((asset) => (
@@ -171,7 +178,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
                     key={asset.asset_id}
                     padding="none"
                     rounded="xl"
-                    className="overflow-hidden flex flex-col h-full bg-surface-2 border-border/40 pointer-events-none"
+                    className="overflow-hidden flex flex-col h-full bg-surface-2 border-border/40 pointer-events-none snap-center shrink-0 w-[85%] sm:w-auto"
                   >
                     <div className="aspect-[16/9] w-full overflow-hidden">
                       <MediaImage

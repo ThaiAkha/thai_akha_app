@@ -58,8 +58,11 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
             href="/booking"
             onClick={() => onNavigate('booking')}
             theme="akha"
+            buttonVariant="brand"
           />
         </div>
+
+        <AkhaThemedLine theme="akha" />
 
         {/* ── 3. Daily Schedule Timeline ──────────────────────────────────── */}
         {classData && (classData.schedule_items ?? []).length > 0 && (

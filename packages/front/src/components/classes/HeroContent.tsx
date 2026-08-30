@@ -33,10 +33,16 @@ export const HeroContent: React.FC<HeroContentProps> = ({
           {/* Image column */}
           <div className="w-full lg:w-5/12 relative h-80 md:h-[500px] lg:h-full overflow-hidden shrink-0 bg-surface-2">
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700 z-10" />
+            {/* MediaImage non e' utilizzabile qui: vuole un assetId e la classe espone
+                solo un URL. L'immagine e' l'hero, quindi above the fold: `eager` +
+                priorita' alta e' corretto, `lazy` la ritarderebbe. */}
             {currentClass.image_url ? (
               <img
                 src={currentClass.image_url}
                 alt={currentClass.title}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
               />
             ) : (
@@ -57,7 +63,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
 
             {/* Stat badges — price + class time + pickup, one row */}
             <div className="flex flex-row flex-wrap [gap:var(--space-fluid-xs)]">
-              <div className="px-5 py-3 rounded-2xl flex flex-col backdrop-blur-md border bg-action/40 text-white border-action/40 shadow-lg">
+              <div className="[padding:var(--space-fluid-s)_var(--space-fluid-m)] rounded-2xl flex flex-col backdrop-blur-md border bg-action/40 text-white border-action/40 shadow-lg">
                 <Typography variant="microLabel" className="opacity-60 leading-none mb-1 text-white">
                   {currentClass.unit || t('classes:perPerson')}
                 </Typography>
@@ -66,7 +72,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
                 </Typography>
               </div>
               {currentClass.duration_text && (
-                <div className="px-5 py-3 rounded-2xl flex flex-col backdrop-blur-md border bg-black/40 text-white border-black/20 shadow-lg">
+                <div className="[padding:var(--space-fluid-s)_var(--space-fluid-m)] rounded-2xl flex flex-col backdrop-blur-md border bg-black/40 text-white border-black/20 shadow-lg">
                   <Typography variant="microLabel" className="opacity-60 leading-none mb-1 text-white">
                     {t('classes:classTime')}
                   </Typography>
@@ -75,7 +81,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
                   </Typography>
                 </div>
               )}
-              <div className="px-5 py-3 rounded-2xl flex flex-col backdrop-blur-md border bg-black/40 text-white border-black/20 shadow-lg">
+              <div className="[padding:var(--space-fluid-s)_var(--space-fluid-m)] rounded-2xl flex flex-col backdrop-blur-md border bg-black/40 text-white border-black/20 shadow-lg">
                 <Typography variant="microLabel" className="opacity-60 leading-none mb-1 text-white">
                   {t('classes:hotelPickup')}
                 </Typography>

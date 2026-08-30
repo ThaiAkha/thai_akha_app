@@ -13,6 +13,7 @@ import { useClassOverviewExtras } from '../hooks/useClassOverviewExtras';
 import { useMediaAsset } from '../hooks/useMediaAsset';
 import { useShareLink } from '../hooks/useShareLink';
 import { t } from '../i18n';
+import { MediaCardSkeleton } from '../components/skeleton';
 
 interface InfoClassesProps {
   onNavigate: (page: string, topic?: string, sectionId?: string) => void;
@@ -162,7 +163,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)]">
               {loading ? (
                 Array(6).fill(0).map((_, i) => (
-                  <div key={i} className="aspect-[16/9] bg-surface-2 animate-pulse rounded-xl" />
+                  <MediaCardSkeleton key={i} lines={3} />
                 ))
               ) : (
                 reasons.map((asset) => (
@@ -246,7 +247,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
               {loading ? (
                 Array(3).fill(0).map((_, i) => (
                   <React.Fragment key={i}>
-                    <div className="h-64 bg-surface-2 animate-pulse" />
+                    <MediaCardSkeleton aspect="video" />
                     {i < 2 && <div className="hidden md:block w-8" />}
                   </React.Fragment>
                 ))

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
-import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
+import React, { useState, useMemo } from 'react';
 import { Button, Tooltip, Typography } from '../ui/index';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 import { getDateKey } from '@thaiakha/shared/lib/dateKeyUtils';
+import { useCalendarAvailability } from './hooks/useCalendarAvailability';
 
 interface CalendarViewProps {
   currentDate: Date | null;
@@ -13,15 +12,7 @@ interface CalendarViewProps {
   allowSelectionOnFullDays?: boolean; // Per Admin
 }
 
-interface SessionStatus {
-  status: 'OPEN' | 'FULL' | 'CLOSED';
-  seats: number;
-}
-
-interface DayData {
-  morning: SessionStatus;
-  evening: SessionStatus;
-}
+// Posti per giorno/sessione: dati e tipi in ./hooks/useCalendarAvailability.
 
 const DAYS_HEADER = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -34,93 +25,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   allowSelectionOnFullDays = false
 }) => {
   const [viewDate, setViewDate] = useState(new Date(currentDate || new Date()));
-  const [availability, setAvailability] = useState<Record<string, DayData>>({});
-  const [loading, setLoading] = useState(true);
-
-  // --- 1. DATA FETCHING ---
-  useEffect(() => {
-    let isMounted = true;
-    const fetchAvailability = async () => {
-      setLoading(true);
-
-      const year = viewDate.getFullYear();
-      const month = viewDate.getMonth();
-
-      const firstDayOfMonth = new Date(year, month, 1);
-      const dayOfWeek = firstDayOfMonth.getDay(); // 0: Sun, 1: Mon...
-      const startDayIndex = (dayOfWeek + 6) % 7; // Convert to Mon:0, Tue:1... Sun:6
-
-      const startGrid = new Date(year, month, 1 - startDayIndex);
-      const endGrid = new Date(startGrid);
-      endGrid.setDate(startGrid.getDate() + 42);
-
-      const startDateStr = getDateKey(startGrid);
-      const endDateStr = getDateKey(endGrid);
-
-      try {
-        // A. Base Capacity
-        const { data: sessionsData } = await supabase.from('class_sessions').select('id, max_capacity');
-        const baseCaps: Record<string, number> = {};
-        sessionsData?.forEach((s) => baseCaps[s.id] = getSessionCapacity(s.max_capacity) ?? 0);
-
-        // B. Bookings
-        const { data: bookings } = await supabase
-          .from('bookings')
-          .select('booking_date, session_id, pax_count')
-          .gte('booking_date', startDateStr)
-          .lte('booking_date', endDateStr)
-          .neq('status', 'cancelled');
-
-        // C. Overrides
-        const { data: overrides } = await supabase
-          .from('class_calendar_overrides')
-          .select('*')
-          .gte('date', startDateStr)
-          .lte('date', endDateStr);
-
-        // D. Build Map
-        const statusMap: Record<string, DayData> = {};
-        const loopDate = new Date(startGrid);
-
-        for (let i = 0; i < 42; i++) {
-          const dateStr = getDateKey(loopDate);
-
-          const getStatus = (sessionId: string): SessionStatus => {
-            const override = overrides?.find(o => o.date === dateStr && o.session_id === sessionId);
-
-            if (override?.is_closed) return { status: 'CLOSED', seats: 0 };
-
-            const max = getSessionCapacity(override?.custom_capacity ?? baseCaps[sessionId]) ?? 0;
-            const occupied = bookings
-              ?.filter(b => b.booking_date === dateStr && b.session_id === sessionId)
-              .reduce((sum, b) => sum + (b.pax_count || 0), 0) || 0;
-
-            const remaining = Math.max(0, max - occupied);
-
-            return { status: remaining > 0 ? 'OPEN' : 'FULL', seats: remaining };
-          };
-
-          statusMap[dateStr] = {
-            morning: getStatus('morning_class'),
-            evening: getStatus('evening_class')
-          };
-
-          loopDate.setDate(loopDate.getDate() + 1);
-        }
-
-        if (isMounted) {
-          setAvailability(statusMap);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Calendar Sync Error:", err);
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    fetchAvailability();
-    return () => { isMounted = false; };
-  }, [viewDate]);
+  // --- 1. DATA (posti per giorno, cache TanStack, rilettura a ogni mese) ---
+  const { availability, loading } = useCalendarAvailability(viewDate);
 
   // --- 2. GRID RENDERING ---
   const calendarDays = useMemo(() => {

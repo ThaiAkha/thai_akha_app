@@ -1,105 +1,92 @@
 /**
  * MenuManager - stato e dati: piatti selezionati/fissi per la prenotazione, categorie menu,
  * categoria attiva, ricetta in vista, azioni (modifica menu, Ask Cherry, musica).
- * Estratto da MenuManager.tsx (#16 split monstre) a comportamento invariato.
+ * Estratto da MenuManager.tsx (#16 split monstre) a comportamento invariato; le tre letture
+ * (categorie, piatti fissi, piatti scelti) sono su useQuery (CLAUDE.md #17).
  */
 /* eslint-disable @typescript-eslint/no-explicit-any -- righe piatti non tipizzate, come nell'originale */
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery, keepPreviousData } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { RecipeData } from '../../menu/RecipeView';
-import { contentService } from '@thaiakha/shared/services';
-import { ContentCategoryDB } from '@thaiakha/shared';
+import { useContentCategories } from '../../../hooks/useContentCategories';
 import { normalizeCatKey, FALLBACK_CATEGORY_INFO } from './menuHelpers';
 import type { MenuManagerProps } from './types';
 
+/** Le tre categorie dell'esperienza inclusa (tab). */
+const FIXED_TAB_KEYS = ['akha_specialty', 'appetizer', 'dessert'];
+const NO_DISHES: any[] = [];
+const NO_IDS: string[] = [];
+
+export const fixedClassDishesQueryKey = ['recipes', 'fixed_class_dishes'] as const;
+export const menuSelectedDishesQueryKey = (ids: readonly string[]) =>
+  ['recipes', 'menu_selected', ids.join('|')] as const;
+
 export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<MenuManagerProps, 'bookingId' | 'menuSelection' | 'onNavigate'>) {
-  const [loading, setLoading] = useState(true);
-  const [selectedDishes, setSelectedDishes] = useState<any[]>([]);
-  const [fixedDishes, setFixedDishes] = useState<any[]>([]);
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('akha_specialty');
   const [viewingRecipe, setViewingRecipe] = useState<RecipeData | null>(null);
 
-  // --- DATA FETCHING ---
+  // 0. Categorie per i tab: solo le tre dell'esperienza inclusa.
+  const { categories: allCategories, loading: catsLoading } = useContentCategories('recipe');
+  const categories = useMemo(
+    () => allCategories.filter(c => FIXED_TAB_KEYS.includes(normalizeCatKey(c.id))),
+    [allCategories]
+  );
+
+  // 1. Piatti fissi (Included Experience): letti una volta, condivisi fra prenotazioni.
+  const fixedQ = useQuery({
+    queryKey: fixedClassDishesQueryKey,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('recipes')
+        .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
+        .eq('recipe_type', 'class')
+        .eq('is_fixed_dish', true)
+        .order('category');
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+  });
+
+  // 2. Piatti scelti (Your Menu): chiave = i tre id nell'ordine curry/soup/stirfry.
+  const ids = menuSelection
+    ? [menuSelection.curry_id, menuSelection.soup_id, menuSelection.stirfry_id].filter((id): id is string => Boolean(id))
+    : NO_IDS;
+  const selectedQ = useQuery({
+    queryKey: menuSelectedDishesQueryKey(ids),
+    enabled: ids.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('recipes')
+        .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
+        .eq('recipe_type', 'class')
+        .in('id', ids);
+      if (error) throw error;
+      const selected = data ?? [];
+      return [menuSelection?.curry_id, menuSelection?.soup_id, menuSelection?.stirfry_id]
+        .map(id => selected.find(r => r.id === id))
+        .filter(Boolean)
+        // Resolve cover → image so the "Your Menu" hero cards (<img src={dish.image}>) render.
+        .map((r: any) => ({ ...r, image: r.cover?.image_url || r.image })) as any[];
+    },
+    // Al cambio prenotazione restano i piatti precedenti finche' arrivano i nuovi (come prima).
+    placeholderData: keepPreviousData,
+  });
+
+  const fixedDishes: any[] = fixedQ.data ?? NO_DISHES;
+  const selectedDishes: any[] = ids.length > 0 ? (selectedQ.data ?? NO_DISHES) : NO_DISHES;
+
+  // Loading "di pagina" solo al primo caricamento, com'era: dopo, un cambio di prenotazione
+  // non rimette gli skeleton (l'originale lo saltava se aveva gia' dei piatti).
+  const chainPending = catsLoading || fixedQ.isPending || (ids.length > 0 && selectedQ.isPending);
+  const [initialDone, setInitialDone] = useState(false);
   useEffect(() => {
-    const fetchMenuDetails = async () => {
-      // Only show top-level loading if we have no dishes yet
-      if (selectedDishes.length === 0 && fixedDishes.length === 0) {
-        setLoading(true);
-      }
-      
-      try {
-        // 0. Fetch Categories for Tabs
-        if (categories.length === 0) {
-            const cats = await contentService.getContentCategories('recipe');
-            // Filter only fixed experience categories for these tabs
-            const fixedCats = cats.filter(c => ['akha_specialty', 'appetizer', 'dessert'].includes(normalizeCatKey(c.id)));
-            setCategories(fixedCats);
-            if (fixedCats.length > 0 && !activeCategory) {
-               setActiveCategory(normalizeCatKey(fixedCats[0].id));
-            }
-        }
-
-        // 1. Fetch Fixed Dishes (Included Experience) - Fetch only once
-        if (fixedDishes.length === 0) {
-          const { data: fixed } = await supabase
-              .from('recipes')
-              .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
-              .eq('recipe_type', 'class')
-              .eq('is_fixed_dish', true)
-              .order('category');
-          
-          if (fixed) setFixedDishes(fixed);
-        }
-
-        // 2. Fetch Selected Dishes (Your Menu)
-        if (menuSelection) {
-          const ids = [
-            menuSelection.curry_id,
-            menuSelection.soup_id,
-            menuSelection.stirfry_id
-          ].filter((id): id is string => Boolean(id));
-
-          if (ids.length > 0) {
-            // Check if IDs have changed before refetching
-            const currentIds = selectedDishes.map(d => d.id).sort();
-            const newIds = [...ids].sort();
-            const hasChanged = JSON.stringify(currentIds) !== JSON.stringify(newIds);
-
-            if (hasChanged || selectedDishes.length === 0) {
-              const { data: selected } = await supabase
-                .from('recipes')
-                .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
-                .eq('recipe_type', 'class')
-                .in('id', ids);
-              const ordered = [
-                selected?.find(r => r.id === menuSelection.curry_id),
-                selected?.find(r => r.id === menuSelection.soup_id),
-                selected?.find(r => r.id === menuSelection.stirfry_id)
-              ].filter(Boolean)
-                // Resolve cover → image so the "Your Menu" hero cards (<img src={dish.image}>) render.
-                .map((r: any) => ({ ...r, image: r.cover?.image_url || r.image }));
-
-              setSelectedDishes(ordered as any[]);
-            }
-          } else {
-             setSelectedDishes([]);
-          }
-        } else {
-            setSelectedDishes([]);
-        }
-      } catch (err) {
-        console.error("Menu Fetch Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMenuDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- refetch only when menuSelection changes; selectedDishes is written by this effect (loop risk)
-  }, [menuSelection]);
+    if (!chainPending) setInitialDone(true);
+  }, [chainPending]);
+  const loading = !initialDone && chainPending;
 
   // --- HELPERS ---
-  
+
   // LOGICA CUSTOM: Unisce piatti DB e Schede Culturali
   const getDisplayItems = (cat: string) => {
     const dbItems = fixedDishes.filter(d => normalizeCatKey(d.category) === cat);
@@ -165,7 +152,7 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
   };
 
   return {
-    loading, setLoading, selectedDishes, setSelectedDishes, fixedDishes, setFixedDishes, categories, setCategories, activeCategory, setActiveCategory, viewingRecipe, setViewingRecipe, getDisplayItems, FIXED_TABS, getCategoryDescription, handleEditMenu, handleAskCherry, handlePlayMusic,
+    loading, selectedDishes, fixedDishes, categories, activeCategory, setActiveCategory, viewingRecipe, setViewingRecipe, getDisplayItems, FIXED_TABS, getCategoryDescription, handleEditMenu, handleAskCherry, handlePlayMusic,
   };
 }
 

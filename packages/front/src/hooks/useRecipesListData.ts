@@ -1,41 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
-import { ContentCategoryDB, SpicinessLevel } from '@thaiakha/shared';
+import { useContentCategories } from './useContentCategories';
+import { useSpicinessLevels } from './useSpicinessLevels';
+
+const NO_RECIPES: Record<string, unknown>[] = [];
+
+export const recipesFullQueryKey = ['recipes', 'class_full'] as const;
 
 /**
  * Data loader for the Recipes LIST page (Recipes.tsx).
  * Distinct from `useRecipePageData` which serves the single-recipe page.
- * Keeps the original artificial 600ms loader tail to avoid skeleton flash.
+ * Tre query in cache (CLAUDE.md #17); categorie e piccantezza sono hook condivisi.
  */
 export const useRecipesListData = () => {
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [recipes, setRecipes] = useState<Record<string, unknown>[]>([]);
-  const [spicinessLevels, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
+  const { categories, loading: catsLoading } = useContentCategories('recipe');
+  const { spicinessLevels, loading: spiceLoading } = useSpicinessLevels();
+  const recipesQ = useQuery({
+    queryKey: recipesFullQueryKey,
+    queryFn: () => contentService.getAllRecipesFull(),
+  });
+  const fetching = catsLoading || spiceLoading || recipesQ.isPending;
 
+  // Coda artificiale di 600 ms dopo l'arrivo dei dati (invariata): evita il flash dello
+  // skeleton quando la risposta e' immediata, che con la cache e' il caso normale.
+  const [tailDone, setTailDone] = useState(false);
   useEffect(() => {
-    let mounted = true;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [cats, recipesRes, spiceData] = await Promise.all([
-          contentService.getContentCategories('recipe'),
-          contentService.getAllRecipesFull(),
-          contentService.getSpicinessLevels(),
-        ]);
-        if (!mounted) return;
-        setCategories(cats);
-        if (recipesRes) setRecipes(recipesRes);
-        setSpicinessLevels(spiceData);
-      } catch (e) {
-        console.error('Error fetching recipes:', e);
-      } finally {
-        setTimeout(() => { if (mounted) setLoading(false); }, 600);
-      }
-    };
-    fetchData();
-    return () => { mounted = false; };
-  }, []);
+    if (fetching) return;
+    const t = setTimeout(() => setTailDone(true), 600);
+    return () => clearTimeout(t);
+  }, [fetching]);
 
-  return { categories, recipes, spicinessLevels, loading };
+  return {
+    categories,
+    recipes: recipesQ.data ?? NO_RECIPES,
+    spicinessLevels,
+    loading: fetching || !tailDone,
+  };
 };

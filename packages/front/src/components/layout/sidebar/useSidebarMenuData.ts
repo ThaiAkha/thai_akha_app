@@ -1,9 +1,12 @@
 /**
- * Menu della sidebar (desktop + mobile) da site_metadata: fetch con retry/backoff.
- * Era copiato identico in Sidebar.tsx e SidebarMobile.tsx (#16 split monstre): ora una sola
- * implementazione, comportamento invariato (stessi tentativi, stesso "mai svuotare un menu buono").
+ * Menu della sidebar (desktop + mobile) da site_metadata.
+ * Era copiato identico in Sidebar.tsx e SidebarMobile.tsx (#16 split monstre), poi un solo
+ * useEffect con retry/backoff a mano. Ora una useQuery (CLAUDE.md #17) con la stessa
+ * semantica: 3 tentativi a 400/800/1200 ms se il menu arriva vuoto, e "mai svuotare un
+ * menu buono" al cambio lingua o ruolo (il precedente resta finche' arriva il nuovo).
  */
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
+import { useQuery, keepPreviousData } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
 
 export interface MenuItem {
@@ -18,61 +21,58 @@ export interface MenuItem {
   parent_id?: string | null;
 }
 
+const NO_ITEMS: MenuItem[] = [];
+const MAX_RETRIES = 3;
+/** Sentinella interna: un menu vuoto e' un errore "da ritentare", non da loggare. */
+const EMPTY_MENU = 'sidebar-menu-empty';
+
+export const sidebarMenuQueryKey = (lang: string, reloadKey: string) =>
+  ['sidebar_menu', lang, reloadKey] as const;
+
 /**
  * @param lang      lingua corrente: al cambio il menu si ricarica dal sidecar
  * @param reloadKey chiave extra che forza il ricaricamento (desktop: ruolo utente)
  * @param logLabel  etichetta del console.error (invariata rispetto ai due file di origine)
  */
 export function useSidebarMenuData(lang: string, reloadKey = '', logLabel = 'Menu error') {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [footerItems, setFooterItems] = useState<MenuItem[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  // L'etichetta serve solo al log: in un ref, cosi' non e' mai una dipendenza del fetch.
+  // L'etichetta serve solo al log: in un ref, cosi' non entra nella chiave della query.
   const logLabelRef = useRef(logLabel);
   logLabelRef.current = logLabel;
 
-  useEffect(() => {
-    let cancelled = false;
-    let attempts = 0;
-    const MAX_ATTEMPTS = 3;
-
-    const loadMenu = async () => {
-      if (cancelled) return;
+  const query = useQuery({
+    queryKey: sidebarMenuQueryKey(lang, reloadKey),
+    queryFn: async () => {
       try {
         const [items, footer] = await Promise.all([
           contentService.getMenuItems('site_metadata', lang),
           contentService.getFooterItems(lang),
         ]);
-        if (cancelled) return;
-
-        // Never blank a good menu with an empty result: an empty fetch here is
-        // almost always a transient race (Sidebar mounts before the Supabase
-        // session is restored → RLS yields 0 rows). Keep prior items and retry
-        // with backoff so the menu fills in WITHOUT needing a manual refresh.
-        if (items && items.length > 0) {
-          // contentService ritorna righe non tipizzate (Record<string, unknown>): il doppio
-          // passaggio via unknown e' l'unico cast lecito finche' il service non e' tipizzato (P6 audit 2026-08).
-          setMenuItems(items as unknown as MenuItem[]);
-          setIsLoaded(true);
-        } else if (attempts < MAX_ATTEMPTS) {
-          attempts += 1;
-          setTimeout(loadMenu, 400 * attempts);
-          return;
-        }
-        if (footer && footer.length > 0) setFooterItems(footer as unknown as MenuItem[]);
+        // Un menu vuoto qui e' quasi sempre una race transitoria (la Sidebar monta prima
+        // che la sessione Supabase sia ripristinata → RLS restituisce 0 righe): si lancia,
+        // cosi' TanStack ritenta col backoff di sotto e il menu si riempie da solo.
+        if (!items || items.length === 0) throw new Error(EMPTY_MENU);
+        // contentService ritorna righe non tipizzate (Record<string, unknown>): il doppio
+        // passaggio via unknown e' l'unico cast lecito finche' il service non e' tipizzato (P6 audit 2026-08).
+        return {
+          menuItems: items as unknown as MenuItem[],
+          footerItems: (footer ?? []) as unknown as MenuItem[],
+        };
       } catch (error) {
-        console.error(logLabelRef.current, error);
-        if (!cancelled && attempts < MAX_ATTEMPTS) {
-          attempts += 1;
-          setTimeout(loadMenu, 400 * attempts);
+        if (!(error instanceof Error && error.message === EMPTY_MENU)) {
+          console.error(logLabelRef.current, error);
         }
+        throw error;
       }
-    };
+    },
+    retry: MAX_RETRIES,
+    retryDelay: (attempt) => 400 * (attempt + 1),
+    placeholderData: keepPreviousData,
+  });
 
-    loadMenu();
-    return () => { cancelled = true; };
-  // `lang` nelle deps: al cambio lingua il menu si ricarica dal sidecar.
-  }, [lang, reloadKey]);
-
-  return { menuItems, footerItems, isLoaded };
+  return {
+    menuItems: query.data?.menuItems ?? NO_ITEMS,
+    footerItems: query.data?.footerItems ?? NO_ITEMS,
+    // Come prima: "caricato" = c'e' un menu da mostrare, anche quello precedente durante un cambio lingua.
+    isLoaded: query.data !== undefined,
+  };
 }

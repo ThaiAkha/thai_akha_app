@@ -1,77 +1,79 @@
 /**
  * RecipeView (menu) - stato e logica: ingredienti ricchi + mappa allergie da DB, conflitti dieta/
  * allergie, categorie/menu, audio story/cooking, gallery, Ask Cherry.
- * Estratto da RecipeView.tsx (#16 split monstre) a comportamento invariato.
+ * Estratto da RecipeView.tsx (#16 split monstre) a comportamento invariato; le tre letture
+ * (ingredienti per nome, allergy map, categorie) sono su useQuery (CLAUDE.md #17).
  */
 import { useMemo, useState, useRef, useEffect } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { contentService } from '@thaiakha/shared/services';
-import { ContentCategoryDB } from '@thaiakha/shared';
+import { useContentCategories } from '../../../hooks/useContentCategories';
 import type { GalleryItem } from '../../modal/GalleryModal';
 import type { RecipeData, IngredientDetail } from './types';
 
 interface Params { recipe: RecipeData; allRecipes: RecipeData[]; activeDiet: string; userAllergies: string[]; }
+
+const NO_INGREDIENTS: IngredientDetail[] = [];
+const NO_NAMES: string[] = [];
+const NO_ALLERGY_MAP: Record<string, string> = {};
+
+export const allergyMapQueryKey = ['allergy_map'] as const;
+/** Chiave per insieme di nomi (ordinati): due ricette con gli stessi ingredienti condividono la voce. */
+export const ingredientsByNameQueryKey = (names: readonly string[]) =>
+  ['ingredients_by_name', [...names].sort().join('|')] as const;
 
 export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }: Params) {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryStartIndex, setGalleryStartIndex] = useState(0);
   const [activeAudio, setActiveAudio] = useState<'story' | 'cooking' | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [richIngredients, setRichIngredients] = useState<IngredientDetail[]>([]);
   const [activeIngredient, setActiveIngredient] = useState<IngredientDetail | null>(null);
-  const [loadingIng, setLoadingIng] = useState(false);
-  const [allergyMap, setAllergyMap]   = useState<Record<string, string>>({});
-  
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // --- 1. FETCH INGREDIENTI & ALLERGY MAP ---
+  // --- 1. INGREDIENTI RICCHI, ALLERGY MAP, CATEGORIE ---
+  const ingredientNames = recipe.keyIngredients ?? NO_NAMES;
+  const ingredientsQ = useQuery({
+    queryKey: ingredientsByNameQueryKey(ingredientNames),
+    enabled: ingredientNames.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ingredients_library')
+        .select('id, name_en, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
+        .in('name_en', ingredientNames);
+      if (error) throw error;
+      // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
+      return ((data ?? []) as Array<Record<string, unknown>>).map((item): IngredientDetail => {
+        const cover = item.cover as { image_url?: string } | null;
+        return {
+          id: item.id as string,
+          name_en: item.name_en as string,
+          name_th: item.name_th as string,
+          phonetic: item.phonetic as string | undefined,
+          description: item.description as string,
+          is_visible_public: item.is_visible_public as boolean,
+          image_url: cover?.image_url ?? '',
+        };
+      });
+    },
+  });
+  const allergyQ = useQuery({
+    queryKey: allergyMapQueryKey,
+    queryFn: () => contentService.getAllergyMap(),
+  });
+  const { categories } = useContentCategories('recipe');
+
+  const richIngredients = ingredientsQ.data ?? NO_INGREDIENTS;
+  const allergyMap = allergyQ.data ?? NO_ALLERGY_MAP;
+  const loadingIng = ingredientNames.length > 0 && ingredientsQ.isPending;
+
+  // Al cambio ricetta si torna in cima (come prima).
   useEffect(() => {
-    const fetchRichIngredients = async () => {
-        if (!recipe.keyIngredients || recipe.keyIngredients.length === 0) return;
-        setLoadingIng(true);
-        const { data } = await supabase
-            .from('ingredients_library')
-            .select('id, name_en, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
-            .in('name_en', recipe.keyIngredients);
-        // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
-        if (data) setRichIngredients(
-            (data as Array<Record<string, unknown>>).map((item) => {
-                const cover = item.cover as { image_url?: string } | null;
-                return {
-                    id: item.id as string,
-                    name_en: item.name_en as string,
-                    name_th: item.name_th as string,
-                    phonetic: item.phonetic as string | undefined,
-                    description: item.description as string,
-                    is_visible_public: item.is_visible_public as boolean,
-                    image_url: cover?.image_url ?? '',
-                };
-            })
-        );
-        setLoadingIng(false);
-    };
-
-    const fetchAllergies = async () => {
-        const map = await contentService.getAllergyMap();
-        setAllergyMap(map);
-    };
-
-    const fetchCategories = async () => {
-        const cats = await contentService.getContentCategories('recipe');
-        setCategories(cats);
-    };
-
-    fetchRichIngredients();
-    fetchAllergies();
-    fetchCategories();
-    
     const mainContainer = document.getElementById('main-scroll-container');
     if (mainContainer) mainContainer.scrollTo({ top: 0, behavior: 'instant' });
     else window.scrollTo(0, 0);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- refetch solo al cambio ricetta (keyIngredients e' un array nuovo a ogni render)
   }, [recipe.id]);
 
   // --- 2. FILTRO PRIVACY PUBBLICA ---
@@ -169,7 +171,7 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
   };
 
   return {
-    isGalleryOpen, setIsGalleryOpen, galleryItems, galleryStartIndex, setGalleryStartIndex, activeAudio, setActiveAudio, isMenuOpen, setIsMenuOpen, categories, setCategories, richIngredients, setRichIngredients, activeIngredient, setActiveIngredient, loadingIng, setLoadingIng, allergyMap, setAllergyMap, audioRef, menuRef, visibleIngredientsNames, activeConflicts, groupedRecipes, categoryOrder, getCategoryLabel, handleAskCherry, toggleAudio, openGalleryAt,
+    isGalleryOpen, setIsGalleryOpen, galleryItems, galleryStartIndex, setGalleryStartIndex, activeAudio, setActiveAudio, isMenuOpen, setIsMenuOpen, categories, richIngredients, activeIngredient, setActiveIngredient, loadingIng, allergyMap, audioRef, menuRef, visibleIngredientsNames, activeConflicts, groupedRecipes, categoryOrder, getCategoryLabel, handleAskCherry, toggleAudio, openGalleryAt,
   };
 }
 

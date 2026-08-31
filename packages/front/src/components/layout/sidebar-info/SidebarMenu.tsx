@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { contentService } from '@thaiakha/shared/services';
+import React from 'react';
 import { Typography, Icon } from '../../ui';
 import type { TocAccent } from '../../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../../i18n';
 import SidebarCard from './SidebarCard';
 import { useLanguage } from '../../../context/LanguageContext';
-
-interface FooterItem {
-  page_slug: string;
-  menu_label: string;
-}
+import { useFooterMenu } from './useFooterMenu';
 
 interface SidebarMenuProps {
   /** Slug pagina corrente → evidenzia la voce. */
@@ -31,6 +26,7 @@ const MENU_ACCENT: Record<TocAccent, { active: string; hover: string; ring: stri
 /**
  * SidebarMenu — menu "Information" (pagine del menu footer: About, Contact, Terms…),
  * dentro SidebarCard (header + divider a tema, come il TOC). Base condivisa col TOC.
+ * Le voci arrivano da useFooterMenu (cache TanStack, CLAUDE.md #17).
  */
 export const SidebarMenu: React.FC<SidebarMenuProps> = ({
   currentSlug,
@@ -38,17 +34,9 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
   accent = 'ocean',
   title = t('components:sidebarInfo.menuTitle'),
 }) => {
-  const [footer, setFooter] = useState<FooterItem[]>([]);
   const { lang } = useLanguage();
+  const { footerItems: footer } = useFooterMenu(lang);
   const a = MENU_ACCENT[accent];
-
-  useEffect(() => {
-    let cancelled = false;
-    contentService.getFooterItems(lang).then((items) => {
-      if (!cancelled && items?.length) setFooter(items as unknown as FooterItem[]);
-    });
-    return () => { cancelled = true; };
-  }, [lang]);
 
   if (footer.length === 0) return null;
 

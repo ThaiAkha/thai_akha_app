@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { useQuery } from '@thaiakha/shared/query';
 import { Typography, Button, Icon, Badge } from '../components/ui/index';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
@@ -7,14 +8,13 @@ import { MenuCard } from '../components/menu/index';
 import { authService, UserProfile } from '../services/auth.service';
 import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
 import { useDietaryKnowledge, type DietaryProfile } from '../hooks/useDietaryKnowledge';
+import { useContentCategories } from '../hooks/useContentCategories';
 import { useActiveProfile } from '../context/ActiveProfileContext';
 import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
 import { NoBookingBanner } from '../components/user-dashboard';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../i18n';
-import { contentService } from '@thaiakha/shared/services';
-import { ContentCategoryDB } from '@thaiakha/shared';
-import type { SpicinessLevel, Tables } from '@thaiakha/shared/types';
+import type { Tables } from '@thaiakha/shared/types';
 
 /** Recipe row as selected below (recipes + key ingredients + cover join).
  *  keyIngredients is flattened for the list; saved selections keep the raw row (no keyIngredients). */
@@ -23,6 +23,9 @@ type MenuRecipe = Tables<'recipes'> & {
   cover: Pick<Tables<'media_assets'>, 'asset_id' | 'image_url' | 'alt_text'> | null;
   keyIngredients?: string[];
 };
+
+const NO_RECIPES: MenuRecipe[] = [];
+const classMenuRecipesQueryKey = ['recipes', 'class_menu'] as const;
 
 const normalizeCat = (cat: string) => {
   const lower = cat.toLowerCase();
@@ -38,15 +41,34 @@ const MenuPage: React.FC<{
   onAuthSuccess: () => void;
   sectionId?: string | null;
 }> = ({ onNavigate, userProfile, onAuthSuccess, sectionId }) => {
-  const [loading, setLoading] = useState(true);
+  const [hydrating, setHydrating] = useState(true);
   const [saving, setSaving] = useState(false);
 
   // Context
   const [targetBookingId, setTargetBookingId] = useState<string | null>(sectionId || null);
 
-  // Dati
-  const [recipes, setRecipes] = useState<MenuRecipe[]>([]);
-  const [, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
+  // Dati pubblici (categorie + ricette di classe): cache TanStack (CLAUDE.md #17).
+  // La lettura spiciness che stava qui era scaricata e mai usata: tolta.
+  const { categories, loading: catsLoading } = useContentCategories('recipe');
+  const recipesQ = useQuery({
+    queryKey: classMenuRecipesQueryKey,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('recipes')
+        .select(`*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`)
+        .eq('recipe_type', 'class')
+        .order('category')
+        .order('name');
+      if (error) throw error;
+      return (data ?? []).map(r => ({
+        ...r,
+        keyIngredients: r.recipe_key_ingredients?.map((i) => i.ingredient) || []
+      }));
+    },
+  });
+  const recipes: MenuRecipe[] = recipesQ.data ?? NO_RECIPES;
+  const dataLoading = catsLoading || recipesQ.isPending;
+  const loading = dataLoading || hydrating;
 
   // Preferenze
   const [diet, setDiet] = useState<string>('regular');
@@ -54,7 +76,6 @@ const MenuPage: React.FC<{
   const [selectedSpicinessId, setSelectedSpicinessId] = useState<number>(2);
 
   // Selezioni
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
   const [selections, setSelections] = useState<Record<string, MenuRecipe | null>>({});
 
   // Dietary Knowledge
@@ -66,38 +87,22 @@ const MenuPage: React.FC<{
   const { managedProfiles, activeProfileId, isActingAsManaged, isActiveVisitor } = useActiveProfile();
   const activeManaged = managedProfiles.find(p => p.id === activeProfileId) ?? null;
 
-  // --- INIT ---
+  // --- HYDRATION: stato iniziale del form (selezioni, dieta, allergie, booking) ---
+  // Non e' una lettura pura: scrive lo stato del form dal profilo attivo e dal menu salvato.
+  // Parte quando categorie e ricette sono in cache; le due letture qui dentro (ultimo
+  // booking, menu salvato) sono dell'utente e cambiano a ogni prenotazione.
   useEffect(() => {
+    if (dataLoading) return;
+    let cancelled = false;
     const init = async () => {
-      setLoading(true);
+      setHydrating(true);
       try {
-        const [cats, recRes, spiceRes] = await Promise.all([
-          contentService.getContentCategories('recipe'),
-          supabase.from('recipes').select(`*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`).eq('recipe_type', 'class').order('category').order('name'),
-          // Fonte unica: il service (cached + join photo_asset_id). Era una query
-          // diretta `select('*')`, che bypassava cache e foto. Vedi #70.
-          contentService.getSpicinessLevels()
-        ]);
-
-        if (cats) {
-          setCategories(cats);
-          // Initialize selections with category IDs that are selection-based
-          // Selection-based categories are identified by specific IDs or simply all active categories for now
-          // content_categories.id is a SLUG (e.g. 'authentic-thai-curry-recipes'),
-          // not a short key — normalize it to curry/soup/stirfry before matching.
-          const selectionCats = cats.filter(c => ['curry', 'soup', 'stirfry'].includes(normalizeCat(c.id)));
-          const initialSelections: Record<string, MenuRecipe | null> = {};
-          selectionCats.forEach(c => { initialSelections[normalizeCat(c.id)] = null; });
-          setSelections(initialSelections);
-        }
-
-        if (recRes.data) {
-          setRecipes(recRes.data.map(r => ({
-            ...r,
-            keyIngredients: r.recipe_key_ingredients?.map((i) => i.ingredient) || []
-          })));
-        }
-        if (spiceRes.length > 0) setSpicinessLevels(spiceRes);
+        // content_categories.id is a SLUG (e.g. 'authentic-thai-curry-recipes'),
+        // not a short key — normalize it to curry/soup/stirfry before matching.
+        const selectionCats = categories.filter(c => ['curry', 'soup', 'stirfry'].includes(normalizeCat(c.id)));
+        const initialSelections: Record<string, MenuRecipe | null> = {};
+        selectionCats.forEach(c => { initialSelections[normalizeCat(c.id)] = null; });
+        setSelections(initialSelections);
 
         const currentUser = userProfile || await authService.getCurrentUserProfile();
 
@@ -132,22 +137,23 @@ const MenuPage: React.FC<{
               .eq('user_id', effectiveUserId)
               .maybeSingle();
 
-            if (savedMenu && recRes.data) {
+            if (savedMenu) {
               const menuSelections: Record<string, MenuRecipe | null> = {};
-              menuSelections.curry = recRes.data.find(r => r.id === savedMenu.curry_id) || null;
-              menuSelections.soup = recRes.data.find(r => r.id === savedMenu.soup_id) || null;
-              menuSelections.stirfry = recRes.data.find(r => r.id === savedMenu.stirfry_id) || null;
+              menuSelections.curry = recipes.find(r => r.id === savedMenu.curry_id) || null;
+              menuSelections.soup = recipes.find(r => r.id === savedMenu.soup_id) || null;
+              menuSelections.stirfry = recipes.find(r => r.id === savedMenu.stirfry_id) || null;
               setSelections(menuSelections);
             }
           }
         } else {
           onNavigate('auth');
         }
-      } catch (err) { console.error(err); } finally { setLoading(false); }
+      } catch (err) { console.error(err); } finally { if (!cancelled) setHydrating(false); }
     };
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeManaged/isActingAsManaged derive from activeProfileId; onNavigate is stable enough, re-init would refetch
-  }, [userProfile, sectionId, activeProfileId]);
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- activeManaged/isActingAsManaged derive from activeProfileId; categories/recipes sono riferimenti stabili di cache; onNavigate is stable enough, re-init would refetch
+  }, [dataLoading, userProfile, sectionId, activeProfileId]);
 
   // --- ACTIONS ---
   const handleConfirm = async () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
 
 export interface DietarySubstitution {
@@ -21,59 +21,47 @@ export interface DietaryProfile {
   [key: string]: unknown;
 }
 
+const NO_PROFILES: DietaryProfile[] = [];
+
+export const dietaryProfilesQueryKey = ['dietary_profiles'] as const;
+
+/** Profili dietetici dal service, mappati sul tipo UI e ordinati per display_order. */
+async function fetchDietaryProfiles(): Promise<DietaryProfile[]> {
+  const p = await contentService.getDietaryProfiles();
+  const mapped: DietaryProfile[] = p.map(profile => ({
+    id: profile.id as string,
+    name: profile.name as string,
+    icon: (profile.icon as string | null | undefined) || 'restaurant',
+    description: (profile.description as string | null | undefined) || '',
+    description_long: (profile.description_long as string | null | undefined) ?? null,
+    experience: profile.experience as string | undefined,
+    type: profile.type as string | undefined,
+    image_url: profile.image_url as string | undefined,
+    display_order: profile.display_order as number | undefined,
+    substitutions: (profile.substitutions as DietarySubstitution[] | null | undefined) || [],
+  }));
+  mapped.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+  return mapped;
+}
+
+/**
+ * Diete e allergie (dietary_profiles) per Recipes, UserMenu e Passport.
+ * Data layer unico (CLAUDE.md #17): era `useEffect + useState`; ora una voce di cache
+ * condivisa fra le pagine, e `profiles` e' un riferimento stabile fra i render.
+ */
 export function useDietaryKnowledge() {
-  const [profiles, setProfiles] = useState<DietaryProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+  const query = useQuery({ queryKey: dietaryProfilesQueryKey, queryFn: fetchDietaryProfiles });
+  const profiles = query.data ?? NO_PROFILES;
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const p = await contentService.getDietaryProfiles();
-        
-        // Ensure type safety or mapping if needed
-        const mappedProfiles: DietaryProfile[] = p.map(profile => ({
-          id: profile.id as string,
-          name: profile.name as string,
-          icon: (profile.icon as string | null | undefined) || 'restaurant',
-          description: (profile.description as string | null | undefined) || '',
-          description_long: (profile.description_long as string | null | undefined) ?? null,
-          experience: profile.experience as string | undefined,
-          type: profile.type as string | undefined,
-          image_url: profile.image_url as string | undefined,
-          display_order: profile.display_order as number | undefined,
-          substitutions: (profile.substitutions as DietarySubstitution[] | null | undefined) || []
-        }));
-
-        // Explicit sorting by display_order
-        mappedProfiles.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-
-        setProfiles(mappedProfiles);
-      } catch (error) {
-        console.error("Error fetching dietary knowledge:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  const getProfileData = (slug: string) => {
-    return profiles.find(p => p.id === slug);
-  };
-
-  const getDietProfiles = () => {
-    return profiles.filter(p => p.type !== 'allergy');
-  };
-
-  const getAllergyProfiles = () => {
-    return profiles.filter(p => p.type === 'allergy');
-  };
+  const getProfileData = (slug: string) => profiles.find(p => p.id === slug);
+  const getDietProfiles = () => profiles.filter(p => p.type !== 'allergy');
+  const getAllergyProfiles = () => profiles.filter(p => p.type === 'allergy');
 
   return {
     profiles,
-    loading,
+    loading: query.isPending,
     getProfileData,
     getDietProfiles,
-    getAllergyProfiles
+    getAllergyProfiles,
   };
 }

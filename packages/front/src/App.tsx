@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 // Importiamo supabase per la gestione sessione
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { useQueryClient } from '@thaiakha/shared/query';
 // PAGINE: la tabella delle route (lazy, code splitting) vive in lib/routes.tsx (#87).
 import { findRoute, routeSlug, isBookingRedirectRole, ADMIN_ROLES, NO_BOOKING_ROLES, ADMIN_URL, type NavigateFn } from './lib/routes';
 // Recovery password: schermo a se', fuori dalla shell (non e' una route).
@@ -283,11 +284,16 @@ const App: React.FC = () => {
     return route.render(routeCtx) ?? <PageLoader />;
   };
 
+  const queryClient = useQueryClient();
   const handleLogout = useCallback(async () => {
     await authService.signOut();
+    // Le query con dati dell'utente hanno chiave con prefisso 'user' (compagni, punteggio
+    // quiz): si tolgono qui, come l'admin fa col clear() (CLAUDE.md #17). Non tutto:
+    // menu, pagine e media sono pubblici e svuotarli farebbe sparire la sidebar un istante.
+    queryClient.removeQueries({ queryKey: ['user'] });
     setUserProfile(null);
     handleNavigate('home');
-  }, [handleNavigate]);
+  }, [handleNavigate, queryClient]);
 
   // Password recovery deep-link: the reset email lands on `/reset-password?token_hash=…&type=recovery`.
   // Render a dedicated full-screen recovery screen (verifyOtp + set new password), bypassing the app shell.

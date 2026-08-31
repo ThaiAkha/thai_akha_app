@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
+import React from 'react';
 import { t } from '../i18n';
 import { PageLayout, InfoPageHero, PageEssentials, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
 import { InfoPageSidebar } from '../components/layout/sidebar-info';
@@ -7,30 +6,15 @@ import { Typography, Icon, Badge, FaqBottomPage, GlassCard } from '../components
 import { AskCherryButton } from '../components/chat';
 import { AkhaThemedLine } from '../components/blog';
 import { SkeletonBase } from '../components/skeleton/atoms';
-import { getInfoPage } from '../services/infoPages.service';
 import { usePageSection, usePageSections } from '../hooks/usePageSections';
-import type { LegalDocument } from '@thaiakha/shared';
+import { useAboutUsData, type TeamMember } from '../hooks/useAboutUsData';
 import type { PageSectionData } from '../hooks/usePageSections';
 
 interface AboutUsPageProps {
   onNavigate: (page: string) => void;
 }
 
-// ─── Team (tabella authors — fonte unica lavoratori) ─────────────────────────
-// staff_group (founders|teacher|helper|setup|extra|drivers|cherry) → header
-// page_sections `about-role-{group}`. Ordine di esposizione = display_order (DB).
-
-interface TeamMember {
-  id: string;
-  name: string;
-  title: string | null;
-  description: string | null;
-  avatar_url: string | null;
-  expertise_tags: string[] | null;
-  is_ai_agent: boolean;
-  staff_group: string;
-  display_order: number;
-}
+// Team (tabella authors) e story: dati e tipo TeamMember in hooks/useAboutUsData.
 
 const roleSectionId = (group: string) => `about-role-${group}`;
 
@@ -43,41 +27,13 @@ const STORY_SECTION_ID = 'about-story';
 const ROLE_SECTION_IDS = [STORY_SECTION_ID, ...KNOWN_GROUPS.map(roleSectionId)];
 
 const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
-  const [team, setTeam] = useState<TeamMember[]>([]);
-  const [story, setStory] = useState<LegalDocument | null>(null);
-  const [pageLoading, setPageLoading] = useState(true);
+  // Team attivo + corpo della story: due query in cache (CLAUDE.md #17)
+  const { team, story, loading: pageLoading } = useAboutUsData();
   // Card Cherry finale: prompt/label dal nodo condiviso universal_cherry (come FAQ)
   const { section: cherrySection } = usePageSection('universal_cherry');
   // Header story + intestazioni gruppi (page_sections) - un'unica query, cache TanStack
   const { sections: roleSections, loading: sectionsLoading } = usePageSections(ROLE_SECTION_IDS);
   const loading = pageLoading || sectionsLoading;
-
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all([
-      supabase
-        .from('authors')
-        .select('id, name, title, description, expertise_tags, is_ai_agent, staff_group, display_order, avatar:media_assets!avatar_asset_id(image_url)')
-        .eq('is_active', true)
-        .is('terminated_at', null)
-        .not('staff_group', 'is', null)
-        .order('display_order', { ascending: true }),
-      getInfoPage('about-thai-akha-kitchen'),
-    ]).then(([{ data: authorsData }, storyDoc]) => {
-      if (cancelled) return;
-      if (authorsData) {
-        setTeam(
-          authorsData.map(row => {
-            const av = (row as Record<string, unknown>).avatar as { image_url?: string } | null;
-            return { ...row, avatar_url: av?.image_url ?? null } as unknown as TeamMember;
-          })
-        );
-      }
-      setStory(storyDoc);
-      setPageLoading(false);
-    });
-    return () => { cancelled = true; };
-  }, []);
 
   // Gruppi in ordine di apparizione (display_order DB) → sezioni pagina + TOC
   const groups = team.reduce<{ key: string; members: TeamMember[] }[]>((acc, m) => {

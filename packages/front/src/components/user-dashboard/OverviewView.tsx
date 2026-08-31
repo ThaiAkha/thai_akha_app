@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Rocket } from 'lucide-react';
+import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { Button, Typography, Icon } from '../ui';
 import type { UserProfile, UserDashboardBooking, DashboardMenuSelection } from '@thaiakha/shared/types';
@@ -15,6 +16,9 @@ interface OverviewViewProps {
   isStaff: boolean;
 }
 
+/** Prefisso 'user': dato dell'utente loggato, rimosso al logout (App.handleLogout). */
+const companionCountQueryKey = (userId: string) => ['user', 'companion_count', userId] as const;
+
 const OverviewView: React.FC<OverviewViewProps> = ({
   userProfile,
   bookings,
@@ -23,16 +27,21 @@ const OverviewView: React.FC<OverviewViewProps> = ({
   onNavigate,
   isStaff,
 }) => {
-  const [companionCount, setCompanionCount] = useState<number>(0);
-
-  useEffect(() => {
-    if (!userProfile?.id || isStaff) return;
-    supabase
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .eq('managed_by', userProfile.id)
-      .then(({ count }) => setCompanionCount(count ?? 0));
-  }, [userProfile?.id, isStaff]);
+  const userId = userProfile?.id ?? '';
+  // Compagni gestiti dall'host (profiles.managed_by). Era `useEffect + useState` (CLAUDE.md #17).
+  const { data: companionCount = 0 } = useQuery({
+    queryKey: companionCountQueryKey(userId),
+    enabled: Boolean(userId) && !isStaff,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('managed_by', userId);
+      return count ?? 0;
+    },
+    // I compagni si aggiungono dal Passport: si riconta a ogni mount della tab, come prima.
+    staleTime: 0,
+  });
 
   /* ── STAFF VIEW ── */
   if (isStaff) {

@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { haversineDistance } from '@thaiakha/shared/lib/geoUtils';
 import type { MeetingPoint } from '@thaiakha/shared/types';
@@ -22,6 +23,11 @@ interface Options {
   bookingDate?: string | null;
 }
 
+/** Vuoto stabile: un `[]` inline sarebbe un riferimento nuovo a ogni render (rompe i useMemo). */
+const NO_POINTS: MeetingPoint[] = [];
+
+export const meetingPointsQueryKey = ['meeting_points', 'active_with_cover'] as const;
+
 /** Weekday locale da 'YYYY-MM-DD' (0=domenica … 6=sabato); null se data assente/malformata. */
 function parseWeekday(dateStr: string | null | undefined): number | null {
   if (!dateStr) return null;
@@ -30,35 +36,30 @@ function parseWeekday(dateStr: string | null | undefined): number | null {
   return new Date(y, m - 1, d).getDay();
 }
 
+/**
+ * Punti d'incontro attivi (con cover da media_assets) e le liste derivate per la pagina Pickup.
+ * Data layer unico (CLAUDE.md #17): era `useEffect + useState + cancelled`. Stessa query;
+ * in cache, cosi' tornare sulla pagina non la ripete.
+ */
 export function useMeetingPoints({ selectedClass, outsideHotelCoords, bookingDate }: Options): UseMeetingPointsResult {
-  const [meetingPoints, setMeetingPoints] = useState<MeetingPoint[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const { data } = await supabase
-          .from('meeting_points')
-          .select('*, point_type, is_dropoff_point, cover:media_assets!image_asset_id(image_url, alt_text)')
-          .eq('active', true)
-          .order('name');
-        if (!cancelled) {
-          // Resolve image_asset_id → media_assets; keep the `image_url` alias used by MeetingCard.
-          const resolved = (data ?? []).map((row) => {
-            const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;
-            return { ...row, image_url: cover?.image_url ?? null };
-          });
-          setMeetingPoints(resolved as unknown as MeetingPoint[]);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    fetch();
-    return () => { cancelled = true; };
-  }, []);
+  const query = useQuery({
+    queryKey: meetingPointsQueryKey,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('meeting_points')
+        .select('*, point_type, is_dropoff_point, cover:media_assets!image_asset_id(image_url, alt_text)')
+        .eq('active', true)
+        .order('name');
+      if (error) throw error;
+      // Resolve image_asset_id → media_assets; keep the `image_url` alias used by MeetingCard.
+      const resolved = (data ?? []).map((row) => {
+        const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;
+        return { ...row, image_url: cover?.image_url ?? null };
+      });
+      return resolved as unknown as MeetingPoint[];
+    },
+  });
+  const meetingPoints = query.data ?? NO_POINTS;
 
   const walkInPoints = useMemo(() =>
     meetingPoints.filter(mp => {
@@ -115,6 +116,6 @@ export function useMeetingPoints({ selectedClass, outsideHotelCoords, bookingDat
     trainPoints,
     dropoffPoints,
     outsideZonePoints,
-    loading,
+    loading: query.isPending,
   };
 }

@@ -15,6 +15,10 @@ interface Options {
  * Restores existing booking state when editing (edit mode).
  * Reads the booking from DB and populates useLocationState setters.
  * Calls onLoaded() when done so the parent can stop its loading indicator.
+ *
+ * NON e' una lettura da migrare a useQuery (CLAUDE.md #17, triage #118): e' un'idratazione.
+ * Legge il booking UNA volta per bookingId e scrive sette setter dello stato pickup; in cache
+ * rigirerebbe a ogni refetch e sovrascriverebbe le modifiche in corso dell'utente.
  */
 export function useBookingLoader({
   bookingId,

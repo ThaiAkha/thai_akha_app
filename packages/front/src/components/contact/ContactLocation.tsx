@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@thaiakha/shared/lib/supabase';
 import { t } from '../../i18n';
-import type { MeetingPoint } from '@thaiakha/shared/types';
 import { Typography, Icon } from '../ui';
 import { SmartHeaderSection } from '../layout';
 import { SkeletonBase } from '../skeleton/atoms';
 import { useBusinessProfile } from '../../hooks/useBusinessProfile';
+import { useContactLocationData } from '../../hooks/useContactLocationData';
 
 // "08:50:00" (time DB) → "8:50 AM"
 function fmtTime(hms: string | null | undefined): string | null {
@@ -17,14 +15,6 @@ function fmtTime(hms: string | null | undefined): string | null {
   return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
 }
 
-interface PickupZoneRow {
-  id: string;
-  name: string;
-  color_code: string | null;
-  morning_pickup_time: string | null;
-  evening_pickup_time: string | null;
-}
-
 /**
  * ContactLocation — Location & Pickup interamente da DB:
  *  · meeting point walk-in da `meeting_points` (point_type='walk_in')
@@ -34,32 +24,7 @@ interface PickupZoneRow {
  */
 export default function ContactLocation() {
   const { profile: bp } = useBusinessProfile();
-  const [points, setPoints] = useState<MeetingPoint[]>([]);
-  const [zones, setZones] = useState<PickupZoneRow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all([
-      supabase
-        .from('meeting_points')
-        .select('id, name, description, google_maps_link, morning_pickup_time, evening_pickup_time')
-        .eq('active', true)
-        .eq('point_type', 'walk_in')
-        .order('name'),
-      supabase
-        .from('pickup_zones')
-        .select('id, name, color_code, morning_pickup_time, evening_pickup_time')
-        .not('morning_pickup_time', 'is', null)
-        .order('display_order'),
-    ]).then(([mp, pz]) => {
-      if (cancelled) return;
-      setPoints((mp.data ?? []) as unknown as MeetingPoint[]);
-      setZones((pz.data ?? []) as unknown as PickupZoneRow[]);
-      setLoading(false);
-    });
-    return () => { cancelled = true; };
-  }, []);
+  const { points, zones, loading } = useContactLocationData();
 
   const fullAddress = bp
     ? [bp.street_address, bp.address_locality, bp.postal_code, bp.address_country]

@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import LeaderHeader from '../../common/LeaderHeader';
 import SelectField from '../../form/input/SelectField';
 import InputField from '../../form/input/InputField';
-import { InspectorShell, InspectorLeader, InspectorBody } from '../../ui/inspector';
+import { InspectorShell, InspectorLeader, InspectorBody, InspectorFooter } from '../../ui/inspector';
+import { InspectorPrimaryButton } from '../../ui/inspector/InspectorActionButtons';
 import SearchableHotelSelect from './logisticInspector/SearchableHotelSelect';
 import ZoneTimeBadge from './logisticInspector/ZoneTimeBadge';
 import {
     MapPin, Search,
-    Truck, User
+    Save, Truck, User
 } from 'lucide-react';
 import {
     LogisticsItem,
@@ -29,6 +30,8 @@ interface LogisticInspectorProps {
     onAssign: (bookingId: string, driverId: string | null) => void;
     onUpdateLocal: (id: string, updates: Partial<LogisticsItem>) => void;
     onSubmit: (e: React.FormEvent) => void;
+    /** Salvataggio in corso: disabilita e mostra lo spinner sul Save del footer. */
+    isSaving?: boolean;
 }
 
 const LogisticInspector: React.FC<LogisticInspectorProps> = ({
@@ -40,6 +43,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
     onAssign,
     onUpdateLocal,
     onSubmit,
+    isSaving = false,
 }) => {
     const { t } = useTranslation('logistics');
 
@@ -281,6 +285,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     )}
                 </div>
             </InspectorBody>
+            {/* Il Save vive nel footer come azione primaria h-12 (standard planner), ed e'
+                `type="submit"`: chiude il <form> radice, quindi Enter continua a salvare e
+                non serve piu' alcun evento fabbricato dall'header. */}
+            <InspectorFooter>
+                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving} startIcon={<Save className="w-4 h-4" />}>
+                    {isSaving ? t('actions.saving') : t('actions.save')}
+                </InspectorPrimaryButton>
+            </InspectorFooter>
 
         </form>
         </InspectorShell>

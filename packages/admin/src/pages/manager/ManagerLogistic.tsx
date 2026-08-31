@@ -11,7 +11,6 @@ import { useDaysOverview } from '../../hooks/useDaysOverview';
 // Modular Components
 import LogisticContent from '../../components/manager/logistic/LogisticContent';
 import LogisticInspector from '../../components/manager/logistic/LogisticInspector';
-import LogisticInspectorActions from '../../components/manager/logistic/LogisticInspectorActions';
 
 // Logic Hook
 import { useManagerLogistic, LogisticsItem } from '../../hooks/useManagerLogistic';
@@ -156,13 +155,6 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                     <DataExplorerInspector
                         isEditing={false}
                         onClose={closeInspector}
-                        headerActions={
-                            <LogisticInspectorActions
-                                handleSave={() => handleUpdateBooking()}
-                                isSaving={isSaving}
-                                selectedBooking={selectedBooking}
-                            />
-                        }
                     >
                         <LogisticInspector
                             selectedBooking={selectedBooking}
@@ -173,6 +165,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                             onAssign={handleAssign}
                             onUpdateLocal={updateLocalItem}
                             onSubmit={handleUpdateBooking}
+                            isSaving={isSaving}
                         />
                     </DataExplorerInspector>
                 }

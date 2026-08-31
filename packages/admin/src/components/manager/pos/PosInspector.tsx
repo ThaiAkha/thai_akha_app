@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import Button from '../../ui/button/Button';
 import { InspectorShell, InspectorHeader, InspectorBody, InspectorEmpty, InspectorFooter } from '../../ui/inspector/InspectorShell';
+import { InspectorLeader } from '../../ui/inspector';
+import LeaderHeader from '../../common/LeaderHeader';
 import { ReportLineRow, ReportLineMedia } from '../../reports';
 import { Search, Receipt, CreditCard, GraduationCap, Banknote } from 'lucide-react';
 import { Guest, OrderItem, ClassFeeItem } from '../../../hooks/useManagerPos';
@@ -40,11 +42,22 @@ const PosInspector: React.FC<PosInspectorProps> = ({
 
     return (
         <InspectorShell>
+            {/* Standard planner: header = LeaderHeader ovunque. L'InspectorHeader resta per
+                il contesto (sessione + data) e il close; la PERSONA sta nel blocco leader,
+                con avatar e pax come in Logistic, Reservation e Kitchen. */}
             <InspectorHeader
-                subtitle={t('inspector.customerName')}
-                title={activeGuest?.full_name || t('inspector.selectGuest')}
+                subtitle={activeGuest ? new Date(activeGuest.booking_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : undefined}
+                title={activeGuest?.session_name || t('inspector.selectGuest')}
                 onClose={activeGuestId ? onClose : undefined}
             />
+            {activeGuest && (
+                <InspectorLeader className="p-4 pb-0">
+                    <LeaderHeader
+                        label={t('inspector.customerName')}
+                        leader={{ name: activeGuest.full_name, pax: activeGuest.pax_count }}
+                    />
+                </InspectorLeader>
+            )}
 
             <InspectorBody className="p-4 space-y-3">
                 {!activeGuestId ? (

@@ -6,7 +6,8 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import Label from '../../../components/form/Label';
 import Button from '../../../components/ui/button/Button';
 import { Heading, Caption, SectionTitle } from '../../../components/typography';
-import { InspectorShell, InspectorBody } from '../../../components/ui/inspector';
+import { InspectorShell, InspectorBody, InspectorLeader } from '../../../components/ui/inspector';
+import LeaderHeader from '../../../components/common/LeaderHeader';
 import { MapPin, Clock, Phone, Printer, Save, Edit, MoreHorizontal } from 'lucide-react';
 import { getDisplayId, type AgencyBooking } from './types';
 import type { AgencyReservationsState } from './useAgencyReservations';
@@ -23,11 +24,28 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                     <Caption className="font-mono uppercase tracking-widest leading-4">{activeBooking ? getDisplayId(activeBooking) : t('agency.inspectorIdle')}</Caption>
                 </div>
                 {activeBooking && (
-                    <Button variant="outline" size="sm" onClick={() => setSelectedBookingId(null)} className="rounded-lg h-9 w-9 p-0 flex items-center justify-center">
+                    <Button variant="outline" size="sm" onClick={() => setSelectedBookingId(null)} className="rounded-lg h-11 w-11 p-0 flex items-center justify-center">
                         <MoreHorizontal className="w-4 h-4" />
                     </Button>
                 )}
             </div>
+
+            {/* Standard planner: LeaderHeader in testa, come negli inspector manager.
+                Chiavi gia' tradotte in es/zh (namespace reservation): niente stringhe nuove. */}
+            {activeBooking && (
+                <InspectorLeader className="p-4 pb-0">
+                    <LeaderHeader
+                        label={t('inspector.groupLeader')}
+                        leader={{
+                            name: activeBooking.guest_name,
+                            phone: activeBooking.phone_number,
+                            email: activeBooking.email,
+                            pax: activeBooking.pax,
+                        }}
+                        emptyContactsLabel={t('kitchen.noContacts')}
+                    />
+                </InspectorLeader>
+            )}
 
             <InspectorBody scrollbar className="p-4">
                 {activeBooking ? (

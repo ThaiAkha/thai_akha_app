@@ -94,11 +94,20 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
           )}
         </div>
 
+        {/* Seconda CTA di prenotazione, come Morning (scelta owner 31/08): fa anche da
+            separatore di sezione, quindi niente AkhaThemedLine prima delle Inclusions. */}
+        <AkhaButtonLine
+          label={t('classes:bookYourClass')}
+          icon="calendar_month"
+          href="/booking"
+          onClick={() => onNavigate('booking')}
+          theme="akha"
+          buttonVariant="brand"
+        />
+
         {/* ── 5. Inclusions ───────────────────────────────────────────────── */}
         {inclusions.length > 0 && (
           <>
-            <AkhaThemedLine theme="akha" />
-
             <div className="flex flex-col [gap:var(--space-fluid-l)]">
               <SmartHeaderSection sectionId="evening-05" variant="section" align="center" />
               <ClassInclusions items={inclusions} />

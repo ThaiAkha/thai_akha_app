@@ -14,6 +14,12 @@ interface HeroContentOverviewProps {
   sectionId?: string;
   /** Prefetched data to avoid extra roundtrips */
   prefetchedData?: PageSectionData | null;
+  /**
+   * Flag di caricamento del batch (usePageSections), inoltrato al SmartHeaderSection
+   * interno. Senza, in modalita' progressiva quel componente non e' "controllato" e
+   * fa una query PROPRIA mentre il batch e' ancora in volo.
+   */
+  loading?: boolean;
   /** Content overrides for dynamic management at call-site */
   title?: string;
   subtitle?: string;
@@ -28,6 +34,7 @@ export const HeroContentOverview: React.FC<HeroContentOverviewProps> = ({
   audioAssetId,
   sectionId = 'class-01',
   prefetchedData,
+  loading,
   title,
   subtitle,
   description,
@@ -60,6 +67,7 @@ export const HeroContentOverview: React.FC<HeroContentOverviewProps> = ({
             <SmartHeaderSection
               sectionId={sectionId}
               prefetchedData={prefetchedData}
+              loading={loading}
               variant="hero-1"
               align="left"
               hideSubtitle={!subtitle && !prefetchedData?.subtitle}

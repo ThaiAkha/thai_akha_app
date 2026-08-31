@@ -34,7 +34,9 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
   return (
     <PageLayout
       slug="thai-cooking-classes-chiang-mai"
+      customMetadata={classesMetadata || undefined}
       loading={pageLoading}
+      instantContent
       showPatterns={true}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="thai-cooking-classes-chiang-mai" />}
@@ -44,15 +46,14 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
 
       <div className="contents">
         {/* HERO SECTION */}
-        {pageMetadata && (
-          <HeroContentOverview
-            sectionId="class-00"
-            prefetchedData={pageSections['class-00']}
-            imageAssetId={pageSections['class-00']?.image_asset_id || undefined}
-            imageUrl={!pageSections['class-00']?.image_asset_id ? pageMetadata.imageUrl : undefined}
-            audioAssetId="class-00"
-          />
-        )}
+        <HeroContentOverview
+          sectionId="class-00"
+          prefetchedData={pageSections['class-00']}
+          loading={sectionsLoading}
+          imageAssetId={pageSections['class-00']?.image_asset_id || undefined}
+          imageUrl={!pageSections['class-00']?.image_asset_id ? pageMetadata?.imageUrl : undefined}
+          audioAssetId="class-00"
+        />
 
         <AkhaThemedLine theme="akha" />
 
@@ -62,6 +63,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <SmartHeaderSection
               sectionId="class-01"
               prefetchedData={pageSections['class-01']}
+              loading={sectionsLoading}
               variant="hero2"
               align="center"
               gradientFrom="primary"
@@ -154,6 +156,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <SmartHeaderSection
               sectionId="class-02"
               prefetchedData={pageSections['class-02']}
+              loading={sectionsLoading}
               variant="hero2"
               align="center"
               gradientFrom="primary"
@@ -219,6 +222,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <SmartHeaderSection
               sectionId="class-03"
               prefetchedData={pageSections['class-03']}
+              loading={sectionsLoading}
               variant="hero2"
               align="center"
               gradientFrom="primary"
@@ -246,6 +250,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <SmartHeaderSection
               sectionId="class-04"
               prefetchedData={pageSections['class-04']}
+              loading={sectionsLoading}
               variant="hero2"
               align="center"
               gradientFrom="primary"
@@ -293,6 +298,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <GlassCardFull
               sectionId="class-05"
               prefetchedData={pageSections['class-05']}
+              loading={sectionsLoading}
               buttonVariant="brand"
               onNavigate={(path) => onNavigate(path)}
               imagePosition="right"
@@ -309,6 +315,7 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
             <GlassCardFull
               sectionId="class-06"
               prefetchedData={pageSections['class-06']}
+              loading={sectionsLoading}
               onNavigate={(path) => onNavigate(path)}
               imagePosition="left"
               glassVariant="action"

@@ -227,8 +227,10 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
 
             <div className="w-full">
               <div className="grid grid-cols-1 md:grid-cols-3 [gap:var(--space-fluid-m)]">
-                {/* TODO: placeholder — 3 video identici (stesso videoId). Sostituire con videoId diversi. */}
-                <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
+                {/* TODO (31/08/2026): il terzo video manca ancora. Sinistra e centro sono
+                    distinti; DESTRA ripete il centro in attesa del link dall'owner.
+                    Su mobile i tre si impilano, quindi due uguali di fila si notano. */}
+                <VideoPlayer videoId="m3Sag54Scv0" title={t('alt:classVideo')} />
                 <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
                 <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
               </div>

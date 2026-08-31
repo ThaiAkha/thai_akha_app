@@ -59,7 +59,7 @@ const InspectorCloseRich: React.FC<InspectorCloseRichProps> = ({ onClose, toolti
         variant="outline"
         size="icon"
         className={cn(
-          'h-9 w-9 p-0 shadow-sm transition-all active:scale-95 flex items-center justify-center',
+          'h-11 w-11 p-0 shadow-sm transition-all active:scale-95 flex items-center justify-center',   // 44px, standard planner
           isEditing
             ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/40'
             : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700',
@@ -100,7 +100,9 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="text-sub hover:text-body rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            // size-11 = 44px di area tattile (standard planner); l'icona resta 16px, il
+            // margine negativo tiene l'icona dov'era visivamente. Prima l'area era 16px.
+            className="size-11 -mr-3 inline-flex items-center justify-center text-sub hover:text-body rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <X className="w-4 h-4" />
           </button>

@@ -4,6 +4,7 @@ import { CookingClassDB } from '@thaiakha/shared';
 import { SmartHeaderSection } from '../layout/SmartHeaderSection';
 import AudioPlayer from '../modal/AudioPlayer';
 import { t } from '../../i18n';
+import { SkeletonBase, SkeletonText, SkeletonTitle } from '../skeleton/atoms';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface HeroContentProps {
@@ -13,6 +14,13 @@ interface HeroContentProps {
   sectionId?: string;
   /** Audio asset ID rendered below the card, centered */
   audioAssetId?: string;
+  /**
+   * Caricamento in corso. In modalita' progressiva la pagina si renderizza mentre i
+   * dati arrivano: senza questo, `currentClass` e' null, l'hero fa `return null` e
+   * poi COMPARE DI COLPO a meta' caricamento. Con lo skeleton l'altezza e' riservata
+   * e il layout non salta.
+   */
+  loading?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -20,7 +28,28 @@ export const HeroContent: React.FC<HeroContentProps> = ({
   currentClass,
   sectionId = 'class-00',
   audioAssetId,
+  loading = false,
 }) => {
+  if (loading) {
+    return (
+      <div className="flex flex-col [gap:var(--space-fluid-l)]">
+        <div className="min-h-[500px] flex">
+          <Card variant="glass" padding="none" className="w-full flex flex-col lg:flex-row overflow-hidden">
+            <SkeletonBase className="w-full lg:w-5/12 h-80 md:h-[500px] lg:h-auto shrink-0 rounded-none" variant="rectangular" />
+            <div
+              className="w-full lg:w-7/12 flex flex-col justify-center"
+              style={{ padding: 'var(--space-fluid-xl)', gap: 'var(--space-fluid-m)' }}
+            >
+              <SkeletonTitle />
+              <SkeletonText lines={3} />
+            </div>
+          </Card>
+        </div>
+        <AkhaThemedLine theme="akha" />
+      </div>
+    );
+  }
+
   if (!currentClass) return null;
 
   return (

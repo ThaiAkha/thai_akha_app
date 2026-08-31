@@ -23,13 +23,16 @@ const MorningClassPage: React.FC<MorningClassPageProps> = ({ onNavigate }) => {
     pickupSection,
     exclusionsSection,
     classSections,
+    pageMetadata,
     loading,
   } = useClassPageData('morning');
 
   return (
     <PageLayout
       slug="morning-cooking-class-market-tour"
+      customMetadata={pageMetadata || undefined}
       loading={loading}
+      instantContent
       showPatterns={true}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="morning-cooking-class-market-tour" />}
@@ -42,6 +45,7 @@ const MorningClassPage: React.FC<MorningClassPageProps> = ({ onNavigate }) => {
         <HeroContent
           activeTab="morning"
           currentClass={classData}
+          loading={loading}
           sectionId="morning-01"
           audioAssetId="class-02"
         />
@@ -119,6 +123,7 @@ const MorningClassPage: React.FC<MorningClassPageProps> = ({ onNavigate }) => {
         <GlassCardFull
           sectionId="morning-06"
           prefetchedData={pickupSection}
+          loading={loading}
           glassVariant="action"
           imagePosition="left"
           onNavigate={(path) => onNavigate?.(path)}
@@ -130,6 +135,7 @@ const MorningClassPage: React.FC<MorningClassPageProps> = ({ onNavigate }) => {
         <GlassCardFull
           sectionId="universal_exclusions"
           prefetchedData={exclusionsSection}
+          loading={loading}
           glassVariant="action"
           imagePosition="right"
           onNavigate={(path) => onNavigate?.(path)}

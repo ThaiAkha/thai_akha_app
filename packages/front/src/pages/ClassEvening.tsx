@@ -23,6 +23,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
     pickupSection,
     exclusionsSection,
     classSections,
+    pageMetadata,
     loading,
   } = useClassPageData('evening');
 
@@ -31,7 +32,9 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
   return (
     <PageLayout
       slug="evening-cooking-class-dinner"
+      customMetadata={pageMetadata || undefined}
       loading={loading}
+      instantContent
       showPatterns={true}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="evening-cooking-class-dinner" />}
@@ -44,6 +47,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
         <HeroContent
           activeTab="evening"
           currentClass={classData}
+          loading={loading}
           sectionId="evening-01"
           audioAssetId="class-03"
         />
@@ -116,6 +120,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
         <GlassCardFull
           sectionId="evening-06"
           prefetchedData={pickupSection}
+          loading={loading}
           glassVariant="secondary"
           imagePosition="right"
           onNavigate={(path) => onNavigate(path)}
@@ -127,6 +132,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
         <GlassCardFull
           sectionId="universal_exclusions"
           prefetchedData={exclusionsSection}
+          loading={loading}
           glassVariant="primary"
           imagePosition="left"
           onNavigate={(path) => onNavigate(path)}

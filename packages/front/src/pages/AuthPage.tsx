@@ -3,12 +3,11 @@ import { useSwipeable } from 'react-swipeable';
 import { Typography, Icon, Button, AkhaCard, Modal, FaqBottomPage } from '../components/ui/index';
 import { CinematicBackground, SmartHeaderSection } from '../components/layout/index';
 import AuthForm from '../components/auth/AuthForm';
-import { contentService } from '@thaiakha/shared/services';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t, tObj } from '../i18n';
 import { AUTH_HERO_IMAGES, ONBOARDING_CARDS_META } from '../config/auth';
-import type { LegalDocument } from '@thaiakha/shared';
-import { getInfoPage } from '../services/infoPages.service';
+import { usePageMetadata } from '../hooks/usePageMetadata';
+import { useInfoPage } from '../hooks/useInfoPage';
 import LegalDocumentStaticViewer from '../components/legal/LegalDocumentStaticViewer';
 import { InfoContentSkeleton } from '../components/skeleton';
 
@@ -29,21 +28,15 @@ interface AuthPageProps {
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
-  const [imageUrl, setImageUrl] = useState<string>('');
+  // Sfondo cinematico dai metadata della pagina 'auth' (stessa chiave di PageLayout).
+  const { metadata: authMeta } = usePageMetadata('auth');
+  const imageUrl = authMeta?.imageUrl ?? '';
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [authPanel, setAuthPanel] = useState<'login' | 'signup'>('login');
   const [showPrivacy, setShowPrivacy] = useState(false);
-  // Privacy dal DB (info_pages, stessa fonte di PrivacyPage) — fetch lazy alla
-  // prima apertura del modal, poi resta in stato (niente più copia statica).
-  const [privacyDoc, setPrivacyDoc] = useState<LegalDocument | null>(null);
-  useEffect(() => {
-    if (!showPrivacy || privacyDoc) return;
-    let cancelled = false;
-    getInfoPage('privacy-policy').then(doc => {
-      if (!cancelled) setPrivacyDoc(doc);
-    });
-    return () => { cancelled = true; };
-  }, [showPrivacy, privacyDoc]);
+  // Privacy dal DB (stessa fonte di PrivacyPage) — lettura lazy alla prima apertura del
+  // modal, poi resta in cache (niente più copia statica).
+  const { document: privacyDoc } = useInfoPage('privacy-policy', { enabled: showPrivacy });
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
   useEffect(() => {
@@ -56,12 +49,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate, onAuthSuccess }) => {
     preventScrollOnSwipe: true,
     trackMouse: false,
   });
-
-  useEffect(() => {
-    contentService.getPageMetadata('auth').then(m => {
-      if (m?.imageUrl) setImageUrl(m.imageUrl);
-    });
-  }, []);
 
   const renderFeatureRow = (feature: OnboardingCard, index: number) => {
     const isThird = index === 2;

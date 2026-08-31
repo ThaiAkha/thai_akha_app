@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
-import { newsService, contentMetadataService } from '@thaiakha/shared/services';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
+import { newsService } from '@thaiakha/shared/services';
 import { NewsArticle } from '@thaiakha/shared/types';
 import { t } from '../i18n';
+import { useContentCategories } from './useContentCategories';
+import { usePageMetadata } from './usePageMetadata';
 
 export type { NewsArticle };
 
@@ -26,11 +29,44 @@ export interface NewsCategory {
     icon_name: string;
 }
 
+const NO_ARTICLES: NewsArticle[] = [];
+
+export const newsFeedQueryKey = ['news_feed'] as const;
+
+/**
+ * Feed news: metadata pagina + categorie blog + articoli. Data layer unico (CLAUDE.md #17):
+ * era un Promise.all in useEffect; ora tre query in cache (metadata e categorie condivise).
+ */
 export function useNewsFeed(targetCategory: string | null = null) {
-    const [metadata, setMetadata] = useState<NewsMetadata | null>(null);
-    const [categories, setCategories] = useState<NewsCategory[]>([]);
-    const [articles, setArticles] = useState<NewsArticle[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { metadata: meta, loading: metaLoading } = usePageMetadata('thai-cooking-tips-news');
+    const { categories: cats, loading: catsLoading } = useContentCategories('blog');
+    const feed = useQuery({
+        queryKey: newsFeedQueryKey,
+        queryFn: () => newsService.getNewsFeed(),
+    });
+
+    const metadata = useMemo<NewsMetadata | null>(() => meta ? {
+        header_title_main: meta.titleMain ?? '',
+        header_title_highlight: meta.titleHighlight ?? undefined,
+        header_badge: meta.badge ?? undefined,
+        page_description: meta.description ?? undefined,
+        hero_image_url: meta.imageUrl ?? undefined,
+        seo_title: meta.seoTitle ?? undefined,
+        seo_description: meta.seoDescription ?? undefined,
+        seo_robots: meta.robots ?? undefined,
+        og_image: meta.ogImage ?? undefined,
+        json_ld: (meta.jsonLd as Record<string, unknown> | null | undefined) ?? null,
+    } : null, [meta]);
+
+    const categories = useMemo<NewsCategory[]>(() => cats.map(c => ({
+        id: c.id,
+        title: c.title,
+        tab_label: c.tab_label,
+        icon_name: c.icon_name ?? '',
+    })), [cats]);
+
+    const articles = feed.data ?? NO_ARTICLES;
+    const loading = metaLoading || catsLoading || feed.isPending;
 
     const [activeCategoryState, setActiveCategoryState] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -67,51 +103,6 @@ export function useNewsFeed(targetCategory: string | null = null) {
         // If categories not loaded yet, keep initial assumption (slug)
     }, [targetCategory, categories]);
 
-    useEffect(() => {
-        const fetchNewsData = async () => {
-            setLoading(true);
-            try {
-                const [meta, cats, arts] = await Promise.all([
-                    contentMetadataService.getPageMetadata('thai-cooking-tips-news'),
-                    contentMetadataService.getContentCategories('blog'),
-                    newsService.getNewsFeed(),
-                ]);
-
-                if (meta) {
-                    setMetadata({
-                        header_title_main: meta.titleMain ?? '',
-                        header_title_highlight: meta.titleHighlight ?? undefined,
-                        header_badge: meta.badge ?? undefined,
-                        page_description: meta.description ?? undefined,
-                        hero_image_url: meta.imageUrl ?? undefined,
-                        seo_title: meta.seoTitle ?? undefined,
-                        seo_description: meta.seoDescription ?? undefined,
-                        seo_robots: meta.robots ?? undefined,
-                        og_image: meta.ogImage ?? undefined,
-                        json_ld: (meta.jsonLd as Record<string, unknown> | null | undefined) ?? null,
-                    });
-                }
-
-                setCategories(
-                    cats.map(c => ({
-                        id: c.id,
-                        title: c.title,
-                        tab_label: c.tab_label,
-                        icon_name: c.icon_name ?? '',
-                    }))
-                );
-
-                setArticles(arts);
-            } catch (err) {
-                console.error('Error fetching news:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchNewsData();
-    }, []);
-
     // 1. Filter by Category
     let filteredArticles = activeCategoryState === 'all'
         ? articles
@@ -142,10 +133,10 @@ export function useNewsFeed(targetCategory: string | null = null) {
     });
 
     // 4. Pagination (Disabled - returning all articles)
-    const totalPages = 1; 
+    const totalPages = 1;
     const paginatedArticles = filteredArticles;
 
-    const activeCategories = categories.filter(c => 
+    const activeCategories = categories.filter(c =>
         articles.some(a => {
             const catId = typeof a.category === 'object' ? a.category?.id : a.category;
             return catId === c.id;

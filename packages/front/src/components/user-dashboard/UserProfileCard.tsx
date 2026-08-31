@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { User, Crown, Truck, ChefHat, BookOpen, Shield, GraduationCap } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { GlassCard, Typography, Icon, Badge } from '../ui';
-import type { UserProfile, SpicinessLevel } from '@thaiakha/shared/types';
-import { authCoreService, recipeService } from '@thaiakha/shared/services';
+import type { UserProfile } from '@thaiakha/shared/types';
+import { authCoreService } from '@thaiakha/shared/services';
+import { useSpicinessLevels } from '../../hooks/useSpicinessLevels';
+import { useDietaryKnowledge } from '../../hooks/useDietaryKnowledge';
 
 interface UserProfileCardProps {
   userProfile: UserProfile | null;
@@ -25,26 +27,14 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ userProfile: initialP
   const [userProfile, setUserProfile] = useState<UserProfile | null>(initialProfile);
   const [uploading, setUploading] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [spicinessLevels, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
-  const [dietaryProfiles, setDietaryProfiles] = useState<{ id: string; name: string }[]>([]);
+  // Etichette dieta/piccantezza dalle voci di cache condivise (CLAUDE.md #17).
+  const { spicinessLevels } = useSpicinessLevels();
+  const { profiles: dietaryProfiles } = useDietaryKnowledge();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setUserProfile(initialProfile);
   }, [initialProfile]);
-
-  useEffect(() => {
-    const loadMetadata = async () => {
-      const [spicy, diets] = await Promise.all([
-        recipeService.getSpicinessLevels(),
-        recipeService.getDietaryProfiles()
-      ]);
-      setSpicinessLevels(spicy);
-      // getDietaryProfiles returns Record<string, unknown>[]; only id/name are read here
-      setDietaryProfiles(diets as unknown as { id: string; name: string }[]);
-    };
-    loadMetadata();
-  }, []);
 
   if (!userProfile) return null;
 

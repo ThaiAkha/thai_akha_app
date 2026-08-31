@@ -1,35 +1,25 @@
 /**
  * useBusinessProfile — identità/fatturazione azienda dalla riga unica business_profile.
- * Wrappa contentMetadataService.getBusinessProfile() (già cached in localStorage,
- * stale-while-revalidate) con stato React. Fonte unica: cambi in DB → cambi in pagina.
+ * Data layer unico (CLAUDE.md #17): era una cache di modulo + useEffect; ora una useQuery
+ * (il service resta cached in localStorage, stale-while-revalidate). Fonte unica: cambi in
+ * DB → cambi in pagina. Contact e LegalFooterCard condividono UNA voce.
  */
 
-import { useEffect, useState } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { contentMetadataService } from '@thaiakha/shared/services';
 import type { BusinessProfile } from '@thaiakha/shared/types';
 
-let _cache: BusinessProfile | null = null;
+export const businessProfileQueryKey = ['business_profile'] as const;
 
 export function useBusinessProfile(): {
   profile: BusinessProfile | null;
   loading: boolean;
 } {
-  const [profile, setProfile] = useState<BusinessProfile | null>(_cache);
-  const [loading, setLoading] = useState(_cache === null);
-
-  useEffect(() => {
-    if (_cache) return;
-    let cancelled = false;
-    contentMetadataService.getBusinessProfile().then(bp => {
-      if (cancelled) return;
-      _cache = bp;
-      setProfile(bp);
-      setLoading(false);
-    });
-    return () => { cancelled = true; };
-  }, []);
-
-  return { profile, loading };
+  const query = useQuery({
+    queryKey: businessProfileQueryKey,
+    queryFn: () => contentMetadataService.getBusinessProfile(),
+  });
+  return { profile: query.data ?? null, loading: query.isPending };
 }
 
 export default useBusinessProfile;

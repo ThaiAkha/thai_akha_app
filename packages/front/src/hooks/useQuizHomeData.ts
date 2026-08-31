@@ -23,8 +23,9 @@ export const quizScoreQueryKey = (managedId: string | null) =>
  * profile is active (`managedId`), the score comes from its DB row, not localStorage.
  * Due query (CLAUDE.md #17): il catalogo e' pubblico e stabile, il punteggio no.
  */
-export const useQuizHomeData = (managedId: string | null) => {
-  const catalog = useQuery({
+/** Categorie + premi (ordinati per soglia): condiviso da home quiz e widget dashboard. */
+export function useQuizCatalog() {
+  const query = useQuery({
     queryKey: quizHomeCatalogQueryKey,
     queryFn: async () => {
       const [cats, rwds] = await Promise.all([
@@ -37,6 +38,15 @@ export const useQuizHomeData = (managedId: string | null) => {
       };
     },
   });
+  return {
+    categories: query.data?.categories ?? NO_CATEGORIES,
+    rewards: query.data?.rewards ?? NO_REWARDS,
+    loading: query.isPending,
+  };
+}
+
+export const useQuizHomeData = (managedId: string | null) => {
+  const catalog = useQuizCatalog();
 
   const score = useQuery({
     queryKey: quizScoreQueryKey(managedId),
@@ -54,9 +64,9 @@ export const useQuizHomeData = (managedId: string | null) => {
   });
 
   return {
-    categories: catalog.data?.categories ?? NO_CATEGORIES,
-    rewards: catalog.data?.rewards ?? NO_REWARDS,
+    categories: catalog.categories,
+    rewards: catalog.rewards,
     score: score.data ?? 0,
-    loading: catalog.isPending || score.isPending,
+    loading: catalog.loading || score.isPending,
   };
 };

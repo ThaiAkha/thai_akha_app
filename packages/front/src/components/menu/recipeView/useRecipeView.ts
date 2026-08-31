@@ -7,8 +7,8 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { contentService } from '@thaiakha/shared/services';
 import { useContentCategories } from '../../../hooks/useContentCategories';
+import { useAllergyMap } from '../../../hooks/useAllergyMap';
 import type { GalleryItem } from '../../modal/GalleryModal';
 import type { RecipeData, IngredientDetail } from './types';
 
@@ -16,9 +16,6 @@ interface Params { recipe: RecipeData; allRecipes: RecipeData[]; activeDiet: str
 
 const NO_INGREDIENTS: IngredientDetail[] = [];
 const NO_NAMES: string[] = [];
-const NO_ALLERGY_MAP: Record<string, string> = {};
-
-export const allergyMapQueryKey = ['allergy_map'] as const;
 /** Chiave per insieme di nomi (ordinati): due ricette con gli stessi ingredienti condividono la voce. */
 export const ingredientsByNameQueryKey = (names: readonly string[]) =>
   ['ingredients_by_name', [...names].sort().join('|')] as const;
@@ -59,14 +56,10 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
       });
     },
   });
-  const allergyQ = useQuery({
-    queryKey: allergyMapQueryKey,
-    queryFn: () => contentService.getAllergyMap(),
-  });
+  const { allergyMap } = useAllergyMap();
   const { categories } = useContentCategories('recipe');
 
   const richIngredients = ingredientsQ.data ?? NO_INGREDIENTS;
-  const allergyMap = allergyQ.data ?? NO_ALLERGY_MAP;
   const loadingIng = ingredientNames.length > 0 && ingredientsQ.isPending;
 
   // Al cambio ricetta si torna in cima (come prima).

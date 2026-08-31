@@ -1,6 +1,6 @@
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { getInfoPage } from '../services/infoPages.service';
+import { useInfoPage } from './useInfoPage';
 
 // ─── Team (tabella authors — fonte unica lavoratori) ─────────────────────────
 // staff_group (founders|teacher|helper|setup|extra|drivers|cherry) → header
@@ -21,7 +21,6 @@ const NO_TEAM: TeamMember[] = [];
 
 export const ABOUT_SLUG = 'about-thai-akha-kitchen';
 export const aboutTeamQueryKey = ['about_team'] as const;
-export const infoPageQueryKey = (slug: string) => ['info_page', slug] as const;
 
 /**
  * Pagina About: team attivo (authors, avatar da media_assets) + corpo della story
@@ -47,14 +46,11 @@ export function useAboutUsData() {
     },
   });
 
-  const story = useQuery({
-    queryKey: infoPageQueryKey(ABOUT_SLUG),
-    queryFn: () => getInfoPage(ABOUT_SLUG),
-  });
+  const story = useInfoPage(ABOUT_SLUG);
 
   return {
     team: team.data ?? NO_TEAM,
-    story: story.data ?? null,
-    loading: team.isPending || story.isPending,
+    story: story.document,
+    loading: team.isPending || story.loading,
   };
 }

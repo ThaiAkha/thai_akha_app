@@ -14,6 +14,7 @@ export function useIngredientDetail(slug: string, listItems: IngredientListItem[
   );
 
   const { detail, previous, next, loading, error } = useContentDetail<IngredientDetail, IngredientListItem>({
+    cacheKey: 'ingredient_detail',
     slug,
     listItems,
     fetcher,

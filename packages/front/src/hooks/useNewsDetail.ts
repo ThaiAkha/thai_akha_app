@@ -10,6 +10,7 @@ export function useNewsDetail(slug: string, articles: NewsArticle[]) {
 
     const { detail, previous: seqPrev, next: seqNext, loading, error } =
         useContentDetail<NewsDetail, NewsArticle>({
+            cacheKey: 'news_detail',
             slug,
             listItems: articles,
             fetcher,

@@ -9,6 +9,7 @@ export function useCultureDetail(slug: string, sections: CultureSection[]) {
 
     const { detail, secondaryData, previous: seqPrev, next: seqNext, loading, error } =
         useContentDetail<CultureSectionDetail, CultureSection>({
+            cacheKey: 'culture_detail',
             slug,
             listItems: sections,
             fetcher,

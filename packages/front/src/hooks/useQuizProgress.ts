@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
 
 const PROGRESS_KEY = 'thai_akha_quiz_progress_v2';
@@ -16,107 +17,65 @@ export interface ProgressData {
   percentage: number;
 }
 
+const NO_LEVELS: QuizProgressLevel[] = [];
+
+export const quizDataAllQueryKey = ['quiz_data', 'all'] as const;
+
+/** Progressi locali, letti UNA volta al mount (com'era: dentro l'effetto). */
+function readLocalProgress(): { perfect: string[]; completed: string[] } {
+  try {
+    const stored = localStorage.getItem(PROGRESS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return { perfect: parsed.perfectModules || [], completed: parsed.completedModules || [] };
+    }
+  } catch { /* noop */ }
+  return { perfect: [], completed: [] };
+}
+
+/**
+ * Progressi quiz per categoria/livello/globali: struttura livelli→moduli dal DB (cache
+ * condivisa fra home quiz, widget dashboard e gioco: CLAUDE.md #17) + moduli completati
+ * dal localStorage.
+ */
 export const useQuizProgress = () => {
-  const [loading, setLoading] = useState(true);
-  const [perfectModules, setPerfectModules] = useState<string[]>([]);
-  const [completedModules, setCompletedModules] = useState<string[]>([]);
-  const [quizData, setQuizData] = useState<QuizProgressLevel[]>([]);
+  const [local] = useState(readLocalProgress);
+  const perfectModules = local.perfect;
+  const completedModules = local.completed;
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        // Load local progress
-        try {
-          const stored = localStorage.getItem(PROGRESS_KEY);
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            setPerfectModules(parsed.perfectModules || []);
-            setCompletedModules(parsed.completedModules || []);
-          }
-        } catch { /* noop */ }
+  const query = useQuery({
+    queryKey: quizDataAllQueryKey,
+    // getQuizData e' tipizzato Record<string, unknown>[]: si dichiara qui la shape minima usata (id, category_id, modules).
+    queryFn: async () => ((await contentService.getQuizData()) || []) as unknown as QuizProgressLevel[],
+  });
+  const quizData = query.data ?? NO_LEVELS;
 
-        // Fetch all quiz data
-        const dbData = await contentService.getQuizData();
-        // getQuizData e' tipizzato Record<string, unknown>[]: si dichiara qui la shape minima usata (id, category_id, modules).
-        setQuizData((dbData || []) as unknown as QuizProgressLevel[]);
-      } catch (e) {
-        console.error('[useQuizProgress]', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  const getCategoryProgress = (categoryId: string): ProgressData => {
-    const categoryLevels = quizData.filter(l => l.category_id === categoryId);
+  const countModules = (levels: QuizProgressLevel[]): ProgressData => {
     let total = 0;
     let completed = 0;
-
-    categoryLevels.forEach(lvl => {
+    levels.forEach(lvl => {
       if (lvl.modules) {
         total += lvl.modules.length;
         lvl.modules.forEach((m) => {
-          if (completedModules.includes(m.id)) {
-            completed += 1;
-          }
+          if (completedModules.includes(m.id)) completed += 1;
         });
       }
     });
-
-    return {
-      completed,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-    };
+    return { completed, total, percentage: total > 0 ? Math.round((completed / total) * 100) : 0 };
   };
+
+  const getCategoryProgress = (categoryId: string): ProgressData =>
+    countModules(quizData.filter(l => l.category_id === categoryId));
 
   const getLevelProgress = (levelId: number): ProgressData => {
     const level = quizData.find(l => l.id === levelId);
-    let total = 0;
-    let completed = 0;
-
-    if (level && level.modules) {
-      total = level.modules.length;
-      level.modules.forEach((m) => {
-        if (completedModules.includes(m.id)) {
-          completed += 1;
-        }
-      });
-    }
-
-    return {
-      completed,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-    };
+    return countModules(level ? [level] : []);
   };
 
-  const getGlobalProgress = (): ProgressData => {
-    let total = 0;
-    let completed = 0;
-
-    quizData.forEach(lvl => {
-      if (lvl.modules) {
-        total += lvl.modules.length;
-        lvl.modules.forEach((m) => {
-          if (completedModules.includes(m.id)) {
-            completed += 1;
-          }
-        });
-      }
-    });
-
-    return {
-      completed,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-    };
-  };
+  const getGlobalProgress = (): ProgressData => countModules(quizData);
 
   return {
-    loading,
+    loading: query.isPending,
     getCategoryProgress,
     getLevelProgress,
     getGlobalProgress,

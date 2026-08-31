@@ -1,8 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
-import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
+import type { CultureSection } from '@thaiakha/shared/types';
 import { t } from '../i18n';
-import type { PageMetadata } from './usePageSections';
+import { useContentCategories } from './useContentCategories';
+import { usePageMetadata } from './usePageMetadata';
+
+const NO_SECTIONS: CultureSection[] = [];
+
+export const cultureSectionsQueryKey = ['culture_sections'] as const;
 
 // URL patterns:
 //   /history                        → index, all categories
@@ -23,11 +29,17 @@ function parseHistoryUrl() {
 }
 
 export function useHistoryFeed(targetSection?: string | null) {
-  const [sections, setSections] = useState<CultureSection[]>([]);
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [metadata, setMetadata] = useState<PageMetadata | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  // Sezioni + categorie + metadata: tre query in cache (CLAUDE.md #17). Era un Promise.all
+  // in useEffect; i metadata ora condividono la chiave di PageLayout.
+  const sectionsQuery = useQuery({
+    queryKey: cultureSectionsQueryKey,
+    queryFn: () => contentService.getCultureSections(),
+  });
+  const { categories, loading: catsLoading } = useContentCategories('history');
+  const { metadata, loading: metaLoading } = usePageMetadata('akha-culture-highland-heritage');
+  const sections = sectionsQuery.data ?? NO_SECTIONS;
+  const loading = sectionsQuery.isPending || catsLoading || metaLoading;
+  const error = sectionsQuery.isError;
 
   const initialUrl = parseHistoryUrl();
   const [activeSlug, setActiveSlug] = useState<string | null>(
@@ -37,43 +49,18 @@ export function useHistoryFeed(targetSection?: string | null) {
     () => initialUrl.category ?? 'all'
   );
 
-  // Load sections + content_categories(domain='history') + metadata in parallel
+  // If we have an active slug but no category (e.g. direct load), find the category
+  // from the section data. Era dentro il fetch: ora reagisce all'arrivo delle sezioni.
   useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(false);
-        const [sectionsData, categoriesData, metaData] = await Promise.all([
-          contentService.getCultureSections(),
-          contentService.getContentCategories('history'),
-          contentService.getPageMetadata('akha-culture-highland-heritage')
-        ]);
-        if (mounted) {
-          setSections(sectionsData);
-          setCategories(categoriesData);
-          setMetadata(metaData as PageMetadata | null);
-
-          // If we have an active slug but no category (e.g. direct load), 
-          // find the category from the section data
-          const { category } = parseHistoryUrl();
-          if (!category && initialUrl.slug) {
-            const currentSection = sectionsData.find(s => s.slug === initialUrl.slug);
-            if (currentSection?.category?.id) {
-              setActiveCategory(currentSection.category.id);
-            }
-          }
-        }
-      } catch (e) {
-        console.error('useHistoryFeed: failed to load', e);
-        if (mounted) setError(true);
-      } finally {
-        if (mounted) setLoading(false);
+    if (sections.length === 0) return;
+    const { category } = parseHistoryUrl();
+    if (!category && initialUrl.slug) {
+      const currentSection = sections.find(s => s.slug === initialUrl.slug);
+      if (currentSection?.category?.id) {
+        setActiveCategory(currentSection.category.id);
       }
-    };
-    load();
-    return () => { mounted = false; };
-  }, [initialUrl.slug, initialUrl.category]); // Includiamo category per sicurezza se la logica interna la usa
+    }
+  }, [sections, initialUrl.slug]);
 
   // Sync with browser back/forward
   useEffect(() => {

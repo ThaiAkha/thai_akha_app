@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { UserProfile } from '../../services/auth.service';
-import { contentService } from '@thaiakha/shared/services';
 import type { SpicinessLevel } from '@thaiakha/shared/types';
 
 import { Button, Icon } from '../ui';
@@ -10,6 +9,8 @@ import AkhaPixelLine from '../divider/AkhaPixelLine';
 import Alert from '../ui/card/Alert';
 import { AllergySelector, DietSelector, SpicySelector } from '../menu';
 import { useUserPassport } from '../../hooks/useUserPassport';
+import { useDietaryKnowledge } from '../../hooks/useDietaryKnowledge';
+import { useAllergyMap } from '../../hooks/useAllergyMap';
 import { useActiveProfile } from '../../context/ActiveProfileContext';
 
 interface UserSettingsProps {
@@ -39,8 +40,11 @@ const UserSettings: React.FC<UserSettingsProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [dietOptions, setDietOptions] = useState<DietOption[]>([]);
-  const [allergyMap, setAllergyMap] = useState<Record<string, string>>({});
+  // Diete e mappa allergeni dalle voci di cache condivise (CLAUDE.md #17). Le diete
+  // arrivano gia' mappate (icon con fallback 'restaurant'): stessi campi letti qui.
+  const { profiles } = useDietaryKnowledge();
+  const dietOptions = profiles as unknown as DietOption[];
+  const { allergyMap } = useAllergyMap();
 
   // F2 — il passport segue il PROFILO ATTIVO (host o un suo gestito), non l'host fisso.
   const { managedProfiles, activeProfileId, isActingAsManaged } = useActiveProfile();
@@ -51,11 +55,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   const { passport, updatePassport } = useUserPassport(passportTarget, onUpdate);
 
   const [fullName, setFullName] = useState('');
-
-  useEffect(() => {
-    contentService.getDietaryProfiles().then(p => { if (p) setDietOptions(p as unknown as DietOption[]); });
-    contentService.getAllergyMap().then(map => { if (map) setAllergyMap(map); });
-  }, []);
 
   useEffect(() => {
     setFullName(activeName);

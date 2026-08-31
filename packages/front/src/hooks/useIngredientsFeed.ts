@@ -1,7 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ingredientService, contentMetadataService } from '@thaiakha/shared/services';
-import { IngredientListItem, ContentCategoryDB } from '@thaiakha/shared/types';
-import type { PageMetadata } from './usePageSections';
+import { useMemo } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
+import { ingredientService } from '@thaiakha/shared/services';
+import type { IngredientListItem } from '@thaiakha/shared/types';
+import { useContentCategories } from './useContentCategories';
+import { usePageMetadata } from './usePageMetadata';
 
 // URL patterns (hub prefix = 'thai-cooking-ingredients'):
 //   /thai-cooking-ingredients                         → hub (6 category cards)
@@ -17,39 +19,26 @@ export function isCategorySlug(sub: string | null | undefined): boolean {
   return !!sub && sub.endsWith('-guide');
 }
 
-export function useIngredientsFeed(targetSection?: string | null) {
-  const [ingredients, setIngredients] = useState<IngredientListItem[]>([]);
-  const [categories, setCategories] = useState<ContentCategoryDB[]>([]);
-  const [metadata, setMetadata] = useState<PageMetadata | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+const NO_INGREDIENTS: IngredientListItem[] = [];
 
-  useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(false);
-        const [indexData, categoriesData, metaData] = await Promise.all([
-          ingredientService.getIngredientsIndex(),
-          contentMetadataService.getContentCategories('ingredient'),
-          contentMetadataService.getPageMetadata(INGREDIENTS_HUB_SLUG),
-        ]);
-        if (mounted) {
-          setIngredients(indexData);
-          setCategories(categoriesData);
-          setMetadata(metaData as PageMetadata | null);
-        }
-      } catch (e) {
-        console.error('useIngredientsFeed: failed to load', e);
-        if (mounted) setError(true);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-    load();
-    return () => { mounted = false; };
-  }, []);
+export const ingredientsIndexQueryKey = ['ingredients_index'] as const;
+
+/**
+ * Hub ingredienti: indice + categorie + metadata pagina. Data layer unico (CLAUDE.md #17):
+ * era un Promise.all in useEffect; ora tre query in cache, e i metadata condividono la
+ * chiave di PageLayout (prima si pagavano una seconda volta a ogni mount).
+ */
+export function useIngredientsFeed(targetSection?: string | null) {
+  const index = useQuery({
+    queryKey: ingredientsIndexQueryKey,
+    queryFn: () => ingredientService.getIngredientsIndex(),
+  });
+  const { categories, loading: catsLoading } = useContentCategories('ingredient');
+  const { metadata, loading: metaLoading } = usePageMetadata(INGREDIENTS_HUB_SLUG);
+
+  const ingredients = index.data ?? NO_INGREDIENTS;
+  const loading = index.isPending || catsLoading || metaLoading;
+  const error = index.isError;
 
   // The sub-slug (parts[1], passed as targetSection) selects the view.
   const sub = targetSection ?? null;

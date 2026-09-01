@@ -44,6 +44,26 @@ declare global {
   }
 }
 
+// Lo script Maps in index.html e' `async defer`: puo' eseguire DOPO il mount di
+// questa pagina, e altri script possono aver gia' creato un `window.google`
+// parziale. Chiamare importLibrary alla cieca dava "importLibrary is not a
+// function" in prod (2026-08-31) oppure una mappa morta in silenzio. Qui si
+// attende il caricamento vero: polling leggero finche' importLibrary non esiste.
+const MAPS_POLL_MS = 150;
+const MAPS_TIMEOUT_MS = 10000;
+const waitForMaps = (): Promise<GmMapsGlobal | null> =>
+  new Promise((resolve) => {
+    const started = Date.now();
+    const tick = () => {
+      // cast locale: il tipo globale dichiara window.google sempre presente, qui serve il caso "non ancora"
+      const maps = (window as { google?: { maps?: Partial<GmMapsGlobal> } }).google?.maps;
+      if (typeof maps?.importLibrary === 'function') return resolve(maps as GmMapsGlobal);
+      if (Date.now() - started > MAPS_TIMEOUT_MS) return resolve(null);
+      window.setTimeout(tick, MAPS_POLL_MS);
+    };
+    tick();
+  });
+
 interface PickupMapBackgroundProps {
   geoJsonData: PickupGeoJsonCollection;
   selectedLocation?: { lat: number; lng: number } | null;
@@ -81,10 +101,15 @@ const PickupMapBackground: React.FC<PickupMapBackgroundProps> = ({
   // 1. INIZIALIZZAZIONE MAPPA
   useEffect(() => {
     const initMap = async () => {
-      if (!mapRef.current || !window.google) return;
+      if (!mapRef.current) return;
+
+      // Attende lo script Maps (async defer); se non arriva entro il timeout
+      // la pagina resta usabile, solo senza sfondo mappa.
+      const maps = await waitForMaps();
+      if (!maps || !mapRef.current) return;
       
       // Importa librerie necessarie (Maps + Marker Avanzati)
-      const { Map } = await window.google.maps.importLibrary("maps");
+      const { Map } = await maps.importLibrary("maps");
       
       if (!googleMapRef.current) {
         const map = new Map(mapRef.current, {

@@ -12,9 +12,18 @@
 //
 // Uso: node scripts/check-env.mjs <dir-del-package> [MODE]
 import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 
-const REQUIRED = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
+const REQUIRED_BASE = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
+
+// Richieste solo da un package. La chiave Maps la usa solo il front:
+// index.html la inlina via %VITE_GOOGLE_MAPS_API_KEY%; se manca, Vite lascia
+// il placeholder LETTERALE nell'HTML e la mappa pickup muore in silenzio.
+// (Nota: questo guard ferma la chiave ASSENTE. Una chiave presente ma scaduta
+// in Cloud Console - ExpiredKeyMapError, 2026-08-31 - da qui non si vede.)
+const REQUIRED_BY_PKG = {
+  front: ['VITE_GOOGLE_MAPS_API_KEY'],
+};
 
 // Guard segreti (audit 2026-08, P2): tutto cio' che si chiama VITE_* finisce nel
 // bundle browser appena qualcuno scrive `import.meta.env.VITE_X`. Le chiavi a
@@ -36,6 +45,13 @@ if (!pkgDir) {
   console.error('check-env: manca la directory del package.');
   process.exit(2);
 }
+
+// Il package si riconosce dal nome della cartella (lo script riceve "." dal
+// build script di ciascun package, quindi si risolve al path assoluto).
+const REQUIRED = [
+  ...REQUIRED_BASE,
+  ...(REQUIRED_BY_PKG[basename(resolve(pkgDir))] ?? []),
+];
 
 // Stesso ordine di precedenza di Vite: le piu' specifiche vincono.
 const files = ['.env', `.env.${mode}`, '.env.local', `.env.${mode}.local`];

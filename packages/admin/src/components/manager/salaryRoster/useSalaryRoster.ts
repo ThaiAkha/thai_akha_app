@@ -22,6 +22,14 @@ export function useSalaryRoster() {
     const [loadError, setLoadError] = useState<string | null>(null);
     const [actionError, setActionError] = useState<string | null>(null);
 
+    // Prova a vuoto (#111): un periodo FUTURO non puo' MAI creare spese vere.
+    // L'edge riceve dry_run e risponde con la partizione simulata, zero scritture Zoho.
+    // Nota: il mese finto va scelto in un ANNO diverso (es. 2099-01), perche' il
+    // payslip cumula lo year-to-date per anno e un finto 2026 sporcherebbe i veri.
+    const isDryRun = period > thisMonth();
+    const [dryRunResult, setDryRunResult] = useState<{ individuals: number; groups: string; total: number } | null>(null);
+    useEffect(() => { setDryRunResult(null); }, [period]);
+
     // People + base: una volta. authors e' public-read, staff_details e' admin/manager only.
     const fetchPeople = useCallback(async () => {
         const { data, error } = await supabase
@@ -147,9 +155,23 @@ export function useSalaryRoster() {
         setBusy(true);
         setActionError(null);
         try {
-            const { data, error } = await supabase.functions.invoke('zoho-create-salary-expense', { body: { period } });
+            setDryRunResult(null);
+            const { data, error } = await supabase.functions.invoke('zoho-create-salary-expense', { body: { period, dry_run: isDryRun } });
             if (error) throw error;
-            const res = data as { success?: boolean; failures?: { method: string; message: string; employee?: string }[] };
+            const res = data as {
+                success?: boolean; dry_run?: boolean;
+                individual?: { amount: number }[];
+                groups?: { method: string; employees: number; amount: number }[];
+                failures?: { method: string; message: string; employee?: string }[];
+            };
+            if (res.dry_run) {
+                setDryRunResult({
+                    individuals: res.individual?.length ?? 0,
+                    groups: (res.groups ?? []).map(g => `${g.method} ×${g.employees}`).join(' + ') || '-',
+                    total: (res.individual?.reduce((s, r) => s + (r.amount || 0), 0) ?? 0)
+                        + (res.groups?.reduce((s, g) => s + (g.amount || 0), 0) ?? 0),
+                });
+            }
             if (res.failures?.length) {
                 setActionError(res.failures.map(f => `${f.employee ? `${f.employee} (${f.method})` : f.method}: ${f.message}`).join(' · '));
             }
@@ -157,7 +179,7 @@ export function useSalaryRoster() {
         } catch (err) {
             setActionError(err instanceof Error ? err.message : String(err));
         } finally { setBusy(false); }
-    }, [busy, period, people, fetchSalaries]);
+    }, [busy, period, people, fetchSalaries, isDryRun]);
 
     // Payslip: uno (salary_id) o tutto il mese (period → PDF multipagina).
     const payslip = useCallback(async (body: { salary_id?: string; period?: string }, key: string) => {
@@ -182,7 +204,7 @@ export function useSalaryRoster() {
     return {
         period, setPeriod, people, bases, individualIds, baseVisible,
         salaries, drafts, setDraft, groups, summary,
-        savingId, saveRow, busy, createExpenses, payslipBusy, payslip,
+        savingId, saveRow, busy, createExpenses, isDryRun, dryRunResult, payslipBusy, payslip,
         loadError, actionError, anySaved: Object.keys(salaries).length > 0,
     };
 }

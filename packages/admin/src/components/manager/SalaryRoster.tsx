@@ -23,7 +23,7 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
     const {
         period, setPeriod, people, bases, individualIds, baseVisible,
         salaries, drafts, setDraft, groups, summary,
-        savingId, saveRow, busy, createExpenses, payslipBusy, payslip,
+        savingId, saveRow, busy, createExpenses, isDryRun, dryRunResult, payslipBusy, payslip,
         loadError, actionError, anySaved,
     } = useSalaryRoster();
 
@@ -31,7 +31,9 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
     const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
 
     const onCreateExpenses = () => {
-        const msg = t('salary.confirmExpenses', { defaultValue: 'Create the Zoho salary expense(s) for {{p}}? Total ฿{{n}}.', p: period, n: summary.net.toLocaleString() });
+        const msg = isDryRun
+            ? t('salary.confirmDryRun', { defaultValue: 'TEST RUN for {{p}} (future month): expense payloads are simulated and NOTHING is written to Zoho. Continue?', p: period })
+            : t('salary.confirmExpenses', { defaultValue: 'Create the Zoho salary expense(s) for {{p}}? Total ฿{{n}}.', p: period, n: summary.net.toLocaleString() });
         if (window.confirm(msg)) createExpenses();
     };
 
@@ -44,7 +46,11 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button variant="primary" size="sm" disabled={busy || !anySaved} startIcon={<Banknote className="w-4 h-4" />} onClick={onCreateExpenses}>
-                        {busy ? t('salary.creating', { defaultValue: 'Creating…' }) : t('salary.createExpenses', { defaultValue: 'Create salary expenses' })}
+                        {busy
+                            ? t('salary.creating', { defaultValue: 'Creating…' })
+                            : isDryRun
+                                ? t('salary.testExpenses', { defaultValue: 'Test expenses (dry run)' })
+                                : t('salary.createExpenses', { defaultValue: 'Create salary expenses' })}
                     </Button>
                     <Button variant="outline" size="sm" disabled={!anySaved || payslipBusy === 'all'} startIcon={<FileText className="w-4 h-4" />} onClick={() => payslip({ period }, 'all')}>
                         {payslipBusy === 'all' ? t('salary.generating', { defaultValue: 'Generating…' }) : t('salary.allPayslips', { defaultValue: 'All payslips (1 PDF)' })}
@@ -61,6 +67,14 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
             {(loadError || actionError) && (
                 <div className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50/60 dark:bg-red-500/5 p-3 text-xs text-error">
                     {loadError ?? actionError}
+                </div>
+            )}
+            {dryRunResult && (
+                <div className="rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-500/5 p-3 text-xs text-blue-800 dark:text-blue-200">
+                    {t('salary.dryRunResult', {
+                        defaultValue: 'Dry run {{p}}: {{i}} individual expense(s) + groups {{g}} - total ฿{{n}}. Nothing was written to Zoho.',
+                        p: period, i: dryRunResult.individuals, g: dryRunResult.groups, n: dryRunResult.total.toLocaleString(),
+                    })}
                 </div>
             )}
 

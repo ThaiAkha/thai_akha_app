@@ -86,6 +86,7 @@
   "salary": {
     "month": "Month",
     "createExpenses": "Create salary expenses",
+    "testExpenses": "Test expenses (dry run)",
     "creating": "Creating…",
     "allPayslips": "All payslips (1 PDF)",
     "generating": "Generating…",
@@ -97,6 +98,8 @@
     "paid": "Paid",
     "payslip": "Payslip",
     "confirmExpenses": "Create the Zoho salary expense(s) for {{p}}? Total ฿{{n}}.",
+    "confirmDryRun": "TEST RUN for {{p}} (future month): expense payloads are simulated and NOTHING is written to Zoho. Continue?",
+    "dryRunResult": "Dry run {{p}}: {{i}} individual expense(s) + groups {{g}} - total ฿{{n}}. Nothing was written to Zoho.",
     "someFailed": "Some failed",
     "expenseError": "Expense error",
     "saveError": "Could not save",

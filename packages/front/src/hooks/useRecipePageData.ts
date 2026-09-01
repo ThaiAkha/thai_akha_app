@@ -1,8 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { contentService, recipeService } from '@thaiakha/shared/services';
 import type { UserProfile } from '@thaiakha/shared/types';
 import { useDietaryKnowledge } from './useDietaryKnowledge';
 import { useAudioAsset } from './useAudioAsset';
+import { useAllergyMap } from './useAllergyMap';
+import { useSpicinessLevels } from './useSpicinessLevels';
+import { recipesFullQueryKey } from './useRecipesListData';
 import { LOCAL_PASSPORT_KEY } from './useUserPassport';
 import { mapToRecipeData } from '../lib/recipeHelpers';
 import { adaptRecipeToDiet } from '../lib/recipeAdapter';
@@ -29,6 +33,12 @@ export interface IngredientDetail {
 const normalizeAllergenKey = (s: string) =>
   s.replace(/^allergy[_-]/i, '').replace(/[_-]/g, ' ').trim().toLowerCase();
 
+const NO_ROWS: Record<string, unknown>[] = [];
+const NO_INGREDIENTS: IngredientDetail[] = [];
+
+export const recipeBySlugQueryKey = (slug: string) => ['recipe', slug] as const;
+export const ingredientsLibraryQueryKey = ['ingredients_library'] as const;
+
 export interface UseRecipePageDataResult {
   recipe: RecipeData | null;
   recipeRaw: Record<string, unknown> | null;
@@ -52,22 +62,41 @@ export interface UseRecipePageDataResult {
   navLoading: boolean;
 }
 
+/**
+ * Data loader della pagina RICETTA SINGOLA (#118 lotto 5, regola #17).
+ * Cinque letture su TanStack Query: ricetta per slug + ingredients_library qui,
+ * allergy map / spiciness / lista completa via hook condivisi (stessa cache
+ * di menu, lista ricette e passport). Le derivazioni (showroom ingredienti,
+ * prev/next, categorie, gallerie) sono useMemo puri sui dati in cache.
+ */
 export function useRecipePageData(
   slug: string,
   userProfile: UserProfile | null | undefined
 ): UseRecipePageDataResult {
-  const [dataLoading, setDataLoading] = useState(true);
-  const [navLoading, setNavLoading] = useState(true);
-  const [recipeRaw, setRecipeRaw] = useState<Record<string, unknown> | null>(null);
-  const [allRecipesRaw, setAllRecipesRaw] = useState<Record<string, unknown>[]>([]);
-  const [fullLibrary, setFullLibrary] = useState<Record<string, unknown>[]>([]);
-  const [baseRichIngredients, setBaseRichIngredients] = useState<IngredientDetail[]>([]);
-  const [allergyMap, setAllergyMap] = useState<Record<string, string>>({});
-  const [spiceLevel, setSpiceLevel] = useState<Record<string, unknown> | null>(null);
   const [activeDiet, setActiveDiet] = useState('');
   const [activeAllergies, setActiveAllergies] = useState<string[]>([]);
 
   const { loading: knowledgeLoading, profiles } = useDietaryKnowledge();
+  const { allergyMap, loading: allergyLoading } = useAllergyMap();
+  const { spicinessLevels, loading: spiceLoading } = useSpicinessLevels();
+
+  const recipeQ = useQuery({
+    queryKey: recipeBySlugQueryKey(slug),
+    queryFn: async () => (await contentService.getRecipeBySlug(slug)) ?? null,
+  });
+  const libraryQ = useQuery({
+    queryKey: ingredientsLibraryQueryKey,
+    queryFn: async () => (await recipeService.getIngredientsLibrary()) ?? NO_ROWS,
+  });
+  // Stessa chiave della pagina lista (useRecipesListData): una sola copia in cache.
+  const allQ = useQuery({
+    queryKey: recipesFullQueryKey,
+    queryFn: async () => (await contentService.getAllRecipesFull()) ?? NO_ROWS,
+  });
+
+  const recipeRaw = (recipeQ.data ?? null) as Record<string, unknown> | null;
+  const fullLibrary = libraryQ.data ?? NO_ROWS;
+  const allRecipesRaw = allQ.data ?? NO_ROWS;
 
   const audioId = recipeRaw?.audio_asset_id as string | undefined;
   const { asset: audioAsset } = useAudioAsset({ assetId: audioId });
@@ -93,48 +122,17 @@ export function useRecipePageData(
     }
   }, [userProfile]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setDataLoading(true);
-      setNavLoading(true);
+  // Spice level risolto dal record ricetta (era parte del fetch critico).
+  const spiceLevel = useMemo<Record<string, unknown> | null>(() => {
+    const spiceLevelId = recipeRaw?.spice_level_id as number | undefined;
+    if (!spiceLevelId) return null;
+    const found = spicinessLevels.find(s => s.id === spiceLevelId);
+    return found ? (found as unknown as Record<string, unknown>) : null;
+  }, [recipeRaw, spicinessLevels]);
 
-      // Critical path: single recipe + allergy map + spice levels — unblocks page render
-      try {
-        const [singleData, allergyMapData, spiceLevels, libraryData] = await Promise.all([
-          contentService.getRecipeBySlug(slug),
-          contentService.getAllergyMap(),
-          recipeService.getSpicinessLevels(),
-          recipeService.getIngredientsLibrary(),
-        ]);
-        setRecipeRaw(singleData);
-        setAllergyMap(allergyMapData || {});
-        setFullLibrary(libraryData || []);
-        const spiceLevelId = (singleData as Record<string, unknown> | null)?.spice_level_id as number | undefined;
-        if (spiceLevelId) {
-          const found = spiceLevels.find(s => s.id === spiceLevelId);
-          setSpiceLevel(found ? (found as unknown as Record<string, unknown>) : null);
-        }
-      } catch (err) {
-        console.error('Failed to load recipe:', err);
-      } finally {
-        setDataLoading(false);
-      }
-
-      // Background: all recipes for nav (prev/next + recipe panel)
-      try {
-        const allData = await contentService.getAllRecipesFull();
-        setAllRecipesRaw(allData || []);
-      } catch (err) {
-        console.error('Failed to load recipes nav:', err);
-      } finally {
-        setNavLoading(false);
-      }
-    };
-    fetchData();
-  }, [slug]);
-
-  useEffect(() => {
-    if (!recipeRaw) return;
+  // Showroom ingredienti: derivazione pura (era state + effect, stesso risultato).
+  const baseRichIngredients = useMemo<IngredientDetail[]>(() => {
+    if (!recipeRaw) return NO_INGREDIENTS;
 
     // Sort by display_order so 'main' (order 1) always leads the grid
     const keyIngredientsList = ((recipeRaw.recipe_key_ingredients as Array<{
@@ -154,14 +152,14 @@ export function useRecipePageData(
       fullLibrary.map(lib => [(lib.name_en as string).toLowerCase().trim(), lib])
     );
 
-    const ingredients: IngredientDetail[] = keyIngredientsList.map(keyIng => {
+    return keyIngredientsList.map(keyIng => {
       const name = keyIng.ingredient;
-      
+
       let lib = keyIng.ingredient_id ? libraryMapById.get(keyIng.ingredient_id) : null;
       if (!lib) {
         lib = libraryMapByName.get(name.toLowerCase().trim());
       }
-      
+
       // Parse dietary_adaptations if it's a string
       let parsedAdaptations: Record<string, unknown> = {};
       if (typeof keyIng.dietary_adaptations === 'string') {
@@ -193,16 +191,14 @@ export function useRecipePageData(
         // Doses omitted per architectural rule (Visual Showroom vs BoM)
       };
     });
-
-    setBaseRichIngredients(ingredients);
   }, [recipeRaw, fullLibrary]);
 
   const richIngredients = useMemo<IngredientDetail[]>(() => {
     if (!baseRichIngredients.length) return baseRichIngredients;
-    
+
     const cleanDiet = activeDiet?.replace('diet_', '').toLowerCase() || 'regular';
     const dietKey = `diet_${cleanDiet}`;
-    
+
     // Convert activeAllergies to valid keys (e.g., Peanut -> allergy_peanuts or allergy_peanut depending on naming,
     // wait, we map them directly to allergy_${key})
     const allergyKeys = activeAllergies.map(a => `allergy_${a.toLowerCase().replace(/\s+/g, '_')}`);
@@ -213,7 +209,7 @@ export function useRecipePageData(
       if (ing.dietary_adaptations) {
         // Find if any active key has an adaptation for this ingredient
         const matchingKey = activeKeys.find(key => ing.dietary_adaptations![key]);
-        
+
         if (matchingKey) {
           // dietary_adaptations e' Record<string, unknown> (JSONB): shape reale { action, substitute_id? } (Sistema B).
           const adaptation = ing.dietary_adaptations[matchingKey] as { action?: string; substitute_id?: string };
@@ -330,6 +326,10 @@ export function useRecipePageData(
       .filter((c): c is { allergen: string; warning: string } => c !== null);
   }, [recipe, activeAllergies, allergyMap]);
 
+  // Critico (blocca il render): ricetta + allergy map + spice + library, come prima.
+  const loading =
+    recipeQ.isPending || libraryQ.isPending || allergyLoading || spiceLoading || knowledgeLoading;
+
   return {
     recipe,
     recipeRaw,
@@ -347,7 +347,7 @@ export function useRecipePageData(
     audioAsset,
     activeConflicts,
     spiceLevel,
-    loading: dataLoading || knowledgeLoading,
-    navLoading,
+    loading,
+    navLoading: allQ.isPending,
   };
 }

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { supabase } from '@thaiakha/shared/lib/supabase';
-import { contentService } from '@thaiakha/shared/services';
 import { PageLayout, HeaderMenu, StickyTabNav } from '../components/layout';
 import { UserProfile } from '../services/auth.service';
-import type { UserDashboardBooking, DashboardMenuSelection, MenuSelectionDish, PickupRouteStop, SpicinessLevel } from '@thaiakha/shared/types';
+import type { MenuSelectionDish } from '@thaiakha/shared/types';
 import { Certificate, CertificateDish } from '../components/menu/Certificate';
 import {
   DashboardTab,
@@ -22,6 +20,7 @@ import ContextualStatsView from '../components/user-dashboard/ContextualStatsVie
 import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
 import TopWarriorsCard from '../components/user-dashboard/TopWarriorsCard';
 import { CherryHelp } from '../components/chat/CherryHelp';
+import { useUserDashboardData } from '../hooks/useUserDashboardData';
 import { t } from '../i18n';
 
 /* ── CONSTANTS ── */
@@ -59,20 +58,24 @@ const UserPage: React.FC<UserPageProps> = ({
   onProfileRefresh,
   sectionId,
 }) => {
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('overview');
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  // Data
-  const [bookingsList, setBookingsList] = useState<UserDashboardBooking[]>([]);
-  const [activeBookingId, setActiveBookingId] = useState<string | null>(null);
-  const [menuSelection, setMenuSelection] = useState<DashboardMenuSelection | null>(null);
-  const [spicinessLevels, setSpicinessLevels] = useState<SpicinessLevel[]>([]);
-  const [routeStops, setRouteStops] = useState<PickupRouteStop[]>([]);
   const [showCertificate, setShowCertificate] = useState(false);
 
   /* ── ROLE LOGIC ── */
   const isStaff = STAFF_ROLES.has(userProfile?.role as string ?? '');
+
+  /* ── DATA — bookings/menu/route su TanStack Query (#118 lotto 6, regola #17) ── */
+  const {
+    bookingsList,
+    activeBookingId,
+    setActiveBookingId,
+    activeBooking,
+    menuSelection,
+    routeStops,
+    spicinessLevels,
+    loading,
+    refresh,
+  } = useUserDashboardData(userProfile, isStaff);
 
   /* ── ACTIVE BOOKING ── (futuro/oggi, non cancellato). Gate UNICO di Menu + My
      Reservation per QUALSIASI ruolo: senza booking attivo non si vedono. */
@@ -111,122 +114,6 @@ const UserPage: React.FC<UserPageProps> = ({
     }
   }, [sectionId]);
 
-  /* ── FETCH BOOKINGS — guarded for staff ── */
-  const fetchBookings = async (isBackgroundRefresh = false) => {
-    if (!userProfile || isStaff) return;
-    if (!isBackgroundRefresh) setLoading(true);
-
-    try {
-      if (spicinessLevels.length === 0) {
-        // Fonte unica: il service (cached + join photo_asset_id). Era una query
-        // diretta `select('*')`, che bypassava cache e foto. Vedi #70.
-        const levels = await contentService.getSpicinessLevels();
-        if (levels.length > 0) setSpicinessLevels(levels);
-      }
-
-      const { data: bookingRows } = await supabase
-        .from('bookings')
-        .select(`*, class_sessions ( display_name, start_time )`)
-        .eq('user_id', userProfile.id)
-        .neq('status', 'cancelled');
-      // Shape della select (join class_sessions) non inferibile: cast unico alla forma dichiarata.
-      const bookings = bookingRows as unknown as UserDashboardBooking[] | null;
-
-      if (bookings && bookings.length > 0) {
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        const future = bookings
-          .filter(b => new Date(b.booking_date) >= now)
-          .sort((a, b) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime());
-        const past = bookings
-          .filter(b => new Date(b.booking_date) < now)
-          .sort((a, b) => new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime());
-
-        const sorted = [...future, ...past];
-        setBookingsList(sorted);
-
-        if (!activeBookingId) {
-          const lastEdited = localStorage.getItem('last_edited_booking');
-          const target = lastEdited && sorted.find(b => b.internal_id === lastEdited)
-            ? lastEdited
-            : (future.length > 0 ? future[0].internal_id : sorted[0].internal_id);
-          setActiveBookingId(target);
-          localStorage.removeItem('last_edited_booking');
-        }
-      } else {
-        setBookingsList([]);
-        setActiveBookingId(null);
-      }
-    } catch (err) {
-      console.error('UserPage Fetch Error:', err);
-    } finally {
-      if (!isBackgroundRefresh) setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isStaff) { setLoading(false); return; }
-    fetchBookings();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchBookings e' ricreata a ogni render: deps volute = utente/refresh/ruolo
-  }, [userProfile, refreshTrigger, isStaff]);
-
-  /* ── FETCH ROUTE DATA ── */
-  const fetchRouteData = async (currentBooking: UserDashboardBooking) => {
-    const { data: stops } = await supabase
-      .from('bookings')
-      .select('internal_id, hotel_name, route_order, transport_status, pickup_time')
-      .eq('booking_date', currentBooking.booking_date)
-      .eq('session_id', currentBooking.session_id as string) // sempre valorizzato per un booking reale
-      .neq('status', 'cancelled')
-      .order('route_order', { ascending: true });
-    setRouteStops(stops || []);
-  };
-
-  /* ── FETCH MENU + ROUTE DETAILS ── */
-  useEffect(() => {
-    if (isStaff) return;
-    const loadDetails = async () => {
-      if (!activeBookingId) { setMenuSelection(null); setRouteStops([]); return; }
-
-      const { data: menu } = await supabase
-        .from('menu_selections')
-        .select(`*, curry:recipes!curry_id(name, image), soup:recipes!soup_id(name, image), stirfry:recipes!stirfry_id(name, image)`)
-        .eq('booking_id', activeBookingId)
-        .maybeSingle();
-
-      // Join curry/soup/stirfry non inferibile: cast unico alla forma dichiarata.
-      setMenuSelection(menu as unknown as DashboardMenuSelection | null);
-      const current = bookingsList.find(b => b.internal_id === activeBookingId);
-      if (current) fetchRouteData(current);
-    };
-    loadDetails();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- bookingsList escluso di proposito: eviterebbe il refetch del menu durante il polling
-  }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to prevent menu re-fetching during polling
-
-  /* ── SMART POLLING (today only) ── */
-  useEffect(() => {
-    if (isStaff || !activeBookingId) return;
-
-    // Use an interval that doesn't trigger effect re-runs
-    const interval = setInterval(() => {
-      const current = bookingsList.find(b => b.internal_id === activeBookingId);
-      if (!current) return;
-
-      const now = new Date();
-      const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-      const isToday = current.booking_date === todayStr;
-      const isPending = current.transport_status !== 'dropped_off';
-
-      if (isToday && isPending) {
-        fetchBookings(true);
-        fetchRouteData(current);
-      }
-    }, 20000); // 20s is enough for background sync
-
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- bookingsList/fetchBookings esclusi di proposito: il polling non deve riavviarsi a ogni fetch
-  }, [activeBookingId, isStaff]); // [REMOVED bookingsList] to stop the loop
-
   /* ── CERTIFICATE HELPER ── */
   const getCertificateDishes = (): CertificateDish[] => {
     if (!menuSelection) return [];
@@ -244,7 +131,6 @@ const UserPage: React.FC<UserPageProps> = ({
       }));
   };
 
-  const activeBooking = bookingsList.find(b => b.internal_id === activeBookingId);
   const currentSlug = HEADER_SLUGS[activeTab] || 'user-dashboard';
 
   // ActiveProfileProvider e' montato a livello shell in App.tsx (#87): qui si consuma soltanto.
@@ -355,7 +241,7 @@ const UserPage: React.FC<UserPageProps> = ({
                     spicinessLevels={spicinessLevels}
                     onBack={() => setActiveTab(hasActiveBooking ? 'reservation' : 'overview')}
                     onUpdate={() => {
-                      setRefreshTrigger(prev => prev + 1);
+                      refresh();
                       onProfileRefresh();
                       setTimeout(() => {
                         setActiveTab(hasActiveBooking ? 'reservation' : 'overview');

@@ -4,10 +4,12 @@
  * viste ricevono questo oggetto.
  */
 import { useState, useMemo, useEffect } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { scoreAnswer, type QuizAnswer } from '../../components/quiz/quizScoring';
 import { contentService } from '@thaiakha/shared/services';
-import { QuizLevel, QuizQuestion, type QuizRewardDB, type ContentCategoryDB, type QuizOption, type QuizQuestionType } from '@thaiakha/shared';
+import { QuizLevel, QuizQuestion, type QuizOption, type QuizQuestionType } from '@thaiakha/shared';
+import { useQuizCatalog } from '../../hooks/useQuizHomeData';
 import type { NodeBlock } from '@thaiakha/shared/data';
 
 // Raw shape returned by contentService.getQuizData (game.service normalizes most fields,
@@ -37,13 +39,23 @@ import {
   PROGRESS_KEY, EXPLANATIONS_KEY, getLocalExplanations, saveLocalScore, getLocalScore, syncProgressToSupabase, type View,
 } from './quizStorage';
 
+// Chiave distinta da quizDataAllQueryKey (['quiz_data','all']): il segmento
+// 'category' evita ogni collisione tra il catalogo completo e una categoria.
+export const quizDataByCategoryQueryKey = (categoryId: string) =>
+  ['quiz_data', 'category', categoryId] as const;
+
 export function useQuizGame(categoryId: string, onNavigate: (page: string, topic?: string, sectionId?: string) => void) {
-  // --- Data state ---
-  const [quizLevels, setQuizLevels] = useState<QuizLevel[]>([]);
-  const [quizRewards, setQuizRewards] = useState<QuizRewardDB[]>([]);
-  const [allCategories, setAllCategories] = useState<ContentCategoryDB[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [categoryTitle, setCategoryTitle] = useState<string>(t('quiz:spiritQuizTitle'));
+  // --- Data (#118 lotto 6): contenuti quiz su TanStack Query. Catalogo
+  // (categorie+premi) condiviso in cache con la home quiz e il widget dashboard.
+  const catalog = useQuizCatalog();
+  const quizRewards = catalog.rewards;
+  const allCategories = catalog.categories;
+  const quizDataQ = useQuery({
+    queryKey: quizDataByCategoryQueryKey(categoryId),
+    queryFn: async () => (await contentService.getQuizData(categoryId)) ?? [],
+  });
+  // Idratazione progressi (localStorage + profilo) in corso: parte del loading.
+  const [hydrating, setHydrating] = useState(true);
   const { getCategoryProgress } = useQuizProgress();
 
   // F2 — quiz per PROFILO ATTIVO. Quando si agisce come gestito: DB-only su
@@ -76,27 +88,23 @@ export function useQuizGame(categoryId: string, onNavigate: (page: string, topic
   // --- XP spesi in hint/retry: ledger persistente (in quiz_progress), sottratto dal lordo ---
   const [spentXp, setSpentXp] = useState(0);
 
-  // --- Init ---
+  // Torna in cima quando cambia categoria/profilo; l'idratazione riparte (era nell'init).
   useEffect(() => {
     window.scrollTo(0, 0);
-    const init = async () => {
-      setLoading(true);
-      try {
-        const [dbData, rewards, categories] = await Promise.all([
-          contentService.getQuizData(categoryId),
-          contentService.getQuizRewards(),
-          contentService.getQuizCategories(),
-        ]);
+    setHydrating(true);
+  }, [categoryId, managedId]);
 
-        setQuizRewards(rewards);
-        setAllCategories(categories);
+  const categoryTitle = useMemo(() => {
+    const cat = allCategories.find(c => c.id === categoryId);
+    return cat?.title ?? t('quiz:spiritQuizTitle');
+  }, [allCategories, categoryId]);
 
-        const cat = categories.find(c => c.id === categoryId);
-        if (cat) setCategoryTitle(cat.title);
-
-        if (dbData) {
-          // Cast once: the service returns Record<string, unknown>[] (see RawQuizLevel above)
-          const adaptedLevels: QuizLevel[] = (dbData as RawQuizLevel[]).map((l) => ({
+  // Adattamento DB → modello di gioco: derivazione pura dai dati in cache (era nell'init).
+  const quizLevels = useMemo<QuizLevel[]>(() => {
+    const dbData = quizDataQ.data;
+    if (!dbData || dbData.length === 0) return [];
+    // Cast once: the service returns Record<string, unknown>[] (see RawQuizLevel above)
+    return (dbData as RawQuizLevel[]).map((l) => ({
             id: l.id,
             title: l.title,
             subtitle: l.subtitle,
@@ -134,8 +142,17 @@ export function useQuizGame(categoryId: string, onNavigate: (page: string, topic
               })),
             })),
           }));
-          setQuizLevels(adaptedLevels);
+  }, [quizDataQ.data]);
 
+  // --- Idratazione progressi, GATED sui dati quiz (#118 lotto 6): legge una volta
+  // (localStorage + profilo attivo) e scrive i setter di gioco. E' idratazione, non
+  // fetch (come useBookingLoader, lotto 2): resta un effect e non entra in cache.
+  useEffect(() => {
+    if (quizDataQ.isPending) return;
+    // Parita' col vecchio init: senza dati quiz niente idratazione ne' progressi.
+    if (!quizDataQ.data || quizDataQ.data.length === 0) { setHydrating(false); return; }
+    const hydrate = async () => {
+      try {
           // Load score and progress. Profilo gestito (F2): SOLO DB su managedId,
           // nessun uso del localStorage (cache per-device dell'host). Host: come prima.
           const localScore = managedId ? 0 : getLocalScore();
@@ -182,25 +199,27 @@ export function useQuizGame(categoryId: string, onNavigate: (page: string, topic
             setAwardedBonuses(savedProgress.awardedBonuses || []);
             setSpentXp(savedProgress.spentXp || 0); // legacy: assente → 0
             const savedLevelId = savedProgress.currentLevelId;
-            const levelExists = adaptedLevels?.some(l => l.id === savedLevelId);
-            setCurrentLevelId(levelExists ? savedLevelId : (adaptedLevels?.[0]?.id || 1));
+            const levelExists = quizLevels.some(l => l.id === savedLevelId);
+            setCurrentLevelId(levelExists ? savedLevelId : (quizLevels[0]?.id || 1));
           } else {
             setCompletedModules([]);
             setPerfectModules([]);
             setBestScores({});
             setAwardedBonuses([]);
             setSpentXp(0);
-            setCurrentLevelId(adaptedLevels?.[0]?.id || 1);
+            setCurrentLevelId(quizLevels[0]?.id || 1);
           }
-        }
       } catch (e) {
         console.error('[QuizPageSingle]', e);
       } finally {
-        setLoading(false);
+        setHydrating(false);
       }
     };
-    init();
-  }, [categoryId, managedId]);
+    hydrate();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- quizLevels deriva da quizDataQ.data (stessa identita'): idratazione una volta per (dati, profilo)
+  }, [quizDataQ.isPending, quizDataQ.data, managedId]);
+
+  const loading = quizDataQ.isPending || catalog.loading || hydrating;
 
   // Lordo = somma best per modulo + completion_bonus di OGNI livello interamente completato (F3).
   const computeGross = (bs: Record<string, number>, completed: string[]) => {
@@ -411,7 +430,7 @@ export function useQuizGame(categoryId: string, onNavigate: (page: string, topic
   const categoryProg = getCategoryProgress(categoryId || '');
 
   return {
-    quizLevels, setQuizLevels, quizRewards, setQuizRewards, allCategories, setAllCategories, loading, setLoading, categoryTitle, setCategoryTitle, view, setView, score, setScore, completedModules, setCompletedModules, perfectModules, setPerfectModules, bestScores, setBestScores, awardedBonuses, setAwardedBonuses, currentLevelId, setCurrentLevelId, currentModuleId, setCurrentModuleId, currentQuestionIndex, setCurrentQuestionIndex, sessionScore, setSessionScore, showFeedback, setShowFeedback, selectedOption, setSelectedOption, sessionAnswers, setSessionAnswers, showExplanations, setShowExplanations, spentXp, setSpentXp, managedId, computeGross, computeBonuses, saveProgress, setExplanationPref, currentLevel, currentModule, maxTotalScore, rewardsList, handleStartModule, recordAnswer, handleAnswer, handleSubmitSelection, handleNext, finishModule, spendXp, dispatchHint, handleAskHint, handleRetry, handleLearnMore, categoryProg, getCategoryProgress, activeProfileId, isActingAsManaged,
+    quizLevels, quizRewards, allCategories, loading, categoryTitle, view, setView, score, setScore, completedModules, setCompletedModules, perfectModules, setPerfectModules, bestScores, setBestScores, awardedBonuses, setAwardedBonuses, currentLevelId, setCurrentLevelId, currentModuleId, setCurrentModuleId, currentQuestionIndex, setCurrentQuestionIndex, sessionScore, setSessionScore, showFeedback, setShowFeedback, selectedOption, setSelectedOption, sessionAnswers, setSessionAnswers, showExplanations, setShowExplanations, spentXp, setSpentXp, managedId, computeGross, computeBonuses, saveProgress, setExplanationPref, currentLevel, currentModule, maxTotalScore, rewardsList, handleStartModule, recordAnswer, handleAnswer, handleSubmitSelection, handleNext, finishModule, spendXp, dispatchHint, handleAskHint, handleRetry, handleLearnMore, categoryProg, getCategoryProgress, activeProfileId, isActingAsManaged,
   };
 }
 

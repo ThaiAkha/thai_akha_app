@@ -1,4 +1,4 @@
-# Admin DS - Baseline v2 (2026-08-28)
+# Admin DS - Baseline v2.1 (2026-09-02)
 
 Standard unico del design system dell'app admin (`packages/admin`). Idioma TailAdmin: `gray-*` e `dark:` sono leciti; le regole front di `CLAUDE.md` #1-#6 NON si applicano. iPad/desktop-first. Adapt-only, diff minimo.
 Sostituisce la v1 (giu 2026, 97 righe) e assorbe la baseline `/admin-style` del brain (`agent-memory/admin-style/design_system.md` + `decisions.md`, i cui numeri erano precedenti ai fix). Nei planner della manager vince `Admin_UX_2027/ADMIN_PLANNER_UX.md` dove e' piu' stringente.
@@ -182,6 +182,7 @@ rg -c  'prefers-color-scheme'   dist/assets/index-*.css          # atteso 0 (§1
 rg -o  'html\.dark\{[^}]*'      dist/assets/index-*.css          # blocco token dark
 rg -o  ':is\(\.dark \*\)'       dist/assets/index-*.css | wc -l  # variante dark (529 al 28/08)
 ```
+Controllo automatico (dal 2026-09-02, #113): `python3 thai_akha_brain/000_Core_Agents/010_Config/011_Tools/check_tailwind_classes.py` confronta i token classe dei `.ts/.tsx` (front+admin+shared) coi selettori del CSS compilato e stampa le classi che NON generano CSS, con file:riga. Senza argomenti usa i dist esistenti (0.6s, avvisa se stantii); `--build` ricompila prima (17s); `--self-test` verifica il rilevatore sulle famiglie note (gray-150/750, bg-gray-20, text-md, brand-*, text-theme-base). Gira anche in `sync_all.sh` del brain (senza build).
 BSD `grep` di macOS non ha `-P`: usare `rg` o `perl -ne`. Contrasto: luminanza relativa L = 0.2126R + 0.7152G + 0.0722B (canali linearizzati sRGB), CR = (L1+0.05)/(L2+0.05); misurare sempre sul caso peggiore fra le superfici reali (§2). I colori Tailwind default sono oklch (§0): convertire oklch → oklab → sRGB lineare → sRGB a 8 bit prima della luminanza; i fondi `/10` `/15` si compongono in sRGB sulla superficie. Conteggi: regex `text-gray-\d+` (con e senza prefisso `(?<![a-z-:])`) su `src/**/*.{ts,tsx}`; le sostituzioni di classi si fanno con un tokenizer per prefisso di variante, mai con replace di stringa (`decisions.md`, tre errori documentati).
 
 ## 13. Aperti
@@ -202,6 +203,7 @@ BSD `grep` di macOS non ha `-P`: usare `rg` o `perl -ne`. Contrasto: luminanza r
 | 12 | Surface 1 dark: `bg-white dark:bg-gray-800` su 73 elementi contro 67 `dark:bg-gray-900` (standard §3, D2); su `gray-800` `text-sub` = 3.10 | `pages/market/marketRunner/RunPickerView.tsx:47`, `RunShoppingView.tsx:66` e altri | 73 righe |
 | 13 | Focus input in verde Tailwind (`green-500`, 108 token: border 45 · bg 31 · text 23 · ring 9) invece di `primary`/`sys-*`; nessuno standard di focus per gli input | `form/input/InputField.tsx:44` | decidere il ring (candidati `primary-500/20`, `action-*`) |
 | 14 | Badge ancora sotto AA con la palette v4 (§5): `light.light` 4.34 (11+3 call-site), success light su `--bg` 4.39, error dark su `--surface` 4.48, info dark 3.67, `light.dark` 3.42 e `solid.light` 4.49 (0 call-site: eliminare); InspectorHeader sottotitolo 4.28-4.36 (§6); commento `Badge.tsx:40-45` con i numeri v3 | `ui/badge/Badge.tsx:42,57-58,66`, `InspectorShell.tsx:37` | fix candidati: fondo `/15` in light, `text-green-800`/`red-300` dove serve, sottotitolo `text-body` |
+| 15 | 17 classi che non generano CSS in admin (build pulita 2026-09-02, via `check_tailwind_classes.py` §12): famiglia `blue-light-*` mai definita (`DataExplorerSidebar.tsx:54-56`, `ReportLineMedia.tsx:14`), `animate-in`/`animate-fade-in`/`animate-bounce-slow` senza plugin ne' keyframe (quindi l'entrata pagina `animate-in fade-in` di `PageContainer` dichiarata in §7 NON anima nulla), typo `border-gary-200` (`DemographicCard.tsx:55`), `dark:bg-dark-900` (`PhoneInput.tsx:93`), `bg-secondary-600` (`AkhaPixelPattern.tsx:15`), `focus:border-ring-primary-300` (`FileInput.tsx:12`), `max-h-select` (`MultiSelect.tsx:214`), `text-decoration-none` (`StorageInspector.tsx:141`), `text-theme-base` (`DataCardContent.tsx:26`). Il front ne ha 63 (fuori scope admin: famiglia `sys-*` e opacita' `/N` sui semantici `:root`-only, segnalate a /style) | output completo: lanciare lo script | 17 admin + 63 front |
 
 ## Delta v1 (giu 2026) → v2
 

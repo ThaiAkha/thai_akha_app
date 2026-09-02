@@ -17,6 +17,7 @@
 import { useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { getSessionCapacity } from '@thaiakha/shared/lib/sessionUtils';
 import { t } from '../../../i18n';
 import type { DailyAvailability, SessionInfo, SessionStatus } from '../booking.types';
 
@@ -71,7 +72,8 @@ async function fetchAvailabilityRange(dateStrings: readonly string[]): Promise<R
         };
       }
 
-      const max      = override?.custom_capacity ?? baseCaps[sessionId] ?? 0;
+      // Capacita' NORMALIZZATA (trovato (b) #118): stessa lettura di useCalendarAvailability.
+      const max      = getSessionCapacity(override?.custom_capacity ?? baseCaps[sessionId]) ?? 0;
       const row      = occupancy?.find((o) => o.booking_date === dateStr && o.session_id === sessionId);
       const occupied = Number(row?.total_occupied ?? 0);
       const remaining = Math.max(0, max - occupied);

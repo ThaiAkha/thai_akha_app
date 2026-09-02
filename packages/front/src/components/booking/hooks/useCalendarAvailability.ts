@@ -5,9 +5,12 @@
  * isMounted` dentro la vista. Sono POSTI: `staleTime: 0`, si rilegge a ogni cambio mese e a
  * ogni apertura del calendario, come prima; lo skeleton compare a ogni lettura, come prima.
  *
- * ⚠️ Calcola l'occupazione dalle righe di `bookings` (pax_count), mentre useAvailability usa
- * la RPC get_calendar_availability: due calcoli dello stesso fatto. Invariante qui; da
- * unificare a parte (nota nel triage #118).
+ * Occupazione via RPC get_calendar_availability (SECURITY DEFINER), stessa fonte di
+ * useAvailability: conteggi COMPLETI anche per anon e clienti. Prima leggeva `bookings`
+ * dal browser, ma la RLS (bookings_select_scoped) mostra solo le righe PROPRIE: la somma
+ * era parziale e il calendario SOVRASTIMAVA i posti liberi - difetto mascherato dalla
+ * pausa booking (max_capacity 0 = tutto FULL comunque). Chiude i trovati (a)+(b) del
+ * triage #118 (2026-09-02).
  */
 
 import { useQuery } from '@thaiakha/shared/query';
@@ -50,16 +53,11 @@ async function fetchCalendarGrid(startGrid: Date): Promise<Record<string, Calend
   const endDateStr = getDateKey(endGrid);
 
   // A+B+C in parallelo: erano tre await in fila (3-5 s a mese da qui), sono indipendenti.
-  const [{ data: sessionsData }, { data: bookings }, { data: overrides }] = await Promise.all([
+  const [{ data: sessionsData }, { data: occupancy }, { data: overrides }] = await Promise.all([
     // A. Base Capacity
     supabase.from('class_sessions').select('id, max_capacity'),
-    // B. Bookings
-    supabase
-      .from('bookings')
-      .select('booking_date, session_id, pax_count')
-      .gte('booking_date', startDateStr)
-      .lte('booking_date', endDateStr)
-      .neq('status', 'cancelled'),
+    // B. Occupazione via RPC: conteggi completi lato server (vedi header)
+    supabase.rpc('get_calendar_availability', { start_date: startDateStr, end_date: endDateStr }),
     // C. Overrides
     supabase
       .from('class_calendar_overrides')
@@ -83,9 +81,9 @@ async function fetchCalendarGrid(startGrid: Date): Promise<Record<string, Calend
       if (override?.is_closed) return { status: 'CLOSED', seats: 0 };
 
       const max = getSessionCapacity(override?.custom_capacity ?? baseCaps[sessionId]) ?? 0;
-      const occupied = bookings
-        ?.filter(b => b.booking_date === dateStr && b.session_id === sessionId)
-        .reduce((sum, b) => sum + (b.pax_count || 0), 0) || 0;
+      const occupied = Number(occupancy
+        ?.find(o => o.booking_date === dateStr && o.session_id === sessionId)
+        ?.total_occupied ?? 0);
 
       const remaining = Math.max(0, max - occupied);
 

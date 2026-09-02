@@ -82,7 +82,7 @@ const Modal: React.FC<ModalProps> = ({
       {/* PANEL */}
       <div
         className={cn(
-          "relative z-10 w-full flex flex-col max-h-[90vh] overflow-hidden outline-none",
+          "relative z-10 w-full flex flex-col max-h-[90dvh] overflow-hidden outline-none",
           "animate-in zoom-in-95 slide-in-from-bottom-4 duration-500 ease-cinematic",
           "rounded-[2.5rem]",
           variantStyles[variant],

@@ -63,16 +63,18 @@ const StepperRow: React.FC<StepperRowProps> = ({
     ? 'bg-action shadow-action-glow'
     : 'bg-btn-s-500 shadow-[0_4px_16px_rgba(28,163,230,0.4)]';
 
-  // Compact (~10% smaller) sizing tokens
-  const px      = compact ? '[padding-inline:var(--space-fluid-m)]' : '[padding-inline:var(--space-fluid-l)]';
+  // Compact (~10% smaller) sizing tokens.
+  // Non-compact: a 375px la riga chiedeva ~408px su 343 disponibili (bottone + clipped) —
+  // il token ponte --space-fluid-s-l ha lo stesso max di fluid-l, quindi da desktop nulla cambia.
+  const px      = compact ? '[padding-inline:var(--space-fluid-m)]' : '[padding-inline:var(--space-fluid-s-l)]';
   const py      = compact ? '[padding-block:var(--space-fluid-s)]'  : '[padding-block:var(--space-fluid-m)]';
   const gap     = compact ? '[gap:var(--space-fluid-s)]'            : '[gap:var(--space-fluid-m)]';
-  const btnSize = compact ? 'size-11'       : 'size-12';
-  const numSize = compact ? 'text-3xl w-10' : 'text-4xl w-12';
-  const lblSize = compact ? 'text-lg'       : 'text-xl';
-  const prSize  = compact ? 'pr-6'          : 'pr-8';
-  const minW    = compact ? 'min-w-[108px]' : 'min-w-[120px]';
-  const gapStp  = compact ? '[gap:var(--space-fluid-m)]'            : '[gap:var(--space-fluid-l)]';
+  const btnSize = compact ? 'size-11'       : 'size-11 md:size-12';
+  const numSize = compact ? 'text-3xl w-10' : 'text-3xl md:text-4xl w-10 md:w-12';
+  const lblSize = compact ? 'text-lg'       : 'text-lg md:text-xl';
+  const prSize  = compact ? 'pr-6'          : 'pr-6 md:pr-8';
+  const minW    = compact ? 'min-w-[108px]' : 'md:min-w-[120px]';
+  const gapStp  = compact ? '[gap:var(--space-fluid-m)]'            : '[gap:var(--space-fluid-s-l)]';
 
   return (
     <div className={cn('flex flex-col items-center gap-3', isDisabled && 'opacity-30 pointer-events-none')}>

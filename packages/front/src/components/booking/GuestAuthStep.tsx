@@ -34,14 +34,14 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-l)]">
         <button
           onClick={() => setAuthMode('login')}
-          className="group relative flex flex-col items-start text-left bg-surface-elevated/40 hover:bg-white/[0.05] border border-white/5 hover:border-primary/40 p-10 rounded-[3rem] transition-all cursor-pointer overflow-hidden"
+          className="group relative flex flex-col items-start text-left bg-surface-elevated/40 hover:bg-surface-elevated/60 border border-border hover:border-primary/40 p-10 rounded-[3rem] transition-all cursor-pointer overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 blur-3xl pointer-events-none" />
           <div className="flex items-center gap-4 mb-4">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
               <Icon name="person" size="xs" className="text-primary" />
             </div>
-            <Typography variant="h5" className="font-black text-white">Existing User</Typography>
+            <Typography variant="h5" className="font-black text-title">Existing User</Typography>
           </div>
           <Typography variant="paragraphS" className="opacity-40 font-medium leading-relaxed pl-12">
             Login with your account.
@@ -50,14 +50,14 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
 
         <button
           onClick={onGoToGuestForm}
-          className="group relative flex flex-col items-start text-left bg-surface-elevated/40 hover:bg-white/[0.05] border border-white/5 hover:border-action/40 p-10 rounded-[3rem] transition-all cursor-pointer overflow-hidden"
+          className="group relative flex flex-col items-start text-left bg-surface-elevated/40 hover:bg-surface-elevated/60 border border-border hover:border-action/40 p-10 rounded-[3rem] transition-all cursor-pointer overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-action/5 rounded-full -translate-y-16 translate-x-16 blur-3xl pointer-events-none" />
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-              <Icon name="person_add" size="xs" className="text-white" />
+            <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center">
+              <Icon name="person_add" size="xs" className="text-title" />
             </div>
-            <Typography variant="h5" className="font-black text-white">New User</Typography>
+            <Typography variant="h5" className="font-black text-title">New User</Typography>
           </div>
           <Typography variant="paragraphS" className="opacity-40 font-medium leading-relaxed pl-12">
             Create an account &amp; book.

@@ -169,17 +169,18 @@ const BookingForm: React.FC<BookingFormProps> = ({
         </div>
 
         {/* Row 2: Phone + WhatsApp */}
+        {/* A 375px la 12-col fissa strozzava i campi (Prefix ~63px): su mobile si impila, da md il layout resta quello di prima */}
         <div className="grid grid-cols-12 [gap:var(--space-fluid-s)] items-start">
-          <div className="col-span-3 space-y-2">
+          <div className="col-span-5 md:col-span-3 space-y-2">
             <Typography variant="fieldLabel" className="ml-1 opacity-70">Prefix</Typography>
             <PhonePrefixSelect value={formData.phonePrefix} onChange={val => update({ phonePrefix: val })} />
           </div>
-          <div className="col-span-5">
+          <div className="col-span-7 md:col-span-5">
             <Input label="Phone Number" type="tel" autoComplete="tel-national" placeholder="81 234 5678"
               value={formData.phoneNumber}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ phoneNumber: e.target.value })} />
           </div>
-          <div className="col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-4 space-y-2">
             <Typography variant="fieldLabel" as="label" className="ml-1 opacity-70">WhatsApp</Typography>
             <div className="flex gap-2">
               {([true, false] as const).map(val => (
@@ -201,12 +202,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
         {/* Row 3: Age + Gender + Nationality */}
         <div className="grid grid-cols-12 [gap:var(--space-fluid-s)] items-start">
-          <div className="col-span-3">
+          <div className="col-span-4 md:col-span-3">
             <Input label="Age" type="number" min="0" max="120" placeholder="—"
               value={formData.age}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ age: e.target.value })} />
           </div>
-          <div className="col-span-4">
+          <div className="col-span-8 md:col-span-4">
             <MineralSelect label="Gender" value={formData.gender}
               onChange={e => update({ gender: e.target.value })}>
               <option value="">Select</option>
@@ -215,7 +216,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <option value="other">Other</option>
             </MineralSelect>
           </div>
-          <div className="col-span-5 space-y-2">
+          <div className="col-span-12 md:col-span-5 space-y-2">
             <Typography variant="fieldLabel" className="ml-1 opacity-70">Nationality</Typography>
             <NationalitySelect value={formData.nationality} onChange={code => update({ nationality: code })} />
           </div>

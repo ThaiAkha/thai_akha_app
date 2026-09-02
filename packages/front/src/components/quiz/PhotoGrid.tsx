@@ -2,6 +2,7 @@ import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import type { QuizOption, QuizQuestionType } from '@thaiakha/shared';
 import { Icon, Typography } from '../ui';
+import { t } from '../../i18n';
 
 /**
  * Griglia foto unica per i gameplay a foto (photo_single / photo_multi / photo_order),
@@ -88,15 +89,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ options, urlFor, questionType, ph
         }
 
         // ── QUESTION ────────────────────────────────────────────────────────
+        // #126: in fase domanda niente label visibile e alt NEUTRO — il nome
+        // dell'opzione (ingrediente/ricetta) e' spesso la risposta: non deve
+        // stare nel DOM prima del reveal. Al reveal tornano nome e alt veri.
         if (isSingle) {
           return (
             <button key={i} onClick={() => onPick?.(i)}
               className="group relative rounded-[2rem] overflow-hidden border-2 border-white/10 bg-white/5 hover:border-quiz-p/60 hover:scale-[1.03] active:scale-[0.98] transition-all shadow-lg aspect-square">
-              <CardImg url={url} alt={opt.label} />
+              <CardImg url={url} alt={t('quiz:photoAlt')} />
               <div className="absolute top-2 left-2 size-7 rounded-lg bg-black/40 backdrop-blur flex items-center justify-center z-10">
                 <Typography variant="microLabel" className="font-mono font-bold text-white">{['A', 'B', 'C', 'D'][i] ?? ''}</Typography>
               </div>
-              <CardLabel label={opt.label} />
             </button>
           );
         }
@@ -111,7 +114,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ options, urlFor, questionType, ph
                 ? "border-quiz-p ring-2 ring-quiz-p/60 scale-[0.97] shadow-[0_0_30px_-8px_var(--color-quiz-p)]"
                 : "border-white/10 hover:border-quiz-p/40 hover:scale-[1.02] active:scale-[0.98]"
             )}>
-            <CardImg url={url} alt={opt.label} />
+            <CardImg url={url} alt={t('quiz:photoAlt')} />
             <div className={cn(
               "absolute top-2 right-2 size-8 rounded-full flex items-center justify-center transition-all z-10 border",
               isOrder && "font-mono font-bold text-sm",
@@ -119,7 +122,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ options, urlFor, questionType, ph
             )}>
               {isOrder ? (sel ? pos + 1 : '+') : <Icon name={sel ? "check" : "add"} size="xs" />}
             </div>
-            <CardLabel label={opt.label} small />
           </button>
         );
       })}

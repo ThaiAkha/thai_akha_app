@@ -164,10 +164,11 @@ const PlayQuiz: React.FC<PlayQuizProps> = ({
         {/* Glow Ambientale */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-quiz-p/50 to-transparent blur-[2px]" />
 
-        {/* Foto hero della domanda (1:1) — vale per tutti i tipi, se presente */}
+        {/* Foto hero della domanda (1:1) — vale per tutti i tipi, se presente.
+            #126: alt neutro finche' non c'e' la risposta (niente nomi nel DOM pre-reveal). */}
         {currentQuestion.imageUrl && (
           <div className="w-full max-w-xs mx-auto [margin-bottom:var(--space-fluid-m)] rounded-[2rem] overflow-hidden border border-white/10 aspect-square shrink-0">
-            <img src={currentQuestion.imageUrl} alt={currentQuestion.text} className="w-full h-full object-cover" />
+            <img src={currentQuestion.imageUrl} alt={showFeedback ? currentQuestion.text : t('quiz:photoAlt')} className="w-full h-full object-cover" />
           </div>
         )}
 

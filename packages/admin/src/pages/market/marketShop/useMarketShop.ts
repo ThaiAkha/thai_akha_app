@@ -63,6 +63,9 @@ export function useMarketShop() {
   const [formState, setFormState] = useState<Record<string, { qty: number; price: number }>>({});
   const [activeShopTab, setActiveShopTab] = useState('All');
   const [workerId, setWorkerId] = useState<string | null>(null);
+  // #106: giorno in cui i soldi escono davvero. null = segue il giorno pianificato
+  // (selectedDateStr); si valorizza solo se chi conferma la cambia a mano.
+  const [spentOn, setSpentOn] = useState<string | null>(null);
 
   const selectedDateStr = useMemo(() => {
     const offset = selectedDate.getTimezoneOffset() * 60000;
@@ -101,6 +104,8 @@ export function useMarketShop() {
     setSelectedRun(run);
     setWorkerId(run.worker_id ?? null);
     setSelectedDate(new Date(run.run_date));
+    // spent_on personalizzato solo se diverge dal pianificato (altrimenti segue la data).
+    setSpentOn(run.spent_on && run.spent_on !== run.run_date ? run.spent_on : null);
     setActiveTab(run.shopper_role);
     setViewMode('planner');
   };
@@ -110,6 +115,7 @@ export function useMarketShop() {
     setFormState({});
     setSelectedRun(null);
     setWorkerId(null);
+    setSpentOn(null);
     setViewMode('planner');
     setIsCalendarModalOpen(false);
   };
@@ -153,6 +159,7 @@ export function useMarketShop() {
     setFormState({});
     setSelectedRun(null);
     setWorkerId(null);
+    setSpentOn(null);
     setActiveTab('logistics');
     setViewMode('planner');
   };
@@ -171,6 +178,7 @@ export function useMarketShop() {
         setFormState({});
         setSelectedRun(null);
         setWorkerId(null);
+        setSpentOn(null);
         setActiveTab(launchScope);
         setViewMode('planner');
       } else if (launch.action === 'edit' && launch.run_id) {
@@ -326,6 +334,8 @@ export function useMarketShop() {
       const status = activeScope === 'teacher' ? 'approved' : (confirm ? 'approved' : 'planned');
       const payload: Record<string, unknown> = {
         run_date: selectedDateStr,
+        // #106: giorno reale della spesa; default = giorno pianificato.
+        spent_on: spentOn ?? selectedDateStr,
         shopper_role: activeScope,
         items_snapshot: itemsToSave,
         status,
@@ -376,6 +386,7 @@ export function useMarketShop() {
     library, history, selectedRun,
     keypadOpen, setKeypadOpen, keypadItemId, tempPrice,
     formState, setFormState, activeShopTab, setActiveShopTab, workerId, setWorkerId,
+    spentOn, setSpentOn,
     selectedDateStr, activeScope,
     // derivati
     filteredLibrary, uniqueShops, groupedLibrary,

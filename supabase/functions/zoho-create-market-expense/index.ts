@@ -141,7 +141,7 @@ Deno.serve(async (req: Request) => {
     // 3) Carica i run del gruppo
     const { data: rows, error: rowsErr } = await admin
       .from('market_runs')
-      .select('id, run_date, shopper_role, total_cost, notes, items_snapshot, status, approved_by, approved_at, zoho_expense_id, worker:authors!worker_id(name)')
+      .select('id, run_date, spent_on, shopper_role, total_cost, notes, items_snapshot, status, approved_by, approved_at, zoho_expense_id, worker:authors!worker_id(name)')
       .in('id', runIds)
       .eq('shopper_role', stream)
       .order('run_date', { ascending: true })
@@ -158,11 +158,15 @@ Deno.serve(async (req: Request) => {
     if (amount <= 0) return json({ success: false, message: 'Total amount is 0.' }, 400)
 
     // 6) Meta Expense
-    const lastDate = rows[rows.length - 1].run_date as string
+    // #106: la data dell'Expense e' il giorno in cui i soldi sono usciti (spent_on,
+    // fallback run_date per lo storico); il reference resta su run_date, che e'
+    // l'identita' stabile della run/gruppo (mensile teacher, per-run logistics).
+    const spentOf = (r: { spent_on?: string | null; run_date: string }) => (r.spent_on ?? r.run_date) as string
+    const lastDate = rows.map((r) => spentOf(r as { spent_on?: string | null; run_date: string })).sort().pop()!
     const reference =
       stream === 'teacher'
-        ? `${cfg.refPrefix}-${lastDate.slice(0, 7)}`        // mensile
-        : `${cfg.refPrefix}-${rows[0].run_date}`            // per-run
+        ? `${cfg.refPrefix}-${(rows[rows.length - 1].run_date as string).slice(0, 7)}`  // mensile
+        : `${cfg.refPrefix}-${rows[0].run_date}`                                         // per-run
     // Zoho taglia a 500 caratteri: header col totale + le righe che ci stanno (il mese teacher ne ha ~30).
     const description = fitDescription(
       `${cfg.shop} · ${rows.length} run(s) · THB ${amount.toLocaleString('en-US')}`,
@@ -172,14 +176,13 @@ Deno.serve(async (req: Request) => {
         // shopper = the PERSON (authors via worker_id), useful for per-person COGS
         const w = (r as { worker?: { name: string | null } | { name: string | null }[] | null }).worker
         const who = Array.isArray(w) ? w[0]?.name : w?.name
-        return `${r.run_date} THB ${Number(r.total_cost ?? 0).toLocaleString('en-US')}${items ? ` (${items} items)` : ''}${who ? ` by ${who}` : ''}${note}`
+        return `${spentOf(r as { spent_on?: string | null; run_date: string })} THB ${Number(r.total_cost ?? 0).toLocaleString('en-US')}${items ? ` (${items} items)` : ''}${who ? ` by ${who}` : ''}${note}`
       }),
     )
 
     // 7) Crea l'Expense in Zoho
     const dc = Deno.env.get('ZOHO_DC') ?? 'com'
     const orgId = Deno.env.get('ZOHO_ORG_ID')!
-    const token = await zohoAccessToken()
     const payload = {
       account_id: envOr(cfg.accountEnv, cfg.accountDefault),
       paid_through_account_id: envOr('ZOHO_MARKET_PAID_THROUGH_ACCOUNT_ID', PAID_THROUGH_DEFAULT),
@@ -190,6 +193,13 @@ Deno.serve(async (req: Request) => {
       reference_number: reference,
       description,
     }
+
+    // #106: dry-run - restituisce il payload SENZA creare l'Expense ne' scrivere sul DB.
+    // Serve a verificare la data (spent_on) su una run di prova prima del GO reale.
+    if (body.dry_run === true)
+      return json({ success: true, dry_run: true, stream, runs: rows.length, payload })
+
+    const token = await zohoAccessToken()
     const zres = await fetch(`https://www.zohoapis.${dc}/books/v3/expenses?organization_id=${orgId}`, {
       method: 'POST',
       headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },

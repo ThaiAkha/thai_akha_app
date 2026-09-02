@@ -15,7 +15,7 @@ export type Gran = 'day' | 'month';
 export type MarketScope = 'teacher' | 'logistics';
 
 export interface MarketItem { id?: string; name?: string; unit?: string; quantity?: number; price?: number; actual_price?: number; }
-export interface MarketRunRow { id: string; run_date: string; status: string; total_cost: number; items: MarketItem[]; archived: boolean; shopper: string | null; /* authors.name via worker_id */ }
+export interface MarketRunRow { id: string; run_date: string; spent_on: string; status: string; total_cost: number; items: MarketItem[]; archived: boolean; shopper: string | null; /* authors.name via worker_id */ }
 export interface MonthGroup { key: string; label: string; runs: MarketRunRow[]; total: number; days: number; archived: boolean; }
 // A logistics run leaves "In progress" and enters "Archive" once it is expensed.
 const isRunArchived = (status: string) => status === 'expensed';
@@ -26,12 +26,14 @@ const marketKey = (scope: MarketScope | null) => ['manager_reports', 'market', s
 async function loadMarketRuns(scope: MarketScope): Promise<MarketRunRow[]> {
     const { data } = await supabase
         .from('market_runs')
-        .select('id, run_date, status, total_cost, items_snapshot, worker:authors!worker_id(name)')
+        .select('id, run_date, spent_on, status, total_cost, items_snapshot, worker:authors!worker_id(name)')
         .eq('shopper_role', scope)
         .order('run_date', { ascending: false });
-    type Row = { id: string; run_date: string; status: string; total_cost: number; items_snapshot: unknown; worker: { name: string | null } | { name: string | null }[] | null };
+    type Row = { id: string; run_date: string; spent_on: string | null; status: string; total_cost: number; items_snapshot: unknown; worker: { name: string | null } | { name: string | null }[] | null };
     return ((data as unknown as Row[]) ?? []).map(r => ({
-        id: r.id, run_date: r.run_date, status: r.status, total_cost: Number(r.total_cost) || 0,
+        // #106: la data mostrata nei report e' il giorno REALE della spesa (spent_on);
+        // run_date resta l'identita' della run (raggruppamento mese, nome PDF).
+        id: r.id, run_date: r.run_date, spent_on: r.spent_on ?? r.run_date, status: r.status, total_cost: Number(r.total_cost) || 0,
         items: Array.isArray(r.items_snapshot) ? (r.items_snapshot as MarketItem[]) : [],
         archived: isRunArchived(r.status),
         shopper: (Array.isArray(r.worker) ? r.worker[0]?.name : r.worker?.name) ?? null,

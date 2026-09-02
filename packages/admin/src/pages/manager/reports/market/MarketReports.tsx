@@ -35,7 +35,7 @@ const RunCard: React.FC<{ m: MarketReportsState; r: MarketRunRow }> = ({ m, r })
     <ReportListCard
         selected={m.selectedRunId === r.id}
         onClick={(e) => { e.stopPropagation(); m.setSelectedRunId(r.id); }}
-        title={new Date(r.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+        title={new Date(r.spent_on + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
         amount={r.total_cost.toLocaleString()}
         meta={<>
             <span className="text-xs font-bold uppercase tracking-wider text-sub">{r.items.length} items</span>
@@ -89,7 +89,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
                     {selMonth.runs.map(r => (
                         <ReportLineRow
                             key={r.id}
-                            title={new Date(r.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' })}
+                            title={new Date(r.spent_on + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' })}
                             subtitle={`${r.items.length} ${t('reports.items', { defaultValue: 'items' })}`}
                             amount={r.total_cost.toLocaleString()}
                             actions={
@@ -119,7 +119,7 @@ export const MarketInspector: React.FC<Props> = ({ m, isTeacher }) => {
     if (!selRun) return <InspectorEmpty icon={<History className="w-8 h-8" />} hint={t('reports.selectWeek', { defaultValue: 'Select a report to see the detail.' })} />;
     return (
         <>
-            <InspectorHeader subtitle={`${isTeacher ? t('reports.typeTeacher', { defaultValue: 'Market · Kitchen' }) : t('reports.typeLogistic', { defaultValue: 'Market · Logistic' })}${selRun.shopper ? ` · ${selRun.shopper}` : ''}`} title={new Date(selRun.run_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} onClose={() => m.setSelectedRunId(null)} />
+            <InspectorHeader subtitle={`${isTeacher ? t('reports.typeTeacher', { defaultValue: 'Market · Kitchen' }) : t('reports.typeLogistic', { defaultValue: 'Market · Logistic' })}${selRun.shopper ? ` · ${selRun.shopper}` : ''}`} title={new Date(selRun.spent_on + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} onClose={() => m.setSelectedRunId(null)} />
             <InspectorBody className="p-4 space-y-2">
                 {selRun.items.length === 0 ? (
                     <div className="text-sm text-sub px-1">{t('reports.noItems', { defaultValue: 'No items.' })}</div>

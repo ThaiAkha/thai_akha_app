@@ -71,6 +71,8 @@ export interface DraftItem {
 export interface MarketRun {
   id: string;
   run_date: string;
+  /** Giorno in cui i soldi sono usciti davvero (#106). Default = run_date. */
+  spent_on: string | null;
   shopper_role: 'logistics' | 'teacher';
   items_snapshot: DraftItem[];
   status: 'planned' | 'completed' | 'approved' | 'expensed';

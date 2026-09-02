@@ -12,13 +12,14 @@ import WorkerSelector from '../../../components/common/WorkerSelector';
 import { Heading, Caption } from '../../../components/typography';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { X, ShoppingCart, CheckCircle2 } from 'lucide-react';
-import { WORKER_ROLES_BY_SCOPE, normalizeEntry, formatLongDate, type DraftItem } from './types';
+import { WORKER_ROLES_BY_SCOPE, normalizeEntry, formatLongDate, toISODate, type DraftItem } from './types';
 import type { MarketShopState } from './useMarketShop';
 
 export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => {
   const { t, i18n } = useTranslation('market');
   const {
     activeTab, setActiveTab, viewMode, selectedDate, workerId, setWorkerId, formState, library,
+    spentOn, setSpentOn,
     isSaving, handleAdjustQty, openKeypad, handleToggleItem, handleSave,
   } = s;
 
@@ -39,6 +40,25 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
             {formatLongDate(selectedDate, i18n.language)}
           </span>
         </div>
+
+        {/* #106: run_date = giorno pianificato; qui si registra il giorno in cui i
+            soldi escono DAVVERO (spesa fuori calendario). Default = pianificato. */}
+        {activeTab !== 'dashboard' && (
+          <div className="flex items-center justify-center gap-3">
+            <Caption className="font-bold uppercase tracking-widest">
+              {t('labels.spentOn', { defaultValue: 'Spent on' })}
+            </Caption>
+            <input
+              type="date"
+              value={spentOn ?? toISODate(selectedDate)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setSpentOn(v && v !== toISODate(selectedDate) ? v : null);
+              }}
+              className="h-10 px-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent text-sm font-mono text-title"
+            />
+          </div>
+        )}
 
         {/* Who is shopping? (authors via worker_roles; the login stays in created_by) */}
         {activeTab !== 'dashboard' && (

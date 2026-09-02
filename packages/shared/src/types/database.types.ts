@@ -3524,6 +3524,7 @@ export type Database = {
           notes: string | null
           run_date: string
           shopper_role: string
+          spent_on: string | null
           status: string | null
           total_cost: number | null
           updated_at: string | null
@@ -3541,6 +3542,7 @@ export type Database = {
           notes?: string | null
           run_date?: string
           shopper_role: string
+          spent_on?: string | null
           status?: string | null
           total_cost?: number | null
           updated_at?: string | null
@@ -3558,6 +3560,7 @@ export type Database = {
           notes?: string | null
           run_date?: string
           shopper_role?: string
+          spent_on?: string | null
           status?: string | null
           total_cost?: number | null
           updated_at?: string | null

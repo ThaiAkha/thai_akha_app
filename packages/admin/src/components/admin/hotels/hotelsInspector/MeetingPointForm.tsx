@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Image as ImageIcon } from 'lucide-react';
 import InputField from '../../../../components/form/input/InputField';
 import Switch from '../../../../components/form/switch/Switch';
-import SectionHeader from '../../../ui/SectionHeader';
+import { SectionTitle } from '../../../typography';
 import type { MeetingPointFormProps } from './types';
 
 // Form del meeting point: stesso wrapper e stessi campi del ramo originale, in view e in edit
@@ -14,7 +14,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
     return (
         <div className="px-6 py-6 bg-gray-50/10 space-y-5">
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldMPName')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldMPName')}</SectionTitle>
                 <InputField
                     placeholder={t('inspector.placeholderMPName')}
                     value={meetingPoint.name}
@@ -25,7 +25,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldLatitude')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldLatitude')}</SectionTitle>
                     <InputField
                         type="number"
                         step={0.0000001}
@@ -35,7 +35,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldLongitude')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldLongitude')}</SectionTitle>
                     <InputField
                         type="number"
                         step={0.0000001}
@@ -47,7 +47,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldDescription')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldDescription')}</SectionTitle>
                 <InputField
                     placeholder={t('inspector.placeholderDesc')}
                     value={meetingPoint.description || ''}
@@ -57,7 +57,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldGoogleMaps')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldGoogleMaps')}</SectionTitle>
                 <InputField
                     placeholder="https://maps.google.com/..."
                     value={meetingPoint.google_maps_link || ''}
@@ -68,7 +68,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldMorningStart')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldMorningStart')}</SectionTitle>
                     <InputField
                         type="time"
                         value={meetingPoint.morning_pickup_time || ''}
@@ -77,7 +77,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldMorningEnd')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldMorningEnd')}</SectionTitle>
                     <InputField
                         type="time"
                         value={meetingPoint.morning_pickup_end || ''}
@@ -89,7 +89,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldEveningStart')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldEveningStart')}</SectionTitle>
                     <InputField
                         type="time"
                         value={meetingPoint.evening_pickup_time || ''}
@@ -98,7 +98,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldEveningEnd')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldEveningEnd')}</SectionTitle>
                     <InputField
                         type="time"
                         value={meetingPoint.evening_pickup_end || ''}
@@ -109,7 +109,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldImageAsset', { defaultValue: 'Photo (media asset)' })} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldImageAsset', { defaultValue: 'Photo (media asset)' })}</SectionTitle>
                 <div className="flex items-center gap-3">
                     <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                         {meetingPoint.image_url ? (
@@ -130,7 +130,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldIconUrl')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldIconUrl')}</SectionTitle>
                 <InputField
                     placeholder="https://..."
                     value={meetingPoint.icon_url || ''}
@@ -140,7 +140,7 @@ const MeetingPointForm: React.FC<MeetingPointFormProps> = ({ meetingPoint, isEdi
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05]">
-                <SectionHeader title={t('inspector.fieldActiveStatus')} className="mb-0" />
+                <SectionTitle as="h6" tone="sub" className="mb-0">{t('inspector.fieldActiveStatus')}</SectionTitle>
                 <Switch
                     label=""
                     checked={meetingPoint.active || false}

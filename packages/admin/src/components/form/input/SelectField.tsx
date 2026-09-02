@@ -1,6 +1,6 @@
 import { ChangeEvent, ReactNode, useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import SectionHeader from '../../ui/SectionHeader';
+import Label from '../../form/Label';
 import { ChevronDown } from 'lucide-react';
 
 interface SelectFieldProps {
@@ -53,10 +53,7 @@ const SelectField = ({
     return (
         <div className="w-full space-y-1.5">
             {label && (
-                <SectionHeader
-                    title={label}
-                    variant="formfield"
-                />
+                <Label className="font-bold text-sub">{label}</Label>
             )}
 
             <div className="relative group/select">

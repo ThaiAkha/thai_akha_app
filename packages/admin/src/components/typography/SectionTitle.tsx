@@ -20,8 +20,9 @@ const TONE: Record<SectionTitleTone, string> = {
 
 /**
  * Titolo di sezione standard (card, gruppi di form, inspector): "Pax Count",
- * "Logistics & Notes", ecc. E' l'UNICA implementazione: `ui/SectionHeader` e' un
- * guscio sopra questo, non un secondo componente.
+ * "Logistics & Notes", ecc. E' l'UNICA implementazione: il vecchio guscio
+ * `ui/SectionHeader` e' stato assorbito qui il 2026-09-02 (#114); le etichette
+ * di form (ex variante `formfield`) stanno su `form/Label`, non qui.
  *
  * Taglia `text-sm`: lo standard ADMIN_PLANNER_UX fissa il floor a 14px e VIETA
  * `text-xs` per i titoli di sezione. Fino al 2026-08-28 questo componente era a

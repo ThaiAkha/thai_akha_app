@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Database } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import { SYSTEM_TABLES } from '../../../hooks/useAdminDatabase';
-import SectionHeader from '../../ui/SectionHeader';
 import { SectionTitle } from '../../typography';
 
 interface DbSidebarProps {
@@ -26,7 +25,7 @@ const DbSidebar: React.FC<DbSidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-amber-50 dark:bg-amber-900/10 border-t border-amber-100 dark:border-amber-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title={t('sidebar.statusLabel')} variant="sidebar" className="text-warning mb-0 ml-0" />
+                        <SectionTitle as="h6" tone="sub" className="text-warning mb-0 ml-0">{t('sidebar.statusLabel')}</SectionTitle>
                         <SectionTitle className="text-warning">
                             {t('sidebar.status')}
                         </SectionTitle>

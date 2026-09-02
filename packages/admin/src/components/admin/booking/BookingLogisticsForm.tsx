@@ -6,7 +6,6 @@ import InputField from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import TextArea from '../../../components/form/input/TextArea';
 import ZoneInfoCard, { type ZoneInfo } from '../ZoneInfoCard';
-import SectionHeader from '../../ui/SectionHeader';
 import { Heading, SectionTitle } from '../../typography';
 
 /** Minimal structural shapes used by this form (parent hooks pass full DB rows). */
@@ -73,7 +72,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
 
         {/* Need Pickup Toggle */}
         <div className="col-span-12 md:col-span-3">
-          <SectionHeader title={t('logistics.needPickup')} className="mb-2" />
+          <SectionTitle as="h6" tone="sub" className="mb-2">{t('logistics.needPickup')}</SectionTitle>
           <div className="grid grid-cols-2 gap-3 h-14">
             <button
               type="button"
@@ -167,7 +166,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
             </div>
 
             <div className="col-span-12 md:col-span-3">
-              <SectionHeader title={t('logistics.luggage')} className="mb-2" />
+              <SectionTitle as="h6" tone="sub" className="mb-2">{t('logistics.luggage')}</SectionTitle>
               <div className="grid grid-cols-2 gap-3 h-14">
                 <button
                   type="button"

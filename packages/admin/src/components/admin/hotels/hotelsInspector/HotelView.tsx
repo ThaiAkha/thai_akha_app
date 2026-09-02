@@ -2,9 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import Badge from '../../../../components/ui/badge/Badge';
-import SectionHeader from '../../../ui/SectionHeader';
 import ZoneInfoCard from '../../../../components/admin/ZoneInfoCard';
-import { Paragraph } from '../../../typography';
+import { Paragraph, SectionTitle } from '../../../typography';
 import type { HotelViewProps } from './types';
 
 // Vista hotel in sola lettura: campi opzionali (indirizzo, telefono, link, sito) compaiono solo se valorizzati.
@@ -20,12 +19,12 @@ const HotelView: React.FC<HotelViewProps> = ({ selectedHotel, zones }) => {
 
             <div className="space-y-5">
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.viewFieldHotelName')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldHotelName')}</SectionTitle>
                     <Paragraph size="base" className="text-title font-semibold">{selectedHotel?.name}</Paragraph>
                 </div>
 
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.viewFieldZone')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldZone')}</SectionTitle>
                     <Paragraph>
                         <span
                             className="inline-block px-2.5 py-1 rounded text-sm font-medium"
@@ -41,20 +40,20 @@ const HotelView: React.FC<HotelViewProps> = ({ selectedHotel, zones }) => {
 
                 {selectedHotel?.address && (
                     <div className="space-y-1.5">
-                        <SectionHeader title={t('inspector.viewFieldAddress')} />
+                        <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldAddress')}</SectionTitle>
                         <Paragraph size="sm" className="text-body">{selectedHotel.address}</Paragraph>
                     </div>
                 )}
 
                 {selectedHotel?.phone_number && (
                     <div className="space-y-1.5">
-                        <SectionHeader title={t('inspector.viewFieldPhone')} />
+                        <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldPhone')}</SectionTitle>
                         <Paragraph size="sm" className="text-body">{selectedHotel.phone_number}</Paragraph>
                     </div>
                 )}
 
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.viewFieldCoordinates')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldCoordinates')}</SectionTitle>
                     <Paragraph size="sm" className="font-mono text-body">
                         {selectedHotel?.latitude && selectedHotel?.longitude
                             ? `${selectedHotel.latitude}, ${selectedHotel.longitude}`
@@ -64,7 +63,7 @@ const HotelView: React.FC<HotelViewProps> = ({ selectedHotel, zones }) => {
 
                 {selectedHotel?.map_link && (
                     <div className="space-y-1.5">
-                        <SectionHeader title={t('inspector.viewFieldMapLink')} />
+                        <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldMapLink')}</SectionTitle>
                         <a
                             href={selectedHotel.map_link}
                             target="_blank"
@@ -78,7 +77,7 @@ const HotelView: React.FC<HotelViewProps> = ({ selectedHotel, zones }) => {
 
                 {selectedHotel?.website && (
                     <div className="space-y-1.5">
-                        <SectionHeader title={t('inspector.viewFieldWebsite')} />
+                        <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldWebsite')}</SectionTitle>
                         <a
                             href={selectedHotel.website}
                             target="_blank"
@@ -91,7 +90,7 @@ const HotelView: React.FC<HotelViewProps> = ({ selectedHotel, zones }) => {
                 )}
 
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.viewFieldStatus')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.viewFieldStatus')}</SectionTitle>
                     <Paragraph>
                         {selectedHotel?.is_active
                             ? <Badge color="success" size="sm" startIcon={<CheckCircle2 className="w-3 h-3" />}>{t('content.active')}</Badge>

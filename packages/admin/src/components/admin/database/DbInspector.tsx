@@ -1,4 +1,3 @@
-import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
 import { SectionTitle } from '../../typography';
 import { InspectorDeleteZone } from '../../ui/inspector';
@@ -52,7 +51,7 @@ const DbInspector: React.FC<DbInspectorProps> = ({
                                 isLongText && "md:col-span-2"
                             )}>
                                 <div className="flex justify-between items-center">
-                                    <SectionHeader title={col.replace(/_/g, ' ')} />
+                                    <SectionTitle as="h6" tone="sub" className="mb-2">{col.replace(/_/g, ' ')}</SectionTitle>
                                     {isReadOnly && (
                                         <span className="text-xs font-black text-sub uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                                             READ ONLY

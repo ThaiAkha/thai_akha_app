@@ -140,7 +140,7 @@ Scala Tailwind default, valori ammessi 2 · 3 · 4 · 6 · 8 (1/1.5 per icone e 
 | Target touch | >= 44px (`h-11`/`size-11`) | `Button` md 44px ok; sm 36px; chiusura Inspector 16px |
 | Bottone primario | `h-12 text-base font-bold rounded-xl` | `InputField` gia' `h-12`, ma focus `focus:border-green-500 focus:ring-4 ring-green-500/20` (`InputField.tsx:44`: verde Tailwind, non `primary` ne' `sys-*`, aperti #13); `Button` md senza `h-*` esplicito |
 | Icon-button | `size-11 rounded-xl`; `size-12` azione primaria | `size-10` 18 · `size-12` 9 · `size-11` 3 (v1) |
-| Section title | `text-sm font-bold uppercase tracking-wide`, mai `text-xs` | `typography/SectionTitle.tsx:20` = `text-xs`; `ui/SectionHeader.tsx` (21 file, 5 varianti) `title`/`sidebar`/`inspector` = `text-xs font-black tracking-[0.1em]` (inspector 8 call-site), `default`/`formfield` = `text-sm`: due componenti per lo stesso ruolo (aperti #2) |
+| Section title | `text-sm font-bold uppercase tracking-wide`, mai `text-xs` | UNA implementazione: `typography/SectionTitle` (`text-sm`, floor rispettato). `ui/SectionHeader` eliminato il 2026-09-02 (#114): 64 call-site in 23 file inlinati su SectionTitle, la variante `formfield` (etichetta di form, non titolo) migrata a `form/Label` in InputField/TextArea/SelectField/DriverPayoutForm |
 | Info row | label `text-sm` · valore `text-base` | - |
 | Card lista | titolo `text-base`, sottotitolo `text-sm`, avatar `h-10`; header avatar `h-14` | ok dove usato `LeaderHeader` |
 
@@ -190,7 +190,7 @@ BSD `grep` di macOS non ha `-P`: usare `rg` o `perl -ne`. Contrasto: luminanza r
 | # | Voce | File | Numeri |
 |---|---|---|---|
 | 1 | Body `bg-gray-50` (`#E6ECEC`) diverso da `--bg` (`#F6FCFC`): `text-sub` direttamente sulla pagina in light = 3.98 (AA-large). Fix candidato: body → `bg-background` | `index.css:49` | 1 riga, cambia il grigio di pagina light |
-| 2 | #94 typography: `SectionTitle` `text-xs` → `text-sm` (standard planner); `ui/SectionHeader.tsx` varianti `title`/`sidebar`/`inspector` `text-xs` (21 file) e doppione di `SectionTitle`; `Caption muted` = `text-muted` a `text-xs` viola la regola §2; `typography/Badge.tsx` e `typography/Label.tsx` hanno 0 utilizzatori (solo `index.ts`) → eliminare, `form/Label.tsx` (4 utilizzatori, stesse classi) e' la Label viva | `typography/SectionTitle.tsx:20`, `Caption.tsx:18-20`, `Badge.tsx`, `Label.tsx` | + 3 `text-muted` a `text-xs`: `ui/StatCard.tsx:89`, `manager/reservation/ReservationSidebar.tsx:105`, `data-explorer/DataExplorerContent.tsx:49` |
+| 2 | CHIUSO (#94 il 30/08 + #114 il 02/09): `SectionTitle` a `text-sm`, doppioni `typography/Badge`/`Label` eliminati, `Caption muted` rimossa, i 3 `text-muted` a 12px corretti, `ui/SectionHeader` eliminato (§9) | - | - |
 | 3 | Colori di stato dai default Tailwind invece dei token `sys-*` | tutto `src` | 935 vs 83 (§5); overline `text-xs uppercase tracking-wide*` 230 righe |
 | 4 | `text-[10px]` x18 | `SalaryRoster.tsx:78,88`, `pos/PosClassSidebar.tsx:130`, `salaryRoster/SalarySummary.tsx:27`, `PersonRow.tsx:30,60,65,109`, `common/LeaderHeader.tsx:70`, `WorkerSelector.tsx:126`, `market/ShopItemCard.tsx:86`, `pages/agency/AgencyReports.tsx:169,180,203,219,225,242,263` | 8 file |
 | 5 | Ring `focus-visible` dentro `Button` (copre 79 call-site in una riga) | `ui/button/Button.tsx:77` | copertura 23/310 file |

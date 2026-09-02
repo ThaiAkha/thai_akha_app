@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@thaiakha/shared/lib/utils";
-import SectionHeader from "../../ui/SectionHeader";
+import Label from "../../form/Label";
 
 interface TextareaProps {
   placeholder?: string;
@@ -45,10 +45,7 @@ const TextArea: React.FC<TextareaProps> = ({
   return (
     <div className="w-full space-y-1.5">
       {label && (
-        <SectionHeader
-          title={label}
-          variant="formfield"
-        />
+        <Label className="font-bold text-sub">{label}</Label>
       )}
 
       <textarea

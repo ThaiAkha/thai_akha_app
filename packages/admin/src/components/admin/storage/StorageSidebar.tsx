@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { HardDrive, Folder } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import type { Bucket } from '../../../hooks/useAdminStorage';
-import SectionHeader from '../../ui/SectionHeader';
 import { SectionTitle } from '../../typography';
 
 interface StorageSidebarProps {
@@ -40,7 +39,7 @@ const StorageSidebar: React.FC<StorageSidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-blue-50 dark:bg-blue-900/10 border-t border-blue-100 dark:border-blue-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title={t('sidebar.statusLabel')} variant="sidebar" className="text-info mb-0 ml-0" />
+                        <SectionTitle as="h6" tone="sub" className="text-info mb-0 ml-0">{t('sidebar.statusLabel')}</SectionTitle>
                         <SectionTitle className="text-info">
                             {t('sidebar.status')}
                         </SectionTitle>

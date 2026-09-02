@@ -5,16 +5,15 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image as ImageIcon, Volume2, LayoutGrid } from 'lucide-react';
-import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
-import { Caption } from '../../typography';
+import { Caption, SectionTitle } from '../../typography';
 import { useMediaResolver } from '../../../hooks/useMediaResolver';
 import { parseGallery } from './newsFieldUtils';
 
 export function FieldLabel({ label, isReadOnly = false }: { label: string; isReadOnly?: boolean }) {
     return (
         <div className="flex justify-between items-center mb-1.5">
-            <SectionHeader title={label.replace(/_/g, ' ')} />
+            <SectionTitle as="h6" tone="sub" className="mb-2">{label.replace(/_/g, ' ')}</SectionTitle>
             {isReadOnly && (
                 <span className="text-xs font-black text-sub uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
                     READ ONLY
@@ -39,7 +38,7 @@ export function CoverImageField({ fieldKey, value, isEditing, onChange }: {
         <div className="space-y-2">
             <div className="flex items-center gap-2 mb-2">
                 <ImageIcon className="w-4 h-4 text-gray-400" />
-                <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{fieldKey.replace(/_/g, ' ')}</SectionTitle>
                 {loading && <span className="text-xs text-sub">resolving...</span>}
                 {displayUrl && <span className="text-xs text-sub font-mono truncate">{displayUrl.substring(0, 30)}...</span>}
             </div>
@@ -93,7 +92,7 @@ export function AudioField({ fieldKey, value, isEditing, onChange }: {
         <div className="space-y-2">
             <div className="flex items-center gap-2 mb-2">
                 <Volume2 className="w-4 h-4 text-purple-400" />
-                <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{fieldKey.replace(/_/g, ' ')}</SectionTitle>
                 {loading && <span className="text-xs text-purple-400">resolving...</span>}
             </div>
             {displayUrl && !loading ? (
@@ -145,7 +144,7 @@ export function GalleryField({ fieldKey, value, isEditing, onChange }: {
         <div className="space-y-2">
             <div className="flex items-center gap-2 mb-2">
                 <LayoutGrid className="w-4 h-4 text-info" />
-                <SectionHeader title={fieldKey.replace(/_/g, ' ')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{fieldKey.replace(/_/g, ' ')}</SectionTitle>
                 {loading && <span className="text-xs text-info">resolving...</span>}
                 {displayUrls.length > 0 && (
                     <span className="text-xs font-black text-info bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-wider">

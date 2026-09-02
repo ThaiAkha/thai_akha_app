@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import InputField from '../../../../components/form/input/InputField';
 import SelectField from '../../../../components/form/input/SelectField';
 import Switch from '../../../../components/form/switch/Switch';
-import SectionHeader from '../../../ui/SectionHeader';
 import { Caption, SectionTitle } from '../../../typography';
 import type { HotelEditFormProps } from './types';
 
@@ -22,7 +21,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
     return (
         <div className="px-6 py-6 bg-gray-50/10 space-y-5">
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldHotelName')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldHotelName')}</SectionTitle>
                 <InputField
                     placeholder={t('inspector.placeholderHotelName')}
                     value={form.name}
@@ -31,7 +30,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldZone')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldZone')}</SectionTitle>
                 <SelectField
                     value={form.zone_id || ''}
                     onChange={(e) => onFormChange({ zone_id: e.target.value })}
@@ -44,7 +43,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldMapLink')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldMapLink')}</SectionTitle>
                 <InputField
                     placeholder={t('inspector.placeholderMapLink')}
                     value={form.map_link || ''}
@@ -56,7 +55,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldLatitude')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldLatitude')}</SectionTitle>
                     <InputField
                         type="number"
                         step={0.0000001}
@@ -66,7 +65,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <SectionHeader title={t('inspector.fieldLongitude')} />
+                    <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldLongitude')}</SectionTitle>
                     <InputField
                         type="number"
                         step={0.0000001}
@@ -78,7 +77,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldAddress')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldAddress')}</SectionTitle>
                 <InputField
                     placeholder={t('inspector.placeholderAddress')}
                     value={form.address || ''}
@@ -87,7 +86,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldPhone')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldPhone')}</SectionTitle>
                 <InputField
                     placeholder={t('inspector.placeholderPhone')}
                     value={form.phone_number || ''}
@@ -96,7 +95,7 @@ const HotelEditForm: React.FC<HotelEditFormProps> = ({
             </div>
 
             <div className="space-y-1.5">
-                <SectionHeader title={t('inspector.fieldWebsite')} />
+                <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldWebsite')}</SectionTitle>
                 <InputField
                     placeholder="https://..."
                     value={form.website || ''}

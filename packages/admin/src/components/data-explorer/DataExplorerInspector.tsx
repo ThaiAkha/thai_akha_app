@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { InspectorShell, InspectorHeader, InspectorBody } from '../ui/inspector';
 
-import SectionHeader from '../ui/SectionHeader';
+import { SectionTitle } from '../typography';
 
 interface DataExplorerInspectorProps {
     title?: string;
@@ -16,7 +16,7 @@ interface DataExplorerInspectorProps {
 /**
  * Adapter sui primitivi `ui/inspector` (task #93, B1): stesse props e stesso DOM di prima
  * per le 8 pagine host (Storage, Inventory, Media, Hotels, Database, News, Logistic,
- * Reservation). Il titolo passa dallo slot `heading` (SectionHeader variant="title",
+ * Reservation). Il titolo passa dallo slot `heading` (SectionTitle as="h6",
  * non lo span dell'header nudo); `isEditing` attiva il close ricco (Button 36px +
  * Tooltip, rosso in edit); `closeTooltip` resta undefined cosi' il testo del tooltip
  * viene dall'header (explorer.close / explorer.closeCancel, ns dashboard) come oggi.
@@ -34,7 +34,7 @@ const DataExplorerInspector: React.FC<DataExplorerInspectorProps> = ({
     return (
         <InspectorShell className={className}>
             <InspectorHeader
-                heading={<SectionHeader title={title ?? t('explorer.details')} variant="title" className="text-body" />}
+                heading={<SectionTitle as="h6" className="mb-0 text-body">{title ?? t('explorer.details')}</SectionTitle>}
                 actions={headerActions}
                 onClose={onClose}
                 isEditing={isEditing}

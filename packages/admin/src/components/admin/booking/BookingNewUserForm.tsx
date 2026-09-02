@@ -6,7 +6,6 @@ import SelectField from '../../../components/form/input/SelectField';
 import PhoneCountryInput from '../../common/PhoneCountryInput';
 import { searchCountries, getCountryByCode, type CountryData } from '@thaiakha/shared/data';
 import { NewUser } from '../../../hooks/useAdminBooking';
-import SectionHeader from '../../ui/SectionHeader';
 import { SectionTitle } from '../../typography';
 
 interface BookingNewUserFormProps {
@@ -153,7 +152,7 @@ const BookingNewUserForm: React.FC<BookingNewUserFormProps> = ({
         </div>
 
         <div className="col-span-12 md:col-span-4 lg:col-span-3">
-          <SectionHeader title={t('newUser.whatsapp')} className="mb-2" />
+          <SectionTitle as="h6" tone="sub" className="mb-2">{t('newUser.whatsapp')}</SectionTitle>
           <div className="grid grid-cols-2 gap-3 h-14">
             <button
               type="button"

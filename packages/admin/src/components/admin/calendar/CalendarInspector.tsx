@@ -1,7 +1,6 @@
 import { Lock, Edit2, Minus, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatDateByLanguage } from '../../../lib/dateFormatter';
-import SectionHeader from '../../ui/SectionHeader';
 import { cn } from '@thaiakha/shared/lib/utils';
 import Button from '../../../components/ui/button/Button';
 import Badge from '../../../components/ui/badge/Badge';
@@ -139,7 +138,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                             </div>
                                             {sess.isClosed ? (
                                                 <div className="animate-in fade-in slide-in-from-top-2">
-                                                    <SectionHeader title={t('inspector.closingReason')} variant="inspector" className="mb-2 capitalize" />
+                                                    <SectionTitle as="h6" tone="sub" className="mb-2 capitalize">{t('inspector.closingReason')}</SectionTitle>
                                                     <input
                                                         type="text"
                                                         value={sess.reason}
@@ -153,7 +152,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                                 </div>
                                             ) : (
                                                 <div className="animate-in fade-in slide-in-from-top-2">
-                                                    <SectionHeader title={isBulkMode ? t('inspector.addRemoveSpots') : t('inspector.availableSeats')} variant="inspector" className="mb-2 capitalize" />
+                                                    <SectionTitle as="h6" tone="sub" className="mb-2 capitalize">{isBulkMode ? t('inspector.addRemoveSpots') : t('inspector.availableSeats')}</SectionTitle>
                                                     <div className="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl p-1.5 shadow-sm">
                                                         <button
                                                             onClick={() => {

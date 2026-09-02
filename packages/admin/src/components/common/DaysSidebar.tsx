@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CalendarDays, Sunrise, Sunset, Plus } from 'lucide-react';
-import SectionHeader from '../ui/SectionHeader';
+import { SectionTitle } from '../typography';
 import BadgePaxNumber from '../ui/badge/BadgePaxNumber';
 import type { DayOverview } from '../../hooks/useDaysOverview';
 import { dayLabel } from './DaysSidebar.helpers';
@@ -66,7 +66,7 @@ const DaysSidebar: React.FC<DaysSidebarProps> = ({ days, selectedDate, selectedS
                 <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-sub">
                     <CalendarDays size={16} />
                 </div>
-                <SectionHeader title={title ?? t('groupsPlanner.days', { defaultValue: 'Days' })} variant="title" />
+                <SectionTitle as="h6" className="mb-0">{title ?? t('groupsPlanner.days', { defaultValue: 'Days' })}</SectionTitle>
             </div>
 
             {/* Slot prominente opzionale (es. pickup/dropoff) */}

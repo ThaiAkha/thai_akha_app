@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { Plus, Image as ImageIcon, Music, Video, FileText, File as FileIcon, Save, Loader2, Check, Copy, ExternalLink } from 'lucide-react';
-import SectionHeader from '../../ui/SectionHeader';
 import Input from '../../../components/form/input/InputField';
 import Button from '../../../components/ui/button/Button';
 import DeleteZone from '../../../components/ui/DeleteZone';
@@ -133,7 +132,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                     <div className="space-y-4">
                         {/* Specialized Downloads */}
                         <div className="p-4 bg-gray-50/50 dark:bg-white/[0.02] rounded-2xl border border-gray-100 dark:border-white/[0.05]">
-                            <SectionHeader title={t('inspector.downloadOptions')} variant="inspector" className="mb-3" />
+                            <SectionTitle as="h6" tone="sub" className="mb-3">{t('inspector.downloadOptions')}</SectionTitle>
 
                             <div className="grid grid-cols-1 gap-2">
                                 {(selectedFile && selectedFile.metadata?.mimetype?.startsWith('image/')) ? (
@@ -203,7 +202,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
             {/* Fields List */}
             <div className="space-y-5 pt-6 border-t border-gray-100 dark:border-gray-800">
                 <div className="space-y-2">
-                    <SectionHeader title={pendingFile ? t('inspector.setFilename') : t('inspector.assetName')} variant="inspector" />
+                    <SectionTitle as="h6" tone="sub" className="mb-1">{pendingFile ? t('inspector.setFilename') : t('inspector.assetName')}</SectionTitle>
                     {pendingFile ? (
                         <Input
                             value={pendingFileName}
@@ -228,7 +227,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                     <Tooltip content={t('inspector.tooltipSize')} position="bottom" className="w-full">
                         <div className="space-y-2">
-                            <SectionHeader title={t('inspector.diskSize')} variant="inspector" />
+                            <SectionTitle as="h6" tone="sub" className="mb-1">{t('inspector.diskSize')}</SectionTitle>
                             <div className={cn(
                                 "p-3 bg-gray-50/50 dark:bg-gray-800/20 rounded-lg text-xs font-black text-sub border border-gray-100 dark:border-gray-800/50",
                                 isEditing && "opacity-60 cursor-not-allowed"
@@ -239,7 +238,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                     </Tooltip>
                     <Tooltip content={t('inspector.tooltipMime')} position="bottom" className="w-full">
                         <div className="space-y-2">
-                            <SectionHeader title={t('inspector.mimeType')} variant="inspector" />
+                            <SectionTitle as="h6" tone="sub" className="mb-1">{t('inspector.mimeType')}</SectionTitle>
                             <div className={cn(
                                 "p-3 bg-gray-50/50 dark:bg-gray-800/20 rounded-lg text-xs font-black text-sub border border-gray-100 dark:border-gray-800/50 truncate",
                                 isEditing && "opacity-60 cursor-not-allowed"
@@ -255,7 +254,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                 {!pendingFile && selectedFile && (
                     <div className="pt-2 space-y-4">
                         <div className="space-y-2">
-                            <SectionHeader title={t('inspector.createdAt')} variant="inspector" />
+                            <SectionTitle as="h6" tone="sub" className="mb-1">{t('inspector.createdAt')}</SectionTitle>
                             <div className={cn(
                                 "p-3 bg-gray-50/30 dark:bg-gray-800/10 rounded-lg text-xs font-bold text-sub border border-gray-100 dark:border-gray-800/50",
                                 isEditing && "opacity-60 cursor-not-allowed"
@@ -266,7 +265,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                         {/* pb-10: aria sotto l'ultimo campo perche' il corpo scrolla fino in fondo; resta
                             finche' Save/Delete non passano a InspectorFooter sticky (task #93, ticket a parte). */}
                         <div className="space-y-2 pb-10">
-                            <SectionHeader title={t('inspector.lastSynced')} variant="inspector" />
+                            <SectionTitle as="h6" tone="sub" className="mb-1">{t('inspector.lastSynced')}</SectionTitle>
                             <div className={cn(
                                 "p-3 bg-gray-50/30 dark:bg-gray-800/10 rounded-lg text-xs font-bold text-sub border border-gray-100 dark:border-gray-800/50",
                                 isEditing && "opacity-60 cursor-not-allowed"

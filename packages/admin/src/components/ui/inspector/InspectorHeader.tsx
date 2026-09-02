@@ -31,7 +31,7 @@ interface InspectorHeaderBaseProps {
 /**
  * Testo dell'header, in alternativa: `title` (stringa o nodo) dentro la colonna di testo
  * standard, oppure `heading`, che SOSTITUISCE l'intera colonna `flex flex-col min-w-0`.
- * Serve all'adapter di DataExplorerInspector (B1), che rende `<SectionHeader variant="title">`
+ * Serve all'adapter di DataExplorerInspector (B1), che rende `<SectionTitle as="h6">`
  * e non un `<span>` font-bold text-title: con `heading` il DOM delle 8 pagine resta uguale.
  */
 export type InspectorHeaderProps = InspectorHeaderBaseProps & (

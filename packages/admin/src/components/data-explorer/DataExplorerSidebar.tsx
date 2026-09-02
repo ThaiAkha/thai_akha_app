@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
-import SectionHeader from '../ui/SectionHeader';
+import { SectionTitle } from '../typography';
 
 export interface SidebarItem {
     id: string;
@@ -88,7 +88,7 @@ const DataExplorerSidebar: React.FC<DataExplorerSidebarProps> = ({
                             {React.isValidElement(titleIcon) ? React.cloneElement(titleIcon as React.ReactElement<{ size?: number }>, { size: 16 }) : titleIcon}
                         </div>
                     )}
-                    <SectionHeader title={title} variant="title" />
+                    <SectionTitle as="h6" className="mb-0">{title}</SectionTitle>
                 </div>
             </div>
 

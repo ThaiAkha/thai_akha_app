@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { ShoppingBag, Package } from 'lucide-react';
 import { DataExplorerSidebar } from '../../../components/data-explorer';
 import type { Category } from '../../../hooks/useAdminInventory';
-import SectionHeader from '../../ui/SectionHeader';
 import { SectionTitle } from '../../typography';
 
 interface InventorySidebarProps {
@@ -39,7 +38,7 @@ const InventorySidebar: React.FC<InventorySidebarProps> = ({
             footer={
                 <div className="px-2 py-2 bg-green-50 dark:bg-green-900/10 border-t border-green-100 dark:border-green-900/20">
                     <div className="flex gap-1.5 items-center px-2">
-                        <SectionHeader title={t('inspector.statusLabel')} variant="sidebar" className="text-success mb-0 ml-0" />
+                        <SectionTitle as="h6" tone="sub" className="text-success mb-0 ml-0">{t('inspector.statusLabel')}</SectionTitle>
                         <SectionTitle className="text-success">
                             Live Inventory
                         </SectionTitle>

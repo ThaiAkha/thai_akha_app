@@ -4,7 +4,7 @@ import PhoneInput, { type CountryData as PhoneCountryData } from 'react-phone-in
 import ReactCountryFlag from 'react-country-flag';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Globe } from 'lucide-react';
-import SectionHeader from '../ui/SectionHeader';
+import { SectionTitle } from '../typography';
 
 export interface CountryInfo {
   code?: string;
@@ -39,9 +39,7 @@ export default function PhoneCountryInput({ value, onChange, onCountryChange, la
   return (
     <div className="w-full space-y-2">
       {label && (
-        <SectionHeader
-          title={label}
-        />
+        <SectionTitle as="h6" tone="sub" className="mb-2">{label}</SectionTitle>
       )}
 
       <div className="relative group/phone">

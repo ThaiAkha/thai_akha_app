@@ -10,7 +10,7 @@ import { Heading, Paragraph } from '../../components/typography';
 import SelectField from '../../components/form/input/SelectField';
 import Button from '../../components/ui/button/Button';
 import Card from '../../components/ui/Card';
-import SectionHeader from '../../components/ui/SectionHeader';
+import Label from '../../components/form/Label';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { getLocaleCode } from '../../lib/dateFormatter';
 
@@ -279,7 +279,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
       <form onSubmit={handleSubmit} className="flex flex-col [gap:var(--space-fluid-s,1rem)]">
         {/* Date — read only */}
         <div className="w-full space-y-1.5">
-          <SectionHeader title={t('payoutForm.dateLabel')} variant="formfield" />
+          <Label className="font-bold text-sub">{t('payoutForm.dateLabel')}</Label>
           <div className="h-12 flex items-center px-4 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/40 text-base font-bold text-title">
             <span className="capitalize">{fmtDate(runDate, i18n.language)}</span>
             {isToday && (

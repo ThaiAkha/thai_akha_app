@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon, Eye, EyeOff } from 'lucide-react';
-import SectionHeader from '../../ui/SectionHeader';
+import { SectionTitle } from '../../typography';
 import Input from '../../../components/form/input/InputField';
 import SelectField from '../../../components/form/input/SelectField';
 import TextArea from '../../../components/form/input/TextArea';
@@ -52,7 +52,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         )}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-6 backdrop-blur-sm">
                             <div className="w-full space-y-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                <SectionHeader title={t('inspector.updateImageUrl')} className="text-white" />
+                                <SectionTitle as="h6" tone="sub" className="mb-2 text-white">{t('inspector.updateImageUrl')}</SectionTitle>
                                 <Input
                                     placeholder="https://..."
                                     value={editingProduct.catalog_image_url}
@@ -65,7 +65,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-4 border-t border-gray-100 dark:border-gray-800">
                         <div className="space-y-1.5">
-                            <SectionHeader title={t('inspector.fieldName')} />
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldName')}</SectionTitle>
                             <Input
                                 placeholder={t('inspector.placeholderName')}
                                 value={editingProduct.item_name}
@@ -79,7 +79,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title={t('inspector.fieldSku')} />
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldSku')}</SectionTitle>
                             <Input
                                 placeholder="SKU-CODE"
                                 value={editingProduct.sku}
@@ -93,7 +93,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title={t('inspector.fieldCategory')} />
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldCategory')}</SectionTitle>
                             <SelectField
                                 value={editingProduct.category_id}
                                 onChange={(e) => handleChange('category_id', e.target.value)}
@@ -107,7 +107,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title={t('inspector.fieldStock')} />
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldStock')}</SectionTitle>
                             <Input
                                 type="number"
                                 value={editingProduct.stock_quantity}
@@ -121,7 +121,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
-                            <SectionHeader title={t('inspector.fieldPrice')} />
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldPrice')}</SectionTitle>
                             <Input
                                 type="number"
                                 value={editingProduct.price_thb}
@@ -135,7 +135,7 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5 md:col-span-2">
-                            <SectionHeader title={t('inspector.fieldDescription')} />
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldDescription')}</SectionTitle>
                             <TextArea
                                 rows={4}
                                 placeholder={t('inspector.descPlaceholder')}

@@ -9,7 +9,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { Users, User, Crown, Scissors, Undo2, Check } from 'lucide-react';
-import SectionHeader from '../../ui/SectionHeader';
+import { SectionTitle } from '../../typography';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
 import { Guest } from '../../../hooks/useManagerPos';
 
@@ -206,7 +206,7 @@ const PosClassSidebar: React.FC<PosClassSidebarProps> = ({ guests, session, acti
         <div className="lg:col-span-2 flex flex-col bg-white dark:bg-[#0a0a0b] border-r border-gray-100 dark:border-white/[0.05] overflow-hidden">
             <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex items-center gap-2.5 shrink-0 shadow-sm">
                 <div className="p-1.5 rounded-lg bg-white dark:bg-white/[0.05] shadow-sm border border-gray-100 dark:border-white/[0.05] text-sub"><Users size={16} /></div>
-                <SectionHeader title={tp('sidebar.title', { defaultValue: 'Guests' })} variant="title" />
+                <SectionTitle as="h6" className="mb-0">{tp('sidebar.title', { defaultValue: 'Guests' })}</SectionTitle>
             </div>
 
             {classes.length === 0 ? (

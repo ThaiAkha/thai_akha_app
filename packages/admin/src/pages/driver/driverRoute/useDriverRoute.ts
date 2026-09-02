@@ -216,22 +216,13 @@ export function useDriverRoute() {
         ));
 
         try {
-            const updatePayload: Record<string, unknown> = {
-                transport_status: nextStatus,
-                pickup_driver_uid: userProfile.id,
-            };
-
-            if (nextStatus === 'on_board') {
-                updatePayload.actual_pickup_time = new Date().toISOString();
-            }
-            if (nextStatus === 'dropped_off') {
-                updatePayload.actual_dropoff_time = new Date().toISOString();
-            }
-
-            const { error } = await supabase
-                .from('bookings')
-                .update(updatePayload)
-                .eq('internal_id', stop.internal_id);
+            // #132: il driver non ha piu' UPDATE diretto su bookings (RLS stretta).
+            // La RPC SECURITY DEFINER consente SOLO i campi pickup delle SUE fermate
+            // e scrive i timestamp actual_* lato server.
+            const { error } = await supabase.rpc('driver_update_pickup', {
+                p_internal_id: stop.internal_id,
+                p_status: nextStatus,
+            });
 
             if (error) throw error;
 
@@ -252,10 +243,10 @@ export function useDriverRoute() {
                     (s.route_order > currentOrder || !s.route_order)
                 );
                 if (nextStop) {
-                    await supabase.from('bookings').update({
-                        transport_status: 'driver_en_route',
-                        pickup_driver_uid: userProfile.id
-                    }).eq('internal_id', nextStop.internal_id);
+                    await supabase.rpc('driver_update_pickup', {
+                        p_internal_id: nextStop.internal_id,
+                        p_status: 'driver_en_route',
+                    });
                 }
             }
 

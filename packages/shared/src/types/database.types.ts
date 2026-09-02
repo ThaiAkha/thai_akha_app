@@ -6288,6 +6288,10 @@ export type Database = {
           visitor_count: number
         }[]
       }
+      driver_update_pickup: {
+        Args: { p_internal_id: string; p_status: string }
+        Returns: undefined
+      }
       generate_weekly_payouts: {
         Args: { p_end_date: string; p_start_date: string }
         Returns: undefined

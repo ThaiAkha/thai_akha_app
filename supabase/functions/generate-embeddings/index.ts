@@ -32,7 +32,8 @@ const json = (body: unknown, status = 200) =>
 const clean = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
 // ── Config per tabella: come comporre il testo da embeddare ──────────────────
-type TableCfg = { select: string; text: (r: Record<string, unknown>) => string };
+// idCol: colonna chiave per update/count (default "id"; page_sections usa section_id).
+type TableCfg = { select: string; idCol?: string; text: (r: Record<string, unknown>) => string };
 
 const TABLES: Record<string, TableCfg> = {
   site_metadata: {
@@ -40,20 +41,21 @@ const TABLES: Record<string, TableCfg> = {
     text: (r) => [r.seo_title, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
   recipes: {
-    select: "id, name, description, seo_description",
-    text: (r) => [r.name, r.description, r.seo_description].map(clean).filter(Boolean).join(" — "),
+    select: "id, name, description, seo_description, summary_ai",
+    text: (r) => [r.name, r.description, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
   culture_sections: {
     select: "id, title, subtitle, seo_description, summary_ai",
     text: (r) => [r.title, r.subtitle, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
   akha_news: {
-    select: "id, title, excerpt, seo_description",
-    text: (r) => [r.title, r.excerpt, r.seo_description].map(clean).filter(Boolean).join(" — "),
+    select: "id, title, excerpt, seo_description, summary_ai",
+    text: (r) => [r.title, r.excerpt, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
   ingredients_library: {
-    select: "id, name_en, name_th, description, category, seo_description, summary_ai",
-    text: (r) => [r.name_en, r.name_th, r.category, r.description, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
+    // "category" non esiste piu' (c'e' solo category_id, un id raw: inutile nel testo).
+    select: "id, name_en, name_th, description, seo_description, summary_ai",
+    text: (r) => [r.name_en, r.name_th, r.description, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
   content_categories: {
     select: "id, title, subtitle, description, summary_ai",
@@ -62,6 +64,24 @@ const TABLES: Record<string, TableCfg> = {
   cooking_classes: {
     select: "id, title, tagline, description, summary_ai",
     text: (r) => [r.title, r.tagline, r.description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
+  },
+  // Asset e sezioni CMS (#71): summary_ai qui e' descrizione-per-ricerca, non knowledge Cherry.
+  media_assets: {
+    select: "id, title, alt_text, caption, tags, summary_ai",
+    text: (r) =>
+      [r.title, r.alt_text, r.caption, Array.isArray(r.tags) ? r.tags.join(" ") : "", r.summary_ai]
+        .map(clean).filter(Boolean).join(" — "),
+  },
+  audio_assets: {
+    select: "id, title, caption, transcript, summary_ai",
+    text: (r) =>
+      [r.title, r.caption, r.summary_ai, typeof r.transcript === "string" ? r.transcript.slice(0, 6000) : ""]
+        .map(clean).filter(Boolean).join(" — "),
+  },
+  page_sections: {
+    select: "section_id, title, subtitle, highlight, description, summary_ai",
+    idCol: "section_id",
+    text: (r) => [r.title, r.subtitle, r.highlight, r.description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
 };
 
@@ -93,16 +113,17 @@ async function processTable(supabase: ReturnType<typeof createClient>, table: st
   const texts = rows.map((r) => cfg.text(r as Record<string, unknown>) || "Thai Akha Kitchen");
   const vectors = await embed(texts);
 
+  const idCol = cfg.idCol ?? "id";
   let processed = 0;
   for (let i = 0; i < rows.length; i++) {
-    const id = (rows[i] as { id: string | number }).id;
-    const { error: upErr } = await supabase.from(table).update({ semantic_vector: toVec(vectors[i]) }).eq("id", id);
+    const id = (rows[i] as Record<string, unknown>)[idCol] as string | number;
+    const { error: upErr } = await supabase.from(table).update({ semantic_vector: toVec(vectors[i]) }).eq(idCol, id);
     if (upErr) throw new Error(`update ${table} ${id}: ${upErr.message}`);
     processed++;
   }
 
   const { count: remaining } = await supabase
-    .from(table).select("id", { count: "exact", head: true }).is("semantic_vector", null);
+    .from(table).select(idCol, { count: "exact", head: true }).is("semantic_vector", null);
   return { table, processed, remaining: remaining ?? 0 };
 }
 

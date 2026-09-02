@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { useQueryClient } from '@thaiakha/shared/query';
 import { UserProfile } from '../../services/auth.service';
 import type { SpicinessLevel } from '@thaiakha/shared/types';
+import { t } from '../../i18n';
 
 import { Button, Icon } from '../ui';
 import { Typography } from '../ui/Typography';
@@ -59,6 +61,36 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   useEffect(() => {
     setFullName(activeName);
   }, [activeName]);
+
+  // ── #129 (GDPR, residuo C4): cancellazione chat su richiesta dal Passport. ──
+  // DELETE diretto: la policy RLS "manage own session" (FOR ALL) copre gia' il
+  // DELETE own (auth.uid() = user_id) e chat_messages segue via FK ON DELETE
+  // CASCADE - nessuna RPC necessaria. Cancella SOLO le sessioni dell'utente
+  // autenticato: i profili gestiti non hanno un proprio auth.uid, le loro chat
+  // (se fatte da questo account) vivono sotto lo stesso user_id e cadono insieme.
+  const queryClient = useQueryClient();
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deletingChats, setDeletingChats] = useState(false);
+  const [chatsDeleted, setChatsDeleted] = useState(false);
+  const isLoggedUser = !!userProfile?.id && userProfile.id !== 'guest';
+
+  const handleDeleteChats = async () => {
+    if (!isLoggedUser || !userProfile) return;
+    setDeletingChats(true);
+    try {
+      const { error } = await supabase.from('chat_sessions').delete().eq('user_id', userProfile.id);
+      if (error) throw error;
+      // Le query utente (prefisso 'user') possono referenziare le chat: si rifanno.
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      setConfirmingDelete(false);
+      setChatsDeleted(true);
+      setTimeout(() => setChatsDeleted(false), 5000);
+    } catch (err) {
+      console.error('Delete chats error:', err);
+    } finally {
+      setDeletingChats(false);
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -149,6 +181,61 @@ const UserSettings: React.FC<UserSettingsProps> = ({
               />
             )}
           </section>
+
+          {/* 4. PRIVACY — cancellazione chat Cherry su richiesta (#129, solo utenti loggati) */}
+          {isLoggedUser && (
+            <>
+              <AkhaPixelLine size={6} className="py-2" />
+              <section className="flex flex-col [gap:var(--space-fluid-s)]">
+                <div className="flex items-center [gap:var(--space-fluid-xs)]">
+                  <Icon name="shield_person" size="sm" className="text-muted" />
+                  <Typography variant="fieldLabel" color="title" className="font-bold uppercase tracking-wider">
+                    {t('user:privacyTitle')}
+                  </Typography>
+                </div>
+                <Typography variant="paragraphS" color="muted" className="leading-relaxed max-w-md">
+                  {t('user:deleteChatsDesc')}
+                </Typography>
+                {chatsDeleted ? (
+                  <Typography variant="paragraphS" color="action" className="font-bold flex items-center gap-2 animate-in fade-in">
+                    <Icon name="check_circle" size="sm" />
+                    {t('user:deleteChatsDone')}
+                  </Typography>
+                ) : !confirmingDelete ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon="delete"
+                    className="self-start pointer-coarse:min-h-11"
+                    onClick={() => setConfirmingDelete(true)}
+                  >
+                    {t('user:deleteChats')}
+                  </Button>
+                ) : (
+                  <div className="flex flex-wrap items-center [gap:var(--space-fluid-xs)]">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon="delete_forever"
+                      className="pointer-coarse:min-h-11"
+                      isLoading={deletingChats}
+                      onClick={handleDeleteChats}
+                    >
+                      {t('user:deleteChatsConfirm')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="pointer-coarse:min-h-11"
+                      onClick={() => setConfirmingDelete(false)}
+                    >
+                      {t('common:cancel')}
+                    </Button>
+                  </div>
+                )}
+              </section>
+            </>
+          )}
 
         </div>
 

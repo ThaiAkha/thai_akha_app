@@ -2189,54 +2189,6 @@ export type Database = {
         }
         Relationships: []
       }
-      faq_backup_20260810_pickup3km: {
-        Row: {
-          answer: string | null
-          backed_up_at: string | null
-          faq_key: string | null
-          id: string | null
-          question: string | null
-        }
-        Insert: {
-          answer?: string | null
-          backed_up_at?: string | null
-          faq_key?: string | null
-          id?: string | null
-          question?: string | null
-        }
-        Update: {
-          answer?: string | null
-          backed_up_at?: string | null
-          faq_key?: string | null
-          id?: string | null
-          question?: string | null
-        }
-        Relationships: []
-      }
-      faq_backup_20260821_pickup_hours: {
-        Row: {
-          answer: string | null
-          backed_up_at: string | null
-          faq_key: string | null
-          id: string | null
-          question: string | null
-        }
-        Insert: {
-          answer?: string | null
-          backed_up_at?: string | null
-          faq_key?: string | null
-          id?: string | null
-          question?: string | null
-        }
-        Update: {
-          answer?: string | null
-          backed_up_at?: string | null
-          faq_key?: string | null
-          id?: string | null
-          question?: string | null
-        }
-        Relationships: []
-      }
       faq_categories: {
         Row: {
           audience: string[]
@@ -2303,54 +2255,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      faq_categories_backup_20260822: {
-        Row: {
-          audience: string[] | null
-          avatar_asset_id: string | null
-          backed_up_at: string | null
-          category_key: string | null
-          created_at: string | null
-          display_order: number | null
-          id: string | null
-          image_asset_id: string | null
-          is_active: boolean | null
-          parent_id: string | null
-          section_id: string | null
-          title: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          backed_up_at?: string | null
-          category_key?: string | null
-          created_at?: string | null
-          display_order?: number | null
-          id?: string | null
-          image_asset_id?: string | null
-          is_active?: boolean | null
-          parent_id?: string | null
-          section_id?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          audience?: string[] | null
-          avatar_asset_id?: string | null
-          backed_up_at?: string | null
-          category_key?: string | null
-          created_at?: string | null
-          display_order?: number | null
-          id?: string | null
-          image_asset_id?: string | null
-          is_active?: boolean | null
-          parent_id?: string | null
-          section_id?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
       }
       faq_categories_translations: {
         Row: {
@@ -6404,6 +6308,30 @@ export type Database = {
         Args: { p_run_date: string; p_session_id: string }
         Returns: undefined
       }
+      driver_route: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          booking_date: string
+          customer_note: string
+          dropoff_driver_uid: string
+          dropoff_hotel: string
+          guest_name: string
+          hotel_name: string
+          internal_id: string
+          pax_count: number
+          phone_number: string
+          pickup_driver_uid: string
+          pickup_time: string
+          pickup_zone: string
+          requires_dropoff: boolean
+          route_order: number
+          session_id: string
+          status: string
+          transport_status: string
+          visitor_count: number
+        }[]
+      }
       generate_weekly_payouts: {
         Args: { p_end_date: string; p_start_date: string }
         Returns: undefined
@@ -6626,12 +6554,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -6655,11 +6583,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -6680,11 +6608,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -6705,11 +6633,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -6722,11 +6650,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

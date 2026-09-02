@@ -65,13 +65,14 @@ export function useDriverRoute() {
     const fetchRoute = useCallback(async () => {
         if (!userProfile) return;
         try {
-            // Legge da driver_route_v, non da bookings: la vista espone i campi di
-            // trasporto + guest_name/avatar_url e NON le colonne sanitarie del profilo
-            // (allergies, dietary_profile). Vedi Privacy 2142 e la migration
-            // 20260728000200_profiles_privilege_guard. La vista si auto-scopa come
-            // bookings_select_scoped, quindi i filtri qui sotto restano identici.
+            // Legge dalla RPC driver_route(), non da bookings: la funzione espone i campi
+            // di trasporto + guest_name/avatar_url e NON le colonne sanitarie del profilo
+            // (allergies, dietary_profile). Vedi Privacy 2142; era la vista driver_route_v
+            // (20260728000200_profiles_privilege_guard), diventata funzione con lo stesso
+            // filtro nella migration 20260902200000_driver_route_rpc (advisor 0010). Si
+            // auto-scopa come bookings_select_scoped, quindi i filtri qui restano identici.
             const { data, error } = await supabase
-                .from('driver_route_v')
+                .rpc('driver_route')
                 .select(`
                     internal_id, status, pax_count, hotel_name, pickup_zone, pickup_time, phone_number, customer_note, session_id, route_order,
                     pickup_driver_uid, transport_status, dropoff_hotel, requires_dropoff,

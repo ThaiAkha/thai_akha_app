@@ -58,7 +58,7 @@ const BOOKING_COLS_DRIVER =
   'internal_id, booking_date, session_id, pax_count, visitor_count, status, guest_name, ' +
   'hotel_name, pickup_time, pickup_zone';
 
-/** Shape delle righe lette con BOOKING_COLS / BOOKING_COLS_DRIVER (bookings o driver_route_v). */
+/** Shape delle righe lette con BOOKING_COLS / BOOKING_COLS_DRIVER (bookings o RPC driver_route). */
 // Le colonne sono stringhe concatenate (non literal): PostgREST non le inferisce, quindi il
 // risultato viene castato UNA volta a questa shape (colonne driver = sottoinsieme, opzionali).
 type BookingScopedRow = Pick<Tables<'bookings'>, 'internal_id' | 'booking_date' | 'session_id' | 'pax_count' | 'visitor_count' | 'status' | 'guest_name' | 'hotel_name' | 'pickup_time' | 'pickup_zone'>
@@ -153,14 +153,16 @@ export async function fetchAdminScopedData(
   }
 
   // ── DRIVER: solo i propri pickup, colonne minime, niente finanza/menu ─────
-  // Fonte = driver_route_v, NON bookings: dal 2026-08-03 il driver non ha piu' SELECT su
+  // Fonte = RPC driver_route(), NON bookings: dal 2026-08-03 il driver non ha piu' SELECT su
   // `bookings` (ramo rimosso da bookings_select_scoped) e la RLS non da' errore, filtra - da
-  // `bookings` questa query tornava semplicemente vuota. Il filtro .or() sotto e' ridondante
-  // (la vista gia' scopa per auth.uid()) ma resta esplicito: la fonte dice cosa stiamo leggendo.
+  // `bookings` questa query tornava semplicemente vuota. Era la vista driver_route_v, diventata
+  // funzione con lo stesso filtro (migration 20260902200000_driver_route_rpc, advisor 0010).
+  // Il filtro .or() sotto e' ridondante (la funzione gia' scopa per auth.uid()) ma resta
+  // esplicito: la fonte dice cosa stiamo leggendo.
   if (scope === 'driver') {
     if (!userId) return empty;
     const { data } = await supabase
-      .from('driver_route_v')
+      .rpc('driver_route')
       .select(BOOKING_COLS_DRIVER)
       .or(`pickup_driver_uid.eq.${userId},dropoff_driver_uid.eq.${userId}`)
       .gte('booking_date', today)

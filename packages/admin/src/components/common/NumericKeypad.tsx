@@ -26,7 +26,7 @@ const NumericKeypad: React.FC<NumericKeypadProps> = ({
                         key={key}
                         type="button"
                         onClick={() => onKeyPress(key)}
-                        className="h-14 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xl font-bold text-title hover:bg-gray-50 dark:hover:bg-gray-700/80 active:scale-95 transition-all shadow-sm"
+                        className="h-14 rounded-xl bg-surface border border-gray-200 dark:border-gray-700 text-xl font-bold text-title hover:bg-gray-50 dark:hover:bg-gray-700/80 active:scale-95 transition-all shadow-sm"
                     >
                         {key}
                     </button>

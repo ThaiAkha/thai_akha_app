@@ -64,7 +64,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                 {/* VENDOR CONTACT BANNER */}
                 {activeTab !== 'all' && (
                     <div className="px-4 pt-4 animate-in slide-in-from-top-4 duration-500">
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                        <div className="bg-surface border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex items-center justify-between shadow-sm">
                             <div className="flex items-center gap-3">
                                 <div className="size-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-500/20">
                                     {typeof activeContact === 'undefined' ? <Store className="w-5 h-5" /> : getShopIcon(activeTab)}
@@ -109,7 +109,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                             <div
                                 key={item.id}
                                 className={cn(
-                                    "relative flex items-stretch min-h-24 bg-white dark:bg-gray-800 rounded-2xl border transition-all duration-300 overflow-hidden shadow-sm",
+                                    "relative flex items-stretch min-h-24 bg-surface rounded-2xl border transition-all duration-300 overflow-hidden shadow-sm",
                                     item.is_bought
                                         ? "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 opacity-60"
                                         : "border-gray-200 dark:border-gray-700"
@@ -151,7 +151,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                             "w-12 flex items-center justify-center transition-all active:scale-95 border-l border-gray-100 dark:border-gray-700 disabled:opacity-60",
                                             item.is_bought
                                                 ? "bg-green-500 text-white"
-                                                : "bg-white dark:bg-gray-800 text-gray-300 hover:text-success hover:bg-green-50 dark:hover:bg-green-900/20"
+                                                : "bg-surface text-gray-300 hover:text-success hover:bg-green-50 dark:hover:bg-green-900/20"
                                         )}
                                     >
                                         {item.is_bought ? <CheckCircle2 className="w-6 h-6 animate-in zoom-in duration-300" /> : <Circle className="w-6 h-6" />}
@@ -164,7 +164,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
             </div>
 
             {/* ================= FIXED FOOTER ================= */}
-            <div className="absolute bottom-4 left-4 right-4 z-40 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-2 shadow-xl flex gap-2">
+            <div className="absolute bottom-4 left-4 right-4 z-40 bg-surface rounded-2xl border border-gray-200 dark:border-gray-700 p-2 shadow-xl flex gap-2">
                 {locked ? (
                     <div className="flex-1 h-12 flex items-center justify-center gap-2 text-success font-black uppercase text-xs tracking-widest">
                         <Lock className="w-4 h-4" /> {t('labels.confirmedLocked', { defaultValue: 'Shopping confirmed — locked' })}
@@ -202,7 +202,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
             {/* Numeric keypad (price entry) */}
             <Modal isOpen={keypadOpen} onClose={() => setKeypadOpen(false)} className="bg-transparent border-none shadow-none max-w-sm p-0">
                 <div className="space-y-4">
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border-2 border-primary-500 text-center shadow-2xl">
+                    <div className="bg-surface p-6 rounded-3xl border-2 border-primary-500 text-center shadow-2xl">
                         <span className="uppercase font-black text-primary-600 tracking-widest mb-1 block text-xs">{t('labels.inputThb', { defaultValue: 'Price (THB)' })}</span>
                         <div className="font-mono text-title text-4xl font-bold flex items-center justify-center gap-2">
                             {tempPrice}<span className="text-xl opacity-50">฿</span>

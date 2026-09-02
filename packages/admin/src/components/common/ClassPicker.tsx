@@ -175,7 +175,7 @@ const ClassPicker: React.FC<ClassPickerProps> = ({
                                         "flex items-center justify-center min-w-[44px] px-5 py-1.5 rounded-md text-xs font-black uppercase tracking-widest transition-all",
                                         // Active state - senza ombra
                                         isActive
-                                            ? "bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400"
+                                            ? "bg-surface text-primary-600 dark:text-primary-400"
                                             : "text-sub hover:text-title"
                                     )}
                                     title={s.label}

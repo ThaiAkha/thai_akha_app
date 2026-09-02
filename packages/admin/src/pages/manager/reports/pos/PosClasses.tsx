@@ -21,7 +21,7 @@ export const PosToolbar: React.FC<{ p: PosClassesState }> = ({ p }) => {
                 type="date"
                 value={p.posDay}
                 onChange={(e) => p.setPosDay(e.target.value)}
-                className="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             />
         </div>
     );

@@ -101,7 +101,7 @@ const BookingContent: React.FC<BookingContentProps> = ({
                                 className={cn(
                                     "flex-1 flex items-center justify-center gap-2 px-4 py-4 text-base font-black uppercase tracking-wider transition-all border-b-2 whitespace-nowrap",
                                     userMode === mode.id
-                                        ? "border-green-500 text-success bg-white dark:bg-gray-800"
+                                        ? "border-green-500 text-success bg-surface"
                                         : "border-transparent text-body hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800/20"
                                 )}
                             >

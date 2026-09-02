@@ -147,8 +147,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     </Heading>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={handlePrev} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
-                    <button onClick={handleNext} className="size-10 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronRight className="w-5 h-5" /></button>
+                    <button onClick={handlePrev} className="size-10 rounded-xl bg-surface hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
+                    <button onClick={handleNext} className="size-10 rounded-xl bg-surface hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-sub transition-all active:scale-95"><ChevronRight className="w-5 h-5" /></button>
                 </div>
             </div>
 
@@ -237,7 +237,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </div>
 
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 flex justify-center shrink-0">
-                <button onClick={onClose} className="px-6 py-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-title font-bold uppercase tracking-widest text-xs transition-colors border border-gray-200 dark:border-gray-700">
+                <button onClick={onClose} className="px-6 py-2 rounded-xl bg-surface hover:bg-gray-50 dark:hover:bg-gray-700 text-title font-bold uppercase tracking-widest text-xs transition-colors border border-gray-200 dark:border-gray-700">
                     {t('common:buttons.cancel')}
                 </button>
             </div>

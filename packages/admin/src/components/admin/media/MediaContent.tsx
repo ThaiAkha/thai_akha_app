@@ -225,7 +225,7 @@ const MediaContent: React.FC<MediaContentProps> = ({
                                                         alert(t('content.table.noUrl'));
                                                     }
                                                 }}
-                                                className="group/btn relative inline-flex p-3.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-white/10 text-gray-400 hover:bg-primary-500 hover:text-white hover:border-primary-500 hover:scale-110 transition-all duration-500 shadow-xl shadow-gray-200/20 dark:shadow-none"
+                                                className="group/btn relative inline-flex p-3.5 rounded-2xl bg-surface border border-gray-100 dark:border-white/10 text-gray-400 hover:bg-primary-500 hover:text-white hover:border-primary-500 hover:scale-110 transition-all duration-500 shadow-xl shadow-gray-200/20 dark:shadow-none"
                                                 title={t('content.table.openInNewWindow')}
                                             >
                                                 <ExternalLink size={18} />

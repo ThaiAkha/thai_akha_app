@@ -56,7 +56,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
         "group relative flex flex-col rounded-[2rem] overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer active:scale-95",
         isAdded
           ? "bg-primary-50 data-[mode=dark]:bg-primary-900/10 border-primary-500 shadow-lg scale-[1.02] z-10"
-          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md"
+          : "bg-surface border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md"
       )}
     >
       {/* IMAGE LAYER — 1:1, full color, white 10% veil that clears on hover */}

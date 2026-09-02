@@ -58,7 +58,7 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                     <button
                         onClick={() => setProps(generateDefaultProps(component))}
-                        className="p-2 text-sub hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:scale-105"
+                        className="p-2 text-sub hover:text-gray-900 dark:hover:text-white bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:scale-105"
                         title="Reset Props"
                     >
                         <RefreshCw className="w-4 h-4" />
@@ -96,8 +96,8 @@ const ViewPlayground: React.FC<ViewPlaygroundProps> = ({ component }) => {
             </div>
 
             {/* Controls Area (Right / Bottom) */}
-            <div className="w-full lg:w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto custom-scrollbar shadow-xl z-20">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-10">
+            <div className="w-full lg:w-96 bg-surface border-l border-gray-200 dark:border-gray-700 overflow-y-auto custom-scrollbar shadow-xl z-20">
+                <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-surface sticky top-0 z-10">
                     <Heading level="h4" className="text-title">{component.name}</Heading>
                     <Paragraph size="sm" color="secondary" className="mt-1">{component.description}</Paragraph>
                 </div>

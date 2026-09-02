@@ -43,7 +43,7 @@ const PosContent: React.FC<PosContentProps> = ({
                                 "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase whitespace-nowrap transition-all border-2",
                                 activeCategory === cat.value
                                     ? "bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-500/20"
-                                    : "bg-white dark:bg-gray-800 text-sub border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-900/30"
+                                    : "bg-surface text-sub border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-900/30"
                             )}
                         >
                             <ShoppingBag className="w-4 h-4" />

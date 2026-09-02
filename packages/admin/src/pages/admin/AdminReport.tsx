@@ -129,7 +129,7 @@ const AdminReport: React.FC = () => {
                                 className={cn(
                                     "p-6 rounded-3xl border transition-all cursor-pointer",
                                     selectedMetric === metric.id
-                                        ? "bg-white dark:bg-gray-800 border-primary-500 shadow-xl shadow-primary-500/10"
+                                        ? "bg-surface border-primary-500 shadow-xl shadow-primary-500/10"
                                         : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-300"
                                 )}
                             >

@@ -73,7 +73,7 @@ export function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                     value={rawValue}
                     onChange={e => { setImgError(false); onChange(e.target.value); }}
                     placeholder={t('news.placeholderMediaId')}
-                    className="text-xs font-mono bg-white dark:bg-gray-800 h-9 px-3 rounded-lg shadow-sm"
+                    className="text-xs font-mono bg-surface dark:bg-surface h-9 px-3 rounded-lg shadow-sm"
                 />
             )}
         </div>
@@ -123,7 +123,7 @@ export function AudioField({ fieldKey, value, isEditing, onChange }: {
                     value={rawValue}
                     onChange={e => onChange(e.target.value)}
                     placeholder={t('news.placeholderMediaId')}
-                    className="text-xs font-mono bg-white dark:bg-gray-800 h-9 px-3 rounded-lg shadow-sm"
+                    className="text-xs font-mono bg-surface dark:bg-surface h-9 px-3 rounded-lg shadow-sm"
                 />
             )}
         </div>
@@ -191,7 +191,7 @@ export function GalleryField({ fieldKey, value, isEditing, onChange }: {
                     }}
                     rows={4}
                     placeholder='["https://url1.jpg", "https://url2.jpg"]'
-                    className="w-full text-xs font-mono bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 resize-none shadow-sm focus:ring-2 focus:ring-primary-500/20"
+                    className="w-full text-xs font-mono bg-surface px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 resize-none shadow-sm focus:ring-2 focus:ring-primary-500/20"
                 />
             )}
         </div>

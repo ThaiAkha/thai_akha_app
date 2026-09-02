@@ -104,7 +104,7 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
       </div>
 
       {activeTab !== 'dashboard' && viewMode === 'planner' && Object.keys(formState).length > 0 && (
-        <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-surface">
           {activeTab === 'teacher' ? (
             <Button
               variant="primary"

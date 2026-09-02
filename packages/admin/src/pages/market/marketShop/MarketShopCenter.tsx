@@ -50,7 +50,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
               <div className="grid grid-cols-1 gap-8 max-w-xl mx-auto">
                 {/* LOGISTICS CARD */}
                 {allowedScopes.includes('logistics') && (
-                <div className="group p-8 rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary-500/50 transition-all duration-300">
+                <div className="group p-8 rounded-3xl bg-surface border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary-500/50 transition-all duration-300">
                   <div className="flex items-center gap-5 mb-8">
                     <div className="size-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-500">
                       <Truck className="w-8 h-8" />
@@ -81,7 +81,7 @@ export const MarketShopCenter: React.FC<{ s: MarketShopState }> = ({ s }) => {
 
                 {/* TEACHER CARD */}
                 {allowedScopes.includes('teacher') && (
-                <div className="group p-8 rounded-3xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-purple-500/50 transition-all duration-300">
+                <div className="group p-8 rounded-3xl bg-surface border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-purple-500/50 transition-all duration-300">
                   <div className="flex items-center gap-5 mb-8">
                     <div className="size-16 rounded-2xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-500">
                       <GraduationCap className="w-8 h-8" />

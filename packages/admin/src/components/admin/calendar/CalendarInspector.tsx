@@ -146,7 +146,7 @@ const CalendarInspector: React.FC<CalendarInspectorProps> = ({
                                                             updateEditState(key, 'reason', e.target.value);
                                                             if (s === 'all') updateEditState('evening_class', 'reason', e.target.value);
                                                         }}
-                                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 p-3 text-sm text-body bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-500"
+                                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 p-3 text-sm text-body bg-surface placeholder-gray-500 dark:placeholder-gray-500"
                                                         placeholder={t('inspector.reasonPlaceholder')}
                                                     />
                                                 </div>

@@ -62,7 +62,7 @@ const InspectorCloseRich: React.FC<InspectorCloseRichProps> = ({ onClose, toolti
           'h-11 w-11 p-0 shadow-sm transition-all active:scale-95 flex items-center justify-center',   // 44px, standard planner
           isEditing
             ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/40'
-            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700',
+            : 'bg-surface dark:bg-surface border-gray-200 dark:border-gray-700',
         )}
       >
         {icon ?? <X className={cn('w-5 h-5', isEditing ? 'text-red-600' : 'text-sub')} />}

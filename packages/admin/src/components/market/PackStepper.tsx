@@ -28,7 +28,7 @@ export const PackStepper: React.FC<PackStepperProps> = ({ qty, onIncrement, onDe
         aria-label="Remove one pack"
         disabled={disabled || qty <= 0}
         onClick={stop(onDecrement)}
-        className={cn(BTN, btnSize, 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sub hover:border-primary-400 hover:text-primary-600 active:scale-95')}
+        className={cn(BTN, btnSize, 'bg-surface border-gray-200 dark:border-gray-700 text-sub hover:border-primary-400 hover:text-primary-600 active:scale-95')}
       >
         <Minus className={icon} />
       </button>

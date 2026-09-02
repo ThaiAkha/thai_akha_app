@@ -162,7 +162,7 @@ const AgencyReports: React.FC = () => {
                         {METRICS.map((metric) => (
                             <div key={metric.id} onClick={() => setSelectedMetric(metric.id)}
                                 className={cn("p-6 rounded-3xl border transition-all cursor-pointer",
-                                    selectedMetric === metric.id ? "bg-white dark:bg-gray-800 border-primary-500 shadow-xl shadow-primary-500/10" : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-300")}>
+                                    selectedMetric === metric.id ? "bg-surface border-primary-500 shadow-xl shadow-primary-500/10" : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-300")}>
                                 <div className="flex justify-between items-start mb-4">
                                     <div className={cn("size-12 rounded-2xl flex items-center justify-center text-white",
                                         selectedMetric === metric.id ? "bg-primary-600 shadow-lg shadow-primary-500/40" : "bg-gray-100 dark:bg-gray-800 text-gray-500")}>{metric.icon}</div>

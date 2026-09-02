@@ -30,7 +30,7 @@ export const LogisticColumn: React.FC<LogisticColumnProps> = ({
     const { t } = useTranslation('logistics');
 
     return (
-        <div className="w-[320px] flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+        <div className="w-[320px] flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 bg-surface shadow-sm overflow-hidden">
             {/* Header */}
             <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
                 <div className="flex items-center gap-2">

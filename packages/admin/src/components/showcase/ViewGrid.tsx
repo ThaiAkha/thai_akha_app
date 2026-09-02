@@ -13,7 +13,7 @@ const ViewGrid: React.FC<ViewGridProps> = ({ components }) => {
                 {components.map((config) => (
                     <div
                         key={config.name}
-                        className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center gap-4 hover:border-primary-500 transition-colors"
+                        className="bg-surface rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center gap-4 hover:border-primary-500 transition-colors"
                     >
                         <SectionTitle as="h4" tone="sub">{config.name}</SectionTitle>
                         <div className="scale-75 origin-center pointer-events-none">

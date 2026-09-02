@@ -28,7 +28,7 @@ const SalaryRoster: React.FC<{ onOpenDriverPayouts?: () => void }> = ({ onOpenDr
     } = useSalaryRoster();
 
     const roleLabel = (r: string) => t(`salary.roles.${r}`, { defaultValue: r });
-    const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
+    const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
 
     const onCreateExpenses = () => {
         const msg = isDryRun

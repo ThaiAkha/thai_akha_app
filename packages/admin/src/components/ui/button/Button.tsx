@@ -75,6 +75,10 @@ const Button: React.FC<ButtonProps> = ({
     <button
       className={cn(
         "relative overflow-hidden isolate inline-flex items-center justify-center gap-2 rounded-xl font-medium",
+        // Ring canonico del focus da tastiera (D5, baseline §10): qui e non nei
+        // 79 call-site, cosi' ogni <Button> lo eredita. Mouse e touch non lo
+        // vedono (focus-visible), quindi la resa a click resta identica.
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900",
         sizeClasses[size],
         variantClasses[variant],
         (disabled || isLoading) && "cursor-not-allowed opacity-50 !scale-100 !translate-y-0",

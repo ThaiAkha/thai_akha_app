@@ -93,7 +93,7 @@ const LogisticReports: React.FC = () => {
                                 type="date"
                                 value={planDate}
                                 onChange={(e) => setPlanDate(e.target.value)}
-                                className="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                                className="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sm text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                             />
                             <Button variant="primary" size="sm" startIcon={<Plus className="w-4 h-4" />} onClick={() => launchNew(planDate)}>{t('buttons.newPlan', { defaultValue: 'New plan' })}</Button>
                         </div>

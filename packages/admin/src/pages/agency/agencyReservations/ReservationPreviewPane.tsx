@@ -21,7 +21,7 @@ export function ReservationPreviewPane({ s }: { s: AgencyReservationsState }) {
 
             <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-100/50 dark:bg-black/20 flex justify-center">
                 {activeBooking ? (
-                    <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                    <div className="w-full max-w-2xl bg-surface rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                         <div className="p-8 md:p-10 space-y-8">
                             {/* Header */}
                             <div className="flex justify-between items-start">

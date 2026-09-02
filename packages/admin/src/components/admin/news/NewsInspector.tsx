@@ -135,7 +135,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                         onChange={e => onRowChange({ ...selectedRow, [col]: e.target.value })}
                         rows={rows}
                         className={cn(
-                            "w-full text-sm font-medium bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 resize-none shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
+                            "w-full text-sm font-medium bg-surface px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 resize-none shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
                             (isReadOnly || !isEditing) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                         )}
                     />
@@ -146,7 +146,7 @@ const NewsInspector: React.FC<NewsInspectorProps> = ({
                         value={stringValue}
                         onChange={e => onRowChange({ ...selectedRow, [col]: e.target.value })}
                         className={cn(
-                            "text-sm font-medium bg-white dark:bg-gray-800 h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
+                            "text-sm font-medium bg-surface dark:bg-surface h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
                             (isReadOnly || !isEditing) && "opacity-60 cursor-not-allowed bg-gray-50/50"
                         )}
                     />

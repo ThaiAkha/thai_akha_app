@@ -45,7 +45,7 @@ export const RunPickerView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                 <button
                                     key={run.id}
                                     onClick={() => selectRun(run)}
-                                    className="group text-left p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 dark:hover:border-primary-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+                                    className="group text-left p-5 rounded-2xl bg-surface border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 dark:hover:border-primary-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
                                 >
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="size-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-colors">

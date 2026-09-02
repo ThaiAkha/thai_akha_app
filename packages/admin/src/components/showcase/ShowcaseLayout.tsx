@@ -119,7 +119,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold uppercase",
                                 currentMode === 'catalog'
-                                    ? "bg-white dark:bg-gray-800 shadow text-title"
+                                    ? "bg-surface shadow text-title"
                                     : "text-sub hover:text-body"
                             )}
                         >
@@ -130,7 +130,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold uppercase",
                                 currentMode === 'playground'
-                                    ? "bg-white dark:bg-gray-800 shadow text-title"
+                                    ? "bg-surface shadow text-title"
                                     : "text-sub hover:text-body"
                             )}
                         >
@@ -141,7 +141,7 @@ const ShowcaseLayout: React.FC<ShowcaseLayoutProps> = ({
                             className={cn(
                                 "p-2 rounded-md transition-all flex items-center gap-2 text-xs font-bold uppercase",
                                 currentMode === 'grid'
-                                    ? "bg-white dark:bg-gray-800 shadow text-title"
+                                    ? "bg-surface shadow text-title"
                                     : "text-sub hover:text-body"
                             )}
                         >

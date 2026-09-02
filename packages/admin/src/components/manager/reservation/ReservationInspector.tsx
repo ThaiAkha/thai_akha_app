@@ -20,7 +20,7 @@ interface ReservationInspectorProps {
 }
 
 /** Tile dell'icona nello stato vuoto: era il div scritto a mano, ora passa da InspectorEmpty. */
-const EMPTY_ICON_TILE = 'size-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center text-sub shadow-sm border border-gray-100 dark:border-gray-700';
+const EMPTY_ICON_TILE = 'size-16 rounded-2xl bg-surface flex items-center justify-center text-sub shadow-sm border border-gray-100 dark:border-gray-700';
 
 /**
  * Pannello destro di ManagerReservation (task #93, B6): sui primitivi `ui/inspector`.

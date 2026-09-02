@@ -63,7 +63,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                             onSelectBooking(item.id);
                         }}
                         className={cn(
-                            "p-3 rounded-xl border transition-all cursor-pointer bg-white dark:bg-gray-800 shadow-sm group",
+                            "p-3 rounded-xl border transition-all cursor-pointer bg-surface shadow-sm group",
                             isSelected
                                 ? "border-primary-500 ring-1 ring-primary-500"
                                 : "border-gray-100 dark:border-gray-700 hover:border-primary-300"

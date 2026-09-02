@@ -150,7 +150,7 @@ export const DriverInspector: React.FC<{ d: DriverReportsState }> = ({ d }) => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <label className="text-xs font-bold uppercase text-sub">pax</label>
-                                        <input type="number" min={0} value={editing.pax} onChange={(e) => d.setEditing({ ...editing, pax: e.target.value })} className="w-20 h-9 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" />
+                                        <input type="number" min={0} value={editing.pax} onChange={(e) => d.setEditing({ ...editing, pax: e.target.value })} className="w-20 h-9 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sm text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" />
                                         <div className="flex-1" />
                                         <Button variant="primary" size="sm" disabled={busy} startIcon={<Check className="w-4 h-4" />} onClick={d.handleSaveEdit}>{t('driverPayouts.save', { defaultValue: 'Save' })}</Button>
                                         <Button variant="outline" size="sm" disabled={busy} startIcon={<X className="w-4 h-4" />} onClick={() => d.setEditing(null)}>{t('driverPayouts.cancel', { defaultValue: 'Cancel' })}</Button>

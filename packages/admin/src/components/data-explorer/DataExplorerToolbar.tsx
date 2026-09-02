@@ -8,7 +8,7 @@ import { cn } from '@thaiakha/shared/lib/utils';
 type ViewMode = 'table' | 'grid';
 
 /** Shared style for all toolbar icon buttons - premium theme */
-const ICON_BTN = "h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sub hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-500/10 primary-btn-animation";
+const ICON_BTN = "h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sub hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-500/10 primary-btn-animation";
 
 /** Shared style for primary action button - premium theme */
 const PRIMARY_BTN = "h-9 px-4 inline-flex items-center gap-2 rounded-lg border border-primary-500 bg-primary-500 text-white text-xs font-black uppercase tracking-widest primary-shadow primary-btn-animation disabled:opacity-50 disabled:cursor-not-allowed";
@@ -82,7 +82,7 @@ const DataExplorerToolbar: React.FC<DataExplorerToolbarProps> = ({
         <div className="h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-2 bg-white dark:bg-gray-950/20 shrink-0">
             {/* 1. View Mode Toggle */}
             {showViewMode && (
-                <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm bg-white dark:bg-gray-800">
+                <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm bg-surface">
                     <Tooltip content={t('explorer.tableView')} position="bottom">
                         <button
                             type="button"

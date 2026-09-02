@@ -96,7 +96,7 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
           'w-full min-h-12 flex items-center gap-3 px-3 rounded-xl border text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-60',
           selected
             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10'
-            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary-300'
+            : 'border-gray-200 dark:border-gray-700 bg-surface hover:border-primary-300'
         )}
       >
         {selected
@@ -109,7 +109,7 @@ export const WorkerSelector: React.FC<WorkerSelectorProps> = ({ roles, value, on
       </button>
 
       {open && (
-        <ul role="listbox" className="absolute z-30 mt-1 w-full max-h-72 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-1">
+        <ul role="listbox" className="absolute z-30 mt-1 w-full max-h-72 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-surface shadow-xl p-1">
           {workers.length === 0 && (
             <li className="px-3 py-3 text-xs font-bold uppercase text-sub">{t('worker.none', { defaultValue: 'No staff for this task' })}</li>
           )}

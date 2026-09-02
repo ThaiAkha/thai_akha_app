@@ -171,7 +171,7 @@ const MediaPinterestCard: React.FC<{ asset: MediaAsset }> = ({ asset }) => {
             <select
               value={pickIdx}
               onChange={e => setPickIdx(Number(e.target.value))}
-              className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-body"
+              className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-body"
             >
               {usages.map((u, i) => <option key={u.url} value={i}>{u.label}</option>)}
             </select>

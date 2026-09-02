@@ -153,7 +153,7 @@ export function ReservationInspectorPane({ s }: { s: AgencyReservationsState }) 
                                                 "flex-1 py-3 rounded-xl text-xs font-black uppercase border transition-all tracking-widest",
                                                 editForm.status === s
                                                     ? "bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-600/20"
-                                                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-sub hover:bg-gray-50"
+                                                    : "bg-surface border-gray-100 dark:border-gray-700 text-sub hover:bg-gray-50"
                                             )}
                                         >
                                             {s}

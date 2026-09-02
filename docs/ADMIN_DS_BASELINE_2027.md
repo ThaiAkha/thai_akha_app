@@ -68,8 +68,8 @@ Nei componenti: `Heading` default→`text-title`, muted→`text-sub` · `Paragra
 | `border-border` | `--border` | `#D6DCDC` | `#4A504F` | bordo soft card, divisore | `border-gray-100 dark:border-gray-800` |
 | `border-border-2` | `--border-2` | `#C2C8C8` | `#5E6464` | input, tabella, separatore forte | `border-gray-200 dark:border-gray-700` |
 
-Cablate in `theme.css:43-47`; nel CSS compilato escono solo se usate (JIT): oggi `bg-surface` 1, `border-border` 1, le altre 0. Le coppie gray a mano restano lecite perche' sono gli stessi hex; la classe semantica e' preferita nel codice nuovo. Attenzione: il body (`index.css:49`) e' `bg-gray-50` (`#E6ECEC`), non `--bg` (`#F6FCFC`): vedi aperti #1.
-Surface 1 in dark = `gray-900`, non `gray-800` (`decisions.md` D2): su `gray-800` il testo secondario scende a 3.10. Oggi `bg-white dark:bg-gray-800` e' ancora su 73 elementi contro 67 `bg-white dark:bg-gray-900` (es. `pages/market/marketRunner/RunPickerView.tsx:47`, `RunShoppingView.tsx:66`): aperti #12.
+Cablate in `theme.css:43-47`; nel CSS compilato escono solo se usate (JIT): dopo #116 (2026-09-02) `bg-surface` e' su 75 righe. Le coppie gray a mano restano lecite perche' sono gli stessi hex; la classe semantica e' preferita nel codice nuovo. Attenzione: il body (`index.css:49`) e' `bg-gray-50` (`#E6ECEC`), non `--bg` (`#F6FCFC`): vedi aperti #1.
+Surface 1 in dark = `gray-900`, non `gray-800` (`decisions.md` D2): su `gray-800` il testo secondario scende a 3.10. Il 2026-09-02 (#116) le 73 coppie `bg-white dark:bg-gray-800` sono passate a `bg-surface`; dove il className entra in un componente con `dark:bg-*` interno (Input, TextArea, Button outline) la forma e' `bg-surface dark:bg-surface`, perche' tailwind-merge deduplica per gruppo+variante e il solo `bg-surface` lascerebbe vivo il `dark:bg-gray-800/20` del componente. Le 67 coppie `bg-white dark:bg-gray-900` restano lecite (stessi hex).
 Non-testo: nessun bordo raggiunge 3.0 (light 1.39/1.69, dark 1.82/2.49). Accettato perche' decorativo; stato e selezione non si comunicano mai col solo bordo (serve icona, fondo o testo).
 
 ## 4. Dove `text-gray-*` resta lecito
@@ -112,7 +112,7 @@ Misura: famiglie Tailwind default (`red|green|amber|orange|blue|purple|emerald|y
 | `Button` primary | `bg-primary-500 text-white hover:bg-primary-600` (`:41`) | 4.66 · hover 6.05 |
 | `Button` outline | `bg-white text-gray-700 ring-gray-700` (`:43`) | 6.03 |
 | `Button` olive (DEFAULT) | `bg #BAD879 text-gray-950`, hover `#9EBF63`, active `#82A64D` (`:49`, `tokens.css:34-36`) | 11.70 · 8.95 · 6.66 (era bianco: 1.59) |
-| `Button` focus | nessun `focus-visible` (`:77`) | aperti #5 |
+| `Button` focus | ring canonico §10 nella base (`Button.tsx:78-81`, dal 2026-09-02 #116): copre i 79 call-site; sulla variante `outline` il ring eredita `ring-inset` della variante (visibile comunque) | - |
 | `ui/badge/Badge` | light/solid x 7 colori, `text-theme-xs` sm / `text-sm` md, `rounded-md` (`:31-38`); 27 file lo importano | tabella §5 |
 | `typography/*` | 7 componenti: `Heading` (5xl..sm, colore default/onDark/brand/muted), `Paragraph` (lg..xs), `SectionTitle` `text-xs` uppercase (`:20`), `Label`, `Caption` `text-xs`, `Badge`, `Numeric` | `Heading` 14 file, `Paragraph` 10, `SectionTitle` 9, `Numeric` 1, `Caption`/`Badge`/`Label` 0 |
 | `InspectorShell` | header `h-16`/`h-20`, `border-gray-200 dark:border-gray-800 bg-gray-50/50` (`:33`); sottotitolo `text-sub` `text-xs` uppercase; chiusura `text-sub` + ring focus ma senza dimensione = target 16px (`:44-49`); `InspectorEmpty` `text-sub` (`:71`, era 1.52); footer `border-gray-100 bg-gray-50/30` (`:78`) | sottotitolo `text-xs font-bold` (12px, `size="sm"`, `:37`) su `gray-50/50` = 4.36 su bianco, 4.28 su `--bg`: FAIL (12px bold non e' testo grande, §0). Fix candidato: `text-body` |
@@ -154,7 +154,7 @@ Fuori dai planner: nessun testo leggibile sotto `text-xs` (12px); `text-[10px]` 
 | Active | `active:scale-95` (card grandi `active:scale-[0.98]`) |
 | Disabled | `disabled:opacity-50 disabled:cursor-not-allowed` |
 | Focus input | oggi `InputField.tsx:44` = `focus:border-green-500 focus:ring-4 ring-green-500/20` (verde Tailwind: `green-500` 108 token in src = border 45 · bg 31 · text 23 · ring 9, la "terza lime"); standard da fissare in aperti #13 |
-| Copertura | `focus-visible:` in 23 file su 310; `Button.tsx` nessuno; `<button>` grezzi 206 in 90 file, 201 senza `focus-visible:` sulla riga |
+| Copertura | `focus-visible:` in 24 file su 310; `Button.tsx` ha il ring canonico nella base (#116, copre 79 call-site); `<button>` grezzi 206 in 90 file, 201 senza `focus-visible:` sulla riga |
 
 Nessun `outline-none` senza rimpiazzo `focus-visible`.
 
@@ -193,17 +193,21 @@ BSD `grep` di macOS non ha `-P`: usare `rg` o `perl -ne`. Contrasto: luminanza r
 | 2 | CHIUSO (#94 il 30/08 + #114 il 02/09): `SectionTitle` a `text-sm`, doppioni `typography/Badge`/`Label` eliminati, `Caption muted` rimossa, i 3 `text-muted` a 12px corretti, `ui/SectionHeader` eliminato (§9) | - | - |
 | 3 | Colori di stato dai default Tailwind invece dei token `sys-*` | tutto `src` | 935 vs 83 (§5); overline `text-xs uppercase tracking-wide*` 230 righe |
 | 4 | `text-[10px]` x18 | `SalaryRoster.tsx:78,88`, `pos/PosClassSidebar.tsx:130`, `salaryRoster/SalarySummary.tsx:27`, `PersonRow.tsx:30,60,65,109`, `common/LeaderHeader.tsx:70`, `WorkerSelector.tsx:126`, `market/ShopItemCard.tsx:86`, `pages/agency/AgencyReports.tsx:169,180,203,219,225,242,263` | 8 file |
-| 5 | Ring `focus-visible` dentro `Button` (copre 79 call-site in una riga) | `ui/button/Button.tsx:77` | copertura 23/310 file |
+| 5 | CHIUSO (#116 il 02/09): ring canonico D5 nella base di `Button` (§6, §10) | - | - |
 | 6 | Touch: chiusura Inspector 16px, `Button` sm 36px, icon-button `size-10` dominante | `InspectorShell.tsx:44-49`, `Button.tsx:34` | standard 44px |
 | 7 | `Card.tsx` padding `p-3/p-5/p-6` (standard `p-4/p-6/p-8`) e hover che scende | `ui/Card.tsx:89-91,99`, `dashboard/BasicCard.tsx:28` | 10 file usano `Card` |
 | 8 | Z-index fuori scala | `AdminChatBox.tsx:98,114,158`, `ui/modal/index.tsx:57,72`, `ui/Tooltip.tsx:58` | 6 righe |
 | 9 | `text-sub`/`text-muted` su superfici tinte (`bg-gray-50/100`, `dark:bg-gray-800`): sotto AA (§2) | audit da fare | nessun conteggio ancora |
 | 10 | 17 `text-gray` "altro": empty state `text-gray-300` (`AgencyNews.tsx:160`, `ReservationInspectorPane.tsx:147`, `ReservationPreviewPane.tsx:99`, `DbContent.tsx:53`, `NewsContent.tsx:62`, `StorageContent.tsx:83`, `RunShoppingView.tsx:144`), kicker `text-gray-600` (`SectionHeader.tsx:20`) | vedi §4 | 2.10 / 4.49 su bianco |
 | 11 | Fase 0 non committata: 172 file modificati in `packages/admin/src` vivono solo nel working tree | `git status packages/admin/src` | revisione avversaria del diff prima del commit |
-| 12 | Surface 1 dark: `bg-white dark:bg-gray-800` su 73 elementi contro 67 `dark:bg-gray-900` (standard §3, D2); su `gray-800` `text-sub` = 3.10 | `pages/market/marketRunner/RunPickerView.tsx:47`, `RunShoppingView.tsx:66` e altri | 73 righe |
+| 12 | CHIUSO (#116 il 02/09): le 73 coppie `dark:bg-gray-800` → `bg-surface` (§3). Nota per #9: nei "well" `bg-gray-50 dark:bg-gray-900` (es. `RunShoppingView.tsx:23`) card e contenitore ora condividono la shade in dark e separano col bordo, come gia' in light; la gerarchia a superfici in dark si recupera con `bg-surface-2`, non tornando a gray-800 | - | - |
 | 13 | Focus input in verde Tailwind (`green-500`, 108 token: border 45 · bg 31 · text 23 · ring 9) invece di `primary`/`sys-*`; nessuno standard di focus per gli input | `form/input/InputField.tsx:44` | decidere il ring (candidati `primary-500/20`, `action-*`) |
 | 14 | Badge ancora sotto AA con la palette v4 (§5): `light.light` 4.34 (11+3 call-site), success light su `--bg` 4.39, error dark su `--surface` 4.48, info dark 3.67, `light.dark` 3.42 e `solid.light` 4.49 (0 call-site: eliminare); InspectorHeader sottotitolo 4.28-4.36 (§6); commento `Badge.tsx:40-45` con i numeri v3 | `ui/badge/Badge.tsx:42,57-58,66`, `InspectorShell.tsx:37` | fix candidati: fondo `/15` in light, `text-green-800`/`red-300` dove serve, sottotitolo `text-body` |
 | 15 | 17 classi che non generano CSS in admin (build pulita 2026-09-02, via `check_tailwind_classes.py` §12): famiglia `blue-light-*` mai definita (`DataExplorerSidebar.tsx:54-56`, `ReportLineMedia.tsx:14`), `animate-in`/`animate-fade-in`/`animate-bounce-slow` senza plugin ne' keyframe (quindi l'entrata pagina `animate-in fade-in` di `PageContainer` dichiarata in §7 NON anima nulla), typo `border-gary-200` (`DemographicCard.tsx:55`), `dark:bg-dark-900` (`PhoneInput.tsx:93`), `bg-secondary-600` (`AkhaPixelPattern.tsx:15`), `focus:border-ring-primary-300` (`FileInput.tsx:12`), `max-h-select` (`MultiSelect.tsx:214`), `text-decoration-none` (`StorageInspector.tsx:141`), `text-theme-base` (`DataCardContent.tsx:26`). Il front ne ha 63 (fuori scope admin: famiglia `sys-*` e opacita' `/N` sui semantici `:root`-only, segnalate a /style) | output completo: lanciare lo script | 17 admin + 63 front |
+
+## Delta v2 → v2.1 (2026-09-02, batch #113-#116)
+
+#113 controllo automatico classi fantasma (`check_tailwind_classes.py`, §12) + nuovo aperto #15 · #114 `ui/SectionHeader` eliminato (§9, aperto #2 chiuso) · #116 ring focus canonico dentro `Button` (aperto #5 chiuso) e superficie dark unica via `bg-surface` (aperto #12 chiuso, regola twMerge in §3).
 
 ## Delta v1 (giu 2026) → v2
 

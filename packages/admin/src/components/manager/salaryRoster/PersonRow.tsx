@@ -19,7 +19,7 @@ interface PersonRowProps {
     roleLabel: (r: string) => string;
 }
 
-const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
+const inputCls = 'h-10 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sm text-title disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500';
 
 /** Un campo importo con etichetta: 4 numeri in fila senza label sono illeggibili. */
 const AmountField: React.FC<{
@@ -72,7 +72,7 @@ const PersonRow: React.FC<PersonRowProps> = ({
                 <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                     {(['bank', 'cash'] as const).map(m => (
                         <button key={m} disabled={locked} onClick={() => onChange({ method: m })}
-                            className={`px-3 h-10 text-xs font-bold uppercase ${draft.method === m ? 'bg-primary-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-500'} disabled:opacity-60`}>
+                            className={`px-3 h-10 text-xs font-bold uppercase ${draft.method === m ? 'bg-primary-600 text-white' : 'bg-surface text-gray-500'} disabled:opacity-60`}>
                             {m === 'bank' ? t('salary.bank', { defaultValue: 'Bank' }) : t('salary.cash', { defaultValue: 'Cash' })}
                         </button>
                     ))}

@@ -41,7 +41,7 @@ export const AgencySearch: React.FC<{ a: AgencyReportsState }> = ({ a }) => {
                 value={a.agencySearch}
                 onChange={(e) => { a.setAgencySearch(e.target.value); a.clearAgencySel(); }}
                 placeholder={t('reports.searchAgency', { defaultValue: 'Search agency…' })}
-                className="w-full h-9 pl-9 pr-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-title placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="w-full h-9 pl-9 pr-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-surface text-sm text-title placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             />
         </div>
     );

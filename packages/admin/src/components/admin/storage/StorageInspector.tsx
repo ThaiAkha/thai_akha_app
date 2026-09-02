@@ -137,7 +137,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                             <div className="grid grid-cols-1 gap-2">
                                 {(selectedFile && selectedFile.metadata?.mimetype?.startsWith('image/')) ? (
                                     <>
-                                        <a href={getFilePreview(selectedFile.name)} download={selectedFile.name} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary-500 transition-colors group text-decoration-none">
+                                        <a href={getFilePreview(selectedFile.name)} download={selectedFile.name} className="flex items-center justify-between p-3 bg-surface rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary-500 transition-colors group text-decoration-none">
                                             <div className="flex items-center gap-3">
                                                 <ImageIcon className="w-4 h-4 text-primary-500" />
                                                 <div className="text-left">
@@ -150,7 +150,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                     </>
                                 ) : (selectedFile && selectedFile.metadata?.mimetype?.startsWith('audio/')) ? (
                                     <>
-                                        <a href={getFilePreview(selectedFile.name)} download={selectedFile.name} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-purple-500 transition-colors group text-decoration-none">
+                                        <a href={getFilePreview(selectedFile.name)} download={selectedFile.name} className="flex items-center justify-between p-3 bg-surface rounded-xl border border-gray-100 dark:border-gray-700 hover:border-purple-500 transition-colors group text-decoration-none">
                                             <div className="flex items-center gap-3">
                                                 <Music className="w-4 h-4 text-purple-500" />
                                                 <div className="text-left">
@@ -162,7 +162,7 @@ const StorageInspector: React.FC<StorageInspectorProps> = ({
                                         </a>
                                     </>
                                 ) : (
-                                    <a href={getFilePreview(selectedFile?.name || '')} download={selectedFile?.name} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-gray-500 transition-colors group text-decoration-none">
+                                    <a href={getFilePreview(selectedFile?.name || '')} download={selectedFile?.name} className="flex items-center justify-between p-3 bg-surface rounded-xl border border-gray-100 dark:border-gray-700 hover:border-gray-500 transition-colors group text-decoration-none">
                                         <div className="flex items-center gap-3">
                                             <FileText className="w-4 h-4 text-gray-500" />
                                             <div className="text-left">

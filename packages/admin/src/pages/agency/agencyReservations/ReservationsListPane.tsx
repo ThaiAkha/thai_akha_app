@@ -27,7 +27,7 @@ export function ReservationsListPane({ s }: { s: AgencyReservationsState }) {
                         placeholder={t('agency.searchPlaceholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border-none rounded-lg text-sm focus:ring-1 focus:ring-primary-500 shadow-sm"
+                        className="w-full pl-9 pr-4 py-2 bg-surface border-none rounded-lg text-sm focus:ring-1 focus:ring-primary-500 shadow-sm"
                     />
                 </div>
             </div>

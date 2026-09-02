@@ -419,6 +419,17 @@ verify_jwt = true
 [functions.send-contact-notification]
 verify_jwt = true
 
+# #122: called by the AFTER INSERT trigger on bookings (agency+confirmed), anon
+# key as Authorization header → JWT ok.
+[functions.send-agency-booking-confirmation]
+verify_jwt = true
+
+# #122: cron-only channel (private.agency_reminder_tick via pg_net) that sends
+# x-agency-cron-secret and NO JWT - same pattern as zoho-create-market-expense.
+# Recorded here so a plain redeploy does not flip it back to true and kill the cron.
+[functions.send-agency-reminder]
+verify_jwt = false
+
 # Market expense has TWO auth channels: staff JWT, or the cron channel that sends
 # x-market-cron-secret (no JWT at all). It was deployed by hand with --no-verify-jwt
 # and the setting lived only on the server: a plain redeploy would have flipped it

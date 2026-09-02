@@ -1,5 +1,10 @@
 # send-contact-notification (#120)
 
+> ✅ **LIVE dal 2026-09-02**: secret `CONTACT_NOTIFY_TO=office@thaiakhakitchen.com`
+> impostato, edge deployata, trigger applicato (migration
+> `20260902250000_contact_notification_trigger.sql`). Test end-to-end riuscito:
+> insert → POST 200 in 3 secondi → riga di prova cancellata.
+
 Un INSERT in `contact_messages` (contact form di thaiakha.com) produce un'email
 alla casella operativa. Prima di questa funzione il messaggio finiva in tabella
 e nessuno lo leggeva.

@@ -13,7 +13,8 @@
  *   - Legal modals (Terms / Privacy)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { Typography, Icon, Button, Card, Modal } from '../ui/index';
 import { Input, PhonePrefixSelect, NationalitySelect } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -112,19 +113,14 @@ const BookingForm: React.FC<BookingFormProps> = ({
 }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [legalModal, setLegalModal]       = useState<'terms' | 'privacy' | null>(null);
-  // Documenti legali dal DB (info_pages, stessa fonte di Terms/Privacy page) —
-  // fetch lazy alla prima apertura del modal, poi restano in stato.
-  const [legalDocs, setLegalDocs] = useState<{ terms: LegalDocument | null; privacy: LegalDocument | null }>({ terms: null, privacy: null });
-  useEffect(() => {
-    if (!legalModal || legalDocs[legalModal]) return;
-    const kind = legalModal;
-    const slug = kind === 'terms' ? 'booking-terms-conditions' : 'privacy-policy';
-    let cancelled = false;
-    getInfoPage(slug).then(doc => {
-      if (!cancelled) setLegalDocs(prev => ({ ...prev, [kind]: doc }));
-    });
-    return () => { cancelled = true; };
-  }, [legalModal, legalDocs]);
+  // Documenti legali dal DB (stessa fonte di Terms/Privacy page) — regola #17: useQuery,
+  // fetch lazy alla prima apertura del modal, poi resta in cache (contenuto pubblico).
+  const legalSlug = legalModal === 'terms' ? 'booking-terms-conditions' : 'privacy-policy';
+  const { data: legalDoc } = useQuery({
+    queryKey: ['info_page', legalSlug],
+    enabled: legalModal !== null,
+    queryFn: (): Promise<LegalDocument | null> => getInfoPage(legalSlug),
+  });
 
   const isActualUser = (userProfile && userProfile.role !== 'guest_virtual') || !!loggedInUserId;
   const canSubmit    = termsAccepted || isActualUser;
@@ -328,8 +324,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
         size="lg"
       >
         {legalModal !== null && (
-          legalDocs[legalModal]
-            ? <LegalContent doc={legalDocs[legalModal]} />
+          legalDoc
+            ? <LegalContent doc={legalDoc} />
             : <InfoContentSkeleton blocks={4} />
         )}
       </Modal>

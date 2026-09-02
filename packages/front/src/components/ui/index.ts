@@ -23,7 +23,6 @@ export { default as Avatar } from './navigation/Avatar';
 export { default as Icon } from './Icon';
 export { default as ShareButton } from './ShareButton';
 export * from './RippleLink';
-export { default as ClassPicker } from '../booking/ClassPicker';
 
 // Media Primitives
 export { default as MediaImage } from '../modal/MediaImage';

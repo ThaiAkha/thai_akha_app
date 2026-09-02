@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from '../ui/Typography';
-import { Icon } from '../ui';
+import { Icon, MediaImage } from '../ui';
 import type { SpicinessLevel } from '@thaiakha/shared/types';
 
 /**
@@ -59,6 +59,19 @@ const SpicySelector: React.FC<SpicySelectorProps> = ({ options, selected, onChan
       >
         <div className="[padding:var(--space-fluid-m)]">
 
+          {/* Level photo — resolved from media_assets via photo_asset_id; url from the
+              service embed shows it instantly, the asset fetch enriches alt/caption */}
+          {hasSelection && current?.photo_asset_id && (
+            <MediaImage
+              key={current.photo_asset_id}
+              assetId={current.photo_asset_id}
+              url={current.photo?.image_url}
+              fallbackAlt={current.title}
+              className="[margin-bottom:var(--space-fluid-s)]"
+              imgClassName="aspect-video rounded-2xl"
+            />
+          )}
+
           {/* 5-chip grid — 3 cols on mobile, 5 on sm+ */}
           <div className="grid grid-cols-3 lg:grid-cols-5 [gap:var(--space-fluid-xs)]">
             {levels.map(lvl => {
@@ -69,7 +82,7 @@ const SpicySelector: React.FC<SpicySelectorProps> = ({ options, selected, onChan
                 <button
                   key={lvl.id}
                   onClick={() => onChange(lvl.id)}
-                  className="flex flex-col items-center justify-center [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-xs)] rounded-2xl border transition-all duration-300 hover:scale-[1.03] active:scale-95 !bg-surface !border-border"
+                  className="flex flex-col items-center justify-center [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-xs)] pointer-coarse:min-h-11 rounded-2xl border transition-all duration-300 hover:scale-[1.03] active:scale-95 !bg-surface !border-border"
                   style={isActive ? {
                     backgroundColor: `${lvlColor}12`,
                     borderColor: `${lvlColor}80`,

@@ -39,6 +39,324 @@ export type Database = {
   }
   public: {
     Tables: {
+      _temp_bak_20260902_culture_clinical: {
+        Row: {
+          content: string | null
+          id: string | null
+          slug: string | null
+        }
+        Insert: {
+          content?: string | null
+          id?: string | null
+          slug?: string | null
+        }
+        Update: {
+          content?: string | null
+          id?: string | null
+          slug?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_faq_clinical: {
+        Row: {
+          answer: string | null
+          audience: string[] | null
+          avatar_asset_id: string | null
+          category_id: string | null
+          created_at: string | null
+          cta: Json | null
+          display_order: number | null
+          entity_slug: string | null
+          entity_type: string | null
+          faq_key: string | null
+          faq_style: string | null
+          id: string | null
+          is_active: boolean | null
+          question: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_news_clinical: {
+        Row: {
+          content: string | null
+          excerpt: string | null
+          id: string | null
+          json_ld: Json | null
+          og_title: string | null
+          slug: string | null
+          title: string | null
+        }
+        Insert: {
+          content?: string | null
+          excerpt?: string | null
+          id?: string | null
+          json_ld?: Json | null
+          og_title?: string | null
+          slug?: string | null
+          title?: string | null
+        }
+        Update: {
+          content?: string | null
+          excerpt?: string | null
+          id?: string | null
+          json_ld?: Json | null
+          og_title?: string | null
+          slug?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_recipes_clinical: {
+        Row: {
+          allergen_adaptations: Json | null
+          description: string | null
+          essentials: Json | null
+          id: string | null
+          notes: string | null
+          slug: string | null
+        }
+        Insert: {
+          allergen_adaptations?: Json | null
+          description?: string | null
+          essentials?: Json | null
+          id?: string | null
+          notes?: string | null
+          slug?: string | null
+        }
+        Update: {
+          allergen_adaptations?: Json | null
+          description?: string | null
+          essentials?: Json | null
+          id?: string | null
+          notes?: string | null
+          slug?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_sm_clinical: {
+        Row: {
+          id: string | null
+          page_essentials: Json | null
+          page_slug: string | null
+        }
+        Insert: {
+          id?: string | null
+          page_essentials?: Json | null
+          page_slug?: string | null
+        }
+        Update: {
+          id?: string | null
+          page_essentials?: Json | null
+          page_slug?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_spice_article: {
+        Row: {
+          content: string | null
+          id: string | null
+          json_ld: Json | null
+          slug: string | null
+        }
+        Insert: {
+          content?: string | null
+          id?: string | null
+          json_ld?: Json | null
+          slug?: string | null
+        }
+        Update: {
+          content?: string | null
+          id?: string | null
+          json_ld?: Json | null
+          slug?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_spice_faq: {
+        Row: {
+          answer: string | null
+          audience: string[] | null
+          avatar_asset_id: string | null
+          category_id: string | null
+          created_at: string | null
+          cta: Json | null
+          display_order: number | null
+          entity_slug: string | null
+          entity_type: string | null
+          faq_key: string | null
+          faq_style: string | null
+          id: string | null
+          is_active: boolean | null
+          question: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string | null
+          audience?: string[] | null
+          avatar_asset_id?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          cta?: Json | null
+          display_order?: number | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          faq_key?: string | null
+          faq_style?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          question?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      _temp_bak_20260902_spice_media: {
+        Row: {
+          ai_tool: string | null
+          alt_text: string | null
+          asset_id: string | null
+          caption: string | null
+          content_location: string | null
+          copyright: string | null
+          crawl_priority: number | null
+          created_at: string | null
+          credit: string | null
+          date_taken: string | null
+          file_name: string | null
+          folder_path: string | null
+          height: number | null
+          id: string | null
+          image_url: string | null
+          in_content: boolean | null
+          is_ai_generated: boolean | null
+          key_entities: Json | null
+          license: string | null
+          mime_type: string | null
+          semantic_vector: string | null
+          size_kb: number | null
+          summary_ai: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          width: number | null
+        }
+        Insert: {
+          ai_tool?: string | null
+          alt_text?: string | null
+          asset_id?: string | null
+          caption?: string | null
+          content_location?: string | null
+          copyright?: string | null
+          crawl_priority?: number | null
+          created_at?: string | null
+          credit?: string | null
+          date_taken?: string | null
+          file_name?: string | null
+          folder_path?: string | null
+          height?: number | null
+          id?: string | null
+          image_url?: string | null
+          in_content?: boolean | null
+          is_ai_generated?: boolean | null
+          key_entities?: Json | null
+          license?: string | null
+          mime_type?: string | null
+          semantic_vector?: string | null
+          size_kb?: number | null
+          summary_ai?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          width?: number | null
+        }
+        Update: {
+          ai_tool?: string | null
+          alt_text?: string | null
+          asset_id?: string | null
+          caption?: string | null
+          content_location?: string | null
+          copyright?: string | null
+          crawl_priority?: number | null
+          created_at?: string | null
+          credit?: string | null
+          date_taken?: string | null
+          file_name?: string | null
+          folder_path?: string | null
+          height?: number | null
+          id?: string | null
+          image_url?: string | null
+          in_content?: boolean | null
+          is_ai_generated?: boolean | null
+          key_entities?: Json | null
+          license?: string | null
+          mime_type?: string | null
+          semantic_vector?: string | null
+          size_kb?: number | null
+          summary_ai?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          width?: number | null
+        }
+        Relationships: []
+      }
       agency_invoices: {
         Row: {
           agency_id: string
@@ -5872,7 +6190,6 @@ export type Database = {
           label: string | null
           philosophy_quote: string | null
           photo_asset_id: string | null
-          photo_description: string | null
           subtitle: string | null
           title: string
         }
@@ -5887,7 +6204,6 @@ export type Database = {
           label?: string | null
           philosophy_quote?: string | null
           photo_asset_id?: string | null
-          photo_description?: string | null
           subtitle?: string | null
           title: string
         }
@@ -5902,7 +6218,6 @@ export type Database = {
           label?: string | null
           philosophy_quote?: string | null
           photo_asset_id?: string | null
-          photo_description?: string | null
           subtitle?: string | null
           title?: string
         }
@@ -5928,7 +6243,6 @@ export type Database = {
           lang: string
           level_id: number
           philosophy_quote: string | null
-          photo_description: string | null
           source_hash: string | null
           subtitle: string | null
           title: string | null
@@ -5948,7 +6262,6 @@ export type Database = {
           lang: string
           level_id: number
           philosophy_quote?: string | null
-          photo_description?: string | null
           source_hash?: string | null
           subtitle?: string | null
           title?: string | null
@@ -5968,7 +6281,6 @@ export type Database = {
           lang?: string
           level_id?: number
           philosophy_quote?: string | null
-          photo_description?: string | null
           source_hash?: string | null
           subtitle?: string | null
           title?: string | null

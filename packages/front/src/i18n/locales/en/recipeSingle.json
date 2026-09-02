@@ -10,6 +10,8 @@
   "secretChef": "Ingredient details are kept as our Chef's secret.",
   "closeDetails": "Close Details",
   "backToRecipes": "Back to Recipes",
+  "subRecipeHowTo": "How to Make the Paste",
+  "backToParent": "Back to {{name}}",
   "notFound": "Recipe Not Found",
   "dishAdded": "Dish added to your collection",
   "reserveMenu": "Reserve for your Menu",

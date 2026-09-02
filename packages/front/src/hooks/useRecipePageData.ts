@@ -39,6 +39,12 @@ const NO_INGREDIENTS: IngredientDetail[] = [];
 export const recipeBySlugQueryKey = (slug: string) => ['recipe', slug] as const;
 export const ingredientsLibraryQueryKey = ['ingredients_library'] as const;
 
+/** Voce di recipes.linked_sub_recipes (JSONB): sub-ricetta collegata (es. curry → paste). #4 */
+export interface SubRecipeLink {
+  slug: string;
+  label: string;
+}
+
 export interface UseRecipePageDataResult {
   recipe: RecipeData | null;
   recipeRaw: Record<string, unknown> | null;
@@ -57,6 +63,10 @@ export interface UseRecipePageDataResult {
   activeConflicts: Array<{ allergen: string; warning: string }>;
   /** Pre-resolved spice level record (all fields) — avoids extra Supabase call in RecipeEssentials */
   spiceLevel: Record<string, unknown> | null;
+  /** Sub-ricette collegate (recipes.linked_sub_recipes, es. curry → curry paste). #4 */
+  subRecipeLinks: SubRecipeLink[];
+  /** Ricetta madre quando questa e' una sub-ricetta (is_sub_recipe): lookup inverso su linked_sub_recipes. #4 */
+  parentRecipe: Record<string, unknown> | null;
   loading: boolean;
   /** Nav data (prev/next/all recipes) is still loading — RecipeNav disabled meanwhile */
   navLoading: boolean;
@@ -250,6 +260,29 @@ export function useRecipePageData(
     return adaptRecipeToDiet(mapped, activeDiet, activeAllergies, profiles);
   }, [recipeRaw, activeDiet, activeAllergies, profiles]);
 
+  // Link curry → paste: voci valide di linked_sub_recipes (slug obbligatorio). #4
+  const subRecipeLinks = useMemo<SubRecipeLink[]>(() => {
+    const raw = recipeRaw?.linked_sub_recipes;
+    if (!Array.isArray(raw)) return [];
+    return (raw as Array<{ slug?: string; label?: string }>)
+      .filter((s): s is { slug: string; label?: string } => typeof s?.slug === 'string' && s.slug.length > 0)
+      .map(s => ({ slug: s.slug, label: s.label ?? '' }));
+  }, [recipeRaw]);
+
+  // Ritorno paste → curry: la madre e' la ricetta il cui linked_sub_recipes contiene questo slug.
+  // Derivazione client-side su allRecipesRaw (gia' in cache), nessuna query extra. #4
+  const parentRecipe = useMemo<Record<string, unknown> | null>(() => {
+    if (!recipeRaw?.is_sub_recipe) return null;
+    const mySlug = recipeRaw.slug as string | undefined;
+    if (!mySlug) return null;
+    return (
+      allRecipesRaw.find(r => {
+        const subs = r.linked_sub_recipes;
+        return Array.isArray(subs) && (subs as Array<{ slug?: string }>).some(s => s?.slug === mySlug);
+      }) ?? null
+    );
+  }, [recipeRaw, allRecipesRaw]);
+
   const { previous, next } = useMemo(() => {
     if (!recipeRaw || !allRecipesRaw.length) return { previous: null, next: null };
     const currentIndex = allRecipesRaw.findIndex(r => r.id === recipeRaw.id);
@@ -347,6 +380,8 @@ export function useRecipePageData(
     audioAsset,
     activeConflicts,
     spiceLevel,
+    subRecipeLinks,
+    parentRecipe,
     loading,
     navLoading: allQ.isPending,
   };

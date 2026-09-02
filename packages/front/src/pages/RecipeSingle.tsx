@@ -40,6 +40,8 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
     audioAsset,
     activeConflicts,
     spiceLevel,
+    subRecipeLinks,
+    parentRecipe,
     loading,
     navLoading,
   } = useRecipePageData(slug, userProfile);
@@ -209,6 +211,46 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
               <RecipeSection sectionId="recipe_single_directions">
                 <DirectionsSteps steps={recipe.directions} />
               </RecipeSection>
+            </div>
+          )}
+
+          {/* ── Sub-ricette (curry ⇄ paste, DB-driven) — link paste da linked_sub_recipes,
+              ritorno alla ricetta madre sulle sub-ricette (is_sub_recipe). #4 */}
+          {(subRecipeLinks.length > 0 || parentRecipe) && (
+            <div className="flex flex-wrap justify-center [gap:var(--space-fluid-s)]">
+              {subRecipeLinks.map(link => (
+                <Button
+                  key={link.slug}
+                  as="a"
+                  href={`/authentic-thai-akha-recipes/${link.slug}`}
+                  variant="brand"
+                  icon="skillet"
+                  className="pointer-coarse:min-h-11"
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    if (e.metaKey || e.ctrlKey) return; // nuova scheda nativa
+                    e.preventDefault();
+                    onNavigate?.('recipes', undefined, link.slug);
+                  }}
+                >
+                  {link.label || t('recipeSingle:subRecipeHowTo')}
+                </Button>
+              ))}
+              {parentRecipe && (
+                <Button
+                  as="a"
+                  href={`/authentic-thai-akha-recipes/${(parentRecipe.slug as string) || (parentRecipe.id as string)}`}
+                  variant="mineral"
+                  icon="arrow_back"
+                  className="pointer-coarse:min-h-11"
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    if (e.metaKey || e.ctrlKey) return; // nuova scheda nativa
+                    e.preventDefault();
+                    onNavigate?.('recipes', undefined, (parentRecipe.slug as string) || (parentRecipe.id as string));
+                  }}
+                >
+                  {t('recipeSingle:backToParent', { name: parentRecipe.name as string })}
+                </Button>
+              )}
             </div>
           )}
 

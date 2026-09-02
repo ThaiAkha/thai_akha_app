@@ -4,6 +4,7 @@ import GalleryModal from '../modal/GalleryModal';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { sanitizeHtml } from '../../lib/sanitizeHtml';
 import { useRecipeView } from './recipeView/useRecipeView';
+import { CHERRY_AVATAR_SRC, CHERRY_SMALL_AVATAR_BG } from '../chat/ChatIdentityHeader';
 import type { RecipeData, CategoryData, IngredientDetail } from './recipeView/types';
 
 // Tipi ri-esportati (consumer esistenti importano da qui). Logica in ./recipeView/useRecipeView (#16 split).
@@ -137,8 +138,12 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               <button onClick={() => toggleAudio('story')} className={cn("flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all bg-surface", activeAudio === 'story' ? "bg-primary/20 border-primary text-primary animate-pulse" : "border-white/10 text-gray-700 dark:text-gray-300")}>
                  <Icon name="graphic_eq" size="md" /><span className="text-[9px] font-black uppercase tracking-widest">Story</span>
               </button>
-              <button onClick={handleAskCherry} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-action/10 border border-action/20 text-action hover:bg-action hover:text-white transition-all shadow-sm">
-                 <Icon name="chat" size="md" /><span className="text-[9px] font-black uppercase tracking-widest">Ask Cherry</span>
+              {/* Voce brand Cherry (#4): gradiente + avatar canonico come CherryPill/FAB, evento trigger-chat-topic invariato */}
+              <button onClick={handleAskCherry} aria-label="Ask Cherry" className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-[image:var(--cherry-btn-grad)] text-white ring-2 ring-cherry-ai/30 shadow-glow-cherry-ai hover:scale-[1.02] active:scale-95 transition-all">
+                 <span className={cn('size-8 rounded-full overflow-hidden', CHERRY_SMALL_AVATAR_BG)}>
+                    <img src={CHERRY_AVATAR_SRC} alt="" loading="lazy" className="w-full h-full object-cover" />
+                 </span>
+                 <Typography as="span" variant="microLabel" className="text-white font-black uppercase tracking-widest">Ask Cherry</Typography>
               </button>
            </div>
         </div>

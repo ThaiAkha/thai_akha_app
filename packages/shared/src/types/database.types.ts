@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       agency_invoices: {
@@ -1527,6 +1552,7 @@ export type Database = {
           theme_color: string | null
           title: string
           unit: string | null
+          youtube_video_id: string | null
         }
         Insert: {
           badge?: string | null
@@ -1552,6 +1578,7 @@ export type Database = {
           theme_color?: string | null
           title: string
           unit?: string | null
+          youtube_video_id?: string | null
         }
         Update: {
           badge?: string | null
@@ -1577,6 +1604,7 @@ export type Database = {
           theme_color?: string | null
           title?: string
           unit?: string | null
+          youtube_video_id?: string | null
         }
         Relationships: [
           {
@@ -3902,6 +3930,7 @@ export type Database = {
           tag_badge: string | null
           title: string
           updated_at: string | null
+          youtube_video_id: string | null
         }
         Insert: {
           audio_asset_id?: string | null
@@ -3925,6 +3954,7 @@ export type Database = {
           tag_badge?: string | null
           title: string
           updated_at?: string | null
+          youtube_video_id?: string | null
         }
         Update: {
           audio_asset_id?: string | null
@@ -3948,6 +3978,7 @@ export type Database = {
           tag_badge?: string | null
           title?: string
           updated_at?: string | null
+          youtube_video_id?: string | null
         }
         Relationships: [
           {
@@ -6583,6 +6614,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

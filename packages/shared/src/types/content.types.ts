@@ -184,6 +184,8 @@ export interface CookingClassDB {
   capacity_text?: string | null;
   /** Immagine hero della pagina classe (HeroContent). URL Storage diretta. */
   image_url?: string | null;
+  /** Id YouTube del video della classe (solo id, non URL). NULL = nessun video. #117 */
+  youtube_video_id?: string | null;
   description?: string | null;
   highlights?: string[] | null;
   schedule_items?: Record<string, unknown>[] | null;

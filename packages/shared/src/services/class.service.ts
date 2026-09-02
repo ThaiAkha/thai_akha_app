@@ -6,7 +6,7 @@ export const classService = {
 
     /** 🍲 COOKING CLASSES: info corsi (marketing). Prezzo dalla FONTE UNICA class_sessions. */
     async getCookingClasses(): Promise<CookingClassDB[]> {
-        const data = await fetchWithCache<CookingClassDB[]>('cooking_classes_v4', async () => {
+        const data = await fetchWithCache<CookingClassDB[]>('cooking_classes_v5', async () => {
             // Solo colonne UI realmente renderizzate. Esclusi i campi server-only
             // (semantic_vector, key_entities, summary_ai) e i cherry_* (Cherry usa il
             // modulo statico cherryKnowledge/classes.ts, non questa query).
@@ -17,7 +17,7 @@ export const classService = {
             const [ccRes, csRes] = await Promise.all([
                 supabase
                     .from('cooking_classes')
-                    .select('id, title, badge, tags, currency, unit, theme_color, duration_text, tagline, capacity_text, cover:media_assets!cover_asset_id(image_url, alt_text), description, highlights, schedule_items, inclusions, is_active, created_at'),
+                    .select('id, title, badge, tags, currency, unit, theme_color, duration_text, tagline, capacity_text, cover:media_assets!cover_asset_id(image_url, alt_text), description, highlights, schedule_items, inclusions, is_active, created_at, youtube_video_id'),
                 supabase.from('class_sessions').select('id, price_thb'),
             ]);
 

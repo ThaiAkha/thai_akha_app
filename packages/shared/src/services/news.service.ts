@@ -58,7 +58,7 @@ export const newsService = {
         if (sectionIds.length === 0) return [];
         const { data, error } = await supabase
             .from('page_sections')
-            .select('section_id, title, subtitle, description, highlight, tag_badge, image_asset_id, button_text, button_link_url, open_in_new_tab, cherry_prompt, cherry_response, bullets, cards')
+            .select('section_id, title, subtitle, description, highlight, tag_badge, image_asset_id, button_text, button_link_url, open_in_new_tab, cherry_prompt, cherry_response, bullets, cards, youtube_video_id')
             .in('section_id', sectionIds);
         if (error) { console.error('[newsService] getPageSections:', error); throw error; }
         return (data ?? []) as T[];

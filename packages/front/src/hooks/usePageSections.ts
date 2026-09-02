@@ -48,6 +48,8 @@ export interface PageSectionData {
   bullets?: string[] | null;
   /** Stat card CMS - jsonb array. */
   cards?: PageSectionCard[] | null;
+  /** Id YouTube del video della sezione (gemello di image/audio_asset_id). #117 */
+  youtube_video_id?: string | null;
 }
 
 /** Metadata di pagina (site_metadata): stesso tipo/chiave di usePageMetadata. */

@@ -21,7 +21,7 @@ interface InfoClassesProps {
 
 const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
   const { sections: pageSections, metadata: classesMetadata, loading: sectionsLoading } = usePageSections(CLASSES_SECTION_IDS, { metadataSlug: 'thai-cooking-classes-chiang-mai' });
-  const { featuredNews, reasons, loading } = useClassOverviewExtras();
+  const { featuredNews, reasons, classVideoIds, loading } = useClassOverviewExtras();
   // Blocco confronto Morning vs Evening — dati dalla media asset
   const { asset: compareAsset } = useMediaAsset({ assetId: 'classes-compare-cover-01' });
   const [comparePhotoOpen, setComparePhotoOpen] = useState(false);
@@ -29,6 +29,12 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
 
   const pageLoading = sectionsLoading || loading;
   const pageMetadata = classesMetadata;
+
+  // #117: griglia video "Kitchen Spirit" dal DB - i video di classe (morning, evening)
+  // da cooking_classes.youtube_video_id + il video della sezione (Meet Cherry / how to
+  // book) da page_sections.class-03.youtube_video_id. Fallback = nessun video.
+  const sectionVideoId = pageSections['class-03']?.youtube_video_id;
+  const videoIds = sectionVideoId ? [...classVideoIds, sectionVideoId] : classVideoIds;
 
 
   return (
@@ -229,13 +235,15 @@ const InfoClasses: React.FC<InfoClassesProps> = ({ onNavigate }) => {
               gradientTo="action"
             />
 
-            <div className="w-full">
-              <div className="grid grid-cols-1 md:grid-cols-3 [gap:var(--space-fluid-m)]">
-                <VideoPlayer videoId="m3Sag54Scv0" title={t('alt:classVideo')} />
-                <VideoPlayer videoId="j7kN7fw5OfY" title={t('alt:classVideo')} />
-                <VideoPlayer videoId="xrkjHUSCAN0" title={t('alt:classVideo')} />
+            {videoIds.length > 0 && (
+              <div className="w-full">
+                <div className="grid grid-cols-1 md:grid-cols-3 [gap:var(--space-fluid-m)]">
+                  {videoIds.map((id) => (
+                    <VideoPlayer key={id} videoId={id} title={t('alt:classVideo')} />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </section>
         </ScrollEntrance>
 

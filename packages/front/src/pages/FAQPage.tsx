@@ -216,8 +216,8 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
             className="hidden lg:flex lg:sticky lg:top-[var(--space-fluid-l)]"
           />
 
-          {/* Destra: accordion categorie — measure di lettura 72ch, come i documenti legali del trio */}
-          <div className="flex flex-col [gap:var(--space-fluid-xl)] min-w-0 max-w-[72ch]">
+          {/* Destra: accordion categorie — riempie la track (cap 4xl = standard lettura app, come i documenti legali del trio) */}
+          <div className="flex flex-col [gap:var(--space-fluid-xl)] min-w-0 max-w-4xl">
           {loading ? (
             <InfoContentSkeleton blocks={6} />
           ) : (

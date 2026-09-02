@@ -35,8 +35,8 @@ const LegalDocumentStaticViewer: React.FC<LegalDocumentStaticViewerProps> = ({
       )}
 
       {/* Content */}
-      {/* Content — larghezza di lettura limitata (~72ch): evita righe troppo lunghe su tablet landscape */}
-      <div className="flex flex-col [gap:var(--space-fluid-l)] max-w-[72ch]">
+      {/* Content — riempie la colonna della griglia; cap 4xl (standard lettura app) evita righe troppo lunghe su tablet landscape */}
+      <div className="flex flex-col [gap:var(--space-fluid-l)] max-w-4xl">
         {doc.sections.map((section, i) => (
           <SectionBlock key={i} section={section} index={i} accent={accent} />
         ))}

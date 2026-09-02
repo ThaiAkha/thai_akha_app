@@ -139,22 +139,23 @@ const HomePage: React.FC<{ onNavigate: (p: string, t?: string, s?: string) => vo
                   {cards.map((card, idx) => {
                     // card_id e' nullable nel tipo: una card senza id non e' renderizzabile
                     if (!card.card_id) return null;
-                    // Card 0-2 verticali a mezza colonna; card 3-4 orizzontali SEMPRE a
-                    // tutta larghezza su mobile (a mezza colonna l'immagine w-32 lasciava
-                    // ~30px al testo e il bottone collassava a 16px). Desktop invariato.
+                    // Variante dal DB (card_type); fallback = posizione storica (0-2 verticali,
+                    // 3-4 orizzontali). Le orizzontali SEMPRE a tutta larghezza su mobile
+                    // (a mezza colonna l'immagine w-32 lasciava ~30px al testo e il bottone
+                    // collassava a 16px); col-span segue la variante, non l'indice. #5
+                    const cardLayout = card.card_type ?? (idx < 3 ? 'vertical' : 'horizontal');
                     const colClass = cn(
-                      idx < 3 ? 'md:col-span-2' : 'md:col-span-3',
-                      idx >= 3 ? 'col-span-2' : 'col-span-1'
+                      cardLayout === 'vertical' ? 'md:col-span-2' : 'md:col-span-3',
+                      cardLayout === 'horizontal' ? 'col-span-2' : 'col-span-1'
                     );
 
                     return (
                       <div key={card.card_id} className={colClass}>
                         {/* Single DOM instance for every card — no responsive dual-render.
-                            Cards 0-2: vertical; cards 3-4: horizontal (same on mobile+desktop).
                             Eliminates T01/T05 pickup-text duplication and D04 duplicate H3. */}
                         <SmartHomeCard
                           cardId={card.card_id}
-                          layout={idx < 3 ? 'vertical' : 'horizontal'}
+                          layout={cardLayout}
                           showDivider={true}
                           onNavigate={onNavigate}
                           buttonSize="xs"

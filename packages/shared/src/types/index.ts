@@ -411,6 +411,8 @@ export interface FrontHomeCard {
   description: string;
   link_label: string;
   target_path: string;
+  /** Variante di resa scelta dal DB ('vertical' | 'horizontal'). Assente/null → decide il caller. */
+  card_type?: 'vertical' | 'horizontal' | null;
   image_asset_id?: string | null;
   cover_data?: {
     image_url: string;

@@ -38,6 +38,10 @@ const SmartHomeCard: React.FC<SmartHomeCardProps> = ({
 
   if (!cardData) return null;
 
+  // Variante dal DB (home_cards_front.card_type) quando presente; la prop `layout`
+  // resta come fallback per le card senza valore. #5
+  const effectiveLayout = cardData.card_type ?? layout;
+
   // Map database data to InfoCard format
   const mappedCard = {
     id: cardData.card_id ?? undefined,
@@ -69,7 +73,7 @@ const SmartHomeCard: React.FC<SmartHomeCardProps> = ({
     <div className={className}>
       <InfoCard
         card={mappedCard}
-        layout={layout}
+        layout={effectiveLayout}
         aspectRatio={aspectRatio}
         onNavigate={onNavigate}
         showDivider={showDivider}

@@ -2725,6 +2725,7 @@ export type Database = {
       home_cards_front: {
         Row: {
           card_id: string | null
+          card_type: string
           created_at: string | null
           description: string | null
           display_order: number | null
@@ -2742,6 +2743,7 @@ export type Database = {
         }
         Insert: {
           card_id?: string | null
+          card_type?: string
           created_at?: string | null
           description?: string | null
           display_order?: number | null
@@ -2759,6 +2761,7 @@ export type Database = {
         }
         Update: {
           card_id?: string | null
+          card_type?: string
           created_at?: string | null
           description?: string | null
           display_order?: number | null

@@ -59,7 +59,7 @@ const SpicySelector: React.FC<SpicySelectorProps> = ({ options, selected, onChan
       >
         <div className="[padding:var(--space-fluid-m)]">
 
-          {/* Level photo — resolved from media_assets via photo_asset_id; url from the
+          {/* Level photo - resolved from media_assets via photo_asset_id; url from the
               service embed shows it instantly, the asset fetch enriches alt/caption */}
           {hasSelection && current?.photo_asset_id && (
             <MediaImage

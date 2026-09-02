@@ -10,6 +10,8 @@
   "secretChef": "食材の詳細はシェフの秘密です。",
   "closeDetails": "詳細を閉じる",
   "backToRecipes": "レシピに戻る",
+  "subRecipeHowTo": "カレーペーストの作り方",
+  "backToParent": "{{name}}に戻る",
   "notFound": "レシピが見つかりません",
   "dishAdded": "コレクションに料理を追加しました",
   "reserveMenu": "マイメニューに入れる",

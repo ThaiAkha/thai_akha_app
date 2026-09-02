@@ -10,6 +10,8 @@
   "secretChef": "De ingrediëntdetails blijven het geheim van onze chef.",
   "closeDetails": "Details sluiten",
   "backToRecipes": "Terug naar recepten",
+  "subRecipeHowTo": "Zo maak je de currypasta",
+  "backToParent": "Terug naar {{name}}",
   "notFound": "Recept niet gevonden",
   "dishAdded": "Gerecht toegevoegd aan je collectie",
   "reserveMenu": "Reserveer voor je menu",

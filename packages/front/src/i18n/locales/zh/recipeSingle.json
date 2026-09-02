@@ -10,6 +10,8 @@
   "secretChef": "食材细节是我们主厨的秘密。",
   "closeDetails": "关闭详情",
   "backToRecipes": "返回食谱",
+  "subRecipeHowTo": "咖喱酱制作方法",
+  "backToParent": "返回{{name}}",
   "notFound": "未找到食谱",
   "dishAdded": "菜品已加入你的收藏",
   "reserveMenu": "为你的菜单预留",

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography } from '../ui/index';
 import { BookingSummaryPills } from './BookingSummaryPills';
+import { t } from '../../i18n';
 
 interface BookingStickyFooterProps {
   viewStep: string;
@@ -45,13 +46,13 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
         {pax > 0 && (
           <div className="flex items-center justify-between w-full border-t border-border/50 [padding-top:var(--space-fluid-m)] px-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="flex flex-col text-left">
-              <Typography variant="microLabel" color="muted" className="[margin-bottom:var(--space-fluid-2xs)]">Totale Prenotazione</Typography>
+              <Typography variant="microLabel" color="muted" className="[margin-bottom:var(--space-fluid-2xs)]">{t('booking:stickyTotal')}</Typography>
               <Typography variant="numericPrice" color="title">
-                {finalPrice.toLocaleString()} <Typography variant="microLabel" as="span" className="opacity-40">THB</Typography>
+                {finalPrice.toLocaleString()} <Typography variant="microLabel" as="span" className="opacity-40">{t('booking:thb')}</Typography>
               </Typography>
               {visitors > 0 && (
                 <Typography variant="microLabel" color="muted" className="[margin-top:var(--space-fluid-2xs)]">
-                  + {visitors} accompagnatore{visitors > 1 ? 'i' : ''} (nessun costo extra)
+                  {visitors > 1 ? t('booking:visitorsNoCostMany', { count: visitors }) : t('booking:visitorsNoCostOne')}
                 </Typography>
               )}
             </div>
@@ -64,7 +65,7 @@ export const BookingStickyFooter: React.FC<BookingStickyFooterProps> = ({
               icon="arrow_forward"
               className="px-10 md:px-16 h-14 md:h-16 text-base md:text-xl shadow-action-glow transition-all active:scale-95 rounded-full font-black min-w-[160px] md:min-w-[200px]"
             >
-              Conferma e Continua
+              {t('booking:confirmContinue')}
             </Button>
           </div>
         )}

@@ -10,6 +10,8 @@
   "secretChef": "I dettagli degli ingredienti restano il segreto del nostro Chef.",
   "closeDetails": "Chiudi dettagli",
   "backToRecipes": "Torna alle ricette",
+  "subRecipeHowTo": "Come preparare la pasta di curry",
+  "backToParent": "Torna a {{name}}",
   "notFound": "Ricetta non trovata",
   "dishAdded": "Piatto aggiunto alla tua collezione",
   "reserveMenu": "Riservalo per il tuo menu",

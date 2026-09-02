@@ -10,6 +10,8 @@
   "secretChef": "Els detalls dels ingredients són el secret del nostre Xef.",
   "closeDetails": "Tanca els detalls",
   "backToRecipes": "Torna a les receptes",
+  "subRecipeHowTo": "Com fer la pasta de curri",
+  "backToParent": "Torna a {{name}}",
   "notFound": "Recepta no trobada",
   "dishAdded": "Plat afegit a la teva col·lecció",
   "reserveMenu": "Reserva'l per al teu menú",

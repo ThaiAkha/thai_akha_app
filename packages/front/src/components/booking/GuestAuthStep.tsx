@@ -8,6 +8,7 @@ import React from 'react';
 import { Typography, Icon, Card, Button } from '../ui/index';
 import { Input } from '../ui/form';
 import type { AuthMode, BookingFormData } from './booking.types';
+import { t } from '../../i18n';
 
 interface GuestAuthStepProps {
   authMode:                AuthMode;
@@ -41,10 +42,10 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
               <Icon name="person" size="xs" className="text-primary" />
             </div>
-            <Typography variant="h5" className="font-black text-title">Existing User</Typography>
+            <Typography variant="h5" className="font-black text-title">{t('booking:existingUser')}</Typography>
           </div>
           <Typography variant="paragraphS" className="opacity-40 font-medium leading-relaxed pl-12">
-            Login with your account.
+            {t('booking:existingUserDesc')}
           </Typography>
         </button>
 
@@ -57,10 +58,10 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
             <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center">
               <Icon name="person_add" size="xs" className="text-title" />
             </div>
-            <Typography variant="h5" className="font-black text-title">New User</Typography>
+            <Typography variant="h5" className="font-black text-title">{t('booking:newUser')}</Typography>
           </div>
           <Typography variant="paragraphS" className="opacity-40 font-medium leading-relaxed pl-12">
-            Create an account &amp; book.
+            {t('booking:newUserDesc')}
           </Typography>
         </button>
       </div>
@@ -70,14 +71,14 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
   // ── Login form ─────────────────────────────────────────────────────────────
   return (
     <Card variant="glass" className="max-w-xl mx-auto p-8 border-border bg-surface/50">
-      <Typography variant="h4" className="italic mb-2">Accesso Utente</Typography>
+      <Typography variant="h4" className="italic mb-2">{t('booking:formTitleLogin')}</Typography>
       <Typography variant="caption" className="opacity-60 [margin-bottom:var(--space-fluid-l)] block">
-        Accedi per sbloccare il tuo profilo e continuare con la prenotazione.
+        {t('booking:loginSubtitle')}
       </Typography>
 
       <div className="space-y-4 [margin-bottom:var(--space-fluid-l)]">
         <Input
-          label="Email"
+          label={t('auth:emailLabel')}
           type="email"
           autoComplete="email"
           value={formData.email}
@@ -87,7 +88,7 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
           leftIcon="mail"
         />
         <Input
-          label="Password"
+          label={t('auth:passwordLabel')}
           type="password"
           autoComplete="current-password"
           value={formData.password}
@@ -105,7 +106,7 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
           onClick={() => setAuthMode('guest')}
           className="flex-1 border-border"
         >
-          Indietro
+          {t('common:back')}
         </Button>
         <Button
           variant="action"
@@ -116,7 +117,7 @@ const GuestAuthStep: React.FC<GuestAuthStepProps> = ({
           icon="login"
           className="flex-1"
         >
-          Accedi
+          {t('user:loginCta')}
         </Button>
       </div>
     </Card>

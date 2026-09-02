@@ -10,6 +10,8 @@
   "secretChef": "รายละเอียดวัตถุดิบเป็นความลับของเชฟเรา",
   "closeDetails": "ปิดรายละเอียด",
   "backToRecipes": "กลับไปที่สูตร",
+  "subRecipeHowTo": "วิธีทำพริกแกง",
+  "backToParent": "กลับไปที่ {{name}}",
   "notFound": "ไม่พบสูตร",
   "dishAdded": "เพิ่มเมนูในคอลเลกชันของคุณแล้ว",
   "reserveMenu": "จองไว้สำหรับเมนูของคุณ",

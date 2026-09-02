@@ -10,6 +10,8 @@
   "secretChef": "Die Zutaten-Details bleiben das Geheimnis unseres Chefs.",
   "closeDetails": "Details schließen",
   "backToRecipes": "Zurück zu den Rezepten",
+  "subRecipeHowTo": "So machst du die Currypaste",
+  "backToParent": "Zurück zu {{name}}",
   "notFound": "Rezept nicht gefunden",
   "dishAdded": "Gericht zu deiner Sammlung hinzugefügt",
   "reserveMenu": "Für dein Menü reservieren",

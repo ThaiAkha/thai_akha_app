@@ -10,6 +10,8 @@
   "secretChef": "Os detalhes dos ingredientes são o segredo do nosso Chef.",
   "closeDetails": "Fechar detalhes",
   "backToRecipes": "Voltar às receitas",
+  "subRecipeHowTo": "Como fazer a pasta de caril",
+  "backToParent": "Voltar a {{name}}",
   "notFound": "Receita não encontrada",
   "dishAdded": "Prato adicionado à sua coleção",
   "reserveMenu": "Reserve para o seu menu",

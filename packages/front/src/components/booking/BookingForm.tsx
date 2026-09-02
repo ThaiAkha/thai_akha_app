@@ -24,6 +24,7 @@ import { InfoContentSkeleton } from '../skeleton';
 import type { BookingFormData, AuthMode, PaymentMethod } from './booking.types';
 import type { UserProfile } from '../../services/auth.service';
 import { sanitizeHtml } from '../../lib/sanitizeHtml';
+import { t } from '../../i18n';
 
 // ─── Mineral select ───────────────────────────────────────────────────────────
 const MineralSelect = ({
@@ -51,7 +52,7 @@ const MineralSelect = ({
 const LegalContent = ({ doc }: { doc: LegalDocument }) => (
   <div className="space-y-6 text-sm">
     <Typography variant="caption" className="not-italic opacity-60">
-      Effective: {new Date(doc.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+      {t('booking:legalEffective', { date: new Date(doc.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) })}
     </Typography>
     {doc.sections?.map((s: LegalDocumentSection, i: number) => (
       <div key={i}>
@@ -134,21 +135,21 @@ const BookingForm: React.FC<BookingFormProps> = ({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center [margin-bottom:var(--space-fluid-l)] [gap:var(--space-fluid-s)]">
         <div>
           <Typography variant="h4" className="italic">
-            {isActualUser ? 'I Tuoi Dati' : (authMode === 'login' ? 'Accesso Utente' : 'Dati Nuovo Utente')}
+            {isActualUser ? t('booking:formTitleUser') : (authMode === 'login' ? t('booking:formTitleLogin') : t('booking:formTitleNew'))}
           </Typography>
           {isActualUser ? (
             <Typography variant="caption" className="not-italic text-action font-bold mt-1 inline-flex items-center gap-1">
-              <Icon name="verified" size="xs" /> Account collegato: {userProfile?.full_name || formData.fullName || 'Utente'}
+              <Icon name="verified" size="xs" /> {t('booking:accountLinked', { name: userProfile?.full_name || formData.fullName || t('booking:userFallback') })}
             </Typography>
           ) : (
             <Typography variant="caption" className="not-italic opacity-60 mt-1">
-              {authMode === 'login' ? 'Accedi per usare il tuo profilo.' : 'Crea un account per completare la prenotazione.'}
+              {authMode === 'login' ? t('booking:loginHint') : t('booking:signupHint')}
             </Typography>
           )}
         </div>
         {!isActualUser && (
           <Button variant="mineral" size="sm" icon="view_list" onClick={onGoBack} className="text-xs h-10 px-4 border-border hover:border-title shrink-0">
-            Indietro
+            {t('common:back')}
           </Button>
         )}
       </div>
@@ -156,10 +157,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
       <div className="space-y-5">
         {/* Row 1: Name + Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 [gap:var(--space-fluid-s)]">
-          <Input label="Full Name" autoComplete="name" value={formData.fullName}
+          <Input label={t('auth:fullNameLabel')} autoComplete="name" value={formData.fullName}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ fullName: e.target.value })}
             disabled={isActualUser} leftIcon="person" />
-          <Input label="Email" type="email" autoComplete="email" value={formData.email}
+          <Input label={t('auth:emailLabel')} type="email" autoComplete="email" value={formData.email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ email: e.target.value })}
             disabled={isActualUser} leftIcon="mail" />
         </div>
@@ -168,16 +169,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
         {/* A 375px la 12-col fissa strozzava i campi (Prefix ~63px): su mobile si impila, da md il layout resta quello di prima */}
         <div className="grid grid-cols-12 [gap:var(--space-fluid-s)] items-start">
           <div className="col-span-5 md:col-span-3 space-y-2">
-            <Typography variant="fieldLabel" className="ml-1 opacity-70">Prefix</Typography>
+            <Typography variant="fieldLabel" className="ml-1 opacity-70">{t('booking:prefixLabel')}</Typography>
             <PhonePrefixSelect value={formData.phonePrefix} onChange={val => update({ phonePrefix: val })} />
           </div>
           <div className="col-span-7 md:col-span-5">
-            <Input label="Phone Number" type="tel" autoComplete="tel-national" placeholder="81 234 5678"
+            <Input label={t('booking:phoneLabel')} type="tel" autoComplete="tel-national" placeholder="81 234 5678"
               value={formData.phoneNumber}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ phoneNumber: e.target.value })} />
           </div>
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Typography variant="fieldLabel" as="label" className="ml-1 opacity-70">WhatsApp</Typography>
+            <Typography variant="fieldLabel" as="label" className="ml-1 opacity-70">{t('booking:whatsappLabel')}</Typography>
             <div className="flex gap-2">
               {([true, false] as const).map(val => (
                 <button key={String(val)} type="button" onClick={() => update({ hasWhatsapp: val })}
@@ -189,7 +190,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                       : 'border-border bg-surface-2 text-muted hover:border-border-2',
                   )}>
                   <span className="text-sm">{val ? '✓' : '✗'}</span>
-                  <Typography variant="microLabel" as="span">{val ? 'Yes' : 'No'}</Typography>
+                  <Typography variant="microLabel" as="span">{val ? t('booking:yes') : t('booking:no')}</Typography>
                 </button>
               ))}
             </div>
@@ -199,28 +200,28 @@ const BookingForm: React.FC<BookingFormProps> = ({
         {/* Row 3: Age + Gender + Nationality */}
         <div className="grid grid-cols-12 [gap:var(--space-fluid-s)] items-start">
           <div className="col-span-4 md:col-span-3">
-            <Input label="Age" type="number" min="0" max="120" placeholder="—"
+            <Input label={t('booking:ageLabel')} type="number" min="0" max="120" placeholder="—"
               value={formData.age}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ age: e.target.value })} />
           </div>
           <div className="col-span-8 md:col-span-4">
-            <MineralSelect label="Gender" value={formData.gender}
+            <MineralSelect label={t('booking:genderLabel')} value={formData.gender}
               onChange={e => update({ gender: e.target.value })}>
-              <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="">{t('common:select')}</option>
+              <option value="male">{t('booking:genderMale')}</option>
+              <option value="female">{t('booking:genderFemale')}</option>
+              <option value="other">{t('booking:genderOther')}</option>
             </MineralSelect>
           </div>
           <div className="col-span-12 md:col-span-5 space-y-2">
-            <Typography variant="fieldLabel" className="ml-1 opacity-70">Nationality</Typography>
+            <Typography variant="fieldLabel" className="ml-1 opacity-70">{t('booking:nationalityLabel')}</Typography>
             <NationalitySelect value={formData.nationality} onChange={code => update({ nationality: code })} />
           </div>
         </div>
 
         {/* Password — new users only */}
         {!userProfile && !loggedInUserId && authMode !== 'login' && (
-          <Input label="Create Password" type="password" autoComplete="new-password" placeholder="Min 6 chars"
+          <Input label={t('auth:createPasswordLabel')} type="password" autoComplete="new-password" placeholder={t('auth:passwordPlaceholder')}
             value={formData.password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => update({ password: e.target.value })}
             leftIcon="lock" />
@@ -232,11 +233,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
             <Icon name="info" className="text-action" size="md" />
           </div>
           <div>
-            <Typography variant="h6" as="p" className="mb-1 font-black text-title">After Registration</Typography>
+            <Typography variant="h6" as="p" className="mb-1 font-black text-title">{t('booking:afterRegTitle')}</Typography>
             <Typography variant="caption" className="not-italic opacity-70 leading-relaxed">
-              Once registered, you'll be able to set your <strong className="text-title">pickup location</strong>,
-              choose your <strong className="text-title">preferred menu</strong>, and access exclusive member
-              benefits — all from your personal dashboard.
+              {t('booking:afterRegDesc')}
             </Typography>
           </div>
         </div>
@@ -255,27 +254,27 @@ const BookingForm: React.FC<BookingFormProps> = ({
             )}
           </button>
           <Typography variant="caption" className="not-italic opacity-70 leading-relaxed">
-            I agree to the{' '}
+            {t('booking:agreeTo')}{' '}
             <button type="button" onClick={() => setLegalModal('terms')}
               className="text-title font-bold underline underline-offset-2 hover:text-action transition-colors cursor-pointer">
-              Terms of Service
+              {t('booking:termsOfService')}
             </button>
-            {' '}and{' '}
+            {' '}{t('booking:andWord')}{' '}
             <button type="button" onClick={() => setLegalModal('privacy')}
               className="text-title font-bold underline underline-offset-2 hover:text-action transition-colors cursor-pointer">
-              Privacy Policy
+              {t('booking:privacyPolicy')}
             </button>
-            . Required to complete your booking.
+            . {t('booking:agreeRequired')}
           </Typography>
         </div>
 
         {/* Payment */}
         <div className="pt-6 border-t border-border mt-6">
           <div className="flex justify-between items-end mb-4">
-            <Typography variant="h6" className="opacity-60">Total Due</Typography>
+            <Typography variant="h6" className="opacity-60">{t('booking:totalDue')}</Typography>
             <Typography variant="h3" className="font-black">
               {finalPrice.toLocaleString()}{' '}
-              <Typography variant="numericRegular" as="span" color="primary" className="text-sm">THB</Typography>
+              <Typography variant="numericRegular" as="span" color="primary" className="text-sm">{t('booking:thb')}</Typography>
             </Typography>
           </div>
 
@@ -284,9 +283,11 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <button type="button" onClick={() => setPaymentMethod('arrival')}
                 className={cn('p-4 rounded-2xl border text-left transition-all cursor-pointer',
                   paymentMethod === 'arrival' ? 'bg-action/10 border-action text-title' : 'bg-surface-2 border-border text-desc hover:bg-surface-2/10')}>
-                <Typography variant="h6" as="div" className="mb-1">Paga all'Arrivo</Typography>
-                <Typography variant="microLabel" as="div" className="opacity-70 normal-case font-medium">Contanti o QR Code</Typography>
+                <Typography variant="h6" as="div" className="mb-1">{t('booking:payOnArrival')}</Typography>
+                <Typography variant="microLabel" as="div" className="opacity-70 normal-case font-medium">{t('booking:payOnArrivalSub')}</Typography>
               </button>
+              {/* #124 (decisione owner aperta): i testi dell'opzione carta restano
+                  hardcoded finche' non si decide se l'opzione sopravvive (#125). */}
               <button type="button" onClick={() => setPaymentMethod('card')}
                 className={cn('p-4 rounded-2xl border text-left transition-all cursor-pointer',
                   paymentMethod === 'card' ? 'bg-primary/10 border-primary text-title' : 'bg-surface-2 border-border text-desc hover:bg-surface-2/10')}>
@@ -298,7 +299,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
           {!canSubmit && authMode === 'guest' && (
             <Typography variant="caption" className="not-italic text-primary/80 text-center mb-3">
-              Please accept the Terms of Service to continue.
+              {t('booking:acceptTermsToContinue')}
             </Typography>
           )}
 
@@ -311,7 +312,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
             icon={paymentMethod === 'card' ? 'credit_card' : 'verified'}
             className="h-16 text-lg shadow-xl"
           >
-            {paymentMethod === 'card' ? 'Paga Ora (Demo)' : 'Conferma Prenotazione'}
+            {/* Ramo carta: testo hardcoded in attesa della #124 (vedi sopra) */}
+            {paymentMethod === 'card' ? 'Paga Ora (Demo)' : t('booking:confirmPayLater')}
           </Button>
         </div>
       </div>
@@ -320,7 +322,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
       <Modal
         isOpen={legalModal !== null}
         onClose={() => setLegalModal(null)}
-        title={legalModal === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+        title={legalModal === 'terms' ? t('booking:termsOfService') : t('booking:privacyPolicy')}
         size="lg"
       >
         {legalModal !== null && (

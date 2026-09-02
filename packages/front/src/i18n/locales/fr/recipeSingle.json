@@ -10,6 +10,8 @@
   "secretChef": "Les détails des ingrédients restent le secret de notre Chef.",
   "closeDetails": "Fermer les détails",
   "backToRecipes": "Retour aux recettes",
+  "subRecipeHowTo": "Comment préparer la pâte de curry",
+  "backToParent": "Retour à {{name}}",
   "notFound": "Recette introuvable",
   "dishAdded": "Plat ajouté à votre collection",
   "reserveMenu": "Réservez-le pour votre menu",

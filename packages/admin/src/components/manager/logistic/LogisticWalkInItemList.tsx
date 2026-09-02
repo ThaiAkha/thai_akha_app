@@ -1,10 +1,12 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Clock, MapPin } from 'lucide-react';
 import Avatar from '../../ui/avatar/Avatar';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
 import BadgeLuggageStatus from '../../ui/badge/BadgeLuggageStatus';
 import Tooltip from '../../ui/Tooltip';
+import Paragraph from '../../typography/Paragraph';
 import { LogisticsItem } from '../../../hooks/useManagerLogistic';
 
 // Helper function to map zone colors to Tailwind classes
@@ -37,6 +39,8 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
     selectedBookingId,
     onSelectBooking
 }) => {
+    const { t } = useTranslation('common');
+
     return (
         <div className="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50/50 dark:bg-gray-900/50 no-scrollbar">
             {items.map((item) => {
@@ -50,10 +54,12 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                             onSelectBooking(item.id);
                         }}
                         className={cn(
-                            "p-3 rounded-xl border transition-all cursor-pointer bg-surface shadow-sm group",
+                            // Standard planner (ADMIN_PLANNER_UX): bordo 1px, niente doppio
+                            // bordo; la selezione si comunica con l'elevazione, non col ring.
+                            "p-3 rounded-xl border transition-all cursor-pointer bg-surface group",
                             isSelected
-                                ? "border-primary-500 ring-1 ring-primary-500"
-                                : "border-gray-100 dark:border-gray-700 hover:border-primary-300"
+                                ? "border-primary-500 shadow-lg"
+                                : "border-gray-100 dark:border-gray-700 hover:border-primary-300 shadow-sm"
                         )}
                     >
                         {/* Row 1: Icon + Name + Badges */}
@@ -66,9 +72,9 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                                 fallbackClassName="bg-orange-100 dark:bg-btn-p-900/30"
                             />
                             <div className="flex-1 min-w-0">
-                                <span className="font-bold text-base text-title truncate">
-                                    {item.guest_name || 'Guest'}
-                                </span>
+                                <Paragraph size="base" className="font-bold text-title truncate">
+                                    {item.guest_name || t('fallback.guest')}
+                                </Paragraph>
                             </div>
                             <div className="flex gap-1">
                                 <BadgeLuggageStatus hasLuggage={item.has_luggage} size="md" />
@@ -91,10 +97,11 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                             </div>
                         )}
 
-                        {/* Row 3: Meeting Time */}
+                        {/* Row 3: Meeting Time (floor 14px del planner, icona al posto dell'emoji) */}
                         {item.pickup_time && (
-                            <div className="text-xs text-sub font-mono">
-                                🕐 {item.pickup_time}
+                            <div className="flex items-center gap-2 text-sm text-sub font-mono">
+                                <Clock className="w-4 h-4 shrink-0" />
+                                {item.pickup_time}
                             </div>
                         )}
                     </div>
@@ -103,7 +110,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
 
             {items.length === 0 && (
                 <div className="h-full flex flex-col items-center justify-center opacity-30 gap-2">
-                    <span className="text-xs font-bold uppercase">Empty</span>
+                    <span className="text-sm font-bold uppercase">{t('fallback.empty')}</span>
                 </div>
             )}
         </div>

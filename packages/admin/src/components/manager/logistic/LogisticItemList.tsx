@@ -6,6 +6,7 @@ import Avatar from '../../ui/avatar/Avatar';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
 import BadgeLuggageStatus from '../../ui/badge/BadgeLuggageStatus';
 import Tooltip from '../../ui/Tooltip';
+import Paragraph from '../../typography/Paragraph';
 import { LogisticsItem, DriverProfile } from '../../../hooks/useManagerLogistic';
 
 export interface LogisticItemListProps {
@@ -63,10 +64,12 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                             onSelectBooking(item.id);
                         }}
                         className={cn(
-                            "p-3 rounded-xl border transition-all cursor-pointer bg-surface shadow-sm group",
+                            // Standard planner (ADMIN_PLANNER_UX): bordo 1px, niente doppio
+                            // bordo; la selezione si comunica con l'elevazione, non col ring.
+                            "p-3 rounded-xl border transition-all cursor-pointer bg-surface group",
                             isSelected
-                                ? "border-primary-500 ring-1 ring-primary-500"
-                                : "border-gray-100 dark:border-gray-700 hover:border-primary-300"
+                                ? "border-primary-500 shadow-lg"
+                                : "border-gray-100 dark:border-gray-700 hover:border-primary-300 shadow-sm"
                         )}
                     >
                         {/* Row 1: Avatar + Name + Badges */}
@@ -75,9 +78,9 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                 <Avatar src={item.avatar_url} alt={item.guest_name} size="medium" />
                             )}
                             <div className="flex-1 min-w-0">
-                                <span className="font-bold text-base text-title truncate">
+                                <Paragraph size="base" className="font-bold text-title truncate">
                                     {item.guest_name || t('fallback.guest')}
-                                </span>
+                                </Paragraph>
                             </div>
                             <div className="flex gap-1">
                                 <BadgeLuggageStatus hasLuggage={item.has_luggage} size="md" />
@@ -101,7 +104,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                         )}
 
                         {/* Row 3: Move Buttons */}
-                        <div className="flex gap-1.5 mb-2">
+                        <div className="flex gap-1.5">
                             <button
                                 type="button"
                                 onClick={(e) => {
@@ -110,7 +113,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                 }}
                                 disabled={isFirst}
                                 className={cn(
-                                    "h-9 w-9 flex items-center justify-center rounded-lg text-sm font-bold transition-colors shrink-0",
+                                    "size-11 flex items-center justify-center rounded-lg text-sm font-bold transition-colors shrink-0",
                                     isFirst
                                         ? "bg-gray-100 dark:bg-gray-700 text-muted cursor-not-allowed"
                                         : "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
@@ -126,7 +129,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                 }}
                                 disabled={isLast}
                                 className={cn(
-                                    "h-9 w-9 flex items-center justify-center rounded-lg text-sm font-bold transition-colors shrink-0",
+                                    "size-11 flex items-center justify-center rounded-lg text-sm font-bold transition-colors shrink-0",
                                     isLast
                                         ? "bg-gray-100 dark:bg-gray-700 text-muted cursor-not-allowed"
                                         : "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
@@ -144,7 +147,12 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                                             onMoveItem(item.id, 'to-driver', e.target.value);
                                         }
                                     }}
-                                    className="flex-1 text-sm bg-gray-100 dark:bg-gray-700 text-sub rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                                    className={cn(
+                                        // ricetta input standard: su chip gray il testo secondario
+                                        // scende sotto AA (§2), su surface text-body tiene ovunque
+                                        "flex-1 h-11 min-w-0 text-sm bg-surface text-body border border-gray-200 dark:border-gray-700 rounded-lg px-2",
+                                        "focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                                    )}
                                 >
                                     <option value="">{t('actions.assign')}</option>
                                     {drivers.map(d => (

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import PageHeaderWithBadge from '../../components/common/PageHeaderWithBadge';
 import PageMeta from '../../components/common/PageMeta';
@@ -30,6 +31,7 @@ interface AgencyLegalPageProps {
  * Nessun dual-read qui: per gli agency non esiste una sorgente legacy.
  */
 const AgencyLegalPage: React.FC<AgencyLegalPageProps> = ({ docKey, pageSlug }) => {
+  const { t } = useTranslation('dashboard');
   const { lang } = useI18n();
   const { pageMeta } = usePageMetadata(pageSlug);
   const { doc, loading } = useLegalDocument(docKey, { lang });
@@ -51,7 +53,7 @@ const AgencyLegalPage: React.FC<AgencyLegalPageProps> = ({ docKey, pageSlug }) =
 
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[2rem] p-6 sm:p-10 shadow-sm">
           {loading && (
-            <Paragraph size="sm" color="secondary" className="leading-5">Loading...</Paragraph>
+            <Paragraph size="sm" color="secondary" className="leading-5">{t('explorer.loading')}</Paragraph>
           )}
 
           {!loading && !doc && (

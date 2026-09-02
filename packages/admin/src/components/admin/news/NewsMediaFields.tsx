@@ -63,7 +63,7 @@ export function CoverImageField({ fieldKey, value, isEditing, onChange }: {
                         </Caption>
                     )}
                     {loading && (
-                        <Caption>Loading...</Caption>
+                        <Caption>{t('dashboard:explorer.loading')}</Caption>
                     )}
                 </div>
             )}

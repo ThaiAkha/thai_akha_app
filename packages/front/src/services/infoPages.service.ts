@@ -113,6 +113,8 @@ export async function getEntityFaqs(
 // dell'array = ordine di presentazione). entity_type/entity_slug NON sono più il
 // collante pagina↔FAQ. I refs arrivano dal data layer (#86: `useSiteMetadata`),
 // qui si risolvono in card. Ritorna [] se non ci sono refs.
+// audience: come getFaqData/getEntityFaqs, il front rende solo audience 'front'
+// (#58): un ref curato verso una FAQ staff/agency non deve comparire in pagina.
 export async function getFaqsByRefs(refs: readonly string[]): Promise<FaqCardUI[]> {
   if (!Array.isArray(refs) || refs.length === 0) return [];
 
@@ -120,7 +122,8 @@ export async function getFaqsByRefs(refs: readonly string[]): Promise<FaqCardUI[
     .from('faq_questions')
     .select('faq_key, question, answer, avatar_asset_id, faq_style, cta')
     .in('faq_key', refs)
-    .eq('is_active', true);
+    .eq('is_active', true)
+    .contains('audience', ['front']);
 
   if (error || !data) {
     console.error('[infoPages] getFaqsByRefs:', error);

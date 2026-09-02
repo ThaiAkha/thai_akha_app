@@ -24,8 +24,9 @@ export interface FaqBottomPageProps {
   className?: string;
   onNavigate?: (page: string) => void;
   hideTopDivider?: boolean;
-  /** Legacy bridge: embedded jsonb items — usati SOLO come fallback se la
-   *  centrale non risponde (rimosso a fine migrazione, deploy #2). */
+  /** SOLO demo/mock (ZZStyleCards): card iniettate senza lettura DB.
+   *  Il vecchio fallback embedded è stato rimosso con la migrazione single-source
+   *  (#58): la centrale faq_questions è l'unica fonte dati. */
   items?: FaqItem[];
   /** Modalità ENTITÀ (recipe | news | culture | ingredient | category):
    *  con entityType, `slug` = entity_slug e le FAQ arrivano dalla centrale

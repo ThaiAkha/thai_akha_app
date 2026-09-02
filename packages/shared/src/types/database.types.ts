@@ -558,13 +558,6 @@ export type Database = {
             referencedColumns: ["internal_id"]
           },
           {
-            foreignKeyName: "booking_participants_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "driver_route_v"
-            referencedColumns: ["internal_id"]
-          },
-          {
             foreignKeyName: "booking_participants_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -769,13 +762,6 @@ export type Database = {
             referencedColumns: ["internal_id"]
           },
           {
-            foreignKeyName: "bookings_parent_booking_id_fkey"
-            columns: ["parent_booking_id"]
-            isOneToOne: false
-            referencedRelation: "driver_route_v"
-            referencedColumns: ["internal_id"]
-          },
-          {
             foreignKeyName: "bookings_pickup_driver_uid_fkey"
             columns: ["pickup_driver_uid"]
             isOneToOne: false
@@ -928,13 +914,6 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
-            referencedColumns: ["internal_id"]
-          },
-          {
-            foreignKeyName: "certificates_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "driver_route_v"
             referencedColumns: ["internal_id"]
           },
           {
@@ -3892,13 +3871,6 @@ export type Database = {
             referencedColumns: ["internal_id"]
           },
           {
-            foreignKeyName: "menu_selections_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "driver_route_v"
-            referencedColumns: ["internal_id"]
-          },
-          {
             foreignKeyName: "menu_selections_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -5281,13 +5253,6 @@ export type Database = {
             referencedColumns: ["internal_id"]
           },
           {
-            foreignKeyName: "shop_orders_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "driver_route_v"
-            referencedColumns: ["internal_id"]
-          },
-          {
             foreignKeyName: "shop_orders_sku_fkey"
             columns: ["sku"]
             isOneToOne: false
@@ -6113,52 +6078,6 @@ export type Database = {
       }
     }
     Views: {
-      driver_route_v: {
-        Row: {
-          avatar_url: string | null
-          booking_date: string | null
-          customer_note: string | null
-          dropoff_driver_uid: string | null
-          dropoff_hotel: string | null
-          guest_name: string | null
-          hotel_name: string | null
-          internal_id: string | null
-          pax_count: number | null
-          phone_number: string | null
-          pickup_driver_uid: string | null
-          pickup_time: string | null
-          pickup_zone: string | null
-          requires_dropoff: boolean | null
-          route_order: number | null
-          session_id: string | null
-          status: string | null
-          transport_status: string | null
-          visitor_count: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bookings_dropoff_driver_uid_fkey"
-            columns: ["dropoff_driver_uid"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bookings_pickup_driver_uid_fkey"
-            columns: ["pickup_driver_uid"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bookings_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "class_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       shop_public: {
         Row: {
           catalog_image_url: string | null

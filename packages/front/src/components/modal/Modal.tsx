@@ -112,7 +112,7 @@ const Modal: React.FC<ModalProps> = ({
             {!hideCloseButton && (
               <button 
                 onClick={onClose}
-                className="size-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-gray-700 dark:text-gray-300 hover:text-primary active:scale-90"
+                className="size-10 pointer-coarse:size-11 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-sub hover:text-primary active:scale-90"
               >
                 <Icon name="close" size="sm" />
               </button>

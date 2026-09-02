@@ -15,7 +15,7 @@ export const StepHeader: React.FC<StepHeaderProps> = ({
   stepName,
   title,
   subtitle,
-  color1 = "text-orange-500",
+  color1 = "text-allergy",
   color2 = "text-action"
 }) => {
   return (

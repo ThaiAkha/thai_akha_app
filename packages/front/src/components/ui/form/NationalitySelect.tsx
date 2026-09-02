@@ -118,7 +118,7 @@ export const NationalitySelect: React.FC<NationalitySelectProps> = ({ value, onC
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Italy, Japan, US..."
-                className="flex-1 bg-transparent text-xs font-medium text-title placeholder:text-muted/40 outline-none"
+                className="flex-1 bg-transparent text-base font-medium text-title placeholder:text-muted/40 outline-none"
               />
               {query && (
                 <button type="button" onClick={() => setQuery('')} className="text-muted hover:text-title cursor-pointer">

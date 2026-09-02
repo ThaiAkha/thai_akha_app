@@ -248,8 +248,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
         {/* Terms & Conditions */}
         <div className="flex items-start gap-3 pt-1">
           <button type="button" onClick={() => setTermsAccepted(v => !v)}
+            aria-pressed={termsAccepted}
             className={cn(
-              'mt-0.5 w-5 h-5 shrink-0 rounded border-2 flex items-center justify-center transition-all duration-200 cursor-pointer',
+              // before:-inset-3 porta l'area tocco a 44px (20+24) senza toccare il visuale
+              'relative before:absolute before:-inset-3 before:content-[\'\'] mt-0.5 w-5 h-5 shrink-0 rounded border-2 flex items-center justify-center transition-all duration-200 cursor-pointer',
               termsAccepted ? 'bg-action border-action shadow-glow-lime' : 'bg-surface-2 border-border hover:border-action/50',
             )}>
             {termsAccepted && (

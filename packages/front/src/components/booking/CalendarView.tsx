@@ -107,7 +107,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               icon="close"
               iconPosition="only"
               iconSize="1.5rem"
-              className="size-12 rounded-xl ml-2 text-red-500"
+              className="size-12 rounded-xl ml-2 text-primary"
             />
           </Tooltip>
         </div>

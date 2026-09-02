@@ -18,6 +18,22 @@ import { HISTORY_WINDOW } from './constants';
 
 export type PickupResult = Awaited<ReturnType<typeof getPickupContextForCherry>>;
 
+/**
+ * Degrado PER CONTESTO: un blocco RAG che fallisce (rete, RLS, tabella assente)
+ * non deve uccidere il messaggio. Prima un solo reject dentro il Promise.all
+ * faceva cadere l'intera risposta nel "kitchen is very busy kha": l'ospite non
+ * riceveva nulla anche quando 9 contesti su 10 avevano risposto. Ora si perde
+ * QUEL blocco e Cherry risponde con il resto.
+ */
+async function safeBlock<T>(label: string, run: () => Promise<T>): Promise<T | null> {
+  try {
+    return await run();
+  } catch (err) {
+    console.warn(`[cherry] contesto "${label}" non disponibile, rispondo senza:`, err);
+    return null;
+  }
+}
+
 interface SystemInstructionParams {
   userText: string;
   sid: string | null;
@@ -55,7 +71,7 @@ export async function buildSystemInstruction({
   };
   const basePrompt = buildCherryPrompt(userContext);
 
-  const recentHistory = await loadRecentMessages(sid || '', HISTORY_WINDOW * 2);
+  const recentHistory = (await safeBlock('history', () => loadRecentMessages(sid || '', HISTORY_WINDOW * 2))) ?? [];
   const historyText = recentHistory
     .slice(-HISTORY_WINDOW)
     .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
@@ -75,20 +91,22 @@ export async function buildSystemInstruction({
   // RAG knowledge: i filtri sono INDIPENDENTI → eseguiti in PARALLELO per non
   // sommare la latenza. Ognuno fa fetch (cached) + match e ritorna null se non
   // pertinente. Cultura/news/ricette/gamification non si escludono a vicenda.
+  // Ogni contesto e' avvolto in safeBlock: il Promise.all non puo' piu' rigettare,
+  // quindi un contesto rotto costa il suo blocco, non la risposta.
   const [recipeBlock, cultureBlock, newsBlock, gamificationBlock, bookingBlock] = await Promise.all([
-    getRecipeContextForCherry(userText, activeProfileIds),
-    getCultureContextForCherry(userText),
-    getNewsContextForCherry(userText),
-    getGamificationContextForCherry(userText), // esce subito se nessun intento quiz
-    getBookingContextForCherry(userText, { isLogged: !!userProfile, userId: userProfile?.id }), // booking/availability su intento
+    safeBlock('recipe', () => getRecipeContextForCherry(userText, activeProfileIds)),
+    safeBlock('culture', () => getCultureContextForCherry(userText)),
+    safeBlock('news', () => getNewsContextForCherry(userText)),
+    safeBlock('gamification', () => getGamificationContextForCherry(userText)), // esce subito se nessun intento quiz
+    safeBlock('booking', () => getBookingContextForCherry(userText, { isLogged: !!userProfile, userId: userProfile?.id })), // booking/availability su intento
   ]);
   // Ingrediente: solo se NESSUNA ricetta ha matchato (le domande sul piatto hanno
   // precedenza e già includono gli ingredienti). Dipende da recipeBlock → dopo.
   // Pickup hotel→zona→orario: solo se NESSUNA prenotazione personale ha già
   // risposto (quella contiene il pickup dell'utente). Per guest e lookup generici.
-  const pickupResult = bookingBlock ? null : await getPickupContextForCherry(userText);
+  const pickupResult = bookingBlock ? null : await safeBlock('pickup', () => getPickupContextForCherry(userText));
 
-  const ingredientBlock = recipeBlock ? null : await getIngredientContextForCherry(userText);
+  const ingredientBlock = recipeBlock ? null : await safeBlock('ingredient', () => getIngredientContextForCherry(userText));
 
   const recipeText = recipeBlock ? `\n${recipeBlock}` : '';
   const cultureText = cultureBlock ? `\n${cultureBlock}` : '';
@@ -105,11 +123,11 @@ export async function buildSystemInstruction({
   const faqBlock = getLegalContext(userText);
   const faqText = faqBlock ? `\n${faqBlock}` : '';
   // Menu del cliente (per-utente, read-only): solo loggato + intento menu.
-  const menuBlock = userProfile ? await getMenuContextForCherry(userText, { isLogged: true, userId: userProfile.id }) : null;
+  const menuBlock = userProfile ? await safeBlock('menu', () => getMenuContextForCherry(userText, { isLogged: true, userId: userProfile.id })) : null;
   const menuText = menuBlock ? `\n${menuBlock}` : '';
   // Conoscenza diete/allergie (DB profili + sostituzioni), su intento, read-only.
   // Mira ai profili citati nel testo + quelli attivi dell'utente.
-  const dietBlock = await getDietContextForCherry(userText, { activeProfileIds });
+  const dietBlock = await safeBlock('diet', () => getDietContextForCherry(userText, { activeProfileIds }));
   const dietText = dietBlock ? `\n${dietBlock}` : '';
 
   // Anti-ripetizione: argomenti già coperti in sessione (da prima di questo turno).

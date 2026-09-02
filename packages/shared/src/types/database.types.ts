@@ -127,7 +127,6 @@ export type Database = {
           last_content_audit_ai: string | null
           news_id: string | null
           og_description: string | null
-          og_image: string | null
           og_title: string | null
           og_type: string | null
           primary_focus_keyword: string | null
@@ -175,7 +174,6 @@ export type Database = {
           last_content_audit_ai?: string | null
           news_id?: string | null
           og_description?: string | null
-          og_image?: string | null
           og_title?: string | null
           og_type?: string | null
           primary_focus_keyword?: string | null
@@ -223,7 +221,6 @@ export type Database = {
           last_content_audit_ai?: string | null
           news_id?: string | null
           og_description?: string | null
-          og_image?: string | null
           og_title?: string | null
           og_type?: string | null
           primary_focus_keyword?: string | null
@@ -633,6 +630,7 @@ export type Database = {
           pickup_zone: string | null
           pos_saved_at: string | null
           pos_tender: string | null
+          reminder_sent_at: string | null
           requires_dropoff: boolean | null
           reservation_id_agency: string | null
           route_order: number | null
@@ -688,6 +686,7 @@ export type Database = {
           pickup_zone?: string | null
           pos_saved_at?: string | null
           pos_tender?: string | null
+          reminder_sent_at?: string | null
           requires_dropoff?: boolean | null
           reservation_id_agency?: string | null
           route_order?: number | null
@@ -743,6 +742,7 @@ export type Database = {
           pickup_zone?: string | null
           pos_saved_at?: string | null
           pos_tender?: string | null
+          reminder_sent_at?: string | null
           requires_dropoff?: boolean | null
           reservation_id_agency?: string | null
           route_order?: number | null

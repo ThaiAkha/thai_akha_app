@@ -378,7 +378,6 @@ export interface NewsDetail extends NewsArticle {
   seo_description?: string | null;
   seo_robots?: string | null;
   seo_keywords?: string[] | null;
-  og_image?: string | null;
   json_ld?: Record<string, unknown> | null;
   audio_asset_id?: string | null;
   ui_quote?: string | null;

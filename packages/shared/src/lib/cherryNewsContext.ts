@@ -16,6 +16,15 @@ const GENERIC_TOKENS = new Set([
   'with', 'for', 'tell', 'know', 'best', 'top', 'ultimate', 'complete',
 ]);
 
+/**
+ * Domanda di rassegna ("what's new?", "any news?"), che non nomina un articolo e
+ * quindi non fa match su nessun titolo. Prima cadeva nel null e Cherry rispondeva
+ * "I don't have that information right now kha" a una domanda del tutto legittima:
+ * ora le si passa l'elenco delle ultime uscite. "new" da solo non basta (compare
+ * in "I'm new to Thai cooking"), serve un segnale esplicito di attualita'.
+ */
+const BROAD_NEWS_INTENT = /\b(news|latest|recent|updates?|blog|articles?)\b|what'?s new|anything new/i;
+
 const FULL_DETAIL_SIGNALS = [
   'full', 'everything', 'in detail', 'detailed', 'complete article', 'read the',
   'more about', 'in depth', 'deep dive', 'tutto', 'dettagli', 'approfond', 'completo',
@@ -61,6 +70,26 @@ function truncate(text: string, max: number): string {
   return clean.length <= max ? clean : clean.slice(0, max).trimEnd() + '…';
 }
 
+/** Le ultime 3 uscite (il feed arriva già ordinato per published_at desc). */
+function buildHeadlines(feed: Array<Record<string, unknown>>): string | null {
+  const righe = feed
+    .slice(0, 3)
+    .map((a) => {
+      const titolo = String(a.title ?? '').trim();
+      if (!titolo) return '';
+      const excerpt = truncate(String(a.excerpt ?? '').trim(), 160);
+      return excerpt ? `- ${titolo}: ${excerpt}` : `- ${titolo}`;
+    })
+    .filter(Boolean);
+  if (righe.length === 0) return null;
+
+  return [
+    '### NEWS DATA — latest stories (authoritative — answer ONLY from this, never invent):',
+    ...righe,
+    'STYLE: mention what is new in a warm sentence or two, then offer to go deeper on the one that interests the guest. Keep it to ~120 words. Plain text, no formatting, no labels kha.',
+  ].join('\n');
+}
+
 /**
  * Blocco NEWS DATA per il prompt, o null se nessun articolo specifico è
  * riconosciuto. Catena dati: summary_ai (L2) → excerpt → content (L3 se richiesto).
@@ -68,7 +97,7 @@ function truncate(text: string, max: number): string {
 export async function getNewsContextForCherry(text: string): Promise<string | null> {
   const feed = (await newsService.getNewsFeed()) as unknown as Array<Record<string, unknown>>;
   const match = findNewsArticle(text, feed);
-  if (!match) return null;
+  if (!match) return BROAD_NEWS_INTENT.test(text) ? buildHeadlines(feed) : null;
 
   const detail = (await newsService.getNewsDetailBySlug(String(match.slug))) as unknown as Record<string, unknown> | null;
   if (!detail) return null;

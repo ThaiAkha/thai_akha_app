@@ -101,12 +101,16 @@
   --color-surface:    #FFFFFF;    /* White surface */
   --color-border:     #E2E8F0;    /* Light border */
 
-  /* TEXT COLORS — Standard v4 (gray scale, WCAG AA+) */
-  --color-title:   #121311;  /* gray-950 — H1/H2/H3       contrast: 19.7:1 ✅ AAA */
-  --color-desc:    #222827;  /* gray-900 — paragraphs      contrast: 15.2:1 ✅ AAA */
-  --color-sub:     #2D3231;  /* gray-900w — labels/secondary contrast: 13.9:1 ✅ AAA */
-  --color-muted:   #5E6464;  /* gray-700 — captions/hints  contrast:  4.6:1 ✅ AA  */
-  --color-inverse: #ffffff;  /* white   — text on dark backgrounds */
+  /* TEXT COLORS — Standard v4 (gray scale, WCAG AA+).
+     #130: runtime vars col nome --fg-* (light qui, dark in html.dark/@media);
+     theme.css @theme delega --color-title: var(--fg-title) → Tailwind GENERA le
+     utility (bg-title, text-muted/40, border-title…) e ri-emette --color-* per i
+     consumer esistenti (index.css, componenti). Il flip resta su <html>. */
+  --fg-title:   #121311;  /* gray-950 — H1/H2/H3       contrast: 19.7:1 ✅ AAA */
+  --fg-desc:    #222827;  /* gray-900 — paragraphs      contrast: 15.2:1 ✅ AAA */
+  --fg-sub:     #2D3231;  /* gray-900w — labels/secondary contrast: 13.9:1 ✅ AAA */
+  --fg-muted:   #5E6464;  /* gray-700 — captions/hints  contrast:  4.6:1 ✅ AA  */
+  --fg-inverse: #ffffff;  /* white   — text on dark backgrounds */
   --text-quiz-p:   var(--color-quiz-p-700);
 
   /* ========================================================================
@@ -261,11 +265,11 @@ html.dark {
   --surface-elevated:     #1a1a1a;    /* Mirror for var(--surface-elevated) usage */
 
   /* TEXT COLORS — Dark mode v4 */
-  --color-title:   #E6ECEC;  /* gray-50  — H1/H2/H3 */
-  --color-desc:    #D6DCDC;  /* gray-100 — paragraphs */
-  --color-sub:     #D6DCDC;  /* gray-100 — general text */
-  --color-muted:   #D6DCDC;  /* gray-100 — other text */
-  --color-inverse: #121212;  /* gray-950 — text on dark backgrounds */
+  --fg-title:   #E6ECEC;  /* gray-50  — H1/H2/H3 */
+  --fg-desc:    #D6DCDC;  /* gray-100 — paragraphs */
+  --fg-sub:     #D6DCDC;  /* gray-100 — general text */
+  --fg-muted:   #D6DCDC;  /* gray-100 — other text */
+  --fg-inverse: #121212;  /* gray-950 — text on dark backgrounds */
   --text-quiz-p:   var(--color-quiz-p-300);
 
   /* Dark mode RGB channels (semantic) */
@@ -295,11 +299,11 @@ html.dark {
     --color-background: #0A0A0A;
     --color-surface:    #121212;
     --color-border:     #2D2D2D;
-    --color-title:   #E6ECEC;
-    --color-desc:    #D6DCDC;
-    --color-sub:     #D6DCDC;
-    --color-muted:   #D6DCDC;
-    --color-inverse: #121212;
+    --fg-title:   #E6ECEC;
+    --fg-desc:    #D6DCDC;
+    --fg-sub:     #D6DCDC;
+    --fg-muted:   #D6DCDC;
+    --fg-inverse: #121212;
 
     --glass-bg:     rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);

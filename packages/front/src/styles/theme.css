@@ -65,7 +65,18 @@
   --color-surface-2:        var(--surface-2);
   --color-border:           #E2E8F0;
   /* NOTE: --color-title, --color-desc, --color-sub, --color-muted, --color-inverse
-     are defined in tokens.css :root — single source of truth. */
+     are defined in tokens.css :root — single source of truth. Le utility Tailwind
+     (bg-*, /N, border-*) le genera il blocco @theme inline in fondo al file (#130). */
+
+  /* ── SYSTEM STATE COLORS (#130) — flat, identici light/dark ─────────────────
+     Erano SOLO channel --sys-*-ch in tokens.css :root: fuori da @theme Tailwind
+     non emette le utility (bg-sys-error, text-sys-success/10… morte in silenzio).
+     Valori statici → opacita' /N calcolate a build. I channel in tokens.css restano. */
+  --color-sys-success: #22C55E;
+  --color-sys-error:   #EF4444;
+  --color-sys-warning: #F59E0B;
+  --color-sys-info:    #3B82F6;
+  --color-sys-notice:  #EAB308;
 
   /* Elevated surface — delega allo strutturale (dark gestito in tokens.css html.dark/media) */
   --color-surface-elevated: var(--surface-elevated);
@@ -90,4 +101,23 @@
     --color-border:            #2D2D2D;
     --color-allergy-secondary: var(--color-allergy-dark);
   }
+}
+
+/* ============================================================================
+   SEMANTIC TEXT COLORS → utility Tailwind (#130)
+   Stesso pattern di --color-surface-2: var(--surface-2). I valori runtime
+   vivono in tokens.css come --fg-* (:root light + html.dark + @media): flip
+   del tema su <html>, mai dark: prefix (CLAUDE.md #3). La delega qui fa due
+   cose: Tailwind GENERA le utility prima morte (bg-title, text-muted/40,
+   border-title, text-inverse/70…) e RI-EMETTE --color-title & co. su :root,
+   quindi i consumer esistenti (index.css, inline style nei componenti) restano
+   identici. NB: la self-reference (--color-x: var(--color-x)) via @theme
+   inline NON funziona: Tailwind la scarta come circolare - serve il nome
+   runtime distinto. ============================================================================ */
+@theme {
+  --color-title:   var(--fg-title);
+  --color-desc:    var(--fg-desc);
+  --color-sub:     var(--fg-sub);
+  --color-muted:   var(--fg-muted);
+  --color-inverse: var(--fg-inverse);
 }

@@ -26,3 +26,10 @@ pg_cron "agency-reminder-24h" (minuto 10 di ogni ora)
 - Spegnere il flusso: `update private.agency_reminder_config set enabled=false where id;`
 - Migration (config, tick, cron): `20260902260000_agency_emails_122.sql`.
 - Write-back fallito dopo invio = failure esplicita nella risposta, mai ingoiata.
+
+## Lingue (#142, dal 2026-09-03)
+
+- Testo 1421_31 nella lingua dell'agenzia: `profiles.preferred_language`
+  (`en|th|es|zh`, default `en`). Testi in `../_shared/agencyEmailI18n.ts`,
+  condivisi con send-agency-booking-confirmation; `results[].lang` nella risposta.
+- Deploy dopo una modifica ai testi: `supabase functions deploy send-agency-reminder`.

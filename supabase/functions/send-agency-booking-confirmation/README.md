@@ -26,3 +26,19 @@ Portale agenzie (INSERT su bookings)
 - Pickup: `pickup_time` del booking se presente, altrimenti finestre canoniche
   015 (morning 8:15-9:00 am, evening 4:15-5:00 pm); senza hotel_name si
   presenta l'arrivo in cucina.
+
+## Lingue (#142, dal 2026-09-03)
+
+- Testi in `../_shared/agencyEmailI18n.ts`, 4 lingue agenzia EN·TH·ES·ZH
+  copiate dalla Consegna_142 del brain (mai ritradurre nel codice).
+- Lingua della 1421_30 = `profiles.preferred_language` dell'agenzia
+  (`en|th|es|zh`, default `en`, migration `20260903100000_profiles_preferred_language_142.sql`).
+  Si imposta a mano: `update public.profiles set preferred_language='zh' where id='<agency uuid>';`
+- La 1421_32 al cliente resta EN: la lingua del guest non e' nota al booking
+  (Consegna_142, decisione 3). Per cambiarla: `buildGuestInvite(b, lang)` in index.ts.
+- Orari: EN in 12h (8:15 am), le altre lingue in 24h (16:15). Date nel locale
+  della lingua (th-TH mostra l'anno buddista).
+- La risposta JSON riporta `results.lang` per capire quale lingua e' partita.
+
+Deploy dopo una modifica ai testi: `supabase functions deploy send-agency-booking-confirmation`
+(porta con se' `_shared/`); il reminder va ridispiegato a parte.

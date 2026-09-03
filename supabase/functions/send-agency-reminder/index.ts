@@ -5,8 +5,10 @@
 // La tick seleziona i booking agency confermati con classe tra 12 e 24 ore
 // (finestra larga: un tick perso non perde il reminder) e reminder_sent_at null;
 // questa edge invia e marca reminder_sent_at (idempotenza per riga).
+// #142: testo nella lingua dell'agenzia (profiles.preferred_language: en|th|es|zh).
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { buildAgencyReminder, type EmailBooking, pickLang } from '../_shared/agencyEmailI18n.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
@@ -19,92 +21,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-agency-cron-secret',
 }
 
-interface BookingRow {
-  internal_id: string
-  booking_ref: string | null
-  reservation_id_agency: string | null
-  session_id: string
-  booking_date: string
-  pax_count: number
-  hotel_name: string | null
-  pickup_time: string | null
-  guest_name: string | null
+interface BookingRow extends EmailBooking {
   booking_source: string | null
   status: string | null
   reminder_sent_at: string | null
   user_id: string
-  agency: { email: string | null; agency_company_name: string | null; full_name: string | null } | null
-}
-
-const CLASS_LABEL: Record<string, string> = {
-  morning_class: 'Morning Cooking Class (includes the 1 hour market tour)',
-  evening_class: 'Evening Cooking Class',
-}
-const PICKUP: Record<string, { ready: string; window: string; kitchen: string }> = {
-  morning_class: { ready: '8:15 am', window: 'between 8:15 am and 9:00 am', kitchen: '9:00 am' },
-  evening_class: { ready: '4:15 pm', window: 'between 4:15 pm and 5:00 pm', kitchen: '5:00 pm' },
-}
-
-function fmtDate(ymd: string): string {
-  const d = new Date(`${ymd}T00:00:00`)
-  return d.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
-}
-
-function fmtTime(hms: string): string {
-  const [h, m] = hms.split(':').map(Number)
-  const ampm = h >= 12 ? 'pm' : 'am'
-  const h12 = h % 12 === 0 ? 12 : h % 12
-  return `${h12}:${String(m).padStart(2, '0')} ${ampm}`
-}
-
-function escapeHtml(s: string): string {
-  return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
-}
-
-function pickupLine(b: BookingRow): string {
-  const p = PICKUP[b.session_id]
-  if (b.hotel_name) {
-    const ready = b.pickup_time ? fmtTime(b.pickup_time) : p.ready
-    const window = b.pickup_time ? `around ${fmtTime(b.pickup_time)}` : p.window
-    return `Please be ready in the lobby of ${escapeHtml(b.hotel_name)} at ${ready}. Our driver will arrive ${window}.`
-  }
-  return `We look forward to welcoming you at our kitchen at ${p.kitchen}.`
-}
-
-// 1421_31 - reminder 24h all'agenzia
-function reminderHtml(b: BookingRow, agencyName: string): string {
-  const rows: Array<[string, string]> = [
-    ['Booking reference', b.booking_ref ?? b.internal_id],
-    ['Your reference', b.reservation_id_agency ?? '-'],
-    ['Class', CLASS_LABEL[b.session_id] ?? b.session_id],
-    ['Date', fmtDate(b.booking_date)],
-    ['Guests', String(b.pax_count ?? 1)],
-    ['Pickup', b.hotel_name ? escapeHtml(b.hotel_name) : 'meeting at our kitchen'],
-  ]
-  const details = rows
-    .map(([k, v]) => `<tr><td style="padding:4px 0;width:150px;color:#5E6464;">${k}</td><td style="padding:4px 0;"><strong>${v}</strong></td></tr>`)
-    .join('\n')
-  return `
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#f7f5f2;padding:24px 0;">
-  <tr><td align="center">
-    <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
-      <tr><td style="background:#E31F33;padding:16px 24px;color:#ffffff;font-size:18px;font-weight:bold;">Thai Akha Kitchen</td></tr>
-      <tr><td style="padding:24px;font-size:14px;color:#222827;line-height:1.6;">
-        <p>Dear ${escapeHtml(agencyName)},</p>
-        <p>A quick reminder: your guests cook with us tomorrow.</p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${details}</table>
-        <p style="margin-top:16px;">Please make sure your clients are ready:</p>
-        <div style="padding:16px;background:#f7f5f2;border-radius:6px;">
-          <p style="margin:0 0 8px;"><strong>See you tomorrow at Thai Akha Kitchen!</strong></p>
-          <p style="margin:0 0 8px;">${pickupLine(b)}</p>
-          <p style="margin:0;">Wear comfortable shoes, bring your appetite, and leave the rest to us.</p>
-        </div>
-        <p>If your clients cannot make it, reply to this email as soon as you can and we will find a solution together.</p>
-        <p>With warm regards,<br />Thai Akha Kitchen</p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>`
+  agency: { email: string | null; agency_company_name: string | null; full_name: string | null; preferred_language: string | null } | null
 }
 
 async function sendResend(to: string, subject: string, html: string) {
@@ -146,14 +68,14 @@ Deno.serve(async (req: Request) => {
     // Rilegge e rifiltra (idempotenza per riga: reminder_sent_at null)
     const { data: rows, error } = await supabase
       .from('bookings')
-      .select('internal_id, booking_ref, reservation_id_agency, session_id, booking_date, pax_count, hotel_name, pickup_time, guest_name, booking_source, status, reminder_sent_at, user_id, agency:profiles!user_id(email, agency_company_name, full_name)')
+      .select('internal_id, booking_ref, reservation_id_agency, session_id, booking_date, pax_count, hotel_name, pickup_time, guest_name, booking_source, status, reminder_sent_at, user_id, agency:profiles!user_id(email, agency_company_name, full_name, preferred_language)')
       .in('internal_id', booking_ids)
       .eq('booking_source', 'agency')
       .eq('status', 'confirmed')
       .is('reminder_sent_at', null)
     if (error) throw new Error(`lettura bookings: ${error.message}`)
 
-    const results: Array<{ booking_id: string; sent: boolean; id?: string }> = []
+    const results: Array<{ booking_id: string; sent: boolean; lang: string; id?: string }> = []
     const failures: Array<{ booking_id: string; detail: unknown }> = []
 
     for (const raw of rows ?? []) {
@@ -161,9 +83,9 @@ Deno.serve(async (req: Request) => {
       const agencyEmail = b.agency?.email
       if (!agencyEmail) { failures.push({ booking_id: b.internal_id, detail: 'profilo agency senza email' }); continue }
       const agencyName = b.agency?.agency_company_name ?? b.agency?.full_name ?? 'partner'
-      const cls = b.session_id === 'morning_class' ? 'Morning' : 'Evening'
-      const subject = `Tomorrow - ${cls} Cooking Class, ${fmtDate(b.booking_date)} - ${b.guest_name ?? b.booking_ref ?? ''}`
-      const sent = await sendResend(agencyEmail, subject, reminderHtml(b, agencyName))
+      const lang = pickLang(b.agency?.preferred_language)
+      const mail = buildAgencyReminder(b, agencyName, lang)
+      const sent = await sendResend(agencyEmail, mail.subject, mail.html)
       if (!sent.ok) {
         console.error('send-agency-reminder: Resend failure', b.internal_id, sent.detail)
         failures.push({ booking_id: b.internal_id, detail: sent.detail })
@@ -179,7 +101,7 @@ Deno.serve(async (req: Request) => {
         failures.push({ booking_id: b.internal_id, detail: `email inviata ma write-back fallito: ${upErr.message}` })
         continue
       }
-      results.push({ booking_id: b.internal_id, sent: true, id: sent.id })
+      results.push({ booking_id: b.internal_id, sent: true, lang, id: sent.id })
     }
 
     return new Response(JSON.stringify({ success: failures.length === 0, results, failures }), {

@@ -4510,6 +4510,7 @@ export type Database = {
           line_id: string | null
           managed_by: string | null
           nationality: string | null
+          preferred_language: string
           preferred_spiciness_id: number | null
           profile_kind: string
           quiz_points: number | null
@@ -4546,6 +4547,7 @@ export type Database = {
           line_id?: string | null
           managed_by?: string | null
           nationality?: string | null
+          preferred_language?: string
           preferred_spiciness_id?: number | null
           profile_kind?: string
           quiz_points?: number | null
@@ -4582,6 +4584,7 @@ export type Database = {
           line_id?: string | null
           managed_by?: string | null
           nationality?: string | null
+          preferred_language?: string
           preferred_spiciness_id?: number | null
           profile_kind?: string
           quiz_points?: number | null

@@ -8,18 +8,18 @@ import type { BookingDaySummary, GuestAlert } from './adminPrompt';
 import type { AdminScopedData, MarketRunSummary } from './adminScopedFetch';
 
 // ⚠️ TIER-1 base file (in-app, sempre presente). PROIEZIONE VERIFICATA dei Terms
-// (front_terms v1.5 §4/§8 + agency_terms v1.2 §5) — NON è la fonte legale: i testi
+// (front_terms v1.6 §4/§8/§10 + agency_terms v1.3 §5/§6) - NON è la fonte legale: i testi
 // vincolanti sono le Terms/Privacy nel DB. A OGNI cambio Terms riverificare qui.
 // Regola brand: mai trattino lungo/medio. Nessuno "group discount" (non ha fonte).
 const BUSINESS_TERMS = `### BUSINESS TERMS
 Working summary for staff. The binding texts are the Terms and the Privacy Policy in the app: if someone asks for exact wording, point them to the page instead of paraphrasing.
-- Cancellation: free with 48 hours notice. Same standard for guests and agencies.
+- Cancellation: free with 48 hours notice, Thailand time, counted from the class start (9:00 AM Morning, 5:00 PM Evening). Same standard for guests and agencies. Within 48 hours, and for no-shows, the amount stays due: the full price for a guest, the net rate for an agency. Date changes are free outside 48 hours, subject to availability. Marketplace bookings (Viator, Klook, Cookly) follow the platform's own rules.
 - Private class: our Morning or Evening class for one group only. Three settings: up to 12 Chefs in the air-conditioned kitchen, up to 16 in the garden kitchen, 17 to 28 in both kitchens together.
   Morning 16,000 / 18,000 / 34,000 THB. Evening 15,000 / 17,000 / 32,000 THB.
   We may ask a 50% deposit to hold the date, at our discretion; the balance and the method are agreed at booking.
 - Private class has exactly two exceptions to the normal rules, both in the guest's favour: the market tour can be ADDED to a private Evening on request (afternoon, before the class, no extra cost; it is not included by default, not even in a private Evening), and the Visitor limits do not apply.
 - Guest payment: online card or PayPal with no surcharge; cash in THB, USD or EUR on arrival with no fee; card or Alipay on site carry 3%.
-- Agency payment: invoiced through Zoho Books, terms agreed at onboarding. Never quote the guest payment rules to an agency partner.`;
+- Agency payment: the agency sells at our public rates and pays us the net rate (public rate minus its per-Traveler commission, at the tier in force at confirmation). Invoiced through Zoho Books in THB; the net rate is paid before the class (classes in the current month: by the day before the class; later months: by the 1st of the month of the class) unless a weekly or monthly cycle was agreed at onboarding. Bank transfer in THB, bank fees on the agency. The agency confirms payment in the Partner Portal with its receipt. No late interest. Marketplace bookings (Viator, Klook, Cookly) are never invoiced. Never quote the guest payment rules to an agency partner.`;
 
 function renderClasses(cookingClasses: CookingClassDB[]): string {
   const body = cookingClasses?.length

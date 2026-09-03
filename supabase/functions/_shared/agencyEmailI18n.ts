@@ -69,6 +69,7 @@ interface Pack {
     choose: string
     cookbookPre: string
     cookbookPost: string
+    terms: string
     changes: string
     signoff: string
   }
@@ -118,6 +119,7 @@ const PACKS: Record<Lang, Pack> = {
       choose: 'Before class, you can pick the dishes you want to cook here:',
       cookbookPre: 'Our cookbook, with every recipe we teach and the stories behind them, is waiting for you at',
       cookbookPost: '(password: ThaiAkhaBook).',
+      terms: 'Cancellation: free up to 48 hours before the class start (Thailand time). Within 48 hours, and for no-shows, the net rate stays due. Full terms:',
       changes: 'If anything changes, just reply to this email and we will take care of it.',
       signoff: 'With warm regards,',
     },
@@ -168,6 +170,7 @@ const PACKS: Record<Lang, Pack> = {
       choose: 'Antes de la clase, puedes elegir aquí los platos que quieres cocinar:',
       cookbookPre: 'Nuestro recetario, con todas las recetas que enseñamos y las historias detrás de ellas, te espera en',
       cookbookPost: '(contraseña: ThaiAkhaBook).',
+      terms: 'Cancelación: gratuita hasta 48 horas antes del inicio de la clase (hora de Tailandia). Dentro de las 48 horas, y en caso de no presentarse, la tarifa neta sigue siendo debida. Condiciones completas:',
       changes: 'Si algo cambia, responde a este email y nos ocupamos de todo.',
       signoff: 'Un cordial saludo,',
     },
@@ -218,6 +221,7 @@ const PACKS: Record<Lang, Pack> = {
       choose: 'ก่อนถึงวันคลาส เลือกเมนูที่อยากทำได้ที่นี่:',
       cookbookPre: 'สมุดสูตรอาหารของเรา พร้อมทุกสูตรที่เราสอนและเรื่องราวเบื้องหลัง รอคุณอยู่ที่',
       cookbookPost: '(รหัสผ่าน: ThaiAkhaBook)',
+      terms: 'การยกเลิก: ยกเลิกได้ฟรีจนถึง 48 ชั่วโมงก่อนเวลาเริ่มคลาส (เวลาประเทศไทย) หากยกเลิกภายใน 48 ชั่วโมงหรือไม่มาตามนัด ยังคงต้องชำระราคาสุทธิ เงื่อนไขฉบับเต็ม:',
       changes: 'หากมีการเปลี่ยนแปลง ตอบกลับอีเมลนี้ได้เลย เราจะดูแลให้',
       signoff: 'ด้วยความนับถือ',
     },
@@ -268,6 +272,7 @@ const PACKS: Record<Lang, Pack> = {
       choose: '开课前，你可以在这里挑选想做的菜：',
       cookbookPre: '我们的食谱书收录了课上教的每道菜和它们背后的故事，在',
       cookbookPost: '等你（密码：ThaiAkhaBook）。',
+      terms: '取消：距开课 48 小时以上（泰国时间）可免费取消；不足 48 小时取消或未到场，仍需支付净价。完整条款：',
       changes: '如有任何变动，回复这封邮件即可，我们来处理。',
       signoff: '谨致问候',
     },
@@ -359,6 +364,7 @@ export function buildAgencyConfirmation(b: EmailBooking, agencyName: string, lan
 <p>${c.greeting(escapeHtml(agencyName))}</p>
 <p>${c.thanks}</p>
 ${detailsTable(b, lang)}
+<p style="margin-top:12px;font-size:13px;color:#5E6464;">${c.terms} ${LINK('https://admin.thaiakha.com/agency-terms', 'admin.thaiakha.com/agency-terms')}</p>
 <p style="margin-top:16px;">${c.forward}</p>
 <div style="padding:16px;background:#f7f5f2;border-radius:6px;">
   <p style="margin:0 0 8px;"><strong>${c.confirmed}</strong></p>

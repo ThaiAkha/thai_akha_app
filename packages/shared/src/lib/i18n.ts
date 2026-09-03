@@ -72,6 +72,17 @@ export const LANGS_WITH_TRANSLATED_SLUGS: readonly SupportedLang[] =
 /** `dir` per lingua: tutto il perimetro è ltr (nessuna lingua rtl in programma). */
 export const LANG_DIR = 'ltr' as const;
 
+/**
+ * Lingue delle email automatiche (#142 agenzie, #172 clienti): `profiles.preferred_language`
+ * accetta solo queste (check `profiles_preferred_language_check`, migration 20260903100000).
+ * Il front ha 12 lingue: `pickEmailLang` riduce la lingua del sito a questo set, altrimenti 'en'.
+ * Le edge scelgono poi il pack che hanno davvero (oggi B2C solo EN) e ricadono su 'en'.
+ */
+export const EMAIL_LANGS = ['en', 'th', 'es', 'zh'] as const;
+export type EmailLang = (typeof EMAIL_LANGS)[number];
+export const pickEmailLang = (lang: string | null | undefined): EmailLang =>
+  (EMAIL_LANGS as readonly string[]).includes(lang ?? '') ? (lang as EmailLang) : 'en';
+
 export const isSupportedLang = (value: unknown): value is SupportedLang =>
   typeof value === 'string' && (SUPPORTED_LANGS as readonly string[]).includes(value);
 

@@ -339,7 +339,8 @@ function detailsTable(b: EmailBooking, lang: Lang): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${inner}</table>`
 }
 
-function wrap(inner: string): string {
+// #172: wrap e LINK sono condivisi con b2cEmailI18n.ts (stesso involucro, stesso rosso brand)
+export function wrap(inner: string): string {
   return `
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#f7f5f2;padding:24px 0;">
   <tr><td align="center">
@@ -351,7 +352,7 @@ function wrap(inner: string): string {
 </table>`
 }
 
-const LINK = (href: string, label: string) => `<a href="${href}" style="color:#E31F33;">${label}</a>`
+export const LINK = (href: string, label: string) => `<a href="${href}" style="color:#E31F33;">${label}</a>`
 
 export interface EmailContent { subject: string; html: string }
 

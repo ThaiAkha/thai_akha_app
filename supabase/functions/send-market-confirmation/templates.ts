@@ -19,7 +19,7 @@ export const MARKET_KITCHEN_EN = `<!DOCTYPE html>
   @media (prefers-color-scheme:dark){ .bg{background:#0e1012!important;} .card{background:#16191c!important;border-color:#2a2f33!important;} .tx{color:#e9eded!important;} .mut{color:#9aa3a3!important;} .wm{color:#ffffff!important;} .rb{border-color:#2a2f33!important;} .foot{background:#101315!important;border-color:#2a2f33!important;} .itbx{border-color:#2a2f33!important;} }
 </style></head>
 <body class="bg" style="margin:0;padding:0;background:#f1f2f2;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Kitchen market expenses recorded — 187 Baht, {{shop}}.</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Kitchen market expenses recorded - {{total}} Baht, {{shop}}.</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg" style="background:#f1f2f2;">
 <tr><td align="center" style="padding:66px 12px;">
   <table role="presentation" width="540" cellpadding="0" cellspacing="0" border="0" class="card"
@@ -82,7 +82,7 @@ export const MARKET_LOGISTIC_EN = `<!DOCTYPE html>
   @media (prefers-color-scheme:dark){ .bg{background:#0e1012!important;} .card{background:#16191c!important;border-color:#2a2f33!important;} .tx{color:#e9eded!important;} .mut{color:#9aa3a3!important;} .wm{color:#ffffff!important;} .rb{border-color:#2a2f33!important;} .foot{background:#101315!important;border-color:#2a2f33!important;} .itbx{border-color:#2a2f33!important;} }
 </style></head>
 <body class="bg" style="margin:0;padding:0;background:#f1f2f2;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Logistics market run recorded — 176 Baht, {{shop}}.</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Logistics market run recorded - {{total}} Baht, {{shop}}.</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg" style="background:#f1f2f2;">
 <tr><td align="center" style="padding:66px 12px;">
   <table role="presentation" width="540" cellpadding="0" cellspacing="0" border="0" class="card"

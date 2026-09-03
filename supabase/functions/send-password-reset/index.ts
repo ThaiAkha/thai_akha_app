@@ -45,8 +45,8 @@ const TEMPLATE: Record<Lang, string> = {
 }
 
 const SUBJECT: Record<Lang, string> = {
-  en: 'Reset your password — Thai Akha Kitchen',
-  th: 'ตั้งรหัสผ่านใหม่ — Thai Akha Kitchen',
+  en: 'Reset your password - Thai Akha Kitchen',
+  th: 'ตั้งรหัสผ่านใหม่ - Thai Akha Kitchen',
 }
 
 async function sendResend(to: string, subject: string, html: string) {

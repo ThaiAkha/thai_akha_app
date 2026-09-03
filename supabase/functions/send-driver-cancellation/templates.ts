@@ -15,7 +15,7 @@ export const CANCEL_ADMIN_EN_HTML = `<!DOCTYPE html>
   @media (prefers-color-scheme:dark){ .bg{background:#0e1012!important;} .card{background:#16191c!important;border-color:#2a2f33!important;} .tx{color:#e9eded!important;} .mut{color:#9aa3a3!important;} .wm{color:#fff!important;} .rb{border-color:#2a2f33!important;} .foot{background:#101315!important;border-color:#2a2f33!important;} }
 </style></head>
 <body class="bg" style="margin:0;padding:0;background:#f1f2f2;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">A pickup service has been cancelled — no payout applies.</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">A pickup service has been cancelled - no payout applies.</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg" style="background:#f1f2f2;">
 <tr><td align="center" style="padding:66px 12px;">
   <table role="presentation" width="520" cellpadding="0" cellspacing="0" border="0" class="card"
@@ -73,7 +73,7 @@ export const CANCEL_DRIVER_TH_HTML = `<!DOCTYPE html>
   @media (prefers-color-scheme:dark){ .bg{background:#0e1012!important;} .card{background:#16191c!important;border-color:#2a2f33!important;} .tx{color:#e9eded!important;} .mut{color:#9aa3a3!important;} .wm{color:#fff!important;} .rb{border-color:#2a2f33!important;} .foot{background:#101315!important;border-color:#2a2f33!important;} }
 </style></head>
 <body class="bg" style="margin:0;padding:0;background:#f1f2f2;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">บริการรับส่งถูกยกเลิก — ไม่มีการจ่ายค่าตอบแทน</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">บริการรับส่งถูกยกเลิก - ไม่มีการจ่ายค่าตอบแทน</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg" style="background:#f1f2f2;">
 <tr><td align="center" style="padding:66px 12px;">
   <table role="presentation" width="520" cellpadding="0" cellspacing="0" border="0" class="card"

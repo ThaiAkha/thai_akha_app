@@ -59,7 +59,7 @@ Deno.serve(async (req: Request) => {
       stops_range: stops,
       total_pax: p.total_pax ?? '',
       payout_amount: p.payout_amount ?? 0,
-      comments: (p.comments ?? '').toString().trim() || '—',
+      comments: (p.comments ?? '').toString().trim() || '-',
     }
 
     const results: Record<string, unknown> = {}
@@ -68,7 +68,7 @@ Deno.serve(async (req: Request) => {
     if (p.email) {
       const r = await sendResend(
         p.email,
-        `Thai Akha Kitchen — สรุปยอดจ่าย ${data.run_date}`.trim(),
+        `Thai Akha Kitchen - สรุปยอดจ่าย ${data.run_date}`.trim(),
         renderEmail(DRIVER_TH_HTML, data),
       )
       results.driver = r.ok ? 'sent' : r.detail
@@ -79,7 +79,7 @@ Deno.serve(async (req: Request) => {
     // 2) Ufficio — EN (riepilogo, niente conferma)
     const a = await sendResend(
       OFFICE,
-      `Driver: ${data.driver_name} – ${session} (${data.run_date})`,
+      `Driver: ${data.driver_name} - ${session} (${data.run_date})`,
       renderEmail(ADMIN_EN_HTML, data),
     )
     results.office = a.ok ? 'sent' : a.detail

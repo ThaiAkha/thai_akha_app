@@ -55,8 +55,8 @@ Deno.serve(async (req: Request) => {
       driver_name: p.driver_name ?? 'Driver',
       session_id: session,
       run_date: p.run_date ?? '',
-      stops_range: stops || '—',
-      reason: (p.reason ?? '').toString().trim() || '—',
+      stops_range: stops || '-',
+      reason: (p.reason ?? '').toString().trim() || '-',
     }
 
     const results: Record<string, unknown> = {}
@@ -65,7 +65,7 @@ Deno.serve(async (req: Request) => {
     if (p.email) {
       const r = await sendResend(
         p.email,
-        `Thai Akha Kitchen — บริการรับส่งถูกยกเลิก ${data.run_date}`.trim(),
+        `Thai Akha Kitchen - บริการรับส่งถูกยกเลิก ${data.run_date}`.trim(),
         renderEmail(CANCEL_DRIVER_TH_HTML, data),
       )
       results.driver = r.ok ? 'sent' : r.detail
@@ -76,7 +76,7 @@ Deno.serve(async (req: Request) => {
     // 2) Ufficio — EN (rosso allerta)
     const a = await sendResend(
       OFFICE,
-      `Pickup cancelled — ${data.driver_name} · ${session} (${data.run_date})`,
+      `Pickup cancelled - ${data.driver_name} · ${session} (${data.run_date})`,
       renderEmail(CANCEL_ADMIN_EN_HTML, data),
     )
     results.office = a.ok ? 'sent' : a.detail

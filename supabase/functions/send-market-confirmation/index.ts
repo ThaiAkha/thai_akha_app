@@ -157,7 +157,7 @@ Deno.serve(async (req: Request) => {
         items_rows: rows,
       })
 
-      const subject = `${SUBJECT_LABEL[role]} market expenses confirmed — ${reportDate}${who?.name ? ` · ${who.name}` : ''}`
+      const subject = `${SUBJECT_LABEL[role]} market expenses confirmed - ${reportDate}${who?.name ? ` · ${who.name}` : ''}`
       const sent = await sendResend(to, subject, html)
       results[runId] = sent.ok ? { sent: true, id: sent.id } : { sent: false, detail: sent.detail }
     }

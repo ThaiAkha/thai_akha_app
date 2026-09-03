@@ -28,6 +28,7 @@
     "fieldCategory": "Category",
     "selectCategory": "Select Category",
     "fieldStock": "Stock Quantity",
+    "fieldReorderPoint": "Reorder point",
     "fieldPrice": "Price (THB)",
     "fieldDescription": "Internal Description",
     "descPlaceholder": "Internal notes/description...",
@@ -59,6 +60,7 @@
     "savedSuccess": "Product saved successfully",
     "saveFailed": "Failed to save: {{message}}",
     "confirmDelete": "Are you sure you want to delete this product?",
-    "copiedCount": "{{count}} items copied to clipboard"
+    "copiedCount": "{{count}} items copied to clipboard",
+    "categoryRequired": "Please choose a category"
   }
 }

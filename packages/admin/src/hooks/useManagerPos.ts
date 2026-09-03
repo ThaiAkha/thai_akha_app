@@ -21,7 +21,8 @@ export function useManagerPos() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     // Default per orario: prima delle 18:00 = Morning, dopo = Evening (switch nella toolbar centrale).
     const [selectedSession, setSelectedSession] = useState<SessionType>(() => (new Date().getHours() >= 18 ? 'evening_class' : 'morning_class'));
-    const [activeCategory, setActiveCategory] = useState<string>('beer');
+    // #170: 'beer' e' una categoria legacy vuota (i prodotti stanno in beer_wine): il POS apriva su un tab vuoto
+    const [activeCategory, setActiveCategory] = useState<string>('beer_wine');
     const [activeSubCategory, setActiveSubCategory] = useState<string>('all');
 
     // Selection & Orders

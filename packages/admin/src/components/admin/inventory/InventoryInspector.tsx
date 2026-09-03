@@ -121,6 +121,21 @@ const InventoryInspector: React.FC<InventoryInspectorProps> = ({
                         </div>
 
                         <div className="space-y-1.5">
+                            {/* #170: soglia di riassortimento, prima viveva solo nel DB (06245 §3) */}
+                            <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldReorderPoint')}</SectionTitle>
+                            <Input
+                                type="number"
+                                value={editingProduct.reorder_point}
+                                onChange={(e) => handleChange('reorder_point', parseInt(e.target.value) || 0)}
+                                disabled={!isEditing && !isNew}
+                                className={cn(
+                                    "text-sm font-medium bg-surface dark:bg-surface h-10 px-3 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500/20 transition-all",
+                                    (!isEditing && !isNew) && "opacity-60 cursor-not-allowed bg-gray-50/50"
+                                )}
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
                             <SectionTitle as="h6" tone="sub" className="mb-2">{t('inspector.fieldPrice')}</SectionTitle>
                             <Input
                                 type="number"

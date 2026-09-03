@@ -28,6 +28,7 @@
     "fieldCategory": "หมวดหมู่",
     "selectCategory": "เลือกหมวดหมู่",
     "fieldStock": "จำนวนสต็อก",
+    "fieldReorderPoint": "จุดสั่งซื้อใหม่",
     "fieldPrice": "ราคา (บาท)",
     "fieldDescription": "คำอธิบายภายใน",
     "descPlaceholder": "หมายเหตุ/คำอธิบายภายใน...",
@@ -59,6 +60,7 @@
     "savedSuccess": "บันทึกสินค้าสำเร็จ",
     "saveFailed": "บันทึกล้มเหลว: {{message}}",
     "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบสินค้านี้?",
-    "copiedCount": "คัดลอก {{count}} รายการแล้ว"
+    "copiedCount": "คัดลอก {{count}} รายการแล้ว",
+    "categoryRequired": "กรุณาเลือกหมวดหมู่"
   }
 }

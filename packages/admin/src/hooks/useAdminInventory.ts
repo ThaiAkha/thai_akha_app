@@ -10,6 +10,8 @@ export interface Product {
     price_thb: number;
     cost_thb: number;
     stock_quantity: number;
+    /** #170: soglia di riassortimento (06245 §3); sotto o uguale = da ricomprare */
+    reorder_point: number;
     category_id: string;
     sub_category: string;
     catalog_image_url: string;
@@ -30,7 +32,11 @@ export const EMPTY_PRODUCT: Product = {
     price_thb: 0,
     cost_thb: 0,
     stock_quantity: 0,
-    category_id: 'beer',
+    reorder_point: 5,
+    // #170: nessuna categoria di default. 'beer' era una delle 7 categorie legacy vuote
+    // (beer, coffee, energy, merch, wine, service_class, service_tour): un prodotto creato
+    // senza cambiarla finiva in una categoria morta. La categoria e' obbligatoria al salvataggio.
+    category_id: '',
     sub_category: 'general',
     catalog_image_url: '',
     is_active: true,
@@ -114,6 +120,10 @@ export const useAdminInventory = () => {
     const handleSave = async () => {
         if (!editingProduct.item_name || !editingProduct.sku) {
             alert(t('alerts.nameSkuRequired'));
+            return;
+        }
+        if (!editingProduct.category_id) {
+            alert(t('alerts.categoryRequired'));
             return;
         }
 

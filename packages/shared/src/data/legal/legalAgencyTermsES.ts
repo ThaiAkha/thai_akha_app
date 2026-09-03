@@ -1,5 +1,5 @@
 // GENERATO DA legal_documents - NON EDITARE A MANO
-// doc_key: agency_terms (es) | versione: 1.2 | generato: 2026-08-02
+// doc_key: agency_terms (es) | versione: 1.2 | generato: 2026-09-03
 // Per cambiare il testo: aggiorna il DB (master nel brain), poi `pnpm gen-legal`.
 
 import type { LegalDocument } from '../../types/legal.types';
@@ -9,7 +9,7 @@ export const AGENCY_TERMS_ES: LegalDocument = {
   "version": "1.2",
   "title": "Términos de Servicio para Agencias",
   "effectiveDate": "",
-  "lastUpdated": "2026-07-28",
+  "lastUpdated": "2026-09-03",
   "sections": [
     {
       "title": "Definiciones y Partes",

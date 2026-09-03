@@ -1,5 +1,5 @@
 // GENERATO DA legal_documents - NON EDITARE A MANO
-// doc_key: agency_terms (zh) | versione: 1.2 | generato: 2026-08-02
+// doc_key: agency_terms (zh) | versione: 1.2 | generato: 2026-09-03
 // Per cambiare il testo: aggiorna il DB (master nel brain), poi `pnpm gen-legal`.
 
 import type { LegalDocument } from '../../types/legal.types';
@@ -9,7 +9,7 @@ export const AGENCY_TERMS_ZH: LegalDocument = {
   "version": "1.2",
   "title": "旅行社服务条款",
   "effectiveDate": "",
-  "lastUpdated": "2026-07-28",
+  "lastUpdated": "2026-09-03",
   "sections": [
     {
       "title": "定义与参与方",

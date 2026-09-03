@@ -1,15 +1,15 @@
 // GENERATO DA legal_documents - NON EDITARE A MANO
-// doc_key: agency_terms | versione: 1.2 | generato: 2026-08-02
+// doc_key: agency_terms | versione: 1.3 | generato: 2026-09-03
 // Per cambiare il testo: aggiorna il DB (master nel brain), poi `pnpm gen-legal`.
 
 import type { LegalDocument } from '../../types/legal.types';
 
 export const AGENCY_TERMS: LegalDocument = {
   "id": "agency_terms",
-  "version": "1.2",
+  "version": "1.3",
   "title": "Agency Terms of Service",
   "effectiveDate": "",
-  "lastUpdated": "2026-07-28",
+  "lastUpdated": "2026-09-03",
   "sections": [
     {
       "title": "Definitions & Parties",
@@ -57,9 +57,13 @@ export const AGENCY_TERMS: LegalDocument = {
       "title": "Payment Terms",
       "anchor": "payments",
       "content": [
-        "• **Invoicing:** We invoice through Zoho Books. Official tax invoices carry our Tax ID (0503558007188) and legal entity details above.",
-        "• **Terms:** Payment terms are agreed with your Agency and confirmed at onboarding, and are stated on each invoice.",
-        "• **Accepted methods:** Agreed with your Agency at onboarding, for example bank transfer.",
+        "• **Net rate model:** You sell our experiences to your customers at our public rates and pay us the net rate: the public rate minus your commission for each Traveler, at the tier that applies when the booking is confirmed. You keep your commission at the point of sale; nothing is paid back to you afterwards. The net rate of a booking is fixed at confirmation and does not change if your tier changes later in the cycle.",
+        "• **Invoicing:** We invoice through Zoho Books, at the net rate and in Thai Baht (THB). As agreed at onboarding, invoices are issued per booking or grouped by week or by month. Every invoice is emailed to your billing address and listed in the Partner Portal. Official tax invoices carry our Tax ID (0503558007188) and the legal entity details above.",
+        "• **Due date:** The net rate is paid before the class. For classes in the current month, payment is due by the day before the class; for classes in later months, by the 1st of the month in which the class takes place. Where a weekly or monthly invoicing cycle has been agreed in writing at onboarding, payment is due by the date stated on each invoice.",
+        "• **Payment methods:** Bank transfer in Thai Baht to the account stated on the invoice is our standard method. The other methods listed in your Rate Sheet are available by agreement. Bank charges, including those of intermediary banks on international transfers, are borne by the Agency: the amount we receive must match the invoice.",
+        "• **Confirming your payment:** Once you have paid, mark the invoice as paid in the Partner Portal and attach your transfer receipt. We check it, record the payment in Zoho Books, and you receive your official receipt by email.",
+        "• **Late payments:** We charge no interest on late payments. If an invoice is not paid by its due date, we will get in touch with you and settle it together.",
+        "• **Marketplace bookings:** Bookings made through Viator, Klook, Cookly or a similar platform are paid and settled through that platform, which keeps its commission at source. We issue no invoice for those bookings: the platform settles with us under its own terms.",
         "• **Taxes:** Amounts are stated exclusive of any applicable taxes or withholding, which are handled according to Thai law."
       ]
     },
@@ -67,8 +71,16 @@ export const AGENCY_TERMS: LegalDocument = {
       "title": "Cancellations, Amendments & No-Shows",
       "anchor": "cancellations",
       "content": [
-        "• **Agency cancellations and changes:** Agency-specific cancellation and amendment terms are agreed in your partnership agreement. Where none applies, our standard consumer window of 48 hours applies (see Guest Terms).",
-        "• **No-shows:** A Traveler who misses the pick-up or does not attend is treated as a No-Show and is non-refundable, as described in our Guest Terms.",
+        "One rule for everyone: Agency bookings follow the same 48-hour window as our direct guests. Hours are counted in Thailand time (ICT, UTC+7), back from the class start: 9:00 AM for the Morning Class and 5:00 PM for the Evening Class.",
+        "• **How to cancel or change:** In the Partner Portal, or by email to office@thaiakhakitchen.com quoting the booking reference. The time we receive your request is the time that counts.",
+        "• **Free cancellation:** Cancel at least 48 hours before the class start and nothing is due for the cancelled Travelers. If the booking has already been invoiced, we correct the invoice; if it has already been paid, we refund it in full.",
+        "• **Within 48 hours:** Cancellations made less than 48 hours before the class start are not refundable: the net rate for those Travelers remains due and is invoiced, or is not refunded if already paid.",
+        "• **Fewer Travelers:** The same rule applies per Traveler. Travelers removed from a booking at least 48 hours before the class are not charged; Travelers removed within 48 hours are charged at the net rate.",
+        "• **Date or class changes:** Free of charge when requested at least 48 hours before the class start, subject to availability on the new date or class; there is no limit to the number of changes. For requests inside 48 hours, contact us and we will do what we can; if no seat is available, the original booking stands and the 48-hour rule above applies.",
+        "• **No-shows:** A Traveler who misses the pick-up or does not attend is a No-Show and is not refundable: the net rate remains due, exactly as for our direct guests. The pick-up readiness and waiting rules are in our Guest Terms; please relay them to your Travelers (see Section 7).",
+        "• **Exceptional circumstances:** If your Travelers cannot attend for reasons beyond their control, such as a cancelled flight, severe weather or sudden illness, tell us as soon as you can. We look at each case with care and may offer a new date at no charge. This is at our discretion and does not change the rules above.",
+        "• **Cancelled bookings and your tier:** Cancelled bookings do not count towards the Traveler volume of your commission tier.",
+        "• **Marketplace bookings:** Bookings made through Viator, Klook, Cookly or a similar platform follow that platform's cancellation and refund rules, and are cancelled through the platform, not with us directly.",
         "• **Cancellation by us:** In the rare event we must cancel, you receive a full refund or a reschedule to any available date, at no penalty."
       ]
     },
@@ -110,7 +122,7 @@ export const AGENCY_TERMS: LegalDocument = {
       "anchor": "term",
       "content": [
         "• This agreement runs until ended by either party. Either party may end it with reasonable written notice.",
-        "• We may suspend or end portal access, without notice, in case of breach of these Terms, non-payment, or misuse of confidential information.",
+        "• We may suspend or end portal access, without notice, in case of breach of these Terms or misuse of confidential information.",
         "• Bookings already confirmed before termination are honored under these Terms."
       ]
     },

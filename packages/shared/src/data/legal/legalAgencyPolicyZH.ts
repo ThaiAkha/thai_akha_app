@@ -1,5 +1,5 @@
 // GENERATO DA legal_documents - NON EDITARE A MANO
-// doc_key: agency_policy (zh) | versione: 1.2 | generato: 2026-08-02
+// doc_key: agency_policy (zh) | versione: 1.2 | generato: 2026-09-03
 // Per cambiare il testo: aggiorna il DB (master nel brain), poi `pnpm gen-legal`.
 
 import type { LegalDocument } from '../../types/legal.types';

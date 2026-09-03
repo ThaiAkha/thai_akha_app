@@ -512,7 +512,7 @@ async function fetchIngredientData(
   try {
     const { data, error } = await supabase
       .from("ingredients_library")
-      .select("seo_title, seo_description, og_title, og_description, image_asset_id, slug, name_en, summary_ai, json_ld, canonical_url")
+      .select("seo_title, seo_description, og_title, og_description, image_asset_id, slug, name, summary_ai, json_ld, canonical_url")
       .eq("slug", slug)
       .eq("is_published", true)
       .single();
@@ -523,7 +523,7 @@ async function fetchIngredientData(
     }
 
     const d = data as Record<string, unknown>;
-    const title = (d.seo_title || d.og_title || d.name_en || "Thai Cooking Ingredient") as string;
+    const title = (d.seo_title || d.og_title || d.name || "Thai Cooking Ingredient") as string;
     const description = (d.seo_description || d.og_description || d.summary_ai || "A key ingredient in Akha and Northern Thai cooking.") as string;
 
     // og:image from image_asset_id → media_assets (ingredients use image_asset_id, not cover_asset_id).

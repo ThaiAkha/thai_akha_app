@@ -87,7 +87,7 @@ export async function getRecipeContextForCherry(
     .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
 
   const nameOf = (i: KeyIngredient) =>
-    String((libById.get(String(i.ingredient_id))?.name_en as string) ?? i.ingredient);
+    String((libById.get(String(i.ingredient_id))?.name as string) ?? i.ingredient);
   const descOf = (i: KeyIngredient) =>
     firstSentence(String((libById.get(String(i.ingredient_id))?.description as string) ?? ''));
 
@@ -106,7 +106,7 @@ export async function getRecipeContextForCherry(
       if (a.action === 'omit') {
         subs.push(`${nameOf(i)} → omitted (${pid})`);
       } else if (a.action === 'substitute' && a.substitute_id) {
-        const subName = String((libById.get(String(a.substitute_id))?.name_en as string) ?? 'substitute');
+        const subName = String((libById.get(String(a.substitute_id))?.name as string) ?? 'substitute');
         subs.push(`${nameOf(i)} → ${subName} (${pid})`);
       }
     }

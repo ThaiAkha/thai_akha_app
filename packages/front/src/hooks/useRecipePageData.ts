@@ -17,7 +17,7 @@ import { t } from '../i18n';
 
 export interface IngredientDetail {
   id: string;
-  name_en: string;
+  name: string;
   name_th: string;
   phonetic?: string;
   description: string;
@@ -159,7 +159,7 @@ export function useRecipePageData(
       fullLibrary.map(lib => [lib.id as string, lib])
     );
     const libraryMapByName = new Map(
-      fullLibrary.map(lib => [(lib.name_en as string).toLowerCase().trim(), lib])
+      fullLibrary.map(lib => [(lib.name as string).toLowerCase().trim(), lib])
     );
 
     return keyIngredientsList.map(keyIng => {
@@ -181,7 +181,7 @@ export function useRecipePageData(
       if (!lib) {
         return {
           id: keyIng.ingredient_id || name.toLowerCase().replace(/\s+/g, '-'),
-          name_en: name,
+          name: name,
           name_th: '',
           description: '',
           image_url: '',
@@ -191,7 +191,7 @@ export function useRecipePageData(
       }
       return {
         id: lib.id as string,
-        name_en: lib.name_en as string,
+        name: lib.name as string,
         name_th: lib.name_th as string,
         phonetic: lib.phonetic as string | undefined,
         description: lib.description as string,
@@ -236,7 +236,7 @@ export function useRecipePageData(
                 acc.push({
                   ...ing,
                   id: substituteLib.id as string,
-                  name_en: substituteLib.name_en as string,
+                  name: substituteLib.name as string,
                   name_th: substituteLib.name_th as string,
                   phonetic: substituteLib.phonetic as string | undefined,
                   description: substituteLib.description as string,

@@ -54,8 +54,8 @@ const TABLES: Record<string, TableCfg> = {
   },
   ingredients_library: {
     // "category" non esiste piu' (c'e' solo category_id, un id raw: inutile nel testo).
-    select: "id, name_en, name_th, description, seo_description, summary_ai",
-    text: (r) => [r.name_en, r.name_th, r.description, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
+    select: "id, name, name_th, description, seo_description, summary_ai",
+    text: (r) => [r.name, r.name_th, r.description, r.seo_description, r.summary_ai].map(clean).filter(Boolean).join(" — "),
   },
   content_categories: {
     select: "id, title, subtitle, description, summary_ai",

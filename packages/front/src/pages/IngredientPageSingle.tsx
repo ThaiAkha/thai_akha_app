@@ -55,7 +55,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
   const handleShare = useCallback(() => {
     if (navigator.share) {
       navigator.share({
-        title: ingredient?.name_en ?? 'Thai Akha',
+        title: ingredient?.name ?? 'Thai Akha',
         text: ingredient?.summary_ai ?? '',
         url: window.location.href,
       }).catch(console.error);
@@ -101,7 +101,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
     <PageLayout
       slug="thai-cooking-ingredients-single"
       customMetadata={ingredient ? {
-        titleMain: ingredient.name_en,
+        titleMain: ingredient.name,
         description: ingredient.seo_description || ingredient.summary_ai || '',
         imageUrl: ingredient.cover_data?.image_url || '',
       } : undefined}
@@ -110,7 +110,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
     >
       {ingredient && (
         <PageSEO
-          title={ingredient.seo_title || ingredient.name_en}
+          title={ingredient.seo_title || ingredient.name}
           description={ingredient.seo_description || ingredient.summary_ai || ''}
           canonical={ingredient.canonical_url || `${window.location.origin}/${INGREDIENTS_HUB_SLUG}/${ingredient.slug}`}
           ogImage={ingredient.cover_data?.image_url || ''}
@@ -139,7 +139,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
           {!dataLoading && ingredient && (
             <article className="flex flex-col [gap:var(--space-fluid-m)] animate-in fade-in slide-in-from-bottom-4 duration-700">
               <HeaderSinglePost
-                title={ingredient.name_en}
+                title={ingredient.name}
                 subtitle={subtitle || undefined}
                 primaryImage={ingredient.cover_data?.image_url ?? undefined}
                 primaryImageAlt={ingredient.cover_data?.alt_text ?? undefined}
@@ -226,14 +226,14 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
               sectionId="sibiling_ingredients"
               onOpen={handleSiblingOpen}
               previous={previous ? {
-                title: previous.name_en,
+                title: previous.name,
                 subtitle: previous.phonetic ?? previous.name_th ?? null,
                 imageUrl: previous.cover_data?.image_url ?? null,
                 href: `/${INGREDIENTS_HUB_SLUG}/${previous.slug}`,
                 slug: previous.slug,
               } : null}
               next={next ? {
-                title: next.name_en,
+                title: next.name,
                 subtitle: next.phonetic ?? next.name_th ?? null,
                 imageUrl: next.cover_data?.image_url ?? null,
                 href: `/${INGREDIENTS_HUB_SLUG}/${next.slug}`,

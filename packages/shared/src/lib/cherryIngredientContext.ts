@@ -45,7 +45,7 @@ export function findIngredient(
   let best: { ing: Record<string, unknown>; score: number } | null = null;
 
   for (const ing of ingredients) {
-    const nameToks = tokenize(String(ing.name_en ?? ''));
+    const nameToks = tokenize(String(ing.name ?? ''));
     if (nameToks.length === 0) continue;
 
     let score = 0;
@@ -86,7 +86,7 @@ export async function getIngredientContextForCherry(text: string): Promise<strin
   const knowledge = summary || description;
   if (!knowledge) return null;
 
-  const name = String(ing.name_en ?? 'ingredient');
+  const name = String(ing.name ?? 'ingredient');
   const thai = String(ing.name_th ?? '').trim();
   const phonetic = String(ing.phonetic ?? '').trim();
   const nameLine = thai || phonetic ? `${name}${thai ? ` (${thai}${phonetic ? `, ${phonetic}` : ''})` : ''}` : name;

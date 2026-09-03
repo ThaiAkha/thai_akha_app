@@ -114,7 +114,7 @@ export const recipeService = {
                     dietary_substitutions (
                         original_ingredient,
                         substitute_ingredient,
-                        alt_sub:ingredients_library!alt_substitute_ingredient_id(name_en)
+                        alt_sub:ingredients_library!alt_substitute_ingredient_id(name)
                     )
                 `)
                 .order('display_order', { ascending: true });
@@ -137,7 +137,7 @@ export const recipeService = {
                 substitutions: ((p as unknown as Record<string, unknown[]>).dietary_substitutions || []).map(s => ({
                     original: (s as Record<string, string>).original_ingredient,
                     substitute: (s as Record<string, string>).substitute_ingredient,
-                    alt_substitute: ((s as Record<string, Record<string, string> | null>).alt_sub)?.name_en || null,
+                    alt_substitute: ((s as Record<string, Record<string, string> | null>).alt_sub)?.name || null,
                 })),
             }));
         })) || [];
@@ -174,7 +174,7 @@ export const recipeService = {
         const data = await fetchWithCache('ingredients_library_v3', async () => {
             const { data, error } = await supabase
                 .from('ingredients_library')
-                .select('id, name_en, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)');
+                .select('id, name, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)');
             if (error) return [];
             // Resolve cover from image_asset_id → media_assets; keep the `image_url`
             // alias so existing consumers keep working after the legacy column is dropped.

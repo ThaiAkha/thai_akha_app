@@ -14,7 +14,7 @@ const swipePower = (offset: number, velocity: number) => {
 
 /** Minimal ingredient shape rendered by the modal (IngredientDetail from useRecipePageData satisfies it). */
 export interface IngredientModalItem {
-  name_en: string;
+  name: string;
   name_th?: string | null;
   phonetic?: string | null;
   description?: string | null;
@@ -150,7 +150,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
                 {currentItem.image_url ? (
                   <MediaImage
                     url={currentItem.image_url}
-                    fallbackAlt={currentItem.name_en}
+                    fallbackAlt={currentItem.name}
                     className="w-full h-full"
                     imgClassName="w-full h-full object-cover pointer-events-none"
                     showCaption={false}
@@ -166,7 +166,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
               <div className="flex-1 md:w-1/2 h-[50%] md:h-full overflow-y-auto flex flex-col p-5 pb-16 md:p-8 md:pb-12 md:pr-16 lg:p-12 lg:pb-16 lg:pr-24">
                 <div className="pointer-events-none mb-4">
                   <HeaderSection
-                    title={currentItem.name_en}
+                    title={currentItem.name}
                     align="left"
                     variant="kitchen"
                     hideSubtitle={true}

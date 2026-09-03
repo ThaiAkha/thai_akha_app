@@ -100,7 +100,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
           'image': (recipeRaw?.cover as Record<string, unknown>)?.image_url,
           'url': `https://www.thaiakha.com/authentic-thai-akha-recipes/${slug}`,
           'author': { '@type': 'Organization', 'name': 'Thai Akha Kitchen' },
-          'recipeIngredient': richIngredients.map(ing => ing.quantity && ing.unit ? `${ing.quantity} ${ing.unit} ${ing.name_en}` : ing.name_en),
+          'recipeIngredient': richIngredients.map(ing => ing.quantity && ing.unit ? `${ing.quantity} ${ing.unit} ${ing.name}` : ing.name),
           'recipeInstructions': recipe.directions?.map(step => ({
             '@type': 'HowToStep',
             'text': step

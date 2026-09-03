@@ -182,7 +182,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                  {visibleIngredientsNames.map((ingName, idx) => {
-                    const details = richIngredients.find(i => i.name_en === ingName);
+                    const details = richIngredients.find(i => i.name === ingName);
                     return (
                        <button key={idx} onClick={() => details && setActiveIngredient(details)} className="relative flex items-stretch h-20 rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-secondary/50 transition-all duration-300 group">
                           <div className="w-[25%] relative overflow-hidden border-r border-white/5">
@@ -230,13 +230,13 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               <div className="h-64 w-full relative">
                  <MediaImage
                    url={activeIngredient.image_url}
-                   fallbackAlt={activeIngredient.name_en}
+                   fallbackAlt={activeIngredient.name}
                    showCaption={false}
                    imgClassName="w-full h-full object-cover"
                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] to-transparent" />
                  <div className="absolute bottom-6 left-6 right-6">
-                    <Typography variant="h3" className="text-white uppercase italic leading-none mb-1 text-3xl">{activeIngredient.name_en}</Typography>
+                    <Typography variant="h3" className="text-white uppercase italic leading-none mb-1 text-3xl">{activeIngredient.name}</Typography>
                     <div className="flex items-center gap-2 text-primary">
                        <Typography variant="h5">{activeIngredient.name_th}</Typography>
                     </div>

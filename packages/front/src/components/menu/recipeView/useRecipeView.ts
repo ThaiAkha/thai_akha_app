@@ -38,15 +38,15 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ingredients_library')
-        .select('id, name_en, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
-        .in('name_en', ingredientNames);
+        .select('id, name, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
+        .in('name', ingredientNames);
       if (error) throw error;
       // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
       return ((data ?? []) as Array<Record<string, unknown>>).map((item): IngredientDetail => {
         const cover = item.cover as { image_url?: string } | null;
         return {
           id: item.id as string,
-          name_en: item.name_en as string,
+          name: item.name as string,
           name_th: item.name_th as string,
           phonetic: item.phonetic as string | undefined,
           description: item.description as string,
@@ -72,7 +72,7 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
   // --- 2. FILTRO PRIVACY PUBBLICA ---
   const visibleIngredientsNames = useMemo(() => {
     return recipe.keyIngredients.filter(name => {
-      const rich = richIngredients.find(ri => ri.name_en === name);
+      const rich = richIngredients.find(ri => ri.name === name);
       return rich ? rich.is_visible_public : false;
     });
   }, [recipe.keyIngredients, richIngredients]);

@@ -34,7 +34,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
       {cover?.image_url ? (
         <img
           src={cover.image_url}
-          alt={cover.alt_text || ingredient.name_en}
+          alt={cover.alt_text || ingredient.name}
           loading="lazy"
           decoding="async"
           className="absolute inset-0 z-0 w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-[1.04]"
@@ -57,7 +57,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
               interactive && 'md:group-hover:text-pantry-2',
             )}
           >
-            {ingredient.name_en}
+            {ingredient.name}
           </Typography>
 
           {showNativeNames && (ingredient.name_th || ingredient.phonetic) && (
@@ -98,7 +98,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
     <RippleLink
       href={`/${INGREDIENTS_HUB_SLUG}/${ingredient.slug}`}
       onNavigate={() => onOpen?.(ingredient.slug)}
-      aria-label={ingredient.name_en}
+      aria-label={ingredient.name}
       className={cn(
         baseClass,
         'transition-all duration-500 ease-out motion-reduce:transition-none',

@@ -65,7 +65,7 @@ export interface CategoryData {
 
 export interface IngredientDetail {
   id: string;
-  name_en: string;
+  name: string;
   name_th: string;
   phonetic?: string;
   description: string;

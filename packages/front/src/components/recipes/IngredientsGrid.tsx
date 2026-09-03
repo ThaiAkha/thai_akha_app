@@ -47,13 +47,13 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           // fianco e collassavano (main "compresso") quando non c'erano.
           !isBase && (isMain ? 'col-span-2 aspect-[4/3] md:aspect-[16/10]' : 'col-span-1 aspect-square')
         )}
-        aria-label={ing.name_en}
+        aria-label={ing.name}
       >
         {/* ── Foto full-card ─────────────────────────────────────────────── */}
         {ing.image_url && !ing.substituted ? (
           <img
             src={ing.image_url}
-            alt={ing.name_en}
+            alt={ing.name}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
           />
@@ -89,7 +89,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             color="white"
             className="leading-snug line-clamp-2 drop-shadow-md"
           >
-            {ing.name_en}
+            {ing.name}
           </Typography>
         </div>
       </button>

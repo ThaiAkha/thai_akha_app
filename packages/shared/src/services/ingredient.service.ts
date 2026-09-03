@@ -4,7 +4,7 @@ import { fetchWithCache } from './_cache';
 
 // Light columns for the hub/category grids + sibling nav (cover joined via image_asset_id).
 const INDEX_COLS =
-  'id, slug, name_en, name_th, phonetic, category_id, ' +
+  'id, slug, name, name_th, phonetic, category_id, ' +
   'cover_data:media_assets!image_asset_id(image_url, alt_text, title)';
 
 /** Recipes that use an ingredient — union of recipe_key_ingredients + recipe_composition. */
@@ -47,7 +47,7 @@ export const ingredientService = {
         .eq('is_published', true)
         .eq('is_visible_public', true)
         .not('kitchen_usage', 'is', null)
-        .order('name_en', { ascending: true });
+        .order('name', { ascending: true });
 
       if (error) {
         console.error('Ingredients index fetch error:', error);

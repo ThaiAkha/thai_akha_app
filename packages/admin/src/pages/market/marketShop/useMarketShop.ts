@@ -77,7 +77,7 @@ export function useMarketShop() {
   const fetchData = useCallback(async () => {
     try {
       const [libRes, runRes] = await Promise.all([
-        supabase.from('ingredients_library').select('*, cover:media_assets!image_asset_id(image_url)').order('name_en'),
+        supabase.from('ingredients_library').select('*, cover:media_assets!image_asset_id(image_url)').order('name'),
         supabase.from('market_runs').select('*').order('run_date', { ascending: false })
       ]);
       // Resolve image from image_asset_id → media_assets; keep the image_url alias
@@ -311,7 +311,7 @@ export function useMarketShop() {
         const item = library.find(l => l.id === id);
         return {
           id,
-          name: item?.name_en || 'Unknown',
+          name: item?.name || 'Unknown',
           // Logistics: quantity = packs, unit = pack label; pack_size/base_unit let
           // reports & COGS reconstruct the real amount (qty × pack_size base_unit).
           unit: item ? packLabel(item) : 'unit',

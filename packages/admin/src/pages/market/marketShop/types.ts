@@ -33,7 +33,7 @@ export function normalizeEntry(
     const [id, val] = entry;
     const libItem = lib.find(l => l.id === id);
     return {
-      id, name: libItem?.name_en || '', qty: val.qty, price: val.price,
+      id, name: libItem?.name || '', qty: val.qty, price: val.price,
       unit: libItem ? packLabel(libItem) : 'unit',
       pack_size: libItem ? packSize(libItem) : 1,
       base_unit: libItem ? baseUnit(libItem) : 'unit',
@@ -44,7 +44,7 @@ export function normalizeEntry(
 
 export interface LibraryItem {
   id: string;
-  name_en: string;
+  name: string;
   name_th: string;
   image_url: string;
   is_logistics_item: boolean;

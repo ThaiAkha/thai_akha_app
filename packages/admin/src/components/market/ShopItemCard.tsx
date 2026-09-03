@@ -8,7 +8,7 @@ import { describePack, describeQty, packLabel } from './packUtils';
 
 interface LibraryItem {
   id: string;
-  name_en: string;
+  name: string;
   name_th: string;
   image_url: string;
   default_unit: string;
@@ -47,7 +47,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
   // Monolingual ingredient name: pick the column for the current UI language,
   // fall back to English when a translation is missing (translations are WIP).
   const lang = i18n.language?.split('-')[0];
-  const displayName = (lang === 'th' && item.name_th) ? item.name_th : item.name_en;
+  const displayName = (lang === 'th' && item.name_th) ? item.name_th : item.name;
 
   return (
     <div
@@ -67,7 +67,7 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
             "w-full h-full object-cover transition-transform duration-700",
             isAdded && "scale-110"
           )}
-          alt={item.name_en}
+          alt={item.name}
         />
 
         {/* White 10% overlay — fades out on hover */}

@@ -125,7 +125,7 @@ export interface IngredientCover {
 export interface IngredientListItem {
   id: string;
   slug: string;
-  name_en: string;
+  name: string;
   name_th?: string | null;
   phonetic?: string | null;
   category_id?: string | null;

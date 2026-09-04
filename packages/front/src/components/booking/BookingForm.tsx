@@ -14,12 +14,11 @@
  */
 
 import React, { useState } from 'react';
-import { useQuery } from '@thaiakha/shared/query';
 import { Typography, Icon, Button, Card, Modal } from '../ui/index';
 import { Input, PhonePrefixSelect, NationalitySelect } from '../ui/form';
 import { cn } from '@thaiakha/shared/lib/utils';
 import type { LegalDocument, LegalDocumentSection } from '@thaiakha/shared';
-import { getInfoPage } from '../../services/infoPages.service';
+import { useInfoPage } from '../../hooks/useInfoPage';
 import { InfoContentSkeleton } from '../skeleton';
 import type { BookingFormData, AuthMode, PaymentMethod } from './booking.types';
 import type { UserProfile } from '../../services/auth.service';
@@ -114,14 +113,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
 }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [legalModal, setLegalModal]       = useState<'terms' | 'privacy' | null>(null);
-  // Documenti legali dal DB (stessa fonte di Terms/Privacy page) — regola #17: useQuery,
-  // fetch lazy alla prima apertura del modal, poi resta in cache (contenuto pubblico).
+  // Documenti legali dal DB (stessa fonte di Terms/Privacy page): fetch lazy alla
+  // prima apertura del modal, poi resta in cache (contenuto pubblico).
   const legalSlug = legalModal === 'terms' ? 'booking-terms-conditions' : 'privacy-policy';
-  const { data: legalDoc } = useQuery({
-    queryKey: ['info_page', legalSlug],
-    enabled: legalModal !== null,
-    queryFn: (): Promise<LegalDocument | null> => getInfoPage(legalSlug),
-  });
+  // Stesso hook di Terms/Privacy page: una sola chiave in cache (lingua inclusa),
+  // non una copia locale che si sarebbe scordata la lingua al primo giro.
+  const { document: legalDoc } = useInfoPage(legalSlug, { enabled: legalModal !== null });
 
   const isActualUser = (userProfile && userProfile.role !== 'guest_virtual') || !!loggedInUserId;
   const canSubmit    = termsAccepted || isActualUser;

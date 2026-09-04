@@ -1,4 +1,5 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { sidecarJoin, mergeSidecarRow } from '../lib/mergeTranslation';
 import { AudioAsset } from '../types/media.types';
 
 /**
@@ -36,23 +37,30 @@ export const audioService = {
   /**
    * Fetch audio info from content_categories (domain=recipe)
    */
-  async getCategoryAudio(categoryId: string): Promise<Partial<AudioAsset> | null> {
+  async getCategoryAudio(categoryId: string, lang = 'en'): Promise<Partial<AudioAsset> | null> {
     if (!categoryId) return null;
 
     try {
-      const { data, error } = await supabase
+      // `audio_story_url` resta sulla base: la traccia audio e' incisa in inglese,
+      // titolo e didascalia invece si traducono.
+      let query = supabase
         .from('content_categories')
-        .select('audio_story_url, title, ui_quote')
+        .select('audio_story_url, title, ui_quote'
+          + sidecarJoin('content_categories_translations', ['title', 'ui_quote'], lang))
         .eq('id', categoryId)
-        .eq('domain', 'recipe')
-        .single();
+        .eq('domain', 'recipe');
+      if (lang !== 'en') query = query.eq('translations.lang', lang);
+      const { data: raw, error } = await query.single();
 
-      if (error || !data || !data.audio_story_url) return null;
+      if (error || !raw) return null;
+      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+      const data = mergeSidecarRow(raw as unknown as Record<string, unknown>, lang);
+      if (!data.audio_story_url) return null;
 
       return {
-        audio_url: data.audio_story_url,
-        title: data.title,
-        caption: data.ui_quote || '',
+        audio_url: data.audio_story_url as string,
+        title: data.title as string,
+        caption: (data.ui_quote as string) || '',
         asset_id: categoryId,
         id: categoryId,
         transcript: '', // Not available in category metadata

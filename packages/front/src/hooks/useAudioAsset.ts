@@ -6,6 +6,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { audioService } from '@thaiakha/shared/services';
+import { useLanguage } from '../context/LanguageContext';
 import { AudioAsset } from '@thaiakha/shared';
 
 interface UseAudioAssetOptions {
@@ -30,10 +31,15 @@ export function useAudioAsset({ assetId, categoryId, url }: UseAudioAssetOptions
   const byCategory = !byAsset && Boolean(categoryId);
   const enabled = byAsset || byCategory;
 
+  // Solo il ramo categoria dipende dalla lingua (titolo e didascalia dal sidecar):
+  // audio_assets non ha sidecar, quindi la sua chiave resta com'era.
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: byAsset ? (['audio_asset', assetId ?? ''] as const) : (['category_audio', categoryId ?? ''] as const),
+    queryKey: byAsset
+      ? (['audio_asset', assetId ?? ''] as const)
+      : (['category_audio', lang, categoryId ?? ''] as const),
     queryFn: (): Promise<Partial<AudioAsset> | null> =>
-      byAsset ? audioService.getAudioAsset(assetId!) : audioService.getCategoryAudio(categoryId!),
+      byAsset ? audioService.getAudioAsset(assetId!) : audioService.getCategoryAudio(categoryId!, lang),
     enabled,
   });
 

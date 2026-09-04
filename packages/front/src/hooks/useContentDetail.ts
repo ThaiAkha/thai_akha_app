@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@thaiakha/shared/query';
+import { useLanguage } from '../context/LanguageContext';
 
 interface UseContentDetailOptions<TDetail, TListItem extends { slug: string }> {
     /** Prefisso della chiave di cache (es. 'news_detail'): una funzione fetcher non e' una chiave. */
     cacheKey: string;
     slug: string;
     listItems: TListItem[];
-    fetcher: (slug: string) => Promise<TDetail | null>;
-    secondaryFetcher?: (slug: string) => Promise<unknown>;
+    /** Riceve anche la lingua attiva: il dettaglio va letto tradotto, non in inglese. */
+    fetcher: (slug: string, lang: string) => Promise<TDetail | null>;
+    secondaryFetcher?: (slug: string, lang: string) => Promise<unknown>;
 }
 
 interface UseContentDetailResult<TDetail, TListItem> {
@@ -39,13 +41,17 @@ export function useContentDetail<TDetail, TListItem extends { slug: string }>(
 ): UseContentDetailResult<TDetail, TListItem> {
     const { cacheKey, slug, listItems, fetcher, secondaryFetcher } = options;
 
+    // La lingua sta qui e non in ogni chiamante: cosi' ingrediente, news e cultura
+    // diventano multilingua in un punto solo, e nessuno puo' scordarsela.
+    const { lang } = useLanguage();
+
     const query = useQuery({
-        queryKey: [cacheKey, slug] as const,
+        queryKey: [cacheKey, lang, slug] as const,
         enabled: slug.length > 0,
         queryFn: async () => {
             const [detail, secondary] = await Promise.all([
-                fetcher(slug),
-                secondaryFetcher ? secondaryFetcher(slug) : Promise.resolve(null),
+                fetcher(slug, lang),
+                secondaryFetcher ? secondaryFetcher(slug, lang) : Promise.resolve(null),
             ]);
             return { detail, secondary };
         },

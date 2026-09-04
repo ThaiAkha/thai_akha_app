@@ -1,5 +1,6 @@
 import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface DietarySubstitution {
   original: string;
@@ -23,11 +24,11 @@ export interface DietaryProfile {
 
 const NO_PROFILES: DietaryProfile[] = [];
 
-export const dietaryProfilesQueryKey = ['dietary_profiles'] as const;
+export const dietaryProfilesQueryKey = (lang = 'en') => ['dietary_profiles', lang] as const;
 
 /** Profili dietetici dal service, mappati sul tipo UI e ordinati per display_order. */
-async function fetchDietaryProfiles(): Promise<DietaryProfile[]> {
-  const p = await contentService.getDietaryProfiles();
+async function fetchDietaryProfiles(lang: string): Promise<DietaryProfile[]> {
+  const p = await contentService.getDietaryProfiles(lang);
   const mapped: DietaryProfile[] = p.map(profile => ({
     id: profile.id as string,
     name: profile.name as string,
@@ -50,7 +51,8 @@ async function fetchDietaryProfiles(): Promise<DietaryProfile[]> {
  * condivisa fra le pagine, e `profiles` e' un riferimento stabile fra i render.
  */
 export function useDietaryKnowledge() {
-  const query = useQuery({ queryKey: dietaryProfilesQueryKey, queryFn: fetchDietaryProfiles });
+  const { lang } = useLanguage();
+  const query = useQuery({ queryKey: dietaryProfilesQueryKey(lang), queryFn: () => fetchDietaryProfiles(lang) });
   const profiles = query.data ?? NO_PROFILES;
 
   const getProfileData = (slug: string) => profiles.find(p => p.id === slug);

@@ -1,8 +1,38 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { SpicinessLevel } from '../types';
-import { fetchWithCache } from './_cache';
+import { fetchWithCache, normalizeLang } from './_cache';
 import { CONTENT_CATEGORY_PUBLIC_COLUMNS } from './contentMetadata.service';
 import { mediaService } from './media.service';
+import { sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+
+/**
+ * Campi di CONTENUTO dei sidecar del mondo ricetta.
+ * `slug` NON entra: lo slug tradotto ha una fonte sola, il registro
+ * v_translated_slugs (vedi SIDECAR_META_COLUMNS), e il merge lo scarterebbe comunque.
+ */
+const RECIPE_T_FIELDS = [
+    'name', 'subtitle', 'description', 'excerpt', 'health_benefits', 'garnish', 'cooks_tip',
+    'notes', 'author_note', 'servings', 'seo_title', 'seo_description', 'og_title',
+    'og_description', 'directions', 'essentials', 'dietary_variants',
+] as const;
+
+const CATEGORY_T_FIELDS = [
+    'title', 'title_highlight', 'tab_label', 'subtitle', 'description', 'content_body',
+    'ui_quote', 'seo_title', 'seo_description', 'og_title', 'og_description',
+] as const;
+
+const DIETARY_T_FIELDS = ['name', 'introduction', 'experience', 'description_long'] as const;
+
+const SPICINESS_T_FIELDS = [
+    'title', 'subtitle', 'description', 'label', 'philosophy_quote', 'chef_note', 'akha_connection',
+] as const;
+
+/** La categoria viaggia DENTRO la ricetta: va fusa allo stesso giro. */
+const RECIPE_EMBEDDED = ['content_categories'] as const;
+
+/** Join della categoria incorporata, gia' col suo sidecar. */
+const categoryEmbed = (lang: string): string =>
+    `content_categories(${CONTENT_CATEGORY_PUBLIC_COLUMNS}${sidecarJoin('content_categories_translations', CATEGORY_T_FIELDS, lang)})`;
 
 export const recipeService = {
 
@@ -24,31 +54,42 @@ export const recipeService = {
     },
 
     /** 🍜 RECIPES: All complete recipes with ingredients */
-    async getAllRecipesFull(): Promise<Record<string, unknown>[]> {
-        const data = await fetchWithCache<Record<string, unknown>[]>('recipes_full_v5', async () => {
-            const { data, error } = await supabase
+    async getAllRecipesFull(lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        // v6: select cambiata (join sidecar) + lingua nella chiave, o la cache
+        // localStorage servirebbe l'inglese sotto /it/.
+        const data = await fetchWithCache<Record<string, unknown>[]>(`recipes_full_${l}_v6`, async () => {
+            let query = supabase
                 .from('recipes')
-                .select(`*, content_categories(${CONTENT_CATEGORY_PUBLIC_COLUMNS}), recipe_key_ingredients(ingredient, ingredient_id, display_order, dietary_adaptations, ui_role), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`)
+                .select(`*, ${categoryEmbed(l)}, recipe_key_ingredients(ingredient, ingredient_id, display_order, dietary_adaptations, ui_role), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
+                    + sidecarJoin('recipes_translations', RECIPE_T_FIELDS, l))
                 .eq('recipe_type', 'class')
                 .order('name', { ascending: true });
+            if (l !== 'en') {
+                query = query.eq('translations.lang', l).eq('content_categories.translations.lang', l);
+            }
+            const { data, error } = await query;
             if (error) {
                 console.error('Recipes fetch error:', error);
                 return [];
             }
-            return data || [];
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l, RECIPE_EMBEDDED);
         });
         return data || [];
     },
 
     /** 🍜 RECIPE BY SLUG: Fetch single recipe with deep composition (class recipes only) */
-    async getRecipeBySlug(slug: string): Promise<Record<string, unknown> | null> {
-        const data = await fetchWithCache<Record<string, unknown> | null>(`recipe_${slug}_v12`, async () => {
-            const { data, error } = await supabase
+    async getRecipeBySlug(slug: string, lang = 'en'): Promise<Record<string, unknown> | null> {
+        const l = normalizeLang(lang);
+        // v13: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache<Record<string, unknown> | null>(`recipe_${slug}_${l}_v13`, async () => {
+            let query = supabase
                 .from('recipes')
                 .select(`
                     *,
                     allergen_adaptations,
-                    content_categories (${CONTENT_CATEGORY_PUBLIC_COLUMNS}),
+                    ${categoryEmbed(l)},
                     authors (
                         id,
                         name,
@@ -71,15 +112,19 @@ export const recipeService = {
                         dietary_adaptations,
                         ui_role
                     )
-                `)
+                `+ sidecarJoin('recipes_translations', RECIPE_T_FIELDS, l))
                 .eq('slug', slug)
-                .eq('recipe_type', 'class')
-                .single();
+                .eq('recipe_type', 'class');
+            if (l !== 'en') {
+                query = query.eq('translations.lang', l).eq('content_categories.translations.lang', l);
+            }
+            const { data, error } = await query.single();
             if (error) {
                 console.error(`Recipe fetch error [${slug}]:`, error);
                 return null;
             }
-            const result = data as Record<string, unknown>;
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            const result = mergeSidecarRow(data as unknown as Record<string, unknown>, l, RECIPE_EMBEDDED);
 
             // Resolve author avatar_asset_id → media_assets; keep authors.avatar_url alias.
             const recipeAuthor = result.authors as Record<string, unknown> | null;
@@ -92,8 +137,8 @@ export const recipeService = {
             // display_order. Sostituisce gallery_asset_ids / culture_asset_ids (restano
             // nel DB per l'admin, non più letti dal front). Shape superset (aggiunge quote).
             const [galleryAssets, cultureAssets] = await Promise.all([
-                mediaService.getGallery(`recipe_${slug}`),
-                mediaService.getGallery(`recipe_${slug}_culture`),
+                mediaService.getGallery(`recipe_${slug}`, l),
+                mediaService.getGallery(`recipe_${slug}_culture`, l),
             ]);
             result.gallery_assets = galleryAssets;
             result.culture_assets = cultureAssets;
@@ -104,9 +149,11 @@ export const recipeService = {
     },
 
     /** 🥗 DIETARY PROFILES: Halal, Kosher, Vegan, etc. */
-    async getDietaryProfiles(): Promise<Record<string, unknown>[]> {
-        return (await fetchWithCache<Record<string, unknown>[]>('dietary_profiles_v3', async () => {
-            const { data, error } = await supabase
+    async getDietaryProfiles(lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        // v4: select cambiata (join sidecar) + lingua nella chiave.
+        return (await fetchWithCache<Record<string, unknown>[]>(`dietary_profiles_${l}_v4`, async () => {
+            let query = supabase
                 .from('dietary_profiles')
                 .select(`
                     *,
@@ -116,14 +163,18 @@ export const recipeService = {
                         substitute_ingredient,
                         alt_sub:ingredients_library!alt_substitute_ingredient_id(name)
                     )
-                `)
+                `+ sidecarJoin('dietary_profiles_translations', DIETARY_T_FIELDS, l))
                 .order('display_order', { ascending: true });
+            if (l !== 'en') query = query.eq('translations.lang', l);
+            const { data: raw, error } = await query;
 
             if (error) {
                 console.error('Dietary Sync Error:', error);
                 return [];
             }
 
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            const data = mergeSidecarRows(raw as unknown as Record<string, unknown>[], l);
             return data.map(p => ({
                 id: (p as Record<string, unknown>).id,
                 name: (p as Record<string, unknown>).name,
@@ -144,21 +195,27 @@ export const recipeService = {
     },
 
     /** 🔥 SPICINESS LEVELS: All spiciness options */
-    async getSpicinessLevels(): Promise<SpicinessLevel[]> {
-        const data = await fetchWithCache('spiciness_levels_v2', async () => {
-            const { data, error } = await supabase
+    async getSpicinessLevels(lang = 'en'): Promise<SpicinessLevel[]> {
+        const l = normalizeLang(lang);
+        // v3: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache(`spiciness_levels_${l}_v3`, async () => {
+            let query = supabase
                 .from('spiciness_levels')
-                .select('*, photo:media_assets!photo_asset_id(image_url, alt_text, title)')
+                .select('*, photo:media_assets!photo_asset_id(image_url, alt_text, title)'
+                    + sidecarJoin('spiciness_levels_translations', SPICINESS_T_FIELDS, l))
                 .order('id', { ascending: true });
+            if (l !== 'en') query = query.eq('translations.lang', l);
+            const { data, error } = await query;
 
-            return error ? [] : (data || []);
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            return error ? [] : mergeSidecarRows(data as unknown as Record<string, unknown>[], l);
         });
-        return (data || []) as SpicinessLevel[];
+        return (data || []) as unknown as SpicinessLevel[];
     },
 
     /** 🛡️ ALLERGY MAP: Key-Value record for fast lookup */
-    async getAllergyMap(): Promise<Record<string, string>> {
-        const profiles = await recipeService.getDietaryProfiles();
+    async getAllergyMap(lang = 'en'): Promise<Record<string, string>> {
+        const profiles = await recipeService.getDietaryProfiles(lang);
         return Object.fromEntries(
             profiles
                 .filter(p => p.type === 'allergy')
@@ -170,15 +227,22 @@ export const recipeService = {
     },
 
     /** 🧅 INGREDIENTS LIBRARY: Fetch all ingredients for substitutions */
-    async getIngredientsLibrary(): Promise<Record<string, unknown>[]> {
-        const data = await fetchWithCache('ingredients_library_v3', async () => {
-            const { data, error } = await supabase
+    async getIngredientsLibrary(lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        // v4: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache(`ingredients_library_${l}_v4`, async () => {
+            let query = supabase
                 .from('ingredients_library')
-                .select('id, name, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)');
+                .select('id, name, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)'
+                    + sidecarJoin('ingredients_library_translations', ['name', 'description', 'summary_ai'], l));
+            if (l !== 'en') query = query.eq('translations.lang', l);
+            const { data: raw, error } = await query;
             if (error) return [];
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            const data = mergeSidecarRows(raw as unknown as Record<string, unknown>[], l);
             // Resolve cover from image_asset_id → media_assets; keep the `image_url`
             // alias so existing consumers keep working after the legacy column is dropped.
-            return (data || []).map(item => {
+            return data.map(item => {
                 const cover = (item as Record<string, unknown>).cover as { image_url?: string; alt_text?: string } | null;
                 return { ...item, image_url: cover?.image_url ?? null, image_alt: cover?.alt_text ?? null };
             });

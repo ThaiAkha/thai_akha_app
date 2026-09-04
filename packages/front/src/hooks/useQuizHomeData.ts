@@ -2,6 +2,7 @@ import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { contentService } from '@thaiakha/shared/services';
 import type { ContentCategoryDB, QuizRewardDB } from '@thaiakha/shared/types';
+import { useLanguage } from '../context/LanguageContext';
 
 const SCORE_KEY = 'thai_akha_quiz_points';
 const getLocalScore = (): number => {
@@ -12,7 +13,7 @@ const getLocalScore = (): number => {
 const NO_CATEGORIES: ContentCategoryDB[] = [];
 const NO_REWARDS: QuizRewardDB[] = [];
 
-export const quizHomeCatalogQueryKey = ['quiz_home', 'catalog'] as const;
+export const quizHomeCatalogQueryKey = (lang = 'en') => ['quiz_home', 'catalog', lang] as const;
 /** Prefisso 'user': dato dell'utente loggato, rimosso al logout (App.handleLogout). */
 export const quizScoreQueryKey = (managedId: string | null) =>
   ['user', 'quiz_score', managedId ?? 'self'] as const;
@@ -25,11 +26,12 @@ export const quizScoreQueryKey = (managedId: string | null) =>
  */
 /** Categorie + premi (ordinati per soglia): condiviso da home quiz e widget dashboard. */
 export function useQuizCatalog() {
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: quizHomeCatalogQueryKey,
+    queryKey: quizHomeCatalogQueryKey(lang),
     queryFn: async () => {
       const [cats, rwds] = await Promise.all([
-        contentService.getQuizCategories(),
+        contentService.getQuizCategories(lang),
         contentService.getQuizRewards(),
       ]);
       return {

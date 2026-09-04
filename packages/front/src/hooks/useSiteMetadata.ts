@@ -13,10 +13,12 @@
 
 import { useQuery } from '@thaiakha/shared/query';
 import { getPageExtras, type SiteMetadataExtras } from '@thaiakha/shared/services';
+import { useLanguage } from '../context/LanguageContext';
 
 export type { SiteMetadataExtras };
 
-export const siteMetadataExtrasQueryKey = (slug: string) => ['site_metadata_extras', slug] as const;
+export const siteMetadataExtrasQueryKey = (slug: string, lang = 'en') =>
+  ['site_metadata_extras', lang, slug] as const;
 
 export function useSiteMetadata(slug: string | undefined, options: { enabled?: boolean } = {}): {
   extras: SiteMetadataExtras | null;
@@ -24,9 +26,10 @@ export function useSiteMetadata(slug: string | undefined, options: { enabled?: b
 } {
   const key = slug ?? '';
   const enabled = (options.enabled ?? true) && key.length > 0;
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: siteMetadataExtrasQueryKey(key),
-    queryFn: () => getPageExtras(key),
+    queryKey: siteMetadataExtrasQueryKey(key, lang),
+    queryFn: () => getPageExtras(key, lang),
     enabled,
   });
   return { extras: query.data ?? null, loading: enabled && query.isPending };

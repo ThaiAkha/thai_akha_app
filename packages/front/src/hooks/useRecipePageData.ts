@@ -7,6 +7,7 @@ import { useAudioAsset } from './useAudioAsset';
 import { useAllergyMap } from './useAllergyMap';
 import { useSpicinessLevels } from './useSpicinessLevels';
 import { recipesFullQueryKey } from './useRecipesListData';
+import { useLanguage } from '../context/LanguageContext';
 import { LOCAL_PASSPORT_KEY } from './useUserPassport';
 import { mapToRecipeData } from '../lib/recipeHelpers';
 import { adaptRecipeToDiet } from '../lib/recipeAdapter';
@@ -36,8 +37,8 @@ const normalizeAllergenKey = (s: string) =>
 const NO_ROWS: Record<string, unknown>[] = [];
 const NO_INGREDIENTS: IngredientDetail[] = [];
 
-export const recipeBySlugQueryKey = (slug: string) => ['recipe', slug] as const;
-export const ingredientsLibraryQueryKey = ['ingredients_library'] as const;
+export const recipeBySlugQueryKey = (slug: string, lang = 'en') => ['recipe', lang, slug] as const;
+export const ingredientsLibraryQueryKey = (lang = 'en') => ['ingredients_library', lang] as const;
 
 /** Voce di recipes.linked_sub_recipes (JSONB): sub-ricetta collegata (es. curry → paste). #4 */
 export interface SubRecipeLink {
@@ -90,18 +91,19 @@ export function useRecipePageData(
   const { allergyMap, loading: allergyLoading } = useAllergyMap();
   const { spicinessLevels, loading: spiceLoading } = useSpicinessLevels();
 
+  const { lang } = useLanguage();
   const recipeQ = useQuery({
-    queryKey: recipeBySlugQueryKey(slug),
-    queryFn: async () => (await contentService.getRecipeBySlug(slug)) ?? null,
+    queryKey: recipeBySlugQueryKey(slug, lang),
+    queryFn: async () => (await contentService.getRecipeBySlug(slug, lang)) ?? null,
   });
   const libraryQ = useQuery({
-    queryKey: ingredientsLibraryQueryKey,
-    queryFn: async () => (await recipeService.getIngredientsLibrary()) ?? NO_ROWS,
+    queryKey: ingredientsLibraryQueryKey(lang),
+    queryFn: async () => (await recipeService.getIngredientsLibrary(lang)) ?? NO_ROWS,
   });
   // Stessa chiave della pagina lista (useRecipesListData): una sola copia in cache.
   const allQ = useQuery({
-    queryKey: recipesFullQueryKey,
-    queryFn: async () => (await contentService.getAllRecipesFull()) ?? NO_ROWS,
+    queryKey: recipesFullQueryKey(lang),
+    queryFn: async () => (await contentService.getAllRecipesFull(lang)) ?? NO_ROWS,
   });
 
   const recipeRaw = (recipeQ.data ?? null) as Record<string, unknown> | null;

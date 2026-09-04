@@ -3,6 +3,7 @@ import { useQuery } from '@thaiakha/shared/query';
 import { ingredientService } from '@thaiakha/shared/services';
 import type { IngredientListItem } from '@thaiakha/shared/types';
 import { useContentCategories } from './useContentCategories';
+import { useLanguage } from '../context/LanguageContext';
 import { usePageMetadata } from './usePageMetadata';
 
 // URL patterns (hub prefix = 'thai-cooking-ingredients'):
@@ -21,7 +22,7 @@ export function isCategorySlug(sub: string | null | undefined): boolean {
 
 const NO_INGREDIENTS: IngredientListItem[] = [];
 
-export const ingredientsIndexQueryKey = ['ingredients_index'] as const;
+export const ingredientsIndexQueryKey = (lang = 'en') => ['ingredients_index', lang] as const;
 
 /**
  * Hub ingredienti: indice + categorie + metadata pagina. Data layer unico (CLAUDE.md #17):
@@ -29,9 +30,10 @@ export const ingredientsIndexQueryKey = ['ingredients_index'] as const;
  * chiave di PageLayout (prima si pagavano una seconda volta a ogni mount).
  */
 export function useIngredientsFeed(targetSection?: string | null) {
+  const { lang } = useLanguage();
   const index = useQuery({
-    queryKey: ingredientsIndexQueryKey,
-    queryFn: () => ingredientService.getIngredientsIndex(),
+    queryKey: ingredientsIndexQueryKey(lang),
+    queryFn: () => ingredientService.getIngredientsIndex(lang),
   });
   const { categories, loading: catsLoading } = useContentCategories('ingredient');
   const { metadata, loading: metaLoading } = usePageMetadata(INGREDIENTS_HUB_SLUG);

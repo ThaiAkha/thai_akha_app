@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import type { FaqCategoryUI } from '@thaiakha/shared';
 import { getFaqData, getInfoPageMeta } from '../services/infoPages.service';
+import { useLanguage } from '../context/LanguageContext';
 import { PageLayout, PageEssentials, InfoPageHero, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
 import { Typography, Icon, FaqBottomPage, AkhaPixelLine, FAQRichAnswer, GlassCard, MediaImage, FaqSearch } from '../components/ui';
 import { CherryInlineChat, CherryIntroCard } from '../components/chat';
@@ -16,6 +18,9 @@ import { t } from '../i18n';
 // Header categoria: page_sections.section_id da faq_categories.section_id (DB-driven,
 // nessuna mappa hardcoded — le categorie nuove si agganciano da sole).
 
+/** Riferimento stabile per lo stato vuoto: evita un nuovo array a ogni render. */
+const EMPTY_FAQ: FaqCategoryUI[] = [];
+
 /** Testo cercabile da una risposta HTML (i tag non devono entrare nel match). */
 const stripHtml = (html: string): string => html.replace(/<[^>]*>/g, ' ');
 
@@ -29,22 +34,25 @@ interface FAQPageProps {
 
 const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [faqData, setFaqData] = useState<FaqCategoryUI[]>([]);
-  const [meta, setMeta] = useState<{ version: string; effectiveDate: string; lastUpdated: string } | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { lang } = useLanguage();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
   // Card intro Cherry — riga page_sections 'universal_cherry' (shared)
   const { section: cherrySection, loading: cherryLoading } = usePageSection('universal_cherry');
 
-  // Fonte DB: FAQ (faq_categories + faq_questions) + meta doc (info_pages 'faq').
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all([getFaqData(), getInfoPageMeta('cooking-class-faq-chiang-mai')]).then(([d, m]) => {
-      if (!cancelled) { setFaqData(d); setMeta(m); setLoading(false); }
-    });
-    return () => { cancelled = true; };
-  }, []);
+  // Fonte DB: FAQ (faq_categories + faq_questions) + meta doc legale della pagina.
+  // Regola #17: una useQuery, non useEffect+useState — cosi' la lingua entra nella
+  // chiave e il cambio lingua rilegge invece di riusare la cache inglese.
+  const faqQuery = useQuery({
+    queryKey: ['faq_hub', lang] as const,
+    queryFn: () => Promise.all([
+      getFaqData(lang),
+      getInfoPageMeta('cooking-class-faq-chiang-mai'),
+    ]).then(([d, m]) => ({ faqData: d, meta: m })),
+  });
+  const faqData: FaqCategoryUI[] = faqQuery.data?.faqData ?? EMPTY_FAQ;
+  const meta = faqQuery.data?.meta ?? null;
+  const loading = faqQuery.isPending;
 
   // ── Ricerca & filtri (client-side sui ~65 hub già in memoria) ───────────────
   const [query, setQuery] = useState('');

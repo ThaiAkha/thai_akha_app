@@ -11,6 +11,7 @@
 import { useQuery } from '@thaiakha/shared/query';
 import { contentMetadataService } from '@thaiakha/shared/services';
 import type { HeaderMetadata } from '@thaiakha/shared';
+import { useLanguage } from '../context/LanguageContext';
 
 export type PageMetadata = HeaderMetadata & { imageUrl: string };
 
@@ -23,9 +24,13 @@ export function usePageMetadata(slug: string | undefined, options: { enabled?: b
 } {
   const key = slug ?? '';
   const enabled = (options.enabled ?? true) && key.length > 0;
+  // La chiave aveva gia' lo slot `lang` ma riceveva sempre il default 'en': il
+  // servizio sapeva fondere il sidecar, nessuno gli diceva in che lingua. Da qui
+  // passano header, badge e Page Essentials di OGNI pagina del front.
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: pageMetadataQueryKey(key),
-    queryFn: () => contentMetadataService.getPageMetadata(key),
+    queryKey: pageMetadataQueryKey(key, 'site_metadata', lang),
+    queryFn: () => contentMetadataService.getPageMetadata(key, 'site_metadata', lang),
     enabled,
   });
   return { metadata: query.data ?? null, loading: enabled && query.isPending };

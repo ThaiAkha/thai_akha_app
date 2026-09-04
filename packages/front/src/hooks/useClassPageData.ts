@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
+import { useLanguage } from '../context/LanguageContext';
 import { contentService } from '@thaiakha/shared/services';
 import { CookingClassDB } from '@thaiakha/shared';
 import { usePageMetadata } from './usePageMetadata';
@@ -71,7 +72,8 @@ export interface ClassPageData {
 const NO_ITEMS: GalleryItem[] = [];
 const NO_SECTIONS: ClassSection[] = [];
 
-export const classPageDataQueryKey = (variant: ClassVariant) => ['class_page_data', variant] as const;
+export const classPageDataQueryKey = (variant: ClassVariant, lang = 'en') =>
+  ['class_page_data', lang, variant] as const;
 
 export const useClassPageData = (variant: ClassVariant): ClassPageData => {
   const cfg = CONFIG[variant];
@@ -82,14 +84,15 @@ export const useClassPageData = (variant: ClassVariant): ClassPageData => {
 
   // Data layer unico (CLAUDE.md #17): era `useEffect + useState + isMounted`, l'ultimo
   // fetch a mano di questa pagina. Stesse quattro chiamate, in una query sola per variante.
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: classPageDataQueryKey(variant),
+    queryKey: classPageDataQueryKey(variant, lang),
     queryFn: async () => {
       const [classes, gal1, gal2, sections] = await Promise.all([
-        contentService.getCookingClasses(),
-        contentService.getGallery(cfg.galleryKeys[0]),
-        contentService.getGallery(cfg.galleryKeys[1]),
-        contentService.getClassSections(cfg.classId),
+        contentService.getCookingClasses(lang),
+        contentService.getGallery(cfg.galleryKeys[0], lang),
+        contentService.getGallery(cfg.galleryKeys[1], lang),
+        contentService.getClassSections(cfg.classId, lang),
       ]);
       return {
         classData: classes.find((c: CookingClassDB) => c.id === cfg.classId) ?? null,

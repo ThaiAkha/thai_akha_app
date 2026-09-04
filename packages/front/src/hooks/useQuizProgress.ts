@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
+import { useLanguage } from '../context/LanguageContext';
 
 const PROGRESS_KEY = 'thai_akha_quiz_progress_v2';
 
@@ -19,7 +20,7 @@ export interface ProgressData {
 
 const NO_LEVELS: QuizProgressLevel[] = [];
 
-export const quizDataAllQueryKey = ['quiz_data', 'all'] as const;
+export const quizDataAllQueryKey = (lang = 'en') => ['quiz_data', 'all', lang] as const;
 
 /** Progressi locali, letti UNA volta al mount (com'era: dentro l'effetto). */
 function readLocalProgress(): { perfect: string[]; completed: string[] } {
@@ -39,14 +40,15 @@ function readLocalProgress(): { perfect: string[]; completed: string[] } {
  * dal localStorage.
  */
 export const useQuizProgress = () => {
+  const { lang } = useLanguage();
   const [local] = useState(readLocalProgress);
   const perfectModules = local.perfect;
   const completedModules = local.completed;
 
   const query = useQuery({
-    queryKey: quizDataAllQueryKey,
+    queryKey: quizDataAllQueryKey(lang),
     // getQuizData e' tipizzato Record<string, unknown>[]: si dichiara qui la shape minima usata (id, category_id, modules).
-    queryFn: async () => ((await contentService.getQuizData()) || []) as unknown as QuizProgressLevel[],
+    queryFn: async () => ((await contentService.getQuizData(undefined, lang)) || []) as unknown as QuizProgressLevel[],
   });
   const quizData = query.data ?? NO_LEVELS;
 

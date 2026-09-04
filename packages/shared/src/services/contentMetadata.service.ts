@@ -1,7 +1,53 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata, ContentCategoryDB, BusinessProfile } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
-import { mergeTranslation, pickTranslation } from '../lib/mergeTranslation';
+import { mergeTranslation, pickTranslation, sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+
+/**
+ * Campi di CONTENUTO dell'header pagina nel sidecar site_metadata. Il resto della
+ * riga (cover, icona, json_ld, canonical, prompt Cherry) non si traduce: json_ld e
+ * hreflang si GENERANO a render dai campi tradotti, non si memorizzano.
+ */
+/**
+ * Campi di CONTENUTO del sidecar categoria. Esportato: ricette, news, cultura e
+ * ingredienti incorporano la stessa categoria e devono tradurla con la stessa lista.
+ */
+/** Campi tradotti di una card news (`slug` escluso: fonte = registro slug). */
+const NEWS_CARD_T_FIELDS = [
+    'title', 'subtitle', 'excerpt', 'content', 'seo_title', 'seo_description', 'og_title', 'og_description',
+] as const;
+
+export const CONTENT_CATEGORY_T_FIELDS = [
+    'title', 'title_highlight', 'tab_label', 'subtitle', 'description', 'content_body',
+    'ui_quote', 'seo_title', 'seo_description', 'og_title', 'og_description',
+] as const;
+
+const PAGE_HEADER_T_FIELDS = [
+    'header_title_main', 'header_title_highlight', 'header_badge', 'page_description',
+    'seo_title', 'seo_description', 'og_title', 'og_description',
+] as const;
+
+/** La forma della riga header dopo il merge: le colonne della select, niente di piu'. */
+interface PageHeaderRow {
+    header_badge: string | null;
+    header_icon: string | null;
+    header_title_main: string | null;
+    header_title_highlight: string | null;
+    page_description: string | null;
+    cover_asset_id: string | null;
+    cover_media: { image_url?: string; alt_text?: string } | null;
+    seo_title: string | null;
+    seo_description: string | null;
+    og_title: string | null;
+    og_description: string | null;
+    og_type: string | null;
+    twitter_card: string | null;
+    canonical_url: string | null;
+    json_ld: unknown;
+    cherry_prompt: string | null;
+    cherry_response: string | null;
+    cherry_button_ids: string[] | null;
+}
 
 /**
  * Join del sidecar front per le voci di menu — solo i due campi che il menu
@@ -124,7 +170,7 @@ export const contentMetadataService = {
                 };
             }
 
-            const { data, error } = await supabase
+            let frontQuery = supabase
                 .from(table)
                 .select(`
                     header_badge,
@@ -145,15 +191,22 @@ export const contentMetadataService = {
                     cherry_prompt,
                     cherry_response,
                     cherry_button_ids
-                `)
-                .eq('page_slug', slug)
-                .maybeSingle();
+                `+ sidecarJoin('site_metadata_translations', PAGE_HEADER_T_FIELDS, normalizedLang))
+                .eq('page_slug', slug);
+            if (normalizedLang !== 'en') frontQuery = frontQuery.eq('translations.lang', normalizedLang);
+            const { data: rawFront, error } = await frontQuery.maybeSingle();
 
-            if (error || !data) return null;
+            if (error || !rawFront) return null;
+            // Cast unico (regola repo #20): PostgREST non inferisce una select
+            // concatenata a runtime e degrada la riga a GenericStringError. La forma
+            // vera e' PageHeaderRow, dichiarata qui sopra sulle stesse colonne.
+            const data = mergeSidecarRow(
+                rawFront as unknown as Record<string, unknown>,
+                normalizedLang,
+            ) as unknown as PageHeaderRow;
 
             // Resolve cover image from media_assets join
-            const coverMedia = (data as Record<string, unknown>).cover_media as { image_url?: string } | null;
-            const resolvedImageUrl = coverMedia?.image_url || '';
+            const resolvedImageUrl = data.cover_media?.image_url || '';
 
             return {
                 badge: data.header_badge,
@@ -172,9 +225,9 @@ export const contentMetadataService = {
                 canonicalUrl: data.canonical_url,
                 jsonLd: data.json_ld as object | null,
                 features: null,
-                cherryPrompt: (data as Record<string, unknown>).cherry_prompt as string | null,
-                cherryResponse: (data as Record<string, unknown>).cherry_response as string | null,
-                cherryButtonIds: (data as Record<string, unknown>).cherry_button_ids as string[] | null,
+                cherryPrompt: data.cherry_prompt,
+                cherryResponse: data.cherry_response,
+                cherryButtonIds: data.cherry_button_ids,
             };
         })();
     },
@@ -309,62 +362,83 @@ export const contentMetadataService = {
     },
 
     /** 🗂️ CONTENT CATEGORIES: Unified taxonomy fetch by domain */
-    async getContentCategories(domain: string): Promise<ContentCategoryDB[]> {
-        const data = await fetchWithCache<ContentCategoryDB[]>(`content_categories_${domain}_v4`, async () => {
-            const { data, error } = await supabase
+    async getContentCategories(domain: string, lang = 'en'): Promise<ContentCategoryDB[]> {
+        const l = normalizeLang(lang);
+        // v5: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache<ContentCategoryDB[]>(`content_categories_${domain}_${l}_v5`, async () => {
+            let query = supabase
                 .from('content_categories')
-                .select(CONTENT_CATEGORY_PUBLIC_COLUMNS)
+                .select(CONTENT_CATEGORY_PUBLIC_COLUMNS
+                    + sidecarJoin('content_categories_translations', CONTENT_CATEGORY_T_FIELDS, l))
                 .eq('domain', domain)
                 .eq('is_active', true)
                 .order('display_order', { ascending: true });
+            if (l !== 'en') query = query.eq('translations.lang', l);
+            const { data, error } = await query;
             if (error) {
                 console.error('[ContentService] getContentCategories error:', error);
                 return [];
             }
-            return (data || []) as unknown as ContentCategoryDB[];
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as ContentCategoryDB[];
         });
         return data || [];
     },
 
     /** 📰 LATEST NEWS: Fetch latest articles from akha_news */
-    async getLatestNews(): Promise<Record<string, unknown>[]> {
-        const data = await fetchWithCache<Record<string, unknown>[]>('agency_news_v1', async () => {
-            const { data, error } = await supabase
+    async getLatestNews(lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        // v2: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache<Record<string, unknown>[]>(`agency_news_${l}_v2`, async () => {
+            let query = supabase
                 .from('akha_news')
                 .select(`
                     *,
-                    category:content_categories(id, title, slug),
+                    category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
-                `)
+                `+ sidecarJoin('akha_news_translations', NEWS_CARD_T_FIELDS, l))
                 .eq('is_published', true)
                 .order('created_at', { ascending: false });
+            if (l !== 'en') {
+                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
+            }
+            const { data, error } = await query;
 
-            return error ? [] : (data || []);
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            return error ? [] : mergeSidecarRows(data as unknown as Record<string, unknown>[], l, ['category']);
         });
         return data || [];
     },
 
     /** 📰 NEWS BY IDS: Fetch specific articles from akha_news by news_id list */
-    async getNewsByNewsIds(newsIds: string[]): Promise<Record<string, unknown>[]> {
-        const data = await fetchWithCache<Record<string, unknown>[]>(`news_by_ids_${newsIds.join(',')}_v1`, async () => {
-            const { data, error } = await supabase
+    async getNewsByNewsIds(newsIds: string[], lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        // v2: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache<Record<string, unknown>[]>(`news_by_ids_${newsIds.join(',')}_${l}_v2`, async () => {
+            let query = supabase
                 .from('akha_news')
                 .select(`
                     *,
-                    category:content_categories(id, title, slug),
+                    category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
-                `)
+                `+ sidecarJoin('akha_news_translations', NEWS_CARD_T_FIELDS, l))
                 .in('news_id', newsIds)
                 .eq('is_published', true);
+            if (l !== 'en') {
+                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
+            }
+            const { data: raw, error } = await query;
 
             if (error) {
                 console.error('Error fetching news by news_id:', error);
                 return [];
             }
+            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+            const data = mergeSidecarRows(raw as unknown as Record<string, unknown>[], l, ['category']);
 
             return (data || []).sort((a, b) =>
-                newsIds.indexOf(a.news_id ?? '') -
-                newsIds.indexOf(b.news_id ?? '')
+                newsIds.indexOf(String(a.news_id ?? '')) -
+                newsIds.indexOf(String(b.news_id ?? ''))
             );
         });
         return data || [];

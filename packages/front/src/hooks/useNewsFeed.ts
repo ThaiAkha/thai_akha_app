@@ -5,6 +5,7 @@ import { NewsArticle } from '@thaiakha/shared/types';
 import { t } from '../i18n';
 import { useContentCategories } from './useContentCategories';
 import { usePageMetadata } from './usePageMetadata';
+import { useLanguage } from '../context/LanguageContext';
 
 export type { NewsArticle };
 
@@ -31,18 +32,19 @@ export interface NewsCategory {
 
 const NO_ARTICLES: NewsArticle[] = [];
 
-export const newsFeedQueryKey = ['news_feed'] as const;
+export const newsFeedQueryKey = (lang = 'en') => ['news_feed', lang] as const;
 
 /**
  * Feed news: metadata pagina + categorie blog + articoli. Data layer unico (CLAUDE.md #17):
  * era un Promise.all in useEffect; ora tre query in cache (metadata e categorie condivise).
  */
 export function useNewsFeed(targetCategory: string | null = null) {
+    const { lang } = useLanguage();
     const { metadata: meta, loading: metaLoading } = usePageMetadata('thai-cooking-tips-news');
     const { categories: cats, loading: catsLoading } = useContentCategories('blog');
     const feed = useQuery({
-        queryKey: newsFeedQueryKey,
-        queryFn: () => newsService.getNewsFeed(),
+        queryKey: newsFeedQueryKey(lang),
+        queryFn: () => newsService.getNewsFeed(lang),
     });
 
     const metadata = useMemo<NewsMetadata | null>(() => meta ? {

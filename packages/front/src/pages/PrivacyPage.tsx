@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLegalDocument } from '@thaiakha/shared/hooks/useLegalDocument';
+import { useLanguage } from '../context/LanguageContext';
 import { PageLayout, InfoPageHero, PageEssentials, SiblingInfoSection } from '../components/layout';
 import { InfoPageSidebar } from '../components/layout/sidebar-info';
 import LegalDocumentStaticViewer from '../components/legal/LegalDocumentStaticViewer';
@@ -15,7 +16,10 @@ interface PrivacyPageProps {
 const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate }) => {
   // Centrale legal_documents, con dual-read su info_page_sections finche' i documenti
   // non sono pubblicati (vedi useLegalDocument). Forma LegalDocument: render invariato.
-  const { doc, loading } = useLegalDocument('front_policy', { fallbackPageSlug: 'privacy-policy' });
+  // La lingua non veniva passata: il documento legale usciva in inglese anche
+  // sotto /it/, sia dalla centrale sia dal ramo legacy.
+  const { lang } = useLanguage();
+  const { doc, loading } = useLegalDocument('front_policy', { fallbackPageSlug: 'privacy-policy', lang });
 
   // TOC = sezioni top-level. id ancora = anchor stabile dal DB (fallback slug), come SectionBlock.
   const toc = doc ? doc.sections.map(s => ({ id: s.anchor ?? slugify(s.title), label: s.title })) : [];

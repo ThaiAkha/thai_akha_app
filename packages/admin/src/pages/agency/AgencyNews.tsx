@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/layout/PageContainer';
 import WelcomeHero from '../../components/dashboard/WelcomeHero';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
-import { contentService } from '@thaiakha/shared/services';
+import { useAgencyNews, type AgencyArticle as Article } from '../../hooks/useAgencyNews';
 import Badge from '../../components/ui/badge/Badge';
 import { Clock, Calendar, ChevronRight, Newspaper } from 'lucide-react';
 import ArticleModal from '../../components/agency/ArticleModal';
@@ -11,42 +11,13 @@ import PageMeta from '../../components/common/PageMeta';
 import { formatDateByLanguage } from '../../lib/dateFormatter';
 import { Heading, Paragraph } from '../../components/typography';
 
-interface Article {
-    id: string;
-    title: string;
-    content: string;
-    cover_image_url?: string;
-    category?: string;
-    created_at: string;
-    author?: string;
-    reading_time?: string;
-}
-
 const AgencyNews: React.FC = () => {
     const { t, i18n } = useTranslation('pages');
     // ✅ AppHeader handles setPageHeader automatically
     const { pageMeta } = usePageMetadata('agency-news');
-    const [news, setNews] = useState<Article[]>([]);
-    const [loading, setLoading] = useState(true);
+    // Lettura via hook (regola #17): una query per lingua, non useEffect+useState.
+    const { news, loading } = useAgencyNews();
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-
-    useEffect(() => {
-        const loadPageData = async () => {
-            setLoading(true);
-            try {
-
-                // Load News Articles
-                const latestNews = await contentService.getLatestNews();
-                setNews(latestNews as unknown as Article[]);
-            } catch (error) {
-                console.error('Error loading news:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadPageData();
-    }, []);
 
     const formatDate = (dateStr: string) => {
         return formatDateByLanguage(dateStr, i18n.language, {

@@ -6,7 +6,7 @@ import { useContentDetail } from './useContentDetail';
 export type { NewsDetail };
 
 export function useNewsDetail(slug: string, articles: NewsArticle[]) {
-    const fetcher = useMemo(() => (s: string) => newsService.getNewsDetailBySlug(s), []);
+    const fetcher = useMemo(() => (s: string, l: string) => newsService.getNewsDetailBySlug(s, l), []);
 
     const { detail, previous: seqPrev, next: seqNext, loading, error } =
         useContentDetail<NewsDetail, NewsArticle>({

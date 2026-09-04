@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { LegalDocument, LegalDocumentSection } from '../types/legal.types';
 import { mergeLegalTranslation, type MergedLegalDocument } from '../lib/mergeLegalTranslation';
+import { sidecarJoin, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /**
  * useLegalDocument — legge un documento legale dalla centrale `legal_documents`.
@@ -68,23 +69,32 @@ async function fromLegalDocuments(docKey: string): Promise<LegalDocument | null>
 }
 
 /** Ramo legacy: info_page_sections + meta da site_metadata (come faceva getInfoPage). */
-async function fromInfoPageSections(pageSlug: string): Promise<LegalDocument | null> {
+async function fromInfoPageSections(pageSlug: string, lang = 'en'): Promise<LegalDocument | null> {
+  // Anche il ramo legacy legge tradotto: finche' i documenti della centrale non sono
+  // pubblicati, e' QUESTO che serve le pagine Terms/Privacy, e lasciarlo inglese
+  // significherebbe legale in inglese sotto ogni prefisso lingua.
+  let sectionsQuery = supabase
+    .from('info_page_sections')
+    .select('heading, body, section_order, anchor'
+      + sidecarJoin('info_page_sections_translations', ['heading', 'body'], lang))
+    .eq('page_slug', pageSlug)
+    .eq('is_active', true)
+    .order('section_order', { ascending: true });
+  if (lang !== 'en') sectionsQuery = sectionsQuery.eq('translations.lang', lang);
   const [meta, sectionsRes] = await Promise.all([
     supabase
       .from('site_metadata')
       .select('legal_version, date_published, date_modified')
       .eq('page_slug', pageSlug)
       .maybeSingle(),
-    supabase
-      .from('info_page_sections')
-      .select('heading, body, section_order, anchor')
-      .eq('page_slug', pageSlug)
-      .eq('is_active', true)
-      .order('section_order', { ascending: true }),
+    sectionsQuery,
   ]);
 
   if (sectionsRes.error || !sectionsRes.data) return null;
-  const sections = toSections(sectionsRes.data as unknown as DbSection[]);
+  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
+  const sections = toSections(
+    mergeSidecarRows(sectionsRes.data as unknown as Record<string, unknown>[], lang) as unknown as DbSection[],
+  );
   if (sections.length === 0) return null;
 
   return {
@@ -173,7 +183,7 @@ export function useLegalDocument(
       }
 
       // Fallback legacy solo se la pagina ne ha uno (documenti front).
-      const legacy = fallbackPageSlug ? await fromInfoPageSections(fallbackPageSlug) : null;
+      const legacy = fallbackPageSlug ? await fromInfoPageSections(fallbackPageSlug, lang ?? 'en') : null;
       if (cancelled) return;
       setDoc(legacy ? mergeLegalTranslation(legacy, null, null) : null);
       setSource(legacy ? 'info_page_sections' : null);

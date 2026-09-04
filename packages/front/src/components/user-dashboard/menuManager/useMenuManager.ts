@@ -8,19 +8,28 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery, keepPreviousData } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import type { RecipeData } from '../../menu/RecipeView';
 import { useContentCategories } from '../../../hooks/useContentCategories';
 import { normalizeCatKey, FALLBACK_CATEGORY_INFO } from './menuHelpers';
 import type { MenuManagerProps } from './types';
+import { useLanguage } from '../../../context/LanguageContext';
+
+/** Campi tradotti che il MenuManager mostra davvero (nome, descrizione, note). */
+const MENU_RECIPE_T_FIELDS = [
+  'name', 'subtitle', 'description', 'excerpt', 'health_benefits', 'garnish', 'cooks_tip',
+  'notes', 'directions', 'essentials',
+] as const;
 
 /** Le tre categorie dell'esperienza inclusa (tab). */
 const FIXED_TAB_KEYS = ['akha_specialty', 'appetizer', 'dessert'];
 const NO_DISHES: any[] = [];
 const NO_IDS: string[] = [];
 
-export const fixedClassDishesQueryKey = ['recipes', 'fixed_class_dishes'] as const;
-export const menuSelectedDishesQueryKey = (ids: readonly string[]) =>
-  ['recipes', 'menu_selected', ids.join('|')] as const;
+export const fixedClassDishesQueryKey = (lang = 'en') =>
+  ['recipes', 'fixed_class_dishes', lang] as const;
+export const menuSelectedDishesQueryKey = (ids: readonly string[], lang = 'en') =>
+  ['recipes', 'menu_selected', lang, ids.join('|')] as const;
 
 export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<MenuManagerProps, 'bookingId' | 'menuSelection' | 'onNavigate'>) {
   const [activeCategory, setActiveCategory] = useState<string>('akha_specialty');
@@ -34,17 +43,21 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
   );
 
   // 1. Piatti fissi (Included Experience): letti una volta, condivisi fra prenotazioni.
+  const { lang } = useLanguage();
   const fixedQ = useQuery({
-    queryKey: fixedClassDishesQueryKey,
+    queryKey: fixedClassDishesQueryKey(lang),
     queryFn: async () => {
-      const { data, error } = await supabase
+      let q = supabase
         .from('recipes')
-        .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
+        .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)'
+          + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .eq('is_fixed_dish', true)
         .order('category');
+      if (lang !== 'en') q = q.eq('translations.lang', lang);
+      const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as any[];
+      return mergeSidecarRows(data as unknown as Record<string, unknown>[], lang) as any[];
     },
   });
 
@@ -53,16 +66,19 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
     ? [menuSelection.curry_id, menuSelection.soup_id, menuSelection.stirfry_id].filter((id): id is string => Boolean(id))
     : NO_IDS;
   const selectedQ = useQuery({
-    queryKey: menuSelectedDishesQueryKey(ids),
+    queryKey: menuSelectedDishesQueryKey(ids, lang),
     enabled: ids.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase
+      let q = supabase
         .from('recipes')
-        .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)')
+        .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)'
+          + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .in('id', ids);
+      if (lang !== 'en') q = q.eq('translations.lang', lang);
+      const { data, error } = await q;
       if (error) throw error;
-      const selected = data ?? [];
+      const selected = mergeSidecarRows(data as unknown as Record<string, unknown>[], lang) as any[];
       return [menuSelection?.curry_id, menuSelection?.soup_id, menuSelection?.stirfry_id]
         .map(id => selected.find(r => r.id === id))
         .filter(Boolean)

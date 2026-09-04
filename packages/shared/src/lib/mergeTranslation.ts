@@ -32,6 +32,10 @@
  *   sovrascrivesse, l'oggetto perderebbe l'identità inglese con cui si rileggono
  *   DB e cache — e avremmo due fonti per la stessa cosa. Chi vuole lo slug
  *   localizzato lo chiede a translatedSlugService.
+ * · `source_hash`/`translated_at`/`verified_at`/`verified_by`: contabilita' del
+ *   sistema di staleness (v_translations_stale, mark_fresh). Oggi nessuna select
+ *   le chiede, ma un domani `select('*')` su un sidecar le porterebbe dentro la
+ *   riga madre: qui non entrano per costruzione, non per attenzione di chi scrive.
  */
 export const SIDECAR_META_COLUMNS = new Set([
   'id',
@@ -43,6 +47,10 @@ export const SIDECAR_META_COLUMNS = new Set([
   'updated_at',
   'page_slug',
   'slug',
+  'source_hash',
+  'translated_at',
+  'verified_at',
+  'verified_by',
 ]);
 
 /**
@@ -98,3 +106,66 @@ export function pickTranslation<T extends { lang?: string | null }>(
   if (!translations?.length) return null;
   return translations.find((t) => t.lang === lang) ?? null;
 }
+
+// ─── Lettura generica dei sidecar ─────────────────────────────────────────────
+
+/**
+ * Join PostgREST del sidecar, da CONCATENARE a una select esistente.
+ *
+ * A lingua inglese torna stringa vuota: la base È l'inglese, il join non serve
+ * e la query resta identica a prima (zero costo sul 90% del traffico).
+ *
+ * Chi lo usa deve anche filtrare le righe incorporate per lingua:
+ *   if (lang !== 'en') query = query.eq('translations.lang', lang);
+ * È un filtro su risorsa incorporata: sfoltisce l'array annidato senza togliere
+ * le righe madri (niente `!inner`, o una pagina non ancora tradotta sparirebbe).
+ * Senza quel filtro ci si porta a casa 11 traduzioni per riga invece di una.
+ *
+ * @param sidecarTable nome COMPLETO del sidecar (`page_sections_translations`)
+ * @param fields       le sole colonne di CONTENUTO: mai id/lang/date/source_hash
+ */
+export const sidecarJoin = (
+  sidecarTable: string,
+  fields: readonly string[],
+  lang: string,
+): string =>
+  lang === 'en' ? '' : `, translations:${sidecarTable}(lang, ${fields.join(', ')})`;
+
+/**
+ * Fonde una riga che porta con sé `translations` (dal join qui sopra) e toglie
+ * quella chiave dal risultato: il consumatore riceve la stessa forma di prima,
+ * coi campi già nella lingua giusta. Fallback per CAMPO (mergeTranslation).
+ */
+export const mergeSidecarRow = <T extends Record<string, unknown>>(
+  row: T,
+  lang: string,
+  embeddedKeys: readonly string[] = [],
+): T => {
+  const { translations, ...rest } = row;
+  let base = rest as Record<string, unknown>;
+
+  // Relazioni incorporate che portano a loro volta un sidecar: una ricetta porta
+  // dentro la sua content_category, e il titolo della categoria va tradotto con la
+  // stessa regola. Ricorsione a un livello per chiave dichiarata, mai automatica:
+  // scendere da soli in ogni oggetto annidato romperebbe media_assets e authors,
+  // che un sidecar non ce l'hanno.
+  for (const key of embeddedKeys) {
+    const child = base[key];
+    if (Array.isArray(child)) {
+      base = { ...base, [key]: child.map((c) => mergeSidecarRow(c as Record<string, unknown>, lang)) };
+    } else if (child && typeof child === 'object') {
+      base = { ...base, [key]: mergeSidecarRow(child as Record<string, unknown>, lang) };
+    }
+  }
+
+  if (lang === 'en') return base as T;
+  const t = pickTranslation(translations as Array<{ lang?: string | null }> | null, lang);
+  return mergeTranslation(base as T, t as Record<string, unknown> | null);
+};
+
+/** `mergeSidecarRow` su una lista. */
+export const mergeSidecarRows = <T extends Record<string, unknown>>(
+  rows: readonly T[] | null | undefined,
+  lang: string,
+  embeddedKeys: readonly string[] = [],
+): T[] => (rows ?? []).map((r) => mergeSidecarRow(r, lang, embeddedKeys));

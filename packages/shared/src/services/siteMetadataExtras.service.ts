@@ -5,13 +5,27 @@
  * (front `useSiteMetadata`, `SiblingInfoSection`).
  */
 import { supabase } from '../lib/supabase';
+import { normalizeLang } from './_cache';
+import { sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+
+/** Campi tradotti mostrati nelle card "pagine sorelle". */
+const SIBLING_T_FIELDS = ['header_title_main', 'header_title_highlight', 'page_description'] as const;
+
+/** La forma della riga sorella dopo il merge: le colonne della select, niente di piu'. */
+interface SiblingRow {
+    page_slug: string;
+    header_title_main: string | null;
+    header_title_highlight: string | null;
+    page_description: string | null;
+    cover_media: { image_url?: string } | null;
+}
 
 /**
  * 🔄 SIBLING PAGES: Given a page_slug, reads sibling_slugs[] from site_metadata
  * and returns the full metadata for each sibling.
  * Returns [] if no siblings defined for this slug.
  */
-export async function getSiblingPagesBySlug(currentSlug: string): Promise<SiblingPageMeta[]> {
+export async function getSiblingPagesBySlug(currentSlug: string, lang = 'en'): Promise<SiblingPageMeta[]> {
     // Step 1: fetch sibling_slugs for current page
     const { data: current, error: e1 } = await supabase
         .from('site_metadata')
@@ -20,7 +34,7 @@ export async function getSiblingPagesBySlug(currentSlug: string): Promise<Siblin
         .single();
 
     if (e1 || !current?.sibling_slugs?.length) return [];
-    return getSiblingPagesBySlugs(current.sibling_slugs);
+    return getSiblingPagesBySlugs(current.sibling_slugs, lang);
 }
 
 /**
@@ -28,11 +42,12 @@ export async function getSiblingPagesBySlug(currentSlug: string): Promise<Siblin
  * Il front la usa con `sibling_slugs` letto da getPageExtras (data layer #86:
  * una sola riga site_metadata per pagina, poi questa query per le sorelle).
  */
-export async function getSiblingPagesBySlugs(slugs: readonly string[]): Promise<SiblingPageMeta[]> {
+export async function getSiblingPagesBySlugs(slugs: readonly string[], lang = 'en'): Promise<SiblingPageMeta[]> {
     if (slugs.length === 0) return [];
 
+    const l = normalizeLang(lang);
     // Step 2: fetch metadata + cover image for each sibling slug
-    const { data, error: e2 } = await supabase
+    let query = supabase
         .from('site_metadata')
         .select(`
             page_slug,
@@ -40,17 +55,22 @@ export async function getSiblingPagesBySlugs(slugs: readonly string[]): Promise<
             header_title_highlight,
             page_description,
             cover_media:media_assets!cover_asset_id(image_url)
-        `)
+        `+ sidecarJoin('site_metadata_translations', SIBLING_T_FIELDS, l))
         .in('page_slug', slugs);
+    if (l !== 'en') query = query.eq('translations.lang', l);
+    const { data: rawSiblings, error: e2 } = await query;
 
-    if (e2 || !data) return [];
+    if (e2 || !rawSiblings) return [];
+    // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata e
+    // degrada la riga a GenericStringError. La forma vera e' SiblingRow.
+    const data = mergeSidecarRows(rawSiblings as unknown as Record<string, unknown>[], l) as unknown as SiblingRow[];
 
     // Preserve order defined in sibling_slugs, resolve cover_media → hero_image_url alias
     return slugs
         .map(s => {
             const d = data.find(d => d.page_slug === s);
             if (!d) return null;
-            const coverMedia = (d as Record<string, unknown>).cover_media as { image_url?: string } | null;
+            const coverMedia = d.cover_media;
             return {
                 page_slug: d.page_slug,
                 header_title_main: d.header_title_main,
@@ -68,19 +88,26 @@ export async function getSiblingPagesBySlugs(slugs: readonly string[]): Promise<
  * page_essentials, date, faq_refs, sibling_slugs). Nessuna cache qui: la
  * possiede TanStack (front `useSiteMetadata`). Ritorna null se la riga manca.
  */
-export async function getPageExtras(slug: string): Promise<SiteMetadataExtras | null> {
+export async function getPageExtras(slug: string, lang = 'en'): Promise<SiteMetadataExtras | null> {
     if (!slug) return null;
-    const { data, error } = await supabase
+    const l = normalizeLang(lang);
+    // `page_essentials` e' l'unico campo tradotto qui: date, faq_refs e sibling_slugs
+    // sono struttura, e il prompt Cherry vive sulla base (Cherry sceglie la lingua
+    // da se'). Fallback per campo: dove il sidecar e' vuoto resta l'inglese.
+    let query = supabase
         .from('site_metadata')
-        .select('cherry_prompt, cherry_response, cherry_button_ids, page_essentials, date_published, date_modified, faq_refs, sibling_slugs')
-        .eq('page_slug', slug)
-        .maybeSingle();
+        .select('cherry_prompt, cherry_response, cherry_button_ids, page_essentials, date_published, date_modified, faq_refs, sibling_slugs'
+            + sidecarJoin('site_metadata_translations', ['page_essentials'], l))
+        .eq('page_slug', slug);
+    if (l !== 'en') query = query.eq('translations.lang', l);
+    const { data, error } = await query.maybeSingle();
     if (error) {
         console.error('[contentMetadataService] getPageExtras:', error);
         throw error;
     }
     if (!data) return null;
-    const row = data as Record<string, unknown>;
+    // Cast unico: PostgREST non inferisce la select concatenata al join.
+    const row = mergeSidecarRow(data as unknown as Record<string, unknown>, l);
     return {
         cherry: {
             prompt: (row.cherry_prompt as string | null) ?? null,

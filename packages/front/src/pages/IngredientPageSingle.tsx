@@ -17,6 +17,7 @@ import { useIngredientDetail } from '../hooks/useIngredientDetail';
 import { INGREDIENTS_HUB_SLUG } from '../hooks/useIngredientsFeed';
 import { nativeNameFor, nativeNameLine } from '@thaiakha/shared/lib/nativeName';
 import { useLanguage } from '../context/LanguageContext';
+import { useSubPageSeo } from '../hooks/useSubPageSeo';
 import { t } from '../i18n';
 import { sanitizeHtml } from '../lib/sanitizeHtml';
 
@@ -53,6 +54,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
 }) => {
   const { ingredient, previous, next, loading: dataLoading, error } = useIngredientDetail(slug, ingredients);
   const { lang } = useLanguage();
+  const seo = useSubPageSeo(INGREDIENTS_HUB_SLUG, ingredient?.slug, ingredient?.hreflang as Record<string, string> | null | undefined);
   // Sottotitolo delle card sorelle: traslitterato, altrimenti thai; su /th/ nessuno dei due.
   const siblingSubtitle = (i: IngredientListItem) => { const n = nativeNameFor(i, lang); return n.phonetic ?? n.thai; };
   const [copied, setCopied] = useState(false);
@@ -115,11 +117,11 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
         <PageSEO
           title={ingredient.seo_title || ingredient.name}
           description={ingredient.seo_description || ingredient.summary_ai || ''}
-          canonical={ingredient.canonical_url || `${window.location.origin}/${INGREDIENTS_HUB_SLUG}/${ingredient.slug}`}
+          canonical={seo.canonical}
           ogImage={ingredient.cover_data?.image_url || ''}
           ogType="article"
           jsonLd={(ingredient.json_ld as object) || undefined}
-          hreflang={ingredient.hreflang as Record<string, string> | undefined}
+          hreflang={seo.hreflang}
         />
       )}
 

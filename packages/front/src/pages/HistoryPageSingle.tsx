@@ -16,6 +16,7 @@ import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useCultureDetail } from '../hooks/useCultureDetail';
+import { useSubPageSeo } from '../hooks/useSubPageSeo';
 import { t } from '../i18n';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -63,6 +64,7 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
   // Audio assets
   const audioId = section?.audio_asset_id ?? undefined;
   const { asset: audioAsset } = useAudioAsset({ assetId: audioId });
+  const seo = useSubPageSeo('akha-culture-highland-heritage', section?.slug, section?.hreflang as Record<string, string> | null | undefined);
 
   // Share logic
   const handleShare = useCallback(() => {
@@ -98,11 +100,11 @@ const HistoryPageSingle: React.FC<HistoryPageSingleProps> = ({
         <PageSEO
           title={section.seo_title || section.title}
           description={section.seo_description || section.subtitle || ''}
-          canonical={section.canonical_url || `${window.location.origin}/akha-culture-highland-heritage/${section.slug}`}
+          canonical={seo.canonical}
           ogImage={section.cover_data?.image_url || ''}
           ogType="article"
           jsonLd={section.json_ld || undefined}
-          hreflang={section.hreflang as Record<string, string> | undefined}
+          hreflang={seo.hreflang}
         />
       )}
       <div className="contents">

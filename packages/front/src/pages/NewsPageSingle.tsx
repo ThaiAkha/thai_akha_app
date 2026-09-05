@@ -6,6 +6,7 @@ import { AuthorBlock, ContentRenderer, parseContent, slugify, ArticleBody } from
 import { CherryEntryCard } from '../components/chat/CherryEntryCard';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useNewsDetail } from '../hooks/useNewsDetail';
+import { useSubPageSeo } from '../hooks/useSubPageSeo';
 import { NewsArticle } from '../hooks/useNewsFeed';
 import { NewsHeaderSinglePost } from '../components/news/NewsHeaderSinglePost';
 import SiblingPostNav from '../components/layout/SiblingPostNav';
@@ -51,6 +52,7 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
   // Audio asset support
   const audioId = detail?.audio_asset_id ?? undefined;
   const { asset: audioAsset } = useAudioAsset({ assetId: audioId });
+  const seo = useSubPageSeo('thai-cooking-tips-news', detail?.slug);
 
   const [copied, setCopied] = useState(false);
 
@@ -124,7 +126,8 @@ const NewsPageSingle: React.FC<NewsPageSingleProps> = ({
         <PageSEO
           title={detail.seo_title || detail.title}
           description={detail.seo_description || detail.excerpt || ''}
-          canonical={detail.canonical_url || `https://www.thaiakha.com/thai-cooking-tips-news/${detail.slug}`}
+          canonical={seo.canonical}
+          hreflang={seo.hreflang}
           ogImage={detail.cover_data?.image_url || ''}
           ogType="article"
         />

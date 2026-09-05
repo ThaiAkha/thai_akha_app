@@ -6,6 +6,7 @@ import { ContentCategoryDB, IngredientListItem } from '@thaiakha/shared/types';
 import { IngredientCard } from '../components/ingredients';
 import { BlogGridSkeleton } from '../components/skeleton';
 import { INGREDIENTS_HUB_SLUG } from '../hooks/useIngredientsFeed';
+import { useSubPageSeo } from '../hooks/useSubPageSeo';
 
 interface IngredientCategoryPageProps {
   category: ContentCategoryDB | null;
@@ -29,6 +30,7 @@ const IngredientCategoryPage: React.FC<IngredientCategoryPageProps> = ({
   onNavigate,
 }) => {
   const handleOpen = useCallback((slug: string) => onOpenIngredient(slug), [onOpenIngredient]);
+  const seo = useSubPageSeo(INGREDIENTS_HUB_SLUG, category?.slug, category?.hreflang as Record<string, string> | null | undefined);
 
   return (
     <PageLayout
@@ -45,10 +47,10 @@ const IngredientCategoryPage: React.FC<IngredientCategoryPageProps> = ({
         <PageSEO
           title={category.seo_title || category.title}
           description={category.seo_description || category.description || ''}
-          canonical={category.canonical_url || `${window.location.origin}/${INGREDIENTS_HUB_SLUG}/${category.slug}`}
+          canonical={seo.canonical}
           ogType={(category.og_type as 'website' | 'article' | 'profile') || 'website'}
           jsonLd={(category.json_ld as object) || undefined}
-          hreflang={category.hreflang as Record<string, string> | undefined}
+          hreflang={seo.hreflang}
         />
       )}
 

@@ -46,7 +46,7 @@ async function withDynamicLocalBusiness(
   return replaced ? { ...jsonLd, '@graph': newGraph } : jsonLd;
 }
 
-const SITE_URL = 'https://www.thaiakha.com';
+export const SITE_URL = 'https://www.thaiakha.com';
 
 // OG fallback — Supabase storage (stessa dell'Edge Function, sempre disponibile)
 const OG_DEFAULT_IMAGE = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg';
@@ -83,7 +83,7 @@ function isSitePage(data: unknown): data is SitePage {
  * A flag SPENTO non viene mai chiamata: emettere 11 alternate verso URL che
  * rispondono 302 sarebbe dare a Google una mappa di link morti.
  */
-function buildHreflang(
+export function buildHreflang(
   enSlug: string,
   alternates: Record<string, string>,
 ): Record<string, string> {
@@ -98,6 +98,31 @@ function buildHreflang(
   const out: Record<string, string> = {};
   for (const lang of ACTIVE_LANGS) out[lang] = pathFor(lang);
   // x-default = inglese: la versione che serve chi non matcha nessuna lingua.
+  out['x-default'] = pathFor(DEFAULT_LANG);
+  return out;
+}
+
+/**
+ * hreflang di una SOTTO-PAGINA (hub + slug, entrambi tradotti dal registro):
+ * ricette, sezioni culture, articoli news, ingredienti, categorie ingrediente.
+ * Stessa regola di buildHreflang, su due segmenti: una lingua senza traduzione
+ * per uno dei due resta inglese per quel segmento. x-default = inglese.
+ * A lista lingue vuota ACTIVE_LANGS e' ['en'] e l'uscita e' la sola self-reference.
+ */
+export function buildSubPageHreflang(
+  hubEn: string,
+  slugEn: string,
+  hubAlternates: Record<string, string>,
+  slugAlternates: Record<string, string>,
+): Record<string, string> {
+  const pathFor = (lang: SupportedLang): string => {
+    const hub = lang === DEFAULT_LANG ? hubEn : (hubAlternates[lang] ?? hubEn);
+    const slug = lang === DEFAULT_LANG ? slugEn : (slugAlternates[lang] ?? slugEn);
+    const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
+    return `${SITE_URL}${prefix}/${hub}/${slug}`;
+  };
+  const out: Record<string, string> = {};
+  for (const lang of ACTIVE_LANGS) out[lang] = pathFor(lang);
   out['x-default'] = pathFor(DEFAULT_LANG);
   return out;
 }

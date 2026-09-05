@@ -18,6 +18,7 @@ import { t } from '../i18n';
 import { sanitizeHtml } from '../lib/sanitizeHtml';
 import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
 import { useLanguage } from '../context/LanguageContext';
+import { useSubPageSeo } from '../hooks/useSubPageSeo';
 
 interface RecipeSinglePageProps {
   slug: string;
@@ -48,6 +49,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
     navLoading,
   } = useRecipePageData(slug, userProfile);
   const { lang } = useLanguage();
+  const seo = useSubPageSeo('authentic-thai-akha-recipes', slug);
 
   const { handleShare, copied } = useShareLink();
 
@@ -89,7 +91,8 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
       <PageSEO
         title={recipeRaw?.seo_title as string || `${recipeRaw?.name} | Thai Akha Kitchen`}
         description={(recipeRaw?.seo_description as string) || (recipeRaw?.description as string)?.slice(0, 160) || ''}
-        canonical={`https://www.thaiakha.com/authentic-thai-akha-recipes/${slug}`}
+        canonical={seo.canonical}
+        hreflang={seo.hreflang}
         ogImage={
           (recipeRaw?.cover as Record<string, unknown>)?.image_url as string ||
           'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg'
@@ -101,7 +104,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
           'name': recipeRaw?.name,
           'description': recipeRaw?.description,
           'image': (recipeRaw?.cover as Record<string, unknown>)?.image_url,
-          'url': `https://www.thaiakha.com/authentic-thai-akha-recipes/${slug}`,
+          'url': seo.canonical,
           'author': { '@type': 'Organization', 'name': 'Thai Akha Kitchen' },
           'recipeIngredient': richIngredients.map(ing => ing.quantity && ing.unit ? `${ing.quantity} ${ing.unit} ${ing.name}` : ing.name),
           'recipeInstructions': recipe.directions?.map(step => ({

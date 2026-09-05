@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { haversineDistance } from '@thaiakha/shared/lib/geoUtils';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import type { MeetingPoint } from '@thaiakha/shared/types';
 import { useLanguage } from '../../../context/LanguageContext';
 
@@ -52,17 +52,15 @@ export function useMeetingPoints({ selectedClass, outsideHotelCoords, bookingDat
   const query = useQuery({
     queryKey: meetingPointsQueryKey(lang),
     queryFn: async () => {
-      let q = supabase
+      const q = sidecarFilter(supabase
         .from('meeting_points')
         .select('*, point_type, is_dropoff_point, cover:media_assets!image_asset_id(image_url, alt_text)'
           + sidecarJoin('meeting_points_translations', MEETING_POINT_T_FIELDS, lang))
         .eq('active', true)
-        .order('name');
-      if (lang !== 'en') q = q.eq('translations.lang', lang);
+        .order('name'), lang);
       const { data: raw, error } = await q;
       if (error) throw error;
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      const data = mergeSidecarRows(raw as unknown as Record<string, unknown>[], lang);
+      const data = mergeSidecarRows(raw, lang);
       // Resolve image_asset_id → media_assets; keep the `image_url` alias used by MeetingCard.
       const resolved = data.map((row) => {
         const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;

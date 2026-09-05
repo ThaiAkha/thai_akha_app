@@ -1,7 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { CookingClassDB } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
-import { sidecarJoin, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /** Campi di CONTENUTO dei sidecar del mondo classe. */
 const CLASS_T_FIELDS = [
@@ -24,11 +24,10 @@ export const classService = {
             // #37 - il PREZZO viene SOLO da class_sessions.price_thb (fonte unica),
             // arricchito per id (cooking_classes.id === class_sessions.id). La colonna
             // cooking_classes.price è stata droppata: non va più selezionata.
-            let ccQuery = supabase
+            const ccQuery = sidecarFilter(supabase
                 .from('cooking_classes')
                 .select('id, title, badge, tags, currency, unit, theme_color, duration_text, tagline, capacity_text, cover:media_assets!cover_asset_id(image_url, alt_text), description, highlights, schedule_items, inclusions, is_active, created_at, youtube_video_id'
-                    + sidecarJoin('cooking_classes_translations', CLASS_T_FIELDS, l));
-            if (l !== 'en') ccQuery = ccQuery.eq('translations.lang', l);
+                    + sidecarJoin('cooking_classes_translations', CLASS_T_FIELDS, l)), l);
             const [ccRes, csRes] = await Promise.all([
                 ccQuery,
                 supabase.from('class_sessions').select('id, price_thb'),
@@ -40,8 +39,7 @@ export const classService = {
             (csRes.data ?? []).forEach((s) => { if (s.price_thb != null) priceById.set(s.id, s.price_thb); });
 
             // Resolve cover_asset_id → media_assets; keep the `image_url` alias used by the UI.
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return mergeSidecarRows(ccRes.data as unknown as Record<string, unknown>[], l)
+            return mergeSidecarRows(ccRes.data, l)
                 .map((row) => {
                     const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;
                     return {
@@ -80,22 +78,20 @@ export const classService = {
         const l = normalizeLang(lang);
         // v3: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache<Record<string, unknown>[]>(`class_sections_${classId}_${l}_v3`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('class_sections')
                 .select('id, section_key, title, subtitle, description, tag_badge, ui_style, display_order, assigned_classes'
                     + sidecarJoin('class_sections_translations', CLASS_SECTION_T_FIELDS, l))
                 .contains('assigned_classes', [classId])
                 .eq('is_active', true)
-                .order('display_order', { ascending: true });
-            if (l !== 'en') query = query.eq('translations.lang', l);
+                .order('display_order', { ascending: true }), l);
             const { data, error } = await query;
 
             if (error) {
                 console.error(`Class sections fetch error [${classId}]:`, error);
                 return [];
             }
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l);
+            return mergeSidecarRows(data, l);
         });
         return data || [];
     },

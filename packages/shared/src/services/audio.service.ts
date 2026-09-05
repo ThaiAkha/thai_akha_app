@@ -1,5 +1,5 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRow } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRow } from '../lib/mergeTranslation';
 import { AudioAsset } from '../types/media.types';
 
 /**
@@ -43,18 +43,16 @@ export const audioService = {
     try {
       // `audio_story_url` resta sulla base: la traccia audio e' incisa in inglese,
       // titolo e didascalia invece si traducono.
-      let query = supabase
+      const query = sidecarFilter(supabase
         .from('content_categories')
         .select('audio_story_url, title, ui_quote'
           + sidecarJoin('content_categories_translations', ['title', 'ui_quote'], lang))
         .eq('id', categoryId)
-        .eq('domain', 'recipe');
-      if (lang !== 'en') query = query.eq('translations.lang', lang);
+        .eq('domain', 'recipe'), lang);
       const { data: raw, error } = await query.single();
 
       if (error || !raw) return null;
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      const data = mergeSidecarRow(raw as unknown as Record<string, unknown>, lang);
+      const data = mergeSidecarRow(raw, lang);
       if (!data.audio_story_url) return null;
 
       return {

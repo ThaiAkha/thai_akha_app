@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { MENU_RECIPE_T_FIELDS } from '../components/user-dashboard/menuManager/menuHelpers';
 import { useQuery } from '@thaiakha/shared/query';
 import { Typography, Button, Icon, Badge } from '../components/ui/index';
 import { PageLayout } from '../components/layout/PageLayout';
@@ -29,12 +30,6 @@ type MenuRecipe = Tables<'recipes'> & {
 const NO_RECIPES: MenuRecipe[] = [];
 const classMenuRecipesQueryKey = (lang = 'en') => ['recipes', 'class_menu', lang] as const;
 
-/** Campi tradotti che le card del menu utente mostrano. */
-const USER_MENU_RECIPE_T_FIELDS = [
-  'name', 'subtitle', 'description', 'excerpt', 'health_benefits', 'garnish', 'cooks_tip',
-  'notes', 'directions', 'essentials',
-] as const;
-
 const normalizeCat = (cat: string) => {
   const lower = cat.toLowerCase();
   if (lower.includes('curry')) return 'curry';
@@ -62,19 +57,16 @@ const MenuPage: React.FC<{
   const recipesQ = useQuery({
     queryKey: classMenuRecipesQueryKey(lang),
     queryFn: async () => {
-      let q = supabase
+      const q = sidecarFilter(supabase
         .from('recipes')
         .select(`*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
-          + sidecarJoin('recipes_translations', USER_MENU_RECIPE_T_FIELDS, lang))
+          + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .order('category')
-        .order('name');
-      if (lang !== 'en') q = q.eq('translations.lang', lang);
+        .order('name'), lang);
       const { data, error } = await q;
       if (error) throw error;
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata,
-      // la forma vera e' quella della madre `recipes` piu' la relazione ingredienti.
-      const merged = mergeSidecarRows(data as unknown as Record<string, unknown>[], lang) as unknown as MenuRecipe[];
+      const merged = mergeSidecarRows<MenuRecipe>(data, lang);
       return merged.map((r): MenuRecipe => ({
         ...r,
         keyIngredients: r.recipe_key_ingredients?.map((i) => i.ingredient) || []

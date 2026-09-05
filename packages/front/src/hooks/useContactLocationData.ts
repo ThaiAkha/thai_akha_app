@@ -1,6 +1,6 @@
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import { useLanguage } from '../context/LanguageContext';
 import type { MeetingPoint } from '@thaiakha/shared/types';
 
@@ -42,17 +42,14 @@ export function useContactLocationData() {
           + sidecarJoin('pickup_zones_translations', ['name'], lang))
         .not('morning_pickup_time', 'is', null)
         .order('display_order');
-      if (lang !== 'en') {
-        mpQuery = mpQuery.eq('translations.lang', lang);
-        pzQuery = pzQuery.eq('translations.lang', lang);
-      }
+      mpQuery = sidecarFilter(mpQuery, lang);
+      pzQuery = sidecarFilter(pzQuery, lang);
       const [mp, pz] = await Promise.all([mpQuery, pzQuery]);
       if (mp.error) throw mp.error;
       if (pz.error) throw pz.error;
-      // cast unico: la select parziale non coincide col tipo completo della tabella
       return {
-        points: mergeSidecarRows(mp.data as unknown as Record<string, unknown>[], lang) as unknown as MeetingPoint[],
-        zones: mergeSidecarRows(pz.data as unknown as Record<string, unknown>[], lang) as unknown as PickupZoneRow[],
+        points: mergeSidecarRows<MeetingPoint>(mp.data, lang),
+        zones: mergeSidecarRows<PickupZoneRow>(pz.data, lang),
       };
     },
   });

@@ -7,7 +7,7 @@
  * sui tipi dominio manuali di @thaiakha/shared (FaqCategoryRow & co.).
  */
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import { normalizeLangTag } from '@thaiakha/shared/lib/i18n';
 import type { FAQLink, FAQCta } from '@thaiakha/shared/types';
 import type {
@@ -51,10 +51,8 @@ export async function getFaqData(lang = 'en'): Promise<FaqCategoryUI[]> {
     .is('entity_type', null)
     .contains('audience', ['front'])
     .order('display_order', { ascending: true });
-  if (l !== 'en') {
-    catsQuery = catsQuery.eq('translations.lang', l);
-    qsQuery = qsQuery.eq('translations.lang', l);
-  }
+  catsQuery = sidecarFilter(catsQuery, l);
+  qsQuery = sidecarFilter(qsQuery, l);
   const [{ data: catsData, error: cErr }, { data: qsData, error: qErr }] = await Promise.all([catsQuery, qsQuery]);
 
   if (cErr || qErr || !catsData || !qsData) {
@@ -62,9 +60,8 @@ export async function getFaqData(lang = 'en'): Promise<FaqCategoryUI[]> {
     return [];
   }
 
-  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-  const cats = mergeSidecarRows(catsData as unknown as Record<string, unknown>[], l) as unknown as Pick<FaqCategoryRow, 'id' | 'category_key' | 'title' | 'image_asset_id' | 'section_id' | 'display_order'>[];
-  const qs = mergeSidecarRows(qsData as unknown as Record<string, unknown>[], l) as unknown as Pick<FaqQuestionRow, 'category_id' | 'question' | 'answer' | 'cta' | 'display_order'>[];
+  const cats = mergeSidecarRows<Pick<FaqCategoryRow, 'id' | 'category_key' | 'title' | 'image_asset_id' | 'section_id' | 'display_order'>>(catsData, l);
+  const qs = mergeSidecarRows<Pick<FaqQuestionRow, 'category_id' | 'question' | 'answer' | 'cta' | 'display_order'>>(qsData, l);
 
   return cats.map(c => ({
     id: c.category_key,
@@ -98,7 +95,7 @@ export async function getEntityFaqs(
   lang = 'en',
 ): Promise<FaqCardUI[]> {
   const l = normalizeLangTag(lang);
-  let query = supabase
+  const query = sidecarFilter(supabase
     .from('faq_questions')
     .select('faq_key, question, answer, avatar_asset_id, faq_style, display_order, cta'
       + sidecarJoin('faq_questions_translations', FAQ_QUESTION_T_FIELDS, l))
@@ -106,16 +103,14 @@ export async function getEntityFaqs(
     .eq('entity_slug', entitySlug)
     .eq('is_active', true)
     .contains('audience', ['front'])
-    .order('display_order', { ascending: true });
-  if (l !== 'en') query = query.eq('translations.lang', l);
+    .order('display_order', { ascending: true }), l);
   const { data, error } = await query;
 
   if (error || !data) {
     console.error('[infoPages] getEntityFaqs:', error);
     return [];
   }
-  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-  const rows = mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'display_order' | 'cta'>[];
+  const rows = mergeSidecarRows<Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'display_order' | 'cta'>>(data, l);
   return rows.map(r => ({
     name: r.question,
     answerHtml: r.answer,
@@ -139,22 +134,20 @@ export async function getFaqsByRefs(refs: readonly string[], lang = 'en'): Promi
   if (!Array.isArray(refs) || refs.length === 0) return [];
 
   const l = normalizeLangTag(lang);
-  let query = supabase
+  const query = sidecarFilter(supabase
     .from('faq_questions')
     .select('faq_key, question, answer, avatar_asset_id, faq_style, cta'
       + sidecarJoin('faq_questions_translations', FAQ_QUESTION_T_FIELDS, l))
     .in('faq_key', refs)
     .eq('is_active', true)
-    .contains('audience', ['front']);
-  if (l !== 'en') query = query.eq('translations.lang', l);
+    .contains('audience', ['front']), l);
   const { data, error } = await query;
 
   if (error || !data) {
     console.error('[infoPages] getFaqsByRefs:', error);
     return [];
   }
-  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-  const rows = mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'cta'>[];
+  const rows = mergeSidecarRows<Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'cta'>>(data, l);
   const byKey = new Map(rows.map(r => [r.faq_key ?? '', r]));
 
   // Ordine = ordine dell'array faq_refs; chiavi mancanti/inattive → saltate.
@@ -204,14 +197,13 @@ export async function getInfoPage(slug: string, lang = 'en'): Promise<LegalDocum
   const l = normalizeLangTag(lang);
   // `anchor` NON si traduce: e' l'ancora dei deep-link legali, e una versione
   // tradotta romperebbe i link che girano nelle email e nei documenti agenzia.
-  let sectionsQuery = supabase
+  const sectionsQuery = sidecarFilter(supabase
     .from('info_page_sections')
     .select('heading, body, section_order, anchor'
       + sidecarJoin('info_page_sections_translations', INFO_SECTION_T_FIELDS, l))
     .eq('page_slug', slug)
     .eq('is_active', true)
-    .order('section_order', { ascending: true });
-  if (l !== 'en') sectionsQuery = sectionsQuery.eq('translations.lang', l);
+    .order('section_order', { ascending: true }), l);
   const [meta, { data: sectionsData, error: sErr }] = await Promise.all([
     getInfoPageMeta(slug),
     sectionsQuery,
@@ -221,8 +213,7 @@ export async function getInfoPage(slug: string, lang = 'en'): Promise<LegalDocum
     console.error('[infoPages] getInfoPage sections:', sErr);
     return null;
   }
-  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-  const sections = mergeSidecarRows(sectionsData as unknown as Record<string, unknown>[], l) as unknown as Pick<InfoPageSectionRow, 'heading' | 'body' | 'section_order' | 'anchor'>[];
+  const sections = mergeSidecarRows<Pick<InfoPageSectionRow, 'heading' | 'body' | 'section_order' | 'anchor'>>(sectionsData, l);
 
   const mapped: LegalDocumentSection[] = sections.map(s => {
     const blocks = (s.body ?? []) as InfoPageBlock[];

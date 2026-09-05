@@ -1,7 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { IngredientListItem, IngredientDetail, RecipeLink } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
-import { sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /** Campi di CONTENUTO del sidecar ingrediente (`slug` escluso: fonte = registro slug). */
 const INGREDIENT_T_FIELDS = [
@@ -36,22 +36,20 @@ async function fetchRecipesUsingIngredient(ingredientId: string, lang = 'en'): P
   if (ids.length === 0) return [];
 
   const l = normalizeLang(lang);
-  let query = supabase
+  const query = sidecarFilter(supabase
     .from('recipes')
     .select('id, slug, name, thai_name, cover_data:media_assets!cover_asset_id(image_url, alt_text)'
       + sidecarJoin('recipes_translations', RECIPE_LINK_T_FIELDS, l))
     .in('id', ids)
     .eq('is_published', true)
-    .order('name', { ascending: true });
-  if (l !== 'en') query = query.eq('translations.lang', l);
+    .order('name', { ascending: true }), l);
   const { data, error } = await query;
 
   if (error) {
     console.error('Recipes-using-ingredient fetch error:', error);
     return [];
   }
-  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-  return mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as RecipeLink[];
+  return mergeSidecarRows<RecipeLink>(data, l);
 }
 
 export const ingredientService = {
@@ -64,22 +62,20 @@ export const ingredientService = {
     const data = await fetchWithCache<IngredientListItem[]>(`ingredients_index_${l}_v3`, async () => {
       // I tre gate restano sulla riga MADRE: `kitchen_usage` decide se l'ingrediente
       // si mostra, e quella decisione non cambia da lingua a lingua.
-      let query = supabase
+      const query = sidecarFilter(supabase
         .from('ingredients_library')
         .select(INDEX_COLS + sidecarJoin('ingredients_library_translations', ['name'], l))
         .eq('is_published', true)
         .eq('is_visible_public', true)
         .not('kitchen_usage', 'is', null)
-        .order('name', { ascending: true });
-      if (l !== 'en') query = query.eq('translations.lang', l);
+        .order('name', { ascending: true }), l);
       const { data, error } = await query;
 
       if (error) {
         console.error('Ingredients index fetch error:', error);
         return [];
       }
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      return mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as IngredientListItem[];
+      return mergeSidecarRows<IngredientListItem>(data, l);
     });
     return data || [];
   },
@@ -89,7 +85,7 @@ export const ingredientService = {
     const l = normalizeLang(lang);
     // v3: select cambiata (join sidecar) + lingua nella chiave.
     return fetchWithCache<IngredientDetail>(`ingredient_${slug}_${l}_v3`, async () => {
-      let query = supabase
+      const query = sidecarFilter(supabase
         .from('ingredients_library')
         .select(`
           *,
@@ -98,10 +94,7 @@ export const ingredientService = {
           category:content_categories!category_id(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)})
         `+ sidecarJoin('ingredients_library_translations', INGREDIENT_T_FIELDS, l))
         .eq('slug', slug)
-        .eq('is_published', true);
-      if (l !== 'en') {
-        query = query.eq('translations.lang', l).eq('category.translations.lang', l);
-      }
+        .eq('is_published', true), l, INGREDIENT_EMBEDDED);
       const { data, error } = await query.single();
 
       if (error) {
@@ -110,8 +103,7 @@ export const ingredientService = {
       }
 
       // Resolve author avatar_asset_id → media_assets; keep author.avatar_url alias (culture pattern).
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      const result = mergeSidecarRow(data as unknown as Record<string, unknown>, l, INGREDIENT_EMBEDDED);
+      const result = mergeSidecarRow(data, l, INGREDIENT_EMBEDDED);
       const author = result.author as Record<string, unknown> | null;
       if (author) {
         const av = author.avatar as { image_url?: string } | null;

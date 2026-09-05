@@ -7,7 +7,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import { useContentCategories } from '../../../hooks/useContentCategories';
 import { useAllergyMap } from '../../../hooks/useAllergyMap';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -42,17 +42,15 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
       // Il filtro `.in('name', ...)` resta sulla colonna MADRE: le chiavi arrivano da
       // recipe_key_ingredients, che e' testo inglese. Si traduce cio' che si MOSTRA,
       // non cio' con cui si cerca - o l'ingrediente non si troverebbe piu'.
-      let q = supabase
+      const q = sidecarFilter(supabase
         .from('ingredients_library')
         .select('id, name, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)'
           + sidecarJoin('ingredients_library_translations', ['name', 'description'], lang))
-        .in('name', ingredientNames);
-      if (lang !== 'en') q = q.eq('translations.lang', lang);
+        .in('name', ingredientNames), lang);
       const { data, error } = await q;
       if (error) throw error;
       // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      return mergeSidecarRows(data as unknown as Record<string, unknown>[], lang).map((item): IngredientDetail => {
+      return mergeSidecarRows(data, lang).map((item): IngredientDetail => {
         const cover = item.cover as { image_url?: string } | null;
         return {
           id: item.id as string,

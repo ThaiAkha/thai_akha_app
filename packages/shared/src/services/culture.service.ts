@@ -1,7 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { CultureSection, CultureSectionDetail, CultureGalleryItem } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
-import { sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /** Campi di CONTENUTO dei sidecar del mondo cultura (`slug` escluso: fonte = registro slug). */
 const CULTURE_T_FIELDS = [
@@ -19,7 +19,7 @@ export const cultureService = {
         const l = normalizeLang(lang);
         // v7: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache<CultureSection[]>(`culture_sections_index_${l}_v7`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('culture_sections')
                 .select(`
                     id, slug, title, subtitle, quote, cover_asset_id, display_order, featured, audio_asset_id, seo_title, canonical_url, hreflang,
@@ -27,10 +27,7 @@ export const cultureService = {
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)})
                 `+ sidecarJoin('culture_sections_translations', CULTURE_T_FIELDS, l))
                 .eq('is_published', true)
-                .order('display_order', { ascending: true });
-            if (l !== 'en') {
-                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
-            }
+                .order('display_order', { ascending: true }), l, CULTURE_EMBEDDED);
             const { data, error } = await query;
 
             if (error) {
@@ -38,8 +35,7 @@ export const cultureService = {
                 return [];
             }
 
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l, CULTURE_EMBEDDED) as unknown as CultureSection[];
+            return mergeSidecarRows<CultureSection>(data, l, CULTURE_EMBEDDED);
         });
         return data || [];
     },
@@ -49,15 +45,14 @@ export const cultureService = {
         const l = normalizeLang(lang);
         // v4: select cambiata (join sidecar) + lingua nella chiave.
         return fetchWithCache<CultureSectionDetail>(`culture_section_${slug}_${l}_v4`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('culture_sections')
                 .select(`
                     *,
                     author:authors(name, title, description, avatar:media_assets!avatar_asset_id(image_url, alt_text)),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('culture_sections_translations', CULTURE_T_FIELDS, l))
-                .eq('slug', slug);
-            if (l !== 'en') query = query.eq('translations.lang', l);
+                .eq('slug', slug), l);
             const { data, error } = await query.single();
 
             if (error) {
@@ -66,8 +61,7 @@ export const cultureService = {
             }
 
             // Resolve author avatar_asset_id → media_assets; keep author.avatar_url alias.
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            const result = mergeSidecarRow(data as unknown as Record<string, unknown>, l);
+            const result = mergeSidecarRow(data, l);
             const author = result.author as Record<string, unknown> | null;
             if (author) {
                 const av = author.avatar as { image_url?: string } | null;
@@ -84,12 +78,11 @@ export const cultureService = {
         // gallery_items_translations oggi e' VUOTO: il lettore c'e', le didascalie
         // restano inglesi finche' /translate-db non lo riempie.
         const data = await fetchWithCache<CultureGalleryItem[]>(`culture_gallery_${galleryId}_${l}_v2`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('gallery_items')
                 .select('*, media_assets(*)' + sidecarJoin('gallery_items_translations', GALLERY_T_FIELDS, l))
                 .eq('gallery_id', galleryId)
-                .order('display_order', { ascending: true });
-            if (l !== 'en') query = query.eq('translations.lang', l);
+                .order('display_order', { ascending: true }), l);
             const { data, error } = await query;
 
             if (error) {
@@ -97,8 +90,7 @@ export const cultureService = {
                 return [];
             }
 
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as CultureGalleryItem[];
+            return mergeSidecarRows<CultureGalleryItem>(data, l);
         });
         return data || [];
     },

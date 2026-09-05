@@ -6,7 +6,7 @@
  */
 import { supabase } from '../lib/supabase';
 import { normalizeLang } from './_cache';
-import { sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /** Campi tradotti mostrati nelle card "pagine sorelle". */
 const SIBLING_T_FIELDS = ['header_title_main', 'header_title_highlight', 'page_description'] as const;
@@ -47,7 +47,7 @@ export async function getSiblingPagesBySlugs(slugs: readonly string[], lang = 'e
 
     const l = normalizeLang(lang);
     // Step 2: fetch metadata + cover image for each sibling slug
-    let query = supabase
+    const query = sidecarFilter(supabase
         .from('site_metadata')
         .select(`
             page_slug,
@@ -56,14 +56,11 @@ export async function getSiblingPagesBySlugs(slugs: readonly string[], lang = 'e
             page_description,
             cover_media:media_assets!cover_asset_id(image_url)
         `+ sidecarJoin('site_metadata_translations', SIBLING_T_FIELDS, l))
-        .in('page_slug', slugs);
-    if (l !== 'en') query = query.eq('translations.lang', l);
+        .in('page_slug', slugs), l);
     const { data: rawSiblings, error: e2 } = await query;
 
     if (e2 || !rawSiblings) return [];
-    // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata e
-    // degrada la riga a GenericStringError. La forma vera e' SiblingRow.
-    const data = mergeSidecarRows(rawSiblings as unknown as Record<string, unknown>[], l) as unknown as SiblingRow[];
+    const data = mergeSidecarRows<SiblingRow>(rawSiblings, l);
 
     // Preserve order defined in sibling_slugs, resolve cover_media → hero_image_url alias
     return slugs
@@ -94,20 +91,18 @@ export async function getPageExtras(slug: string, lang = 'en'): Promise<SiteMeta
     // `page_essentials` e' l'unico campo tradotto qui: date, faq_refs e sibling_slugs
     // sono struttura, e il prompt Cherry vive sulla base (Cherry sceglie la lingua
     // da se'). Fallback per campo: dove il sidecar e' vuoto resta l'inglese.
-    let query = supabase
+    const query = sidecarFilter(supabase
         .from('site_metadata')
         .select('cherry_prompt, cherry_response, cherry_button_ids, page_essentials, date_published, date_modified, faq_refs, sibling_slugs'
             + sidecarJoin('site_metadata_translations', ['page_essentials'], l))
-        .eq('page_slug', slug);
-    if (l !== 'en') query = query.eq('translations.lang', l);
+        .eq('page_slug', slug), l);
     const { data, error } = await query.maybeSingle();
     if (error) {
         console.error('[contentMetadataService] getPageExtras:', error);
         throw error;
     }
     if (!data) return null;
-    // Cast unico: PostgREST non inferisce la select concatenata al join.
-    const row = mergeSidecarRow(data as unknown as Record<string, unknown>, l);
+    const row = mergeSidecarRow(data, l);
     return {
         cherry: {
             prompt: (row.cherry_prompt as string | null) ?? null,

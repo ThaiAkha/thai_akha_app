@@ -1,7 +1,7 @@
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { GEOJSON_MASTER } from '@thaiakha/shared/data';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import type { PickupZone } from '@thaiakha/shared/types';
 import { mergeZonesWithGeoJson, type Zone } from '../utils/locationHelpers';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -32,15 +32,13 @@ export function useZones(): UseZonesResult {
   const query = useQuery({
     queryKey: pickupZonesQueryKey(lang),
     queryFn: async () => {
-      let q = supabase.from('pickup_zones')
-        .select('*' + sidecarJoin('pickup_zones_translations', PICKUP_ZONE_T_FIELDS, lang));
-      if (lang !== 'en') q = q.eq('translations.lang', lang);
+      const q = sidecarFilter(supabase.from('pickup_zones')
+        .select('*' + sidecarJoin('pickup_zones_translations', PICKUP_ZONE_T_FIELDS, lang)), lang);
       const { data, error } = await q;
       if (error) throw error;
       const features = GEOJSON_MASTER?.features ?? [];
       // display_order e' nullable in DB ma opzionale nel tipo: normalizza null -> undefined
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      const zoneRows = mergeSidecarRows(data as unknown as Record<string, unknown>[], lang)
+      const zoneRows = mergeSidecarRows(data, lang)
         .map((z) => ({ ...z, display_order: z.display_order ?? undefined })) as unknown as PickupZone[];
       return mergeZonesWithGeoJson(zoneRows, features);
     },

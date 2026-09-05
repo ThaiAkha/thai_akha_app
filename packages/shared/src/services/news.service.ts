@@ -1,7 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { NewsArticle, NewsDetail, FrontHomeCard } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
-import { sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /**
  * Campi di CONTENUTO dei due sidecar della home. Sono i soli che il merge deve
@@ -13,7 +13,7 @@ const PAGE_SECTION_T_FIELDS = [
 ] as const;
 
 /** Campi di CONTENUTO del sidecar news (`slug` escluso: fonte = registro slug). */
-const NEWS_T_FIELDS = [
+export const NEWS_T_FIELDS = [
     'title', 'subtitle', 'excerpt', 'content', 'seo_title', 'seo_description', 'og_title', 'og_description',
 ] as const;
 
@@ -31,7 +31,7 @@ export const newsService = {
         const l = normalizeLang(lang);
         // v2: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache<NewsArticle[]>(`news_feed_${l}_v2`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
                     id, news_id, slug, title, excerpt, cover_asset_id, read_time_minutes, published_at, canonical_url, hreflang,
@@ -39,14 +39,10 @@ export const newsService = {
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))
                 .eq('is_published', true)
-                .order('published_at', { ascending: false });
-            if (l !== 'en') {
-                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
-            }
+                .order('published_at', { ascending: false }), l, NEWS_EMBEDDED);
             const { data, error } = await query;
             if (error) { console.error('[newsService] getNewsFeed:', error); return []; }
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l, NEWS_EMBEDDED) as unknown as NewsArticle[];
+            return mergeSidecarRows<NewsArticle>(data, l, NEWS_EMBEDDED);
         });
         return data ?? [];
     },
@@ -56,7 +52,7 @@ export const newsService = {
         const l = normalizeLang(lang);
         // v4: select cambiata (join sidecar) + lingua nella chiave.
         return fetchWithCache<NewsDetail>(`news_detail_${slug}_${l}_v4`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
                     *,
@@ -65,15 +61,11 @@ export const newsService = {
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))
                 .eq('slug', slug)
-                .eq('is_published', true);
-            if (l !== 'en') {
-                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
-            }
+                .eq('is_published', true), l, NEWS_EMBEDDED);
             const { data: raw, error } = await query.maybeSingle();
             if (error) { console.error(`[newsService] getNewsDetailBySlug [${slug}]:`, error); return null; }
             if (!raw) return null;
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            const data = mergeSidecarRow(raw as unknown as Record<string, unknown>, l, NEWS_EMBEDDED);
+            const data = mergeSidecarRow(raw, l, NEWS_EMBEDDED);
             // Resolve author avatar_asset_id → media_assets; keep author.avatar_url alias.
             const result = data as Record<string, unknown>;
             const author = result.author as Record<string, unknown> | null;
@@ -94,18 +86,14 @@ export const newsService = {
         // L'errore viene rilanciato: cosi' `error`/retry della query hanno senso.
         if (sectionIds.length === 0) return [];
         const l = normalizeLang(lang);
-        let query = supabase
+        const query = sidecarFilter(supabase
             .from('page_sections')
             .select('section_id, title, subtitle, description, highlight, tag_badge, image_asset_id, button_text, button_link_url, open_in_new_tab, cherry_prompt, cherry_response, bullets, cards, youtube_video_id'
                 + sidecarJoin('page_sections_translations', PAGE_SECTION_T_FIELDS, l))
-            .in('section_id', sectionIds);
-        // Filtro su risorsa incorporata: sfoltisce l'array annidato, NON toglie le
-        // sezioni ancora non tradotte (quelle arrivano con `translations: []`).
-        if (l !== 'en') query = query.eq('translations.lang', l);
+            .in('section_id', sectionIds), l);
         const { data, error } = await query;
         if (error) { console.error('[newsService] getPageSections:', error); throw error; }
-        // Cast unico: PostgREST non inferisce una select concatenata a runtime.
-        return mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as T[];
+        return mergeSidecarRows<T>(data, l);
     },
 
     /**
@@ -120,11 +108,10 @@ export const newsService = {
                 + sidecarJoin('home_cards_front_translations', HOME_CARD_T_FIELDS, l))
             .eq('is_active', true);
         if (cardIds && cardIds.length > 0) query = query.in('card_id', cardIds as string[]);
-        if (l !== 'en') query = query.eq('translations.lang', l);
+        query = sidecarFilter(query, l);
         const { data, error } = await query.order('display_order');
         if (error) { console.error('[newsService] getFrontHomeCards:', error); throw error; }
-        // Cast unico: PostgREST non inferisce una select concatenata a runtime.
-        let result = mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as FrontHomeCard[];
+        let result = mergeSidecarRows<FrontHomeCard>(data, l);
         if (cardIds?.length) {
             result = [...result].sort((a, b) =>
                 cardIds.indexOf(a.card_id ?? '') - cardIds.indexOf(b.card_id ?? '')

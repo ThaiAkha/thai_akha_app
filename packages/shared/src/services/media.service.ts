@@ -1,5 +1,5 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 import { MediaAsset } from '../types/media.types';
 import { fetchWithCache, normalizeLang } from './_cache';
 
@@ -98,13 +98,12 @@ export const mediaService = {
     // gallery_items_translations oggi e' VUOTO: le didascalie restano inglesi
     // finche' /translate-db non lo riempie, il lettore e' gia' pronto.
     const data = await fetchWithCache(`gallery_${galleryId}_${l}_v2`, async () => {
-      let query = supabase
+      const query = sidecarFilter(supabase
         .from('gallery_items')
         .select('asset_id, display_order, quote, media_assets(image_url, title, caption, alt_text)'
           + sidecarJoin('gallery_items_translations', ['quote'], l))
         .eq('gallery_id', galleryId)
-        .order('display_order', { ascending: true });
-      if (l !== 'en') query = query.eq('translations.lang', l);
+        .order('display_order', { ascending: true }), l);
       const { data, error } = await query;
 
       if (error) {
@@ -112,8 +111,7 @@ export const mediaService = {
         return [];
       }
 
-      // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-      return mergeSidecarRows(data as unknown as Record<string, unknown>[], l).map((row) => {
+      return mergeSidecarRows(data, l).map((row) => {
         const r = row as Record<string, unknown>;
         const m = (Array.isArray(r.media_assets) ? r.media_assets[0] : r.media_assets) as Record<string, string> | null;
         return {

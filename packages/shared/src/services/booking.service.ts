@@ -3,7 +3,7 @@
 // Cherry (guest/loggato × booking). Cherry NON scrive mai: questo service
 // espone solo letture. RLS garantisce che l'utente veda solo i propri booking.
 import { supabase } from '../lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 
 export type BookingStateKind = 'none' | 'future' | 'imminent';
 
@@ -155,13 +155,11 @@ export const getUserMenuSelection = async (userId?: string | null, lang = 'en'):
     const ids = [data.curry_id, data.soup_id, data.stirfry_id].filter(Boolean) as string[];
     if (ids.length === 0) return { empty: true };
 
-    let recsQuery = supabase.from('recipes')
+    const recsQuery = sidecarFilter(supabase.from('recipes')
       .select('id, name' + sidecarJoin('recipes_translations', ['name'], lang))
-      .in('id', ids);
-    if (lang !== 'en') recsQuery = recsQuery.eq('translations.lang', lang);
+      .in('id', ids), lang);
     const { data: recs } = await recsQuery;
-    // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-    const merged = mergeSidecarRows(recs as unknown as Record<string, unknown>[], lang);
+    const merged = mergeSidecarRows(recs, lang);
     const nameById = new Map(merged.map((r) => [String(r.id), String(r.name)]));
     const resolve = (id?: string | null) => (id ? nameById.get(String(id)) ?? null : null);
 

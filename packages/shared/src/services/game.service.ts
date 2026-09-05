@@ -2,7 +2,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { ContentCategoryDB, QuizRewardDB } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
 import { CONTENT_CATEGORY_PUBLIC_COLUMNS, CONTENT_CATEGORY_T_FIELDS } from './contentMetadata.service';
-import { sidecarJoin, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 
 // QuizCategoryDB = ContentCategoryDB with domain='quiz' (quiz_categories table dropped)
 
@@ -43,18 +43,16 @@ export const gameService = {
         const l = normalizeLang(lang);
         // v4: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache(`quiz_categories_${l}_v4`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('content_categories')
                 .select(CONTENT_CATEGORY_PUBLIC_COLUMNS
                     + sidecarJoin('content_categories_translations', CONTENT_CATEGORY_T_FIELDS, l))
                 .eq('domain', 'quiz')
                 .eq('is_active', true)
-                .order('display_order', { ascending: true });
-            if (l !== 'en') query = query.eq('translations.lang', l);
+                .order('display_order', { ascending: true }), l);
             const { data, error } = await query;
 
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return error ? [] : (mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as ContentCategoryDB[]);
+            return error ? [] : (mergeSidecarRows<ContentCategoryDB>(data, l));
         });
         return data || [];
     },
@@ -93,18 +91,16 @@ export const gameService = {
             const allQuestions: Record<string, unknown>[] = [];
             for (let i = 0; i < moduleIds.length; i += chunkSize) {
                 const chunk = moduleIds.slice(i, i + chunkSize);
-                let questionsQuery = supabase
+                const questionsQuery = sidecarFilter(supabase
                     .from('quiz_questions')
                     .select('id, module_id, text, options, correct_index, correct_answer, question_type, explanation, explanation_wrong, display_order, points, hint_prompt, hint_response, hint_blocks, cover:media_assets!image_asset_id(image_url)'
                         + sidecarJoin('quiz_questions_translations', QUIZ_T_FIELDS, l))
                     .in('module_id', chunk)
-                    .order('display_order', { ascending: true });
-                if (l !== 'en') questionsQuery = questionsQuery.eq('translations.lang', l);
+                    .order('display_order', { ascending: true }), l);
                 const questionsRes = await questionsQuery;
                 if (questionsRes.error) { console.error('Quiz questions error:', questionsRes.error); return []; }
                 if (questionsRes.data) {
-                    // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-                    allQuestions.push(...mergeSidecarRows(questionsRes.data as unknown as Record<string, unknown>[], l));
+                    allQuestions.push(...mergeSidecarRows(questionsRes.data, l));
                 }
             }
             const questions = allQuestions;

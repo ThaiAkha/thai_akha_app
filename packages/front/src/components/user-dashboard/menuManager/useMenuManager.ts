@@ -8,18 +8,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery, keepPreviousData } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import { sidecarJoin, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import type { RecipeData } from '../../menu/RecipeView';
 import { useContentCategories } from '../../../hooks/useContentCategories';
-import { normalizeCatKey, FALLBACK_CATEGORY_INFO } from './menuHelpers';
+import { normalizeCatKey, FALLBACK_CATEGORY_INFO, MENU_RECIPE_T_FIELDS } from './menuHelpers';
 import type { MenuManagerProps } from './types';
 import { useLanguage } from '../../../context/LanguageContext';
-
-/** Campi tradotti che il MenuManager mostra davvero (nome, descrizione, note). */
-const MENU_RECIPE_T_FIELDS = [
-  'name', 'subtitle', 'description', 'excerpt', 'health_benefits', 'garnish', 'cooks_tip',
-  'notes', 'directions', 'essentials',
-] as const;
 
 /** Le tre categorie dell'esperienza inclusa (tab). */
 const FIXED_TAB_KEYS = ['akha_specialty', 'appetizer', 'dessert'];
@@ -47,17 +41,16 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
   const fixedQ = useQuery({
     queryKey: fixedClassDishesQueryKey(lang),
     queryFn: async () => {
-      let q = supabase
+      const q = sidecarFilter(supabase
         .from('recipes')
         .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)'
           + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .eq('is_fixed_dish', true)
-        .order('category');
-      if (lang !== 'en') q = q.eq('translations.lang', lang);
+        .order('category'), lang);
       const { data, error } = await q;
       if (error) throw error;
-      return mergeSidecarRows(data as unknown as Record<string, unknown>[], lang) as any[];
+      return mergeSidecarRows<RecipeData>(data, lang);
     },
   });
 
@@ -69,16 +62,15 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
     queryKey: menuSelectedDishesQueryKey(ids, lang),
     enabled: ids.length > 0,
     queryFn: async () => {
-      let q = supabase
+      const q = sidecarFilter(supabase
         .from('recipes')
         .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)'
           + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
-        .in('id', ids);
-      if (lang !== 'en') q = q.eq('translations.lang', lang);
+        .in('id', ids), lang);
       const { data, error } = await q;
       if (error) throw error;
-      const selected = mergeSidecarRows(data as unknown as Record<string, unknown>[], lang) as any[];
+      const selected = mergeSidecarRows<RecipeData>(data, lang);
       return [menuSelection?.curry_id, menuSelection?.soup_id, menuSelection?.stirfry_id]
         .map(id => selected.find(r => r.id === id))
         .filter(Boolean)

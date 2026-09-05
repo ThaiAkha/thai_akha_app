@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { LegalDocument, LegalDocumentSection } from '../types/legal.types';
 import { mergeLegalTranslation, type MergedLegalDocument } from '../lib/mergeLegalTranslation';
-import { sidecarJoin, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 
 /**
  * useLegalDocument — legge un documento legale dalla centrale `legal_documents`.
@@ -73,14 +73,13 @@ async function fromInfoPageSections(pageSlug: string, lang = 'en'): Promise<Lega
   // Anche il ramo legacy legge tradotto: finche' i documenti della centrale non sono
   // pubblicati, e' QUESTO che serve le pagine Terms/Privacy, e lasciarlo inglese
   // significherebbe legale in inglese sotto ogni prefisso lingua.
-  let sectionsQuery = supabase
+  const sectionsQuery = sidecarFilter(supabase
     .from('info_page_sections')
     .select('heading, body, section_order, anchor'
       + sidecarJoin('info_page_sections_translations', ['heading', 'body'], lang))
     .eq('page_slug', pageSlug)
     .eq('is_active', true)
-    .order('section_order', { ascending: true });
-  if (lang !== 'en') sectionsQuery = sectionsQuery.eq('translations.lang', lang);
+    .order('section_order', { ascending: true }), lang);
   const [meta, sectionsRes] = await Promise.all([
     supabase
       .from('site_metadata')
@@ -91,9 +90,8 @@ async function fromInfoPageSections(pageSlug: string, lang = 'en'): Promise<Lega
   ]);
 
   if (sectionsRes.error || !sectionsRes.data) return null;
-  // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
   const sections = toSections(
-    mergeSidecarRows(sectionsRes.data as unknown as Record<string, unknown>[], lang) as unknown as DbSection[],
+    mergeSidecarRows<DbSection>(sectionsRes.data, lang),
   );
   if (sections.length === 0) return null;
 

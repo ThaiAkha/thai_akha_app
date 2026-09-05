@@ -1,7 +1,8 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata, ContentCategoryDB, BusinessProfile } from '../types';
 import { fetchWithCache, normalizeLang } from './_cache';
-import { mergeTranslation, pickTranslation, sidecarJoin, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
+import { NEWS_T_FIELDS } from './news.service';
 
 /**
  * Campi di CONTENUTO dell'header pagina nel sidecar site_metadata. Il resto della
@@ -12,10 +13,8 @@ import { mergeTranslation, pickTranslation, sidecarJoin, mergeSidecarRow, mergeS
  * Campi di CONTENUTO del sidecar categoria. Esportato: ricette, news, cultura e
  * ingredienti incorporano la stessa categoria e devono tradurla con la stessa lista.
  */
-/** Campi tradotti di una card news (`slug` escluso: fonte = registro slug). */
-const NEWS_CARD_T_FIELDS = [
-    'title', 'subtitle', 'excerpt', 'content', 'seo_title', 'seo_description', 'og_title', 'og_description',
-] as const;
+/** Alias dell'embed categoria nelle card news: stesso nome per filtro e merge. */
+const NEWS_CARD_EMBEDDED = ['category'] as const;
 
 export const CONTENT_CATEGORY_T_FIELDS = [
     'title', 'title_highlight', 'tab_label', 'subtitle', 'description', 'content_body',
@@ -49,24 +48,8 @@ interface PageHeaderRow {
     cherry_button_ids: string[] | null;
 }
 
-/**
- * Join del sidecar front per le voci di menu — solo i due campi che il menu
- * mostra. Stringa vuota in inglese: la base È l'inglese, niente da fondere.
- */
-const frontTranslationJoin = (lang: string): string =>
-    lang === 'en' ? '' : ', translations:site_metadata_translations(lang, menu_label, page_description)';
-
-/**
- * Fonde una riga di menu con la sua traduzione, campo per campo (regola unica:
- * lib/mergeTranslation). Toglie `translations` dal risultato: i consumatori
- * ricevono la stessa forma di prima, solo con i campi già nella lingua giusta.
- */
-const mergeFrontMenuRow = (row: Record<string, unknown>, lang: string): Record<string, unknown> => {
-    const { translations, ...base } = row;
-    if (lang === 'en') return base;
-    const t = pickTranslation(translations as Array<{ lang?: string | null }> | null, lang);
-    return mergeTranslation(base, t as Record<string, unknown> | null);
-};
+/** I due soli campi che menu e footer mostrano: il resto della riga resta inglese/strutturale. */
+const MENU_T_FIELDS = ['menu_label', 'page_description'] as const;
 
 /**
  * Colonne pubbliche di content_categories servite al browser.
@@ -170,7 +153,7 @@ export const contentMetadataService = {
                 };
             }
 
-            let frontQuery = supabase
+            const frontQuery = sidecarFilter(supabase
                 .from(table)
                 .select(`
                     header_badge,
@@ -192,18 +175,11 @@ export const contentMetadataService = {
                     cherry_response,
                     cherry_button_ids
                 `+ sidecarJoin('site_metadata_translations', PAGE_HEADER_T_FIELDS, normalizedLang))
-                .eq('page_slug', slug);
-            if (normalizedLang !== 'en') frontQuery = frontQuery.eq('translations.lang', normalizedLang);
+                .eq('page_slug', slug), normalizedLang);
             const { data: rawFront, error } = await frontQuery.maybeSingle();
 
             if (error || !rawFront) return null;
-            // Cast unico (regola repo #20): PostgREST non inferisce una select
-            // concatenata a runtime e degrada la riga a GenericStringError. La forma
-            // vera e' PageHeaderRow, dichiarata qui sopra sulle stesse colonne.
-            const data = mergeSidecarRow(
-                rawFront as unknown as Record<string, unknown>,
-                normalizedLang,
-            ) as unknown as PageHeaderRow;
+            const data = mergeSidecarRow<PageHeaderRow>(rawFront, normalizedLang);
 
             // Resolve cover image from media_assets join
             const resolvedImageUrl = data.cover_media?.image_url || '';
@@ -244,7 +220,7 @@ export const contentMetadataService = {
      */
     async getMenuItems(table: 'site_metadata' | 'site_metadata_admin' = 'site_metadata', lang = 'en') {
         const normalizedLang = normalizeLang(lang);
-        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v33`, async () => {
+        return fetchWithCache(`sidebar_menu_${table}_${normalizedLang}_v34`, async () => {
             // Le due query restano separate perche' il front distingue menu primario e
             // footer e non ha sidecar traduzioni. Cio' che conta e' che la REGOLA di
             // risoluzione dell'etichetta sia una sola (resolveLabel, sotto).
@@ -284,18 +260,18 @@ export const contentMetadataService = {
             // FRONT: base inglese sulla riga + sidecar site_metadata_translations
             // (menu_label, page_description) fuso PER CAMPO — stessa regola di
             // seo.service. In inglese il join non parte: la base È l'inglese.
-            const { data, error } = await supabase
+            const { data, error } = await sidecarFilter(supabase
                 .from('site_metadata')
-                .select(`id, page_slug, menu_label, header_icon, menu_order, access_level, page_description, parent_id${frontTranslationJoin(normalizedLang)}`)
+                .select(`id, page_slug, menu_label, header_icon, menu_order, access_level, page_description, parent_id${sidecarJoin('site_metadata_translations', MENU_T_FIELDS, normalizedLang)}`)
                 .eq('show_in_menu', true)
                 .eq('menu_location', 'primary')
-                .order('menu_order', { ascending: true });
+                .order('menu_order', { ascending: true }), normalizedLang);
 
             if (error) {
                 console.error('Errore Menu DB:', error);
                 return [];
             }
-            return (data ?? []).map(row => mergeFrontMenuRow(row as unknown as Record<string, unknown>, normalizedLang));
+            return mergeSidecarRows(data, normalizedLang);
         }) || [];
     },
 
@@ -306,16 +282,16 @@ export const contentMetadataService = {
      */
     async getFooterItems(lang = 'en') {
         const normalizedLang = normalizeLang(lang);
-        // v3: +lang nella chiave (due lingue non possono servirsi la cache a vicenda)
-        return fetchWithCache(`footer_menu_${normalizedLang}_v3`, async () => {
-            const { data, error } = await supabase
+        // v4: filtro lingua server-side sul sidecar (prima arrivavano 11 traduzioni per voce)
+        return fetchWithCache(`footer_menu_${normalizedLang}_v4`, async () => {
+            const { data, error } = await sidecarFilter(supabase
                 .from('site_metadata')
-                .select(`id, page_slug, menu_label, header_icon, menu_order${frontTranslationJoin(normalizedLang)}`)
+                .select(`id, page_slug, menu_label, header_icon, menu_order${sidecarJoin('site_metadata_translations', MENU_T_FIELDS, normalizedLang)}`)
                 .eq('show_in_menu', true)
                 .eq('menu_location', 'footer')
-                .order('menu_order', { ascending: true });
+                .order('menu_order', { ascending: true }), normalizedLang);
             if (error) { console.error('Footer menu error:', error); return []; }
-            return (data ?? []).map(row => mergeFrontMenuRow(row as unknown as Record<string, unknown>, normalizedLang));
+            return mergeSidecarRows(data, normalizedLang);
         }) || [];
     },
 
@@ -366,21 +342,19 @@ export const contentMetadataService = {
         const l = normalizeLang(lang);
         // v5: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache<ContentCategoryDB[]>(`content_categories_${domain}_${l}_v5`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('content_categories')
                 .select(CONTENT_CATEGORY_PUBLIC_COLUMNS
                     + sidecarJoin('content_categories_translations', CONTENT_CATEGORY_T_FIELDS, l))
                 .eq('domain', domain)
                 .eq('is_active', true)
-                .order('display_order', { ascending: true });
-            if (l !== 'en') query = query.eq('translations.lang', l);
+                .order('display_order', { ascending: true }), l);
             const { data, error } = await query;
             if (error) {
                 console.error('[ContentService] getContentCategories error:', error);
                 return [];
             }
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return mergeSidecarRows(data as unknown as Record<string, unknown>[], l) as unknown as ContentCategoryDB[];
+            return mergeSidecarRows<ContentCategoryDB>(data, l);
         });
         return data || [];
     },
@@ -390,22 +364,18 @@ export const contentMetadataService = {
         const l = normalizeLang(lang);
         // v2: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache<Record<string, unknown>[]>(`agency_news_${l}_v2`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
                     *,
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
-                `+ sidecarJoin('akha_news_translations', NEWS_CARD_T_FIELDS, l))
+                `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))
                 .eq('is_published', true)
-                .order('created_at', { ascending: false });
-            if (l !== 'en') {
-                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
-            }
+                .order('created_at', { ascending: false }), l, NEWS_CARD_EMBEDDED);
             const { data, error } = await query;
 
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            return error ? [] : mergeSidecarRows(data as unknown as Record<string, unknown>[], l, ['category']);
+            return error ? [] : mergeSidecarRows(data, l, NEWS_CARD_EMBEDDED);
         });
         return data || [];
     },
@@ -415,26 +385,22 @@ export const contentMetadataService = {
         const l = normalizeLang(lang);
         // v2: select cambiata (join sidecar) + lingua nella chiave.
         const data = await fetchWithCache<Record<string, unknown>[]>(`news_by_ids_${newsIds.join(',')}_${l}_v2`, async () => {
-            let query = supabase
+            const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
                     *,
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
-                `+ sidecarJoin('akha_news_translations', NEWS_CARD_T_FIELDS, l))
+                `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))
                 .in('news_id', newsIds)
-                .eq('is_published', true);
-            if (l !== 'en') {
-                query = query.eq('translations.lang', l).eq('category.translations.lang', l);
-            }
+                .eq('is_published', true), l, NEWS_CARD_EMBEDDED);
             const { data: raw, error } = await query;
 
             if (error) {
                 console.error('Error fetching news by news_id:', error);
                 return [];
             }
-            // Cast unico (regola repo #20): PostgREST non inferisce la select concatenata.
-            const data = mergeSidecarRows(raw as unknown as Record<string, unknown>[], l, ['category']);
+            const data = mergeSidecarRows(raw, l, NEWS_CARD_EMBEDDED);
 
             return (data || []).sort((a, b) =>
                 newsIds.indexOf(String(a.news_id ?? '')) -

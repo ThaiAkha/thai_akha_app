@@ -8,14 +8,19 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { LayoutGrid } from 'lucide-react';
 import { getShopIcon, type ShoppingItem, type MarketRun, type ShopContact } from './types';
+import { displayIngredientName, vendorIngredientName, type IngredientNameSpec } from '../../../components/market/ingredientName';
 
 export function useMarketRunner() {
-    const { t } = useTranslation('market');
+    const { t, i18n } = useTranslation('market');
     const [loading, setLoading] = useState(true);
     const [runs, setRuns] = useState<MarketRun[]>([]);          // saved, not-yet-confirmed logistic lists
     const [activeRun, setActiveRun] = useState<MarketRun | null>(null); // the list being shopped
     const [items, setItems] = useState<ShoppingItem[]>([]);
     const [contacts, setContacts] = useState<Record<string, ShopContact>>({});
+    // id → nomi della riga MADRE. `items_snapshot` congela il nome inglese al salvataggio
+    // (traccia di audit): il thai non c'e' e non ci deve andare, si risolve qui per `id`.
+    // Si carica sempre, non solo in UI thai: il messaggio LINE va al venditore comunque.
+    const [namesById, setNamesById] = useState<Record<string, IngredientNameSpec>>({});
     const [activeTab, setActiveTab] = useState('all');
     const [keypadOpen, setKeypadOpen] = useState(false);
     const [keypadItemId, setKeypadItemId] = useState<string | null>(null);
@@ -40,6 +45,16 @@ export function useMarketRunner() {
                 .order('run_date', { ascending: false });
 
             setRuns((runsData as unknown as MarketRun[]) || []);
+
+            // Nomi della libreria (madre): due colonne, serve solo a rendere le righe.
+            const { data: nameData } = await supabase
+                .from('ingredients_library')
+                .select('id, name, name_th');
+            if (nameData) {
+                const map: Record<string, IngredientNameSpec> = {};
+                nameData.forEach(n => { map[n.id] = { name: n.name, name_th: n.name_th }; });
+                setNamesById(map);
+            }
 
             // Fetch shop contacts
             const { data: contactData } = await supabase
@@ -90,12 +105,23 @@ export function useMarketRunner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tabs recompute on items only, as before (t label read at that time)
     }, [items]);
 
+    /** Nome a schermo di una riga: thai in UI thai, risolto dalla libreria per `id`. */
+    const itemName = useCallback(
+        (item: ShoppingItem) => displayIngredientName(
+            { name: item.name, name_th: namesById[item.id]?.name_th },
+            i18n.language,
+        ),
+        [namesById, i18n.language],
+    );
+
+    // Il destinatario e' il venditore del banco: thai davanti sempre, inglese fra parentesi.
     const generateLineMessage = (shopName: string, shopItems: ShoppingItem[]) => {
         const dateStr = activeRun?.run_date || new Date().toLocaleDateString();
         let msg = `Sawasdee kha ${shopName}! 🙏\nOrder for Thai Akha Kitchen (${dateStr}):\n\n`;
 
         shopItems.forEach(item => {
-            msg += `- ${item.quantity} ${item.unit} ${item.name}\n`;
+            const label = vendorIngredientName({ name: item.name, name_th: namesById[item.id]?.name_th });
+            msg += `- ${item.quantity} ${item.unit} ${label}\n`;
         });
 
         msg += `\nThank you! kha`;
@@ -204,7 +230,7 @@ export function useMarketRunner() {
     const activeContact = activeTab !== 'all' ? contacts[activeTab] : null;
 
     return {
-        loading, setLoading, runs, setRuns, activeRun, setActiveRun, items, setItems, contacts, setContacts, activeTab, setActiveTab, keypadOpen, setKeypadOpen, keypadItemId, setKeypadItemId, tempPrice, setTempPrice, isSaving, setIsSaving, isConfirming, setIsConfirming, locked, fetchData, selectRun, backToList, shopTabs, generateLineMessage, handleSendLine, handleCall, persistItems, toggleBought, openKeypad, handleKeypadPress, handleKeypadDelete, handleKeypadConfirm, handleSave, handleConfirm, filteredItems, liveTotal, activeContact,
+        loading, setLoading, runs, setRuns, activeRun, setActiveRun, items, setItems, contacts, setContacts, activeTab, setActiveTab, keypadOpen, setKeypadOpen, keypadItemId, setKeypadItemId, tempPrice, setTempPrice, isSaving, setIsSaving, isConfirming, setIsConfirming, locked, fetchData, selectRun, backToList, shopTabs, itemName, generateLineMessage, handleSendLine, handleCall, persistItems, toggleBought, openKeypad, handleKeypadPress, handleKeypadDelete, handleKeypadConfirm, handleSave, handleConfirm, filteredItems, liveTotal, activeContact,
     };
 }
 

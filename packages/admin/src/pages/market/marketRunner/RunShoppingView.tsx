@@ -17,7 +17,7 @@ import type { MarketRunnerState } from './useMarketRunner';
 
 export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
     const { t } = useTranslation('market');
-    const { items, setItems, activeTab, setActiveTab, keypadOpen, setKeypadOpen, tempPrice, isSaving, isConfirming, locked, backToList, shopTabs, handleSendLine, handleCall, persistItems, toggleBought, openKeypad, handleKeypadPress, handleKeypadDelete, handleKeypadConfirm, handleSave, handleConfirm, filteredItems, liveTotal, activeContact } = r;
+    const { items, setItems, activeTab, setActiveTab, keypadOpen, setKeypadOpen, tempPrice, isSaving, isConfirming, locked, backToList, shopTabs, itemName, handleSendLine, handleCall, persistItems, toggleBought, openKeypad, handleKeypadPress, handleKeypadDelete, handleKeypadConfirm, handleSave, handleConfirm, filteredItems, liveTotal, activeContact } = r;
     return (
     <PageContainer className="h-[calc(100vh-64px)] overflow-hidden">
         <div className="flex flex-col h-full relative bg-gray-50 dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
@@ -125,7 +125,7 @@ export const RunShoppingView: React.FC<{ r: MarketRunnerState }> = ({ r }) => {
                                         "uppercase font-bold leading-tight truncate",
                                         item.is_bought ? "text-sub line-through" : "text-title"
                                     )}>
-                                        {item.name}
+                                        {itemName(item)}
                                     </Heading>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="font-mono text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 px-1.5 py-0.5 rounded">{t('labels.qty', { quantity: item.quantity })}</span>

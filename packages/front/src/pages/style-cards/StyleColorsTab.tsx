@@ -110,8 +110,8 @@ const COLOR_GROUPS: ColorGroup[] = [
   },
   {
     id: 'quiz-p', name: 'Quiz-P · Deep Magenta',
-    sub: 'bg-quiz-p-25 … bg-quiz-p-dark  ·  flat alias → quiz-p-500 = #9A0050',
-    anchor: '#9A0050',
+    sub: 'bg-quiz-p-25 … bg-quiz-p-dark  ·  flat alias → quiz-p-500 = #9b3357',
+    anchor: '#9b3357',
     colors: [
       { label: 'quiz-p-25',   hex: '#fff0f7', tw: 'bg-quiz-p-25'   },
       { label: 'quiz-p-50',   hex: '#ffe0ee', tw: 'bg-quiz-p-50'   },
@@ -119,7 +119,7 @@ const COLOR_GROUPS: ColorGroup[] = [
       { label: 'quiz-p-200',  hex: '#ff80bc', tw: 'bg-quiz-p-200'  },
       { label: 'quiz-p-300',  hex: '#f0449c', tw: 'bg-quiz-p-300'  },
       { label: 'quiz-p-400',  hex: '#c8207a', tw: 'bg-quiz-p-400'  },
-      { label: 'quiz-p-500',  hex: '#9A0050', tw: 'bg-quiz-p-500', anchor: true },
+      { label: 'quiz-p-500',  hex: '#9b3357', tw: 'bg-quiz-p-500', anchor: true },
       { label: 'quiz-p-600',  hex: '#820044', tw: 'bg-quiz-p-600'  },
       { label: 'quiz-p-700',  hex: '#680038', tw: 'bg-quiz-p-700'  },
       { label: 'quiz-p-800',  hex: '#50002c', tw: 'bg-quiz-p-800'  },
@@ -130,8 +130,8 @@ const COLOR_GROUPS: ColorGroup[] = [
   },
   {
     id: 'quiz-s', name: 'Quiz-S · Deep Purple',
-    sub: 'bg-quiz-s-25 … bg-quiz-s-dark  ·  flat alias → quiz-s-500 = #3B227A',
-    anchor: '#3B227A',
+    sub: 'bg-quiz-s-25 … bg-quiz-s-dark  ·  flat alias → quiz-s-500 = #553a5b',
+    anchor: '#553a5b',
     colors: [
       { label: 'quiz-s-25',   hex: '#f4f0ff', tw: 'bg-quiz-s-25'   },
       { label: 'quiz-s-50',   hex: '#eae0ff', tw: 'bg-quiz-s-50'   },
@@ -139,7 +139,7 @@ const COLOR_GROUPS: ColorGroup[] = [
       { label: 'quiz-s-200',  hex: '#b898ff', tw: 'bg-quiz-s-200'  },
       { label: 'quiz-s-300',  hex: '#9470e8', tw: 'bg-quiz-s-300'  },
       { label: 'quiz-s-400',  hex: '#6844b0', tw: 'bg-quiz-s-400'  },
-      { label: 'quiz-s-500',  hex: '#3B227A', tw: 'bg-quiz-s-500', anchor: true },
+      { label: 'quiz-s-500',  hex: '#553a5b', tw: 'bg-quiz-s-500', anchor: true },
       { label: 'quiz-s-600',  hex: '#311a66', tw: 'bg-quiz-s-600'  },
       { label: 'quiz-s-700',  hex: '#261454', tw: 'bg-quiz-s-700'  },
       { label: 'quiz-s-800',  hex: '#1c0e40', tw: 'bg-quiz-s-800'  },
@@ -228,11 +228,11 @@ const SEMANTIC_TOKENS = [
   { label: 'action',    hex: '#98C93C', note: 'Lime green CTA' },
   { label: 'secondary', hex: '#8D1A31', note: 'Dark cherry' },
   { label: 'allergy',   hex: '#FF6D00', note: 'Allergy orange' },
-  { label: 'quiz-p',    hex: '#9A0050', note: 'Magenta quiz' },
-  { label: 'quiz-s',    hex: '#3B227A', note: 'Purple quiz' },
+  { label: 'quiz-p',    hex: '#9b3357', note: 'Magenta quiz' },
+  { label: 'quiz-s',    hex: '#553a5b', note: 'Purple quiz' },
   { label: 'btn-p',     hex: '#FF6D00', note: 'Orange button' },
   { label: 'btn-s',     hex: '#1CA3E6', note: 'Blue button' },
-  { label: 'quiz',      hex: '#9A0050', note: 'Front alias quiz-p' },
+  { label: 'quiz',      hex: '#9b3357', note: 'Front alias quiz-p' },
 ];
 
 const SYSTEM_TOKENS = [
@@ -250,8 +250,8 @@ const OPACITY_ROWS = [
   { label: 'action',    hex: '#98C93C' },
   { label: 'secondary', hex: '#8D1A31' },
   { label: 'allergy',   hex: '#FF6D00' },
-  { label: 'quiz-p',    hex: '#9A0050' },
-  { label: 'quiz-s',    hex: '#3B227A' },
+  { label: 'quiz-p',    hex: '#9b3357' },
+  { label: 'quiz-s',    hex: '#553a5b' },
   { label: 'btn-p',     hex: '#FF6D00' },
   { label: 'btn-s',     hex: '#1CA3E6' },
 ];

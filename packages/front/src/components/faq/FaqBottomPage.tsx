@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import type { FaqCardUI } from '@thaiakha/shared';
 import { useQuery } from '@thaiakha/shared/query';
 import { getFaqsByRefs, getEntityFaqs } from '../../services/infoPages.service';
+import { useLanguage } from '../../context/LanguageContext';
 import { useMediaAssets } from '../../hooks/useMediaAsset';
 import { useSiteMetadata } from '../../hooks/useSiteMetadata';
 import { Typography, Card } from '../ui/index';
@@ -112,18 +113,19 @@ const FaqBottomPage: React.FC<FaqBottomPageProps> = ({
   const itemsMode = !entityMode && itemsProp !== undefined;
   const pageMode = !entityMode && !itemsMode && slugKey.length > 0;
 
+  const { lang } = useLanguage();
   const { extras, loading: extrasLoading } = useSiteMetadata(slugKey, { enabled: pageMode });
   const refs = extras?.faqRefs ?? [];
   const refsKey = refs.join(',');
 
   const entityQuery = useQuery({
-    queryKey: ['entity_faqs', entityType ?? '', slugKey] as const,
-    queryFn: () => getEntityFaqs(entityType!, slugKey),
+    queryKey: ['entity_faqs', lang, entityType ?? '', slugKey] as const,
+    queryFn: () => getEntityFaqs(entityType!, slugKey, lang),
     enabled: entityMode,
   });
   const pageQuery = useQuery({
-    queryKey: ['page_faqs', refsKey] as const,
-    queryFn: () => getFaqsByRefs(refsKey.split(',')),
+    queryKey: ['page_faqs', lang, refsKey] as const,
+    queryFn: () => getFaqsByRefs(refsKey.split(','), lang),
     enabled: pageMode && refsKey.length > 0,
   });
 

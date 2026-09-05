@@ -1,7 +1,6 @@
 import {
-  ACTIVE_LANGS,
   DEFAULT_LANG,
-  isSupportedLang,
+  isActiveLang,
   type SupportedLang,
 } from '@thaiakha/shared/lib/i18n';
 // Import dal sottopath `services`, non dal barrel root: quello ri-esporta anche
@@ -45,10 +44,6 @@ export interface LangRoute {
    */
   redirectTo: string | null;
 }
-
-/** Una lingua è navigabile solo se è nel perimetro E accesa dal flag. */
-const isActiveLang = (value: string): value is SupportedLang =>
-  isSupportedLang(value) && (ACTIVE_LANGS as readonly string[]).includes(value);
 
 /**
  * Legge il prefisso lingua da un pathname.

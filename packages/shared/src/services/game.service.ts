@@ -1,9 +1,21 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { ContentCategoryDB, QuizRewardDB } from '../types';
-import { fetchWithCache } from './_cache';
-import { CONTENT_CATEGORY_PUBLIC_COLUMNS } from './contentMetadata.service';
+import { fetchWithCache, normalizeLang } from './_cache';
+import { CONTENT_CATEGORY_PUBLIC_COLUMNS, CONTENT_CATEGORY_T_FIELDS } from './contentMetadata.service';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 
 // QuizCategoryDB = ContentCategoryDB with domain='quiz' (quiz_categories table dropped)
+
+/**
+ * Campi tradotti del quiz. `options` e `hint_blocks` sono JSONB: il sidecar li porta
+ * gia' nella forma della madre, quindi il merge li sostituisce interi (tutto-o-niente),
+ * mai a pezzi - un array di risposte mezzo tradotto sarebbe peggio di uno inglese.
+ * NB: quiz_questions_translations oggi e' VUOTO. Il lettore c'e', il testo resta
+ * inglese finche' /translate-db non lo riempie.
+ */
+const QUIZ_T_FIELDS = [
+    'text', 'explanation', 'explanation_wrong', 'hint_response', 'options', 'hint_blocks',
+] as const;
 
 export const gameService = {
 
@@ -27,23 +39,29 @@ export const gameService = {
     },
 
     /** 🎮 QUIZ CATEGORIES: Macro-categorie hub gamification (from content_categories domain='quiz') */
-    async getQuizCategories(): Promise<ContentCategoryDB[]> {
-        const data = await fetchWithCache('quiz_categories_v3', async () => {
-            const { data, error } = await supabase
+    async getQuizCategories(lang = 'en'): Promise<ContentCategoryDB[]> {
+        const l = normalizeLang(lang);
+        // v4: select cambiata (join sidecar) + lingua nella chiave.
+        const data = await fetchWithCache(`quiz_categories_${l}_v4`, async () => {
+            const query = sidecarFilter(supabase
                 .from('content_categories')
-                .select(CONTENT_CATEGORY_PUBLIC_COLUMNS)
+                .select(CONTENT_CATEGORY_PUBLIC_COLUMNS
+                    + sidecarJoin('content_categories_translations', CONTENT_CATEGORY_T_FIELDS, l))
                 .eq('domain', 'quiz')
                 .eq('is_active', true)
-                .order('display_order', { ascending: true });
+                .order('display_order', { ascending: true }), l);
+            const { data, error } = await query;
 
-            return error ? [] : ((data || []) as unknown as ContentCategoryDB[]);
+            return error ? [] : (mergeSidecarRows<ContentCategoryDB>(data, l));
         });
         return data || [];
     },
 
     /** 🧩 QUIZ ENGINE: Deep Fetch (Levels -> Modules -> Questions) — split query per compatibilità PostgREST */
-    async getQuizData(categoryId?: string): Promise<Record<string, unknown>[]> {
-        const cacheKey = categoryId ? `quiz_data_cat_v9_${categoryId}` : 'quiz_full_structure_v10';
+    async getQuizData(categoryId?: string, lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        // v10/v11: select cambiata (join sidecar) + lingua nella chiave.
+        const cacheKey = categoryId ? `quiz_data_cat_${l}_v10_${categoryId}` : `quiz_full_structure_${l}_v11`;
         return (await fetchWithCache<Record<string, unknown>[]>(cacheKey, async () => {
             let levelsQuery = supabase
                 .from('quiz_levels')
@@ -73,14 +91,16 @@ export const gameService = {
             const allQuestions: Record<string, unknown>[] = [];
             for (let i = 0; i < moduleIds.length; i += chunkSize) {
                 const chunk = moduleIds.slice(i, i + chunkSize);
-                const questionsRes = await supabase
+                const questionsQuery = sidecarFilter(supabase
                     .from('quiz_questions')
-                    .select('id, module_id, text, options, correct_index, correct_answer, question_type, explanation, explanation_wrong, display_order, points, hint_prompt, hint_response, hint_blocks, cover:media_assets!image_asset_id(image_url)')
+                    .select('id, module_id, text, options, correct_index, correct_answer, question_type, explanation, explanation_wrong, display_order, points, hint_prompt, hint_response, hint_blocks, cover:media_assets!image_asset_id(image_url)'
+                        + sidecarJoin('quiz_questions_translations', QUIZ_T_FIELDS, l))
                     .in('module_id', chunk)
-                    .order('display_order', { ascending: true });
+                    .order('display_order', { ascending: true }), l);
+                const questionsRes = await questionsQuery;
                 if (questionsRes.error) { console.error('Quiz questions error:', questionsRes.error); return []; }
                 if (questionsRes.data) {
-                    allQuestions.push(...(questionsRes.data as Record<string, unknown>[]));
+                    allQuestions.push(...mergeSidecarRows(questionsRes.data, l));
                 }
             }
             const questions = allQuestions;

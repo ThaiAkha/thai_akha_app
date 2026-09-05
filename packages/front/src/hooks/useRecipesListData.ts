@@ -3,10 +3,11 @@ import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
 import { useContentCategories } from './useContentCategories';
 import { useSpicinessLevels } from './useSpicinessLevels';
+import { useLanguage } from '../context/LanguageContext';
 
 const NO_RECIPES: Record<string, unknown>[] = [];
 
-export const recipesFullQueryKey = ['recipes', 'class_full'] as const;
+export const recipesFullQueryKey = (lang = 'en') => ['recipes', 'class_full', lang] as const;
 
 /**
  * Data loader for the Recipes LIST page (Recipes.tsx).
@@ -16,9 +17,10 @@ export const recipesFullQueryKey = ['recipes', 'class_full'] as const;
 export const useRecipesListData = () => {
   const { categories, loading: catsLoading } = useContentCategories('recipe');
   const { spicinessLevels, loading: spiceLoading } = useSpicinessLevels();
+  const { lang } = useLanguage();
   const recipesQ = useQuery({
-    queryKey: recipesFullQueryKey,
-    queryFn: () => contentService.getAllRecipesFull(),
+    queryKey: recipesFullQueryKey(lang),
+    queryFn: () => contentService.getAllRecipesFull(lang),
   });
   const fetching = catsLoading || spiceLoading || recipesQ.isPending;
 

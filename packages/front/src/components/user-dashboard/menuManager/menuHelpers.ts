@@ -19,3 +19,13 @@ export const FALLBACK_CATEGORY_INFO: Record<string, string> = {
   appetizer: "Handcrafted starters designed to awaken your senses with crunchy textures and fresh Thai herbs.",
   dessert: "Traditional Thai sweets showcasing the natural sweetness of ripe tropical fruits and coconut cream."
 };
+
+/**
+ * Campi tradotti che le card del menu (MenuManager e UserMenu) mostrano davvero:
+ * nome, descrizione, note. Niente campi seo e og (non si vedono qui) ne' dietary_variants
+ * (JSON pesante). Una costante sola per i due lettori, cosi' non divergono.
+ */
+export const MENU_RECIPE_T_FIELDS = [
+  'name', 'subtitle', 'description', 'excerpt', 'health_benefits', 'garnish', 'cooks_tip',
+  'notes', 'directions', 'essentials',
+] as const;

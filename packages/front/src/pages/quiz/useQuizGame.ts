@@ -35,14 +35,15 @@ type RawQuizLevel = {
 import { t } from '../../i18n';
 import { useQuizProgress } from '../../hooks/useQuizProgress';
 import { useActiveProfile } from '../../context/ActiveProfileContext';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   PROGRESS_KEY, EXPLANATIONS_KEY, getLocalExplanations, saveLocalScore, getLocalScore, syncProgressToSupabase, type View,
 } from './quizStorage';
 
 // Chiave distinta da quizDataAllQueryKey (['quiz_data','all']): il segmento
 // 'category' evita ogni collisione tra il catalogo completo e una categoria.
-export const quizDataByCategoryQueryKey = (categoryId: string) =>
-  ['quiz_data', 'category', categoryId] as const;
+export const quizDataByCategoryQueryKey = (categoryId: string, lang = 'en') =>
+  ['quiz_data', 'category', lang, categoryId] as const;
 
 export function useQuizGame(categoryId: string, onNavigate: (page: string, topic?: string, sectionId?: string) => void) {
   // --- Data (#118 lotto 6): contenuti quiz su TanStack Query. Catalogo
@@ -50,9 +51,10 @@ export function useQuizGame(categoryId: string, onNavigate: (page: string, topic
   const catalog = useQuizCatalog();
   const quizRewards = catalog.rewards;
   const allCategories = catalog.categories;
+  const { lang } = useLanguage();
   const quizDataQ = useQuery({
-    queryKey: quizDataByCategoryQueryKey(categoryId),
-    queryFn: async () => (await contentService.getQuizData(categoryId)) ?? [],
+    queryKey: quizDataByCategoryQueryKey(categoryId, lang),
+    queryFn: async () => (await contentService.getQuizData(categoryId, lang)) ?? [],
   });
   // Idratazione progressi (localStorage + profilo) in corso: parte del loading.
   const [hydrating, setHydrating] = useState(true);

@@ -1,3 +1,5 @@
+import { DEFAULT_LANG, OG_LOCALES, activeLangs, prefixRoutesActive } from "../_shared/langPerimeter.ts";
+import { sidecarJoin, sidecarFilter, mergeSidecarRow } from "../_shared/sidecar.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // ─── CORS Headers ───────────────────────────────────────────────────────────
@@ -23,22 +25,9 @@ const OG_CULTURE_IMAGE = OG_DEFAULT_IMAGE;
 // Il Cloudflare Worker dirotta qui ogni richiesta con user-agent bot (googlebot
 // incluso): quello che il browser costruisce in SEOHead, i crawler NON lo vedono
 // mai. Se hreflang, <html lang> e og:locale non sono corretti QUI, non sono
-// corretti per Google, punto. Copia Deno di packages/shared/src/lib/i18n.ts —
-// da tenere allineata a mano, come già LEGACY_SLUG_MAP.
+// corretti per Google, punto. Perimetro lingue e lista attiva arrivano da
+// ../_shared/langPerimeter.ts (copia Deno di shared/lib/i18n.ts, letta per richiesta).
 
-const DEFAULT_LANG = "en";
-const SUPPORTED_LANGS = [
-  "en", "es", "fr", "de", "pt", "it", "ca", "nl", "th", "zh", "ko", "ja",
-] as const;
-
-const OG_LOCALES: Record<string, string> = {
-  en: "en_US", es: "es_ES", fr: "fr_FR", de: "de_DE", pt: "pt_PT", it: "it_IT",
-  ca: "ca_ES", nl: "nl_NL", th: "th_TH", zh: "zh_CN", ko: "ko_KR", ja: "ja_JP",
-};
-
-/** 🔴 Stesso interruttore di front e sitemap. Spento = comportamento di oggi. */
-const I18N_ENABLED = Deno.env.get("I18N_ROUTES_ENABLED") === "true";
-const ACTIVE_LANGS: readonly string[] = I18N_ENABLED ? SUPPORTED_LANGS : [DEFAULT_LANG];
 
 const TWO_LETTER = /^[a-z]{2}$/i;
 
@@ -76,12 +65,12 @@ interface CultureRow {
   seo_description: string | null;
   og_title: string | null;
   og_description: string | null;
-  og_image: string | null;
   cover_asset_id: string | null;  // asset ID → lookup in media_assets
   slug: string;
   title: string;
   subtitle: string | null;
   json_ld: Record<string, unknown> | null;
+  canonical_url: string | null;
 }
 
 interface MediaAssetRow {
@@ -97,12 +86,12 @@ interface RecipeRow {
   seo_description: string | null;
   og_title: string | null;
   og_description: string | null;
-  og_image: string | null;
   cover_asset_id: string | null;  // asset ID → lookup in media_assets
   name: string;
   description: string | null;
   excerpt: string | null;
   json_ld: Record<string, unknown> | null;
+  canonical_url: string | null;
 }
 
 interface NewsRow {
@@ -110,12 +99,57 @@ interface NewsRow {
   seo_description: string | null;
   og_title: string | null;
   og_description: string | null;
-  og_image: string | null;
   cover_asset_id: string | null;  // asset ID → lookup in media_assets
   title: string;
   excerpt: string | null;
   json_ld: Record<string, unknown> | null;
   published_at: string | null;
+  canonical_url: string | null;
+}
+
+// ─── Sidecar: quali campi tradotti servono all'HTML dei bot ─────────────────
+// Solo cio' che finisce in <title>, description, og:*, h1/body e JSON-LD. Il resto
+// (content, quote, directions...) non si emette qui e non viaggia. Stesso merge
+// per campo del front (_shared/sidecar.ts = copia di shared/lib/mergeTranslation.ts).
+const SEO_T = ["seo_title", "seo_description", "og_title", "og_description"] as const;
+const CULTURE_T = ["title", "subtitle", ...SEO_T] as const;
+const INGREDIENT_T = ["name", "summary_ai", ...SEO_T] as const;
+const CATEGORY_T = ["title", "description", ...SEO_T] as const;
+const RECIPE_T = ["name", "description", "excerpt", ...SEO_T] as const;
+const NEWS_T = ["title", "excerpt", ...SEO_T] as const;
+
+/** Nodi JSON-LD di CONTENUTO: solo su questi si toccano headline/name/description. */
+const CONTENT_LD_TYPES = new Set(["Article", "NewsArticle", "BlogPosting", "Recipe", "WebPage", "CollectionPage"]);
+
+/**
+ * JSON-LD per lingua. I json_ld memorizzati nel DB sono inglesi (dottrina: si
+ * GENERANO dai campi tradotti, non si memorizzano tradotti). A lingua diversa
+ * dall'inglese: headline/name/description prendono i campi FUSI, `inLanguage`
+ * dichiara la lingua, e gli `url` che puntavano alla pagina inglese passano al
+ * canonical localizzato (lo stesso che finisce in <link rel=canonical>).
+ * Tocca solo la radice o i nodi di @graph, mai gli oggetti annidati (author,
+ * publisher...): quelli non cambiano lingua.
+ */
+function localizeJsonLd(
+  jsonLd: Record<string, unknown>,
+  patch: { lang: string; headline?: string | null; name?: string | null; description?: string | null; fromUrl?: string; toUrl?: string },
+): Record<string, unknown> {
+  const localizeNode = (node: unknown): unknown => {
+    if (!node || typeof node !== "object" || Array.isArray(node)) return node;
+    const n = { ...(node as Record<string, unknown>) };
+    const type = typeof n["@type"] === "string" ? (n["@type"] as string) : "";
+    if (CONTENT_LD_TYPES.has(type)) {
+      if (patch.headline && "headline" in n) n.headline = patch.headline;
+      if (patch.name && "name" in n) n.name = patch.name;
+      if (patch.description && "description" in n) n.description = patch.description;
+      n.inLanguage = patch.lang;
+    }
+    if (patch.fromUrl && patch.toUrl && n.url === patch.fromUrl) n.url = patch.toUrl;
+    return n;
+  };
+  const out = localizeNode(jsonLd) as Record<string, unknown>;
+  if (Array.isArray(out["@graph"])) out["@graph"] = (out["@graph"] as unknown[]).map(localizeNode);
+  return out;
 }
 
 // ─── Legacy slug → canonical slug map ───────────────────────────────────────
@@ -242,22 +276,22 @@ Deno.serve(async (req: Request) => {
 
     if (resolvedPath.startsWith("/akha-culture-highland-heritage/") && resolvedPath.length > "/akha-culture-highland-heritage/".length) {
       const slug = resolveSlug(extractSlug(resolvedPath, "/akha-culture-highland-heritage/"));
-      const cultureData = await fetchCultureData(supabase, slug);
+      const cultureData = await fetchCultureData(supabase, slug, lang);
       if (cultureData) ogData = cultureData;
     } else if (resolvedPath.startsWith("/authentic-thai-akha-recipes/") && resolvedPath.length > "/authentic-thai-akha-recipes/".length) {
       const slug = resolveSlug(extractSlug(resolvedPath, "/authentic-thai-akha-recipes/"));
-      const recipeData = await fetchRecipeData(supabase, slug);
+      const recipeData = await fetchRecipeData(supabase, slug, lang);
       if (recipeData) ogData = recipeData;
     } else if (resolvedPath.startsWith("/thai-cooking-tips-news/") && resolvedPath.length > "/thai-cooking-tips-news/".length) {
       const slug = resolveSlug(extractSlug(resolvedPath, "/thai-cooking-tips-news/"));
-      const newsData = await fetchNewsData(supabase, slug);
+      const newsData = await fetchNewsData(supabase, slug, lang);
       if (newsData) ogData = newsData;
     } else if (resolvedPath.startsWith("/thai-cooking-ingredients/") && resolvedPath.length > "/thai-cooking-ingredients/".length) {
       // Disambiguation: category guides end in '-guide' (content_categories); everything else = single ingredient.
       const slug = extractSlug(resolvedPath, "/thai-cooking-ingredients/");
       const ingData = slug.endsWith("-guide")
-        ? await fetchIngredientCategoryData(supabase, slug)
-        : await fetchIngredientData(supabase, slug);
+        ? await fetchIngredientCategoryData(supabase, slug, lang)
+        : await fetchIngredientData(supabase, slug, lang);
       if (ingData) ogData = ingData;
     } else {
       const rawSlug = resolvedPath === "/" || resolvedPath === "" ? "home" : extractPageName(resolvedPath);
@@ -278,7 +312,19 @@ Deno.serve(async (req: Request) => {
     const alternates = await buildAlternates(supabase, resolvedPath);
     // Canonical = l'URL di QUESTA lingua, preso dalla stessa fonte che genera gli
     // hreflang: canonical e alternate non possono divergere se nascono insieme.
-    if (alternates[lang]) ogData = { ...ogData, url: alternates[lang] };
+    if (alternates[lang]) {
+      const englishUrl = ogData.url;
+      ogData = { ...ogData, url: alternates[lang] };
+      // Il JSON-LD deve dire la stessa cosa del canonical: gli `url` che puntavano
+      // alla pagina inglese seguono la lingua. Solo fuori dall'inglese.
+      if (lang !== DEFAULT_LANG && ogData.jsonLd) {
+        ogData = { ...ogData, jsonLd: localizeJsonLd(ogData.jsonLd, { lang, fromUrl: englishUrl, toUrl: alternates[lang] }) };
+        // anche l'URL inglese "nudo" del fallback (stesso path senza prefisso)
+        if (alternates[DEFAULT_LANG] && alternates[DEFAULT_LANG] !== englishUrl) {
+          ogData = { ...ogData, jsonLd: localizeJsonLd(ogData.jsonLd!, { lang, fromUrl: alternates[DEFAULT_LANG], toUrl: alternates[lang] }) };
+        }
+      }
+    }
 
     const html = generateOGHTML(ogData, lang, alternates);
 
@@ -344,7 +390,7 @@ function splitLangPath(pathname: string): { lang: string; path: string } {
   if (first && TWO_LETTER.test(first)) {
     const candidate = first.toLowerCase();
     const rest = parts.slice(1);
-    const isActive = candidate !== DEFAULT_LANG && ACTIVE_LANGS.includes(candidate);
+    const isActive = candidate !== DEFAULT_LANG && activeLangs().includes(candidate);
     return {
       lang: isActive ? candidate : DEFAULT_LANG,
       path: `/${rest.join("/")}`,
@@ -363,7 +409,7 @@ async function toEnglishPath(
   path: string,
   lang: string,
 ): Promise<string> {
-  if (!I18N_ENABLED || lang === DEFAULT_LANG) return path;
+  if (!prefixRoutesActive() || lang === DEFAULT_LANG) return path;
 
   const segments = path.split("/").filter(Boolean);
   if (segments.length === 0) return path;
@@ -399,7 +445,7 @@ async function buildAlternates(
 
   // lingua → (slug inglese → slug tradotto), solo per i segmenti di QUESTO path.
   const byLang: Record<string, Record<string, string>> = {};
-  if (I18N_ENABLED && segments.length > 0) {
+  if (prefixRoutesActive() && segments.length > 0) {
     try {
       const { data } = await supabase
         .from("v_translated_slugs")
@@ -416,7 +462,7 @@ async function buildAlternates(
   }
 
   const out: Record<string, string> = {};
-  for (const lang of ACTIVE_LANGS) {
+  for (const lang of activeLangs()) {
     const map = byLang[lang] ?? {};
     const localized = segments.map((s) => map[s] ?? s);
     const prefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
@@ -449,19 +495,23 @@ function extractPageName(pathname: string): string {
 
 async function fetchCultureData(
   supabase: ReturnType<typeof createClient>,
-  slug: string
+  slug: string,
+  lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
-    const { data, error } = await supabase
+    // Una round-trip: madre + sidecar della lingua, fusi per campo (come il front).
+    const { data: raw, error } = await sidecarFilter(supabase
       .from("culture_sections")
-      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, slug, title, subtitle, json_ld, canonical_url")
-      .eq("slug", slug)
-      .single<CultureRow>();
+      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, slug, title, subtitle, json_ld, canonical_url"
+        + sidecarJoin("culture_sections_translations", CULTURE_T, lang))
+      .eq("slug", slug), lang)
+      .single();
 
-    if (error || !data) {
+    if (error || !raw) {
       console.error(`[OG-META] fetchCultureData error for slug '${slug}':`, error?.message);
       return null;
     }
+    const data = mergeSidecarRow<CultureRow>(raw, lang);
 
     const title = data.seo_title || data.og_title || data.title || "Thai Akha Culture & History";
     const description = data.seo_description || data.og_description || data.subtitle || "Discover authentic Akha stories and traditions";
@@ -475,8 +525,9 @@ async function fetchCultureData(
       imageType = asset.mimeType;
     }
 
-    const jsonLd: Record<string, unknown> = data.json_ld && Object.keys(data.json_ld).length > 0
-      ? data.json_ld
+    const storedLd = data.json_ld && Object.keys(data.json_ld).length > 0 ? data.json_ld : null;
+    const jsonLd: Record<string, unknown> = storedLd
+      ? (lang === DEFAULT_LANG ? storedLd : localizeJsonLd(storedLd, { lang, headline: data.title, description }))
       : {
           "@context": "https://schema.org",
           "@type": "Article",
@@ -484,10 +535,10 @@ async function fetchCultureData(
           "description": description,
           "image": imageUrl,
           "url": `${SITE_URL}/akha-culture-highland-heritage/${slug}`,
+          ...(lang !== DEFAULT_LANG ? { inLanguage: lang } : {}),
         };
 
-    const canonicalUrl = (data as Record<string, unknown>).canonical_url as string | null;
-    const finalUrl = canonicalUrl || `${SITE_URL}/akha-culture-highland-heritage/${slug}`;
+    const finalUrl = data.canonical_url || `${SITE_URL}/akha-culture-highland-heritage/${slug}`;
 
     return {
       title,
@@ -507,22 +558,24 @@ async function fetchCultureData(
 // ─── Fetch: /thai-cooking-ingredients/:slug (single ingredient) ──────────────
 async function fetchIngredientData(
   supabase: ReturnType<typeof createClient>,
-  slug: string
+  slug: string,
+  lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
-    const { data, error } = await supabase
+    const { data: raw, error } = await sidecarFilter(supabase
       .from("ingredients_library")
-      .select("seo_title, seo_description, og_title, og_description, image_asset_id, slug, name, summary_ai, json_ld, canonical_url")
+      .select("seo_title, seo_description, og_title, og_description, image_asset_id, slug, name, summary_ai, json_ld, canonical_url"
+        + sidecarJoin("ingredients_library_translations", INGREDIENT_T, lang))
       .eq("slug", slug)
-      .eq("is_published", true)
+      .eq("is_published", true), lang)
       .single();
 
-    if (error || !data) {
+    if (error || !raw) {
       console.error(`[OG-META] fetchIngredientData error for slug '${slug}':`, error?.message);
       return null;
     }
 
-    const d = data as Record<string, unknown>;
+    const d = mergeSidecarRow(raw, lang);
     const title = (d.seo_title || d.og_title || d.name || "Thai Cooking Ingredient") as string;
     const description = (d.seo_description || d.og_description || d.summary_ai || "A key ingredient in Akha and Northern Thai cooking.") as string;
 
@@ -535,17 +588,19 @@ async function fetchIngredientData(
       imageType = asset.mimeType;
     }
 
-    const jsonLd: Record<string, unknown> =
-      d.json_ld && typeof d.json_ld === "object" && Object.keys(d.json_ld as object).length > 0
-        ? (d.json_ld as Record<string, unknown>)
-        : {
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": title,
-            "description": description,
-            "image": imageUrl,
-            "url": `${SITE_URL}/thai-cooking-ingredients/${slug}`,
-          };
+    const storedLd = d.json_ld && typeof d.json_ld === "object" && Object.keys(d.json_ld as object).length > 0
+      ? (d.json_ld as Record<string, unknown>) : null;
+    const jsonLd: Record<string, unknown> = storedLd
+      ? (lang === DEFAULT_LANG ? storedLd : localizeJsonLd(storedLd, { lang, headline: d.name as string | null, name: d.name as string | null, description }))
+      : {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": title,
+          "description": description,
+          "image": imageUrl,
+          "url": `${SITE_URL}/thai-cooking-ingredients/${slug}`,
+          ...(lang !== DEFAULT_LANG ? { inLanguage: lang } : {}),
+        };
 
     const canonicalUrl = d.canonical_url as string | null;
     const finalUrl = canonicalUrl || `${SITE_URL}/thai-cooking-ingredients/${slug}`;
@@ -568,22 +623,24 @@ async function fetchIngredientData(
 // ─── Fetch: /thai-cooking-ingredients/:slug-guide (category landing) ──────────
 async function fetchIngredientCategoryData(
   supabase: ReturnType<typeof createClient>,
-  slug: string
+  slug: string,
+  lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
-    const { data, error } = await supabase
+    const { data: raw, error } = await sidecarFilter(supabase
       .from("content_categories")
-      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, slug, title, description, json_ld, canonical_url")
+      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, slug, title, description, json_ld, canonical_url"
+        + sidecarJoin("content_categories_translations", CATEGORY_T, lang))
       .eq("slug", slug)
-      .eq("domain", "ingredient")
+      .eq("domain", "ingredient"), lang)
       .single();
 
-    if (error || !data) {
+    if (error || !raw) {
       console.error(`[OG-META] fetchIngredientCategoryData error for slug '${slug}':`, error?.message);
       return null;
     }
 
-    const d = data as Record<string, unknown>;
+    const d = mergeSidecarRow(raw, lang);
     const title = (d.seo_title || d.og_title || d.title || "Thai Cooking Ingredients") as string;
     const description = (d.seo_description || d.og_description || d.description || "Explore Thai cooking ingredients by category.") as string;
 
@@ -595,10 +652,11 @@ async function fetchIngredientCategoryData(
       imageType = asset.mimeType;
     }
 
-    const jsonLd =
-      d.json_ld && typeof d.json_ld === "object" && Object.keys(d.json_ld as object).length > 0
-        ? (d.json_ld as Record<string, unknown>)
-        : undefined;
+    const storedCatLd = d.json_ld && typeof d.json_ld === "object" && Object.keys(d.json_ld as object).length > 0
+      ? (d.json_ld as Record<string, unknown>) : undefined;
+    const jsonLd = storedCatLd && lang !== DEFAULT_LANG
+      ? localizeJsonLd(storedCatLd, { lang, headline: d.title as string | null, name: d.title as string | null, description })
+      : storedCatLd;
 
     const canonicalUrl = d.canonical_url as string | null;
     const finalUrl = canonicalUrl || `${SITE_URL}/thai-cooking-ingredients/${slug}`;
@@ -624,30 +682,18 @@ async function fetchSiteMetadata(
   lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
-    const { data, error } = await supabase
+    // FALLBACK PER CAMPO sul sidecar (site_metadata_translations, FK page_id), in
+    // una sola round-trip e con lo stesso merge del front e delle altre fetcher:
+    // ogni campo tradotto vince, ogni campo vuoto resta inglese. Mai per riga.
+    const { data: raw, error } = await sidecarFilter(supabase
       .from("site_metadata")
-      // `id` serve a raggiungere il sidecar (FK page_id).
-      .select("id, seo_title, seo_description, og_title, og_description, cover_asset_id, json_ld")
-      .eq("page_slug", pageSlug)
-      .single<SiteMetadataRow>();
+      .select("id, seo_title, seo_description, og_title, og_description, cover_asset_id, json_ld"
+        + sidecarJoin("site_metadata_translations", SEO_T, lang))
+      .eq("page_slug", pageSlug), lang)
+      .single();
 
-    if (error || !data) return null;
-
-    // FALLBACK PER CAMPO sul sidecar: ogni campo tradotto vince, ogni campo
-    // vuoto resta inglese. Mai per riga — una traduzione parziale non deve
-    // riportare l'intera pagina in inglese (vedi lib/mergeTranslation.ts).
-    let translated: Partial<SiteMetadataRow> = {};
-    if (lang !== DEFAULT_LANG) {
-      const { data: t } = await supabase
-        .from("site_metadata_translations")
-        .select("seo_title, seo_description, og_title, og_description")
-        .eq("page_id", data.id)
-        .eq("lang", lang)
-        .maybeSingle();
-      if (t) translated = t as Partial<SiteMetadataRow>;
-    }
-    const pick = (tr: string | null | undefined, base: string | null | undefined) =>
-      tr && tr.trim() !== "" ? tr : base;
+    if (error || !raw) return null;
+    const data = mergeSidecarRow<SiteMetadataRow>(raw, lang);
 
     // Resolve cover image via cover_asset_id → media_assets (same pattern as recipes/culture/news)
     let imageUrl = OG_DEFAULT_IMAGE;
@@ -668,8 +714,8 @@ async function fetchSiteMetadata(
 
     return {
       // seo_title/seo_description are the canonical fields; og_* as fallback
-      title: pick(translated.seo_title, data.seo_title) || pick(translated.og_title, data.og_title) || "Thai Akha Kitchen",
-      description: pick(translated.seo_description, data.seo_description) || pick(translated.og_description, data.og_description) || "",
+      title: data.seo_title || data.og_title || "Thai Akha Kitchen",
+      description: data.seo_description || data.og_description || "",
       image: imageUrl,
       imageType,
       // URL provvisorio: il canonical definitivo (con prefisso lingua e slug
@@ -715,17 +761,20 @@ function detectImageType(url: string): string {
 
 async function fetchRecipeData(
   supabase: ReturnType<typeof createClient>,
-  slug: string
+  slug: string,
+  lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
-    const { data, error } = await supabase
+    const { data: raw, error } = await sidecarFilter(supabase
       .from("recipes")
-      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, name, description, excerpt, json_ld, canonical_url")
+      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, name, description, excerpt, json_ld, canonical_url"
+        + sidecarJoin("recipes_translations", RECIPE_T, lang))
       .eq("slug", slug)
-      .eq("is_published", true)
-      .single<RecipeRow>();
+      .eq("is_published", true), lang)
+      .single();
 
-    if (error || !data) return null;
+    if (error || !raw) return null;
+    const data = mergeSidecarRow<RecipeRow>(raw, lang);
 
     const title = data.seo_title || data.og_title || `${data.name} | Thai Akha Kitchen`;
     const description = data.seo_description || data.og_description || data.excerpt || (data.description?.slice(0, 160) ?? "");
@@ -739,8 +788,9 @@ async function fetchRecipeData(
       imageType = asset.mimeType;
     }
 
-    const jsonLd: Record<string, unknown> = data.json_ld && Object.keys(data.json_ld).length > 0
-      ? data.json_ld
+    const storedRecipeLd = data.json_ld && Object.keys(data.json_ld).length > 0 ? data.json_ld : null;
+    const jsonLd: Record<string, unknown> = storedRecipeLd
+      ? (lang === DEFAULT_LANG ? storedRecipeLd : localizeJsonLd(storedRecipeLd, { lang, name: data.name, headline: data.name, description }))
       : {
           "@context": "https://schema.org",
           "@type": "Recipe",
@@ -748,10 +798,10 @@ async function fetchRecipeData(
           "description": description,
           "url": `${SITE_URL}/authentic-thai-akha-recipes/${slug}`,
           "image": image,
+          ...(lang !== DEFAULT_LANG ? { inLanguage: lang } : {}),
         };
 
-    const canonicalUrl = (data as Record<string, unknown>).canonical_url as string | null;
-    const finalUrl = canonicalUrl || `${SITE_URL}/authentic-thai-akha-recipes/${slug}`;
+    const finalUrl = data.canonical_url || `${SITE_URL}/authentic-thai-akha-recipes/${slug}`;
 
     return {
       title,
@@ -772,20 +822,23 @@ async function fetchRecipeData(
 
 async function fetchNewsData(
   supabase: ReturnType<typeof createClient>,
-  slug: string
+  slug: string,
+  lang: string = DEFAULT_LANG,
 ): Promise<OGData | null> {
   try {
-    const { data, error } = await supabase
+    const { data: raw, error } = await sidecarFilter(supabase
       .from("akha_news")
-      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, title, excerpt, json_ld, published_at, canonical_url")
+      .select("seo_title, seo_description, og_title, og_description, cover_asset_id, title, excerpt, json_ld, published_at, canonical_url"
+        + sidecarJoin("akha_news_translations", NEWS_T, lang))
       .eq("slug", slug)
-      .eq("is_published", true)
-      .single<NewsRow>();
+      .eq("is_published", true), lang)
+      .single();
 
-    if (error || !data) {
+    if (error || !raw) {
       console.error(`[OG-META] fetchNewsData error for slug '${slug}':`, error?.message);
       return null;
     }
+    const data = mergeSidecarRow<NewsRow>(raw, lang);
 
     const title = data.seo_title || data.og_title || `${data.title} | Thai Akha Kitchen`;
     const description = data.seo_description || data.og_description || data.excerpt?.slice(0, 160) || "";
@@ -799,8 +852,9 @@ async function fetchNewsData(
       imageType = asset.mimeType;
     }
 
-    const jsonLd: Record<string, unknown> = data.json_ld && Object.keys(data.json_ld).length > 0
-      ? data.json_ld
+    const storedNewsLd = data.json_ld && Object.keys(data.json_ld).length > 0 ? data.json_ld : null;
+    const jsonLd: Record<string, unknown> = storedNewsLd
+      ? (lang === DEFAULT_LANG ? storedNewsLd : localizeJsonLd(storedNewsLd, { lang, headline: data.title, description }))
       : {
           "@context": "https://schema.org",
           "@type": "NewsArticle",
@@ -810,10 +864,10 @@ async function fetchNewsData(
           "url": `${SITE_URL}/thai-cooking-tips-news/${slug}`,
           "datePublished": data.published_at,
           "author": { "@type": "Organization", "name": "Thai Akha Kitchen" },
+          ...(lang !== DEFAULT_LANG ? { inLanguage: lang } : {}),
         };
 
-    const canonicalUrl = (data as Record<string, unknown>).canonical_url as string | null;
-    const finalUrl = canonicalUrl || `${SITE_URL}/thai-cooking-tips-news/${slug}`;
+    const finalUrl = data.canonical_url || `${SITE_URL}/thai-cooking-tips-news/${slug}`;
 
     return {
       title,
@@ -890,7 +944,7 @@ function generateOGHTML(
   <meta name="ICBM" content="18.7883, 98.9853">
 ${ogData.jsonLd ? `
   <!-- Structured Data -->
-  <script type="application/ld+json">${JSON.stringify(ogData.jsonLd)}</script>` : ""}
+  <script type="application/ld+json">${JSON.stringify(ogData.jsonLd).replace(/</g, "\\u003c")}</script>` : ""}
 </head>
 <body>
   <article>

@@ -1,3 +1,4 @@
+// COPIA GENERATA da packages/shared/src/lib/mergeTranslation.ts - NON editare qui: `pnpm sync-sidecar` (controllo: `pnpm check-sidecar`).
 /**
  * 🌍 FALLBACK PER CAMPO — la regola di merge di TUTTI i sidecar `*_translations`.
  *

@@ -5,10 +5,11 @@ import type { CultureSection } from '@thaiakha/shared/types';
 import { t } from '../i18n';
 import { useContentCategories } from './useContentCategories';
 import { usePageMetadata } from './usePageMetadata';
+import { useLanguage } from '../context/LanguageContext';
 
 const NO_SECTIONS: CultureSection[] = [];
 
-export const cultureSectionsQueryKey = ['culture_sections'] as const;
+export const cultureSectionsQueryKey = (lang = 'en') => ['culture_sections', lang] as const;
 
 // URL patterns:
 //   /history                        → index, all categories
@@ -29,11 +30,12 @@ function parseHistoryUrl() {
 }
 
 export function useHistoryFeed(targetSection?: string | null) {
+  const { lang } = useLanguage();
   // Sezioni + categorie + metadata: tre query in cache (CLAUDE.md #17). Era un Promise.all
   // in useEffect; i metadata ora condividono la chiave di PageLayout.
   const sectionsQuery = useQuery({
-    queryKey: cultureSectionsQueryKey,
-    queryFn: () => contentService.getCultureSections(),
+    queryKey: cultureSectionsQueryKey(lang),
+    queryFn: () => contentService.getCultureSections(lang),
   });
   const { categories, loading: catsLoading } = useContentCategories('history');
   const { metadata, loading: metaLoading } = usePageMetadata('akha-culture-highland-heritage');

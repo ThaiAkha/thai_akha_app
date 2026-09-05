@@ -7,8 +7,10 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import { useContentCategories } from '../../../hooks/useContentCategories';
 import { useAllergyMap } from '../../../hooks/useAllergyMap';
+import { useLanguage } from '../../../context/LanguageContext';
 import type { GalleryItem } from '../../modal/GalleryModal';
 import type { RecipeData, IngredientDetail } from './types';
 
@@ -17,8 +19,8 @@ interface Params { recipe: RecipeData; allRecipes: RecipeData[]; activeDiet: str
 const NO_INGREDIENTS: IngredientDetail[] = [];
 const NO_NAMES: string[] = [];
 /** Chiave per insieme di nomi (ordinati): due ricette con gli stessi ingredienti condividono la voce. */
-export const ingredientsByNameQueryKey = (names: readonly string[]) =>
-  ['ingredients_by_name', [...names].sort().join('|')] as const;
+export const ingredientsByNameQueryKey = (names: readonly string[], lang = 'en') =>
+  ['ingredients_by_name', lang, [...names].sort().join('|')] as const;
 
 export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }: Params) {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -32,21 +34,30 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
 
   // --- 1. INGREDIENTI RICCHI, ALLERGY MAP, CATEGORIE ---
   const ingredientNames = recipe.keyIngredients ?? NO_NAMES;
+  const { lang } = useLanguage();
   const ingredientsQ = useQuery({
-    queryKey: ingredientsByNameQueryKey(ingredientNames),
+    queryKey: ingredientsByNameQueryKey(ingredientNames, lang),
     enabled: ingredientNames.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Il filtro `.in('name', ...)` resta sulla colonna MADRE: le chiavi arrivano da
+      // recipe_key_ingredients, che e' testo inglese. Si traduce cio' che si MOSTRA,
+      // non cio' con cui si cerca - o l'ingrediente non si troverebbe piu'.
+      // `name_key:name` e' la stessa colonna con un alias: il merge sovrascrive `name`
+      // con la traduzione, `name_key` resta inglese e serve ai confronti a valle.
+      const q = sidecarFilter(supabase
         .from('ingredients_library')
-        .select('id, name, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)')
-        .in('name', ingredientNames);
+        .select('id, name, name_key:name, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)'
+          + sidecarJoin('ingredients_library_translations', ['name', 'description'], lang))
+        .in('name', ingredientNames), lang);
+      const { data, error } = await q;
       if (error) throw error;
       // Resolve cover from image_asset_id → media_assets; keep the image_url alias.
-      return ((data ?? []) as Array<Record<string, unknown>>).map((item): IngredientDetail => {
+      return mergeSidecarRows(data, lang).map((item): IngredientDetail => {
         const cover = item.cover as { image_url?: string } | null;
         return {
           id: item.id as string,
           name: item.name as string,
+          name_key: item.name_key as string,
           name_th: item.name_th as string,
           phonetic: item.phonetic as string | undefined,
           description: item.description as string,
@@ -72,7 +83,7 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
   // --- 2. FILTRO PRIVACY PUBBLICA ---
   const visibleIngredientsNames = useMemo(() => {
     return recipe.keyIngredients.filter(name => {
-      const rich = richIngredients.find(ri => ri.name === name);
+      const rich = richIngredients.find(ri => ri.name_key === name);
       return rich ? rich.is_visible_public : false;
     });
   }, [recipe.keyIngredients, richIngredients]);

@@ -1,4 +1,5 @@
 import { useQuery } from '@thaiakha/shared/query';
+import { useLanguage } from '../context/LanguageContext';
 import { contentService } from '@thaiakha/shared/services';
 import type { CookingClassDB, MediaAsset } from '@thaiakha/shared/types';
 import type { NewsArticle } from './useNewsFeed';
@@ -25,16 +26,17 @@ const NO_NEWS: NewsArticle[] = [];
 const NO_REASONS: MediaAsset[] = [];
 const NO_VIDEOS: string[] = [];
 
-export const classOverviewExtrasQueryKey = ['class_overview_extras'] as const;
+export const classOverviewExtrasQueryKey = (lang = 'en') => ['class_overview_extras', lang] as const;
 
 export const useClassOverviewExtras = () => {
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: classOverviewExtrasQueryKey,
+    queryKey: classOverviewExtrasQueryKey(lang),
     queryFn: async () => {
       const [news, reasonsData, classes] = await Promise.all([
-        contentService.getNewsByNewsIds(NEWS_IDS),
+        contentService.getNewsByNewsIds(NEWS_IDS, lang),
         contentService.getMediaAssetsByIds(REASON_IDS),
-        contentService.getCookingClasses(),
+        contentService.getCookingClasses(lang),
       ]);
       // I service restituiscono Record<string, unknown>[]: shape reale = NewsArticle / MediaAsset
       // (come consumate in ClassOverview).

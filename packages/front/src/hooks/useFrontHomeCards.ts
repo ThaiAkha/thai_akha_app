@@ -14,10 +14,14 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient } from '@thaiakha/shared/query';
 import { newsService } from '@thaiakha/shared/services';
 import { FrontHomeCard } from '@thaiakha/shared/types';
+import { useLanguage } from '../context/LanguageContext';
 
 export type { FrontHomeCard };
 
-export const frontHomeCardQueryKey = (cardId: string) => ['front_home_card', cardId] as const;
+// La lingua fa parte dell'identita' della card in cache: senza, una card gia'
+// letta in inglese verrebbe riservata identica su /it/.
+export const frontHomeCardQueryKey = (cardId: string, lang = 'en') =>
+  ['front_home_card', lang, cardId] as const;
 
 const NO_CARDS: FrontHomeCard[] = [];
 
@@ -27,35 +31,36 @@ export function useFrontHomeCards(cardIds?: readonly string[]): {
   error: Error | null;
 } {
   const queryClient = useQueryClient();
+  const { lang } = useLanguage();
   // Lista vuota/assente = tutte le card attive (come newsService.getFrontHomeCards).
   const wantedIds = cardIds ? Array.from(new Set(cardIds.filter(Boolean))) : [];
   const idsKey = wantedIds.length > 0 ? wantedIds.join(',') : '__all__';
 
   const query = useQuery({
-    queryKey: ['front_home_cards', idsKey] as const,
+    queryKey: ['front_home_cards', lang, idsKey] as const,
     queryFn: async (): Promise<FrontHomeCard[]> => {
       if (idsKey === '__all__') {
-        const all = await newsService.getFrontHomeCards();
-        for (const c of all) if (c.card_id) queryClient.setQueryData(frontHomeCardQueryKey(c.card_id), c);
+        const all = await newsService.getFrontHomeCards(undefined, lang);
+        for (const c of all) if (c.card_id) queryClient.setQueryData(frontHomeCardQueryKey(c.card_id, lang), c);
         return all;
       }
       const wanted = idsKey.split(',');
       const found = new Map<string, FrontHomeCard>();
       const missing: string[] = [];
       for (const id of wanted) {
-        const state = queryClient.getQueryState<FrontHomeCard | null>(frontHomeCardQueryKey(id));
+        const state = queryClient.getQueryState<FrontHomeCard | null>(frontHomeCardQueryKey(id, lang));
         if (state?.data) found.set(id, state.data);
         else if (state?.data !== null) missing.push(id);
       }
       if (missing.length > 0) {
-        const rows = await newsService.getFrontHomeCards(missing);
+        const rows = await newsService.getFrontHomeCards(missing, lang);
         for (const c of rows) {
           if (!c.card_id) continue;
           found.set(c.card_id, c);
-          queryClient.setQueryData(frontHomeCardQueryKey(c.card_id), c);
+          queryClient.setQueryData(frontHomeCardQueryKey(c.card_id, lang), c);
         }
         for (const id of missing) {
-          if (!found.has(id)) queryClient.setQueryData(frontHomeCardQueryKey(id), null);
+          if (!found.has(id)) queryClient.setQueryData(frontHomeCardQueryKey(id, lang), null);
         }
       }
       // Ordine = ordine richiesto (come il service).

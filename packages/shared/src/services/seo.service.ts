@@ -7,7 +7,7 @@ import { translatedSlugService } from './translatedSlug.service';
 import {
   ACTIVE_LANGS,
   DEFAULT_LANG,
-  I18N_ROUTES_ENABLED,
+  PREFIX_ROUTES_ACTIVE,
   OG_LOCALES,
   type SupportedLang,
 } from '../lib/i18n';
@@ -189,7 +189,7 @@ export const seoService = {
 
     // A flag spento nessuna delle due query di registro parte: il sito è quello
     // di oggi, e route/hreflang/sitemap si accendono insieme o non si accendono.
-    const alternates = I18N_ROUTES_ENABLED
+    const alternates = PREFIX_ROUTES_ACTIVE
       ? await translatedSlugService.getAlternatesForSlug(enSlug)
       : {};
     const localizedSlug = lang === DEFAULT_LANG ? enSlug : (alternates[lang] ?? enSlug);
@@ -198,7 +198,7 @@ export const seoService = {
     // route a prefisso non esistono: un canonical `/es/…` manderebbe Google su
     // un 302. Quindi finché l'interruttore è giù il canonical è sempre quello
     // inglese, anche se i contenuti serviti sono tradotti.
-    const usePrefix = I18N_ROUTES_ENABLED && lang !== DEFAULT_LANG;
+    const usePrefix = PREFIX_ROUTES_ACTIVE && lang !== DEFAULT_LANG;
     const canonicalPath = usePrefix
       ? (isHome ? `${lang}/` : `${lang}/${localizedSlug}`)
       : (isHome ? '' : enSlug);
@@ -219,7 +219,7 @@ export const seoService = {
       canonical_url: `${SITE_URL}/${canonicalPath}`,
       // GENERATO dal registro a flag acceso; a flag spento resta il valore DB,
       // che oggi è la sola self-reference inglese.
-      hreflang: I18N_ROUTES_ENABLED
+      hreflang: PREFIX_ROUTES_ACTIVE
         ? buildHreflang(enSlug, alternates)
         : (page.hreflang ?? null),
 

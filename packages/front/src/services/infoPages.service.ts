@@ -7,6 +7,8 @@
  * sui tipi dominio manuali di @thaiakha/shared (FaqCategoryRow & co.).
  */
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { normalizeLangTag } from '@thaiakha/shared/lib/i18n';
 import type { FAQLink, FAQCta } from '@thaiakha/shared/types';
 import type {
   LegalDocument,
@@ -19,6 +21,11 @@ import type {
   InfoPageBlock,
 } from '@thaiakha/shared';
 
+/** Campi di CONTENUTO dei sidecar usati qui: il resto della riga e' struttura. */
+const FAQ_CATEGORY_T_FIELDS = ['title'] as const;
+const FAQ_QUESTION_T_FIELDS = ['question', 'answer', 'cta'] as const;
+const INFO_SECTION_T_FIELDS = ['heading', 'body'] as const;
+
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
 // Categorie universali + domande della LIBRERIA CONDIVISA (entity_type IS NULL):
 // le page-specific (entity_type='page') vivono SOLO sulle loro pagine via
@@ -28,29 +35,33 @@ import type {
 // poi question.display_order. Forma = FaqCategoryUI[].
 // links: la colonna DB è stata unificata dentro cta.links → la forma UI
 // (FAQItem.links) resta identica per i renderer (FAQRichAnswer/FAQPage).
-export async function getFaqData(): Promise<FaqCategoryUI[]> {
-  const [{ data: catsData, error: cErr }, { data: qsData, error: qErr }] = await Promise.all([
-    supabase
-      .from('faq_categories')
-      .select('id, category_key, title, image_asset_id, section_id, display_order')
-      .eq('is_active', true)
-      .order('display_order', { ascending: true }),
-    supabase
-      .from('faq_questions')
-      .select('category_id, question, answer, cta, display_order')
-      .eq('is_active', true)
-      .is('entity_type', null)
-      .contains('audience', ['front'])
-      .order('display_order', { ascending: true }),
-  ]);
+export async function getFaqData(lang = 'en'): Promise<FaqCategoryUI[]> {
+  const l = normalizeLangTag(lang);
+  let catsQuery = supabase
+    .from('faq_categories')
+    .select('id, category_key, title, image_asset_id, section_id, display_order'
+      + sidecarJoin('faq_categories_translations', FAQ_CATEGORY_T_FIELDS, l))
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+  let qsQuery = supabase
+    .from('faq_questions')
+    .select('category_id, question, answer, cta, display_order'
+      + sidecarJoin('faq_questions_translations', FAQ_QUESTION_T_FIELDS, l))
+    .eq('is_active', true)
+    .is('entity_type', null)
+    .contains('audience', ['front'])
+    .order('display_order', { ascending: true });
+  catsQuery = sidecarFilter(catsQuery, l);
+  qsQuery = sidecarFilter(qsQuery, l);
+  const [{ data: catsData, error: cErr }, { data: qsData, error: qErr }] = await Promise.all([catsQuery, qsQuery]);
 
   if (cErr || qErr || !catsData || !qsData) {
     console.error('[infoPages] getFaqData:', cErr || qErr);
     return [];
   }
 
-  const cats = catsData as unknown as Pick<FaqCategoryRow, 'id' | 'category_key' | 'title' | 'image_asset_id' | 'section_id' | 'display_order'>[];
-  const qs = qsData as unknown as Pick<FaqQuestionRow, 'category_id' | 'question' | 'answer' | 'cta' | 'display_order'>[];
+  const cats = mergeSidecarRows<Pick<FaqCategoryRow, 'id' | 'category_key' | 'title' | 'image_asset_id' | 'section_id' | 'display_order'>>(catsData, l);
+  const qs = mergeSidecarRows<Pick<FaqQuestionRow, 'category_id' | 'question' | 'answer' | 'cta' | 'display_order'>>(qsData, l);
 
   return cats.map(c => ({
     id: c.category_key,
@@ -81,21 +92,25 @@ export async function getFaqData(): Promise<FaqCategoryUI[]> {
 export async function getEntityFaqs(
   entityType: string,
   entitySlug: string,
+  lang = 'en',
 ): Promise<FaqCardUI[]> {
-  const { data, error } = await supabase
+  const l = normalizeLangTag(lang);
+  const query = sidecarFilter(supabase
     .from('faq_questions')
-    .select('faq_key, question, answer, avatar_asset_id, faq_style, display_order, cta')
+    .select('faq_key, question, answer, avatar_asset_id, faq_style, display_order, cta'
+      + sidecarJoin('faq_questions_translations', FAQ_QUESTION_T_FIELDS, l))
     .eq('entity_type', entityType)
     .eq('entity_slug', entitySlug)
     .eq('is_active', true)
     .contains('audience', ['front'])
-    .order('display_order', { ascending: true });
+    .order('display_order', { ascending: true }), l);
+  const { data, error } = await query;
 
   if (error || !data) {
     console.error('[infoPages] getEntityFaqs:', error);
     return [];
   }
-  const rows = data as unknown as Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'display_order' | 'cta'>[];
+  const rows = mergeSidecarRows<Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'display_order' | 'cta'>>(data, l);
   return rows.map(r => ({
     name: r.question,
     answerHtml: r.answer,
@@ -115,21 +130,24 @@ export async function getEntityFaqs(
 // qui si risolvono in card. Ritorna [] se non ci sono refs.
 // audience: come getFaqData/getEntityFaqs, il front rende solo audience 'front'
 // (#58): un ref curato verso una FAQ staff/agency non deve comparire in pagina.
-export async function getFaqsByRefs(refs: readonly string[]): Promise<FaqCardUI[]> {
+export async function getFaqsByRefs(refs: readonly string[], lang = 'en'): Promise<FaqCardUI[]> {
   if (!Array.isArray(refs) || refs.length === 0) return [];
 
-  const { data, error } = await supabase
+  const l = normalizeLangTag(lang);
+  const query = sidecarFilter(supabase
     .from('faq_questions')
-    .select('faq_key, question, answer, avatar_asset_id, faq_style, cta')
+    .select('faq_key, question, answer, avatar_asset_id, faq_style, cta'
+      + sidecarJoin('faq_questions_translations', FAQ_QUESTION_T_FIELDS, l))
     .in('faq_key', refs)
     .eq('is_active', true)
-    .contains('audience', ['front']);
+    .contains('audience', ['front']), l);
+  const { data, error } = await query;
 
   if (error || !data) {
     console.error('[infoPages] getFaqsByRefs:', error);
     return [];
   }
-  const rows = data as unknown as Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'cta'>[];
+  const rows = mergeSidecarRows<Pick<FaqQuestionRow, 'faq_key' | 'question' | 'answer' | 'avatar_asset_id' | 'faq_style' | 'cta'>>(data, l);
   const byKey = new Map(rows.map(r => [r.faq_key ?? '', r]));
 
   // Ordine = ordine dell'array faq_refs; chiavi mancanti/inattive → saltate.
@@ -175,22 +193,27 @@ export async function getInfoPageMeta(
 // ─── INFO PAGE (Terms / Privacy) ───────────────────────────────────────────────
 // info_pages DISMESSA: sezioni da info_page_sections per page_slug (colonna diretta),
 // meta doc (versione/date) da site_metadata → mappate in LegalDocument (render invariato).
-export async function getInfoPage(slug: string): Promise<LegalDocument | null> {
+export async function getInfoPage(slug: string, lang = 'en'): Promise<LegalDocument | null> {
+  const l = normalizeLangTag(lang);
+  // `anchor` NON si traduce: e' l'ancora dei deep-link legali, e una versione
+  // tradotta romperebbe i link che girano nelle email e nei documenti agenzia.
+  const sectionsQuery = sidecarFilter(supabase
+    .from('info_page_sections')
+    .select('heading, body, section_order, anchor'
+      + sidecarJoin('info_page_sections_translations', INFO_SECTION_T_FIELDS, l))
+    .eq('page_slug', slug)
+    .eq('is_active', true)
+    .order('section_order', { ascending: true }), l);
   const [meta, { data: sectionsData, error: sErr }] = await Promise.all([
     getInfoPageMeta(slug),
-    supabase
-      .from('info_page_sections')
-      .select('heading, body, section_order, anchor')
-      .eq('page_slug', slug)
-      .eq('is_active', true)
-      .order('section_order', { ascending: true }),
+    sectionsQuery,
   ]);
 
   if (sErr || !sectionsData) {
     console.error('[infoPages] getInfoPage sections:', sErr);
     return null;
   }
-  const sections = sectionsData as unknown as Pick<InfoPageSectionRow, 'heading' | 'body' | 'section_order' | 'anchor'>[];
+  const sections = mergeSidecarRows<Pick<InfoPageSectionRow, 'heading' | 'body' | 'section_order' | 'anchor'>>(sectionsData, l);
 
   const mapped: LegalDocumentSection[] = sections.map(s => {
     const blocks = (s.body ?? []) as InfoPageBlock[];

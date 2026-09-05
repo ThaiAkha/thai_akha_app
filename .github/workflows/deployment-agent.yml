@@ -33,6 +33,15 @@ permissions:
   contents: 'write'
   id-token: 'write'
 
+# Lingue attive del front oltre l'inglese: 'es' oppure 'es,fr'; vuota = solo inglese.
+# Repository variable (Settings > Secrets and variables > Actions > Variables), NON
+# secret: si deve leggere nei log. Stesso valore del secret edge I18N_LANGS e della
+# var del Worker (brain 052). Un blocco solo, a livello di workflow: il dry-run di
+# validate e il build di deploy non possono divergere. Perche' qui e non in
+# .env.production: quel file e' gitignorato e in CI non esiste (RUNBOOK §2.2).
+env:
+  VITE_I18N_LANGS: ${{ vars.VITE_I18N_LANGS }}
+
 
 jobs:
   validate:
@@ -60,6 +69,12 @@ jobs:
 
       - name: Typecheck (front + admin)
         run: pnpm typecheck
+
+      - name: Check Deno sidecar copy
+        run: pnpm check-sidecar
+
+      - name: Test shared (parser lingue, nome nativo)
+        run: pnpm test:shared
 
       - name: Lint Admin
         run: pnpm --filter admin lint

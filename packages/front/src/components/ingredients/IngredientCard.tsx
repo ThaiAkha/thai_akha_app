@@ -3,6 +3,8 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { IngredientListItem } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink, AkhaPixelPattern } from '../ui/index';
 import { INGREDIENTS_HUB_SLUG } from '../../hooks/useIngredientsFeed';
+import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface IngredientCardProps {
   ingredient: IngredientListItem;
@@ -27,6 +29,9 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
   showNativeNames = true,
 }) => {
   const cover = ingredient.cover_data;
+  // Ponte verso il thai solo se differisce dal titolo mostrato (su /th/ il titolo e' gia' thai).
+  const { lang } = useLanguage();
+  const native = nativeNameFor(ingredient, lang);
 
   const inner = (
     <>
@@ -60,16 +65,16 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
             {ingredient.name}
           </Typography>
 
-          {showNativeNames && (ingredient.name_th || ingredient.phonetic) && (
+          {showNativeNames && (native.thai || native.phonetic) && (
             <div className="flex flex-wrap items-baseline [gap:var(--space-fluid-2xs)]">
-              {ingredient.name_th && (
+              {native.thai && (
                 <Typography as="span" variant="paragraphS" className="text-white/90">
-                  {ingredient.name_th}
+                  {native.thai}
                 </Typography>
               )}
-              {ingredient.phonetic && (
+              {native.phonetic && (
                 <Typography as="span" variant="microLabel" className="text-white/60 italic">
-                  {ingredient.phonetic}
+                  {native.phonetic}
                 </Typography>
               )}
             </div>

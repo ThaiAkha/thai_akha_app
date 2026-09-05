@@ -16,6 +16,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { newsService } from '@thaiakha/shared/services';
+import { useLanguage } from '../context/LanguageContext';
 import { usePageMetadata, type PageMetadata } from './usePageMetadata';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -133,9 +134,14 @@ export function usePageSections<Id extends string>(
   const sectionsEnabled = enabled && ids.length > 0;
   const metadataEnabled = enabled && Boolean(metadataSlug);
 
+  // La lingua entra nella CHIAVE, non solo nella query: senza, il cambio lingua
+  // riuserebbe la cache inglese e la pagina resterebbe in inglese finche' non
+  // scade (bug che si vede solo cambiando lingua due volte di seguito).
+  const { lang } = useLanguage();
+
   const sectionsQuery = useQuery({
-    queryKey: ['page_sections', idsSig] as const,
-    queryFn: () => newsService.getPageSections<PageSectionData>(ids),
+    queryKey: ['page_sections', lang, idsSig] as const,
+    queryFn: () => newsService.getPageSections<PageSectionData>(ids, lang),
     enabled: sectionsEnabled,
   });
 

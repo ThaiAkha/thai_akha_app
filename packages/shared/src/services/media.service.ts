@@ -1,6 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 import { MediaAsset } from '../types/media.types';
-import { fetchWithCache } from './_cache';
+import { fetchWithCache, normalizeLang } from './_cache';
 
 /**
  * 🖼️ MEDIA SERVICE
@@ -88,23 +89,29 @@ export const mediaService = {
    * per display_order, e appiattisce media_assets in una shape pronta al render
    * (GalleryItem-compatibile). Sostituisce array hardcoded / gallery_images / gallery_asset_ids.
    */
-  async getGallery(galleryId: string): Promise<Array<{
+  async getGallery(galleryId: string, lang = 'en'): Promise<Array<{
     asset_id: string; image_url: string; title?: string; caption?: string; alt_text?: string; quote?: string;
   }>> {
     if (!galleryId) return [];
-    const data = await fetchWithCache(`gallery_${galleryId}_v1`, async () => {
-      const { data, error } = await supabase
+    const l = normalizeLang(lang);
+    // v2: select cambiata (join sidecar) + lingua nella chiave. NB: il sidecar
+    // gallery_items_translations oggi e' VUOTO: le didascalie restano inglesi
+    // finche' /translate-db non lo riempie, il lettore e' gia' pronto.
+    const data = await fetchWithCache(`gallery_${galleryId}_${l}_v2`, async () => {
+      const query = sidecarFilter(supabase
         .from('gallery_items')
-        .select('asset_id, display_order, quote, media_assets(image_url, title, caption, alt_text)')
+        .select('asset_id, display_order, quote, media_assets(image_url, title, caption, alt_text)'
+          + sidecarJoin('gallery_items_translations', ['quote'], l))
         .eq('gallery_id', galleryId)
-        .order('display_order', { ascending: true });
+        .order('display_order', { ascending: true }), l);
+      const { data, error } = await query;
 
       if (error) {
         console.error(`Gallery fetch error [${galleryId}]:`, error);
         return [];
       }
 
-      return (data || []).map((row) => {
+      return mergeSidecarRows(data, l).map((row) => {
         const r = row as Record<string, unknown>;
         const m = (Array.isArray(r.media_assets) ? r.media_assets[0] : r.media_assets) as Record<string, string> | null;
         return {

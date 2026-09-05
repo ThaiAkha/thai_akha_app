@@ -90,44 +90,66 @@ export const isSupportedLang = (value: unknown): value is SupportedLang =>
 export const normalizeLangTag = (lang: string | null | undefined): string =>
   lang?.split('-')[0].toLowerCase() || DEFAULT_LANG;
 
-// ─── INTERRUTTORE DI ACCENSIONE ───────────────────────────────────────────────
+// ─── LINGUE ATTIVE: UNA variabile a LISTA ─────────────────────────────────────
 
 /**
- * 🔴 UN SOLO INTERRUTTORE per: route a prefisso · hreflang · voci lingua in sitemap.
+ * 🔴 UN SOLO INTERRUTTORE, a LISTA: `VITE_I18N_LANGS` (front, inlinata da Vite al
+ * build; in CI arriva dal workflow come repository variable) e `I18N_LANGS`
+ * (Node e tooling; stesso nome nelle edge Deno come secret e nel worker come var).
  *
- * Spento (default) il sito è esattamente quello di oggi: solo inglese alla radice,
- * hreflang com'è nel DB, sitemap monolingua. Acceso, le tre cose si accendono
- * INSIEME — mai hreflang senza route, o daremmo a Google 11 alternate che
- * rispondono 302: una mappa di link morti.
+ * Valore = codici a 2 lettere separati da virgola: 'es' oppure 'es,fr'.
+ * Vuota o assente = solo inglese, il sito di oggi. Codici fuori da SUPPORTED_LANGS
+ * scartati, 'en' sempre dentro, ordine = SUPPORTED_LANGS (mai quello digitato).
+ * Nessuna parola magica: accendere tutto si scrive per esteso, cosi' allargare il
+ * perimetro a ms/hi non accende una lingua che nessuno ha scritto.
+ * Fail-closed per costruzione: un refuso ('es;fr') produce una lista PIU' CORTA.
  *
- * Accensione:
- *   app (front/admin) → `VITE_I18N_ROUTES=true` nel .env del package, poi rebuild
- *   edge sitemap      → secret `I18N_ROUTES_ENABLED=true` (Deno non importa shared)
- * Sono due superfici dello stesso interruttore: vanno girate insieme.
+ * Perche' una lista e non un booleano (2026-09-05): acceso/spento poteva accendere
+ * solo tutte e 11 le lingue insieme, ma solo `es` ha page_sections,
+ * info_page_sections e legal_documents completi. Con la lista si accende una
+ * lingua per volta, e il cluster hreflang da smontare in un rollback e' di 2 voci.
+ *
+ * Il vecchio booleano VITE_I18N_ROUTES / I18N_ROUTES_ENABLED non e' piu' letto da
+ * nessuno, e scripts/check-env.mjs interrompe il build se lo trova: un 'true'
+ * dimenticato deve fare rumore, non riaccendere 11 lingue.
+ *
+ * Le altre copie del perimetro, con lo STESSO parser da tenere identico a mano:
+ *   supabase/functions/_shared/langPerimeter.ts  (Deno: sitemap + og-meta-tags)
+ *   brain 052_Cloudflare/worker-og-meta-tags.js   (Cloudflare Worker)
  *
  * ⚠️ Vite inlina SOLO l'accesso LETTERALE `import.meta.env.VITE_X` (vedi supabase.ts):
  * niente chiavi dinamiche, o nel bundle browser resta undefined.
  */
-let viteI18nRoutes: string | undefined;
+export const parseLangList = (raw: string | null | undefined): readonly SupportedLang[] => {
+  const wanted = new Set(
+    (raw ?? '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean),
+  );
+  return SUPPORTED_LANGS.filter((l) => l === DEFAULT_LANG || wanted.has(l));
+};
+
+let viteI18nLangs: string | undefined;
 try {
-  viteI18nRoutes = import.meta.env.VITE_I18N_ROUTES;
+  viteI18nLangs = import.meta.env.VITE_I18N_LANGS;
 } catch {
   /* Node/Deno: import.meta.env assente → si guarda process.env */
 }
 
-const readFlag = (): boolean => {
-  if (typeof process !== 'undefined' && process.env?.I18N_ROUTES_ENABLED) {
-    return process.env.I18N_ROUTES_ENABLED === 'true';
+const readLangListRaw = (): string | undefined => {
+  if (typeof process !== 'undefined' && process.env?.I18N_LANGS !== undefined) {
+    return process.env.I18N_LANGS;
   }
-  return viteI18nRoutes === 'true';
+  return viteI18nLangs;
 };
 
-export const I18N_ROUTES_ENABLED: boolean = readFlag();
-
 /**
- * Le lingue effettivamente navigabili ADESSO. A flag spento è solo `['en']`:
- * router, hreflang e switcher iterano su questa lista, non su SUPPORTED_LANGS,
- * così l'accensione è un fatto solo.
+ * Le lingue effettivamente navigabili ADESSO. Router, hreflang, switcher e sitemap
+ * iterano su questa lista, non su SUPPORTED_LANGS: l'accensione e' un fatto solo.
  */
-export const ACTIVE_LANGS: readonly SupportedLang[] =
-  I18N_ROUTES_ENABLED ? SUPPORTED_LANGS : [DEFAULT_LANG];
+export const ACTIVE_LANGS: readonly SupportedLang[] = parseLangList(readLangListRaw());
+
+/** DERIVATO (non letto dall'ambiente): esiste almeno una lingua a prefisso attiva. */
+export const PREFIX_ROUTES_ACTIVE: boolean = ACTIVE_LANGS.length > 1;
+
+/** Una lingua e' navigabile solo se e' nel perimetro E nella lista attiva. */
+export const isActiveLang = (value: unknown): value is SupportedLang =>
+  isSupportedLang(value) && (ACTIVE_LANGS as readonly string[]).includes(value);

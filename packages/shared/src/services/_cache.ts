@@ -141,6 +141,8 @@ export function peekCache<T>(key: string): T | null {
     }
 }
 
-/** Normalize language tag: 'th-TH' → 'th' */
-export const normalizeLang = (lang: string): string =>
-    lang?.split('-')[0].toLowerCase() || 'en';
+/**
+ * Normalizzazione lingua: 'th-TH' -> 'th'. Era una copia identica di
+ * normalizeLangTag (lib/i18n): un solo corpo, un solo DEFAULT_LANG.
+ */
+export { normalizeLangTag as normalizeLang } from '../lib/i18n';

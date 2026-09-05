@@ -3,6 +3,8 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { RecipeLink } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink } from '../ui/index';
 import { AkhaThemedLine } from '../blog';
+import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../../context/LanguageContext';
 
 const RECIPES_HUB_SLUG = 'authentic-thai-akha-recipes';
 
@@ -17,6 +19,7 @@ interface UsedInRecipesProps {
  * Renders nothing when the list is empty. Mobile-first 2-up grid.
  */
 const UsedInRecipes: React.FC<UsedInRecipesProps> = ({ recipes, onOpenRecipe, className }) => {
+  const { lang } = useLanguage();
   if (!recipes || recipes.length === 0) return null;
 
   return (
@@ -61,9 +64,9 @@ const UsedInRecipes: React.FC<UsedInRecipesProps> = ({ recipes, onOpenRecipe, cl
               <Typography variant="paragraphM" color="title" className="font-semibold leading-snug line-clamp-2 md:group-hover:text-pantry-4 transition-colors duration-200">
                 {recipe.name}
               </Typography>
-              {recipe.thai_name && (
+              {nativeNameFor(recipe, lang).thai && (
                 <Typography variant="microLabel" color="muted" className="line-clamp-1">
-                  {recipe.thai_name}
+                  {nativeNameFor(recipe, lang).thai}
                 </Typography>
               )}
             </div>

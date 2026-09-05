@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import {
   ACTIVE_LANGS,
   DEFAULT_LANG,
-  I18N_ROUTES_ENABLED,
   LANG_DIR,
   LANG_LABELS,
   type SupportedLang,
@@ -194,7 +193,7 @@ export const useLanguage = (): LanguageContextValue => {
   return {
     lang: DEFAULT_LANG,
     isTranslated: false,
-    availableLangs: I18N_ROUTES_ENABLED ? ACTIVE_LANGS : [DEFAULT_LANG],
+    availableLangs: ACTIVE_LANGS,
     labels: LANG_LABELS,
     slugMap: null,
     enSegments: [],

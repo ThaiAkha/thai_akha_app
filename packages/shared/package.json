@@ -13,6 +13,7 @@
     "./lib/geoUtils": "./src/lib/geoUtils.ts",
     "./lib/i18n": "./src/lib/i18n.ts",
     "./lib/mergeTranslation": "./src/lib/mergeTranslation.ts",
+    "./lib/nativeName": "./src/lib/nativeName.ts",
     "./lib/businessSchema": "./src/lib/businessSchema.ts",
     "./lib/icons": "./src/lib/icons.ts",
     "./lib/sessionUtils": "./src/lib/sessionUtils.ts",

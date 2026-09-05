@@ -6,6 +6,8 @@ import { sanitizeHtml } from '../../lib/sanitizeHtml';
 import { useRecipeView } from './recipeView/useRecipeView';
 import { CHERRY_AVATAR_SRC, CHERRY_SMALL_AVATAR_BG } from '../chat/ChatIdentityHeader';
 import type { RecipeData, CategoryData, IngredientDetail } from './recipeView/types';
+import { nativeNameFor, type NativeNameSource } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Tipi ri-esportati (consumer esistenti importano da qui). Logica in ./recipeView/useRecipeView (#16 split).
 export type { RecipeData, CategoryData, IngredientDetail };
@@ -47,6 +49,9 @@ const RecipeView: React.FC<RecipeViewProps> = ({
 }) => {
   
   const rv = useRecipeView({ recipe, allRecipes, activeDiet, userAllergies });
+  const { lang } = useLanguage();
+  /** Ponte thai sotto un nome: null se il nome mostrato e' gia' thai o identico. */
+  const thaiOf = (r: NativeNameSource) => nativeNameFor(r, lang).thai;
   const { galleryItems, isGalleryOpen, setIsGalleryOpen, galleryStartIndex, activeAudio, setActiveAudio, isMenuOpen, setIsMenuOpen, richIngredients, activeIngredient, setActiveIngredient, loadingIng, audioRef, menuRef, visibleIngredientsNames, activeConflicts, groupedRecipes, categoryOrder, getCategoryLabel, handleAskCherry, toggleAudio, openGalleryAt } = rv;
 
   return (
@@ -91,7 +96,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                                          imgClassName="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all"
                                        />
                                     </div>
-                                    <div className="flex-1 px-4 py-2 min-w-0"><span className="font-display font-black uppercase text-sm truncate block">{item.name}</span><span className="text-[9px] opacity-40 uppercase truncate block">{item.thai_name || 'Authentic'}</span></div>
+                                    <div className="flex-1 px-4 py-2 min-w-0"><span className="font-display font-black uppercase text-sm truncate block">{item.name}</span>{thaiOf(item) && <span className="text-[9px] opacity-40 uppercase truncate block">{thaiOf(item)}</span>}</div>
                                  </button>
                               ))}
                            </div>
@@ -153,7 +158,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({
            <div className="space-y-4 hidden md:block">
               <div className="flex gap-3"><Badge variant="mineral">{getCategoryLabel(recipe.category).toUpperCase()}</Badge></div>
               <h1 className="text-4xl md:text-5xl font-display font-black uppercase text-gray-900 dark:text-gray-100 leading-[0.9]">{recipe.name}</h1>
-              {recipe.thai_name && <Typography variant="h4" className="text-primary italic opacity-90">{recipe.thai_name}</Typography>}
+              {thaiOf(recipe) && <Typography variant="h4" className="text-primary italic opacity-90">{thaiOf(recipe)}</Typography>}
            </div>
 
            {/* 🛡️ SAFETY SHIELD CARDS */}
@@ -182,7 +187,8 @@ const RecipeView: React.FC<RecipeViewProps> = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                  {visibleIngredientsNames.map((ingName, idx) => {
-                    const details = richIngredients.find(i => i.name === ingName);
+                    // Confronto sulla chiave INGLESE: `name` puo' essere tradotto, ingName no.
+                    const details = richIngredients.find(i => i.name_key === ingName);
                     return (
                        <button key={idx} onClick={() => details && setActiveIngredient(details)} className="relative flex items-stretch h-20 rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-secondary/50 transition-all duration-300 group">
                           <div className="w-[25%] relative overflow-hidden border-r border-white/5">
@@ -237,9 +243,11 @@ const RecipeView: React.FC<RecipeViewProps> = ({
                  <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] to-transparent" />
                  <div className="absolute bottom-6 left-6 right-6">
                     <Typography variant="h3" className="text-white uppercase italic leading-none mb-1 text-3xl">{activeIngredient.name}</Typography>
-                    <div className="flex items-center gap-2 text-primary">
-                       <Typography variant="h5">{activeIngredient.name_th}</Typography>
-                    </div>
+                    {thaiOf(activeIngredient) && (
+                      <div className="flex items-center gap-2 text-primary">
+                         <Typography variant="h5">{thaiOf(activeIngredient)}</Typography>
+                      </div>
+                    )}
                  </div>
               </div>
               <div className="p-8 pt-4 space-y-6">

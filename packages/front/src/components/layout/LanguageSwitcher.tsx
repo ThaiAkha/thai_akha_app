@@ -109,7 +109,7 @@ export const LanguageFlagPanel: React.FC<LanguageFlagPanelProps> = ({
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               onMouseLeave={() => setHovered(null)}
             >
-              <div className="grid grid-cols-4 [gap:var(--space-fluid-xs)]">
+              <div className="flex flex-wrap justify-center [gap:var(--space-fluid-xs)]">
                 {availableLangs.map((code, i) => (
                   <motion.button
                     key={code}

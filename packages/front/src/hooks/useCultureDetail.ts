@@ -4,8 +4,8 @@ import { CultureSectionDetail, CultureGalleryItem, CultureSection } from '@thaia
 import { useContentDetail } from './useContentDetail';
 
 export function useCultureDetail(slug: string, sections: CultureSection[]) {
-    const fetcher = useMemo(() => (s: string) => cultureService.getCultureSectionBySlug(s), []);
-    const secondaryFetcher = useMemo(() => (s: string) => cultureService.getCultureGallery(s), []);
+    const fetcher = useMemo(() => (s: string, l: string) => cultureService.getCultureSectionBySlug(s, l), []);
+    const secondaryFetcher = useMemo(() => (s: string, l: string) => cultureService.getCultureGallery(s, l), []);
 
     const { detail, secondaryData, previous: seqPrev, next: seqNext, loading, error } =
         useContentDetail<CultureSectionDetail, CultureSection>({

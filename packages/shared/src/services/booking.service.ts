@@ -3,6 +3,7 @@
 // Cherry (guest/loggato × booking). Cherry NON scrive mai: questo service
 // espone solo letture. RLS garantisce che l'utente veda solo i propri booking.
 import { supabase } from '../lib/supabase';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '../lib/mergeTranslation';
 
 export type BookingStateKind = 'none' | 'future' | 'imminent';
 
@@ -139,7 +140,7 @@ export interface UserMenuSelection {
  * Gli id sono recipe id (es. 'curry_04') → risolti in nomi via `recipes`.
  * Read-only. null se utente assente.
  */
-export const getUserMenuSelection = async (userId?: string | null): Promise<UserMenuSelection | null> => {
+export const getUserMenuSelection = async (userId?: string | null, lang = 'en'): Promise<UserMenuSelection | null> => {
   if (!userId) return null;
   try {
     const { data } = await supabase
@@ -154,8 +155,12 @@ export const getUserMenuSelection = async (userId?: string | null): Promise<User
     const ids = [data.curry_id, data.soup_id, data.stirfry_id].filter(Boolean) as string[];
     if (ids.length === 0) return { empty: true };
 
-    const { data: recs } = await supabase.from('recipes').select('id, name').in('id', ids);
-    const nameById = new Map((recs ?? []).map((r) => [String((r as Record<string, unknown>).id), String((r as Record<string, unknown>).name)]));
+    const recsQuery = sidecarFilter(supabase.from('recipes')
+      .select('id, name' + sidecarJoin('recipes_translations', ['name'], lang))
+      .in('id', ids), lang);
+    const { data: recs } = await recsQuery;
+    const merged = mergeSidecarRows(recs, lang);
+    const nameById = new Map(merged.map((r) => [String(r.id), String(r.name)]));
     const resolve = (id?: string | null) => (id ? nameById.get(String(id)) ?? null : null);
 
     return {

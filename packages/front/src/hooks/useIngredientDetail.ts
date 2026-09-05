@@ -9,7 +9,7 @@ import { useContentDetail } from './useContentDetail';
  */
 export function useIngredientDetail(slug: string, listItems: IngredientListItem[] = []) {
   const fetcher = useMemo(
-    () => (s: string) => ingredientService.getIngredientBySlug(s),
+    () => (s: string, l: string) => ingredientService.getIngredientBySlug(s, l),
     [],
   );
 

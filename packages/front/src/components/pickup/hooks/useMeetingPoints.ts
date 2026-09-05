@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { haversineDistance } from '@thaiakha/shared/lib/geoUtils';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
 import type { MeetingPoint } from '@thaiakha/shared/types';
+import { useLanguage } from '../../../context/LanguageContext';
+
+/** Campi di CONTENUTO del sidecar punti d'incontro (dropoff incluso: e' testo utente). */
+const MEETING_POINT_T_FIELDS = ['name', 'description', 'dropoff_description'] as const;
 
 export type MeetingPointWithDist = MeetingPoint & { _distKm?: number };
 
@@ -26,7 +31,8 @@ interface Options {
 /** Vuoto stabile: un `[]` inline sarebbe un riferimento nuovo a ogni render (rompe i useMemo). */
 const NO_POINTS: MeetingPoint[] = [];
 
-export const meetingPointsQueryKey = ['meeting_points', 'active_with_cover'] as const;
+export const meetingPointsQueryKey = (lang = 'en') =>
+  ['meeting_points', 'active_with_cover', lang] as const;
 
 /** Weekday locale da 'YYYY-MM-DD' (0=domenica … 6=sabato); null se data assente/malformata. */
 function parseWeekday(dateStr: string | null | undefined): number | null {
@@ -42,17 +48,21 @@ function parseWeekday(dateStr: string | null | undefined): number | null {
  * in cache, cosi' tornare sulla pagina non la ripete.
  */
 export function useMeetingPoints({ selectedClass, outsideHotelCoords, bookingDate }: Options): UseMeetingPointsResult {
+  const { lang } = useLanguage();
   const query = useQuery({
-    queryKey: meetingPointsQueryKey,
+    queryKey: meetingPointsQueryKey(lang),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const q = sidecarFilter(supabase
         .from('meeting_points')
-        .select('*, point_type, is_dropoff_point, cover:media_assets!image_asset_id(image_url, alt_text)')
+        .select('*, point_type, is_dropoff_point, cover:media_assets!image_asset_id(image_url, alt_text)'
+          + sidecarJoin('meeting_points_translations', MEETING_POINT_T_FIELDS, lang))
         .eq('active', true)
-        .order('name');
+        .order('name'), lang);
+      const { data: raw, error } = await q;
       if (error) throw error;
+      const data = mergeSidecarRows(raw, lang);
       // Resolve image_asset_id → media_assets; keep the `image_url` alias used by MeetingCard.
-      const resolved = (data ?? []).map((row) => {
+      const resolved = data.map((row) => {
         const cover = (row as Record<string, unknown>).cover as { image_url?: string } | null;
         return { ...row, image_url: cover?.image_url ?? null };
       });

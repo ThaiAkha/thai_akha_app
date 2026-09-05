@@ -3334,6 +3334,7 @@ export type Database = {
           og_description: string | null
           og_title: string | null
           related_queries_geo: Json | null
+          season_note: string | null
           seo_description: string | null
           seo_keywords: string[] | null
           seo_title: string | null
@@ -3363,6 +3364,7 @@ export type Database = {
           og_description?: string | null
           og_title?: string | null
           related_queries_geo?: Json | null
+          season_note?: string | null
           seo_description?: string | null
           seo_keywords?: string[] | null
           seo_title?: string | null
@@ -3392,6 +3394,7 @@ export type Database = {
           og_description?: string | null
           og_title?: string | null
           related_queries_geo?: Json | null
+          season_note?: string | null
           seo_description?: string | null
           seo_keywords?: string[] | null
           seo_title?: string | null

@@ -105,6 +105,40 @@ aggiungila a VITE_PUBLIC_ALLOWLIST in scripts/check-env.mjs.
   process.exit(1);
 }
 
+// --- Interruttore multilingua a LISTA (VITE_I18N_LANGS) ----------------------------
+// I nomi ritirati fanno rumore: un vecchio 'true' non deve accendere nulla in silenzio.
+const RETIRED_I18N = ['VITE_I18N_ROUTES', 'I18N_ROUTES_ENABLED'];
+const retiredI18n = RETIRED_I18N.filter((k) => k in env || k in process.env);
+if (retiredI18n.length) {
+  console.error(`
+[thaiakha] Build interrotta: variabile ritirata ${retiredI18n.join(', ')}.
+L'interruttore multilingua e' a LISTA: VITE_I18N_LANGS ('es' | 'es,fr' | vuota = solo inglese).
+`);
+  process.exit(1);
+}
+// Codici validati contro SUPPORTED_LANGS di shared/lib/i18n.ts. Fail-closed: se la
+// lista non si trova nel file, il build si ferma invece di validare a vuoto.
+const rawLangs = (process.env.VITE_I18N_LANGS ?? env.VITE_I18N_LANGS ?? '').trim().toLowerCase();
+const i18nSrc = readFileSync(new URL('../packages/shared/src/lib/i18n.ts', import.meta.url), 'utf8');
+const langsMatch = i18nSrc.match(/export const SUPPORTED_LANGS\s*=\s*\[([\s\S]*?)\]\s*as const/);
+if (!langsMatch) {
+  console.error('[thaiakha] check-env: SUPPORTED_LANGS non trovata in packages/shared/src/lib/i18n.ts, build interrotta.');
+  process.exit(1);
+}
+const supportedLangs = [...langsMatch[1].matchAll(/'([a-z]{2})'/g)].map((m) => m[1]);
+const wantedLangs = rawLangs ? rawLangs.split(',').map((s) => s.trim()).filter(Boolean) : [];
+const unknownLangs = wantedLangs.filter((l) => !supportedLangs.includes(l));
+if (unknownLangs.length) {
+  console.error(`
+[thaiakha] Build interrotta: VITE_I18N_LANGS contiene codici fuori perimetro: ${unknownLangs.join(', ')}
+Ammessi: ${supportedLangs.join(', ')}
+`);
+  process.exit(1);
+}
+const activeLangs = supportedLangs.filter((l) => l === 'en' || wantedLangs.includes(l));
+// Sempre stampata: nel log di CI si legge cosa e' acceso senza cercare nel bundle.
+console.log(`[check-env] VITE_I18N_LANGS="${rawLangs}" -> lingue attive: ${activeLangs.join(',')} (${basename(resolve(pkgDir))})`);
+
 const missing = REQUIRED.filter((k) => !env[k]);
 if (missing.length === 0) process.exit(0);
 

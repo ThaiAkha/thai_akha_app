@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
+import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/lib/mergeTranslation';
+import { MENU_RECIPE_T_FIELDS } from '../components/user-dashboard/menuManager/menuHelpers';
 import { useQuery } from '@thaiakha/shared/query';
 import { Typography, Button, Icon, Badge } from '../components/ui/index';
 import { PageLayout } from '../components/layout/PageLayout';
@@ -10,6 +12,7 @@ import { MegaMenu, MegaMenuCard } from '../components/recipes/index';
 import { useDietaryKnowledge, type DietaryProfile } from '../hooks/useDietaryKnowledge';
 import { useContentCategories } from '../hooks/useContentCategories';
 import { useActiveProfile } from '../context/ActiveProfileContext';
+import { useLanguage } from '../context/LanguageContext';
 import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
 import { NoBookingBanner } from '../components/user-dashboard';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -25,7 +28,7 @@ type MenuRecipe = Tables<'recipes'> & {
 };
 
 const NO_RECIPES: MenuRecipe[] = [];
-const classMenuRecipesQueryKey = ['recipes', 'class_menu'] as const;
+const classMenuRecipesQueryKey = (lang = 'en') => ['recipes', 'class_menu', lang] as const;
 
 const normalizeCat = (cat: string) => {
   const lower = cat.toLowerCase();
@@ -49,18 +52,22 @@ const MenuPage: React.FC<{
 
   // Dati pubblici (categorie + ricette di classe): cache TanStack (CLAUDE.md #17).
   // La lettura spiciness che stava qui era scaricata e mai usata: tolta.
+  const { lang } = useLanguage();
   const { categories, loading: catsLoading } = useContentCategories('recipe');
   const recipesQ = useQuery({
-    queryKey: classMenuRecipesQueryKey,
+    queryKey: classMenuRecipesQueryKey(lang),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const q = sidecarFilter(supabase
         .from('recipes')
-        .select(`*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`)
+        .select(`*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
+          + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .order('category')
-        .order('name');
+        .order('name'), lang);
+      const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []).map(r => ({
+      const merged = mergeSidecarRows<MenuRecipe>(data, lang);
+      return merged.map((r): MenuRecipe => ({
         ...r,
         keyIngredients: r.recipe_key_ingredients?.map((i) => i.ingredient) || []
       }));

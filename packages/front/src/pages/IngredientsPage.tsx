@@ -25,6 +25,7 @@ const IngredientsPage: React.FC<IngredientsPageProps> = ({ onNavigate, targetSec
     categoryIngredients,
     loading,
     error,
+    pageMetadata,
   } = useIngredientsFeed(targetSection);
 
   const openIngredient = useCallback(
@@ -68,6 +69,9 @@ const IngredientsPage: React.FC<IngredientsPageProps> = ({ onNavigate, targetSec
   return (
     <PageLayout
       slug={INGREDIENTS_HUB_SLUG}
+      customMetadata={pageMetadata ?? undefined}
+      loading={loading}
+      instantContent
       showPatterns={true}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug={INGREDIENTS_HUB_SLUG} />}

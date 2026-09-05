@@ -8,8 +8,8 @@ const COLOR_MAP: Record<number, string> = {
     2: 'bg-[#1A1A1A] shadow-[0_0_2px_#000]',               // Nero
     3: 'bg-primary-500 shadow-[0_0_2px_#E31F33]',          // Cherry Red
     4: 'bg-action-500 shadow-[0_0_2px_#98C93C]',           // Lime Green
-    5: 'bg-quiz-p-500 shadow-[0_0_2px_#9A0050]',           // Deep Magenta
-    6: 'bg-quiz-s-500 shadow-[0_0_2px_#3B227A]',           // Deep Purple
+    5: 'bg-quiz-p-500 shadow-[0_0_2px_#9b3357]',           // Magenta (Quiz Set)
+    6: 'bg-quiz-s-500 shadow-[0_0_2px_#553a5b]',           // Violet (Quiz Set)
     7: 'bg-btn-p-500 shadow-[0_0_2px_#FF6D00]',            // Orange
     8: 'bg-btn-s-500 shadow-[0_0_2px_#1CA3E6]',            // Blue Light
     9: 'bg-secondary-600 shadow-[0_0_2px_#8D1A31]',        // Dark Cherry

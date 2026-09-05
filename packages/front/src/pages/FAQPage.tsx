@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import type { FaqCategoryUI } from '@thaiakha/shared';
-import { getFaqData, getInfoPageMeta } from '../services/infoPages.service';
+import { getFaqData } from '../services/infoPages.service';
+import { useSiteMetadata } from '../hooks/useSiteMetadata';
 import { useLanguage } from '../context/LanguageContext';
 import { PageLayout, PageEssentials, InfoPageHero, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
 import { Typography, Icon, FaqBottomPage, AkhaPixelLine, FAQRichAnswer, GlassCard, MediaImage, FaqSearch } from '../components/ui';
@@ -32,6 +33,8 @@ interface FAQPageProps {
   onNavigate: (page: string, topic?: string, section?: string) => void;
 }
 
+const FAQ_SLUG = 'cooking-class-faq-chiang-mai';
+
 const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { lang } = useLanguage();
@@ -45,14 +48,19 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
   // chiave e il cambio lingua rilegge invece di riusare la cache inglese.
   const faqQuery = useQuery({
     queryKey: ['faq_hub', lang] as const,
-    queryFn: () => Promise.all([
-      getFaqData(lang),
-      getInfoPageMeta('cooking-class-faq-chiang-mai'),
-    ]).then(([d, m]) => ({ faqData: d, meta: m })),
+    queryFn: () => getFaqData(lang),
   });
-  const faqData: FaqCategoryUI[] = faqQuery.data?.faqData ?? EMPTY_FAQ;
-  const meta = faqQuery.data?.meta ?? null;
+  const faqData: FaqCategoryUI[] = faqQuery.data ?? EMPTY_FAQ;
   const loading = faqQuery.isPending;
+
+  // Versione e date del documento: stessa riga di site_metadata che questa pagina
+  // gia' legge per Page Essentials, FAQ collegate e pagine sorelle. Prima era una
+  // quarta richiesta, in coppia con le FAQ: l'elenco non compariva finche' non
+  // arrivava anche il numero di versione del testo legale.
+  const { extras } = useSiteMetadata(FAQ_SLUG);
+  const meta = extras
+    ? { version: extras.legalVersion ?? '', effectiveDate: extras.dates.published ?? '', lastUpdated: extras.dates.modified ?? '' }
+    : null;
 
   // ── Ricerca & filtri (client-side sui ~65 hub già in memoria) ───────────────
   const [query, setQuery] = useState('');
@@ -147,14 +155,14 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <PageLayout slug="cooking-class-faq-chiang-mai" showPatterns={false}>
+    <PageLayout slug={FAQ_SLUG} showPatterns={false}>
       {/* SEO: driven entirely by SEOHead via site_metadata slug "cooking-class-faq-chiang-mai".
           No PageSEO — avoids duplicate JSON-LD injection. */}
 
       <div className="flex flex-col [gap:var(--space-fluid-l)] w-full max-w-6xl mx-auto">
         {/* ── PAGE HERO (divider tematizzato block_faq) ── */}
         <InfoPageHero
-          slug="cooking-class-faq-chiang-mai"
+          slug={FAQ_SLUG}
           fallbackIcon="help_outline"
           dividerTheme="block_faq"
           gradientFrom="ocean-blue"
@@ -215,7 +223,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,18rem)_1fr] [gap:var(--space-fluid-l)] items-start">
           {/* Sinistra: sidebar info-page modulare (Menu + TOC + CTA classi) — desktop-only, sticky */}
           <InfoPageSidebar
-            currentSlug="cooking-class-faq-chiang-mai"
+            currentSlug={FAQ_SLUG}
             onNavigate={onNavigate}
             toc={toc}
             numberedToc
@@ -369,12 +377,12 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate }) => {
           </div>{/* /accordion column */}
         </div>{/* /grid sidenav+accordion */}
 
-        <PageEssentials slug="cooking-class-faq-chiang-mai" accent="ocean" />
+        <PageEssentials slug={FAQ_SLUG} accent="ocean" />
 
-        <FaqBottomPage slug="cooking-class-faq-chiang-mai" onNavigate={onNavigate} />
+        <FaqBottomPage slug={FAQ_SLUG} onNavigate={onNavigate} />
 
         <SiblingInfoSection
-          currentSlug="cooking-class-faq-chiang-mai"
+          currentSlug={FAQ_SLUG}
           onNavigate={onNavigate}
           accent="ocean"
         />

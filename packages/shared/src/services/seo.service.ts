@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase';
 import { PageMetadata, SitePage } from '../types/content.types';
 import { buildLocalBusinessSchema } from '../lib/businessSchema';
 import { contentMetadataService } from './contentMetadata.service';
-import { mergeTranslation, pickTranslation } from '../lib/mergeTranslation';
+import { mergeTranslation, pickTranslation, sidecarJoin, sidecarFilter } from '../lib/mergeTranslation';
 import { translatedSlugService } from './translatedSlug.service';
 import {
   ACTIVE_LANGS,
@@ -58,6 +58,31 @@ const OG_DEFAULT_IMAGE = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/ob
  * dal service stesso — evita falsi negativi su righe DB con dati SEO parziali.
  * Updated: migration_002 — hero_image_url rimosso dalla guard (campo opzionale ora)
  */
+/**
+ * Colonne che questa lettura usa DAVVERO: il typeguard `isSitePage` piu' i campi
+ * del `return` di fetchMetadataForSlug. Prima c'era `*`, che su site_metadata
+ * porta anche `semantic_vector` (1536 float serializzati come testo, ~30 KB per
+ * riga) e `seo_audit_logs` (log dell'admin, cresce nel tempo): peso scaricato e
+ * parsato a ogni primo caricamento di OGNI pagina, per campi che nessuno legge.
+ * Stessa regola gia' scritta per content_categories in contentMetadata.service.ts.
+ * `canonical_url` non c'e' di proposito: il canonical lo calcola questo service.
+ */
+const SITE_METADATA_SEO_COLUMNS = [
+  'id', 'page_slug', 'header_title_main', 'header_title_highlight', 'page_description',
+  'access_level', 'seo_title', 'seo_description', 'seo_keywords', 'seo_robots',
+  'og_title', 'og_description', 'og_type', 'twitter_card', 'json_ld', 'hreflang',
+  'seo_health_score', 'business_profile_id',
+  'summary_ai', 'key_entities', 'page_essentials', 'related_queries_geo',
+  'cover_media:media_assets!site_metadata_cover_asset_id_fkey(image_url, alt_text, title)',
+].join(', ');
+
+/** Gli stessi campi, lato sidecar: solo quelli che il merge per campo puo' sovrascrivere. */
+const SITE_METADATA_SEO_T_FIELDS = [
+  'header_title_main', 'header_title_highlight', 'page_description',
+  'seo_title', 'seo_description', 'seo_keywords', 'og_title', 'og_description',
+  'summary_ai', 'key_entities', 'page_essentials', 'related_queries_geo',
+] as const;
+
 function isSitePage(data: unknown): data is SitePage {
   if (!data || typeof data !== 'object') return false;
   const d = data as Record<string, unknown>;
@@ -157,23 +182,18 @@ export const seoService = {
     // Il sidecar arriva nella stessa query: una sola round-trip per pagina.
     // In inglese non serve — la base È l'inglese.
     const needsTranslation = lang !== DEFAULT_LANG;
-    const translationJoin = needsTranslation
-      ? `, translations:site_metadata_translations(
-            lang, header_badge, header_title_main, header_title_highlight,
-            page_description, menu_label, seo_title, seo_description, seo_keywords,
-            og_title, og_description, summary_ai, key_entities, page_essentials,
-            related_queries_geo
-         )`
-      : '';
 
-    const { data, error } = await supabase
-      .from(table)
-      .select(`
-        *,
-        cover_media:media_assets!site_metadata_cover_asset_id_fkey(image_url, alt_text, title)${translationJoin}
-      `)
-      .eq('page_slug', slug)
-      .maybeSingle();
+    // `sidecarFilter` va PRIMA di `.maybeSingle()`: dopo il builder non ha piu' `.eq`.
+    // Senza di esso il join tornava TUTTE le righe tradotte della pagina (fino a 11,
+    // ognuna con i suoi JSON GEO) e `pickTranslation` ne teneva una: si scaricavano
+    // dieci traduzioni per usarne una.
+    const { data, error } = await sidecarFilter(
+      supabase
+        .from(table)
+        .select(`${SITE_METADATA_SEO_COLUMNS}${sidecarJoin('site_metadata_translations', SITE_METADATA_SEO_T_FIELDS, lang)}`)
+        .eq('page_slug', slug),
+      lang,
+    ).maybeSingle();
 
     if (error || !data || !isSitePage(data)) {
       console.warn(`[SEO] No metadata found for slug: ${slug}, using defaults.`);

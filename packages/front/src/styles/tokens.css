@@ -291,10 +291,20 @@ html.dark {
     --border:    #4A504F;
     --border-2:  #5E6464;
 
-    --text-title: #F6FCFC;
-    --text-body:  #D6DCDC;
-    --text-sub:   #9AA0A0;
-    --text-muted: #727878;
+    /* 🔴 Qui c'erano 4 token `--text-title/-body/-sub/-muted`, RIMOSSI il
+       2026-09-02: nel front non li leggeva nessuno. Verificato prima di
+       toccarli: 0 occorrenze di `var(--text-*)` in front/src, 0 classi
+       `text-body` nei componenti, nessun `--color-body` che ci puntasse.
+       Sono la famiglia di nomi dell'ADMIN (`admin/src/styles/tokens.css`, letta
+       da `admin/src/styles/theme.css`), finita anche qui. Il front usa
+       `--color-title/-desc/-sub/-muted`, e `theme.css` lo dichiara single
+       source of truth.
+
+       📏 Il verso opposto del riferimento senza referente: non un testo che
+       promette una cosa assente, ma una cosa presente che nessun testo
+       rivendica. Quattro token che sembravano autorevoli e non alimentavano
+       niente - e che al primo che li avesse "allineati" avrebbero fatto
+       cambiare i valori sbagliati. */
 
     --color-background: #0A0A0A;
     --color-surface:    #121212;

@@ -19,12 +19,20 @@
 /**
  * TAILWIND V4 — FLAT TOKEN ANCHORS
  * Defined directly in entry file for reliable dev-mode resolution.
+ *
+ * ⚠️ QUESTO BLOCCO E' UN MIRROR di base-theme.css, non una seconda fonte.
+ * Viene dopo gli import, stessa specificita', quindi VINCE: un valore fermo
+ * qui serve il colore vecchio a tutti i componenti che usano l'alias flat,
+ * mentre la scala (`bg-quiz-p-500`) serve quello giusto. Nessun errore, due
+ * magenta diversi nella stessa pagina.
+ * E' gia' successo: il front serviva il magenta ritirato a 56 componenti.
+ * Se cambi un anchor in base-theme.css, cambialo QUI nella stessa modifica.
  */
 @theme {
   --color-primary: #E31F33;
   --color-action:  #98C93C;
-  --color-quiz-p:  #9A0050;
-  --color-quiz-s:  #3B227A;
+  --color-quiz-p:  #9b3357;
+  --color-quiz-s:  #553a5b;
   --color-btn-p:   #FF6D00;
   --color-btn-s:   #1CA3E6;
 }

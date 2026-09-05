@@ -1,6 +1,7 @@
 import React from 'react';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import HeaderSection from './HeaderSection';
+import { SkeletonBase, SkeletonHeader } from '../skeleton';
 
 interface InfoPageHeroProps {
   slug: string;
@@ -30,11 +31,23 @@ const InfoPageHero: React.FC<InfoPageHeroProps> = ({
   gradientTo,
 }) => {
   // Data layer (#86): stessa query/cache degli altri lettori di site_metadata per slug.
-  const { metadata } = usePageMetadata(slug);
+  const { metadata, loading } = usePageMetadata(slug);
   const meta = metadata as PageMeta | null;
 
   const title = meta?.titleMain || fallbackTitle;
   const highlight = meta?.titleHighlight || fallbackHighlight;
+
+  // Prima il layout teneva fermo tutto finche' questa riga non arrivava; ora i figli
+  // montano subito, quindi l'attesa la mostra qui chi la sta aspettando, con la
+  // stessa forma dell'immagine e del titolo che prenderanno il suo posto.
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center [gap:var(--space-fluid-m)] w-full">
+        <SkeletonBase className="w-full aspect-[16/6] rounded-3xl [margin-top:var(--space-fluid-l)]" />
+        <SkeletonHeader variant="hero" align="center" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center [gap:var(--space-fluid-m)] w-full">

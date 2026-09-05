@@ -44,9 +44,10 @@ declare global {
   }
 }
 
-// Lo script Maps in index.html e' `async defer`: puo' eseguire DOPO il mount di
-// questa pagina, e altri script possono aver gia' creato un `window.google`
-// parziale. Chiamare importLibrary alla cieca dava "importLibrary is not a
+// Lo script Maps e' `async defer` e lo inietta la route (lib/googleMaps.ts, dal
+// 2026-09-05: prima stava nel <head> di index.html, cioe' su ogni pagina): puo'
+// eseguire DOPO il mount di questa pagina, e altri script possono aver gia'
+// creato un `window.google` parziale. Chiamare importLibrary alla cieca dava "importLibrary is not a
 // function" in prod (2026-08-31) oppure una mappa morta in silenzio. Qui si
 // attende il caricamento vero: polling leggero finche' importLibrary non esiste.
 const MAPS_POLL_MS = 150;

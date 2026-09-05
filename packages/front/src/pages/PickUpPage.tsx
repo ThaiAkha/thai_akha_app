@@ -17,6 +17,7 @@ import { GEOJSON_MASTER } from '@thaiakha/shared/data';
 import { PageLayout } from '../components/layout/PageLayout';
 import { Typography, Badge } from '../components/ui';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { SkeletonBase } from '../components/skeleton';
 import { t } from '../i18n';
 
 import { isPointInPolygon } from '@thaiakha/shared/lib/geoUtils';
@@ -256,7 +257,9 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <PageLayout slug="free-pickup-location-chiang-mai" hideDefaultHeader={true} loading={loading || !bookingLoaded} isFullScreen={true}>
+    <PageLayout slug="free-pickup-location-chiang-mai" hideDefaultHeader={true} instantContent isFullScreen={true}>
+      {/* La mappa e' la parte lenta e non dipende dal database: con instantContent
+          parte subito, invece di aspettare zone, punti di ritrovo e prenotazione. */}
       {/* SEO (title/meta/og/json-ld): interamente di SEOHead via site_metadata —
           il nodo LocalBusiness è già rigenerato da business_profile nel seo.service. */}
       <h1 className="sr-only">Free Hotel Pickup – Chiang Mai Cooking Classes</h1>
@@ -289,6 +292,15 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
           )}
           style={{ '--sheet-h': sheet.liveHeightPx } as React.CSSProperties}
         >
+
+          {/* Zone e punti di ritrovo riguardano solo questo pannello: la mappa,
+              che e' la parte lenta, non li aspetta piu'. */}
+          {(loading || !bookingLoaded) && (
+            <div className="absolute inset-x-0 top-16 z-20 flex flex-col [gap:var(--space-fluid-s)] [padding-inline:var(--space-fluid-m)]">
+              <SkeletonBase className="h-12 w-full rounded-2xl" />
+              <SkeletonBase className="h-24 w-full rounded-2xl" />
+            </div>
+          )}
 
           {/* Saponetta drag + indicatore snap — solo mobile */}
           <div className="lg:hidden shrink-0 flex flex-col items-center pt-3 pb-1" {...sheet.handleProps}>

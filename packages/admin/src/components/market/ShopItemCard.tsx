@@ -5,6 +5,7 @@ import Badge from '../ui/badge/Badge';
 import { CheckCircle2, PlusCircle } from 'lucide-react';
 import { PackStepper } from './PackStepper';
 import { describePack, describeQty, packLabel } from './packUtils';
+import { displayIngredientName } from './ingredientName';
 
 interface LibraryItem {
   id: string;
@@ -44,10 +45,8 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
   const isLogistics = mode === 'logistics';
   const { t, i18n } = useTranslation('market');
 
-  // Monolingual ingredient name: pick the column for the current UI language,
-  // fall back to English when a translation is missing (translations are WIP).
-  const lang = i18n.language?.split('-')[0];
-  const displayName = (lang === 'th' && item.name_th) ? item.name_th : item.name;
+  // Nome monolingua, regola unica in ingredientName.ts (la usano anche la bozza e il Runner).
+  const displayName = displayIngredientName(item, i18n.language);
 
   return (
     <div

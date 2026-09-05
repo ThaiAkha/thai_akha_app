@@ -3,7 +3,7 @@ import { Header, CinematicBackground } from './index';
 import { usePageMetadata } from '../../hooks/usePageMetadata';
 import { HeaderMetadata } from './Header';
 import { cn } from '@thaiakha/shared/lib/utils';
-import { AkhaLoader, Typography } from '../ui/index';
+import PageLoader from './PageLoader';
 import { SkeletonHeader } from '../skeleton';
 import { AkhaTheme } from '../divider/AkhaPixelPattern';
 
@@ -46,7 +46,14 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   // Data layer (#86): self-fetch SOLO quando il padre non passa customMetadata e non
   // e' in modalita' progressiva (instantContent: il padre possiede metadata + loading).
   // Stessa query/cache di usePageSections({ metadataSlug }) e degli altri lettori dello slug.
-  const selfFetch = !instantContent && !customMetadata;
+  //
+  // In piu' (2026-09-05) il layout interroga lo slug solo se quel dato verra' MOSTRATO:
+  // con l'header di default nascosto e nessun header custom, l'unica cosa che ne usciva
+  // era l'`imageUrl` dello sfondo, e sette pagine chiedevano righe che in site_metadata
+  // non esistono nemmeno (`recipes`, `recipe-<slug>`, `menu`, `user`, `quiz`, ...):
+  // un round trip a vuoto che teneva ferma tutta la pagina, perche' finche' e' in volo
+  // i figli non vengono montati e le LORO query non partono.
+  const selfFetch = !instantContent && !customMetadata && (!hideDefaultHeader || !!customHeader);
   const { metadata: fetched, loading: fetchLoading } = usePageMetadata(slug, { enabled: selfFetch });
   const metadata: (HeaderMetadata & { imageUrl?: string }) | null = customMetadata ?? (selfFetch ? fetched : null);
   const isInternalLoading = selfFetch && fetchLoading;
@@ -59,7 +66,9 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
     description: 'Loading content...',
     badge: 'System',
     icon: 'hourglass_empty',
-    imageUrl: 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg'
+    // Vuoto di proposito: durante il fallback lo sfondo e' comunque spento
+    // (isLoaded false) e nessuno deve scaricare og-default.jpg per non mostrarla.
+    imageUrl: ''
   };
 
   return (
@@ -88,12 +97,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         {/* Progressive mode (instantContent) salta lo spinner full-screen: la pagina
             si rivela come UN solo stato continuo (header skeleton + corpo skeleton). */}
         {!instantContent && isLoading ? (
-          <div className="flex-grow flex flex-col items-center justify-center min-h-[80vh] animate-in fade-in duration-700">
-             <AkhaLoader variant="bloom" size={10} className="opacity-90" />
-             <Typography variant="microLabel" className="mt-8 text-gray-700/40 dark:text-gray-300/40 animate-pulse">
-               Pick Ingredients...
-             </Typography>
-          </div>
+          <PageLoader />
         ) : (
           <div className="flex flex-col w-full h-full">
 

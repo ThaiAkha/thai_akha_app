@@ -54,7 +54,15 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ onNavigate }) => {
     inputTranscript,
     outputTranscript,
     voiceError,
+    ensureChatReady,
   } = useCherry();
+
+  // La sessione Supabase e lo storico si aprono qui, alla prima apertura della
+  // box: prima partivano al mount della shell, per ogni visitatore di ogni
+  // pagina, con la chat chiusa. Idempotente, quindi le riaperture non costano.
+  useEffect(() => {
+    if (isOpen) void ensureChatReady();
+  }, [isOpen, ensureChatReady]);
 
   // Scorrimento (ancoraggio apertura, monitor manuale, align-to-top domanda)
   const { isScrolledUp, messagesEndRef, scrollContainerRef, shouldAutoScrollRef, scrollToBottom } = useChatBoxScroll(isOpen, messages);

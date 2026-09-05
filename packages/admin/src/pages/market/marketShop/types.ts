@@ -3,6 +3,7 @@
  * Estratti da MarketShop.tsx (#16 split monstre) a comportamento invariato.
  */
 import { packSize, baseUnit, packLabel } from '../../../components/market/packUtils';
+import { displayIngredientName } from '../../../components/market/ingredientName';
 import type { WorkerRole } from '@thaiakha/shared/types/workers.types';
 
 // "Who are you?" filters by the FUNCTION of the flow, never by login:
@@ -25,21 +26,31 @@ export interface ChecklistDisplayItem {
 
 // Normalizes both formState entries [id, {qty,price}] and DraftItem snapshots
 // to a common display shape, resolving names/units from the library where needed.
+// `lang` = lingua UI: il nome mostrato segue la stessa regola della card del picker
+// (ingredientName.ts), altrimenti la stessa riga si legge thai a sinistra e inglese a
+// destra nella stessa schermata. Il thai arriva SEMPRE dalla libreria per `id`: lo
+// snapshot resta inglese e congelato, e in inglese l'uscita e' identica a prima.
 export function normalizeEntry(
   entry: [string, { qty: number; price: number }] | DraftItem,
-  lib: LibraryItem[]
+  lib: LibraryItem[],
+  lang?: string
 ): ChecklistDisplayItem {
   if (Array.isArray(entry)) {
     const [id, val] = entry;
     const libItem = lib.find(l => l.id === id);
     return {
-      id, name: libItem?.name || '', qty: val.qty, price: val.price,
+      id, name: displayIngredientName(libItem ?? {}, lang), qty: val.qty, price: val.price,
       unit: libItem ? packLabel(libItem) : 'unit',
       pack_size: libItem ? packSize(libItem) : 1,
       base_unit: libItem ? baseUnit(libItem) : 'unit',
     };
   }
-  return { id: entry.id, name: entry.name, qty: entry.quantity, unit: entry.unit, price: entry.price, pack_size: entry.pack_size ?? 1, base_unit: entry.base_unit ?? entry.unit };
+  return {
+    id: entry.id,
+    name: displayIngredientName({ name: entry.name, name_th: lib.find(l => l.id === entry.id)?.name_th }, lang),
+    qty: entry.quantity, unit: entry.unit, price: entry.price,
+    pack_size: entry.pack_size ?? 1, base_unit: entry.base_unit ?? entry.unit,
+  };
 }
 
 export interface LibraryItem {

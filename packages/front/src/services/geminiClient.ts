@@ -1,4 +1,9 @@
-import { GoogleGenAI } from '@google/genai';
+// `import type`: l'SDK Gemini pesa 270 KB (54 compressi) e serve SOLO a chi apre la
+// voce di Cherry. Come import di valore finiva nel chunk d'ingresso, quindi lo
+// scaricava e valutava ogni visitatore di ogni pagina prima del primo render.
+// Con il tipo qui e l'`import()` dentro la funzione, il chunk scende al primo
+// microfono e non un istante prima (2026-09-05).
+import type { GoogleGenAI } from '@google/genai';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 
 // ── LIVE CLIENT (WebSocket / Voice) ──────────────────────────────────────────
@@ -9,6 +14,10 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 let liveClient: GoogleGenAI | null = null;
 
 export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
+  // Il download dell'SDK parte subito e corre in parallelo alla chiamata del token:
+  // due attese sovrapposte invece che in fila.
+  const sdk = import('@google/genai');
+
   // ⚠️ Il token effimero è SINGLE-USE (uses:1 nell'edge gemini-token). NON riutilizzare
   // il client tra sessioni: al 2° avvio voce riuseremmo un token già consumato →
   // ai.live.connect fallisce. Quindi fetch di un token FRESCO ad ogni sessione.
@@ -25,7 +34,8 @@ export async function getLiveGeminiClient(): Promise<GoogleGenAI> {
       throw new Error(error?.message || 'Failed to fetch ephemeral token kha!');
     }
 
-    liveClient = new GoogleGenAI({
+    const { GoogleGenAI: GenAI } = await sdk;
+    liveClient = new GenAI({
       apiKey: data.ephemeralToken,
       httpOptions: { apiVersion: 'v1alpha' },
     });

@@ -81,35 +81,35 @@
   --color-action-950:  #1e3308;
   --color-action-1000: #0e1a03;
 
-  /* QUIZ-P — Deep Magenta (anchor 500 = #9A0050) */
-  --color-quiz-p-25:   #fff0f7;
-  --color-quiz-p-50:   #ffe0ee;
-  --color-quiz-p-100:  #ffb8d9;
-  --color-quiz-p-200:  #ff80bc;
-  --color-quiz-p-300:  #f0449c;
-  --color-quiz-p-400:  #c8207a;
-  --color-quiz-p-500:  #9A0050;
-  --color-quiz-p-600:  #820044;
-  --color-quiz-p-700:  #680038;
-  --color-quiz-p-800:  #50002c;
-  --color-quiz-p-900:  #380020;
-  --color-quiz-p-950:  #280018;
-  --color-quiz-p-1000: #1a0010;
+  /* QUIZ-P — Magenta (anchor 500 = #9b3357, era #9A0050) — allineata al front 03/09 */
+  --color-quiz-p-25:   #faf5f7;
+  --color-quiz-p-50:   #f5ebee;
+  --color-quiz-p-100:  #ebd6dd;
+  --color-quiz-p-200:  #d9b1bf;
+  --color-quiz-p-300:  #c5899e;
+  --color-quiz-p-400:  #af5c79;
+  --color-quiz-p-500:  #9b3357;
+  --color-quiz-p-600:  #862c4b;
+  --color-quiz-p-700:  #6e243e;
+  --color-quiz-p-800:  #561c30;
+  --color-quiz-p-900:  #411525;
+  --color-quiz-p-950:  #31101c;
+  --color-quiz-p-1000: #240c14;
 
-  /* QUIZ-S — Deep Purple (anchor 500 = #3B227A) */
-  --color-quiz-s-25:   #f4f0ff;
-  --color-quiz-s-50:   #eae0ff;
-  --color-quiz-s-100:  #d4bfff;
-  --color-quiz-s-200:  #b898ff;
-  --color-quiz-s-300:  #9470e8;
-  --color-quiz-s-400:  #6844b0;
-  --color-quiz-s-500:  #3B227A;
-  --color-quiz-s-600:  #311a66;
-  --color-quiz-s-700:  #261454;
-  --color-quiz-s-800:  #1c0e40;
-  --color-quiz-s-900:  #14082e;
-  --color-quiz-s-950:  #0c0420;
-  --color-quiz-s-1000: #060212;
+  /* QUIZ-S — Violet (anchor 500 = #553a5b, era #3B227A) — allineata al front 03/09 */
+  --color-quiz-s-25:   #f6f5f7;
+  --color-quiz-s-50:   #eeebef;
+  --color-quiz-s-100:  #ddd8de;
+  --color-quiz-s-200:  #beb4c1;
+  --color-quiz-s-300:  #9c8da0;
+  --color-quiz-s-400:  #77617c;
+  --color-quiz-s-500:  #553a5b;
+  --color-quiz-s-600:  #4b3250;
+  --color-quiz-s-700:  #3f2944;
+  --color-quiz-s-800:  #332038;
+  --color-quiz-s-900:  #29182d;
+  --color-quiz-s-950:  #211225;
+  --color-quiz-s-1000: #1b0d1e;
 
   /* BTN-P — Orange (anchor 500 = #FF6D00) */
   --color-btn-p-25:   #fff6ee;
@@ -168,8 +168,8 @@
      ============================================================================ */
   --color-primary: #E31F33;
   --color-action:  #98C93C;
-  --color-quiz-p:  #9A0050;
-  --color-quiz-s:  #3B227A;
+  --color-quiz-p:  #9b3357;
+  --color-quiz-s:  #553a5b;
   --color-btn-p:   #FF6D00;
   --color-btn-s:   #1CA3E6;
 

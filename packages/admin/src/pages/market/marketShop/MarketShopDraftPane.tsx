@@ -89,7 +89,7 @@ export const MarketShopDraftPane: React.FC<{ s: MarketShopState }> = ({ s }) => 
         <div className="border-t border-gray-100 dark:border-gray-700 pt-6">
           <div className="space-y-3 pb-32">
             {Object.entries(formState).map((entry) => {
-              const item = normalizeEntry(entry as [string, { qty: number; price: number }] | DraftItem, library);
+              const item = normalizeEntry(entry as [string, { qty: number; price: number }] | DraftItem, library, i18n.language);
 
               return (
                 <ReportLineRow

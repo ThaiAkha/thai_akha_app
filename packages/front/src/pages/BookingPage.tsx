@@ -18,6 +18,8 @@
 import React, { useState, useEffect } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import HeaderMenu from '../components/layout/HeaderMenu';
+import { usePageMetadata } from '../hooks/usePageMetadata';
+import { SkeletonBase } from '../components/skeleton';
 import { Modal, Typography, Button, Icon } from '../components/ui/index';
 import type { UserProfile } from '../services/auth.service';
 import { BOOKING_ONLINE_PAUSED, BOOKING_PAUSED_REDIRECT_URL } from '../config/booking';
@@ -47,7 +49,10 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
   const [showCalendarModal, setShowCalendarModal] = useState(false);
 
   // ── Data hooks ─────────────────────────────────────────────────────────────
-  const { sessionConfig, loading: configLoading } = useSessionConfig();
+  const { sessionConfig, loading: configLoading } = useSessionConfig({ enabled: !BOOKING_ONLINE_PAUSED });
+  // Stessa chiave che legge HeaderMenu: una query per la pagina, e il corpo non
+  // aspetta piu' la configurazione delle classi per comparire.
+  const { metadata: pageMetadata, loading: metaLoading } = usePageMetadata('book-cooking-class-chiang-mai');
 
   // proxyDailyStats bridges the circular dependency between dateOptions (from
   // useBookingSelection) and dailyStats (from useAvailability).  After the first
@@ -103,7 +108,9 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
   return (
     <PageLayout
       slug="book-cooking-class-chiang-mai"
-      loading={configLoading}
+      customMetadata={pageMetadata ?? undefined}
+      loading={metaLoading}
+      instantContent
       showPatterns={true}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="book-cooking-class-chiang-mai" />}
@@ -130,6 +137,13 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate, userProfile, onAu
           >
             Go to booking
           </Button>
+        </div>
+      ) : configLoading ? (
+        /* Solo il flusso di prenotazione dipende dalla configurazione delle classi:
+           prima l'attesa copriva l'intera pagina, header compreso. */
+        <div className="w-full max-w-5xl mx-auto flex flex-col [gap:var(--space-fluid-m)] [padding-inline:var(--space-fluid-m)]">
+          <SkeletonBase className="h-32 w-full rounded-3xl" />
+          <SkeletonBase className="h-64 w-full rounded-3xl" />
         </div>
       ) : (
       <>

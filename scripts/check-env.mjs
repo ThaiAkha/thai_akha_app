@@ -17,8 +17,9 @@ import { basename, join, resolve } from 'node:path';
 const REQUIRED_BASE = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
 
 // Richieste solo da un package. La chiave Maps la usa solo il front:
-// index.html la inlina via %VITE_GOOGLE_MAPS_API_KEY%; se manca, Vite lascia
-// il placeholder LETTERALE nell'HTML e la mappa pickup muore in silenzio.
+// dal 2026-09-05 la legge src/lib/googleMaps.ts via import.meta.env (accesso
+// LETTERALE, inlinato da Vite), non piu' il placeholder in index.html; se manca,
+// l'URL dello script porta `key=undefined` e la mappa pickup muore in silenzio.
 // (Nota: questo guard ferma la chiave ASSENTE. Una chiave presente ma scaduta
 // in Cloud Console - ExpiredKeyMapError, 2026-08-31 - da qui non si vede.)
 const REQUIRED_BY_PKG = {

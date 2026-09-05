@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageLayout, PageSEO } from '../components/layout/index';
-import { Typography, Button, AkhaLoader, Card } from '../components/ui/index';
+import { Typography, Button, Card } from '../components/ui/index';
 import GalleryModal from '../components/modal/GalleryModal';
 import IngredientModal from '../components/modal/IngredientModal';
 import { AuthorBlock, HeaderSinglePost, AkhaThemedLine } from '../components/blog';
@@ -19,6 +19,10 @@ import { sanitizeHtml } from '../lib/sanitizeHtml';
 import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
 import { useLanguage } from '../context/LanguageContext';
 import { useSubPageSeo } from '../hooks/useSubPageSeo';
+import { ArticleDetailSkeleton } from '../components/skeleton';
+
+/** Etichetta della pagina per il layout: con `instantContent` non genera query. */
+const RECIPES_HUB_SLUG = 'authentic-thai-akha-recipes';
 
 interface RecipeSinglePageProps {
   slug: string;
@@ -64,19 +68,23 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [slug]);
 
+  // Le tre schermate di prima (loader, "non trovata", contenuto) erano tre
+  // PageLayout diversi, e due chiedevano righe di site_metadata che NON esistono:
+  // non c'e' `recipes` (l'hub si chiama authentic-thai-akha-recipes) e non c'e'
+  // `recipe-<slug>`. Due round trip a vuoto per ogni ricetta aperta, il secondo
+  // per giunta in coda, quando il contenuto era gia' pronto. Con `instantContent`
+  // il layout non interroga piu' lo slug e la pagina resta una sola schermata.
   if (loading) {
     return (
-      <PageLayout slug="recipes" showPatterns={true} hideDefaultHeader={true}>
-        <div className="flex justify-center items-center h-[60vh]">
-          <AkhaLoader />
-        </div>
+      <PageLayout slug={RECIPES_HUB_SLUG} instantContent showPatterns={true} hideDefaultHeader={true}>
+        <ArticleDetailSkeleton />
       </PageLayout>
     );
   }
 
   if (!recipe || !recipeRaw) {
     return (
-      <PageLayout slug="recipes" showPatterns={true} hideDefaultHeader={true}>
+      <PageLayout slug={RECIPES_HUB_SLUG} instantContent showPatterns={true} hideDefaultHeader={true}>
         <div className="flex flex-col justify-center items-center h-[60vh] text-center [padding:var(--space-fluid-m)]">
           <Typography variant="h3" as="p" className="mb-4">{t('recipeSingle:notFound')}</Typography>
           <Button variant="action" onClick={() => onNavigate?.('recipes')}>{t('recipeSingle:backToRecipes')}</Button>
@@ -86,7 +94,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
   }
 
   return (
-    <PageLayout slug={`recipe-${slug}`} showPatterns={false} hideDefaultHeader={true}>
+    <PageLayout slug={RECIPES_HUB_SLUG} instantContent showPatterns={false} hideDefaultHeader={true}>
 
       <PageSEO
         title={recipeRaw?.seo_title as string || `${recipeRaw?.name} | Thai Akha Kitchen`}

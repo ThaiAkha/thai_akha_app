@@ -16,6 +16,7 @@ import { useQuizProgress } from '../hooks/useQuizProgress';
 import { useQuizHomeData } from '../hooks/useQuizHomeData';
 import { usePageSection, toStatCardColor } from '../hooks/usePageSections';
 import { useActiveProfile } from '../context/ActiveProfileContext';
+import { usePageMetadata } from '../hooks/usePageMetadata';
 
 // ── QuizPage ──────────────────────────────────────────────────────────────────
 interface QuizPageProps {
@@ -33,6 +34,10 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
   const { categories, rewards, score, loading } = useQuizHomeData(managedId);
   // Hero stat cards + header quiz-01 da page_sections (una sola query, riga condivisa)
   const { section: quizHero, loading: quizHeroLoading } = usePageSection('quiz-01');
+  // Header e sfondo dal registro pagine: la pagina possiede i metadata e il layout non
+  // fa piu' il gate full-screen (instantContent). Il corpo mostra i SUOI skeleton, che
+  // prima erano codice morto: PageLayout non rendeva i figli finche' `loading` era vero.
+  const { metadata: pageMetadata, loading: metaLoading } = usePageMetadata('akha-wisdom-path-quiz');
 
   // ── Derived data ─────────────────────────────────────────────────────────────
   const nextReward = rewards.find(r => r.required_points > score) ?? null;
@@ -51,7 +56,9 @@ const QuizPage: React.FC<QuizPageProps> = ({ onNavigate }) => {
   return (
     <PageLayout
       slug="akha-wisdom-path-quiz"
-      loading={loading}
+      customMetadata={pageMetadata ?? undefined}
+      loading={metaLoading}
+      instantContent
       hideDefaultHeader={false}
       gradientFrom="quiz-p"
       gradientTo="quiz-s"

@@ -13,7 +13,7 @@ import {
   SidebarMobile,
   SEOHead,
 } from './components/layout/index';
-import { AkhaLoader } from './components/ui/index';
+import PageLoader from './components/layout/PageLoader';
 import { AppErrorBoundary } from '@thaiakha/shared/components/AppErrorBoundary';
 import PageErrorFallback from './components/layout/PageErrorFallback';
 import { ChatBox, CherryProvider } from './components/chat/index';
@@ -36,14 +36,13 @@ const NAV_SLUG_ALIASES: Record<string, string> = {
 import { useLanguage } from './context/LanguageContext';
 import { buildLangPath } from './lib/langRouting';
 
-// Loader unico dell'app: identico come fallback <Suspense> (download chunk lazy)
-// e come gate dei flussi che aspettano il profilo. Stesso elemento ⇒ nessuno
-// swap visivo tra i due stati ("doppio AkhaLoader") quando si concatenano.
-const PageLoader: React.FC = () => (
-  <div className="h-full w-full flex items-center justify-center bg-background">
-    <AkhaLoader variant="bloom" size={10} />
-  </div>
-);
+// Loader di pagina: UN componente (components/layout/PageLoader) per il fallback
+// <Suspense> del chunk lazy, per il gate profilo e per PageLayout in attesa dei
+// dati. Sono tre montaggi diversi dell'albero React, quindi "stesso elemento" da
+// solo non basta: il box e' identico e la fioritura legge un orologio condiviso
+// (AkhaPixelPattern), cosi' il loader che subentra riprende dalla stessa fase.
+// Prima erano due componenti diversi che si concatenavano con salto di posizione,
+// tinta e testo ("doppio AkhaLoader", chiuso 2026-09-05).
 
 const App: React.FC = () => {
   // Hook per gestire l'altezza reale su mobile (100vh fix)

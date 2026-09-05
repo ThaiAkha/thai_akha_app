@@ -3,6 +3,14 @@ import { sidecarJoin, sidecarFilter, mergeSidecarRow } from '../lib/mergeTransla
 import { AudioAsset } from '../types/media.types';
 
 /**
+ * Colonne servite al browser. Fuori resta `semantic_vector` (vector 1536,
+ * circa 19 KB di testo per riga): lo usa solo la ricerca semantica lato server,
+ * qui viaggiava per niente su ogni pagina con una narrazione audio.
+ */
+const AUDIO_ASSET_COLUMNS =
+  'id, asset_id, title, caption, audio_url, transcript, duration_seconds, file_name, folder_path, mime_type, size_kb, key_entities, summary_ai, created_at, updated_at' as const;
+
+/**
  * 🎙️ AUDIO SERVICE
  * Centralized service for fetching audio assets (voice stories)
  * Supports querying by string identifier 'asset_id'.
@@ -18,7 +26,7 @@ export const audioService = {
     try {
       const { data, error } = await supabase
         .from('audio_assets')
-        .select('*')
+        .select(AUDIO_ASSET_COLUMNS)
         .eq('asset_id', assetId)
         .maybeSingle();
 

@@ -1,8 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { lazy, Suspense, useState, useRef } from 'react';
 import { UserProfile } from '../../services/auth.service';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { LogoIconLight, LogoIconDark } from '@thaiakha/shared';
-import { LanguageFlagPanel } from './LanguageSwitcher';
+// lazy: il pannello e' l'unico pezzo di sidebar che usa framer-motion. Statico,
+// teneva 41 KB compressi di libreria nel chunk d'ingresso di ogni pagina per una
+// cosa che a interruttore i18n spento non si vede mai.
+const LanguageFlagPanel = lazy(() => import('./LanguageFlagPanel'));
 import { useLanguage } from '../../context/LanguageContext';
 import { ChevronLeft, ChevronDown, Menu } from 'lucide-react';
 import { CLOSED_WIDTH, SIDEBAR_TRANSITION, EASE_CUBIC, NavItem, ActionButton, SubNavItem, Divider } from './sidebar/SidebarNavPrimitives';
@@ -282,11 +285,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Pannello bandierine — portal su body, quindi il punto in cui sta nel
           JSX è irrilevante per il layout: conta solo l'ancora (langBtnRef). */}
-      <LanguageFlagPanel
-        open={langPanelOpen}
-        onClose={() => setLangPanelOpen(false)}
-        anchorRef={langBtnRef}
-      />
+      {availableLangs.length > 1 && (
+        <Suspense fallback={null}>
+          <LanguageFlagPanel
+            open={langPanelOpen}
+            onClose={() => setLangPanelOpen(false)}
+            anchorRef={langBtnRef}
+          />
+        </Suspense>
+      )}
     </nav>
   );
 };

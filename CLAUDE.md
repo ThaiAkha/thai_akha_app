@@ -63,11 +63,22 @@ docs/               → architettura, design system
 
 ## Agenti Disponibili
 
-> Master in `thai_akha_brain/010_ThaiAkha_com/claude/agents/` · `.claude/` → symlink
+> `.claude/agents` · `commands` · `agent-memory` sono **symlink di cartella** a
+> `thai_akha_brain/010_ThaiAkha_com/claude/…`. Dentro quella cartella pero' **non c'e' nessun master**:
+> sono a loro volta symlink ai condivisi di `000_Core_Agents/080_Agent_Shared/claude/generali/`, dove
+> vivono i file veri. Si edita **sempre** il master in `generali`, mai la copia che si apre da qui.
+>
+> ⚠️ I tre link di `.claude/` usano percorsi **assoluti** `/Users/svevomondino/Desktop/…`, mentre
+> `AGENTS.md`, `GEMINI.md` e `.agents` in radice usano percorsi **relativi** `../thai_akha_brain/…`.
+> Due convenzioni nello stesso repo: i relativi reggono ovunque le due cartelle restino sorelle, gli
+> assoluti si spengono in qualsiasi container o CI senza dire niente.
 
 | Comando | Specializzazione | Quando Usarlo |
 |---|---|---|
 | `/deepseek` | Orchestratore, architettura, decisioni strutturali | Task complessi multi-dominio, refactoring, piani |
+| `/visual` | **Coordinatore famiglia visual FRONT** (coerenza cross-page), sopra `/style` `/typography` `/mobile-ux` | Uniformare l'aspetto tra pagine, audit visivo. Prima di toccare un singolo asse, passa da qui |
+| `/verify` | Gate qualita': typecheck + test + build + comportamento invariato | Chiude ogni fase prima del commit |
+| `/simplify` | Decompone i file monstre in componenti/hook coesi, comportamento invariato | Regola #19, file oltre ~440 LOC |
 | `/cherry` | Cherry AI **FRONT + engine condiviso**: voce Gemini Live, chat streaming, orchestrator v6.3, system prompt | Bug voce, feature Cherry front, engine condiviso, prompt engineering |
 | `/admin-cherry` | Cherry AI **ADMIN** (dominio a sé, completamente diverso): persona/logica/prompt/chat/voce interni, `adminPrompt.ts`, `AdminChatBox`, Function Calling dati | Cherry staff/agency, prompt/logica admin. Attinge all'engine di `/cherry` |
 | `/database` | Data-UI bridge, implementazione query, TypeScript types (53+ tabelle) | Nuovi campi DB→UI, verificare flussi dati, mapping React |
@@ -89,14 +100,42 @@ docs/               → architettura, design system
 
 > **Agenti shared brain** (disponibili come additional dir) — `/humanizer`, `/writer`, `/seo`, `/publisher`, `/news-audit`, `/culture-audit`, `/page-audit`, `/mobile-ux`, `/code-review`, `/seo-flow-audit`
 
+### 🧩 Skill locali del repo (`.claude/skills/`)
+
+Due skill hanno una cartella vera qui: **`faq-pages`** (sistema FAQ / info-page DB-driven del front)
+e **`mobile-ux`** (con `references/`). **Sono COPIE GENERATE, non originali.**
+
+> **Stesso patto della regola #12 sui prompt di Cherry**: il master vive nel brain, qui c'e' una copia
+> tracciata da git, uno script la rigenera e un check sorveglia la divergenza.
+>
+> | | Prompt Cherry (regola #12) | Skill del repo |
+> |---|---|---|
+> | Master | `030_Cherry/033_App_Prompts/` | `010_ThaiAkha_com/claude/agents/*.md` |
+> | Rigenera | `pnpm sync-prompts` | `python3 011_Tools/sync_repo_skills.py --apply` |
+> | Sorveglia | `pnpm check-prompts` | `check_skills.py` §6 (dentro `sync_all.sh`) |
+>
+> Le copie portano in testa `<!-- GENERATO-DA: ... -->`: **non si editano qui**, si edita il master e
+> si rilancia lo script.
+>
+> 🔴 **Perche' e' nato questo patto.** Fino al 2026-09-04 nessun controllo guardava dentro
+> `.claude/skills/`, e le due copie avevano smesso di essere copie: `faq-pages` ferma al 03/07,
+> **`mobile-ux` ferma al 14/05 e lunga un terzo del master** - cioe' precedente a tutto il lavoro su
+> Tailwind v4, spaziature fluid e taglie del divider. Il guasto peggiore non era l'eta': era che **lo
+> stesso nome risolveva a due contenuti diversi** a seconda del meccanismo che lo caricava. Come
+> AGENTE arrivava dal vault via `.claude/agents` (fresco), come SKILL da qui (vecchio). Nessun avviso,
+> da nessuna parte. Rigenerate il 04/09.
+>
+> 📏 **Una copia che ha smesso di essere una copia e' peggio di un file mancante.** Il file mancante
+> da' errore; questa risponde, e risponde come rispondeva a maggio.
+
 ## File Chiave
 
 | Modulo | File da Leggere Prima |
 |---|---|
-| Architettura & Booking | `thai_akha_brain/000_Core_Agents/060_Manuals/061_Manuals_AI/0616_Architecture/06161_Architecture_EN.md`, `supabase/backups/full_backup_*.md` |
+| Architettura & Booking | `thai_akha_brain/000_Core_Agents/060_Manuals/061_Manuals_AI/0616_Architecture/06161_Architecture_EN.md` · schema DB: vedi la riga *Database* qui sotto |
 | Flusso utenti & ruoli | `thai_akha_brain/000_Core_Agents/060_Manuals/061_Manuals_AI/0616_Architecture/06162_User_Flow_EN.md` (tecnico) · `.../062_Manuals_Human/0626_Architecture/06261_User_Flow_Manual_EN.md` (narrativo per ruolo) |
 | Cherry AI (Front) | `.claude/agents/cherry.md`, `packages/front/src/prompts/` |
-| Cherry AI (Admin) | `.claude/agents/cherry.md`, `thai_akha_brain/000_Core_Agents/030_Cherry/033_App_Prompts/800_Admin/adminPrompt.ts` |
+| Cherry AI (Admin) | `.claude/agents/admin-cherry.md`, `thai_akha_brain/000_Core_Agents/030_Cherry/033_App_Prompts/800_Admin/adminPrompt.ts` |
 | Cherry identità/tono | `thai_akha_brain/000_Core_Agents/030_Cherry/031_Foundations/00_identity.md`, `.../02_tone.md` |
 | Cherry doc tecnica (hook/servizi) | `thai_akha_brain/000_Core_Agents/030_Cherry/034_Code_Docs/` |
 | Design System | `packages/front/src/styles/theme.css`, `packages/front/src/styles/tokens.css` |

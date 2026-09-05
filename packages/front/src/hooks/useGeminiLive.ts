@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLiveGeminiClient } from '../services/geminiClient';
-import { Modality } from '@google/genai';
 import type { LiveServerMessage, LiveSendClientContentParameters, LiveSendRealtimeInputParameters, Session } from '@google/genai';
 import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
 import { checkRateLimit, getGuestSessionToken, getUserBookingState } from '@thaiakha/shared/services';
@@ -136,7 +135,13 @@ export const useGeminiLive = (
         setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
         try {
-            const ai = await getLiveGeminiClient();
+            // `Modality` e' un enum, quindi un import di VALORE: da solo teneva l'SDK
+            // Gemini nel chunk d'ingresso di ogni pagina. Qui il chunk e' gia' in cache
+            // (getLiveGeminiClient lo ha appena scaricato), quindi non si aspetta nulla.
+            const [ai, { Modality }] = await Promise.all([
+                getLiveGeminiClient(),
+                import('@google/genai'),
+            ]);
             const AudioContextClass = (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
             
             audioCtxRef.current = new AudioContextClass({ sampleRate: 24000 });

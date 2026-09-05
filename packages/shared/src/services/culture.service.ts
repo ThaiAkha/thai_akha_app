@@ -12,6 +12,21 @@ const GALLERY_T_FIELDS = ['quote'] as const;
 /** La categoria viaggia dentro la card cultura. */
 const CULTURE_EMBEDDED = ['category'] as const;
 
+/**
+ * Colonne servite al browser per una sezione di cultura: tutte tranne
+ * `semantic_vector` (vector 1536, circa 19 KB di testo per riga) e
+ * `seo_audit_logs` (diario dell'admin, cresce nel tempo). Nessuna delle due ha
+ * un lettore nel front: erano peso puro sulla query principale della pagina.
+ */
+const CULTURE_SECTION_COLUMNS =
+    'audio_asset_id, author_id, breadcrumbs, canonical_url, category_id,' +
+    'cherry_button_ids, cherry_prompt, cherry_response, content, content_quality_score,' +
+    'cover_asset_id, display_order, featured, hreflang, id, is_published, json_ld,' +
+    'key_entities, last_content_audit_ai, og_description, og_image, og_title, og_type,' +
+    'primary_focus_keyword, published_at, quote, reading_time_minutes, related_articles,' +
+    'related_queries_geo, seo_description, seo_health_score, seo_keywords, seo_robots,' +
+    'seo_title, slug, subtitle, summary_ai, title, twitter_card, updated_at, view_count';
+
 export const cultureService = {
 
     /** 🏛️ CULTURE SECTIONS INDEX: Cards for the History/Culture index page */
@@ -40,15 +55,18 @@ export const cultureService = {
         return data || [];
     },
 
+
+
     /** 🏛️ CULTURE SECTION DETAIL: Full record for a single culture section */
     async getCultureSectionBySlug(slug: string, lang = 'en'): Promise<CultureSectionDetail | null> {
         const l = normalizeLang(lang);
         // v4: select cambiata (join sidecar) + lingua nella chiave.
-        return fetchWithCache<CultureSectionDetail>(`culture_section_${slug}_${l}_v4`, async () => {
+        // v5: select a colonne esplicite (via semantic_vector e seo_audit_logs).
+        return fetchWithCache<CultureSectionDetail>(`culture_section_${slug}_${l}_v5`, async () => {
             const query = sidecarFilter(supabase
                 .from('culture_sections')
                 .select(`
-                    *,
+                    ${CULTURE_SECTION_COLUMNS},
                     author:authors(name, title, description, avatar:media_assets!avatar_asset_id(image_url, alt_text)),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('culture_sections_translations', CULTURE_T_FIELDS, l))
@@ -77,10 +95,12 @@ export const cultureService = {
         // v2: select cambiata (join sidecar) + lingua nella chiave. NB: il sidecar
         // gallery_items_translations oggi e' VUOTO: il lettore c'e', le didascalie
         // restano inglesi finche' /translate-db non lo riempie.
-        const data = await fetchWithCache<CultureGalleryItem[]>(`culture_gallery_${galleryId}_${l}_v2`, async () => {
+        // v3: le colonne sono esplicite; `media_assets(*)` portava un vettore di
+        // embedding per ogni foto della galleria.
+        const data = await fetchWithCache<CultureGalleryItem[]>(`culture_gallery_${galleryId}_${l}_v3`, async () => {
             const query = sidecarFilter(supabase
                 .from('gallery_items')
-                .select('*, media_assets(*)' + sidecarJoin('gallery_items_translations', GALLERY_T_FIELDS, l))
+                .select('id, gallery_id, asset_id, display_order, quote, media_assets(asset_id, image_url, title, caption, alt_text)' + sidecarJoin('gallery_items_translations', GALLERY_T_FIELDS, l))
                 .eq('gallery_id', galleryId)
                 .order('display_order', { ascending: true }), l);
             const { data, error } = await query;

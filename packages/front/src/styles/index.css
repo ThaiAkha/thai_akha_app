@@ -62,14 +62,22 @@
    from imported files. These mirror base-theme.css + theme.css values. 
 ======================================================================== */
 @theme {
+  /* ⚠️ QUESTO BLOCCO E' UN MIRROR di base-theme.css: se un valore cambia LA'
+     va cambiato ANCHE QUI, o il front serve due colori per lo stesso token.
+     Il 2026-09-02 quiz-p e quiz-s erano fermi ai valori ritirati (#9A0050 /
+     #3B227A) mentre base-theme.css era passato al Quiz Color Set (#9b3357 /
+     #553a5b): il mirror viene dopo gli import, quindi VINCEVA, e 56 componenti
+     mostravano il magenta vecchio contro 17 con quello nuovo.
+     Un mirror che si dichiara mirror e non lo e' e' peggio di nessun mirror:
+     chi legge si fida e non va a controllare. */
   /* ── BRAND COLORS ─────────────────────────────────────────────────────── */
   --color-primary: #E31F33;
   /* = primary-500    */
   --color-action: #98C93C;
   /* = action-500     */
-  --color-quiz-p: #9A0050;
+  --color-quiz-p: #9b3357;
   /* = quiz-p-500     */
-  --color-quiz-s: #3B227A;
+  --color-quiz-s: #553a5b;
   /* = quiz-s-500     */
   --color-btn-p: #FF6D00;
   /* = btn-p-500      */
@@ -79,7 +87,7 @@
   /* = secondary-600  */
   --color-allergy: #FF6D00;
   /* = allergy-500    */
-  --color-quiz: #9A0050;
+  --color-quiz: #9b3357;
   /* front quiz alias */
 
   /* ── SEMANTIC TOKENS ──────────────────────────────────────────────────── */

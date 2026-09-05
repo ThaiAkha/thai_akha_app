@@ -12,6 +12,8 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { UserProfile } from '../services/auth.service';
 import { useDietaryKnowledge, type DietaryProfile } from '../hooks/useDietaryKnowledge';
 import { useUserPassport } from '../hooks/useUserPassport';
+import { usePageMetadata } from '../hooks/usePageMetadata';
+import { MediaCardSkeleton } from '../components/skeleton';
 
 
 
@@ -22,10 +24,17 @@ interface RecipesPageProps {
 }
 
 
+const RECIPES_SLUG = 'authentic-thai-akha-recipes';
+
 const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onProfileUpdate }) => {
   const { categories, recipes, spicinessLevels, loading } = useRecipesListData();
   const { profiles: dietProfiles, getAllergyProfiles, loading: knowledgeLoading } = useDietaryKnowledge();
   const { passport, updatePassport, hasExplicitPassport } = useUserPassport(userProfile, onProfileUpdate);
+  // Stessa chiave che legge HeaderMenu qui sotto: una query sola per la pagina.
+  // La pagina possiede i metadata, cosi' il layout non fa il suo gate e i figli
+  // (Page Essentials, FAQ, pagine sorelle) partono subito invece che in fila.
+  const { metadata: pageMetadata, loading: metaLoading } = usePageMetadata(RECIPES_SLUG);
+  const bodyLoading = loading || knowledgeLoading;
 
   const [isDietDirty, setIsDietDirty] = useState(false);
   const closeMegaMenuRef = useRef<(() => void) | null>(null);
@@ -114,7 +123,15 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
     : undefined;
 
   return (
-    <PageLayout slug="authentic-thai-akha-recipes" loading={loading || knowledgeLoading} showPatterns={true} hideDefaultHeader={true} customHeader={<HeaderMenu customSlug="authentic-thai-akha-recipes" descriptionOverride={headerDescription} />}>
+    <PageLayout
+      slug={RECIPES_SLUG}
+      customMetadata={pageMetadata ?? undefined}
+      loading={metaLoading}
+      instantContent
+      showPatterns={true}
+      hideDefaultHeader={true}
+      customHeader={<HeaderMenu customSlug={RECIPES_SLUG} descriptionOverride={headerDescription} />}
+    >
       {/* SEO: interamente di SEOHead (globale, slug-based). Niente PageSEO qui. */}
 
       {/* MEGA MENU: PERSONALIZZAZIONE */}
@@ -169,7 +186,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
         )}
       </div>
 
-      {!hasExplicitPassport && (
+      {!bodyLoading && !hasExplicitPassport && (
         <div className="[margin-top:var(--space-fluid-xl)] [margin-bottom:var(--space-fluid-xl)] min-h-[35vh] flex items-center justify-center">
           <div className="text-center flex flex-col items-center [gap:var(--space-fluid-m)]">
             <Typography variant="display2" className="text-title uppercase leading-tight">
@@ -196,7 +213,16 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
 
       {/* LISTA RICETTE */}
       <div className="w-full min-h-[50vh] flex flex-col [gap:var(--space-fluid-xl)]">
-        {hasExplicitPassport && passport.dietary_profile && categories.map((cat, idx) => {
+        {/* Le card aspettano anche i profili dietetici: senza, mostrerebbero gli
+            ingredienti non ancora adattati e il nome dieta sbagliato, per poi
+            cambiare sotto gli occhi. */}
+        {bodyLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 [gap:var(--space-fluid-m)]">
+            {[1, 2, 3, 4, 5, 6].map(i => <MediaCardSkeleton key={i} lines={2} />)}
+          </div>
+        )}
+
+        {!bodyLoading && hasExplicitPassport && passport.dietary_profile && categories.map((cat, idx) => {
           const catRecipes = recipes.filter(r => r.category === cat.id);
           if (catRecipes.length === 0) return null;
           const gridConfig = getGridConfig(catRecipes.length);

@@ -21,12 +21,19 @@ const NO_CONFIG: Record<string, SessionInfo> = {};
 
 export const classSessionsQueryKey = ['class_sessions', 'config'] as const;
 
-export function useSessionConfig(): UseSessionConfigResult {
+/**
+ * `enabled: false` quando la prenotazione online e' in pausa: la pagina mostra
+ * solo un cartello, e senza questo interruttore chiedeva comunque le sessioni di
+ * classe e poi la disponibilita' di tre giorni per una schermata mai disegnata.
+ */
+export function useSessionConfig(options: { enabled?: boolean } = {}): UseSessionConfigResult {
+  const enabled = options.enabled ?? true;
   const query = useQuery({
     queryKey: classSessionsQueryKey,
     // Fonte di verità BOOKING = class_sessions (prezzo/capacità/market tour),
     // NON cooking_classes (marketing). Fix has_market_tour (vive qui).
     queryFn: () => contentService.getClassSessions(),
+    enabled,
   });
 
   const sessionConfig = useMemo(() => {
@@ -49,5 +56,7 @@ export function useSessionConfig(): UseSessionConfigResult {
     return config;
   }, [query.data]);
 
-  return { sessionConfig, loading: query.isPending };
+  // `enabled &&`: una query spenta e senza dati resta per sempre in attesa, e chi
+  // legge questo flag ci resterebbe appeso.
+  return { sessionConfig, loading: enabled && query.isPending };
 }

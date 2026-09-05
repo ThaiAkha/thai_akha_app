@@ -29,6 +29,7 @@ export const CherryInlineChat: React.FC<CherryInlineChatProps> = ({ onNavigate, 
     chatError,
     registerInlineSurface,
     unregisterInlineSurface,
+    ensureChatReady,
   } = useCherry();
 
   // ── Registrazione superficie inline (solo quando VISIBILE, ≥lg) ─────────────
@@ -39,7 +40,9 @@ export const CherryInlineChat: React.FC<CherryInlineChatProps> = ({ onNavigate, 
     const mql = window.matchMedia('(min-width: 1024px)');
     let registered = false;
     const sync = () => {
-      if (mql.matches && !registered) { registerInlineSurface(); registered = true; }
+      // Questa superficie mostra lo storico appena e' visibile: qui la sessione
+      // serve davvero, quindi si apre (su mobile resta nascosta e non si apre).
+      if (mql.matches && !registered) { void ensureChatReady(); registerInlineSurface(); registered = true; }
       else if (!mql.matches && registered) { unregisterInlineSurface(); registered = false; }
     };
     sync();
@@ -48,7 +51,7 @@ export const CherryInlineChat: React.FC<CherryInlineChatProps> = ({ onNavigate, 
       mql.removeEventListener('change', sync);
       if (registered) unregisterInlineSurface();
     };
-  }, [registerInlineSurface, unregisterInlineSurface]);
+  }, [registerInlineSurface, unregisterInlineSurface, ensureChatReady]);
 
   // idPrefix dedicato: evita collisioni DOM con la ChatBox laterale (stessi messaggi)
   const ID_PREFIX = 'inline-chat-msg-';

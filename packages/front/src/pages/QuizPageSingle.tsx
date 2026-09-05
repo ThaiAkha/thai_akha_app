@@ -4,6 +4,19 @@ import { LevelQuiz, PlayQuiz, ResultQuiz, HeaderQuiz } from '../components/quiz'
 import { t } from '../i18n';
 import { useQuizGame } from './quiz/useQuizGame';
 import { QuizHomeView } from './quiz/QuizHomeView';
+import { SkeletonBase } from '../components/skeleton';
+
+/** Scheletro della lista livelli: due colonne come la vista vera, zero salti al cambio. */
+const QuizHomeSkeleton: React.FC = () => (
+  <div className="w-full grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)]">
+    <div className="lg:col-span-7 flex flex-col [gap:var(--space-fluid-m)]">
+      {[1, 2, 3].map(i => <SkeletonBase key={i} className="h-40 w-full rounded-3xl" />)}
+    </div>
+    <div className="lg:col-span-5 flex flex-col [gap:var(--space-fluid-m)]">
+      {[1, 2].map(i => <SkeletonBase key={i} className="h-56 w-full rounded-3xl" />)}
+    </div>
+  </div>
+);
 
 /**
  * Quiz single (una categoria): HOME · LEVEL_SELECT · PLAYING · RESULT.
@@ -22,7 +35,7 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
   return (
     <PageLayout
       slug="quiz"
-      loading={loading}
+      instantContent
       hideDefaultHeader={true}
     >
       <div className="sticky top-[20px] z-30 w-full [margin-bottom:var(--space-fluid-xl)]">
@@ -48,7 +61,12 @@ const QuizPageSingle: React.FC<QuizPageSingleProps> = ({ categoryId, onNavigate 
       <div className={`flex flex-col [gap:var(--space-fluid-xl)] [padding-bottom:var(--space-fluid-section)] ${view !== 'HOME' ? 'items-center justify-center' : ''}`}>
 
         {/* HOME — level list */}
-        {view === 'HOME' && <QuizHomeView q={q} categoryId={categoryId} onNavigate={onNavigate} />}
+        {/* L'intestazione del quiz si disegna subito (titolo e punteggio di ripiego,
+            come gia' faceva); il corpo mostra il suo scheletro finche' i livelli
+            arrivano, invece di tenere ferma tutta la pagina. */}
+        {view === 'HOME' && (loading
+          ? <QuizHomeSkeleton />
+          : <QuizHomeView q={q} categoryId={categoryId} onNavigate={onNavigate} />)}
 
         {view === 'LEVEL_SELECT' && currentLevel && (
           <LevelQuiz

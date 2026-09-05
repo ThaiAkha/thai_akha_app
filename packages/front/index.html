@@ -35,18 +35,24 @@
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Noto+Sans+Thai:wght@400;500;600;700;800;900&family=Roboto+Condensed:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap"
             rel="stylesheet">
     </noscript>
+    <!-- Icone: gli assi sono FISSATI a quelli che il codice usa davvero (opsz 24,
+         GRAD 0, peso 400-700, riempimento 0-1). Chiedendoli tutti a range pieno
+         Google serviva un font variabile da 5.360.396 byte, sette volte l'intero
+         JavaScript dell'app; cosi' ne serve 1.451.140, stessi glifi. `display=block`
+         resta: vedi il commento in styles/index.css sul perche' lo swap qui rovina
+         il disegno. Misurato il 2026-09-05. -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400..700,0..1,0&display=block"
         rel="stylesheet" media="print" onload="this.media='all'" />
     <noscript>
         <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400..700,0..1,0&display=block"
             rel="stylesheet" />
     </noscript>
 
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=%VITE_GOOGLE_MAPS_API_KEY%&libraries=geometry,marker&loading=async"
-        async defer></script>
+    <!-- Lo SDK Google Maps NON sta piu' qui: lo caricava su ogni pagina (circa 280 KB
+         compressi e sei richieste) per una mappa che vive solo nella pagina pickup.
+         Ora lo inietta la route, da src/lib/googleMaps.ts. -->
 
     <script type="importmap">
 {

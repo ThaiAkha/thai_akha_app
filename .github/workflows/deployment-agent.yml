@@ -73,6 +73,9 @@ jobs:
       - name: Check Deno sidecar copy
         run: pnpm check-sidecar
 
+      - name: Test shared (parser lingue, nome nativo)
+        run: pnpm test:shared
+
       - name: Lint Admin
         run: pnpm --filter admin lint
 

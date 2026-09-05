@@ -1,29 +1,11 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { DEFAULT_LANG, activeLangs, prefixRoutesActive } from "../_shared/langPerimeter.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 // ⚠️ Must use www to match canonical URLs in the DB and avoid duplicate content penalty
 const SITE_URL = "https://www.thaiakha.com";
 
-/**
- * 🌍 PERIMETRO LINGUE — copia Deno di packages/shared/src/lib/i18n.ts.
- * Le Edge Functions girano su Deno e non possono importare da @thaiakha/shared:
- * questa lista va tenuta allineata a mano, come già si fa per og-meta-tags.
- */
-const DEFAULT_LANG = "en";
-const SUPPORTED_LANGS = [
-  "en", "es", "fr", "de", "pt", "it", "ca", "nl", "th", "zh", "ko", "ja",
-] as const;
-
-/**
- * 🔴 STESSO INTERRUTTORE del front (VITE_I18N_ROUTES lato app).
- * Spento = sitemap monolingua inglese, identica a quella di oggi. Acceso =
- * dodici lingue con hreflang. Non deve MAI accendersi da solo: una sitemap che
- * annuncia URL a prefisso mentre le route sono spente manderebbe Google su
- * pagine che rispondono 302.
- */
-const I18N_ENABLED = Deno.env.get("I18N_ROUTES_ENABLED") === "true";
-const ACTIVE_LANGS: readonly string[] = I18N_ENABLED ? SUPPORTED_LANGS : [DEFAULT_LANG];
 
 // Rete di sicurezza sulle route private. Il filtro vero è access_level='public'
 // (strutturale: una nuova pagina privata è esclusa da sola); questa lista resta
@@ -104,7 +86,7 @@ Deno.serve(async (req: Request) => {
     // Una sola lettura dell'intera view (~1.938 righe) invece di una per lingua.
     // A flag spento non si legge affatto.
     const slugIndex: SlugIndex = {};
-    if (I18N_ENABLED) {
+    if (prefixRoutesActive()) {
       const { data: translatedSlugs } = await supabase
         .from("v_translated_slugs")
         .select("lang, slug_en, slug_translated");
@@ -187,7 +169,7 @@ Deno.serve(async (req: Request) => {
     // ── Emissione ─────────────────────────────────────────────────────────────
     const urls: string[] = [];
     for (const entry of entries) {
-      for (const lang of ACTIVE_LANGS) {
+      for (const lang of activeLangs()) {
         urls.push(buildUrl(entry, lang, slugIndex));
       }
     }
@@ -235,9 +217,9 @@ function buildUrl(entry: SitemapEntry, lang: string, slugIndex: SlugIndex): stri
   // hreflang reciproci: ogni URL elenca TUTTE le lingue, sé stesso compreso.
   // Google scarta i gruppi hreflang non reciproci, quindi l'auto-riferimento non
   // è ridondante — è la condizione perché il gruppo venga considerato valido.
-  // A flag spento ACTIVE_LANGS è ['en'] e questo blocco non emette nulla.
-  const alternates = I18N_ENABLED
-    ? ACTIVE_LANGS.map(
+  // A lista vuota activeLangs() è ['en'] e questo blocco non emette nulla.
+  const alternates = prefixRoutesActive()
+    ? activeLangs().map(
         (alt) =>
           `\n    <xhtml:link rel="alternate" hreflang="${alt}" href="${localizedUrl(entry, alt, slugIndex)}"/>`,
       ).join("") +

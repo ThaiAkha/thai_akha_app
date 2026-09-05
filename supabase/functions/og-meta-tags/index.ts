@@ -1,3 +1,4 @@
+import { DEFAULT_LANG, OG_LOCALES, activeLangs, prefixRoutesActive } from "../_shared/langPerimeter.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // ─── CORS Headers ───────────────────────────────────────────────────────────
@@ -23,22 +24,9 @@ const OG_CULTURE_IMAGE = OG_DEFAULT_IMAGE;
 // Il Cloudflare Worker dirotta qui ogni richiesta con user-agent bot (googlebot
 // incluso): quello che il browser costruisce in SEOHead, i crawler NON lo vedono
 // mai. Se hreflang, <html lang> e og:locale non sono corretti QUI, non sono
-// corretti per Google, punto. Copia Deno di packages/shared/src/lib/i18n.ts —
-// da tenere allineata a mano, come già LEGACY_SLUG_MAP.
+// corretti per Google, punto. Perimetro lingue e lista attiva arrivano da
+// ../_shared/langPerimeter.ts (copia Deno di shared/lib/i18n.ts, letta per richiesta).
 
-const DEFAULT_LANG = "en";
-const SUPPORTED_LANGS = [
-  "en", "es", "fr", "de", "pt", "it", "ca", "nl", "th", "zh", "ko", "ja",
-] as const;
-
-const OG_LOCALES: Record<string, string> = {
-  en: "en_US", es: "es_ES", fr: "fr_FR", de: "de_DE", pt: "pt_PT", it: "it_IT",
-  ca: "ca_ES", nl: "nl_NL", th: "th_TH", zh: "zh_CN", ko: "ko_KR", ja: "ja_JP",
-};
-
-/** 🔴 Stesso interruttore di front e sitemap. Spento = comportamento di oggi. */
-const I18N_ENABLED = Deno.env.get("I18N_ROUTES_ENABLED") === "true";
-const ACTIVE_LANGS: readonly string[] = I18N_ENABLED ? SUPPORTED_LANGS : [DEFAULT_LANG];
 
 const TWO_LETTER = /^[a-z]{2}$/i;
 
@@ -344,7 +332,7 @@ function splitLangPath(pathname: string): { lang: string; path: string } {
   if (first && TWO_LETTER.test(first)) {
     const candidate = first.toLowerCase();
     const rest = parts.slice(1);
-    const isActive = candidate !== DEFAULT_LANG && ACTIVE_LANGS.includes(candidate);
+    const isActive = candidate !== DEFAULT_LANG && activeLangs().includes(candidate);
     return {
       lang: isActive ? candidate : DEFAULT_LANG,
       path: `/${rest.join("/")}`,
@@ -363,7 +351,7 @@ async function toEnglishPath(
   path: string,
   lang: string,
 ): Promise<string> {
-  if (!I18N_ENABLED || lang === DEFAULT_LANG) return path;
+  if (!prefixRoutesActive() || lang === DEFAULT_LANG) return path;
 
   const segments = path.split("/").filter(Boolean);
   if (segments.length === 0) return path;
@@ -399,7 +387,7 @@ async function buildAlternates(
 
   // lingua → (slug inglese → slug tradotto), solo per i segmenti di QUESTO path.
   const byLang: Record<string, Record<string, string>> = {};
-  if (I18N_ENABLED && segments.length > 0) {
+  if (prefixRoutesActive() && segments.length > 0) {
     try {
       const { data } = await supabase
         .from("v_translated_slugs")
@@ -416,7 +404,7 @@ async function buildAlternates(
   }
 
   const out: Record<string, string> = {};
-  for (const lang of ACTIVE_LANGS) {
+  for (const lang of activeLangs()) {
     const map = byLang[lang] ?? {};
     const localized = segments.map((s) => map[s] ?? s);
     const prefix = lang === DEFAULT_LANG ? "" : `/${lang}`;

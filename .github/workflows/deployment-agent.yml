@@ -70,6 +70,9 @@ jobs:
       - name: Typecheck (front + admin)
         run: pnpm typecheck
 
+      - name: Check Deno sidecar copy
+        run: pnpm check-sidecar
+
       - name: Lint Admin
         run: pnpm --filter admin lint
 

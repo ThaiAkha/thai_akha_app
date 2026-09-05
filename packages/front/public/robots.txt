@@ -1,13 +1,14 @@
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: meta-externalagent
-Allow: /
-
+# NB (2026-09-04): su www.thaiakha.com questo file NON viene servito.
+# Il Worker Cloudflare og-meta-tags intercetta /robots.txt e risponde con la
+# stringa inline che sta nel suo sorgente (brain 052_Cloudflare/worker-og-meta-tags.js,
+# ramo `url.pathname === '/robots.txt'`). Questo file e' servito solo dall'origin
+# Firebase (thai-akha-front.web.app) e va tenuto IDENTICO a quella stringa.
+# Se cambi qui senza cambiare il Worker, hai cambiato niente.
 User-agent: *
 Allow: /
 Disallow: /user
 Disallow: /auth
+Disallow: /join-group
 Disallow: /user-dashboard
 Disallow: /user-menu
 Disallow: /user-quiz

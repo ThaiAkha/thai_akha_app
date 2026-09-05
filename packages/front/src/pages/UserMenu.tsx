@@ -16,6 +16,7 @@ import { useLanguage } from '../context/LanguageContext';
 import ProfileSwitcher from '../components/user-dashboard/ProfileSwitcher';
 import { NoBookingBanner } from '../components/user-dashboard';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { HomeGridSkeleton } from '../components/skeleton';
 import { t } from '../i18n';
 import type { Tables } from '@thaiakha/shared/types';
 
@@ -226,12 +227,18 @@ const MenuPage: React.FC<{
   return (
     <PageLayout
       slug="menu"
-      loading={loading}
+      instantContent
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="my-menu" />}
     >
+      {/* `menu` non e' una riga di site_metadata: il layout la chiedeva a ogni
+          apertura e non trovava niente. L'header vero e' HeaderMenu, su `my-menu`. */}
       <div className="contents">
-        <div className="flex flex-col [gap:var(--space-fluid-xl)] animate-in fade-in slide-in-from-bottom-8 duration-700">
+        {loading && <HomeGridSkeleton />}
+        <div className={cn(
+          "flex flex-col [gap:var(--space-fluid-xl)] animate-in fade-in slide-in-from-bottom-8 duration-700",
+          loading && "hidden",
+        )}>
           {/* F2 — chi sta compilando il menu (host o gestito) */}
           <div className="w-full">
             <ProfileSwitcher />

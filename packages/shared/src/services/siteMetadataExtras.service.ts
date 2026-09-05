@@ -93,7 +93,7 @@ export async function getPageExtras(slug: string, lang = 'en'): Promise<SiteMeta
     // da se'). Fallback per campo: dove il sidecar e' vuoto resta l'inglese.
     const query = sidecarFilter(supabase
         .from('site_metadata')
-        .select('cherry_prompt, cherry_response, cherry_button_ids, page_essentials, date_published, date_modified, faq_refs, sibling_slugs'
+        .select('cherry_prompt, cherry_response, cherry_button_ids, page_essentials, legal_version, date_published, date_modified, faq_refs, sibling_slugs'
             + sidecarJoin('site_metadata_translations', ['page_essentials'], l))
         .eq('page_slug', slug), l);
     const { data, error } = await query.maybeSingle();
@@ -110,6 +110,7 @@ export async function getPageExtras(slug: string, lang = 'en'): Promise<SiteMeta
             buttonIds: (row.cherry_button_ids as string[] | null) ?? null,
         },
         essentials: (row.page_essentials as Record<string, unknown> | null) ?? null,
+        legalVersion: (row.legal_version as string | null) ?? null,
         dates: {
             published: (row.date_published as string | null) ?? null,
             modified: (row.date_modified as string | null) ?? null,
@@ -131,6 +132,8 @@ export interface SiblingPageMeta {
 export interface SiteMetadataExtras {
     cherry: { prompt: string | null; response: string | null; buttonIds: string[] | null };
     essentials: Record<string, unknown> | null;
+    /** Versione del documento legale (Terms, Privacy, FAQ): la mostra LegalMetaBanner. */
+    legalVersion: string | null;
     dates: { published: string | null; modified: string | null };
     faqRefs: string[];
     siblingSlugs: string[];

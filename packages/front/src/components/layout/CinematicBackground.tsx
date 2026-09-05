@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 
 interface CinematicBackgroundProps {
   isLoaded: boolean;
+  /**
+   * Marcatore "questa pagina ha una cover": decide se le luci si accendono
+   * (le pagine senza cover non le hanno mai avute). NON viene piu' scaricato.
+   */
   imageUrl: string;
   showPatterns?: boolean;
 }
@@ -11,39 +15,21 @@ const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
   isLoaded,
   imageUrl,
 }) => {
-  const [imgReady, setImgReady] = useState(false);
-
-  // 1. GESTIONE PRELOAD IMMAGINE
-  // Carica l'immagine in memoria per evitare il "pop" visivo e gestire la transizione blur.
-  useEffect(() => {
-    setImgReady(false);
-    const img = new Image();
-    img.src = imageUrl;
-    img.onload = () => setImgReady(true);
-  }, [imageUrl]);
-
-  const show = isLoaded && imgReady;
+  // Qui c'era un preload `new Image()` piu' un layer con la foto in
+  // `backgroundImage`. Il layer stava a `opacity-0` in TUTTI e due i rami e in
+  // TUTTI e due i temi: invisibile per costruzione, nonostante il commento
+  // promettesse 0.08 in chiaro e 0.12 in scuro. Il download avveniva lo stesso, e
+  // due volte per pagina (prima og-default.jpg del fallback, poi la cover vera),
+  // e soprattutto le luci qui sotto aspettavano il suo `onload` per comparire.
+  // Rimosso il 2026-09-05: stesso sfondo a schermo, senza scaricare niente e
+  // senza aspettare. Se un giorno la texture si vuole davvero, torna come <img
+  // loading="lazy"> con una opacita' diversa da zero.
+  const show = isLoaded && Boolean(imageUrl);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-white dark:bg-[#121212] transition-colors duration-1000">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-background transition-colors duration-1000">
 
-      {/* 2. TEXTURE FOTOGRAFICA (STATICA)
-          - Rimossa ogni logica di parallasse per una stabilità visiva totale.
-          - Light Mode: Opacity 0.08 + mix-blend-luminosity per un bianco "seta".
-          - Dark Mode: Opacity 0.12 + mix-blend-overlay per profondità senza grigiore.
-      */}
-      <div
-        className={cn(
-          "absolute inset-0 bg-cover bg-center transition-all duration-[1.5s] ease-out",
-          "dark:mix-blend-overlay",
-          show
-            ? "opacity-[0] dark:opacity-[0] scale-100 blur-0"
-            : "opacity-0 scale-105 blur-xl"
-        )}
-        style={{ backgroundImage: `url('${imageUrl}')` }}
-      />
-
-      {/* 3. DYNAMIC CINEMATIC BLOBS - LUCE PRIMARIA (Top-Left)
+      {/* 2. DYNAMIC CINEMATIC BLOBS - LUCE PRIMARIA (Top-Left)
           Preso spunto dal vecchio file: movimento d'ingresso laterale e blur profondo.
       */}
       <div
@@ -56,7 +42,7 @@ const CinematicBackground: React.FC<CinematicBackgroundProps> = ({
         )}
       />
 
-      {/* 4. DYNAMIC CINEMATIC BLOBS - LUCE SECONDARIA (Bottom-Right)
+      {/* 3. DYNAMIC CINEMATIC BLOBS - LUCE SECONDARIA (Bottom-Right)
           - Light: Action Green (Sottile)
           - Dark: Secondary Lime (Accento Acido)
       */}

@@ -1,8 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { AKHA_PATTERNS, PatternName } from '@thaiakha/shared/data';
-import { motion, type Variants } from 'framer-motion';
 import { AKHA_THEMES, type AkhaTheme, type AnimationType } from './AkhaPixelPattern.constants';
+
+// Il ramo `animateInView` (e con lui framer-motion) sta in un chunk a parte: questo
+// componente e' nel grafo statico della shell, tenerlo dentro significava 41 KB
+// compressi di libreria di animazione nel chunk d'ingresso di ogni pagina.
+const AkhaPixelGridInView = lazy(() => import('./AkhaPixelGridInView'));
 
 // Themes & types live in AkhaPixelPattern.constants.ts (react-refresh: components-only file).
 export type { AkhaTheme, AnimationType } from './AkhaPixelPattern.constants';
@@ -18,6 +22,20 @@ export type AkhaPixelSize = 10 | 8 | 6;
 const readPixelScale = (el: Element): number => {
   const v = parseFloat(getComputedStyle(el).getPropertyValue('--akha-pixel-scale'));
   return Number.isFinite(v) && v > 0 ? v : 1;
+};
+
+/**
+ * Orologio condiviso della fioritura in `loop` (AkhaLoader "bloom").
+ * Ogni istanza montata legge la fase da qui invece di contare da zero: il loader
+ * che subentra a un altro (fallback Suspense → gate profilo → PageLayout) mostra
+ * lo stesso numero di pixel accesi, senza ripartire dal fiore vuoto.
+ */
+const LOOP_EPOCH_MS = typeof performance !== 'undefined' ? performance.now() : 0;
+const loopPhase = (total: number, speed: number, loopDelay: number): number => {
+  const step = Math.max(1, speed);
+  const cycle = total * step + Math.max(0, loopDelay);
+  const t = (performance.now() - LOOP_EPOCH_MS) % cycle;
+  return Math.min(total, Math.floor(t / step));
 };
 
 interface AkhaPixelPatternProps {
@@ -97,7 +115,10 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
   const activeCols = fill ? baseCols * copies : baseCols;
 
   // Stato per animazione sequenziale standard (deprecated if animateInView is used)
-  const [visibleCount, setVisibleCount] = useState(0);
+  const total = activeData.length;
+  const clockDriven = loop && !animateInView && !expandFromCenter;
+  // In loop la fase iniziale viene dall'orologio condiviso: niente primo frame a fiore vuoto.
+  const [visibleCount, setVisibleCount] = useState(() => (clockDriven ? loopPhase(total, speed, loopDelay) : 0));
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -108,35 +129,38 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
       return () => clearTimeout(t);
     }
 
-    let timeoutId: ReturnType<typeof setTimeout>;
+    if (loop) {
+      // Loop guidato dall'orologio, non da un contatore: ogni tick ricalcola la fase
+      // dall'epoca condivisa, cosi' istanze montate in momenti diversi sono in sincrono
+      // e la pausa a fine ciclo non richiede di riavviare l'intervallo (era il dep
+      // `visibleCount === 0`, con il suo eslint-disable).
+      const tick = () => setVisibleCount(loopPhase(total, speed, loopDelay));
+      tick();
+      const interval = setInterval(tick, Math.max(1, speed));
+      return () => clearInterval(interval);
+    }
+
     const interval = setInterval(() => {
       setVisibleCount((prev) => {
-        if (prev < activeData.length) return prev + 1;
-        if (loop) {
-          clearInterval(interval);
-          timeoutId = setTimeout(() => setVisibleCount(0), loopDelay);
-          return prev;
-        }
+        if (prev < total) return prev + 1;
         clearInterval(interval);
         return prev;
       });
     }, speed);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeoutId);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `visibleCount === 0` restarts the loop on purpose; activeData derives from variant/customData
-  }, [variant, customData, speed, loop, loopDelay, visibleCount === 0, expandFromCenter, animateInView]);
+    return () => clearInterval(interval);
+  }, [total, speed, loop, loopDelay, expandFromCenter, animateInView]);
 
   const centerIndex = Math.floor(tiledData.length / 2);
 
-  const grid = (
-    <motion.div
-      initial={animateInView ? "hidden" : undefined}
-      whileInView={animateInView ? "visible" : undefined}
-      viewport={{ once: true, margin: "-20px" }}
-      className={cn("grid w-fit", className)}
+  /**
+   * Griglia senza framer-motion: e' quella del loader, delle linee e dei tile.
+   * `hidden` la rende allo stato iniziale dell'animazione (pixel a scala 0), che
+   * e' esattamente cio' che serve come fallback mentre il chunk animato arriva:
+   * stessa geometria, stesso ingombro, nessun salto di layout.
+   */
+  const staticGrid = (hidden = false) => (
+    <div
+      className={cn('grid w-fit', className)}
       style={{
         gridTemplateColumns: `repeat(${activeCols}, ${px})`,
         gap,
@@ -144,66 +168,12 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
       }}
     >
       {tiledData.map((code, index) => {
-        const row = Math.floor(index / activeCols);
-        const col = index % activeCols;
         const distFromCenter = Math.abs(index - centerIndex);
-        
-        let delayFactor = index;
-        switch (activeAnimationType) {
-          case 'center-out':
-            delayFactor = distFromCenter;
-            break;
-          case 'sides-in':
-            delayFactor = centerIndex - distFromCenter;
-            break;
-          case 'random':
-            delayFactor = Math.random() * activeData.length;
-            break;
-          case 'matrix':
-            // Esempio: dall'alto al basso
-            delayFactor = row + col * 0.5;
-            break;
-          case 'linear':
-          default:
-            delayFactor = index;
-            break;
-        }
 
-        // Framer Motion Variants
-        const variants: Variants = {
-          hidden: {
-            scale: 0,
-            opacity: 0
-          },
-          visible: {
-            scale: 1,
-            opacity: 1,
-            transition: {
-              delay: delayFactor * (speed / 1000),
-              duration: 0.4,
-              ease: "backOut"
-            }
-          }
-        };
-
-        if (animateInView) {
-          return (
-            <motion.div
-              key={index}
-              variants={variants}
-              style={{ width: px, height: px }}
-              className={cn(
-                "rounded-[1px]", 
-                activeColorMap[code] || activeColorMap[0],
-                interactive && code !== 0 ? "hover:scale-[1.8] transition-transform duration-[1200ms] hover:duration-200 ease-out hover:ease-in-out z-10 hover:z-50 cursor-pointer" : ""
-              )}
-            />
-          );
-        }
-
-        // Legacy Fallback (keeping it to not break other pages using the component)
-        let style = {};
-        if (expandFromCenter || activeAnimationType === 'center-out') {
+        let style: React.CSSProperties;
+        if (hidden) {
+          style = { width: px, height: px, opacity: 0, transform: 'scale(0)' };
+        } else if (expandFromCenter || activeAnimationType === 'center-out') {
           const delay = distFromCenter * (speed * 1.5);
           style = {
             width: px,
@@ -227,15 +197,33 @@ const AkhaPixelPattern: React.FC<AkhaPixelPatternProps> = ({
             key={index}
             style={style}
             className={cn(
-              "rounded-[1px]", 
+              "rounded-[1px]",
               activeColorMap[code] || activeColorMap[0],
               interactive && code !== 0 ? "hover:scale-[1.8] transition-transform duration-[1200ms] hover:duration-200 ease-out hover:ease-in-out z-10 hover:z-50 cursor-pointer" : ""
             )}
           />
         );
       })}
-    </motion.div>
+    </div>
   );
+
+  const grid = animateInView ? (
+    <Suspense fallback={staticGrid(true)}>
+      <AkhaPixelGridInView
+        tiledData={tiledData}
+        activeCols={activeCols}
+        px={px}
+        gap={gap}
+        opacity={opacity}
+        className={className}
+        speed={speed}
+        animationType={activeAnimationType}
+        colorMap={activeColorMap}
+        interactive={interactive}
+        baseLength={activeData.length}
+      />
+    </Suspense>
+  ) : staticGrid();
 
   // fill: il wrapper misura la larghezza e TAGLIA il pattern ripetuto (overflow-hidden).
   if (fill) {

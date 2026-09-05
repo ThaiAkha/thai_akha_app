@@ -21,14 +21,29 @@ export interface PassportTarget {
 
 export const LOCAL_PASSPORT_KEY = 'thai_akha_guest_passport';
 
+/**
+ * Passaporto ospite gia' salvato, letto in modo SINCRONO al primo render.
+ * Prima arrivava da un effetto, cioe' un frame dopo: finche' il caricamento era
+ * una schermata piena nessuno se ne accorgeva, ma con il corpo che si disegna
+ * subito quel frame mostrerebbe "scegli la tua dieta" a chi l'ha gia' scelta.
+ */
+const readGuestPassport = (): UserPassportData | null => {
+  try {
+    const raw = localStorage.getItem(LOCAL_PASSPORT_KEY);
+    return raw ? (JSON.parse(raw) as UserPassportData) : null;
+  } catch {
+    return null;
+  }
+};
+
 export function useUserPassport(userProfile: PassportTarget | null, onProfileUpdate?: () => void) {
-  const [passport, setPassport] = useState<UserPassportData>({
+  const [passport, setPassport] = useState<UserPassportData>(() => readGuestPassport() ?? {
     dietary_profile: '',
     allergies: [],
     preferred_spiciness_id: 2,
   });
   // true only when: logged-in user (passport from DB) OR guest who has explicitly saved a passport
-  const [hasExplicitPassport, setHasExplicitPassport] = useState(false);
+  const [hasExplicitPassport, setHasExplicitPassport] = useState(() => readGuestPassport() !== null);
 
   // 1. Initial Load: DB if logged in, else LocalStorage
   useEffect(() => {

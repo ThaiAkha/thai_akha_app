@@ -21,6 +21,8 @@ import AccessDeniedView from '../components/user-dashboard/AccessDeniedView';
 import TopWarriorsCard from '../components/user-dashboard/TopWarriorsCard';
 import { CherryHelp } from '../components/chat/CherryHelp';
 import { useUserDashboardData } from '../hooks/useUserDashboardData';
+import { HomeGridSkeleton } from '../components/skeleton';
+import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../i18n';
 
 /* ── CONSTANTS ── */
@@ -137,11 +139,18 @@ const UserPage: React.FC<UserPageProps> = ({
   return (
     <PageLayout
       slug="user"
-      loading={loading}
+      instantContent
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug={currentSlug} />}
     >
+      {/* `user` non e' una riga di site_metadata: il layout la chiedeva a ogni
+          ingresso senza trovarla. L'header vero e' HeaderMenu, sullo slug della scheda. */}
       <div className="contents">
+
+        {/* Le schede si disegnano subito; sotto, finche' le prenotazioni non
+            arrivano, uno scheletro al posto di un "nessuna prenotazione" che
+            sarebbe falso per un istante. */}
+        {loading && <HomeGridSkeleton />}
 
         {/* ── STICKY TABS ── */}
         <StickyTabNav
@@ -151,7 +160,10 @@ const UserPage: React.FC<UserPageProps> = ({
         />
 
         {/* ── GRID LAYOUT ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] items-start">
+        <div className={cn(
+          "grid grid-cols-1 lg:grid-cols-12 [gap:var(--space-fluid-l)] items-start",
+          loading && "hidden",
+        )}>
 
           {/* ── ASIDE — 3 cols (below tabs on mobile, left on desktop) ── */}
           <aside className="lg:col-span-3 flex flex-col [gap:var(--space-fluid-l)] lg:sticky lg:top-[112px]">

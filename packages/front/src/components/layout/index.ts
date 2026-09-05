@@ -1,4 +1,5 @@
 export { default as PageLayout } from './PageLayout';
+export { default as PageLoader } from './PageLoader';
 export { default as InfoPageHero } from './InfoPageHero';
 export { default as CinematicBackground } from './CinematicBackground';
 export { default as PageEssentials } from './PageEssentials';

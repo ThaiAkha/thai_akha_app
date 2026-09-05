@@ -1,5 +1,6 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata, ContentCategoryDB, BusinessProfile } from '../types';
+import type { SiteMetadataExtras } from './siteMetadataExtras.service';
 import { fetchWithCache, normalizeLang } from './_cache';
 import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
 import { NEWS_T_FIELDS } from './news.service';
@@ -24,7 +25,16 @@ export const CONTENT_CATEGORY_T_FIELDS = [
 const PAGE_HEADER_T_FIELDS = [
     'header_title_main', 'header_title_highlight', 'header_badge', 'page_description',
     'seo_title', 'seo_description', 'og_title', 'og_description',
+    // `page_essentials` viaggia con l'header dal 2026-09-05: la stessa riga
+    // serviva anche il "contorno" di pagina, con una seconda query.
+    'page_essentials',
 ] as const;
+
+/**
+ * Quel che una pagina riceve per il suo header, piu' i campi di contorno della
+ * stessa riga (`extras`, assente sul ramo admin: quella tabella non li ha).
+ */
+export type PageHeaderMetadata = HeaderMetadata & { imageUrl: string; extras?: SiteMetadataExtras | null };
 
 /** La forma della riga header dopo il merge: le colonne della select, niente di piu'. */
 interface PageHeaderRow {
@@ -46,6 +56,12 @@ interface PageHeaderRow {
     cherry_prompt: string | null;
     cherry_response: string | null;
     cherry_button_ids: string[] | null;
+    page_essentials: Record<string, unknown> | null;
+    legal_version: string | null;
+    date_published: string | null;
+    date_modified: string | null;
+    faq_refs: string[] | null;
+    sibling_slugs: string[] | null;
 }
 
 /** I due soli campi che menu e footer mostrano: il resto della riga resta inglese/strutturale. */
@@ -88,7 +104,7 @@ export const contentMetadataService = {
     },
 
     /** 📄 METADATA PAGINE: Titoli, descrizioni e immagini header */
-    async getPageMetadata(slug: string, table: 'site_metadata' | 'site_metadata_admin' = 'site_metadata', lang = 'en'): Promise<HeaderMetadata & { imageUrl: string } | null> {
+    async getPageMetadata(slug: string, table: 'site_metadata' | 'site_metadata_admin' = 'site_metadata', lang = 'en'): Promise<PageHeaderMetadata | null> {
         const normalizedLang = normalizeLang(lang);
         // Data layer #86: nessuna cache localStorage qui. La cache la possiede TanStack
         // (front `usePageMetadata`, admin `usePageMetadata`): stessa riga, stessa freschezza
@@ -173,7 +189,13 @@ export const contentMetadataService = {
                     json_ld,
                     cherry_prompt,
                     cherry_response,
-                    cherry_button_ids
+                    cherry_button_ids,
+                    page_essentials,
+                    legal_version,
+                    date_published,
+                    date_modified,
+                    faq_refs,
+                    sibling_slugs
                 `+ sidecarJoin('site_metadata_translations', PAGE_HEADER_T_FIELDS, normalizedLang))
                 .eq('page_slug', slug), normalizedLang);
             const { data: rawFront, error } = await frontQuery.maybeSingle();
@@ -204,6 +226,27 @@ export const contentMetadataService = {
                 cherryPrompt: data.cherry_prompt,
                 cherryResponse: data.cherry_response,
                 cherryButtonIds: data.cherry_button_ids,
+                // Campi "di contorno" della STESSA riga (Page Essentials, date, FAQ
+                // collegate, pagine sorelle). Prima li leggeva getPageExtras con una
+                // seconda query, su una terza chiave di cache: la stessa riga di
+                // site_metadata arrivava due volte per pagina, e nelle pagine che
+                // aspettano il layout arrivava anche in fila. Ora `useSiteMetadata`
+                // proietta questo campo dalla stessa query dell'header.
+                extras: {
+                    cherry: {
+                        prompt: data.cherry_prompt,
+                        response: data.cherry_response,
+                        buttonIds: data.cherry_button_ids,
+                    },
+                    essentials: data.page_essentials ?? null,
+                    legalVersion: data.legal_version,
+                    dates: {
+                        published: data.date_published,
+                        modified: data.date_modified,
+                    },
+                    faqRefs: Array.isArray(data.faq_refs) ? data.faq_refs : [],
+                    siblingSlugs: Array.isArray(data.sibling_slugs) ? data.sibling_slugs : [],
+                },
             };
         })();
     },

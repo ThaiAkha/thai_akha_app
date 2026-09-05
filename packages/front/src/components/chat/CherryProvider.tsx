@@ -24,6 +24,11 @@ interface CherryContextType {
   isLoading: boolean;
   chatError: string | null;
   sessionId: string | null;
+  /**
+   * Prepara sessione e storico della chat. La chiama la superficie che sta per
+   * mostrare la conversazione (box aperta, chat inline montata). Idempotente.
+   */
+  ensureChatReady: () => Promise<void>;
 
   // Inline surface registry — una CherryInlineChat VISIBILE (es. FAQ desktop) si
   // registra qui; la ChatBox flottante NON si auto-apre se una superficie inline
@@ -68,6 +73,7 @@ export const CherryProvider: React.FC<CherryProviderProps> = ({ userProfile, chi
     isLoading,
     error: chatError,
     sessionId,
+    ensureChatReady,
   } = useCherryChat(userProfile);
 
   const {
@@ -99,6 +105,7 @@ export const CherryProvider: React.FC<CherryProviderProps> = ({ userProfile, chi
     isLoading,
     chatError,
     sessionId,
+    ensureChatReady,
     registerInlineSurface,
     unregisterInlineSurface,
     hasInlineSurface,

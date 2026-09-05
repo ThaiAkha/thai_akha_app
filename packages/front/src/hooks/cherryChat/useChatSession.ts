@@ -27,17 +27,38 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<ChatSession | null>(null);
   const initialized = useRef(false);
+  // Una sola promessa di get-or-create condivisa: l'apertura della chat e un flusso
+  // inject partiti insieme non devono fare due INSERT sulla stessa sessione.
+  const sessionPromise = useRef<Promise<ChatSession> | null>(null);
+
+  const openSession = useCallback(async (): Promise<ChatSession> => {
+    if (sessionRef.current) return sessionRef.current;
+    sessionPromise.current ??= getOrCreateSession(userProfile?.id);
+    const session = await sessionPromise.current;
+    sessionRef.current = session;
+    setSessionId(session.id);
+    return session;
+  }, [userProfile?.id]);
 
   // ── Initialization ─────────────────────────────────────────────────────────
 
-  useEffect(() => {
+  /**
+   * Apre la sessione e ricostruisce la conversazione. Una volta sola per utente.
+   *
+   * Fino al 2026-09-05 partiva al mount del provider, cioe' per OGNI visitatore
+   * di OGNI pagina, con la chat chiusa: due o tre round trip a Supabase (SELECT,
+   * a volte INSERT, poi i messaggi) in gara con le query che disegnano la pagina.
+   * Per chi era loggato la catena girava due volte, perche' il provider si
+   * rimonta quando arriva il profilo, e lasciava per strada una riga di sessione
+   * ospite mai usata. Ora la chiama chi ha davvero bisogno della chat, e in
+   * mancanza di quello uno slot di inattivita' dopo il primo disegno.
+   */
+  const initSession = useCallback(async () => {
     if (initialized.current) return;
     initialized.current = true;
 
     const init = async () => {
-      const session = await getOrCreateSession(userProfile?.id);
-      sessionRef.current = session;
-      setSessionId(session.id);
+      const session = await openSession();
 
       const history = await loadRecentMessages(session.id, HISTORY_WINDOW * 2);
       // Le righe 'system' (es. marker [visited:…]) non si mostrano: servono solo
@@ -69,9 +90,24 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
       setMessages(initialMessages);
     };
 
-    init();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- init one-shot (guard initialized ref): rilancia solo al cambio utente
-  }, [userProfile?.id]);
+    await init();
+  }, [openSession, userProfile?.full_name, setMessages, coveredTopicsRef, visitedNodesRef]);
+
+  // Rete di sicurezza: se nessuno apre la chat, la sessione si prepara comunque,
+  // ma in uno slot di inattivita' e fuori dalla finestra del primo disegno. Chi
+  // apre prima passa da initSession e questo timer non fa niente (guard idempotente).
+  useEffect(() => {
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => { void initSession(); }, { timeout: 4000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(() => { void initSession(); }, 2500);
+    return () => window.clearTimeout(id);
+  }, [initSession]);
 
   // ── Auto-summary ───────────────────────────────────────────────────────────
 
@@ -102,16 +138,7 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
    * Id di sessione garantito per i flussi inject (che possono partire prima che
    * l'init abbia risolto). Blocco estratto 1:1 da injectInteraction/injectStaticExchange.
    */
-  const ensureSessionId = useCallback(async () => {
-    let sid = sessionRef.current?.id;
-    if (!sid) {
-      const session = await getOrCreateSession(userProfile?.id);
-      sessionRef.current = session;
-      setSessionId(session.id);
-      sid = session.id;
-    }
-    return sid;
-  }, [userProfile?.id]);
+  const ensureSessionId = useCallback(async () => (await openSession()).id, [openSession]);
 
-  return { sessionId, sessionRef, triggerAutoSummary, ensureSessionId };
+  return { sessionId, sessionRef, triggerAutoSummary, ensureSessionId, initSession };
 }

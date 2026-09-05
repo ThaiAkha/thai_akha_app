@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
 import { useContentCategories } from './useContentCategories';
@@ -22,21 +21,17 @@ export const useRecipesListData = () => {
     queryKey: recipesFullQueryKey(lang),
     queryFn: () => contentService.getAllRecipesFull(lang),
   });
-  const fetching = catsLoading || spiceLoading || recipesQ.isPending;
-
-  // Coda artificiale di 600 ms dopo l'arrivo dei dati (invariata): evita il flash dello
-  // skeleton quando la risposta e' immediata, che con la cache e' il caso normale.
-  const [tailDone, setTailDone] = useState(false);
-  useEffect(() => {
-    if (fetching) return;
-    const t = setTimeout(() => setTailDone(true), 600);
-    return () => clearTimeout(t);
-  }, [fetching]);
-
+  // Qui c'erano 600 ms di attesa aggiunti DOPO l'arrivo dei dati, per non far
+  // lampeggiare il caricamento quando la risposta era immediata. Ma il ritardo
+  // scattava sempre, anche a cache fredda, cioe' proprio quando l'attesa era gia'
+  // lunga e nessun lampeggio era possibile: mezzo secondo regalato al caso
+  // peggiore per proteggere il caso migliore. Tolto il 2026-09-05, insieme alla
+  // schermata piena che lo rendeva necessario: ora il corpo mostra i suoi
+  // scheletri, che possono comparire e sparire senza dare fastidio.
   return {
     categories,
     recipes: recipesQ.data ?? NO_RECIPES,
     spicinessLevels,
-    loading: fetching || !tailDone,
+    loading: catsLoading || spiceLoading || recipesQ.isPending,
   };
 };

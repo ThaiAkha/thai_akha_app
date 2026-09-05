@@ -48,7 +48,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     messagesRef,
   });
 
-  const { sessionId, sessionRef, triggerAutoSummary, ensureSessionId } = useChatSession({
+  const { sessionId, sessionRef, triggerAutoSummary, ensureSessionId, initSession } = useChatSession({
     userProfile,
     setMessages,
     coveredTopicsRef,
@@ -69,7 +69,10 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
   const sendMessage = useCallback(async (userText: string) => {
     if (!userText.trim() || isLoading) return;
 
-    const sid = sessionRef.current?.id ?? null;
+    // La sessione ora si apre alla prima richiesta vera (non piu' al mount della
+    // shell): qui la si garantisce, cosi' rate limit e salvataggio hanno sempre
+    // un id, anche se l'utente scrive prima che lo slot di inattivita' scatti.
+    const sid = await ensureSessionId();
 
     if (sid) {
       const rateLimit = await checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined);
@@ -168,7 +171,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     } finally {
       setIsLoading(false);
     }
-  }, [userProfile, triggerAutoSummary, isLoading, locale, updateMessages, startStreamTypewriter, sessionRef, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
+  }, [userProfile, triggerAutoSummary, isLoading, locale, updateMessages, startStreamTypewriter, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
 
   const { injectInteraction, injectStaticExchange, addVoiceMessages } = useCherryInjection({
     updateMessages,
@@ -205,5 +208,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     isLoading,
     error,
     sessionId,
+    /** Apre sessione e storico: la chiama chi mostra davvero la chat. */
+    ensureChatReady: initSession,
   };
 };

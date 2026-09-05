@@ -37,6 +37,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
     handleBack,
     handleCategoryChange,
     isInitialLoading,
+    pageMetadata,
   } = useHistoryFeed(targetSection);
 
   // SCROLL BEHAVIOR: Smooth scroll to content top when category changes
@@ -80,6 +81,9 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate, targetSection }) 
   return (
     <PageLayout
       slug="akha-culture-highland-heritage"
+      customMetadata={pageMetadata ?? undefined}
+      loading={loading}
+      instantContent
       showPatterns={true}
       hideDefaultHeader={true}
       customHeader={<HeaderMenu customSlug="akha-culture-highland-heritage" />}

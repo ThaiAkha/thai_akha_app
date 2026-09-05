@@ -22,6 +22,30 @@ const SPICINESS_T_FIELDS = [
     'title', 'subtitle', 'description', 'label', 'philosophy_quote', 'chef_note', 'akha_connection',
 ] as const;
 
+/**
+ * Colonne di `recipes` servite al browser: tutte tranne `semantic_vector`
+ * (vector 1536, circa 19 KB di testo per riga, e le ricette di classe sono 22).
+ * Lo usa solo la ricerca semantica lato server. Era il grosso del peso sia della
+ * lista sia del dettaglio, perche' entrambe le query facevano `select('*')`.
+ * Lista e dettaglio condividono questa costante di proposito: se avessero due
+ * select diverse non condividerebbero piu' la riga in cache e la pagina ricetta
+ * pagherebbe una seconda chiamata.
+ * Colonna nuova nel DB = va aggiunta qui a mano.
+ */
+const RECIPE_PUBLIC_COLUMNS =
+    'allergen_adaptations, audio_asset_id, author_id, author_note, breadcrumbs,' +
+    'canonical_url, category, cherry_button_ids, cherry_prompt, cherry_response,' +
+    'content_quality_score, cook_time_min, cooks_tip, cover_asset_id, created_at,' +
+    'culture_link_label, culture_link_url, description, dietary_variants, difficulty,' +
+    'directions, essentials, excerpt, garnish, has_eggs, has_fish, has_fish_sauce,' +
+    'has_gluten, has_peanuts, has_seafood, has_sesame, has_shellfish, has_soy,' +
+    'has_soy_sauce, has_tree_nuts, health_benefits, id, is_fixed_dish, is_published,' +
+    'is_signature, is_sub_recipe, json_ld, key_entities, last_content_audit_ai,' +
+    'linked_sub_recipes, name, notes, og_description, og_image, og_title, og_type,' +
+    'prep_time_min, published_at, recipe_type, related_queries_geo, seo_description,' +
+    'seo_keywords, seo_robots, seo_title, servings, slug, spice_level_id, subtitle,' +
+    'summary_ai, thai_name, total_time_min, twitter_card, updated_at';
+
 /** La categoria viaggia DENTRO la ricetta: va fusa allo stesso giro. */
 const RECIPE_EMBEDDED = ['content_categories'] as const;
 
@@ -51,12 +75,12 @@ export const recipeService = {
     /** 🍜 RECIPES: All complete recipes with ingredients */
     async getAllRecipesFull(lang = 'en'): Promise<Record<string, unknown>[]> {
         const l = normalizeLang(lang);
-        // v6: select cambiata (join sidecar) + lingua nella chiave, o la cache
-        // localStorage servirebbe l'inglese sotto /it/.
-        const data = await fetchWithCache<Record<string, unknown>[]>(`recipes_full_${l}_v6`, async () => {
+        // v7: colonne esplicite al posto di `*` (via semantic_vector). La chiave sale
+        // a ogni cambio di select, o la cache localStorage servirebbe la forma vecchia.
+        const data = await fetchWithCache<Record<string, unknown>[]>(`recipes_full_${l}_v7`, async () => {
             const query = sidecarFilter(supabase
                 .from('recipes')
-                .select(`*, ${categoryEmbed(l)}, recipe_key_ingredients(ingredient, ingredient_id, display_order, dietary_adaptations, ui_role), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
+                .select(`${RECIPE_PUBLIC_COLUMNS}, ${categoryEmbed(l)}, recipe_key_ingredients(ingredient, ingredient_id, display_order, dietary_adaptations, ui_role), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
                     + sidecarJoin('recipes_translations', RECIPE_T_FIELDS, l))
                 .eq('recipe_type', 'class')
                 .order('name', { ascending: true }), l, RECIPE_EMBEDDED);
@@ -73,13 +97,12 @@ export const recipeService = {
     /** 🍜 RECIPE BY SLUG: Fetch single recipe with deep composition (class recipes only) */
     async getRecipeBySlug(slug: string, lang = 'en'): Promise<Record<string, unknown> | null> {
         const l = normalizeLang(lang);
-        // v13: select cambiata (join sidecar) + lingua nella chiave.
-        const data = await fetchWithCache<Record<string, unknown> | null>(`recipe_${slug}_${l}_v13`, async () => {
+        // v14: colonne esplicite al posto di `*` (via semantic_vector).
+        const data = await fetchWithCache<Record<string, unknown> | null>(`recipe_${slug}_${l}_v14`, async () => {
             const query = sidecarFilter(supabase
                 .from('recipes')
                 .select(`
-                    *,
-                    allergen_adaptations,
+                    ${RECIPE_PUBLIC_COLUMNS},
                     ${categoryEmbed(l)},
                     authors (
                         id,
@@ -106,7 +129,18 @@ export const recipeService = {
                 `+ sidecarJoin('recipes_translations', RECIPE_T_FIELDS, l))
                 .eq('slug', slug)
                 .eq('recipe_type', 'class'), l, RECIPE_EMBEDDED);
-            const { data, error } = await query.single();
+
+            // Gallerie da gallery_items (FONTE UNICA) via getGallery, ordinate per
+            // display_order. Sostituisce gallery_asset_ids / culture_asset_ids (restano
+            // nel DB per l'admin, non più letti dal front). Shape superset (aggiunge quote).
+            // Dipendono solo da slug e lingua, che sono gia' qui: partono INSIEME alla
+            // ricetta invece di aspettarla (prima erano un round trip in fila, per nulla).
+            const [recipeRes, galleryAssets, cultureAssets] = await Promise.all([
+                query.single(),
+                mediaService.getGallery(`recipe_${slug}`, l),
+                mediaService.getGallery(`recipe_${slug}_culture`, l),
+            ]);
+            const { data, error } = recipeRes;
             if (error) {
                 console.error(`Recipe fetch error [${slug}]:`, error);
                 return null;
@@ -120,13 +154,6 @@ export const recipeService = {
                 recipeAuthor.avatar_url = av?.image_url ?? null;
             }
 
-            // Gallerie da gallery_items (FONTE UNICA) via getGallery, ordinate per
-            // display_order. Sostituisce gallery_asset_ids / culture_asset_ids (restano
-            // nel DB per l'admin, non più letti dal front). Shape superset (aggiunge quote).
-            const [galleryAssets, cultureAssets] = await Promise.all([
-                mediaService.getGallery(`recipe_${slug}`, l),
-                mediaService.getGallery(`recipe_${slug}_culture`, l),
-            ]);
             result.gallery_assets = galleryAssets;
             result.culture_assets = cultureAssets;
 

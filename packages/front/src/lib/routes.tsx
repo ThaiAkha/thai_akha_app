@@ -20,6 +20,7 @@
  */
 import { lazy, type ReactNode } from 'react';
 import type { UserProfile } from '../services/auth.service';
+import { ensureMapsScript } from './googleMaps';
 
 const HomePage = lazy(() => import('../pages/HomePage'));
 const QuizPage = lazy(() => import('../pages/QuizPage'));
@@ -30,7 +31,9 @@ const EveningClassPage = lazy(() => import('../pages/ClassEvening'));
 const MenuPage = lazy(() => import('../pages/UserMenu'));
 const HistoryPage = lazy(() => import('../pages/HistoryPage'));
 const IngredientsPage = lazy(() => import('../pages/IngredientsPage'));
-const LocationPage = lazy(() => import('../pages/PickUpPage'));
+// La sola pagina con una mappa: lo SDK Maps parte insieme al suo chunk, non prima
+// (stava nel <head> di index.html, quindi su tutte le pagine).
+const LocationPage = lazy(() => { ensureMapsScript(); return import('../pages/PickUpPage'); });
 const AuthPage = lazy(() => import('../pages/AuthPage'));
 const UserPage = lazy(() => import('../pages/UserPage'));
 const RecipesPage = lazy(() => import('../pages/Recipes'));

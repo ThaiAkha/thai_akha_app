@@ -21,18 +21,31 @@ const INDEX_COLS =
   'id, slug, name, name_th, phonetic, category_id, ' +
   'cover_data:media_assets!image_asset_id(image_url, alt_text, title)';
 
-/** Recipes that use an ingredient — union of recipe_key_ingredients + recipe_composition. */
-async function fetchRecipesUsingIngredient(ingredientId: string, lang = 'en'): Promise<RecipeLink[]> {
-  const [keyRes, compRes] = await Promise.all([
-    supabase.from('recipe_key_ingredients').select('recipe_id').eq('ingredient_id', ingredientId),
-    supabase.from('recipe_composition').select('recipe_id').eq('ingredient_id', ingredientId),
-  ]);
+/**
+ * Colonne di `ingredients_library` servite al browser: tutte tranne
+ * `semantic_vector` (vector 1536, circa 19 KB di testo per riga), che serve solo
+ * alla ricerca semantica lato server.
+ */
+const INGREDIENT_PUBLIC_COLUMNS =
+  'author_id, breadcrumbs, canonical_url, category_id, cherry_button_ids, cherry_prompt,' +
+  'cherry_response, conclusion, content_quality_score, created_at, culinary_uses,' +
+  'default_unit, description, health_benefits, hreflang, id, image_asset_id,' +
+  'is_logistics_item, is_published, is_teacher_item, is_visible_public, json_ld,' +
+  'key_entities, kitchen_usage, last_content_audit_ai, logistics_shop, name, name_th,' +
+  'og_description, og_title, og_type, phonetic, primary_focus_keyword, published_at,' +
+  'purchase_group, purchase_pack_label, purchase_pack_size, reading_time_minutes,' +
+  'related_ingredients, related_queries_geo, season_months, season_note, season_source,' +
+  'season_status, season_verified_at, seo_description, seo_keywords, seo_robots,' +
+  'seo_title, slug, storage_area, summary_ai, teacher_shop, the_essential, twitter_card,' +
+  'updated_at, usage_note';
 
-  const ids = Array.from(new Set(
-    [...(keyRes.data || []), ...(compRes.data || [])]
-      .map((r) => (r as { recipe_id: string | null }).recipe_id)
-      .filter((id): id is string => !!id),
-  ));
+/**
+ * Ricette che usano un ingrediente: unione di recipe_key_ingredients e
+ * recipe_composition. Gli id delle righe ponte arrivano ora insieme al dettaglio
+ * (embed nella query madre), quindi qui resta una sola chiamata invece delle tre
+ * in fila di prima: dettaglio, poi ponti, poi ricette.
+ */
+async function fetchRecipesForIds(ids: string[], lang = 'en'): Promise<RecipeLink[]> {
   if (ids.length === 0) return [];
 
   const l = normalizeLang(lang);
@@ -83,15 +96,17 @@ export const ingredientService = {
   /** 🌿 INGREDIENT DETAIL: full rich-article record + the recipes that use it. */
   async getIngredientBySlug(slug: string, lang = 'en'): Promise<IngredientDetail | null> {
     const l = normalizeLang(lang);
-    // v3: select cambiata (join sidecar) + lingua nella chiave.
-    return fetchWithCache<IngredientDetail>(`ingredient_${slug}_${l}_v3`, async () => {
+    // v4: colonne esplicite (via semantic_vector) + righe ponte nella stessa query.
+    return fetchWithCache<IngredientDetail>(`ingredient_${slug}_${l}_v4`, async () => {
       const query = sidecarFilter(supabase
         .from('ingredients_library')
         .select(`
-          *,
+          ${INGREDIENT_PUBLIC_COLUMNS},
           author:authors(name, title, description, avatar:media_assets!avatar_asset_id(image_url, alt_text)),
           cover_data:media_assets!image_asset_id(image_url, alt_text, title),
-          category:content_categories!category_id(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)})
+          category:content_categories!category_id(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
+          key_links:recipe_key_ingredients(recipe_id),
+          comp_links:recipe_composition(recipe_id)
         `+ sidecarJoin('ingredients_library_translations', INGREDIENT_T_FIELDS, l))
         .eq('slug', slug)
         .eq('is_published', true), l, INGREDIENT_EMBEDDED);
@@ -111,9 +126,19 @@ export const ingredientService = {
       }
 
       // Recipes that use this ingredient (published only). Empty array = section hidden in UI.
-      result.used_in_recipes = await fetchRecipesUsingIngredient(result.id as string, l);
+      // Le righe ponte viaggiano con la query madre (embed `key_links`/`comp_links`):
+      // qui restano solo gli id da risolvere. Le due chiavi escono dal risultato,
+      // cosi' la forma dell'oggetto (e la voce di cache) resta quella di prima.
+      type BridgeRow = { recipe_id: string | null };
+      const { key_links, comp_links, ...clean } = result as Record<string, unknown>;
+      const recipeIds = Array.from(new Set(
+        [...((key_links as BridgeRow[] | null) ?? []), ...((comp_links as BridgeRow[] | null) ?? [])]
+          .map((r) => r.recipe_id)
+          .filter((id): id is string => !!id),
+      ));
+      clean.used_in_recipes = await fetchRecipesForIds(recipeIds, l);
 
-      return result as unknown as IngredientDetail;
+      return clean as unknown as IngredientDetail;
     });
   },
 };

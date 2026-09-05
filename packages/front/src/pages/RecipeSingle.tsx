@@ -16,6 +16,8 @@ import type { RecipeNavItem } from '../components/recipes';
 import type { UserProfile } from '@thaiakha/shared/types';
 import { t } from '../i18n';
 import { sanitizeHtml } from '../lib/sanitizeHtml';
+import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../context/LanguageContext';
 
 interface RecipeSinglePageProps {
   slug: string;
@@ -45,6 +47,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
     loading,
     navLoading,
   } = useRecipePageData(slug, userProfile);
+  const { lang } = useLanguage();
 
   const { handleShare, copied } = useShareLink();
 
@@ -129,7 +132,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
         <div className="w-full max-w-6xl mx-auto">
           <HeaderSinglePost
             title={recipe.name}
-            subtitle={(recipeRaw?.subtitle as string) || (recipeRaw?.thai_name as string) || undefined}
+            subtitle={(recipeRaw?.subtitle as string) || nativeNameFor({ name: recipe.name, thai_name: recipeRaw?.thai_name as string | undefined }, lang).thai || undefined}
             primaryImage={recipe.image}
             primaryImageAlt={recipe.coverAltText || recipe.name}
             audioAssetId={audioId}

@@ -42,9 +42,11 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
       // Il filtro `.in('name', ...)` resta sulla colonna MADRE: le chiavi arrivano da
       // recipe_key_ingredients, che e' testo inglese. Si traduce cio' che si MOSTRA,
       // non cio' con cui si cerca - o l'ingrediente non si troverebbe piu'.
+      // `name_key:name` e' la stessa colonna con un alias: il merge sovrascrive `name`
+      // con la traduzione, `name_key` resta inglese e serve ai confronti a valle.
       const q = sidecarFilter(supabase
         .from('ingredients_library')
-        .select('id, name, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)'
+        .select('id, name, name_key:name, name_th, phonetic, description, is_visible_public, cover:media_assets!image_asset_id(image_url, alt_text)'
           + sidecarJoin('ingredients_library_translations', ['name', 'description'], lang))
         .in('name', ingredientNames), lang);
       const { data, error } = await q;
@@ -55,6 +57,7 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
         return {
           id: item.id as string,
           name: item.name as string,
+          name_key: item.name_key as string,
           name_th: item.name_th as string,
           phonetic: item.phonetic as string | undefined,
           description: item.description as string,
@@ -80,7 +83,7 @@ export function useRecipeView({ recipe, allRecipes, activeDiet, userAllergies }:
   // --- 2. FILTRO PRIVACY PUBBLICA ---
   const visibleIngredientsNames = useMemo(() => {
     return recipe.keyIngredients.filter(name => {
-      const rich = richIngredients.find(ri => ri.name === name);
+      const rich = richIngredients.find(ri => ri.name_key === name);
       return rich ? rich.is_visible_public : false;
     });
   }, [recipe.keyIngredients, richIngredients]);

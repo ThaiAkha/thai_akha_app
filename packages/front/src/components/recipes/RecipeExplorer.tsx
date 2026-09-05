@@ -2,6 +2,8 @@ import React from 'react';
 import { Typography, Badge, MediaImage } from '../ui/index';
 import { RecipeData } from '../menu/index';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface RecipeExplorerProps {
   isOpen: boolean;
@@ -22,6 +24,7 @@ const RecipeExplorer: React.FC<RecipeExplorerProps> = ({
   categoryLabels,
   categoryOrder,
 }) => {
+  const { lang } = useLanguage();
   const groupedRecipes = React.useMemo(() => {
     const groups: Record<string, RecipeData[]> = {};
     categoryOrder.forEach(cat => groups[cat] = []);
@@ -79,7 +82,9 @@ const RecipeExplorer: React.FC<RecipeExplorerProps> = ({
                   </div>
                   <div className="flex-1 px-4 py-2 min-w-0">
                     <span className="font-display font-black uppercase text-sm truncate block">{item.name}</span>
-                    <span className="text-[9px] opacity-40 uppercase truncate block">{item.thai_name || 'Authentic'}</span>
+                    {nativeNameFor(item, lang).thai && (
+                      <span className="text-[9px] opacity-40 uppercase truncate block">{nativeNameFor(item, lang).thai}</span>
+                    )}
                   </div>
                 </button>
               ))}

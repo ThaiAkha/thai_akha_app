@@ -15,6 +15,8 @@ import SiblingPostNav from '../components/layout/SiblingPostNav';
 import { ArticleDetailSkeleton } from '../components/skeleton';
 import { useIngredientDetail } from '../hooks/useIngredientDetail';
 import { INGREDIENTS_HUB_SLUG } from '../hooks/useIngredientsFeed';
+import { nativeNameFor, nativeNameLine } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../context/LanguageContext';
 import { t } from '../i18n';
 import { sanitizeHtml } from '../lib/sanitizeHtml';
 
@@ -50,6 +52,9 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
   onNavigate,
 }) => {
   const { ingredient, previous, next, loading: dataLoading, error } = useIngredientDetail(slug, ingredients);
+  const { lang } = useLanguage();
+  // Sottotitolo delle card sorelle: traslitterato, altrimenti thai; su /th/ nessuno dei due.
+  const siblingSubtitle = (i: IngredientListItem) => { const n = nativeNameFor(i, lang); return n.phonetic ?? n.thai; };
   const [copied, setCopied] = useState(false);
 
   const handleShare = useCallback(() => {
@@ -93,9 +98,7 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
     return items;
   }, [bodySections, ingredient]);
 
-  const subtitle = ingredient
-    ? [ingredient.name_th, ingredient.phonetic ? `[${ingredient.phonetic}]` : null].filter(Boolean).join('  ')
-    : '';
+  const subtitle = ingredient ? (nativeNameLine(ingredient, lang) ?? '') : '';
 
   return (
     <PageLayout
@@ -227,14 +230,14 @@ const IngredientPageSingle: React.FC<IngredientPageSingleProps> = ({
               onOpen={handleSiblingOpen}
               previous={previous ? {
                 title: previous.name,
-                subtitle: previous.phonetic ?? previous.name_th ?? null,
+                subtitle: siblingSubtitle(previous),
                 imageUrl: previous.cover_data?.image_url ?? null,
                 href: `/${INGREDIENTS_HUB_SLUG}/${previous.slug}`,
                 slug: previous.slug,
               } : null}
               next={next ? {
                 title: next.name,
-                subtitle: next.phonetic ?? next.name_th ?? null,
+                subtitle: siblingSubtitle(next),
                 imageUrl: next.cover_data?.image_url ?? null,
                 href: `/${INGREDIENTS_HUB_SLUG}/${next.slug}`,
                 slug: next.slug,

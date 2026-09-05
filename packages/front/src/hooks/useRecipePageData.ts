@@ -160,8 +160,10 @@ export function useRecipePageData(
     const libraryMapById = new Map(
       fullLibrary.map(lib => [lib.id as string, lib])
     );
+    // Chiave INGLESE (`name_key`): `name` arriva tradotto su /es/, /th/... e non
+    // combacerebbe piu' con `recipe_key_ingredients.ingredient`, che e' inglese.
     const libraryMapByName = new Map(
-      fullLibrary.map(lib => [(lib.name as string).toLowerCase().trim(), lib])
+      fullLibrary.map(lib => [((lib.name_key as string | undefined) ?? (lib.name as string)).toLowerCase().trim(), lib])
     );
 
     return keyIngredientsList.map(keyIng => {

@@ -66,6 +66,8 @@ export interface CategoryData {
 export interface IngredientDetail {
   id: string;
   name: string;
+  /** Nome INGLESE della madre: `name` puo' arrivare tradotto, le chiavi di recipe_key_ingredients no. */
+  name_key?: string;
   name_th: string;
   phonetic?: string;
   description: string;

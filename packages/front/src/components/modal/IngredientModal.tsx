@@ -6,6 +6,8 @@ import { cn } from '@thaiakha/shared/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { t } from '../../i18n';
 import { sanitizeHtml } from '../../lib/sanitizeHtml';
+import { nativeNameFor } from '@thaiakha/shared/lib/nativeName';
+import { useLanguage } from '../../context/LanguageContext';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -36,6 +38,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
 }) => {
   const [index, setIndex] = useState(startIndex);
   const [, setDirection] = useState(0);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     if (isOpen) setIndex(startIndex);
@@ -73,6 +76,8 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
   if (!isOpen || items.length === 0) return null;
 
   const currentItem = items[index];
+
+  const native = nativeNameFor(currentItem, lang);
 
   return (
     <Modal
@@ -172,12 +177,16 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
                     hideSubtitle={true}
                     hideDescription={true}
                   />
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="font-numeric font-bold text-xl md:text-2xl text-action italic">{currentItem.name_th}</span>
-                    {currentItem.phonetic && (
-                      <span className="font-mono text-base md:text-lg tracking-widest text-muted/80">[{currentItem.phonetic}]</span>
-                    )}
-                  </div>
+                  {(native.thai || native.phonetic) && (
+                    <div className="flex items-center gap-3 mt-1">
+                      {native.thai && (
+                        <span className="font-numeric font-bold text-xl md:text-2xl text-action italic">{native.thai}</span>
+                      )}
+                      {native.phonetic && (
+                        <span className="font-mono text-base md:text-lg tracking-widest text-muted/80">[{native.phonetic}]</span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Descrizione dal DB in formato HTML → render con prose come in

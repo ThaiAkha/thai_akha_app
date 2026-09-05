@@ -19,7 +19,8 @@
     "typecheck": "pnpm --filter front typecheck && pnpm --filter admin typecheck",
     "ui-strings:export": "node scripts/sync-ui-strings.mjs --app front --export && node scripts/sync-ui-strings.mjs --app admin --export",
     "ui-strings:status": "node scripts/sync-ui-strings.mjs --app front --status && node scripts/sync-ui-strings.mjs --app admin --status",
-    "check-ui-strings:admin": "node scripts/check-ui-strings.mjs --app admin"
+    "check-ui-strings:admin": "node scripts/check-ui-strings.mjs --app admin",
+    "test:shared": "node --import tsx --test packages/shared/src/lib/__tests__/*.test.ts"
   },
   "engines": {
     "node": ">=18",

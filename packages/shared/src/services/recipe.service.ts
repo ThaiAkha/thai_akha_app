@@ -212,11 +212,11 @@ export const recipeService = {
     /** 🧅 INGREDIENTS LIBRARY: Fetch all ingredients for substitutions */
     async getIngredientsLibrary(lang = 'en'): Promise<Record<string, unknown>[]> {
         const l = normalizeLang(lang);
-        // v4: select cambiata (join sidecar) + lingua nella chiave.
-        const data = await fetchWithCache(`ingredients_library_${l}_v4`, async () => {
+        // v5: +name_key (alias inglese di `name`, sopravvive al merge; serve ai confronti per nome).
+        const data = await fetchWithCache(`ingredients_library_${l}_v5`, async () => {
             const query = sidecarFilter(supabase
                 .from('ingredients_library')
-                .select('id, name, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)'
+                .select('id, name, name_key:name, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)'
                     + sidecarJoin('ingredients_library_translations', ['name', 'description', 'summary_ai'], l)), l);
             const { data: raw, error } = await query;
             if (error) return [];

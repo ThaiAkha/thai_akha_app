@@ -40,11 +40,13 @@ export const newsService = {
     async getNewsFeed(lang = 'en'): Promise<NewsArticle[]> {
         const l = normalizeLang(lang);
         // v3: il join del sidecar non porta piu' `content` (vedi NEWS_INDEX_T_FIELDS).
-        const data = await fetchWithCache<NewsArticle[]>(`news_feed_${l}_v3`, async () => {
+        // v4: +title_key (alias inglese di `title`, sopravvive al merge): Cherry
+        // riconosce l'articolo dal titolo inglese anche sulle pagine tradotte.
+        const data = await fetchWithCache<NewsArticle[]>(`news_feed_${l}_v4`, async () => {
             const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
-                    id, news_id, slug, title, excerpt, cover_asset_id, read_time_minutes, published_at, canonical_url, hreflang,
+                    id, news_id, slug, title, title_key:title, excerpt, cover_asset_id, read_time_minutes, published_at, canonical_url, hreflang,
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('akha_news_translations', NEWS_INDEX_T_FIELDS, l))

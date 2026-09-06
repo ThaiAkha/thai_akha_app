@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { CHERRY_CONFIG } from '../config/cherry';
 import { sendChatMessageStream } from '@thaiakha/shared/services';
-import { saveMessage, checkRateLimit } from '@thaiakha/shared/services';
+import { saveMessage } from '@thaiakha/shared/services';
 import type { ChatMessage } from '@thaiakha/shared';
 import type { ChatOption } from '@thaiakha/shared/data/chatFlowData';
 import type { ChatLocale } from '@thaiakha/shared/data/chatFlowI18n';
@@ -9,13 +9,18 @@ import type { UserProfile } from '../services/auth.service';
 import { cleanCherryResponse } from '@thaiakha/shared/lib/cherry-utils';
 import { getContextualFollowups } from '@thaiakha/shared/lib/cherryFollowups';
 import { detectCoveredTopics } from '@thaiakha/shared/lib/cherryCoveredTopics';
+import { buildGeminiHistory } from '@thaiakha/shared/lib/cherryHistory';
 import { useBookingGreeting } from './cherryChat/useBookingGreeting';
 import { useChatSession } from './cherryChat/useChatSession';
 import { useTypewriter } from './cherryChat/useTypewriter';
 import { useCherryInjection } from './cherryChat/useCherryInjection';
 import { buildSystemInstruction } from './cherryChat/buildSystemInstruction';
 
-export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLocale = 'en') => {
+/**
+ * @param locale lingua dei nodi della ragnatela (en | th)
+ * @param lang   lingua dell'interfaccia: i contesti DB di Cherry escono in quella lingua
+ */
+export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLocale = 'en', lang = 'en') => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +37,11 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     });
   }, []);
 
+  // Il ref segue anche lo stato committato: chi scrive con il setter grezzo
+  // lasciava il ref indietro di un turno, e lo storico per il modello partiva
+  // senza l'ultima risposta (verifica avversaria del 2026-09-06).
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+
   // Memoria anti-ripetizione: argomenti già toccati in questa sessione. Iniettati
   // nel prompt come "già coperti" così Cherry non li ripete a ogni risposta.
   const coveredTopicsRef = useRef<Set<string>>(new Set());
@@ -41,16 +51,17 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
   // stessi approfondimenti/link a L3. Esposta via hasVisitedNode/markNodeVisited.
   const visitedNodesRef = useRef<Set<string>>(new Set());
 
+  // Un solo setter per tutti: ogni scrittura passa dal ref (vedi sopra).
   const bookingStateRef = useBookingGreeting({
     userProfile,
     messagesLength: messages.length,
-    setMessages,
+    setMessages: updateMessages,
     messagesRef,
   });
 
   const { sessionId, sessionRef, triggerAutoSummary, ensureSessionId, initSession } = useChatSession({
     userProfile,
-    setMessages,
+    setMessages: updateMessages,
     coveredTopicsRef,
     visitedNodesRef,
   });
@@ -62,29 +73,25 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     fullResponseRef,
     startStreamTypewriter,
     startStaticTypewriter,
-  } = useTypewriter(updateMessages, setMessages);
+  } = useTypewriter(updateMessages, updateMessages);
 
   // ── sendMessage ────────────────────────────────────────────────────────────
 
   const sendMessage = useCallback(async (userText: string) => {
     if (!userText.trim() || isLoading) return;
 
-    // La sessione ora si apre alla prima richiesta vera (non piu' al mount della
-    // shell): qui la si garantisce, cosi' rate limit e salvataggio hanno sempre
-    // un id, anche se l'utente scrive prima che lo slot di inattivita' scatti.
-    const sid = await ensureSessionId();
-
-    if (sid) {
-      const rateLimit = await checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined);
-      if (!rateLimit.allowed) {
-        setError(rateLimit.reason ?? 'Limit reached.');
-        return;
-      }
-    }
+    // Storico per il modello, letto PRIMA di appendere il turno corrente (che la
+    // edge aggiunge da se' come ultimo messaggio).
+    const history = buildGeminiHistory(messagesRef.current);
 
     const userMsgId = `user-${Date.now()}`;
     const modelMsgId = `model-${Date.now()}`;
 
+    // Le bolle compaiono SUBITO. Prima aspettavano sessione e rate limit, due giri
+    // di rete durante i quali l'ospite fissava un campo vuoto senza sapere se il
+    // click fosse passato. Il limite lo applica la edge, l'unico posto in cui
+    // conta: la RPC client `check_chat_rate_limit` rispondeva sempre "limits
+    // disabled" e costava un giro a ogni messaggio.
     updateMessages(prev => [
       ...prev,
       { id: userMsgId, role: 'user', text: userText },
@@ -92,24 +99,30 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     ]);
     setIsLoading(true);
     setError(null);
-
-    if (sid) saveMessage(sid, 'user', userText, 'text');
-
     startStreamTypewriter(modelMsgId);
 
     try {
-      const { systemInstruction, pickupResult } = await buildSystemInstruction({
-        userText,
-        sid,
-        userProfile,
-        bookingState: bookingStateRef.current,
-        summary: sessionRef.current?.summary,
-        coveredTopics: coveredTopicsRef.current,
-      });
+      // Sessione e prompt non dipendono l'uno dall'altra: partono insieme. Il
+      // riassunto delle sessioni passate vive nella sessione: se non e' ancora
+      // aperta (messaggio scritto prima del bootstrap) la si aspetta prima.
+      const sidPromise = ensureSessionId();
+      if (!sessionRef.current) await sidPromise;
+      const [sid, { systemInstruction, pickupResult }] = await Promise.all([
+        sidPromise,
+        buildSystemInstruction({
+          userText,
+          lang,
+          userProfile,
+          bookingState: bookingStateRef.current,
+          summary: sessionRef.current?.summary,
+          coveredTopics: coveredTopicsRef.current,
+        }),
+      ]);
+      if (sid) saveMessage(sid, 'user', userText, 'text');
 
       // Stream from server — push word tokens into the typewriter queue
       const rawResponse = await sendChatMessageStream(
-        { message: userText, systemInstruction },
+        { message: userText, systemInstruction, history, lang },
         (chunk) => {
           const cleanChunk = cleanCherryResponse(chunk);
           fullResponseRef.current += cleanChunk;
@@ -171,7 +184,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     } finally {
       setIsLoading(false);
     }
-  }, [userProfile, triggerAutoSummary, isLoading, locale, updateMessages, startStreamTypewriter, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
+  }, [userProfile, triggerAutoSummary, isLoading, locale, lang, updateMessages, startStreamTypewriter, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
 
   const { injectInteraction, injectStaticExchange, addVoiceMessages } = useCherryInjection({
     updateMessages,

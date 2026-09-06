@@ -29,14 +29,19 @@ export interface DbChatMessage {
 
 const SESSION_TOKEN_KEY = 'cherry_session_token';
 
-const getGuestToken = (): string => {
-  let token = localStorage.getItem(SESSION_TOKEN_KEY);
-  if (!token) {
-    token = `guest_${crypto.randomUUID()}`;
-    localStorage.setItem(SESSION_TOKEN_KEY, token);
-  }
+/** Finestra oltre la quale una sessione ferma si considera chiusa (ospiti e loggati). */
+const SESSION_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+const isRecent = (lastActivity: string | null | undefined): boolean =>
+  !!lastActivity && Date.now() - Date.parse(lastActivity) < SESSION_WINDOW_MS;
+
+const mintGuestToken = (): string => {
+  const token = `guest_${crypto.randomUUID()}`;
+  localStorage.setItem(SESSION_TOKEN_KEY, token);
   return token;
 };
+
+const getGuestToken = (): string => localStorage.getItem(SESSION_TOKEN_KEY) ?? mintGuestToken();
 
 /** Returns the current guest session token from localStorage, or null if not yet created. */
 export const getGuestSessionToken = (): string | null =>
@@ -49,7 +54,7 @@ export const getOrCreateSession = async (userId?: string): Promise<ChatSession> 
         .from('chat_sessions')
         .select('*')
         .eq('user_id', userId)
-        .gte('last_activity', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .gte('last_activity', new Date(Date.now() - SESSION_WINDOW_MS).toISOString())
         .order('last_activity', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -68,12 +73,20 @@ export const getOrCreateSession = async (userId?: string): Promise<ChatSession> 
         .from('chat_sessions')
         .select('*')
         .eq('session_token', token)
+        .order('last_activity', { ascending: false })
+        .limit(1)
         .maybeSingle();
-      if (data) return data as ChatSession;
+      if (data && isRecent(data.last_activity)) return data as ChatSession;
 
+      // Sessione ospite ferma da piu' di 24 ore: se ne apre una nuova con un token
+      // nuovo, come gia' avviene per chi e' loggato. Prima il token ospite era per
+      // sempre: mesi dopo Cherry ripartiva dalla stessa conversazione, con il
+      // riassunto e gli argomenti "gia' coperti" di allora. La vecchia riga resta
+      // nel DB (irraggiungibile dal token nuovo) per la pulizia periodica.
+      const freshToken = data ? mintGuestToken() : token;
       const { data: newSession, error: insertError } = await supabase
         .from('chat_sessions')
-        .insert({ session_token: token, metadata: { source: 'front_app_guest' } })
+        .insert({ session_token: freshToken, metadata: { source: 'front_app_guest' } })
         .select()
         .single();
       if (insertError) throw insertError;

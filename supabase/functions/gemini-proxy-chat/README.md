@@ -19,7 +19,7 @@ Backend response → Frontend display
 
 - ✅ JWT authentication (optional for guests)
 - ✅ Rate limiting (30 msgs/day for logged-in, unlimited for booked guests)
-- ✅ 15-second timeout to prevent hanging requests
+- ✅ 30-second real timeout (AbortController on the Gemini call and the stream)
 - ✅ Structured logging (no sensitive data)
 - ✅ GEMINI_API_KEY stored in Deno.env (never exposed to client)
 
@@ -93,7 +93,7 @@ interface ErrorResponse {
 - `400` - Invalid request (missing message field)
 - `429` - Rate limit exceeded
 - `500` - Server error (missing API key, Gemini error)
-- `504` - Timeout (15-second limit exceeded)
+- `504` - Timeout (30-second limit exceeded, nothing delivered)
 
 ## Rate Limiting Logic
 
@@ -130,3 +130,13 @@ Check logs in Supabase dashboard:
 - [ ] Add Redis caching for identical queries
 - [ ] Implement exponential backoff for retries
 - [ ] Add comprehensive error recovery
+
+## 2026-09-06 — caps, metrics, native history
+
+- **Input caps**: `message` ≤ 4.000 chars, `systemInstruction` ≤ 120.000 chars, `history` ≤ 12 items of ≤ 4.000 chars each, otherwise `400`. Before this date nothing was capped.
+- **Output cap**: `generationConfig.maxOutputTokens = 1024`.
+- **Model from secret**: `GEMINI_CHAT_MODEL` (default `gemini-3-flash-preview`). Change the secret, no redeploy.
+- **Anon shortcut**: a bearer equal to `SUPABASE_ANON_KEY` is a guest without asking GoTrue (one round trip less per guest message). Logged-in clients now send their JWT on the stream too, so the per-user limits actually apply.
+- **History**: `history` is normalized server-side (starts with `user`, roles alternate, ends with `model`); the client twin lives in `packages/shared/src/lib/cherryHistory.ts`.
+- **Metrics**: the log line now carries `usage` (`prompt`, `output`, `cached` token counts from `usageMetadata`), `lang` (client UI language, informational) and `model`.
+- **Partial delivery**: if the stream breaks after some text was sent, the partial text is delivered and logged as success with a warning; with zero text sent the stream errors.

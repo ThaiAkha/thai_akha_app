@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useRef, useCallback, ReactNode } from 'react';
 import { useCherryChat } from '../../hooks/useCherryChat';
 import { useGeminiLive } from '../../hooks/useGeminiLive';
+import { useLanguage } from '../../context/LanguageContext';
 import type { UserProfile } from '../../services/auth.service';
 import type { ChatMessage } from '@thaiakha/shared';
 import type { ChatNodeId, ChatOption } from '@thaiakha/shared/data/chatFlowData';
@@ -64,6 +65,8 @@ interface CherryProviderProps {
 }
 
 export const CherryProvider: React.FC<CherryProviderProps> = ({ userProfile, children }) => {
+  // Lingua dell'interfaccia: i contesti DB di Cherry escono in quella lingua.
+  const { lang } = useLanguage();
   const {
     messages,
     sendMessage,
@@ -74,7 +77,7 @@ export const CherryProvider: React.FC<CherryProviderProps> = ({ userProfile, chi
     error: chatError,
     sessionId,
     ensureChatReady,
-  } = useCherryChat(userProfile);
+  } = useCherryChat(userProfile, undefined, lang);
 
   const {
     isActive: isVoiceActive,

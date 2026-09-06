@@ -19,6 +19,38 @@ export function tokenize(s: string): string[] {
   return matches.filter((t) => t.length >= 3);
 }
 
+/**
+ * Punteggio di un nome contro le parole del messaggio.
+ *
+ * `english` e' la chiave che sopravvive alla traduzione (name_key, title_key,
+ * slug), `localized` il nome nella lingua del sito. Le parole tradotte alzano il
+ * punteggio ma NON bastano da sole a riconoscere il contenuto: le liste di
+ * parole generiche dei contesti sono inglesi, e "con", "mit", "sopa" avrebbero
+ * agganciato un piatto a "posso pagare con carta" (riprodotto in produzione il
+ * 2026-09-06). In inglese `english` e `localized` coincidono e il conteggio e'
+ * identico a prima, ripetizioni comprese.
+ */
+export function scoreName(
+  msgSet: ReadonlySet<string>,
+  english: string,
+  localized: string,
+  isDistinctive: (token: string) => boolean,
+): { score: number; distinctive: number } {
+  const englishTokens = tokenize(english);
+  const englishSet = new Set(englishTokens);
+  let score = 0;
+  let distinctive = 0;
+  for (const tk of englishTokens) {
+    if (!msgSet.has(tk)) continue;
+    score++;
+    if (isDistinctive(tk)) distinctive++;
+  }
+  for (const tk of new Set(tokenize(localized))) {
+    if (!englishSet.has(tk) && msgSet.has(tk)) score++;
+  }
+  return { score, distinctive };
+}
+
 /** Taglia alla lunghezza massima senza spezzare a meta' una parola in coda. */
 export function truncate(text: string, max: number): string {
   const clean = (text ?? '').trim();

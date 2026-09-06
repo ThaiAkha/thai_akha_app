@@ -62,11 +62,11 @@ type Profile = {
 /** Blocco DIET & ALLERGY, o null se nessun intento dieta/allergia. */
 export async function getDietContextForCherry(
   text: string,
-  ctx?: { activeProfileIds?: string[] },
+  ctx?: { activeProfileIds?: string[]; lang?: string },
 ): Promise<string | null> {
   if (!hasDietIntent(text)) return null;
 
-  const profiles = (await recipeService.getDietaryProfiles()) as Profile[];
+  const profiles = (await recipeService.getDietaryProfiles(ctx?.lang ?? 'en')) as Profile[];
   if (!profiles || profiles.length === 0) return null;
 
   const h = (text ?? '').toLowerCase();

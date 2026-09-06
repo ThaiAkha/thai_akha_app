@@ -12,11 +12,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { recipeService } from '../services/recipe.service';
-import { tokenize } from './cherryTextUtils';
+import { tokenize, scoreName } from './cherryTextUtils';
 
 interface KeyIngredient {
   ingredient: string;
-  ingredient_id: string;
+  ingredient_id: string | null;
   display_order?: number;
   ui_role?: string; // 'main' | 'regular' | 'base'
   dietary_adaptations?: Record<string, { action?: 'substitute' | 'omit'; substitute_id?: string | null }>;
@@ -38,17 +38,13 @@ export function findRecipeInText(
   let best: { r: Record<string, unknown>; score: number } | null = null;
 
   for (const r of recipes) {
-    const nameToks = tokenize(String(r.name ?? ''));
-    let score = 0;
-    let distinctive = 0;
-    for (const tk of nameToks) {
-      if (msgSet.has(tk)) {
-        score++;
-        if (!GENERIC_TOKENS.has(tk)) distinctive++;
-      }
-    }
-    // Serve almeno un token DISTINTIVO (es. "papaya", "massaman") per evitare
-    // che "curry" da solo matchi quattro curry diversi.
+    // Nome inglese (`name_key`, sopravvive al merge) per riconoscere il piatto;
+    // nome tradotto solo per alzare il punteggio (vedi scoreName). Serve almeno
+    // un token DISTINTIVO (es. "papaya", "massaman") per evitare che "curry" da
+    // solo matchi quattro curry diversi.
+    const { score, distinctive } = scoreName(
+      msgSet, String(r.name_key ?? r.name ?? ''), String(r.name ?? ''), (tk) => !GENERIC_TOKENS.has(tk),
+    );
     if (distinctive >= 1 && (!best || score > best.score)) best = { r, score };
   }
   return best?.r ?? null;
@@ -67,21 +63,38 @@ function firstSentence(text: string, max = 160): string {
  * è riconosciuta nel testo.
  * @param text             messaggio utente
  * @param activeProfileIds profili attivi dell'utente (es. ['diet_vegan','allergy_peanuts'])
+ * @param lang             lingua dell'interfaccia: nomi e descrizioni escono tradotti
  */
 export async function getRecipeContextForCherry(
   text: string,
   activeProfileIds: string[] = [],
+  lang = 'en',
 ): Promise<string | null> {
-  const recipes = await recipeService.getAllRecipesFull();
-  const recipe = findRecipeInText(text, recipes);
-  if (!recipe) return null;
+  // Riconoscimento sull'indice di navigazione (12 KB), non sul catalogo intero
+  // (957 KB): per capire di quale piatto si parla bastano i nomi.
+  const index = await recipeService.getRecipesNavIndex(lang);
+  const hit = findRecipeInText(text, index);
+  if (!hit) return null;
 
-  const lib = await recipeService.getIngredientsLibrary();
-  const libById = new Map(lib.map(i => [String((i as Record<string, unknown>).id), i as Record<string, unknown>]));
+  const recipe = await recipeService.getRecipeForCherry(String(hit.slug), lang);
+  if (!recipe) return null;
 
   const ings = (((recipe.recipe_key_ingredients as KeyIngredient[]) ?? []))
     .slice()
     .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+
+  // Solo gli ingredienti di QUESTA ricetta e i loro sostituti per il profilo,
+  // non la libreria intera.
+  const wanted = new Set<string>();
+  for (const i of ings) {
+    if (i.ingredient_id) wanted.add(String(i.ingredient_id));
+    for (const pid of activeProfileIds) {
+      const sub = i.dietary_adaptations?.[pid]?.substitute_id;
+      if (sub) wanted.add(String(sub));
+    }
+  }
+  const lib = await recipeService.getIngredientsByIds(Array.from(wanted), lang);
+  const libById = new Map(lib.map(i => [String(i.id), i]));
 
   const nameOf = (i: KeyIngredient) =>
     String((libById.get(String(i.ingredient_id))?.name as string) ?? i.ingredient);

@@ -23,6 +23,8 @@
     "./lib/cherry-utils": "./src/lib/cherry-utils.ts",
     "./lib/cherryFollowups": "./src/lib/cherryFollowups.ts",
     "./lib/cherryRecipeContext": "./src/lib/cherryRecipeContext.ts",
+    "./lib/cherryHistory": "./src/lib/cherryHistory.ts",
+    "./lib/cherryTextUtils": "./src/lib/cherryTextUtils.ts",
     "./lib/cherryCoveredTopics": "./src/lib/cherryCoveredTopics.ts",
     "./lib/cherryCultureContext": "./src/lib/cherryCultureContext.ts",
     "./lib/cherryNewsContext": "./src/lib/cherryNewsContext.ts",

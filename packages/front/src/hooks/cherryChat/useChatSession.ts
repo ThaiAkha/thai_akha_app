@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { sendChatMessageProxy } from '@thaiakha/shared/services';
 import {
+  getGuestSessionToken,
   getOrCreateSession,
   loadRecentMessages,
   updateSummary,
@@ -9,6 +10,7 @@ import {
 } from '@thaiakha/shared/services';
 import type { ChatMessage } from '@thaiakha/shared';
 import { detectCoveredTopics } from '@thaiakha/shared/lib/cherryCoveredTopics';
+import { truncate } from '@thaiakha/shared/lib/cherryTextUtils';
 import type { UserProfile } from '../../services/auth.service';
 import { HISTORY_WINDOW } from './constants';
 
@@ -87,7 +89,18 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
         initialMessages.push({ id: 'static:greeting', role: 'model', text: greeting });
       }
 
-      setMessages(initialMessages);
+      // Fusione, non sostituzione: se durante i giri di rete del bootstrap e'
+      // gia' partito uno scambio (Ask Cherry, primo messaggio scritto), lo
+      // storico va davanti e il saluto si salta. La sostituzione cancellava la
+      // bolla in corso e il click sembrava ignorato.
+      setMessages(prev => {
+        if (prev.length === 0) return initialMessages;
+        // Le righe appena salvate dallo scambio in corso possono gia' essere
+        // tornate dal DB: stesso testo in memoria = stessa riga, non si raddoppia.
+        const onScreen = new Set(prev.map(m => m.fullText ?? m.text));
+        const restored = initialMessages.filter(m => m.id !== 'static:greeting' && !onScreen.has(m.text));
+        return restored.length > 0 ? [...restored, ...prev] : prev;
+      });
     };
 
     await init();
@@ -96,7 +109,13 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
   // Rete di sicurezza: se nessuno apre la chat, la sessione si prepara comunque,
   // ma in uno slot di inattivita' e fuori dalla finestra del primo disegno. Chi
   // apre prima passa da initSession e questo timer non fa niente (guard idempotente).
+  const hasProfile = !!userProfile;
   useEffect(() => {
+    // Un ospite che non ha mai scritto a Cherry non ha un token: aprirgli una
+    // sessione "per sicurezza" creava una riga di chat_sessions per ogni
+    // visitatore di ogni pagina. Si prepara in anticipo solo chi puo' avere
+    // uno storico da mostrare; gli altri aprono la sessione al primo messaggio.
+    if (!hasProfile && !getGuestSessionToken()) return;
     const w = window as Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
@@ -107,15 +126,19 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
     }
     const id = window.setTimeout(() => { void initSession(); }, 2500);
     return () => window.clearTimeout(id);
-  }, [initSession]);
+  }, [initSession, hasProfile]);
 
   // ── Auto-summary ───────────────────────────────────────────────────────────
 
   const triggerAutoSummary = useCallback(async (sid: string) => {
     try {
       const recentMessages = await loadRecentMessages(sid, HISTORY_WINDOW * 2);
+      // Righe tagliate: al riassunto serve il senso, e la edge rifiuta i messaggi
+      // oltre i 4.000 caratteri (sei risposte lunghe li superano). Le righe
+      // 'system' (marker di visita) non sono conversazione.
       const transcript = recentMessages
-        .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
+        .filter(m => m.sender_role === 'user' || m.sender_role === 'assistant')
+        .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${truncate(m.content, 500)}`)
         .join('\n');
 
       const summary = await sendChatMessageProxy({
@@ -129,8 +152,10 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
           sessionRef.current.summary = summary;
         }
       }
-    } catch {
-      // silent fail
+    } catch (err) {
+      // Non blocca la chat, ma non deve sparire: un riassunto che smette di
+      // aggiornarsi si nota solo settimane dopo.
+      console.warn('[cherry] riassunto della sessione non aggiornato:', err);
     }
   }, []);
 

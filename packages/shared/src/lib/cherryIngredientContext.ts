@@ -14,7 +14,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { recipeService } from '../services/recipe.service';
-import { tokenize, truncate, includesAny } from './cherryTextUtils';
+import { tokenize, truncate, includesAny, scoreName } from './cherryTextUtils';
 
 // Parole troppo comuni per attivare da sole una scheda ingrediente (evitano
 // falsi positivi con domande generiche su cibo/ricette).
@@ -46,17 +46,13 @@ export function findIngredient(
   let best: { ing: Record<string, unknown>; score: number } | null = null;
 
   for (const ing of ingredients) {
-    const nameToks = tokenize(String(ing.name ?? ''));
-    if (nameToks.length === 0) continue;
-
-    let score = 0;
-    let distinctive = 0;
-    for (const tk of nameToks) {
-      if (!msgSet.has(tk)) continue;
-      score++;
-      if (tk.length >= 6 && !GENERIC_INGREDIENT_TOKENS.has(tk)) distinctive++;
-    }
-    // Match valido solo se l'utente ha citato un token distintivo del nome.
+    // Nome inglese (`name_key`) per riconoscere, nome tradotto solo per il
+    // punteggio (vedi scoreName). Match valido solo se l'utente ha citato un
+    // token distintivo del nome.
+    const { score, distinctive } = scoreName(
+      msgSet, String(ing.name_key ?? ing.name ?? ''), String(ing.name ?? ''),
+      (tk) => tk.length >= 6 && !GENERIC_INGREDIENT_TOKENS.has(tk),
+    );
     if (distinctive >= 1 && (!best || score > best.score)) best = { ing, score };
   }
   return best?.ing ?? null;
@@ -68,8 +64,8 @@ export function findIngredient(
  * Blocco INGREDIENT DATA per il prompt, o null se nessun ingrediente distintivo
  * è riconosciuto. summary_ai (futuro) → description (oggi).
  */
-export async function getIngredientContextForCherry(text: string): Promise<string | null> {
-  const ingredients = await recipeService.getIngredientsLibraryForAI();
+export async function getIngredientContextForCherry(text: string, lang = 'en'): Promise<string | null> {
+  const ingredients = await recipeService.getIngredientsLibraryForAI(lang);
   const ing = findIngredient(text, ingredients);
   if (!ing) return null;
 

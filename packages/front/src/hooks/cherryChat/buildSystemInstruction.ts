@@ -1,4 +1,4 @@
-import { loadRecentMessages, type UserBookingState } from '@thaiakha/shared/services';
+import type { UserBookingState } from '@thaiakha/shared/services';
 import { buildCherryPrompt, type CherryUserContext } from '../../prompts/cherryPrompt';
 import type { UserProfile } from '../../services/auth.service';
 import { tObj } from '../../i18n';
@@ -14,7 +14,6 @@ import { getLegalContext } from '@thaiakha/shared/lib/cherryLegalContext';
 import { getMenuContextForCherry } from '@thaiakha/shared/lib/cherryMenuContext';
 import { getDietContextForCherry } from '@thaiakha/shared/lib/cherryDietContext';
 import { buildCoveredTopicsBlock } from '@thaiakha/shared/lib/cherryCoveredTopics';
-import { HISTORY_WINDOW } from './constants';
 
 export type PickupResult = Awaited<ReturnType<typeof getPickupContextForCherry>>;
 
@@ -36,7 +35,8 @@ async function safeBlock<T>(label: string, run: () => Promise<T>): Promise<T | n
 
 interface SystemInstructionParams {
   userText: string;
-  sid: string | null;
+  /** Lingua dell'interfaccia: i contesti letti dal DB escono in quella lingua. */
+  lang: string;
   userProfile?: UserProfile | null;
   bookingState: UserBookingState;
   summary?: string | null;
@@ -46,13 +46,14 @@ interface SystemInstructionParams {
 /**
  * Costruisce la system instruction del turno: prompt base + summary + tutti i
  * blocchi RAG (ricette, cultura, news, ingredienti, gamification, booking,
- * pickup, sapere statico, legale, menu, diete) + anti-ripetizione + history.
- * Estratto 1:1 da sendMessage: stesse chiamate, stesso ordine, stessa concatenazione.
+ * pickup, sapere statico, legale, menu, diete) + anti-ripetizione.
+ * Lo storico NON sta piu' qui: dal 2026-09-06 viaggia nel campo `history` del
+ * proxy, nella forma nativa del modello (vedi shared/lib/cherryHistory).
  * Ritorna anche il pickupResult perché serve al pulsante mappa dinamico.
  */
 export async function buildSystemInstruction({
   userText,
-  sid,
+  lang,
   userProfile,
   bookingState,
   summary,
@@ -87,14 +88,13 @@ export async function buildSystemInstruction({
   // gamification non si escludono a vicenda.
   // Ogni contesto e' avvolto in safeBlock: il Promise.all non puo' piu' rigettare,
   // quindi un contesto rotto costa il suo blocco, non la risposta.
-  const [recentHistoryRaw, recipeBlock, cultureBlock, newsBlock, gamificationBlock, bookingBlock, menuBlock, dietBlock] = await Promise.all([
-    // Lo storico, il menu del cliente e la conoscenza delle diete non dipendono da
-    // nessuno degli altri: stavano in fila per abitudine, e ogni attesa in fila si
-    // somma davanti all'ospite che aspetta la risposta. Da cinque giri a due.
-    safeBlock('history', () => loadRecentMessages(sid || '', HISTORY_WINDOW * 2)),
-    safeBlock('recipe', () => getRecipeContextForCherry(userText, activeProfileIds)),
-    safeBlock('culture', () => getCultureContextForCherry(userText)),
-    safeBlock('news', () => getNewsContextForCherry(userText)),
+  const [recipeBlock, cultureBlock, newsBlock, gamificationBlock, bookingBlock, menuBlock, dietBlock] = await Promise.all([
+    // Il menu del cliente e la conoscenza delle diete non dipendono da nessuno
+    // degli altri: stavano in fila per abitudine, e ogni attesa in fila si somma
+    // davanti all'ospite che aspetta la risposta. Da cinque giri a due.
+    safeBlock('recipe', () => getRecipeContextForCherry(userText, activeProfileIds, lang)),
+    safeBlock('culture', () => getCultureContextForCherry(userText, lang)),
+    safeBlock('news', () => getNewsContextForCherry(userText, lang)),
     safeBlock('gamification', () => getGamificationContextForCherry(userText)), // esce subito se nessun intento quiz
     safeBlock('booking', () => getBookingContextForCherry(userText, { isLogged: !!userProfile, userId: userProfile?.id })), // booking/availability su intento
     // Menu del cliente (per-utente, read-only): solo loggato + intento menu.
@@ -103,14 +103,9 @@ export async function buildSystemInstruction({
       : Promise.resolve(null),
     // Conoscenza diete/allergie (DB profili + sostituzioni), su intento, read-only.
     // Mira ai profili citati nel testo + quelli attivi dell'utente.
-    safeBlock('diet', () => getDietContextForCherry(userText, { activeProfileIds })),
+    safeBlock('diet', () => getDietContextForCherry(userText, { activeProfileIds, lang })),
   ]);
 
-  const recentHistory = recentHistoryRaw ?? [];
-  const historyText = recentHistory
-    .slice(-HISTORY_WINDOW)
-    .map(m => `${m.sender_role === 'user' ? 'Guest' : 'Cherry'}: ${m.content}`)
-    .join('\n');
   // Ingrediente: solo se NESSUNA ricetta ha matchato (le domande sul piatto hanno
   // precedenza e già includono gli ingredienti). Dipende da recipeBlock → dopo.
   // Pickup hotel→zona→orario: solo se NESSUNA prenotazione personale ha già
@@ -120,7 +115,7 @@ export async function buildSystemInstruction({
   // sono indipendenti e possono partire insieme.
   const [pickupResult, ingredientBlock] = await Promise.all([
     bookingBlock ? Promise.resolve(null) : safeBlock('pickup', () => getPickupContextForCherry(userText)),
-    recipeBlock ? Promise.resolve(null) : safeBlock('ingredient', () => getIngredientContextForCherry(userText)),
+    recipeBlock ? Promise.resolve(null) : safeBlock('ingredient', () => getIngredientContextForCherry(userText, lang)),
   ]);
 
   const recipeText = recipeBlock ? `\n${recipeBlock}` : '';
@@ -145,8 +140,7 @@ export async function buildSystemInstruction({
   const coveredText = coveredBlock ? `\n${coveredBlock}` : '';
 
   const systemInstruction =
-    basePrompt + summaryText + recipeText + cultureText + newsText + ingredientText + gamificationText + bookingText + pickupText + staticText + faqText + menuText + dietText + coveredText +
-    (historyText ? `\n### RECENT CONVERSATION:\n${historyText}` : '');
+    basePrompt + summaryText + recipeText + cultureText + newsText + ingredientText + gamificationText + bookingText + pickupText + staticText + faqText + menuText + dietText + coveredText;
 
   return { systemInstruction, pickupResult };
 }

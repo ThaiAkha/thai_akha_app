@@ -19,6 +19,9 @@ const RECIPE_T_FIELDS = [
 /** I soli campi tradotti che l'indice di navigazione mostra. */
 const RECIPE_NAV_T_FIELDS = ['name', 'subtitle', 'excerpt'] as const;
 
+/** `ingredients_library.id` e' uuid: un valore diverso nel filtro `in` fa fallire tutta la query (400). */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const DIETARY_T_FIELDS = ['name', 'introduction', 'experience', 'description_long'] as const;
 
 const SPICINESS_T_FIELDS = [
@@ -128,10 +131,12 @@ export const recipeService = {
      */
     async getRecipesNavIndex(lang = 'en'): Promise<Record<string, unknown>[]> {
         const l = normalizeLang(lang);
-        const data = await fetchWithCache<Record<string, unknown>[]>(`recipes_nav_${l}_v1`, async () => {
+        // v2: +name_key (alias inglese di `name`, sopravvive al merge): Cherry
+        // riconosce il piatto sia dal nome tradotto sia da quello inglese.
+        const data = await fetchWithCache<Record<string, unknown>[]>(`recipes_nav_${l}_v2`, async () => {
             const query = sidecarFilter(supabase
                 .from('recipes')
-                .select(`id, name, slug, category, subtitle, excerpt, linked_sub_recipes,
+                .select(`id, name, name_key:name, slug, category, subtitle, excerpt, linked_sub_recipes,
                     cover:media_assets!cover_asset_id(image_url),
                     content_categories(id, title, title_highlight, display_order${sidecarJoin('content_categories_translations', ['title', 'title_highlight'], l)})`
                     + sidecarJoin('recipes_translations', RECIPE_NAV_T_FIELDS, l))
@@ -145,6 +150,48 @@ export const recipeService = {
             return mergeSidecarRows(data, l, RECIPE_EMBEDDED);
         });
         return data || [];
+    },
+
+    /**
+     * 🍒 La ricetta come la legge Cherry: nome e ingredienti chiave, niente altro.
+     *
+     * Fino al 2026-09-06 il contesto ricette di Cherry scaricava `getAllRecipesFull`
+     * (957.808 byte misurati) per riconoscere UN piatto nel messaggio e leggerne
+     * gli ingredienti. Ora riconosce sull'indice di navigazione (12 KB) e chiede
+     * qui la sola riga che serve, nella lingua dell'ospite.
+     */
+    async getRecipeForCherry(slug: string, lang = 'en'): Promise<Record<string, unknown> | null> {
+        const l = normalizeLang(lang);
+        const data = await fetchWithCache<Record<string, unknown> | null>(`recipe_cherry_${slug}_${l}_v1`, async () => {
+            const query = sidecarFilter(supabase
+                .from('recipes')
+                .select('id, name, name_key:name, slug, recipe_key_ingredients(ingredient, ingredient_id, display_order, dietary_adaptations, ui_role)'
+                    + sidecarJoin('recipes_translations', ['name'], l))
+                .eq('slug', slug)
+                .eq('recipe_type', 'class'), l);
+            const { data, error } = await query.maybeSingle();
+            if (error || !data) return null;
+            return mergeSidecarRow(data, l);
+        });
+        return data ?? null;
+    },
+
+    /**
+     * 🧅 Solo gli ingredienti richiesti (nome e descrizione, nella lingua data).
+     * Serve a Cherry per dare un nome agli ingredienti di UNA ricetta senza
+     * scaricare la libreria intera. Niente cache: lettura piccola, solo su match.
+     */
+    async getIngredientsByIds(ids: string[], lang = 'en'): Promise<Record<string, unknown>[]> {
+        const wanted = ids.filter(id => UUID_RE.test(id));
+        if (wanted.length === 0) return [];
+        const l = normalizeLang(lang);
+        const query = sidecarFilter(supabase
+            .from('ingredients_library')
+            .select('id, name, name_key:name, description' + sidecarJoin('ingredients_library_translations', ['name', 'description'], l))
+            .in('id', wanted), l);
+        const { data, error } = await query;
+        if (error) return [];
+        return mergeSidecarRows(data, l);
     },
 
     /** 🍜 RECIPE BY SLUG: Fetch single recipe with deep composition (class recipes only) */

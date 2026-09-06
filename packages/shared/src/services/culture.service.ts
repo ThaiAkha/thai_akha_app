@@ -40,11 +40,13 @@ export const cultureService = {
     async getCultureSections(lang = 'en'): Promise<CultureSection[]> {
         const l = normalizeLang(lang);
         // v8: il join del sidecar non porta piu' `content` (vedi CULTURE_INDEX_T_FIELDS).
-        const data = await fetchWithCache<CultureSection[]>(`culture_sections_index_${l}_v8`, async () => {
+        // v9: +title_key (alias inglese di `title`, sopravvive al merge): Cherry
+        // riconosce la sezione dal titolo inglese anche sulle pagine tradotte.
+        const data = await fetchWithCache<CultureSection[]>(`culture_sections_index_${l}_v9`, async () => {
             const query = sidecarFilter(supabase
                 .from('culture_sections')
                 .select(`
-                    id, slug, title, subtitle, quote, cover_asset_id, display_order, featured, audio_asset_id, seo_title, canonical_url, hreflang,
+                    id, slug, title, title_key:title, subtitle, quote, cover_asset_id, display_order, featured, audio_asset_id, seo_title, canonical_url, hreflang,
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title),
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)})
                 `+ sidecarJoin('culture_sections_translations', CULTURE_INDEX_T_FIELDS, l))

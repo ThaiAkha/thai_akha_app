@@ -10,7 +10,24 @@ export interface ProxyChatPayload {
   message: string;
   history?: GeminiChatMessage[];
   systemInstruction?: string;
+  /** Lingua dell'interfaccia: solo per le metriche della edge, non cambia la risposta. */
+  lang?: string;
 }
+
+/**
+ * Chi e' loggato manda il proprio JWT: la edge lo riconosce e applica i limiti
+ * per utente (e il passaggio libero a chi ha una prenotazione confermata). Fino
+ * al 2026-09-06 lo stream mandava sempre la chiave anon, quindi per la edge
+ * erano tutti ospiti, e il ramo "utente" della edge non girava mai.
+ */
+const bearerToken = async (): Promise<string> => {
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? supabaseAnonKey;
+  } catch {
+    return supabaseAnonKey;
+  }
+};
 
 /**
  * Send a chat message via Supabase Edge Function proxy
@@ -61,7 +78,7 @@ export const sendChatMessageStream = async (
     headers: {
       'Content-Type': 'application/json',
       'apikey': supabaseAnonKey,
-      'Authorization': `Bearer ${supabaseAnonKey}`,
+      'Authorization': `Bearer ${await bearerToken()}`,
     },
     body: JSON.stringify(payload),
   });

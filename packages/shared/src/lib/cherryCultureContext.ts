@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { cultureService } from '../services/culture.service';
-import { tokenize, truncate, includesAny } from './cherryTextUtils';
+import { tokenize, truncate, includesAny, scoreName } from './cherryTextUtils';
 
 // Token generici che NON identificano una sezione specifica.
 const GENERIC_TOKENS = new Set([
@@ -47,15 +47,12 @@ export function findCultureSection(
   let best: { s: Record<string, unknown>; score: number } | null = null;
 
   for (const s of sections) {
-    const hay = `${String(s.title ?? '')} ${String(s.slug ?? '').replace(/-/g, ' ')}`;
-    let score = 0;
-    let distinctive = 0;
-    for (const tk of tokenize(hay)) {
-      if (msgSet.has(tk)) {
-        score++;
-        if (!GENERIC_TOKENS.has(tk)) distinctive++;
-      }
-    }
+    // Titolo inglese (`title_key`, sopravvive al merge) + slug per riconoscere
+    // la sezione; titolo tradotto solo per il punteggio (vedi scoreName).
+    const slugWords = String(s.slug ?? '').replace(/-/g, ' ');
+    const { score, distinctive } = scoreName(
+      msgSet, `${String(s.title_key ?? s.title ?? '')} ${slugWords}`, String(s.title ?? ''), (tk) => !GENERIC_TOKENS.has(tk),
+    );
     if (distinctive >= 1 && (!best || score > best.score)) best = { s, score };
   }
   return best?.s ?? null;
@@ -67,12 +64,14 @@ export function findCultureSection(
  * Blocco CULTURE DATA per il prompt, o null se nessuna sezione specifica è
  * riconosciuta (→ risponde l'intro statica L1).
  */
-export async function getCultureContextForCherry(text: string): Promise<string | null> {
-  const sections = (await cultureService.getCultureSections()) as unknown as Array<Record<string, unknown>>;
+export async function getCultureContextForCherry(text: string, lang = 'en'): Promise<string | null> {
+  // Titoli nella lingua del sito; lo slug resta inglese, quindi il match regge
+  // anche se l'ospite scrive in inglese su una pagina tradotta.
+  const sections = (await cultureService.getCultureSections(lang)) as unknown as Array<Record<string, unknown>>;
   const match = findCultureSection(text, sections);
   if (!match) return null;
 
-  const detail = (await cultureService.getCultureSectionBySlug(String(match.slug))) as unknown as Record<string, unknown> | null;
+  const detail = (await cultureService.getCultureSectionBySlug(String(match.slug), lang)) as unknown as Record<string, unknown> | null;
   if (!detail) return null;
 
   const wantFull = wantsFullDetail(text);

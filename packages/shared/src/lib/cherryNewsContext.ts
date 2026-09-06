@@ -9,7 +9,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { newsService } from '../services/news.service';
-import { tokenize, truncate, includesAny } from './cherryTextUtils';
+import { tokenize, truncate, includesAny, scoreName } from './cherryTextUtils';
 
 const GENERIC_TOKENS = new Set([
   'the', 'and', 'akha', 'thai', 'guide', 'tips', 'how', 'your', 'what', 'about',
@@ -44,17 +44,13 @@ export function findNewsArticle(
   let best: { a: Record<string, unknown>; score: number } | null = null;
 
   for (const a of articles) {
-    const hay = `${String(a.title ?? '')} ${String(a.slug ?? '').replace(/-/g, ' ')}`;
-    let score = 0;
-    let distinctive = 0;
-    for (const tk of tokenize(hay)) {
-      if (msgSet.has(tk)) {
-        score++;
-        if (!GENERIC_TOKENS.has(tk)) distinctive++;
-      }
-    }
-    // Almeno DUE token distintivi per le news: i titoli sono lunghi e generici,
-    // serve più specificità per evitare match casuali.
+    // Titolo inglese (`title_key`) + slug per riconoscere; titolo tradotto solo
+    // per il punteggio (vedi scoreName). Almeno DUE token distintivi per le
+    // news: i titoli sono lunghi e generici, serve piu' specificita'.
+    const slugWords = String(a.slug ?? '').replace(/-/g, ' ');
+    const { score, distinctive } = scoreName(
+      msgSet, `${String(a.title_key ?? a.title ?? '')} ${slugWords}`, String(a.title ?? ''), (tk) => !GENERIC_TOKENS.has(tk),
+    );
     if (distinctive >= 2 && (!best || score > best.score)) best = { a, score };
   }
   return best?.a ?? null;
@@ -86,12 +82,13 @@ function buildHeadlines(feed: Array<Record<string, unknown>>): string | null {
  * Blocco NEWS DATA per il prompt, o null se nessun articolo specifico è
  * riconosciuto. Catena dati: summary_ai (L2) → excerpt → content (L3 se richiesto).
  */
-export async function getNewsContextForCherry(text: string): Promise<string | null> {
-  const feed = (await newsService.getNewsFeed()) as unknown as Array<Record<string, unknown>>;
+export async function getNewsContextForCherry(text: string, lang = 'en'): Promise<string | null> {
+  // Titoli nella lingua del sito; lo slug resta inglese (vedi cultura).
+  const feed = (await newsService.getNewsFeed(lang)) as unknown as Array<Record<string, unknown>>;
   const match = findNewsArticle(text, feed);
   if (!match) return BROAD_NEWS_INTENT.test(text) ? buildHeadlines(feed) : null;
 
-  const detail = (await newsService.getNewsDetailBySlug(String(match.slug))) as unknown as Record<string, unknown> | null;
+  const detail = (await newsService.getNewsDetailBySlug(String(match.slug), lang)) as unknown as Record<string, unknown> | null;
   if (!detail) return null;
 
   const wantFull = wantsFullDetail(text);

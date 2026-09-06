@@ -17,6 +17,16 @@ export const NEWS_T_FIELDS = [
     'title', 'subtitle', 'excerpt', 'content', 'seo_title', 'seo_description', 'og_title', 'og_description',
 ] as const;
 
+/**
+ * Gli stessi campi MENO `content`, per l'elenco.
+ *
+ * La select della riga madre nell'elenco non chiede il testo dell'articolo, ma il
+ * join del sidecar lo portava lo stesso, e il merge lo infilava dentro: l'elenco
+ * inglese pesava 2.831 byte e quello spagnolo 112.219, quaranta volte tanto, per
+ * un testo che nessuna scheda mostra. Misurato il 2026-09-05.
+ */
+const NEWS_INDEX_T_FIELDS = NEWS_T_FIELDS.filter(f => f !== 'content');
+
 /** La categoria viaggia dentro la card/dettaglio news e va fusa allo stesso giro. */
 const NEWS_EMBEDDED = ['category'] as const;
 
@@ -29,15 +39,15 @@ export const newsService = {
     /** 📰 NEWS FEED: Lista articoli pubblicati per il feed index */
     async getNewsFeed(lang = 'en'): Promise<NewsArticle[]> {
         const l = normalizeLang(lang);
-        // v2: select cambiata (join sidecar) + lingua nella chiave.
-        const data = await fetchWithCache<NewsArticle[]>(`news_feed_${l}_v2`, async () => {
+        // v3: il join del sidecar non porta piu' `content` (vedi NEWS_INDEX_T_FIELDS).
+        const data = await fetchWithCache<NewsArticle[]>(`news_feed_${l}_v3`, async () => {
             const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
                     id, news_id, slug, title, excerpt, cover_asset_id, read_time_minutes, published_at, canonical_url, hreflang,
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
-                `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))
+                `+ sidecarJoin('akha_news_translations', NEWS_INDEX_T_FIELDS, l))
                 .eq('is_published', true)
                 .order('published_at', { ascending: false }), l, NEWS_EMBEDDED);
             const { data, error } = await query;

@@ -16,7 +16,8 @@ export const NEWS_TABLES = [
     { id: 'page_sections', label: 'Page Sections', icon: <Layout className="w-5 h-5" /> },
 ];
 
-export const NEWS_READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid'];
+// `semantic_vector` in sola lettura: vedi il commento gemello in useAdminDatabase.
+export const NEWS_READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid', 'semantic_vector'];
 // Colonne galleria legacy: la fonte unica è gallery_items → mai più scritte dagli editor.
 export const LEGACY_GALLERY_COLUMNS = ['gallery_images', 'gallery_asset_ids', 'culture_asset_ids'];
 

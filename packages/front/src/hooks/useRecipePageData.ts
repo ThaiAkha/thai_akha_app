@@ -6,7 +6,13 @@ import { useDietaryKnowledge } from './useDietaryKnowledge';
 import { useAudioAsset } from './useAudioAsset';
 import { useAllergyMap } from './useAllergyMap';
 import { useSpicinessLevels } from './useSpicinessLevels';
-import { recipesFullQueryKey } from './useRecipesListData';
+/**
+ * Chiave dell'indice di navigazione: e' una lista DIVERSA da quella della pagina
+ * elenco. Qui servono nomi, slug e categorie per muoversi fra le ricette; li'
+ * serve la ricetta intera per disegnare le schede. Tenerle separate costa una
+ * riga e risparmia 250 KB compressi su ogni apertura di una ricetta.
+ */
+export const recipesNavQueryKey = (lang = 'en') => ['recipes', 'nav_index', lang] as const;
 import { useLanguage } from '../context/LanguageContext';
 import { LOCAL_PASSPORT_KEY } from './useUserPassport';
 import { mapToRecipeData } from '../lib/recipeHelpers';
@@ -102,8 +108,8 @@ export function useRecipePageData(
   });
   // Stessa chiave della pagina lista (useRecipesListData): una sola copia in cache.
   const allQ = useQuery({
-    queryKey: recipesFullQueryKey(lang),
-    queryFn: async () => (await contentService.getAllRecipesFull(lang)) ?? NO_ROWS,
+    queryKey: recipesNavQueryKey(lang),
+    queryFn: async () => (await contentService.getRecipesNavIndex(lang)) ?? NO_ROWS,
   });
 
   const recipeRaw = (recipeQ.data ?? null) as Record<string, unknown> | null;

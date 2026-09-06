@@ -11,6 +11,23 @@ export interface MediaCategory {
     count: number;
 }
 
+/**
+ * Le colonne dell'interfaccia MediaAsset, e nient'altro.
+ *
+ * Qui c'era `select('*')`: su 593 asset significa 11 MB di `semantic_vector`
+ * (19 KB per riga, misurati il 2026-09-05) scaricati e tenuti in memoria a ogni
+ * apertura della pagina, per un campo che nessuna schermata mostra e che serve
+ * solo alla ricerca semantica lato server. Con le colonne esplicite si aggiusta
+ * anche il salvataggio: `upsert` rimanda indietro solo cio' che ha ricevuto,
+ * quindi modificare un testo alternativo non riscrive piu' il vettore.
+ */
+// `uploaded_by` NON c'e': l'interfaccia MediaAsset lo dichiara opzionale ma la
+// tabella non ha quella colonna, e chiederla fa fallire l'intera query con un 400.
+const MEDIA_ASSET_COLUMNS =
+    'id, asset_id, file_name, folder_path, image_url, title, caption, alt_text, ' +
+    'mime_type, size_kb, width, height, created_at, updated_at, ' +
+    'copyright, tags, is_ai_generated, ai_tool';
+
 export function useAdminMedia() {
     const { t } = useTranslation('media');
     const [assets, setAssets] = useState<MediaAsset[]>([]);
@@ -33,7 +50,7 @@ export function useAdminMedia() {
         try {
             const { data, error } = await supabase
                 .from('media_assets')
-                .select('*')
+                .select(MEDIA_ASSET_COLUMNS)
                 .order('asset_id', { ascending: true });
 
             if (error) throw error;

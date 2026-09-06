@@ -43,7 +43,6 @@ export { default as Slider } from './Slider';
 // Feedback Components
 export { default as Alert } from './card/Alert';
 export { default as Tooltip } from './navigation/Tooltip';
-export { default as ProgressBar } from './ProgressBar';
 
 // Data Display
 export { default as Pagination } from './navigation/Pagination';

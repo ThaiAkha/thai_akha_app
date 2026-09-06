@@ -5,8 +5,9 @@
 // l'ingrediente da ingredients_library e ne dà la descrizione reale, invece di
 // allucinare (il guardrail in 03-recipes deflette senza dati).
 //
-// Fonte L2: summary_ai se presente, altrimenti `description` (oggi popolata
-// 193/194; summary_ai ancora vuota → fallback automatico).
+// Fonte L2: summary_ai se presente, altrimenti `description`. Dal 2026-09-05
+// arriva da `getIngredientsLibraryForAI`: summary_ai e' popolata e pesa 149 KB,
+// quindi non viaggia piu' con la lista che serve a disegnare la pagina ricetta.
 //
 // Da chiamare SOLO se la RAG ricette NON ha matchato (le domande su un piatto
 // hanno precedenza). Match conservativo: solo nomi-ingrediente distintivi.
@@ -76,7 +77,7 @@ function truncate(text: string, max: number): string {
  * è riconosciuto. summary_ai (futuro) → description (oggi).
  */
 export async function getIngredientContextForCherry(text: string): Promise<string | null> {
-  const ingredients = await recipeService.getIngredientsLibrary();
+  const ingredients = await recipeService.getIngredientsLibraryForAI();
   const ing = findIngredient(text, ingredients);
   if (!ing) return null;
 

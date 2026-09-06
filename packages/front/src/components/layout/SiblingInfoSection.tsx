@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { getSiblingPagesBySlugs } from '@thaiakha/shared/services';
 import { useQuery } from '@thaiakha/shared/query';
 import { useSiteMetadata } from '../../hooks/useSiteMetadata';
+import { useLanguage } from '../../context/LanguageContext';
+import { buildLangPath } from '../../lib/langRouting';
 import { SiblingCardPage, SiblingPage } from '../ui/card/SiblingCardPage';
 import { SiblingSection } from './SiblingSection';
 import { SkeletonBase } from '../skeleton/atoms';
@@ -40,10 +42,14 @@ export const SiblingInfoSection: React.FC<SiblingInfoSectionProps> = ({
   // Data layer (#86): sibling_slugs dalla riga site_metadata condivisa, poi UNA
   // query per le sorelle (chiave = lista slug: pagine con le stesse sorelle la condividono).
   const { extras, loading: extrasLoading } = useSiteMetadata(currentSlug);
+  const { lang, slugMap } = useLanguage();
   const slugsKey = (extras?.siblingSlugs ?? []).join(',');
+  // La lingua entra nella chiave e nella query: era l'ultimo lettore del front
+  // senza, quindi queste card restavano inglesi e la prima lingua che apriva la
+  // pagina vinceva per tutte le altre nella stessa sessione.
   const siblingsQuery = useQuery({
-    queryKey: ['sibling_pages', slugsKey] as const,
-    queryFn: () => getSiblingPagesBySlugs(slugsKey.split(',')),
+    queryKey: ['sibling_pages', lang, slugsKey] as const,
+    queryFn: () => getSiblingPagesBySlugs(slugsKey.split(','), lang),
     enabled: slugsKey.length > 0,
   });
   const siblings: SiblingPage[] = useMemo(
@@ -52,10 +58,12 @@ export const SiblingInfoSection: React.FC<SiblingInfoSectionProps> = ({
       titleHighlight: d.header_title_highlight,
       description: d.page_description,
       imageUrl: d.hero_image_url,
-      href: `/${d.page_slug}`,
+      // Con il prefisso lingua: aprire la card in una scheda nuova non deve
+      // riportare all'inglese. A lingue spente e' lo stesso indirizzo di prima.
+      href: buildLangPath(lang, [d.page_slug], slugMap),
       slug: d.page_slug,
     })),
-    [siblingsQuery.data],
+    [siblingsQuery.data, lang, slugMap],
   );
   const loading = extrasLoading || (slugsKey.length > 0 && siblingsQuery.isPending);
 

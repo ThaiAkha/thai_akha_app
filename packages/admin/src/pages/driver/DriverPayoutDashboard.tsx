@@ -86,9 +86,13 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
   const fetchedOnce = useRef(false);
 
   const fetchRows = React.useCallback(async () => {
+    if (!driverId) return;
     const { data, error: e } = await supabase
       .from('driver_payments')
       .select('run_date, session_id, total_stops, total_pax, payout_amount, status, paid_at')
+      // Un manager vede per RLS anche le righe degli altri: senza questo filtro
+      // il riepilogo settimanale sommava due autisti in un totale solo.
+      .eq('driver_id', driverId)
       .order('run_date', { ascending: false });
     if (e) { setError(e.message); return; }
     const list = (data as PayoutRow[]) ?? [];
@@ -107,13 +111,19 @@ const DriverPayoutDashboard: React.FC<Props> = ({ onEdit, refreshKey }) => {
       localStorage.setItem(LS_SEEN_PAID, newestPaid);
     }
     fetchedOnce.current = true;
+  // `driverId` DEVE stare nelle deps: senza, la callback resterebbe legata al
+  // valore iniziale (null) e non leggerebbe mai le righe.
   // eslint-disable-next-line react-hooks/exhaustive-deps -- t nelle deps rifarebbe il fetch al cambio lingua
-  }, []);
+  }, [driverId]);
 
   useEffect(() => {
     authService.getCurrentUserProfile().then((p) => setDriverId(p?.id ?? null));
-    fetchRows();
-  }, [fetchRows, refreshKey]);
+  }, []);
+
+  // Le righe si leggono quando si sa DI CHI sono.
+  useEffect(() => {
+    if (driverId) void fetchRows();
+  }, [driverId, fetchRows, refreshKey]);
 
   // Realtime: l'admin segna "pagato" -> aggiorno e mostro il popup live.
   useEffect(() => {

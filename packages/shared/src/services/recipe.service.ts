@@ -16,6 +16,9 @@ const RECIPE_T_FIELDS = [
     'og_description', 'directions', 'essentials', 'dietary_variants',
 ] as const;
 
+/** I soli campi tradotti che l'indice di navigazione mostra. */
+const RECIPE_NAV_T_FIELDS = ['name', 'subtitle', 'excerpt'] as const;
+
 const DIETARY_T_FIELDS = ['name', 'introduction', 'experience', 'description_long'] as const;
 
 const SPICINESS_T_FIELDS = [
@@ -87,6 +90,56 @@ export const recipeService = {
             const { data, error } = await query;
             if (error) {
                 console.error('Recipes fetch error:', error);
+                return [];
+            }
+            return mergeSidecarRows(data, l, RECIPE_EMBEDDED);
+        });
+        return data || [];
+    },
+
+    /**
+     * 🧅 Come sopra, piu' `summary_ai`: la usa SOLO il contesto che si passa a
+     * Cherry. Chiave separata di proposito, cosi' il peso del riassunto non entra
+     * nella cache che serve a disegnare la pagina.
+     */
+    async getIngredientsLibraryForAI(lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        const data = await fetchWithCache(`ingredients_library_ai_${l}_v1`, async () => {
+            const query = sidecarFilter(supabase
+                .from('ingredients_library')
+                .select('id, name, name_key:name, description, summary_ai'
+                    + sidecarJoin('ingredients_library_translations', ['name', 'description', 'summary_ai'], l)), l);
+            const { data: raw, error } = await query;
+            if (error) return [];
+            return mergeSidecarRows(raw, l);
+        });
+        return data || [];
+    },
+
+    /**
+     * 🍜 INDICE DI NAVIGAZIONE: le sole colonne che servono a muoversi FRA le ricette
+     * (freccia avanti/indietro, pannello categorie, ritorno alla ricetta madre).
+     *
+     * La pagina della singola ricetta chiedeva `getAllRecipesFull`, cioe' 22 ricette
+     * con tutte le 68 colonne e la categoria completa incorporata: 957.808 byte
+     * (250 KB compressi) misurati, per disegnare due frecce e una lista di nomi.
+     * Questa select ne serve 10.011 (2,4 KB), ed e' la stessa informazione.
+     * La lista ricette continua a usare `getAllRecipesFull`, che le serve davvero.
+     */
+    async getRecipesNavIndex(lang = 'en'): Promise<Record<string, unknown>[]> {
+        const l = normalizeLang(lang);
+        const data = await fetchWithCache<Record<string, unknown>[]>(`recipes_nav_${l}_v1`, async () => {
+            const query = sidecarFilter(supabase
+                .from('recipes')
+                .select(`id, name, slug, category, subtitle, excerpt, linked_sub_recipes,
+                    cover:media_assets!cover_asset_id(image_url),
+                    content_categories(id, title, title_highlight, display_order${sidecarJoin('content_categories_translations', ['title', 'title_highlight'], l)})`
+                    + sidecarJoin('recipes_translations', RECIPE_NAV_T_FIELDS, l))
+                .eq('recipe_type', 'class')
+                .order('name', { ascending: true }), l, RECIPE_EMBEDDED);
+            const { data, error } = await query;
+            if (error) {
+                console.error('Recipes nav index fetch error:', error);
                 return [];
             }
             return mergeSidecarRows(data, l, RECIPE_EMBEDDED);
@@ -236,15 +289,23 @@ export const recipeService = {
         );
     },
 
-    /** 🧅 INGREDIENTS LIBRARY: Fetch all ingredients for substitutions */
+    /**
+     * 🧅 INGREDIENTS LIBRARY: Fetch all ingredients for substitutions
+     *
+     * `summary_ai` NON e' qui: e' il riassunto per l'assistente, lo legge soltanto
+     * Cherry (`cherryIngredientContext`), e sulle 192 righe pesa 149 KB misurati.
+     * Stava in mezzo al percorso critico della pagina ricetta, che aspetta questa
+     * lista per disegnare. Chi ne ha bisogno usa `getIngredientsLibraryForAI`.
+     */
     async getIngredientsLibrary(lang = 'en'): Promise<Record<string, unknown>[]> {
         const l = normalizeLang(lang);
-        // v5: +name_key (alias inglese di `name`, sopravvive al merge; serve ai confronti per nome).
-        const data = await fetchWithCache(`ingredients_library_${l}_v5`, async () => {
+        // v6: via summary_ai (vedi sopra). v5: +name_key (alias inglese di `name`,
+        // sopravvive al merge; serve ai confronti per nome).
+        const data = await fetchWithCache(`ingredients_library_${l}_v6`, async () => {
             const query = sidecarFilter(supabase
                 .from('ingredients_library')
-                .select('id, name, name_key:name, name_th, phonetic, description, summary_ai, category_id, cover:media_assets!image_asset_id(image_url, alt_text)'
-                    + sidecarJoin('ingredients_library_translations', ['name', 'description', 'summary_ai'], l)), l);
+                .select('id, name, name_key:name, name_th, phonetic, description, category_id, cover:media_assets!image_asset_id(image_url, alt_text)'
+                    + sidecarJoin('ingredients_library_translations', ['name', 'description'], l)), l);
             const { data: raw, error } = await query;
             if (error) return [];
             const data = mergeSidecarRows(raw, l);

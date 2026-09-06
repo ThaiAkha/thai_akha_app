@@ -87,15 +87,23 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
 
   // Smart-UI: rileva un servizio già esistente per (data, classe) e precompila.
   useEffect(() => {
+    if (!profile) return;
     let active = true;
     supabase
       .from('driver_payments')
       .select('total_stops, total_pax, payout_amount, status')
       .eq('run_date', runDate)
       .eq('session_id', session)
+      // Senza il filtro sull'autista, un manager (che per RLS vede tutti) riceveva
+      // piu' righe: `maybeSingle` restituiva un errore che nessuno leggeva, la
+      // riga esistente spariva e il modulo dichiarava "nuovo servizio" anche
+      // quando il servizio era gia' stato registrato. Sul database ci sono otto
+      // date con due autisti sulla stessa sessione, quindi non era un caso di scuola.
+      .eq('driver_id', profile.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (!active) return;
+        if (error) console.error('[driver payout] lettura servizio esistente:', error);
         const row = (data as ExistingRow | null) ?? null;
         setExisting(row);
         if (row) {
@@ -108,7 +116,7 @@ const DriverPayoutForm: React.FC<Props> = ({ editTarget, onDone }) => {
         }
       });
     return () => { active = false; };
-  }, [runDate, session, isEditMode]);
+  }, [runDate, session, isEditMode, profile]);
 
   const repStops = STOPS_REP[stopsRange];
   const price = useMemo(() => {

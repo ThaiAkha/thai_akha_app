@@ -57,7 +57,12 @@ export const SYSTEM_TABLES = [
     { id: 'spiciness_levels', label: 'Spiciness Levels', icon: <Package className="w-5 h-5" /> }
 ];
 
-export const READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid'];
+// `semantic_vector` e' in sola lettura: e' l'embedding, lo rigenera il server quando
+// il contenuto cambia. Comparendo come campo modificabile veniva rimandato indietro
+// a ogni salvataggio, e il trigger che marca l'embedding da rifare crede a chi gli
+// passa un vettore esplicito: modificare un titolo poteva quindi lasciare
+// l'embedding vecchio senza che nessuno se ne accorgesse.
+export const READ_ONLY_COLUMNS = ['id', 'created_at', 'updated_at', 'internal_id', 'uid', 'semantic_vector'];
 
 export const PRIMARY_KEY_MAP: Record<string, string> = {
     bookings: 'internal_id',

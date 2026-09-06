@@ -7,6 +7,13 @@ import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '.
 const CULTURE_T_FIELDS = [
     'title', 'subtitle', 'content', 'quote', 'seo_title', 'seo_description', 'og_title', 'og_description',
 ] as const;
+/**
+ * Gli stessi campi MENO `content`, per l'elenco: le schede mostrano titolo,
+ * sottotitolo e citazione, mai il testo dell'articolo. Col join pieno l'indice
+ * spagnolo pesava 169.110 byte contro i 28.742 dell'inglese.
+ */
+const CULTURE_INDEX_T_FIELDS = CULTURE_T_FIELDS.filter(f => f !== 'content');
+
 /** La galleria traduce solo la didascalia. */
 const GALLERY_T_FIELDS = ['quote'] as const;
 /** La categoria viaggia dentro la card cultura. */
@@ -32,15 +39,15 @@ export const cultureService = {
     /** 🏛️ CULTURE SECTIONS INDEX: Cards for the History/Culture index page */
     async getCultureSections(lang = 'en'): Promise<CultureSection[]> {
         const l = normalizeLang(lang);
-        // v7: select cambiata (join sidecar) + lingua nella chiave.
-        const data = await fetchWithCache<CultureSection[]>(`culture_sections_index_${l}_v7`, async () => {
+        // v8: il join del sidecar non porta piu' `content` (vedi CULTURE_INDEX_T_FIELDS).
+        const data = await fetchWithCache<CultureSection[]>(`culture_sections_index_${l}_v8`, async () => {
             const query = sidecarFilter(supabase
                 .from('culture_sections')
                 .select(`
                     id, slug, title, subtitle, quote, cover_asset_id, display_order, featured, audio_asset_id, seo_title, canonical_url, hreflang,
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title),
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)})
-                `+ sidecarJoin('culture_sections_translations', CULTURE_T_FIELDS, l))
+                `+ sidecarJoin('culture_sections_translations', CULTURE_INDEX_T_FIELDS, l))
                 .eq('is_published', true)
                 .order('display_order', { ascending: true }), l, CULTURE_EMBEDDED);
             const { data, error } = await query;

@@ -6,6 +6,21 @@ import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '.
 import { NEWS_T_FIELDS } from './news.service';
 
 /**
+ * Colonne di `akha_news` servite al browser: tutte tranne `semantic_vector`
+ * (vector 1536, circa 19 KB di testo per riga) e `seo_audit_logs` (diario
+ * dell'admin). Le due query qui sotto facevano `select('*')`.
+ */
+const NEWS_PUBLIC_COLUMNS =
+    'access_level, audio_asset_id, author_id, breadcrumbs, canonical_url, category_id,' +
+    'cherry_button_ids, cherry_prompt, cherry_response, content, content_quality_score,' +
+    'cover_asset_id, created_at, excerpt, hreflang, id, is_featured, is_published,' +
+    'json_ld, key_entities, last_content_audit_ai, news_id, og_description, og_title,' +
+    'og_type, primary_focus_keyword, published_at, read_time_minutes, related_articles,' +
+    'related_queries_geo, seo_description, seo_health_score, seo_keywords, seo_robots,' +
+    'seo_title, slug, subtitle, summary_ai, tags, title, twitter_card, updated_at,' +
+    'view_count';
+
+/**
  * Campi di CONTENUTO dell'header pagina nel sidecar site_metadata. Il resto della
  * riga (cover, icona, json_ld, canonical, prompt Cherry) non si traduce: json_ld e
  * hreflang si GENERANO a render dai campi tradotti, non si memorizzano.
@@ -406,11 +421,11 @@ export const contentMetadataService = {
     async getLatestNews(lang = 'en'): Promise<Record<string, unknown>[]> {
         const l = normalizeLang(lang);
         // v2: select cambiata (join sidecar) + lingua nella chiave.
-        const data = await fetchWithCache<Record<string, unknown>[]>(`agency_news_${l}_v2`, async () => {
+        const data = await fetchWithCache<Record<string, unknown>[]>(`agency_news_${l}_v3`, async () => {
             const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
-                    *,
+                    ${NEWS_PUBLIC_COLUMNS},
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))
@@ -427,11 +442,11 @@ export const contentMetadataService = {
     async getNewsByNewsIds(newsIds: string[], lang = 'en'): Promise<Record<string, unknown>[]> {
         const l = normalizeLang(lang);
         // v2: select cambiata (join sidecar) + lingua nella chiave.
-        const data = await fetchWithCache<Record<string, unknown>[]>(`news_by_ids_${newsIds.join(',')}_${l}_v2`, async () => {
+        const data = await fetchWithCache<Record<string, unknown>[]>(`news_by_ids_${newsIds.join(',')}_${l}_v3`, async () => {
             const query = sidecarFilter(supabase
                 .from('akha_news')
                 .select(`
-                    *,
+                    ${NEWS_PUBLIC_COLUMNS},
                     category:content_categories(id, title, slug${sidecarJoin('content_categories_translations', ['title'], l)}),
                     cover_data:media_assets!cover_asset_id(image_url, alt_text, title)
                 `+ sidecarJoin('akha_news_translations', NEWS_T_FIELDS, l))

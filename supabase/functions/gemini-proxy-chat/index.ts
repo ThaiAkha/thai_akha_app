@@ -324,10 +324,11 @@ Deno.serve(async (req: Request) => {
               failure = err;
             }
             clearTimeout(timeoutId);
-            if (failure && !fullText) {
-              // Niente consegnato: errore vero, il client lo tratta come tale.
+            if (failure && !fullText.trim()) {
+              // Niente consegnato (nemmeno un carattere che non sia spazio):
+              // errore vero, il client lo tratta come tale.
               const reason = failure instanceof Error ? failure.message : 'stream failed';
-              logMetrics(userId, message.length, 0, Date.now() - startTime, false, reason, metricsExtra);
+              logMetrics(userId, message.length, 0, Date.now() - startTime, false, reason, { ...metricsExtra, usage, finish });
               controller.error(failure);
               return;
             }
@@ -354,12 +355,24 @@ Deno.serve(async (req: Request) => {
       const response = await result.response;
       const responseText = response.text();
       const finish = readFinish(response);
-      // Qui passa il riassunto della sessione: uno tronco non va salvato.
-      if (finish === 'MAX_TOKENS') throw new Error('answer truncated (MAX_TOKENS)');
-      if (!responseText.trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
+      const usage = readUsage(response.usageMetadata);
+      // Qui passa il riassunto della sessione: uno tronco o vuoto non va salvato.
+      // Risposta diretta, non throw: il catch esterno loggherebbe senza finish,
+      // usage e modello, e i tetti toccati vanno contati con i loro numeri.
+      const rejectedAnswer = finish === 'MAX_TOKENS'
+        ? 'answer truncated (MAX_TOKENS)'
+        : !responseText.trim() ? `empty answer (${finish ?? 'no candidate'})` : null;
+      if (rejectedAnswer) {
+        clearTimeout(timeoutId);
+        logMetrics(userId, message.length, responseText.length, Date.now() - startTime, false, rejectedAnswer, { ...metricsExtra, usage, finish });
+        return new Response(
+          JSON.stringify({ error: `Failed to generate response: ${rejectedAnswer}` }),
+          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       clearTimeout(timeoutId);
-      logMetrics(userId, message.length, responseText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage: readUsage(response.usageMetadata), finish });
+      logMetrics(userId, message.length, responseText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage, finish });
 
       return new Response(
         JSON.stringify({ response: responseText }),

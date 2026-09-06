@@ -82,12 +82,12 @@ test('cultura e news: titolo inglese + slug riconoscono, titolo tradotto no da s
 test('scoreName: il punteggio conta le ripetizioni, le distintive una volta sola', () => {
   const msg = new Set(['spirit', 'gate']);
   const same = scoreName(msg, 'The Spirit Gate spirit gate', 'The Spirit Gate spirit gate', () => true);
-  assert.deepEqual(same, { score: 4, distinctive: 2 });
+  assert.deepEqual(same, { score: 4, distinctive: 2, distinctiveHits: 4 });
   const localized = scoreName(msg, 'Spirit Gate', 'Puerta spirit', () => true);
-  assert.deepEqual(localized, { score: 2, distinctive: 2 });
+  assert.deepEqual(localized, { score: 2, distinctive: 2, distinctiveHits: 2 });
 });
 
-test('news: regola di produzione, una parola vera in titolo e slug; "mai" italiano no', () => {
+test('news: regola storica (due colpi distintivi con ripetizione); "mai" italiano no', () => {
   const news: Row[] = [
     { slug: 'sunday-walking-street-market-chiang-mai', title: 'Il mercato della domenica a Chiang Mai', title_key: 'Sunday Walking Street Market in Chiang Mai' },
     { slug: 'how-to-play-akha-wisdom-path-quiz', title: 'Come giocare al Quiz', title_key: 'How to Play the Akha Wisdom Path Quiz: Your Complete Guide' },
@@ -97,4 +97,7 @@ test('news: regola di produzione, una parola vera in titolo e slug; "mai" italia
   assert.equal(findNewsArticle('is the walking street market open?', news)?.slug, 'sunday-walking-street-market-chiang-mai');
   // Una parola solo nel titolo tradotto non basta.
   assert.equal(findNewsArticle('il mercato della domenica', news), null);
+  // Una distintiva presente una volta sola + una generica: NON basta (era cosi' anche prima).
+  const once: Row[] = [{ slug: 'akha-kitchen-story', title: 'Akha Kitchen Story', title_key: 'The Sunrise Kitchen Story' }];
+  assert.equal(findNewsArticle('tell me the sunrise story', once), null);
 });

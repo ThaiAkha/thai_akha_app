@@ -37,17 +37,24 @@ export function scoreName(
   english: string,
   localized: string,
   isDistinctive: (token: string) => boolean,
-): { score: number; distinctive: number } {
+): { score: number; distinctive: number; distinctiveHits: number } {
   const englishTokens = tokenize(english);
   const englishSet = new Set(englishTokens);
   let score = 0;
   let distinctive = 0;
-  for (const tk of englishTokens) if (msgSet.has(tk)) score++;
+  let distinctiveHits = 0;
+  for (const tk of englishTokens) {
+    if (!msgSet.has(tk)) continue;
+    score++;
+    // `distinctiveHits` conta le ripetizioni (la stessa parola in titolo e slug
+    // vale due): e' la regola storica delle news, che la usa cosi'.
+    if (isDistinctive(tk)) distinctiveHits++;
+  }
   for (const tk of englishSet) if (msgSet.has(tk) && isDistinctive(tk)) distinctive++;
   for (const tk of new Set(tokenize(localized))) {
     if (!englishSet.has(tk) && msgSet.has(tk)) score++;
   }
-  return { score, distinctive };
+  return { score, distinctive, distinctiveHits };
 }
 
 /** Taglia alla lunghezza massima senza spezzare a meta' una parola in coda. */

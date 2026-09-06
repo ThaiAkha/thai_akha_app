@@ -47,15 +47,15 @@ export function findNewsArticle(
 
   for (const a of articles) {
     // Titolo inglese (`title_key`) + slug per riconoscere; titolo tradotto solo
-    // per il punteggio (vedi scoreName). Regola come in produzione fino al
-    // 2026-09-06: una parola distintiva che compare in titolo E slug (punteggio
-    // almeno 2). La vecchia "almeno due distintive" contava la stessa parola due
-    // volte, quindi era gia' questa; scritta cosi' non cambia con il conteggio.
+    // per il punteggio (vedi scoreName). Regola storica, identica a prima del
+    // 2026-09-06: almeno DUE colpi distintivi CONTANDO le ripetizioni, cioe' una
+    // parola vera presente in titolo e slug, oppure due parole vere. Con
+    // 'chiang' e 'mai' generiche, "mai" da solo (italiano: never) non basta piu'.
     const slugWords = String(a.slug ?? '').replace(/-/g, ' ');
-    const { score, distinctive } = scoreName(
+    const { score, distinctiveHits } = scoreName(
       msgSet, `${String(a.title_key ?? a.title ?? '')} ${slugWords}`, String(a.title ?? ''), (tk) => !GENERIC_TOKENS.has(tk),
     );
-    if (distinctive >= 1 && score >= 2 && (!best || score > best.score)) best = { a, score };
+    if (distinctiveHits >= 2 && (!best || score > best.score)) best = { a, score };
   }
   return best?.a ?? null;
 }

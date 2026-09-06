@@ -164,7 +164,6 @@ export function useHistoryFeed(targetSection?: string | null) {
     categories,
     pageMetadata: metadata,
     loading,
-    isLoading: loading,
     isInitialLoading: loading && sections.length === 0,
     error,
     activeSlug,

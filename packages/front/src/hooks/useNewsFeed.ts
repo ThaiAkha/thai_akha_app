@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { newsService } from '@thaiakha/shared/services';
 import { NewsArticle } from '@thaiakha/shared/types';
@@ -70,39 +70,27 @@ export function useNewsFeed(targetCategory: string | null = null) {
     const articles = feed.data ?? NO_ARTICLES;
     const loading = metaLoading || catsLoading || feed.isPending;
 
-    const [activeCategoryState, setActiveCategoryState] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'by-id'>('by-id');
-    const [currentPage, setCurrentPage] = useState(1);
 
-    // Reset to page 1 when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [activeCategoryState, searchQuery, sortBy]);
-
-    // Eagerly assume targetCategory is a slug to avoid flash of news grid.
-    // The useEffect below corrects it to a category filter once categories load.
-    const [activeSlugState, setActiveSlugState] = useState<string | null>(
-        targetCategory && targetCategory !== 'all' ? targetCategory : null
-    );
-
-    // Correct the assumption once categories are loaded
-    useEffect(() => {
+    /**
+     * Il secondo segmento dell'URL puo' essere una CATEGORIA o lo slug di un
+     * articolo, e si distinguono solo confrontandolo con le categorie caricate.
+     *
+     * Era scritto come due stati piu' un effetto che li ricalcolava: ma nessun
+     * setter usciva dall'hook e l'effetto leggeva solo i suoi due ingredienti,
+     * quindi era gia' una funzione pura travestita da stato. Finche' le categorie
+     * non sono arrivate si assume "slug", come prima, per non far lampeggiare la
+     * griglia degli articoli.
+     */
+    const { activeCategoryState, activeSlugState } = useMemo(() => {
         if (!targetCategory || targetCategory === 'all') {
-            setActiveCategoryState('all');
-            setActiveSlugState(null);
-        } else if (categories.length > 0) {
-            if (categories.some(c => c.id === targetCategory)) {
-                // It's a category filter, not a slug
-                setActiveCategoryState(targetCategory);
-                setActiveSlugState(null);
-            } else {
-                // It's an article slug
-                setActiveCategoryState('all');
-                setActiveSlugState(targetCategory);
-            }
+            return { activeCategoryState: 'all', activeSlugState: null as string | null };
         }
-        // If categories not loaded yet, keep initial assumption (slug)
+        if (categories.length > 0 && categories.some(c => c.id === targetCategory)) {
+            return { activeCategoryState: targetCategory, activeSlugState: null as string | null };
+        }
+        return { activeCategoryState: 'all', activeSlugState: targetCategory };
     }, [targetCategory, categories]);
 
     // 1. Filter by Category
@@ -134,10 +122,6 @@ export function useNewsFeed(targetCategory: string | null = null) {
         return sortBy === 'latest' ? dateB - dateA : dateA - dateB;
     });
 
-    // 4. Pagination (Disabled - returning all articles)
-    const totalPages = 1;
-    const paginatedArticles = filteredArticles;
-
     const activeCategories = categories.filter(c =>
         articles.some(a => {
             const catId = typeof a.category === 'object' ? a.category?.id : a.category;
@@ -158,7 +142,7 @@ export function useNewsFeed(targetCategory: string | null = null) {
         metadata,
         pageMetadata: metadata,
         categories,
-        articles: paginatedArticles,
+        articles: filteredArticles,
         allArticles: articles,
         tabItems,
         activeCategory: activeCategoryState,
@@ -167,11 +151,7 @@ export function useNewsFeed(targetCategory: string | null = null) {
         setSearchQuery,
         sortBy,
         setSortBy,
-        currentPage,
-        setCurrentPage,
-        totalPages,
         loading,
-        isLoading: loading,
         isInitialLoading: loading && articles.length === 0,
     };
 }

@@ -28,7 +28,6 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
     setSearchQuery,
     sortBy,
     setSortBy,
-    currentPage,
     loading
   } = useNewsFeed(targetSection);
 
@@ -36,17 +35,17 @@ const NewsPage: React.FC<NewsPageProps> = ({ onNavigate, targetSection }) => {
   useEffect(() => {
     const scrollContainer = document.getElementById('main-scroll-container');
     const contentContainer = document.getElementById('news-content');
-    if (scrollContainer && contentContainer && (activeCategory !== 'all' || currentPage > 1)) {
+    if (scrollContainer && contentContainer && activeCategory !== 'all') {
       const containerRect = scrollContainer.getBoundingClientRect();
       const contentRect = contentContainer.getBoundingClientRect();
       const stickyOffset = window.innerWidth < 768 ? 20 : 40;
       const targetScrollTop =
         scrollContainer.scrollTop + (contentRect.top - containerRect.top) - stickyOffset;
       scrollContainer.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
-    } else if (scrollContainer && activeCategory === 'all' && currentPage === 1) {
+    } else if (scrollContainer && activeCategory === 'all') {
       scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [activeCategory, currentPage]);
+  }, [activeCategory]);
   const handleCategoryChange = (catId: string) => {
     if (catId === 'all') {
       onNavigate('thai-cooking-tips-news');

@@ -5,6 +5,16 @@
  * ROBUSTNESS: a caching failure (e.g. localStorage QuotaExceededError) must NEVER
  * discard freshly-fetched data or break a page load. setCache is best-effort and
  * self-evicting; fetchWithCache only returns null on an actual fetch failure.
+ *
+ * COSTO (2026-09-06). Tutte le voci vivono in UNA chiave di localStorage, e fino a
+ * oggi ogni lettura la ricaricava per intero da disco (JSON.parse del blob) e ogni
+ * scrittura la riscriveva per intero (JSON.stringify + setItem, sincrono). Misurato
+ * sui dati veri: una pagina che tocca dodici chiavi costava 24 parse e 12 scritture
+ * del blob, cioe' circa 70 ms sul thread principale e 28 MB scritti, a ogni apertura.
+ * Ora il blob si legge e si converte UNA volta e resta in memoria; le scritture si
+ * raggruppano in una sola, poco dopo l'ultima modifica. Stesso formato su disco,
+ * stessa chiave: nessuna migrazione. Il caso "due schede aperte" e' coperto
+ * dall'evento `storage`, che il browser manda alle ALTRE schede quando una scrive.
  */
 
 // Bumped v15 → v16 to drop the previously bloated monolithic blob on first load.
@@ -26,7 +36,12 @@ try {
 type CacheEntry = { value: unknown; timestamp: number };
 type CacheMap = Record<string, CacheEntry>;
 
-const getCache = (): CacheMap => {
+// ── Copia in memoria ─────────────────────────────────────────────────────────
+// `null` = non ancora letta da disco. Dopo la prima lettura e' la fonte di verita'
+// di questa scheda: disco e altre schede si allineano da soli (vedi sotto).
+let memo: CacheMap | null = null;
+
+const readFromDisk = (): CacheMap => {
     try {
         const data = localStorage.getItem(GLOBAL_CACHE_KEY);
         return data ? (JSON.parse(data) as CacheMap) : {};
@@ -35,35 +50,87 @@ const getCache = (): CacheMap => {
     }
 };
 
+/** L'oggetto e' CONDIVISO fra i lettori: si legge, non si modifica (solo setCache scrive). */
+const getCache = (): CacheMap => {
+    if (memo === null) memo = readFromDisk();
+    return memo;
+};
+
+// ── Scrittura raggruppata ────────────────────────────────────────────────────
+// Le risposte di rete arrivano a grappolo: si aspetta un attimo dopo l'ultima
+// modifica e si scrive una volta sola. Se la pagina viene nascosta o chiusa prima
+// che scada il timer, si scrive subito (pagehide/visibilitychange, in fondo).
+const FLUSH_DELAY_MS = 150;
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
+/** Chiavi modificate in memoria e non ancora su disco: servono allo sfratto e alla fusione fra schede. */
+const pendingKeys = new Set<string>();
+
+const writeToDisk = (map: CacheMap): boolean => {
+    try {
+        localStorage.setItem(GLOBAL_CACHE_KEY, JSON.stringify(map));
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 /**
  * Best-effort write. On QuotaExceededError, evict the oldest half of the cache and
- * retry once; if it still fails, drop the cache entirely. Never throws.
+ * retry once; if it still fails, drop the cache on disk. Never throws.
+ * La copia in memoria resta comunque valida per questa scheda: sono dati buoni,
+ * e il prossimo flush riuscito li riporta su disco.
  */
-const setCache = (key: string, value: unknown): void => {
+const flush = (): void => {
+    if (flushTimer !== null) { clearTimeout(flushTimer); flushTimer = null; }
+    if (memo === null || pendingKeys.size === 0) return;
+    const dirty = Array.from(pendingKeys);
+    pendingKeys.clear();
     try {
-        const cache = getCache();
-        cache[key] = { value, timestamp: Date.now() };
-        try {
-            localStorage.setItem(GLOBAL_CACHE_KEY, JSON.stringify(cache));
-        } catch {
-            // Quota exceeded → keep the newest half + the entry we are writing.
-            const entries = Object.entries(cache).sort(
-                (a, b) => a[1].timestamp - b[1].timestamp,
-            );
-            const pruned: CacheMap = Object.fromEntries(
-                entries.slice(Math.floor(entries.length / 2)),
-            );
-            pruned[key] = cache[key];
-            try {
-                localStorage.setItem(GLOBAL_CACHE_KEY, JSON.stringify(pruned));
-            } catch {
-                try { localStorage.removeItem(GLOBAL_CACHE_KEY); } catch { /* noop */ }
-            }
-        }
+        if (writeToDisk(memo)) return;
+        // Quota exceeded → keep the newest half + the entries we are writing.
+        const entries = Object.entries(memo).sort((a, b) => a[1].timestamp - b[1].timestamp);
+        const pruned: CacheMap = Object.fromEntries(entries.slice(Math.floor(entries.length / 2)));
+        for (const k of dirty) if (memo[k]) pruned[k] = memo[k];
+        if (writeToDisk(pruned)) { memo = pruned; return; }
+        try { localStorage.removeItem(GLOBAL_CACHE_KEY); } catch { /* noop */ }
     } catch {
         /* caching is best-effort — never let it break the app */
     }
 };
+
+const scheduleFlush = (): void => {
+    if (flushTimer !== null) return;
+    flushTimer = setTimeout(flush, FLUSH_DELAY_MS);
+};
+
+const setCache = (key: string, value: unknown): void => {
+    try {
+        getCache()[key] = { value, timestamp: Date.now() };
+        pendingKeys.add(key);
+        scheduleFlush();
+    } catch {
+        /* caching is best-effort — never let it break the app */
+    }
+};
+
+// ── Altre schede e chiusura pagina ───────────────────────────────────────────
+if (typeof window !== 'undefined') {
+    // Un'altra scheda ha scritto: si rilegge il disco e si tengono sopra le nostre
+    // modifiche non ancora scritte, cosi' non si perde niente da nessuna parte.
+    // `key === null` e' localStorage.clear().
+    window.addEventListener('storage', (e) => {
+        if (e.key !== null && e.key !== GLOBAL_CACHE_KEY) return;
+        const disk = readFromDisk();
+        if (memo !== null) for (const k of pendingKeys) if (memo[k]) disk[k] = memo[k];
+        memo = disk;
+    });
+    window.addEventListener('pagehide', flush);
+}
+if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') flush();
+    });
+}
 
 // In-flight request dedup: on a cold cache, multiple components can request the
 // same key in the same tick (e.g. SEOHead + the page both reading the SEO slug).

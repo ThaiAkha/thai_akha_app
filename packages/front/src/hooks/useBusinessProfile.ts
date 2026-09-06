@@ -11,15 +11,18 @@ import type { BusinessProfile } from '@thaiakha/shared/types';
 
 export const businessProfileQueryKey = ['business_profile'] as const;
 
-export function useBusinessProfile(): {
+export function useBusinessProfile(options: { enabled?: boolean } = {}): {
   profile: BusinessProfile | null;
   loading: boolean;
 } {
+  const enabled = options.enabled ?? true;
   const query = useQuery({
     queryKey: businessProfileQueryKey,
     queryFn: () => contentMetadataService.getBusinessProfile(),
+    enabled,
   });
-  return { profile: query.data ?? null, loading: query.isPending };
+  // `enabled &&`: una query spenta e senza dati resta per sempre in attesa.
+  return { profile: query.data ?? null, loading: enabled && query.isPending };
 }
 
 export default useBusinessProfile;

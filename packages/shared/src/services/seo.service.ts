@@ -1,9 +1,6 @@
-import { supabase } from '../lib/supabase';
-import { PageMetadata, SitePage } from '../types/content.types';
+import { PageMetadata, BusinessProfile } from '../types/content.types';
 import { buildLocalBusinessSchema } from '../lib/businessSchema';
-import { contentMetadataService } from './contentMetadata.service';
-import { mergeTranslation, pickTranslation, sidecarJoin, sidecarFilter } from '../lib/mergeTranslation';
-import { translatedSlugService } from './translatedSlug.service';
+import { isSiteMetadataRow } from './siteMetadataRow';
 import {
   ACTIVE_LANGS,
   DEFAULT_LANG,
@@ -13,18 +10,18 @@ import {
 } from '../lib/i18n';
 
 /**
- * Se il json_ld ha un @graph con un nodo LocalBusiness e la pagina è agganciata
+ * Se il json_ld ha un @graph con un nodo LocalBusiness e la pagina e' agganciata
  * a business_profile, rigenera quel nodo dalla fonte unica (indirizzo/telefono/
- * legalName/taxID sempre freschi dal DB — niente copia statica da mantenere).
- * Gli altri nodi (FAQPage, BreadcrumbList, …) restano invariati.
+ * legalName/taxID sempre freschi dal DB, niente copia statica da mantenere).
+ * Gli altri nodi (FAQPage, BreadcrumbList, ...) restano invariati.
+ * Riceve il profilo invece di leggerlo: chi lo legge decide se e come aspettarlo.
  */
-async function withDynamicLocalBusiness(
+function applyLocalBusiness(
   jsonLd: Record<string, unknown>,
-): Promise<Record<string, unknown>> {
+  bp: BusinessProfile | null,
+): Record<string, unknown> {
   const graph = jsonLd['@graph'];
   if (!Array.isArray(graph)) return jsonLd;
-
-  const bp = await contentMetadataService.getBusinessProfile();
   if (!bp) return jsonLd;
 
   const dynamicNode = buildLocalBusinessSchema(bp);
@@ -50,51 +47,6 @@ export const SITE_URL = 'https://www.thaiakha.com';
 
 // OG fallback — Supabase storage (stessa dell'Edge Function, sempre disponibile)
 const OG_DEFAULT_IMAGE = 'https://mtqullobcsypkqgdkaob.supabase.co/storage/v1/object/public/showcase/og-default.jpg';
-
-/**
- * Type guard: verifica che i campi strutturali obbligatori di SitePage
- * siano presenti nel record restituito da Supabase.
- * Non controlla i campi PageMetadata perché vengono costruiti con fallback
- * dal service stesso — evita falsi negativi su righe DB con dati SEO parziali.
- * Updated: migration_002 — hero_image_url rimosso dalla guard (campo opzionale ora)
- */
-/**
- * Colonne che questa lettura usa DAVVERO: il typeguard `isSitePage` piu' i campi
- * del `return` di fetchMetadataForSlug. Prima c'era `*`, che su site_metadata
- * porta anche `semantic_vector` (1536 float serializzati come testo, ~30 KB per
- * riga) e `seo_audit_logs` (log dell'admin, cresce nel tempo): peso scaricato e
- * parsato a ogni primo caricamento di OGNI pagina, per campi che nessuno legge.
- * Stessa regola gia' scritta per content_categories in contentMetadata.service.ts.
- * `canonical_url` non c'e' di proposito: il canonical lo calcola questo service.
- */
-const SITE_METADATA_SEO_COLUMNS = [
-  'id', 'page_slug', 'header_title_main', 'header_title_highlight', 'page_description',
-  'access_level', 'seo_title', 'seo_description', 'seo_keywords', 'seo_robots',
-  'og_title', 'og_description', 'og_type', 'twitter_card', 'json_ld', 'hreflang',
-  'seo_health_score', 'business_profile_id',
-  'summary_ai', 'key_entities', 'page_essentials', 'related_queries_geo',
-  'cover_media:media_assets!site_metadata_cover_asset_id_fkey(image_url, alt_text, title)',
-].join(', ');
-
-/** Gli stessi campi, lato sidecar: solo quelli che il merge per campo puo' sovrascrivere. */
-const SITE_METADATA_SEO_T_FIELDS = [
-  'header_title_main', 'header_title_highlight', 'page_description',
-  'seo_title', 'seo_description', 'seo_keywords', 'og_title', 'og_description',
-  'summary_ai', 'key_entities', 'page_essentials', 'related_queries_geo',
-] as const;
-
-function isSitePage(data: unknown): data is SitePage {
-  if (!data || typeof data !== 'object') return false;
-  const d = data as Record<string, unknown>;
-  return (
-    typeof d['id'] === 'string' &&
-    typeof d['page_slug'] === 'string' &&
-    typeof d['header_title_main'] === 'string' &&
-    typeof d['header_title_highlight'] === 'string' &&
-    typeof d['access_level'] === 'string' &&
-    typeof d['page_description'] === 'string'
-  );
-}
 
 /**
  * 🌍 hreflang GENERATO, mai memorizzato.
@@ -152,148 +104,110 @@ export function buildSubPageHreflang(
   return out;
 }
 
+/** URL assoluto per i crawler social; vuoto → immagine di ripiego (la stessa della edge). */
+export function toAbsoluteImageUrl(url: string): string {
+  if (!url) return OG_DEFAULT_IMAGE;
+  if (url.startsWith('http')) return url;
+  return `${SITE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
+/** Le due dipendenze esterne dei meta: chi le procura decide come aspettarle. */
+export interface PageSeoDeps {
+  /** Riga di business_profile; serve solo alle pagine con `business_profile_id` (oggi: home). */
+  businessProfile: BusinessProfile | null;
+  /** Slug tradotti per lingua, dal registro; vuoto a lingue spente. */
+  alternates: Record<string, string>;
+}
+
+/**
+ * Costruisce i meta dei motori dalla riga di site_metadata GIA' letta e fusa.
+ *
+ * PURA e SINCRONA di proposito. Fino al 2026-09-06 questa logica viveva dentro
+ * una funzione che faceva anche la lettura dal database, piu' due attese in
+ * fila (il profilo aziendale per il nodo LocalBusiness, il registro degli slug
+ * per gli hreflang). Cosi' la stessa riga si leggeva due volte per pagina: una
+ * per l'header, una per i meta. Ora la riga arriva da `getPageMetadata`, che e'
+ * gia' la lettura dell'header, e le due dipendenze le procura il chiamante
+ * (`useSEO`, con due query dipendenti) e le passa qui. Nessun `await`: puo'
+ * stare in un `useMemo`, e per la prima volta si puo' testare senza rete.
+ *
+ * Restituisce null se la riga non e' una pagina valida: il chiamante ricade
+ * sui default, come faceva prima.
+ */
+export function buildPageSeo(row: unknown, lang: string, deps: PageSeoDeps): PageMetadata | null {
+  if (!isSiteMetadataRow(row)) return null;
+  const page = row;
+
+  // 1. Access Level Guard: Sicurezza assoluta
+  const robots = page.access_level === 'public'
+    ? (page.seo_robots || 'index, follow')
+    : 'noindex, nofollow';
+
+  // 2. Risolvi immagine: cover_asset_id → media_assets (join cover_media)
+  const resolvedImage = page.cover_media?.image_url || '';
+
+  // 2b. json_ld: pagine agganciate a business_profile (home) → nodo LocalBusiness
+  //     rigenerato dalla fonte unica; il resto del @graph resta com'e'.
+  let jsonLd = (page.json_ld || {}) as Record<string, unknown>;
+  if (page.business_profile_id) {
+    jsonLd = applyLocalBusiness(jsonLd, deps.businessProfile);
+  }
+
+  // 3. URL della pagina in questa lingua.
+  // `page.page_slug` resta SEMPRE l'inglese: il merge non tocca gli slug, la loro
+  // fonte unica e' il registro (v_translated_slugs), che arriva in `deps.alternates`.
+  const enSlug = page.page_slug;
+  const isHome = enSlug === 'home';
+
+  // A flag spento il registro non si interroga: il sito e' quello di oggi, e
+  // route/hreflang/sitemap si accendono insieme o non si accendono.
+  const alternates = PREFIX_ROUTES_ACTIVE ? deps.alternates : {};
+  const localizedSlug = lang === DEFAULT_LANG ? enSlug : (alternates[lang] ?? enSlug);
+
+  // Il canonical deve puntare a un URL che RISOLVE davvero. A flag spento le
+  // route a prefisso non esistono: un canonical `/es/…` manderebbe Google su
+  // un 302. Quindi finche' l'interruttore e' giu' il canonical e' sempre quello
+  // inglese, anche se i contenuti serviti sono tradotti.
+  const usePrefix = PREFIX_ROUTES_ACTIVE && lang !== DEFAULT_LANG;
+  const canonicalPath = usePrefix
+    ? (isHome ? `${lang}/` : `${lang}/${localizedSlug}`)
+    : (isHome ? '' : enSlug);
+
+  // 4. Metadata Construction
+  return {
+    seo_title: page.seo_title || `${page.header_title_main} ${page.header_title_highlight} | Thai Akha Kitchen`,
+    seo_description: page.seo_description || page.page_description || '',
+    seo_keywords: page.seo_keywords || [],
+    seo_robots: robots,
+    og_image: toAbsoluteImageUrl(resolvedImage),
+    og_title: page.og_title || undefined,
+    og_description: page.og_description || undefined,
+    og_type: page.og_type || undefined,
+    twitter_card: page.twitter_card || undefined,
+    json_ld: jsonLd,
+    seo_health_score: page.seo_health_score || 0,
+    canonical_url: `${SITE_URL}/${canonicalPath}`,
+    // GENERATO dal registro a flag acceso; a flag spento resta il valore DB,
+    // che oggi e' la sola self-reference inglese.
+    hreflang: PREFIX_ROUTES_ACTIVE
+      ? buildHreflang(enSlug, alternates)
+      : (page.hreflang ?? null),
+
+    // Multilingua
+    lang,
+    page_slug: enSlug,
+    localized_slug: localizedSlug,
+    og_locale: OG_LOCALES[lang as SupportedLang] ?? OG_LOCALES.en,
+
+    // GEO / AI-search — gia' tradotti dal merge per campo.
+    summary_ai: page.summary_ai ?? null,
+    key_entities: page.key_entities ?? null,
+    page_essentials: page.page_essentials ?? null,
+    related_queries_geo: page.related_queries_geo ?? null,
+  };
+}
+
 export const seoService = {
-  /**
-   * Recupera i metadati SEO per uno slug specifico con logica di sicurezza e fallback.
-   * Risolve cover_asset_id → media_assets.image_url via join.
-   *
-   * Data layer #86: la cache la possiede TanStack (front `useSEO`); qui nessun
-   * localStorage. Miss/errore → default (mai null).
-   *
-   * @param slug SEMPRE lo slug INGLESE (identità DB). La traduzione dell'URL la
-   *             fa il router prima di chiamare qui: un solo posto che conosce gli slug.
-   * @param lang lingua richiesta; 'en' legge solo la base, le altre fondono il
-   *             sidecar campo per campo.
-   */
-  async getMetadataForSlug(
-    slug: string,
-    table: 'site_metadata' = 'site_metadata',
-    lang: string = DEFAULT_LANG,
-  ): Promise<PageMetadata> {
-    return (await this.fetchMetadataForSlug(slug, table, lang)) ?? this.getDefaultMetadata();
-  },
-
-  /** Raw fetch+build of page metadata. Returns null on miss/error (never cached). */
-  async fetchMetadataForSlug(
-    slug: string,
-    table: 'site_metadata' = 'site_metadata',
-    lang: string = DEFAULT_LANG,
-  ): Promise<PageMetadata | null> {
-    // Il sidecar arriva nella stessa query: una sola round-trip per pagina.
-    // In inglese non serve — la base È l'inglese.
-    const needsTranslation = lang !== DEFAULT_LANG;
-
-    // `sidecarFilter` va PRIMA di `.maybeSingle()`: dopo il builder non ha piu' `.eq`.
-    // Senza di esso il join tornava TUTTE le righe tradotte della pagina (fino a 11,
-    // ognuna con i suoi JSON GEO) e `pickTranslation` ne teneva una: si scaricavano
-    // dieci traduzioni per usarne una.
-    const { data, error } = await sidecarFilter(
-      supabase
-        .from(table)
-        .select(`${SITE_METADATA_SEO_COLUMNS}${sidecarJoin('site_metadata_translations', SITE_METADATA_SEO_T_FIELDS, lang)}`)
-        .eq('page_slug', slug),
-      lang,
-    ).maybeSingle();
-
-    if (error || !data || !isSitePage(data)) {
-      console.warn(`[SEO] No metadata found for slug: ${slug}, using defaults.`);
-      return null;
-    }
-
-    // FALLBACK PER CAMPO: ogni campo tradotto vince, ogni campo vuoto ricade
-    // sull'inglese. Mai per riga — vedi lib/mergeTranslation.ts.
-    const translations = (data as unknown as { translations?: Array<{ lang?: string | null }> }).translations;
-    const page = needsTranslation
-      ? mergeTranslation(
-          data as unknown as Record<string, unknown>,
-          pickTranslation(translations, lang) as Record<string, unknown> | null,
-        ) as unknown as SitePage
-      : data;
-
-    // 1. Access Level Guard: Sicurezza assoluta
-    const robots = page.access_level === 'public'
-      ? (page.seo_robots || 'index, follow')
-      : 'noindex, nofollow';
-
-    // 2. Risolvi immagine: cover_asset_id → media_assets (join cover_media)
-    const coverMedia = page.cover_media as { image_url?: string } | null;
-    const resolvedImage = coverMedia?.image_url || '';
-
-    // 2b. json_ld: pagine agganciate a business_profile (home) → nodo LocalBusiness
-    //     rigenerato dalla fonte unica; il resto del @graph resta com'è.
-    let jsonLd = (page.json_ld || {}) as Record<string, unknown>;
-    if (page.business_profile_id) {
-      jsonLd = await withDynamicLocalBusiness(jsonLd);
-    }
-
-    // 3. URL della pagina in questa lingua.
-    // `page.page_slug` resta SEMPRE l'inglese: mergeTranslation non tocca gli
-    // slug, la loro fonte unica è il registro (v_translated_slugs).
-    const enSlug = page.page_slug;
-    const isHome = enSlug === 'home';
-
-    // A flag spento nessuna delle due query di registro parte: il sito è quello
-    // di oggi, e route/hreflang/sitemap si accendono insieme o non si accendono.
-    const alternates = PREFIX_ROUTES_ACTIVE
-      ? await translatedSlugService.getAlternatesForSlug(enSlug)
-      : {};
-    const localizedSlug = lang === DEFAULT_LANG ? enSlug : (alternates[lang] ?? enSlug);
-
-    // Il canonical deve puntare a un URL che RISOLVE davvero. A flag spento le
-    // route a prefisso non esistono: un canonical `/es/…` manderebbe Google su
-    // un 302. Quindi finché l'interruttore è giù il canonical è sempre quello
-    // inglese, anche se i contenuti serviti sono tradotti.
-    const usePrefix = PREFIX_ROUTES_ACTIVE && lang !== DEFAULT_LANG;
-    const canonicalPath = usePrefix
-      ? (isHome ? `${lang}/` : `${lang}/${localizedSlug}`)
-      : (isHome ? '' : enSlug);
-
-    // 4. Metadata Construction
-    return {
-      seo_title: page.seo_title || `${page.header_title_main} ${page.header_title_highlight} | Thai Akha Kitchen`,
-      seo_description: page.seo_description || page.page_description || '',
-      seo_keywords: page.seo_keywords || [],
-      seo_robots: robots,
-      og_image: this.ensureAbsoluteUrl(resolvedImage),
-      og_title: page.og_title || undefined,
-      og_description: page.og_description || undefined,
-      og_type: page.og_type || undefined,
-      twitter_card: page.twitter_card || undefined,
-      json_ld: jsonLd,
-      seo_health_score: page.seo_health_score || 0,
-      canonical_url: `${SITE_URL}/${canonicalPath}`,
-      // GENERATO dal registro a flag acceso; a flag spento resta il valore DB,
-      // che oggi è la sola self-reference inglese.
-      hreflang: PREFIX_ROUTES_ACTIVE
-        ? buildHreflang(enSlug, alternates)
-        : (page.hreflang ?? null),
-
-      // Multilingua
-      lang,
-      page_slug: enSlug,
-      localized_slug: localizedSlug,
-      og_locale: OG_LOCALES[lang as SupportedLang] ?? OG_LOCALES.en,
-
-      // GEO / AI-search — già tradotti dal merge per campo.
-      // page_essentials è ancora vuota lato dati: qui passa comunque, così quando
-      // /translate-db la riempie non serve toccare il lettore.
-      summary_ai: (page as unknown as Record<string, unknown>).summary_ai as string | null ?? null,
-      key_entities: (page as unknown as Record<string, unknown>).key_entities ?? null,
-      page_essentials: (page as unknown as Record<string, unknown>).page_essentials ?? null,
-      related_queries_geo: (page as unknown as Record<string, unknown>).related_queries_geo ?? null,
-    };
-  },
-
-  /**
-   * Garantisce che l'URL dell'immagine sia assoluto per i crawler social.
-   * Fallback → Supabase storage default (stessa immagine dell'Edge Function).
-   */
-  ensureAbsoluteUrl(url: string): string {
-    if (!url) return OG_DEFAULT_IMAGE;
-    if (url.startsWith('http')) return url;
-    return `${SITE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
-  },
-
   /**
    * Metadati di emergenza per evitare tag vuoti.
    * canonical_url è intenzionalmente assente — SEOHead usa window.location.href come fallback.

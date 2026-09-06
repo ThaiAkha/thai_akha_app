@@ -2,6 +2,7 @@ export * from './content.service';
 export * from './news.service';
 export * from './contentMetadata.service';
 export * from './siteMetadataExtras.service';
+export * from './siteMetadataRow';
 export * from './recipe.service';
 export * from './culture.service';
 export * from './ingredient.service';

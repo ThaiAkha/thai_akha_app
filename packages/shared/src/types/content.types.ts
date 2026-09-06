@@ -41,25 +41,6 @@ export interface PageMetadata {
 }
 
 /**
- * Extended page type with SEO metadata
- * Updated: migration_002 — business fields moved to business_profile table
- */
-export interface SitePage extends PageMetadata {
-  id: string;
-  page_slug: string;
-  header_title_main: string;
-  header_title_highlight: string;
-  access_level: string;
-  page_description: string;
-  // Image — resolved from cover_asset_id via media_assets join
-  cover_asset_id?: string | null;
-  cover_media?: { image_url: string; alt_text: string | null; title: string | null } | null;
-  // Business profile FK — only populated for 'home' page
-  business_profile_id?: string | null;
-  // hero_image_url, og_image, primary_image_alt/title — DROPPED in migration_001
-}
-
-/**
  * Business profile — single row for Thai Akha Kitchen LocalBusiness schema
  * Referenced from site_metadata.business_profile_id (only home page)
  */

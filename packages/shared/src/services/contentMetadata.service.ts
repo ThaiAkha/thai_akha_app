@@ -1,6 +1,7 @@
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { HeaderMetadata, ContentCategoryDB, BusinessProfile } from '../types';
 import type { SiteMetadataExtras } from './siteMetadataExtras.service';
+import { SITE_METADATA_ROW_COLUMNS, SITE_METADATA_ROW_T_FIELDS, type SiteMetadataRow } from './siteMetadataRow';
 import { fetchWithCache, normalizeLang } from './_cache';
 import { sidecarJoin, sidecarFilter, mergeSidecarRow, mergeSidecarRows } from '../lib/mergeTranslation';
 import { NEWS_T_FIELDS } from './news.service';
@@ -37,47 +38,20 @@ export const CONTENT_CATEGORY_T_FIELDS = [
     'ui_quote', 'seo_title', 'seo_description', 'og_title', 'og_description',
 ] as const;
 
-const PAGE_HEADER_T_FIELDS = [
-    'header_title_main', 'header_title_highlight', 'header_badge', 'page_description',
-    'seo_title', 'seo_description', 'og_title', 'og_description',
-    // `page_essentials` viaggia con l'header dal 2026-09-05: la stessa riga
-    // serviva anche il "contorno" di pagina, con una seconda query.
-    'page_essentials',
-] as const;
-
 /**
  * Quel che una pagina riceve per il suo header, piu' i campi di contorno della
  * stessa riga (`extras`, assente sul ramo admin: quella tabella non li ha).
  */
-export type PageHeaderMetadata = HeaderMetadata & { imageUrl: string; extras?: SiteMetadataExtras | null };
-
-/** La forma della riga header dopo il merge: le colonne della select, niente di piu'. */
-interface PageHeaderRow {
-    header_badge: string | null;
-    header_icon: string | null;
-    header_title_main: string | null;
-    header_title_highlight: string | null;
-    page_description: string | null;
-    cover_asset_id: string | null;
-    cover_media: { image_url?: string; alt_text?: string } | null;
-    seo_title: string | null;
-    seo_description: string | null;
-    og_title: string | null;
-    og_description: string | null;
-    og_type: string | null;
-    twitter_card: string | null;
-    canonical_url: string | null;
-    json_ld: unknown;
-    cherry_prompt: string | null;
-    cherry_response: string | null;
-    cherry_button_ids: string[] | null;
-    page_essentials: Record<string, unknown> | null;
-    legal_version: string | null;
-    date_published: string | null;
-    date_modified: string | null;
-    faq_refs: string[] | null;
-    sibling_slugs: string[] | null;
-}
+export type PageHeaderMetadata = HeaderMetadata & {
+    imageUrl: string;
+    extras?: SiteMetadataExtras | null;
+    /**
+     * La riga intera, gia' fusa col sidecar. La legge SOLO `useSEO`, come
+     * proiezione della stessa query: e' cosi' che i meta dei motori smettono di
+     * costare una seconda lettura della stessa riga per pagina (2026-09-06).
+     */
+    seoRow?: SiteMetadataRow | null;
+};
 
 /** I due soli campi che menu e footer mostrano: il resto della riga resta inglese/strutturale. */
 const MENU_T_FIELDS = ['menu_label', 'page_description'] as const;
@@ -184,39 +158,23 @@ export const contentMetadataService = {
                 };
             }
 
+            // UNA lettura per pagina, colonne dall'unione dei due lettori (vedi
+            // siteMetadataRow.ts): l'header e i meta dei motori si servono qui.
             const frontQuery = sidecarFilter(supabase
                 .from(table)
-                .select(`
-                    header_badge,
-                    header_icon,
-                    header_title_main,
-                    header_title_highlight,
-                    page_description,
-                    cover_asset_id,
-                    cover_media:media_assets!cover_asset_id(image_url, alt_text),
-                    seo_title,
-                    seo_description,
-                    og_title,
-                    og_description,
-                    og_type,
-                    twitter_card,
-                    canonical_url,
-                    json_ld,
-                    cherry_prompt,
-                    cherry_response,
-                    cherry_button_ids,
-                    page_essentials,
-                    legal_version,
-                    date_published,
-                    date_modified,
-                    faq_refs,
-                    sibling_slugs
-                `+ sidecarJoin('site_metadata_translations', PAGE_HEADER_T_FIELDS, normalizedLang))
+                .select(SITE_METADATA_ROW_COLUMNS
+                    + sidecarJoin('site_metadata_translations', SITE_METADATA_ROW_T_FIELDS, normalizedLang))
                 .eq('page_slug', slug), normalizedLang);
             const { data: rawFront, error } = await frontQuery.maybeSingle();
 
-            if (error || !rawFront) return null;
-            const data = mergeSidecarRow<PageHeaderRow>(rawFront, normalizedLang);
+            if (error) {
+                // Un errore vero merita una riga di log; una riga assente no (ci sono
+                // slug legittimi senza riga). Prima l'avviso viveva nel lettore SEO.
+                console.warn(`[site_metadata] lettura fallita per "${slug}":`, error.message);
+                return null;
+            }
+            if (!rawFront) return null;
+            const data = mergeSidecarRow<SiteMetadataRow>(rawFront, normalizedLang);
 
             // Resolve cover image from media_assets join
             const resolvedImageUrl = data.cover_media?.image_url || '';
@@ -241,6 +199,7 @@ export const contentMetadataService = {
                 cherryPrompt: data.cherry_prompt,
                 cherryResponse: data.cherry_response,
                 cherryButtonIds: data.cherry_button_ids,
+                seoRow: data,
                 // Campi "di contorno" della STESSA riga (Page Essentials, date, FAQ
                 // collegate, pagine sorelle). Prima li leggeva getPageExtras con una
                 // seconda query, su una terza chiave di cache: la stessa riga di

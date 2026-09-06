@@ -46,7 +46,22 @@ export function useTypewriter(
    * sempre, senza opzioni e fuori dallo storico per il modello.
    */
   const finalizeActive = useCallback(() => {
-    if (activeIdRef.current) stopTypewriter(activeIdRef.current);
+    const id = activeIdRef.current;
+    if (!id) return;
+    // Bolla di stream che non ha ancora ricevuto un pezzo di testo: chiuderla
+    // ora la mostrerebbe vuota e senza puntini fino a fine stream. Cede solo il
+    // turno (intervallo e coda liberi per il nuovo); la completa sendMessage a
+    // fine stream, o la toglie in caso di errore.
+    if (fullResponseRef.current === '') {
+      if (typeIntervalRef.current) {
+        clearInterval(typeIntervalRef.current);
+        typeIntervalRef.current = null;
+      }
+      typeQueueRef.current = [];
+      activeIdRef.current = null;
+      return;
+    }
+    stopTypewriter(id);
   }, [stopTypewriter]);
 
   /** true se il typewriter sta ancora rivelando QUESTA bolla (nessun turno l'ha presa in consegna). */

@@ -47,13 +47,15 @@ export function findNewsArticle(
 
   for (const a of articles) {
     // Titolo inglese (`title_key`) + slug per riconoscere; titolo tradotto solo
-    // per il punteggio (vedi scoreName). Almeno DUE token distintivi per le
-    // news: i titoli sono lunghi e generici, serve piu' specificita'.
+    // per il punteggio (vedi scoreName). Regola come in produzione fino al
+    // 2026-09-06: una parola distintiva che compare in titolo E slug (punteggio
+    // almeno 2). La vecchia "almeno due distintive" contava la stessa parola due
+    // volte, quindi era gia' questa; scritta cosi' non cambia con il conteggio.
     const slugWords = String(a.slug ?? '').replace(/-/g, ' ');
     const { score, distinctive } = scoreName(
       msgSet, `${String(a.title_key ?? a.title ?? '')} ${slugWords}`, String(a.title ?? ''), (tk) => !GENERIC_TOKENS.has(tk),
     );
-    if (distinctive >= 2 && (!best || score > best.score)) best = { a, score };
+    if (distinctive >= 1 && score >= 2 && (!best || score > best.score)) best = { a, score };
   }
   return best?.a ?? null;
 }

@@ -67,12 +67,13 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
 
   const {
     typeQueueRef,
-    typeIntervalRef,
     serverDoneRef,
     fullResponseRef,
     startStreamTypewriter,
     startStaticTypewriter,
+    stopTypewriter,
     finalizeActive,
+    isActive,
   } = useTypewriter(updateMessages, updateMessages);
 
   // ── sendMessage ────────────────────────────────────────────────────────────
@@ -135,6 +136,10 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
       const rawResponse = await sendChatMessageStream(
         { message: userText, systemInstruction, history, lang },
         (chunk) => {
+          // La coda e il testo pieno appartengono al typewriter ATTIVO: se nel
+          // frattempo un nodo cliccato ha preso il turno (le pillole restano
+          // cliccabili durante lo stream), i pezzi non finiscono nella sua bolla.
+          if (!isActive(modelMsgId)) return;
           const cleanChunk = cleanCherryResponse(chunk);
           fullResponseRef.current += cleanChunk;
           // Split into word tokens + newline tokens (preserving structure for CherryFormatter)
@@ -143,10 +148,15 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
         }
       );
 
-      // Signal server is done — typewriter will finalize when queue empties
+      // Signal server is done — typewriter will finalize when queue empties.
+      // Se la bolla e' stata presa in consegna da un nodo, i ref sono del nodo:
+      // il testo definitivo va scritto direttamente (vedi finalOptions sotto).
       const response = cleanCherryResponse(rawResponse);
-      fullResponseRef.current = response;
-      serverDoneRef.current = true;
+      const takenOver = !isActive(modelMsgId);
+      if (!takenOver) {
+        fullResponseRef.current = response;
+        serverDoneRef.current = true;
+      }
 
       // Aggiorna la memoria anti-ripetizione con gli argomenti toccati in questo turno.
       for (const topic of detectCoveredTopics(`${userText}\n${response}`)) {
@@ -172,9 +182,17 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
           }]
         : [];
       const finalOptions = [...pickupButton, ...followups].slice(0, 4);
-      if (finalOptions.length > 0) {
+      if (finalOptions.length > 0 || takenOver) {
         updateMessages(prev =>
-          prev.map(m => m.id === modelMsgId ? { ...m, options: finalOptions } : m)
+          prev.map(m => m.id === modelMsgId
+            ? {
+                ...m,
+                // Presa in consegna: chiusa da finalizeActive col testo parziale
+                // di allora, qui riceve la risposta intera, la stessa salvata nel DB.
+                ...(takenOver && { text: response, isStreaming: false }),
+                ...(finalOptions.length > 0 && { options: finalOptions }),
+              }
+            : m)
         );
       }
 
@@ -186,16 +204,15 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
       }
     } catch (err) {
       console.error('[useCherryChat] sendMessage error:', err);
-      if (typeIntervalRef.current) {
-        clearInterval(typeIntervalRef.current);
-        typeIntervalRef.current = null;
-      }
+      // Si ferma solo il PROPRIO typewriter: se un nodo ha preso il turno, il
+      // suo intervallo continua (prima si cancellava l'intervallo di chiunque).
+      if (isActive(modelMsgId)) stopTypewriter(modelMsgId);
       setError('The kitchen is very busy kha! Please try again.');
       updateMessages(prev => prev.filter(m => m.id !== modelMsgId));
     } finally {
       setIsLoading(false);
     }
-  }, [userProfile, triggerAutoSummary, isLoading, locale, lang, updateMessages, startStreamTypewriter, finalizeActive, initSession, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
+  }, [userProfile, triggerAutoSummary, isLoading, locale, lang, updateMessages, startStreamTypewriter, stopTypewriter, finalizeActive, isActive, initSession, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeQueueRef]);
 
   const { injectInteraction, injectStaticExchange, addVoiceMessages } = useCherryInjection({
     updateMessages,

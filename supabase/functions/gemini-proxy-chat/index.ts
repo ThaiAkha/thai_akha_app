@@ -319,7 +319,7 @@ Deno.serve(async (req: Request) => {
               finish = readFinish(aggregated);
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
-              if (!fullText) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
+              if (!fullText.trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
             } catch (err) {
               failure = err;
             }
@@ -335,7 +335,10 @@ Deno.serve(async (req: Request) => {
               // A meta' risposta si consegna quello che c'e' (timeout o rete).
               console.warn('[gemini-proxy-chat] stream interrotto, consegno il parziale:', failure instanceof Error ? failure.message : failure);
             }
-            logMetrics(userId, message.length, fullText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage, finish });
+            // Tetto di uscita toccato: il testo parte comunque (e' quello che
+            // c'e'), ma nei numeri conta come guasto, cosi' si vede quante volte.
+            const truncated = finish === 'MAX_TOKENS';
+            logMetrics(userId, message.length, fullText.length, Date.now() - startTime, !truncated, truncated ? 'MAX_TOKENS: answer truncated' : undefined, { ...metricsExtra, usage, finish });
             controller.close();
           },
         });
@@ -351,7 +354,9 @@ Deno.serve(async (req: Request) => {
       const response = await result.response;
       const responseText = response.text();
       const finish = readFinish(response);
-      if (!responseText) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
+      // Qui passa il riassunto della sessione: uno tronco non va salvato.
+      if (finish === 'MAX_TOKENS') throw new Error('answer truncated (MAX_TOKENS)');
+      if (!responseText.trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
 
       clearTimeout(timeoutId);
       logMetrics(userId, message.length, responseText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage: readUsage(response.usageMetadata), finish });

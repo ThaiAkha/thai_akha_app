@@ -49,6 +49,9 @@ export function useTypewriter(
     if (activeIdRef.current) stopTypewriter(activeIdRef.current);
   }, [stopTypewriter]);
 
+  /** true se il typewriter sta ancora rivelando QUESTA bolla (nessun turno l'ha presa in consegna). */
+  const isActive = useCallback((msgId: string) => activeIdRef.current === msgId, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -113,6 +116,7 @@ export function useTypewriter(
     fullResponseRef,
     stopTypewriter,
     finalizeActive,
+    isActive,
     startStreamTypewriter,
     startStaticTypewriter,
   };

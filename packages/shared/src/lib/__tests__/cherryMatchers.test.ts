@@ -87,14 +87,14 @@ test('scoreName: il punteggio conta le ripetizioni, le distintive una volta sola
   assert.deepEqual(localized, { score: 2, distinctive: 2 });
 });
 
-test('news: "mai" italiano e "curry" da solo non bastano, due parole vere si\'', () => {
+test('news: regola di produzione, una parola vera in titolo e slug; "mai" italiano no', () => {
   const news: Row[] = [
     { slug: 'sunday-walking-street-market-chiang-mai', title: 'Il mercato della domenica a Chiang Mai', title_key: 'Sunday Walking Street Market in Chiang Mai' },
-    { slug: 'mortar-vs-blender-thai-curry-paste', title: 'Mortar vs Blender: Thai Curry Paste', title_key: 'Mortar vs Blender: Thai Curry Paste' },
+    { slug: 'how-to-play-akha-wisdom-path-quiz', title: 'Come giocare al Quiz', title_key: 'How to Play the Akha Wisdom Path Quiz: Your Complete Guide' },
   ];
   assert.equal(findNewsArticle('non l\'ho mai provato', news), null);
-  assert.equal(findNewsArticle('which curry do we cook?', news), null);
-  assert.equal(findNewsArticle('mortar or blender for the paste?', news)?.slug, 'mortar-vs-blender-thai-curry-paste');
-  assert.equal(findNewsArticle('the chiang mai market', news), null);
+  assert.equal(findNewsArticle('tell me about the quiz', news)?.slug, 'how-to-play-akha-wisdom-path-quiz');
   assert.equal(findNewsArticle('is the walking street market open?', news)?.slug, 'sunday-walking-street-market-chiang-mai');
+  // Una parola solo nel titolo tradotto non basta.
+  assert.equal(findNewsArticle('il mercato della domenica', news), null);
 });

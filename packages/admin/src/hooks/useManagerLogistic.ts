@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { Tables } from '@thaiakha/shared/types';
 import { SessionType } from '../components/common/ClassPicker';
@@ -90,6 +91,38 @@ export interface PickupZoneOption {
     evening_pickup_time: string | null;
 }
 
+/** Vuoti stabili: `[]` inline sarebbe un riferimento nuovo a ogni render. */
+const NO_HOTELS: HotelOption[] = [];
+const NO_MEETING_POINTS: MeetingPointOption[] = [];
+const NO_ZONES: PickupZoneOption[] = [];
+
+export const logisticReferenceQueryKey = ['logistic', 'reference_data'] as const;
+
+async function fetchLogisticReference() {
+    const [hotelRes, mpRes, zoneRes] = await Promise.all([
+        supabase
+            .from('hotel_locations')
+            .select('id, name, zone_id')
+            .eq('is_active', true)
+            .eq('review_status', 'approved')
+            .order('name', { ascending: true }),
+        supabase
+            .from('meeting_points')
+            .select('id, name, morning_pickup_time, evening_pickup_time')
+            .eq('active', true)
+            .order('name', { ascending: true }),
+        supabase
+            .from('pickup_zones')
+            .select('id, name, color_code, morning_pickup_time, evening_pickup_time')
+            .order('display_order', { ascending: true }),
+    ]);
+    return {
+        hotels: (hotelRes.data ?? []) as HotelOption[],
+        meetingPoints: (mpRes.data ?? []) as MeetingPointOption[],
+        pickupZones: (zoneRes.data ?? []) as PickupZoneOption[],
+    };
+}
+
 export function useManagerLogistic() {
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -98,9 +131,16 @@ export function useManagerLogistic() {
     const [upcomingSessions, setUpcomingSessions] = useState<SessionSummary[]>([]);
 
     // Reference data
-    const [hotels, setHotels] = useState<HotelOption[]>([]);
-    const [meetingPoints, setMeetingPoints] = useState<MeetingPointOption[]>([]);
-    const [pickupZones, setPickupZones] = useState<PickupZoneOption[]>([]);
+    // Dati di riferimento: alberghi, punti di ritrovo e zone. Non cambiano quasi
+    // mai, e prima venivano riletti a ogni montaggio della pagina. Una chiave sola,
+    // condivisa da chiunque li chieda.
+    const referenceQuery = useQuery({
+        queryKey: logisticReferenceQueryKey,
+        queryFn: fetchLogisticReference,
+    });
+    const hotels: HotelOption[] = referenceQuery.data?.hotels ?? NO_HOTELS;
+    const meetingPoints: MeetingPointOption[] = referenceQuery.data?.meetingPoints ?? NO_MEETING_POINTS;
+    const pickupZones: PickupZoneOption[] = referenceQuery.data?.pickupZones ?? NO_ZONES;
 
     // Selection State
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -108,35 +148,6 @@ export function useManagerLogistic() {
     const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
     // ✅ AppHeader handles metadata loading automatically
-
-    // --- REFERENCE DATA FETCH (once on mount) ---
-    useEffect(() => {
-        const fetchReferenceData = async () => {
-            const [hotelRes, mpRes, zoneRes] = await Promise.all([
-                supabase
-                    .from('hotel_locations')
-                    .select('id, name, zone_id')
-                    .eq('is_active', true)
-                    .eq('review_status', 'approved')
-                    .order('name', { ascending: true }),
-                supabase
-                    .from('meeting_points')
-                    .select('id, name, morning_pickup_time, evening_pickup_time')
-                    .eq('active', true)
-                    .order('name', { ascending: true }),
-                supabase
-                    .from('pickup_zones')
-                    .select('id, name, color_code, morning_pickup_time, evening_pickup_time')
-                    .order('display_order', { ascending: true }),
-            ]);
-
-            if (hotelRes.data) setHotels(hotelRes.data);
-            if (mpRes.data) setMeetingPoints(mpRes.data);
-            if (zoneRes.data) setPickupZones(zoneRes.data);
-        };
-
-        fetchReferenceData();
-    }, []);
 
     // --- SESSION DATA FETCHING ---
     const fetchData = useCallback(async () => {

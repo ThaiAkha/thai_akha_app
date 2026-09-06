@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useQuery, useQueryClient } from '@thaiakha/shared/query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { GEOJSON_MASTER } from '@thaiakha/shared/data';
@@ -27,15 +28,66 @@ function extractGPS(url: string): { lat: number; lng: number } | null {
     return null;
 }
 
+/** Vuoti stabili: `[]` inline sarebbe un riferimento nuovo a ogni render. */
+const NO_HOTELS: HotelLocation[] = [];
+const NO_ZONES: PickupZone[] = [];
+const NO_MEETING_POINTS: MeetingPoint[] = [];
+
+export const adminHotelsQueryKey = ['admin', 'hotels_and_zones'] as const;
+
+/** Gli alberghi arrivano a pagine da 1000: la tabella supera il limite di PostgREST. */
+async function fetchAllHotels(): Promise<HotelLocation[]> {
+    let allData: HotelLocation[] = [];
+    let from = 0;
+    const step = 1000;
+    for (;;) {
+        const { data, error } = await supabase
+            .from('hotel_locations')
+            .select('*')
+            .order('name')
+            .range(from, from + step - 1);
+
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+
+        // DB row (is_active/created_at nullable) -> domain HotelLocation, as before the typing.
+        allData = [...allData, ...(data as unknown as HotelLocation[])];
+        if (data.length < step) break;
+        from += step;
+    }
+    return allData;
+}
+
+async function fetchHotelsData(): Promise<{ hotels: HotelLocation[]; zones: PickupZone[]; meetingPoints: MeetingPoint[] }> {
+    const [hotelsData, zonesRes, meetingPointsRes] = await Promise.all([
+        fetchAllHotels(),
+        supabase.from('pickup_zones').select('*').order('display_order', { ascending: true }),
+        supabase.from('meeting_points').select('*, cover:media_assets!image_asset_id(image_url, alt_text)').order('name'),
+    ]);
+
+    const zones = (zonesRes.data ?? []) as unknown as PickupZone[];
+    // Resolve image_asset_id → media_assets; keep image_url alias for display.
+    const meetingPoints = (meetingPointsRes.data ?? []).map(mp => {
+        const cover = (mp as Record<string, unknown>).cover as { image_url?: string } | null;
+        return { ...mp, image_url: cover?.image_url ?? null };
+    }) as unknown as MeetingPoint[];
+
+    const hotels = hotelsData.map((h) => {
+        const zone = zones.find((z) => z.id === h.zone_id);
+        return {
+            ...h,
+            zone_name: zone?.name || 'No Zone',
+            zone_color: zone?.color_code || '#9CA3AF',
+        };
+    });
+
+    return { hotels, zones, meetingPoints };
+}
+
 export function useAdminHotels() {
     const { t } = useTranslation('hotels');
     // ✅ AppHeader handles metadata loading automatically
 
-    // Data State
-    const [hotels, setHotels] = useState<HotelLocation[]>([]);
-    const [zones, setZones] = useState<PickupZone[]>([]);
-    const [meetingPoints, setMeetingPoints] = useState<MeetingPoint[]>([]);
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     // UI State
@@ -75,66 +127,22 @@ export function useAdminHotels() {
         return null;
     }, []);
 
-    // ── Fetch Data ────────────────────────────────────────────────────────────
-    const fetchData = useCallback(async () => {
-        setLoading(true);
-        try {
-            const fetchAllHotels = async () => {
-                let allData: HotelLocation[] = [];
-                let from = 0;
-                const step = 1000;
-                while (true) {
-                    const { data, error } = await supabase
-                        .from('hotel_locations')
-                        .select('*')
-                        .order('name')
-                        .range(from, from + step - 1);
-
-                    if (error) throw error;
-                    if (!data || data.length === 0) break;
-
-                    // DB row (is_active/created_at nullable) -> domain HotelLocation, as before the typing.
-                    allData = [...allData, ...(data as unknown as HotelLocation[])];
-                    if (data.length < step) break;
-                    from += step;
-                }
-                return allData;
-            };
-
-            const [hotelsData, zonesRes, meetingPointsRes] = await Promise.all([
-                fetchAllHotels(),
-                supabase.from('pickup_zones').select('*').order('display_order', { ascending: true }),
-                supabase.from('meeting_points').select('*, cover:media_assets!image_asset_id(image_url, alt_text)').order('name'),
-            ]);
-
-            if (zonesRes.data) setZones(zonesRes.data as unknown as PickupZone[]);
-            // Resolve image_asset_id → media_assets; keep image_url alias for display.
-            if (meetingPointsRes.data) setMeetingPoints(meetingPointsRes.data.map(mp => {
-                const cover = (mp as Record<string, unknown>).cover as { image_url?: string } | null;
-                return { ...mp, image_url: cover?.image_url ?? null };
-            }) as unknown as MeetingPoint[]);
-
-            if (hotelsData && zonesRes.data) {
-                const enriched = hotelsData.map((h) => {
-                    const zone = zonesRes.data.find((z) => z.id === h.zone_id);
-                    return {
-                        ...h,
-                        zone_name: zone?.name || 'No Zone',
-                        zone_color: zone?.color_code || '#9CA3AF',
-                    };
-                });
-                setHotels(enriched);
-            }
-        } catch (err) {
-            console.error('Fetch error:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+    // Data layer unico (CLAUDE.md #17): era `useState` + `useEffect` + fetch a mano,
+    // rifatto a ogni montaggio della pagina. Ora una chiave sola; dopo un
+    // salvataggio si invalida, che e' il gesto equivalente al vecchio `fetchData()`.
+    const queryClient = useQueryClient();
+    const hotelsQuery = useQuery({
+        queryKey: adminHotelsQueryKey,
+        queryFn: fetchHotelsData,
+    });
+    const hotels = hotelsQuery.data?.hotels ?? NO_HOTELS;
+    const zones = hotelsQuery.data?.zones ?? NO_ZONES;
+    const meetingPoints = hotelsQuery.data?.meetingPoints ?? NO_MEETING_POINTS;
+    const loading = hotelsQuery.isPending;
+    const fetchData = useCallback(
+        () => queryClient.invalidateQueries({ queryKey: adminHotelsQueryKey }),
+        [queryClient],
+    );
 
     // ── Handlers ──────────────────────────────────────────────────────────────
     const handleMapLinkChange = (value: string) => {

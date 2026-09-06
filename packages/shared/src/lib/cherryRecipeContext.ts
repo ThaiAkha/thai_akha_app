@@ -12,6 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { recipeService } from '../services/recipe.service';
+import { tokenize } from './cherryTextUtils';
 
 interface KeyIngredient {
   ingredient: string;
@@ -27,10 +28,6 @@ const GENERIC_TOKENS = new Set([
   'sweet', 'sour', 'spicy', 'class', 'dish', 'rice', 'akha', 'homemade', 'fresh',
 ]);
 
-function tokenize(s: string): string[] {
-  const matches: string[] = s.toLowerCase().match(/[a-z]+/g) ?? [];
-  return matches.filter((t) => t.length >= 3);
-}
 
 /** Trova la ricetta citata nel testo (match per token distintivi del nome). */
 export function findRecipeInText(

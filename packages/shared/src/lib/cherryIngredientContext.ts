@@ -14,6 +14,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { recipeService } from '../services/recipe.service';
+import { tokenize, truncate, includesAny } from './cherryTextUtils';
 
 // Parole troppo comuni per attivare da sole una scheda ingrediente (evitano
 // falsi positivi con domande generiche su cibo/ricette).
@@ -28,10 +29,9 @@ const FULL_DETAIL_SIGNALS = [
   'tutto', 'dettagli', 'approfond', 'completo',
 ];
 
-function tokenize(s: string): string[] {
-  const matches: string[] = s.toLowerCase().match(/[a-z]+/g) ?? [];
-  return matches.filter((t) => t.length >= 3);
-}
+/** La lista sopra e' di QUESTO contesto: la funzione e' condivisa, le parole no. */
+const wantsFullDetail = (text: string): boolean => includesAny(text, FULL_DETAIL_SIGNALS);
+
 
 /**
  * Cerca l'ingrediente più pertinente citato nel testo. Conservativo: serve un
@@ -62,15 +62,7 @@ export function findIngredient(
   return best?.ing ?? null;
 }
 
-function wantsFullDetail(text: string): boolean {
-  const hay = (text ?? '').toLowerCase();
-  return FULL_DETAIL_SIGNALS.some((kw) => hay.includes(kw));
-}
 
-function truncate(text: string, max: number): string {
-  const clean = (text ?? '').trim();
-  return clean.length <= max ? clean : clean.slice(0, max).trimEnd() + '…';
-}
 
 /**
  * Blocco INGREDIENT DATA per il prompt, o null se nessun ingrediente distintivo

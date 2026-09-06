@@ -9,6 +9,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { newsService } from '../services/news.service';
+import { tokenize, truncate, includesAny } from './cherryTextUtils';
 
 const GENERIC_TOKENS = new Set([
   'the', 'and', 'akha', 'thai', 'guide', 'tips', 'how', 'your', 'what', 'about',
@@ -30,10 +31,9 @@ const FULL_DETAIL_SIGNALS = [
   'more about', 'in depth', 'deep dive', 'tutto', 'dettagli', 'approfond', 'completo',
 ];
 
-function tokenize(s: string): string[] {
-  const matches: string[] = s.toLowerCase().match(/[a-z]+/g) ?? [];
-  return matches.filter((t) => t.length >= 3);
-}
+/** La lista sopra e' di QUESTO contesto: la funzione e' condivisa, le parole no. */
+const wantsFullDetail = (text: string): boolean => includesAny(text, FULL_DETAIL_SIGNALS);
+
 
 /** Cerca l'articolo news pertinente (match su title + slug). null se broad. */
 export function findNewsArticle(
@@ -60,15 +60,7 @@ export function findNewsArticle(
   return best?.a ?? null;
 }
 
-function wantsFullDetail(text: string): boolean {
-  const hay = (text ?? '').toLowerCase();
-  return FULL_DETAIL_SIGNALS.some((kw) => hay.includes(kw));
-}
 
-function truncate(text: string, max: number): string {
-  const clean = (text ?? '').trim();
-  return clean.length <= max ? clean : clean.slice(0, max).trimEnd() + '…';
-}
 
 /** Le ultime 3 uscite (il feed arriva già ordinato per published_at desc). */
 function buildHeadlines(feed: Array<Record<string, unknown>>): string | null {

@@ -15,6 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { cultureService } from '../services/culture.service';
+import { tokenize, truncate, includesAny } from './cherryTextUtils';
 
 // Token generici che NON identificano una sezione specifica.
 const GENERIC_TOKENS = new Set([
@@ -33,10 +34,9 @@ const FULL_DETAIL_SIGNALS = [
   'deep dive', 'all about', 'tutto', 'dettagli', 'dettaglio', 'approfond', 'completo',
 ];
 
-function tokenize(s: string): string[] {
-  const matches: string[] = s.toLowerCase().match(/[a-z]+/g) ?? [];
-  return matches.filter((t) => t.length >= 3);
-}
+/** La lista sopra e' di QUESTO contesto: la funzione e' condivisa, le parole no. */
+const wantsFullDetail = (text: string): boolean => includesAny(text, FULL_DETAIL_SIGNALS);
+
 
 /** Cerca la sezione cultura pertinente (match su title + slug). null se broad. */
 export function findCultureSection(
@@ -61,15 +61,7 @@ export function findCultureSection(
   return best?.s ?? null;
 }
 
-function wantsFullDetail(text: string): boolean {
-  const hay = (text ?? '').toLowerCase();
-  return FULL_DETAIL_SIGNALS.some((kw) => hay.includes(kw));
-}
 
-function truncate(text: string, max: number): string {
-  const clean = (text ?? '').trim();
-  return clean.length <= max ? clean : clean.slice(0, max).trimEnd() + '…';
-}
 
 /**
  * Blocco CULTURE DATA per il prompt, o null se nessuna sezione specifica è

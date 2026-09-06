@@ -25,8 +25,14 @@ const MAX_MESSAGE_CHARS = 4_000;
 const MAX_SYSTEM_CHARS = 120_000;
 const MAX_HISTORY_ITEMS = 12;
 const MAX_HISTORY_PART_CHARS = 4_000;
-/** Risposte di Cherry: ~150 parole di norma, una ricetta intera nei casi lunghi. */
-const MAX_OUTPUT_TOKENS = 1_024;
+/**
+ * Tetto di sicurezza contro le risposte fuori controllo, NON la misura di una
+ * risposta: su Gemini 3 i token di ragionamento si scalano da qui, e con 1.024
+ * (primo valore) una risposta poteva uscire vuota o tronca con stato di
+ * successo. 8.192 lascia spazio al ragionamento; `finish` nei log dice se il
+ * tetto viene toccato davvero.
+ */
+const MAX_OUTPUT_TOKENS = 8_192;
 /** Tempo massimo per una risposta, primo token compreso. Prima il timer non fermava nulla. */
 const GEMINI_TIMEOUT_MS = 30_000;
 /** Il modello si cambia da secret, senza redeploy. */
@@ -36,6 +42,7 @@ interface TokenUsage {
   prompt?: number;
   output?: number;
   cached?: number;
+  thoughts?: number;
 }
 
 interface RateLimitResult {
@@ -136,7 +143,7 @@ const logMetrics = (
   durationMs: number,
   success: boolean,
   error?: string,
-  extra?: { usage?: TokenUsage; lang?: string; model?: string }
+  extra?: { usage?: TokenUsage; lang?: string; model?: string; finish?: string }
 ) => {
   const timestamp = new Date().toISOString();
   const message = {
@@ -152,14 +159,19 @@ const logMetrics = (
     ...(extra?.usage && { usage: extra.usage }),
     ...(extra?.lang && { lang: extra.lang }),
     ...(extra?.model && { model: extra.model }),
+    ...(extra?.finish && { finish: extra.finish }),
   };
   console.log('[gemini-proxy-chat]', JSON.stringify(message));
 };
 
 const readUsage = (
-  u?: { promptTokenCount?: number; candidatesTokenCount?: number; cachedContentTokenCount?: number },
+  u?: { promptTokenCount?: number; candidatesTokenCount?: number; cachedContentTokenCount?: number; thoughtsTokenCount?: number },
 ): TokenUsage | undefined =>
-  u ? { prompt: u.promptTokenCount, output: u.candidatesTokenCount, cached: u.cachedContentTokenCount } : undefined;
+  u ? { prompt: u.promptTokenCount, output: u.candidatesTokenCount, cached: u.cachedContentTokenCount, thoughts: u.thoughtsTokenCount } : undefined;
+
+/** Perche' il modello si e' fermato (STOP, MAX_TOKENS, SAFETY...): dai candidati della risposta aggregata. */
+const readFinish = (r: { candidates?: Array<{ finishReason?: string }> }): string | undefined =>
+  r.candidates?.[0]?.finishReason;
 
 /**
  * Lo storico nella forma che il modello accetta: si parte da 'user', i ruoli si
@@ -292,6 +304,7 @@ Deno.serve(async (req: Request) => {
           async start(controller) {
             let fullText = '';
             let usage: TokenUsage | undefined;
+            let finish: string | undefined;
             let failure: unknown = null;
             try {
               for await (const chunk of streamResult.stream) {
@@ -301,7 +314,12 @@ Deno.serve(async (req: Request) => {
                   controller.enqueue(new TextEncoder().encode(text));
                 }
               }
-              usage = readUsage((await streamResult.response).usageMetadata);
+              const aggregated = await streamResult.response;
+              usage = readUsage(aggregated.usageMetadata);
+              finish = readFinish(aggregated);
+              // Nessun testo con una ragione di stop: tetto raggiunto dal solo
+              // ragionamento o blocco di sicurezza. Non e' una risposta.
+              if (!fullText) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
             } catch (err) {
               failure = err;
             }
@@ -317,7 +335,7 @@ Deno.serve(async (req: Request) => {
               // A meta' risposta si consegna quello che c'e' (timeout o rete).
               console.warn('[gemini-proxy-chat] stream interrotto, consegno il parziale:', failure instanceof Error ? failure.message : failure);
             }
-            logMetrics(userId, message.length, fullText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage });
+            logMetrics(userId, message.length, fullText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage, finish });
             controller.close();
           },
         });
@@ -332,9 +350,11 @@ Deno.serve(async (req: Request) => {
       const result = await chat.sendMessage(message, { signal: abort.signal });
       const response = await result.response;
       const responseText = response.text();
+      const finish = readFinish(response);
+      if (!responseText) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
 
       clearTimeout(timeoutId);
-      logMetrics(userId, message.length, responseText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage: readUsage(response.usageMetadata) });
+      logMetrics(userId, message.length, responseText.length, Date.now() - startTime, true, undefined, { ...metricsExtra, usage: readUsage(response.usageMetadata), finish });
 
       return new Response(
         JSON.stringify({ response: responseText }),

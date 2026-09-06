@@ -134,9 +134,9 @@ Check logs in Supabase dashboard:
 ## 2026-09-06 — caps, metrics, native history
 
 - **Input caps**: `message` ≤ 4.000 chars, `systemInstruction` ≤ 120.000 chars, `history` ≤ 12 items of ≤ 4.000 chars each, otherwise `400`. Before this date nothing was capped.
-- **Output cap**: `generationConfig.maxOutputTokens = 1024`.
+- **Output cap**: `generationConfig.maxOutputTokens = 8192`. It is a runaway guard, not the size of an answer: on Gemini 3 the thinking tokens count against it (1024 produced empty answers). An empty answer with a stop reason is an error, never a success.
 - **Model from secret**: `GEMINI_CHAT_MODEL` (default `gemini-3-flash-preview`). Change the secret, no redeploy.
 - **Anon shortcut**: a bearer equal to `SUPABASE_ANON_KEY` is a guest without asking GoTrue (one round trip less per guest message). Logged-in clients now send their JWT on the stream too, so the per-user limits actually apply.
 - **History**: `history` is normalized server-side (starts with `user`, roles alternate, ends with `model`); the client twin lives in `packages/shared/src/lib/cherryHistory.ts`.
-- **Metrics**: the log line now carries `usage` (`prompt`, `output`, `cached` token counts from `usageMetadata`), `lang` (client UI language, informational) and `model`.
+- **Metrics**: the log line now carries `usage` (`prompt`, `output`, `cached`, `thoughts` token counts from `usageMetadata`), `finish` (the model stop reason), `lang` (client UI language, informational) and `model`.
 - **Partial delivery**: if the stream breaks after some text was sent, the partial text is delivered and logged as success with a warning; with zero text sent the stream errors.

@@ -24,9 +24,11 @@ export const HISTORY_PART_CHARS = 600;
 
 /**
  * Dai messaggi mostrati in chat allo storico per il modello.
- * Esclude le righe 'system', la bolla in streaming e i testi vuoti; prende gli
- * ultimi `limit`; fonde i messaggi consecutivi dello stesso ruolo; toglie i
- * 'model' in testa e gli 'user' in coda cosi' l'alternanza regge sempre.
+ * Esclude le righe 'system', i testi vuoti e la bolla in streaming di cui non
+ * si conosce ancora il testo completo (quella con `fullText`, un nodo in
+ * trascrizione, entra intera); prende gli ultimi `limit`; fonde i messaggi
+ * consecutivi dello stesso ruolo; toglie i 'model' in testa e gli 'user' in
+ * coda cosi' l'alternanza regge sempre.
  */
 export function buildGeminiHistory(
   messages: readonly ChatMessage[],
@@ -34,7 +36,7 @@ export function buildGeminiHistory(
 ): GeminiChatMessage[] {
   const out: GeminiChatMessage[] = [];
   const recent = messages
-    .filter((m) => (m.role === 'user' || m.role === 'model') && !m.isStreaming)
+    .filter((m) => (m.role === 'user' || m.role === 'model') && (!m.isStreaming || !!m.fullText))
     .map((m) => ({ role: m.role as 'user' | 'model', text: truncate((m.fullText ?? m.text ?? '').trim(), HISTORY_PART_CHARS) }))
     .filter((m) => m.text.length > 0)
     .slice(-limit);

@@ -26,6 +26,8 @@ const GENERIC_TOKENS = new Set([
   // su cibo/classe): es. "how spicy is the food" non deve attivare la cultura.
   'food', 'table', 'mountain', 'highland', 'highlands', 'kitchen', 'recipe',
   'recipes', 'dish', 'dishes', 'spicy', 'spice', 'signature', 'power',
+  // Il posto dove siamo: sta in mezzo titolo, e 'mai' in italiano e' 'never'.
+  'chiang', 'mai',
 ]);
 
 // Segnali che l'utente vuole il dettaglio COMPLETO (L3) e non la sintesi.

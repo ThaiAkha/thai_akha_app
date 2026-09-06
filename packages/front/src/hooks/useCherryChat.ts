@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { CHERRY_CONFIG } from '../config/cherry';
 import { sendChatMessageStream } from '@thaiakha/shared/services';
 import { saveMessage } from '@thaiakha/shared/services';
@@ -28,19 +28,18 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
   // Manteniamo un riferimento sempre aggiornato per evitare closure stale nelle funzioni memoizzate
   const messagesRef = useRef<ChatMessage[]>([]);
 
-  // Wrapper per setMessages che aggiorna anche il ref
+  // Setter UNICO dei messaggi: calcola il prossimo stato dal ref, in modo
+  // sincrono, e lo passa a React gia' pronto. Cosi' il ref e' esatto in ogni
+  // istante (storico per il modello, chiusura del typewriter) senza dipendere
+  // da quando React esegue gli updater. Vale finche' NESSUNO chiama il setState
+  // grezzo: typewriter, sessione, saluto e inject passano tutti di qui. Prima
+  // il ref si aggiornava dentro l'updater e restava indietro di un turno
+  // (verifica avversaria del 2026-09-06).
   const updateMessages = useCallback((updater: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => {
-    setMessages(prev => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
-      messagesRef.current = next;
-      return next;
-    });
+    const next = typeof updater === 'function' ? updater(messagesRef.current) : updater;
+    messagesRef.current = next;
+    setMessages(next);
   }, []);
-
-  // Il ref segue anche lo stato committato: chi scrive con il setter grezzo
-  // lasciava il ref indietro di un turno, e lo storico per il modello partiva
-  // senza l'ultima risposta (verifica avversaria del 2026-09-06).
-  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   // Memoria anti-ripetizione: argomenti già toccati in questa sessione. Iniettati
   // nel prompt come "già coperti" così Cherry non li ripete a ogni risposta.
@@ -73,6 +72,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     fullResponseRef,
     startStreamTypewriter,
     startStaticTypewriter,
+    finalizeActive,
   } = useTypewriter(updateMessages, updateMessages);
 
   // ── sendMessage ────────────────────────────────────────────────────────────
@@ -80,9 +80,14 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
   const sendMessage = useCallback(async (userText: string) => {
     if (!userText.trim() || isLoading) return;
 
-    // Storico per il modello, letto PRIMA di appendere il turno corrente (che la
-    // edge aggiunge da se' come ultimo messaggio).
-    const history = buildGeminiHistory(messagesRef.current);
+    // Se Cherry sta ancora battendo la risposta precedente (l'input si riabilita
+    // a fine stream, non a fine trascrizione), la si chiude: il testo completo e'
+    // gia' noto e deve entrare nello storico, e la bolla non resta "in streaming".
+    finalizeActive();
+    // Chat ancora vuota = bootstrap (sessione + storico dal DB) non concluso: lo
+    // si aspetta dentro il try, a bolle gia' mostrate, cosi' il primo messaggio
+    // di chi torna parte con il suo storico. Idempotente, costa solo l'attesa.
+    const bootstrapped = messagesRef.current.length > 0;
 
     const userMsgId = `user-${Date.now()}`;
     const modelMsgId = `model-${Date.now()}`;
@@ -102,6 +107,12 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     startStreamTypewriter(modelMsgId);
 
     try {
+      if (!bootstrapped) await initSession();
+      // Storico per il modello: le due bolle appena aggiunte cadono da sole (la
+      // bolla vuota in streaming si scarta, l'utente in coda si toglie), e il
+      // messaggio corrente lo aggiunge la edge come ultimo turno.
+      const history = buildGeminiHistory(messagesRef.current);
+
       // Sessione e prompt non dipendono l'uno dall'altra: partono insieme. Il
       // riassunto delle sessioni passate vive nella sessione: se non e' ancora
       // aperta (messaggio scritto prima del bootstrap) la si aspetta prima.
@@ -184,7 +195,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
     } finally {
       setIsLoading(false);
     }
-  }, [userProfile, triggerAutoSummary, isLoading, locale, lang, updateMessages, startStreamTypewriter, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
+  }, [userProfile, triggerAutoSummary, isLoading, locale, lang, updateMessages, startStreamTypewriter, finalizeActive, initSession, sessionRef, ensureSessionId, bookingStateRef, fullResponseRef, serverDoneRef, typeIntervalRef, typeQueueRef]);
 
   const { injectInteraction, injectStaticExchange, addVoiceMessages } = useCherryInjection({
     updateMessages,

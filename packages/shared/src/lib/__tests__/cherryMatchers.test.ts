@@ -79,10 +79,22 @@ test('cultura e news: titolo inglese + slug riconoscono, titolo tradotto no da s
   assert.equal(findNewsArticle('your fish sauce guide', news)?.slug, 'fish-sauce-guide');
 });
 
-test('scoreName: in inglese conta come prima, ripetizioni comprese', () => {
+test('scoreName: il punteggio conta le ripetizioni, le distintive una volta sola', () => {
   const msg = new Set(['spirit', 'gate']);
   const same = scoreName(msg, 'The Spirit Gate spirit gate', 'The Spirit Gate spirit gate', () => true);
-  assert.deepEqual(same, { score: 4, distinctive: 4 });
+  assert.deepEqual(same, { score: 4, distinctive: 2 });
   const localized = scoreName(msg, 'Spirit Gate', 'Puerta spirit', () => true);
   assert.deepEqual(localized, { score: 2, distinctive: 2 });
+});
+
+test('news: "mai" italiano e "curry" da solo non bastano, due parole vere si\'', () => {
+  const news: Row[] = [
+    { slug: 'sunday-walking-street-market-chiang-mai', title: 'Il mercato della domenica a Chiang Mai', title_key: 'Sunday Walking Street Market in Chiang Mai' },
+    { slug: 'mortar-vs-blender-thai-curry-paste', title: 'Mortar vs Blender: Thai Curry Paste', title_key: 'Mortar vs Blender: Thai Curry Paste' },
+  ];
+  assert.equal(findNewsArticle('non l\'ho mai provato', news), null);
+  assert.equal(findNewsArticle('which curry do we cook?', news), null);
+  assert.equal(findNewsArticle('mortar or blender for the paste?', news)?.slug, 'mortar-vs-blender-thai-curry-paste');
+  assert.equal(findNewsArticle('the chiang mai market', news), null);
+  assert.equal(findNewsArticle('is the walking street market open?', news)?.slug, 'sunday-walking-street-market-chiang-mai');
 });

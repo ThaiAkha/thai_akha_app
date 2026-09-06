@@ -23,6 +23,8 @@ export function useTypewriter(
   const typeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const serverDoneRef = useRef(false);
   const fullResponseRef = useRef('');
+  /** Id della bolla che il typewriter sta rivelando, null quando ha finito. */
+  const activeIdRef = useRef<string | null>(null);
 
   const stopTypewriter = useCallback((msgId: string) => {
     if (typeIntervalRef.current) {
@@ -30,10 +32,22 @@ export function useTypewriter(
       typeIntervalRef.current = null;
     }
     typeQueueRef.current = [];
+    if (activeIdRef.current === msgId) activeIdRef.current = null;
     setMessages(prev =>
       prev.map(m => m.id === msgId ? { ...m, text: fullResponseRef.current, isStreaming: false } : m)
     );
   }, [setMessages]);
+
+  /**
+   * Chiude la bolla ancora in trascrizione, se c'e': testo completo, niente piu'
+   * streaming. La chiama chi apre un turno nuovo (messaggio scritto o nodo
+   * iniettato) mentre Cherry sta ancora "battendo". Prima il turno nuovo
+   * cancellava solo l'intervallo: la bolla interrotta restava in streaming per
+   * sempre, senza opzioni e fuori dallo storico per il modello.
+   */
+  const finalizeActive = useCallback(() => {
+    if (activeIdRef.current) stopTypewriter(activeIdRef.current);
+  }, [stopTypewriter]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -44,14 +58,13 @@ export function useTypewriter(
 
   /** Reset coda + avvio consumer per lo stream reale (il server segnala la fine). */
   const startStreamTypewriter = useCallback((modelMsgId: string) => {
-    // Reset typewriter state for this message
+    // Prima si chiude la trascrizione precedente (usa ancora il suo testo
+    // completo), poi si azzera lo stato per questo messaggio.
+    finalizeActive();
     typeQueueRef.current = [];
     serverDoneRef.current = false;
     fullResponseRef.current = '';
-    if (typeIntervalRef.current) {
-      clearInterval(typeIntervalRef.current);
-      typeIntervalRef.current = null;
-    }
+    activeIdRef.current = modelMsgId;
 
     // Start typewriter consumer — drains word queue at fixed cadence
     typeIntervalRef.current = setInterval(() => {
@@ -66,16 +79,16 @@ export function useTypewriter(
       }
       // else: queue empty but server still streaming → wait next tick
     }, CHERRY_CONFIG.TYPEWRITER_INTERVAL_MS);
-  }, [updateMessages, stopTypewriter]);
+  }, [updateMessages, stopTypewriter, finalizeActive]);
 
   /** Testo già noto (inject/CHAT_FLOW): coda precaricata, chiusura a coda vuota. */
   const startStaticTypewriter = useCallback((modelMsgId: string, text: string) => {
-    // Prepariamo la coda del typewriter
+    // Come sopra: chiusura della precedente, poi coda precaricata.
+    finalizeActive();
     typeQueueRef.current = [];
     serverDoneRef.current = false;
     fullResponseRef.current = text;
-
-    if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
+    activeIdRef.current = modelMsgId;
 
     const tokens = text.match(/\S+[ \t]*|\n+/g) ?? [text];
     typeQueueRef.current.push(...tokens);
@@ -91,7 +104,7 @@ export function useTypewriter(
         stopTypewriter(modelMsgId);
       }
     }, CHERRY_CONFIG.TYPEWRITER_INTERVAL_MS);
-  }, [updateMessages, stopTypewriter]);
+  }, [updateMessages, stopTypewriter, finalizeActive]);
 
   return {
     typeQueueRef,
@@ -99,6 +112,7 @@ export function useTypewriter(
     serverDoneRef,
     fullResponseRef,
     stopTypewriter,
+    finalizeActive,
     startStreamTypewriter,
     startStaticTypewriter,
   };

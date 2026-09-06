@@ -46,3 +46,8 @@ test('conversazione vuota o solo saluto → storico vuoto', () => {
   assert.deepEqual(buildGeminiHistory([m('Sawasdee kha!')]), []);
   assert.deepEqual(buildGeminiHistory([m('hi'), u('only user')]), []);
 });
+
+test('bolla in streaming con testo completo noto (nodo in trascrizione) entra intera', () => {
+  const h = buildGeminiHistory([u('menu'), m('Sawas', { isStreaming: true, fullText: 'Sawasdee kha, here is the menu' })]);
+  assert.deepEqual(h, [{ role: 'user', parts: 'menu' }, { role: 'model', parts: 'Sawasdee kha, here is the menu' }]);
+});

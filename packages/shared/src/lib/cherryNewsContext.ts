@@ -15,6 +15,8 @@ const GENERIC_TOKENS = new Set([
   'the', 'and', 'akha', 'thai', 'guide', 'tips', 'how', 'your', 'what', 'about',
   'news', 'article', 'cooking', 'class', 'classes', 'food', 'kitchen', 'story',
   'with', 'for', 'tell', 'know', 'best', 'top', 'ultimate', 'complete',
+  // Il posto dove siamo: sta in mezzo titolo, e 'mai' in italiano e' 'never'.
+  'chiang', 'mai',
 ]);
 
 /**

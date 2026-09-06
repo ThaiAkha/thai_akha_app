@@ -26,6 +26,8 @@ interface KeyIngredient {
 const GENERIC_TOKENS = new Set([
   'thai', 'with', 'and', 'the', 'salad', 'soup', 'curry', 'fried', 'stir', 'fry',
   'sweet', 'sour', 'spicy', 'class', 'dish', 'rice', 'akha', 'homemade', 'fresh',
+  // Il posto dove siamo: sta in mezzo titolo, e 'mai' in italiano e' 'never'.
+  'chiang', 'mai',
 ]);
 
 

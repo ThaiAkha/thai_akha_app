@@ -28,7 +28,9 @@ interface ChatSessionParams {
 export function useChatSession({ userProfile, setMessages, coveredTopicsRef, visitedNodesRef }: ChatSessionParams) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessionRef = useRef<ChatSession | null>(null);
-  const initialized = useRef(false);
+  // Una sola promessa di bootstrap: chi arriva dopo (sendMessage a chat vuota)
+  // aspetta la stessa, invece di tornare subito con lo storico ancora in volo.
+  const initPromise = useRef<Promise<void> | null>(null);
   // Una sola promessa di get-or-create condivisa: l'apertura della chat e un flusso
   // inject partiti insieme non devono fare due INSERT sulla stessa sessione.
   const sessionPromise = useRef<Promise<ChatSession> | null>(null);
@@ -55,9 +57,8 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
    * ospite mai usata. Ora la chiama chi ha davvero bisogno della chat, e in
    * mancanza di quello uno slot di inattivita' dopo il primo disegno.
    */
-  const initSession = useCallback(async () => {
-    if (initialized.current) return;
-    initialized.current = true;
+  const initSession = useCallback((): Promise<void> => {
+    if (initPromise.current) return initPromise.current;
 
     const init = async () => {
       const session = await openSession();
@@ -95,15 +96,19 @@ export function useChatSession({ userProfile, setMessages, coveredTopicsRef, vis
       // bolla in corso e il click sembrava ignorato.
       setMessages(prev => {
         if (prev.length === 0) return initialMessages;
-        // Le righe appena salvate dallo scambio in corso possono gia' essere
-        // tornate dal DB: stesso testo in memoria = stessa riga, non si raddoppia.
-        const onScreen = new Set(prev.map(m => m.fullText ?? m.text));
-        const restored = initialMessages.filter(m => m.id !== 'static:greeting' && !onScreen.has(m.text));
+        // Le righe piu' recenti del DB possono essere quelle appena salvate dallo
+        // scambio in corso: si scartano dalla coda finche' combaciano per ruolo e
+        // testo con qualcosa gia' in chat. Solo dalla coda: un "hi" ripetuto piu'
+        // indietro nello storico e' legittimo e resta.
+        const restored = initialMessages.filter(m => m.id !== 'static:greeting');
+        const mirrored = (r: ChatMessage) => prev.some(p => p.role === r.role && (p.fullText ?? p.text) === r.text);
+        while (restored.length > 0 && mirrored(restored[restored.length - 1])) restored.pop();
         return restored.length > 0 ? [...restored, ...prev] : prev;
       });
     };
 
-    await init();
+    initPromise.current = init();
+    return initPromise.current;
   }, [openSession, userProfile?.full_name, setMessages, coveredTopicsRef, visitedNodesRef]);
 
   // Rete di sicurezza: se nessuno apre la chat, la sessione si prepara comunque,

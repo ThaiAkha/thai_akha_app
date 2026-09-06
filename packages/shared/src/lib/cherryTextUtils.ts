@@ -27,8 +27,10 @@ export function tokenize(s: string): string[] {
  * punteggio ma NON bastano da sole a riconoscere il contenuto: le liste di
  * parole generiche dei contesti sono inglesi, e "con", "mit", "sopa" avrebbero
  * agganciato un piatto a "posso pagare con carta" (riprodotto in produzione il
- * 2026-09-06). In inglese `english` e `localized` coincidono e il conteggio e'
- * identico a prima, ripetizioni comprese.
+ * 2026-09-06). In inglese `english` e `localized` coincidono. Il punteggio
+ * conta le ripetizioni (titolo + slug), le parole distintive UNA volta: "Chiang
+ * Mai" in titolo e slug non vale due parole, e "mai" da solo (che in italiano e'
+ * "never") non deve superare la soglia delle news.
  */
 export function scoreName(
   msgSet: ReadonlySet<string>,
@@ -40,11 +42,8 @@ export function scoreName(
   const englishSet = new Set(englishTokens);
   let score = 0;
   let distinctive = 0;
-  for (const tk of englishTokens) {
-    if (!msgSet.has(tk)) continue;
-    score++;
-    if (isDistinctive(tk)) distinctive++;
-  }
+  for (const tk of englishTokens) if (msgSet.has(tk)) score++;
+  for (const tk of englishSet) if (msgSet.has(tk) && isDistinctive(tk)) distinctive++;
   for (const tk of new Set(tokenize(localized))) {
     if (!englishSet.has(tk) && msgSet.has(tk)) score++;
   }

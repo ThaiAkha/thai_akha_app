@@ -4,6 +4,7 @@
 // Secret: REPORT_RENDERER_URL (URL Cloud Run), RENDER_TOKEN.
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { bangkokTodayHuman } from '../_shared/bangkokDate.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -317,8 +318,8 @@ Deno.serve(async (req: Request) => {
         ytd.set(r.employee_id, cur)
       }
 
-      const today = new Date()
-      const payDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`
+      // Data a Bangkok: una busta paga stampata presto riportava il giorno prima.
+      const payDate = bangkokTodayHuman()
       const periodLabel = (p: string) => { const [y, m] = p.split('-'); return `${MONTHS[Number(m) - 1] ?? m} ${y}` }
 
       template = 'salary_payslip'

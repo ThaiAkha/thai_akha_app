@@ -10,6 +10,7 @@
 // ENV: gli stessi delle altre edge Zoho (ZOHO_CLIENT_ID/SECRET/REFRESH_TOKEN/ORG_ID/DC).
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { bangkokToday } from '../_shared/bangkokDate.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -77,7 +78,9 @@ Deno.serve(async (req: Request) => {
     if (!agency?.zoho_contact_id) return json({ success: false, message: 'Agency has no zoho_contact_id.' }, 400)
 
     const amount = pending.reduce((s, i) => s + Number(i.amount || 0), 0)
-    const today = new Date().toISOString().slice(0, 10)
+    // Data a Bangkok: in UTC, prima delle 7 del mattino locali, il pagamento
+    // finirebbe registrato al giorno prima (e con quella data nel riferimento).
+    const today = bangkokToday()
 
     // 3) Customer payment in Zoho applicato alle fatture
     const dc = Deno.env.get('ZOHO_DC') ?? 'com'

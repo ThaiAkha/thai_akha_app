@@ -29,6 +29,7 @@
 //   (+ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY iniettate da Supabase)
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { bangkokToday } from '../_shared/bangkokDate.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -175,7 +176,8 @@ Deno.serve(async (req: Request) => {
 
     const dc = Deno.env.get('ZOHO_DC') ?? 'com'
     const org = Deno.env.get('ZOHO_ORG_ID')!
-    const today = new Date().toISOString().slice(0, 10)
+    // Data a Bangkok, non UTC: vedi il commento gemello in zoho-record-agency-payment.
+    const today = bangkokToday()
     const per = period ?? rows[0].period
 
     interface ExpenseResult {

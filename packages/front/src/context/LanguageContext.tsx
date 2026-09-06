@@ -14,7 +14,7 @@ import {
   toEnglishSegments,
   canonicalSlugRedirect,
 } from '../lib/langRouting';
-import { syncI18nLanguage } from '../i18n';
+import i18n, { syncI18nLanguage } from '../i18n';
 
 /**
  * 🌍 LINGUA CORRENTE — una sola fonte: l'URL.
@@ -47,6 +47,14 @@ interface LanguageContextValue {
   enSegments: string[];
   /** Cambia lingua RESTANDO sulla stessa pagina (slug rimappato). */
   switchLang: (next: SupportedLang) => void;
+  /**
+   * Sale di uno ogni volta che i18next ha finito di cambiare lingua o di caricare
+   * un pacchetto di stringhe. Sta nel valore del contesto perche' e' quello che
+   * fa ridisegnare l'albero: 82 file importano `t` come funzione statica, e senza
+   * un ridisegno dopo l'arrivo dei file le etichette restavano nella lingua di
+   * prima. Chi ha bisogno di una chiave che cambi con le stringhe puo' usarlo.
+   */
+  uiStringsVersion: number;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -130,6 +138,22 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     syncI18nLanguage(lang);
   }, [lang]);
 
+  // ── Ridisegno quando le stringhe arrivano ──────────────────────────────────
+  // `changeLanguage` e' asincrono: scarica i file della lingua nuova. Il render
+  // che segue `setRoute` parte PRIMA che arrivino, con le stringhe vecchie, e
+  // nessuno era iscritto all'evento con cui i18next dice "ho finito". Oggi il
+  // difetto e' mascherato dalle letture dal database che ridipingono dopo.
+  const [uiStringsVersion, setUiStringsVersion] = useState(0);
+  useEffect(() => {
+    const bump = () => setUiStringsVersion((v) => v + 1);
+    i18n.on('languageChanged', bump);
+    i18n.on('loaded', bump);
+    return () => {
+      i18n.off('languageChanged', bump);
+      i18n.off('loaded', bump);
+    };
+  }, []);
+
   // ── Preferenza salvata (informativa, non redirige) ──────────────────────────
   useEffect(() => {
     try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch { /* quota/privata */ }
@@ -177,7 +201,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     slugMap,
     enSegments,
     switchLang,
-  }), [lang, slugMap, enSegments, switchLang]);
+    uiStringsVersion,
+  }), [lang, slugMap, enSegments, switchLang, uiStringsVersion]);
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
@@ -198,5 +223,6 @@ export const useLanguage = (): LanguageContextValue => {
     slugMap: null,
     enSegments: [],
     switchLang: () => { /* no-op fuori dal provider */ },
+    uiStringsVersion: 0,
   };
 };

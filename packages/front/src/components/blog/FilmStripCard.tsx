@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from 'react';
+import { useInternalHref } from '../../hooks/useInternalHref';
+import { HUB_SLUGS } from '../../lib/hubSlugs';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink, AkhaPixelPattern } from '../ui/index';
@@ -17,6 +19,7 @@ interface BlogCardProps {
 // ─── FilmStripCard — Horizontal editorial style ────────────────────────────────
 
 const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
+  const href = useInternalHref();
   const cardRef = useRef<HTMLAnchorElement>(null);
   const icon = SECTION_ICONS[section.slug] ?? 'auto_stories';
 
@@ -50,7 +53,7 @@ const FilmStripCard: React.FC<BlogCardProps> = ({ section, onOpen }) => {
   return (
     <RippleLink
       ref={cardRef}
-      href={`/history/${section.slug}`}
+      href={href(HUB_SLUGS.culture, section.slug)}
       onNavigate={() => onOpen(section.slug)}
       className={cn(
         'blog-card-glass',

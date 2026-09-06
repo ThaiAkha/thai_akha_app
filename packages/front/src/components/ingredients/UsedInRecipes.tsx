@@ -1,4 +1,5 @@
 import React from 'react';
+import { useInternalHref } from '../../hooks/useInternalHref';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { RecipeLink } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink } from '../ui/index';
@@ -19,6 +20,7 @@ interface UsedInRecipesProps {
  * Renders nothing when the list is empty. Mobile-first 2-up grid.
  */
 const UsedInRecipes: React.FC<UsedInRecipesProps> = ({ recipes, onOpenRecipe, className }) => {
+  const href = useInternalHref();
   const { lang } = useLanguage();
   if (!recipes || recipes.length === 0) return null;
 
@@ -34,7 +36,7 @@ const UsedInRecipes: React.FC<UsedInRecipesProps> = ({ recipes, onOpenRecipe, cl
         {recipes.map((recipe) => (
           <RippleLink
             key={recipe.id}
-            href={`/${RECIPES_HUB_SLUG}/${recipe.slug}`}
+            href={href(RECIPES_HUB_SLUG, recipe.slug)}
             onNavigate={() => onOpenRecipe(recipe.slug)}
             aria-label={recipe.name}
             className={cn(

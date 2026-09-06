@@ -1,4 +1,5 @@
 import React from 'react';
+import { useInternalHref } from '../../hooks/useInternalHref';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { ContentCategoryDB } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink, MediaImage, AkhaPixelPattern } from '../ui/index';
@@ -16,12 +17,14 @@ interface CategoryCardProps {
  * pantry hover/focus accent. Links to the category landing page.
  */
 const CategoryCard: React.FC<CategoryCardProps> = ({ category, count, onOpen }) => {
+  // Prima del `return null`: gli hook non possono stare dopo un ritorno condizionale.
+  const href = useInternalHref();
   if (!category.slug) return null;
   const IconCmp = category.icon_name ? getIcon(category.icon_name) : null;
 
   return (
     <RippleLink
-      href={`/${INGREDIENTS_HUB_SLUG}/${category.slug}`}
+      href={href(INGREDIENTS_HUB_SLUG, category.slug)}
       onNavigate={() => onOpen(category.slug as string)}
       aria-label={category.title}
       className={cn(

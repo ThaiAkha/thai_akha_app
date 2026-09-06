@@ -1,4 +1,6 @@
 import React from 'react';
+import { useInternalHref } from '../../hooks/useInternalHref';
+import { HUB_SLUGS } from '../../lib/hubSlugs';
 import { GlassCard, Button, Badge } from '../ui';
 import { RippleLink } from '../ui/RippleLink';
 import Typography from '../ui/Typography';
@@ -11,6 +13,7 @@ interface NewsCardProps {
 }
 
 export const NewsCard: React.FC<NewsCardProps> = ({ article, onOpen }) => {
+  const href = useInternalHref();
   return (
     <GlassCard
       variant="secondary"
@@ -20,7 +23,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, onOpen }) => {
       className="group flex flex-col overflow-hidden h-full"
     >
       <RippleLink
-        href={`/news/${article.slug}`}
+        href={href(HUB_SLUGS.news, article.slug)}
         onNavigate={() => onOpen(article.slug)}
         className="flex flex-col h-full w-full"
       >

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useInternalHref } from '../../../hooks/useInternalHref';
 import { Typography, Icon } from '../../ui';
 import type { TocAccent } from '../../ui';
 import { cn } from '@thaiakha/shared/lib/utils';
@@ -34,6 +35,7 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
   accent = 'ocean',
   title = t('components:sidebarInfo.menuTitle'),
 }) => {
+  const href = useInternalHref();
   const { lang } = useLanguage();
   const { footerItems: footer } = useFooterMenu(lang);
   const a = MENU_ACCENT[accent];
@@ -48,7 +50,7 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
           return (
             <li key={f.page_slug}>
               <a
-                href={`/${f.page_slug}`}
+                href={href(f.page_slug)}
                 aria-current={active ? 'page' : undefined}
                 onClick={(e) => {
                   if (e.metaKey || e.ctrlKey || e.shiftKey) return; // nuova scheda nativa

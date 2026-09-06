@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { useInternalHref } from '../hooks/useInternalHref';
 import { t } from '../i18n';
 
 import { useRecipesListData } from '../hooks/useRecipesListData';
@@ -34,6 +35,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
   // La pagina possiede i metadata, cosi' il layout non fa il suo gate e i figli
   // (Page Essentials, FAQ, pagine sorelle) partono subito invece che in fila.
   const { metadata: pageMetadata, loading: metaLoading } = usePageMetadata(RECIPES_SLUG);
+  const href = useInternalHref();
   const bodyLoading = loading || knowledgeLoading;
 
   const [isDietDirty, setIsDietDirty] = useState(false);
@@ -266,7 +268,7 @@ const RecipesPage: React.FC<RecipesPageProps> = ({ userProfile, onNavigate, onPr
                           isSelected={false}
                           dietLabel={displayLabel}
                           disableBodyCursor={true}
-                          href={`/authentic-thai-akha-recipes/${rawRecipe.slug || rawRecipe.id}`}
+                          href={href(RECIPES_SLUG, String(rawRecipe.slug || rawRecipe.id))}
                           onClick={() => handleSelectRecipe(rawRecipe)}
                           onPreview={() => handleSelectRecipe(rawRecipe)}
                         />

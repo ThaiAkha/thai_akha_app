@@ -1,4 +1,5 @@
 import React from 'react';
+import { useInternalHref } from '../../hooks/useInternalHref';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { IngredientListItem } from '@thaiakha/shared/types';
 import { Typography, Icon, RippleLink, AkhaPixelPattern } from '../ui/index';
@@ -28,6 +29,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
   interactive = true,
   showNativeNames = true,
 }) => {
+  const href = useInternalHref();
   const cover = ingredient.cover_data;
   // Ponte verso il thai solo se differisce dal titolo mostrato (su /th/ il titolo e' gia' thai).
   const { lang } = useLanguage();
@@ -101,7 +103,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 
   return (
     <RippleLink
-      href={`/${INGREDIENTS_HUB_SLUG}/${ingredient.slug}`}
+      href={href(INGREDIENTS_HUB_SLUG, ingredient.slug)}
       onNavigate={() => onOpen?.(ingredient.slug)}
       aria-label={ingredient.name}
       className={cn(

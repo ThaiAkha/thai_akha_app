@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from 'react';
+import { useInternalHref } from '../../hooks/useInternalHref';
+import { HUB_SLUGS } from '../../lib/hubSlugs';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { CultureSection, ContentCategoryDB } from '@thaiakha/shared/types';
 import { Typography, Badge, RippleLink } from '../ui/index';
@@ -16,6 +18,7 @@ interface BlogCardProps {
 
 // ─── CinematicHeroCard — Full-width 16:9 hero with overlay ─────────────────────
 const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categories, onCategoryClick }) => {
+  const href = useInternalHref();
   const cardRef = useRef<HTMLAnchorElement>(null);
   const catObj = categories?.find(c => c.id === section.category?.id);
   const categoryLabel = catObj?.tab_label 
@@ -52,7 +55,7 @@ const CinematicHeroCard: React.FC<BlogCardProps> = ({ section, onOpen, categorie
   return (
     <RippleLink
       ref={cardRef}
-      href={`/history/${section.slug}`}
+      href={href(HUB_SLUGS.culture, section.slug)}
       onNavigate={() => onOpen(section.slug)}
       className={cn(
         'blog-card-glass',

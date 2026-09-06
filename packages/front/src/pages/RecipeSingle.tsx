@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useInternalHref } from '../hooks/useInternalHref';
 import { PageLayout, PageSEO } from '../components/layout/index';
 import { Typography, Button, Card } from '../components/ui/index';
 import GalleryModal from '../components/modal/GalleryModal';
@@ -57,6 +58,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
 
   const { handleShare, copied } = useShareLink();
 
+  const href = useInternalHref();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [galleryStartIndex, setGalleryStartIndex] = useState(0);
   const [isCultureGalleryOpen, setIsCultureGalleryOpen] = useState(false);
@@ -236,7 +238,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
                 <Button
                   key={link.slug}
                   as="a"
-                  href={`/authentic-thai-akha-recipes/${link.slug}`}
+                  href={href(RECIPES_HUB_SLUG, link.slug)}
                   variant="brand"
                   icon="skillet"
                   className="pointer-coarse:min-h-11"
@@ -252,7 +254,7 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
               {parentRecipe && (
                 <Button
                   as="a"
-                  href={`/authentic-thai-akha-recipes/${(parentRecipe.slug as string) || (parentRecipe.id as string)}`}
+                  href={href(RECIPES_HUB_SLUG, (parentRecipe.slug as string) || (parentRecipe.id as string))}
                   variant="mineral"
                   icon="arrow_back"
                   className="pointer-coarse:min-h-11"
@@ -429,14 +431,14 @@ const RecipeSinglePage: React.FC<RecipeSinglePageProps> = ({ slug, onNavigate, u
                   title: previous.name as string,
                   subtitle: (previous.excerpt as string | null) || null,
                   imageUrl: ((previous.cover as Record<string, unknown>)?.image_url as string | null) ?? null,
-                  href: `/recipes/${(previous.slug as string) || (previous.id as string)}`,
+                  href: href(RECIPES_HUB_SLUG, (previous.slug as string) || (previous.id as string)),
                   slug: (previous.slug as string) || (previous.id as string),
                 } : null}
                 next={next ? {
                   title: next.name as string,
                   subtitle: (next.excerpt as string | null) || null,
                   imageUrl: ((next.cover as Record<string, unknown>)?.image_url as string | null) ?? null,
-                  href: `/recipes/${(next.slug as string) || (next.id as string)}`,
+                  href: href(RECIPES_HUB_SLUG, (next.slug as string) || (next.id as string)),
                   slug: (next.slug as string) || (next.id as string),
                 } : null}
               />

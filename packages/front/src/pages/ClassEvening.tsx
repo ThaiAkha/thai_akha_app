@@ -1,4 +1,6 @@
 import React from 'react';
+import { useInternalHref } from '../hooks/useInternalHref';
+import { HUB_SLUGS } from '../lib/hubSlugs';
 import { PageLayout, PageEssentials, SmartHeaderSection, HeaderMenu, SiblingInfoSection } from '../components/layout';
 import { AkhaThemedLine, AkhaQuote, FaqBottomPage, GlassCardFull } from '../components/ui';
 import { HeroContent } from '../components/classes/HeroContent';
@@ -16,6 +18,7 @@ interface EveningClassPageProps {
 }
 
 const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
+  const href = useInternalHref();
   const {
     classData,
     gallery1,
@@ -59,7 +62,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
           <AkhaButtonLine
             label={t('classes:bookYourClass')}
             icon="calendar_month"
-            href="/booking"
+            href={href(HUB_SLUGS.booking)}
             onClick={() => onNavigate('booking')}
             theme="akha"
             buttonVariant="brand"
@@ -99,7 +102,7 @@ const EveningClassPage: React.FC<EveningClassPageProps> = ({ onNavigate }) => {
         <AkhaButtonLine
           label={t('classes:bookYourClass')}
           icon="calendar_month"
-          href="/booking"
+          href={href(HUB_SLUGS.booking)}
           onClick={() => onNavigate('booking')}
           theme="akha"
           buttonVariant="brand"

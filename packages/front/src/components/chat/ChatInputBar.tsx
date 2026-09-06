@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { CHERRY_MESSAGE_MAX_CHARS, measureMessage } from '@thaiakha/shared/lib/cherryLimits';
+import { Typography } from '../ui/Typography';
 
 export interface ChatInputBarProps {
   onSend: (text: string) => void;
@@ -22,6 +24,8 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   className,
 }) => {
   const [input, setInput] = useState('');
+  // Tetto in caratteri (vedi cherryLimits): come nella chat laterale.
+  const len = measureMessage(input);
 
   const submit = () => {
     const text = input;
@@ -41,6 +45,7 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
           onKeyDown={e => e.key === 'Enter' && submit()}
           placeholder={placeholder}
           disabled={disabled}
+          maxLength={CHERRY_MESSAGE_MAX_CHARS}
           aria-label="Message to Cherry"
           className={cn(
             // Input: statico turchese tenue, focus turchese pieno (cherry sembrava un errore)
@@ -58,6 +63,16 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
           <span className="material-symbols-outlined text-lg">send</span>
         </button>
       </div>
+      {len.nearLimit && (
+        <Typography
+          variant="caption"
+          as="p"
+          aria-live="polite"
+          className={cn('text-right [margin-top:var(--space-fluid-2xs)]', len.atLimit ? '[color:var(--color-sys-error)]' : 'text-muted')}
+        >
+          {len.length}/{len.max}
+        </Typography>
+      )}
     </div>
   );
 };

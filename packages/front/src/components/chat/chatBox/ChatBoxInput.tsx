@@ -1,5 +1,7 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { CHERRY_MESSAGE_MAX_CHARS, measureMessage } from '@thaiakha/shared/lib/cherryLimits';
+import { Typography } from '../../ui/Typography';
 
 interface ChatBoxInputProps {
   inputRef: React.RefObject<HTMLInputElement | null>;
@@ -11,7 +13,11 @@ interface ChatBoxInputProps {
   isVoiceActive: boolean;
 }
 
-export const ChatBoxInput: React.FC<ChatBoxInputProps> = ({ inputRef, input, setInput, processUserMessage, isLoading, isConnecting, isVoiceActive }) => (
+export const ChatBoxInput: React.FC<ChatBoxInputProps> = ({ inputRef, input, setInput, processUserMessage, isLoading, isConnecting, isVoiceActive }) => {
+  // Tetto in caratteri (vedi cherryLimits): il campo non lascia scrivere oltre,
+  // il contatore compare vicino al tetto e cambia colore quando lo tocca.
+  const len = measureMessage(input);
+  return (
   <>
 {/* ── Input Area ──────────────────────────────────────────────── */}
 {/* 📱 Safe-area bottom: l'input non finisce sotto l'home-indicator (env=0 su desktop) */}
@@ -27,6 +33,7 @@ export const ChatBoxInput: React.FC<ChatBoxInputProps> = ({ inputRef, input, set
         isVoiceActive ? 'Cherry is listening...' : 'Ask Cherry anything kha...'
       }
       disabled={isLoading || isConnecting || isVoiceActive}
+      maxLength={CHERRY_MESSAGE_MAX_CHARS}
       aria-label="Message to Cherry"
       className={cn(
         'w-full bg-surface border border-cherry-static/40 rounded-2xl focus:border-cherry-static focus:outline-none py-4 pl-6 pr-14 transition-all text-title',
@@ -43,8 +50,19 @@ export const ChatBoxInput: React.FC<ChatBoxInputProps> = ({ inputRef, input, set
       <span className="material-symbols-outlined text-lg">send</span>
     </button>
   </div>
+  {len.nearLimit && (
+    <Typography
+      variant="caption"
+      as="p"
+      aria-live="polite"
+      className={cn('text-right [margin-top:var(--space-fluid-2xs)]', len.atLimit ? '[color:var(--color-sys-error)]' : 'text-muted')}
+    >
+      {len.length}/{len.max}
+    </Typography>
+  )}
 </div>
   </>
-);
+  );
+};
 
 export default ChatBoxInput;

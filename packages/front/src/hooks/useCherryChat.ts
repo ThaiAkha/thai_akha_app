@@ -10,6 +10,7 @@ import { cleanCherryResponse } from '@thaiakha/shared/lib/cherry-utils';
 import { getContextualFollowups } from '@thaiakha/shared/lib/cherryFollowups';
 import { detectCoveredTopics } from '@thaiakha/shared/lib/cherryCoveredTopics';
 import { buildGeminiHistory } from '@thaiakha/shared/lib/cherryHistory';
+import { CHERRY_MESSAGE_MAX_CHARS } from '@thaiakha/shared/lib/cherryLimits';
 import { useBookingGreeting } from './cherryChat/useBookingGreeting';
 import { useChatSession } from './cherryChat/useChatSession';
 import { useTypewriter } from './cherryChat/useTypewriter';
@@ -80,6 +81,13 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
 
   const sendMessage = useCallback(async (userText: string) => {
     if (!userText.trim() || isLoading) return;
+    // Rete di sicurezza sotto quella della edge (4.000): il campo non lascia
+    // scrivere oltre, ma chi arriva da altre vie passa di qui. Niente chiamata
+    // e niente riga nel DB per un messaggio che non partirebbe comunque.
+    if (userText.length > CHERRY_MESSAGE_MAX_CHARS) {
+      setError(`Message too long (max ${CHERRY_MESSAGE_MAX_CHARS} characters).`);
+      return;
+    }
 
     // Se Cherry sta ancora battendo la risposta precedente (l'input si riabilita
     // a fine stream, non a fine trascrizione), la si chiude: il testo completo e'

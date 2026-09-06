@@ -248,7 +248,16 @@ Deno.serve(async (req: Request) => {
 
   try {
     const url = new URL(req.url);
-    const path = url.searchParams.get("path") || "/";
+    // Il Worker inoltra il percorso COMPLETO di query string (worker: `url.pathname + url.search`).
+    // Senza toglierla, `extractPageName` piu' sotto produce lo slug letterale
+    // `about-thai-akha-kitchen?utm_source=facebook`, che nel database non esiste: la
+    // funzione ricade sui contenuti della home e dichiara canonico l'URL col parametro.
+    // Cioe' ogni link condiviso su Facebook (che aggiunge fbclid) e ogni link di
+    // campagna mostrava agli scraper social il titolo della home invece di quello
+    // della pagina. Verificato in produzione il 2026-09-06 e corretto qui, a monte,
+    // cosi' tutto il resto del flusso continua a ragionare su un percorso pulito.
+    const rawPath = url.searchParams.get("path") || "/";
+    const path = rawPath.split("?")[0].split("#")[0] || "/";
     const userAgent = req.headers.get("User-Agent") || "";
 
     // Non-bot: redirect immediato, zero DB call

@@ -2,8 +2,13 @@
 // tools — esecuzione degli strumenti di Cherry nella edge (Deno).
 //
 // Regole dati (concordate con /database il 2026-09-07):
-//   • match_semantic e i dettagli col SERVICE ROLE: la funzione filtra le bozze
-//     e non e' piu' concessa ad anon/authenticated (migration 20260907200000);
+//   • DUE chiavi, di proposito: `match_semantic` col SERVICE ROLE (la funzione non
+//     e' piu' concessa ad anon), i DETTAGLI con la chiave PUBBLICA. Cosi' a decidere
+//     cosa e' visibile e' la RLS, che conosce le tre forme del cancello
+//     (`is_published` su ricette e cultura, `is_visible_public` sugli ingredienti,
+//     `is_published` + `access_level` sulle news), invece di un filtro riscritto a
+//     mano che le indovina. Il filtro dentro la funzione resta solo per non sprecare
+//     i posti del risultato su righe che la RLS toglierebbe dopo.
 //   • mai `select('*')` dove c'e' semantic_vector: 1.536 numeri per riga;
 //   • i vettori sono inglesi: la domanda si embedda nello stesso spazio;
 //   • una riga modificata sparisce dalla ricerca fino al tick orario.
@@ -19,7 +24,10 @@ import {
 const EMBED_MODEL = 'text-embedding-3-small'; // 1536 dim, lo stesso di generate-embeddings
 
 export interface ToolContext {
-  supabase: SupabaseClient;
+  /** Service role: solo per `match_semantic` (revocata ad anon). */
+  service: SupabaseClient;
+  /** Chiave pubblica: ogni lettura di contenuto, cosi' il cancello lo tiene la RLS. */
+  pub: SupabaseClient;
   lang: string;
   profileIds: string[];
   openaiKey: string | undefined;
@@ -52,17 +60,23 @@ const DETAIL_SELECT: Record<SearchKind, (lang: string) => string> = {
 
 async function searchKind(ctx: ToolContext, kind: SearchKind, vector: number[], limit: number, signal?: AbortSignal): Promise<SearchHit[]> {
   const { table } = KIND_META[kind];
-  const rpc = ctx.supabase.rpc('match_semantic', {
+  // Si chiedono piu' candidati di quanti se ne tengono: la RLS ne togliera' un po'
+  // in lettura, e senza margine il risultato si assottiglierebbe.
+  const rpc = ctx.service.rpc('match_semantic', {
     query_embedding: `[${vector.join(',')}]`,
     match_table: table,
-    match_count: limit,
+    match_count: limit * 2,
   });
   const { data: matches, error } = await (signal ? rpc.abortSignal(signal) : rpc);
-  if (error || !matches?.length) return [];
+  // Un guasto NON e' "nessun risultato": rilanciarlo, cosi' il modello riceve un
+  // errore e non dice all'ospite che non esiste nulla sull'argomento.
+  if (error) throw new Error(`match_semantic ${table}: ${error.message}`);
+  if (!matches?.length) return [];
   const byId = new Map((matches as Array<{ id: string; similarity: number }>).map((m) => [m.id, m.similarity]));
-  let q = ctx.supabase.from(table).select(DETAIL_SELECT[kind](ctx.lang)).in('id', Array.from(byId.keys()));
+  let q = ctx.pub.from(table).select(DETAIL_SELECT[kind](ctx.lang)).in('id', Array.from(byId.keys()));
   if (ctx.lang !== 'en') q = q.eq('translations.lang', ctx.lang);
-  const { data: rows } = await (signal ? q.abortSignal(signal) : q);
+  const { data: rows, error: rowsError } = await (signal ? q.abortSignal(signal) : q);
+  if (rowsError) throw new Error(`${table}: ${rowsError.message}`);
   return ((rows ?? []) as unknown as Row[]).map((r) => {
     const name = pick(r, 'name') || pick(r, 'title');
     const summary = snippet(pick(r, 'summary_ai') || pick(r, 'excerpt') || pick(r, 'description'));
@@ -99,7 +113,7 @@ export async function searchContent(ctx: ToolContext, args: { query?: string; ki
 export async function getRecipe(ctx: ToolContext, args: { slug?: string }, signal?: AbortSignal): Promise<Row> {
   const slug = String(args.slug ?? '').trim();
   if (!slug) return { error: 'missing slug' };
-  let q = ctx.supabase
+  let q = ctx.pub
     .from('recipes')
     .select(`id, slug, name, recipe_key_ingredients(ingredient, ingredient_id, display_order, dietary_adaptations, ui_role)${tr('recipes_translations', 'name', ctx.lang)}`)
     .eq('slug', slug)
@@ -117,7 +131,7 @@ export async function getRecipe(ctx: ToolContext, args: { slug?: string }, signa
       if (sub) wanted.add(sub);
     }
   }
-  let iq = ctx.supabase
+  let iq = ctx.pub
     .from('ingredients_library')
     .select(`id, name, description${tr('ingredients_library_translations', 'name, description', ctx.lang)}`)
     .in('id', Array.from(wanted));

@@ -278,8 +278,16 @@ Deno.serve(async (req: Request) => {
     // Strumenti solo se il client li chiede: il client vecchio manda i suoi blocchi
     // e non deve vedere cambiare nulla. Esecuzione col service role (match_semantic
     // e dettagli), regole in tools.ts.
+    // Due chiavi: il servizio per la sola `match_semantic`, la chiave pubblica per
+    // leggere i contenuti, cosi' e' la RLS a dire cosa un ospite puo' vedere.
     const toolCtx: ToolContext | null = tools
-      ? { supabase: supabaseService as unknown as ToolContext['supabase'], lang: lang ?? 'en', profileIds, openaiKey: Deno.env.get('OPENAI_API_KEY') }
+      ? {
+          service: supabaseService as unknown as ToolContext['service'],
+          pub: createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, { auth: { persistSession: false } }) as unknown as ToolContext['pub'],
+          lang: lang ?? 'en',
+          profileIds,
+          openaiKey: Deno.env.get('OPENAI_API_KEY'),
+        }
       : null;
     const model = genAI.getGenerativeModel({
       model: CHAT_MODEL,

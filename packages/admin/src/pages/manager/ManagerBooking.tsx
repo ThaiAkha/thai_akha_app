@@ -92,7 +92,7 @@ const ManagerBooking: React.FC = () => {
                     newUser={newUser}
                     selectedUser={selectedUser}
                     hotel={hotel?.name}
-                    meetingPoint={meetingPoint}
+                    meetingPoint={meetingPoints.find((mp) => mp.id === meetingPoint)?.name ?? meetingPoint}
                     hasLuggage={hasLuggage}
                     notes={notes}
                     amount={amount}

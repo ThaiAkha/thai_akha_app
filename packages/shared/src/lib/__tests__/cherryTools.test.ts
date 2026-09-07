@@ -9,7 +9,7 @@ import * as loaded from '../../../../../supabase/functions/gemini-proxy-chat/too
 // come CommonJS e gli export nominati stanno sotto `default`. Dentro Deno e' ESM.
 type Pure = typeof import('../../../../../supabase/functions/gemini-proxy-chat/toolsPure');
 const pure = ((loaded as unknown as { default?: Pure }).default ?? loaded) as Pure;
-const { contentUrl, snippet, pick, rankHits, buildRecipeResult, TOOL_DECLARATIONS, MIN_SIMILARITY } = pure;
+const { contentUrl, snippet, pick, rankHits, buildRecipeResult, looksNonEnglish, TOOL_DECLARATIONS, MIN_SIMILARITY } = pure;
 
 test('url: slug inglese con prefisso lingua; ingredienti a tre livelli', () => {
   assert.equal(contentUrl('recipes', 'pad-thai', 'en'), '/authentic-thai-akha-recipes/pad-thai');
@@ -66,4 +66,15 @@ test('dichiarazioni: due strumenti, parametri richiesti', () => {
   assert.deepEqual(TOOL_DECLARATIONS.map((t) => t.name), ['search_content', 'get_recipe']);
   assert.deepEqual(TOOL_DECLARATIONS[0].parameters.required, ['query']);
   assert.deepEqual(TOOL_DECLARATIONS[1].parameters.required, ['slug']);
+});
+
+test('looksNonEnglish: riconosce le domande da ritradurre', () => {
+  assert.equal(looksNonEnglish('what is in pad thai?'), false);
+  assert.equal(looksNonEnglish('ต้มยำกุ้งใส่อะไรบ้างคะ'), true);
+  assert.equal(looksNonEnglish('泰式炒河粉里有什么？'), true);
+  assert.equal(looksNonEnglish('¿Qué es la flor de banano?'), true);
+});
+
+test('soglia: sopra il rumore misurato (0,35) e sotto la risposta giusta piu debole (0,41)', () => {
+  assert.ok(MIN_SIMILARITY > 0.35 && MIN_SIMILARITY < 0.41);
 });

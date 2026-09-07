@@ -12,7 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import type { SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 import {
-  ALL_KINDS_LIMIT, KIND_META, PER_KIND_LIMIT, SEARCH_KINDS, buildRecipeResult, contentUrl, pick, rankHits, snippet,
+  ALL_KINDS_LIMIT, KIND_META, PER_KIND_LIMIT, SEARCH_KINDS, buildRecipeResult, contentUrl, looksNonEnglish, pick, rankHits, snippet,
   type SearchHit, type SearchKind,
 } from './toolsPure.ts';
 
@@ -85,7 +85,15 @@ export async function searchContent(ctx: ToolContext, args: { query?: string; ki
   const vector = await embedQuery(query, ctx.openaiKey, signal);
   const perKind = await Promise.all(kinds.map((k) => searchKind(ctx, k, vector, PER_KIND_LIMIT, signal)));
   const hits = rankHits(perKind.flat(), kinds.length === 1 ? PER_KIND_LIMIT : ALL_KINDS_LIMIT);
-  return hits.length ? { results: hits } : { results: [], note: 'nothing relevant found: say you will check with the chef, do not invent' };
+  if (hits.length) return { results: hits };
+  // Niente sopra soglia. Se la query non era in inglese, la causa piu' probabile
+  // e' quella: il catalogo e' indicizzato in inglese e la somiglianza crolla.
+  return {
+    results: [],
+    note: looksNonEnglish(query)
+      ? 'nothing found. The catalogue is indexed in ENGLISH: translate the query to English and call search_content once more before giving up.'
+      : 'nothing relevant found: say you will check with the chef, do not invent',
+  };
 }
 
 export async function getRecipe(ctx: ToolContext, args: { slug?: string }, signal?: AbortSignal): Promise<Row> {

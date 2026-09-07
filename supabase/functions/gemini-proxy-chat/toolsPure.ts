@@ -19,8 +19,14 @@ export const KIND_META: Record<SearchKind, { table: string; hub: string }> = {
 /** Per famiglia: quanti risultati chiedere e quanti tenerne. */
 export const PER_KIND_LIMIT = 3;
 export const ALL_KINDS_LIMIT = 5;
-/** Sotto questa somiglianza un risultato non e' una risposta: meglio dirlo che inventare. */
-export const MIN_SIMILARITY = 0.25;
+/**
+ * Sotto questa somiglianza un risultato non e' una risposta: meglio dirlo che inventare.
+ * MISURATA il 2026-09-07 sul catalogo vero (scripts/cherry-corpus): otto domande
+ * fuori tema ("visto per la Thailandia", "noleggio scooter") arrivano fino a 0,35
+ * di somiglianza; la risposta GIUSTA piu' debole delle 30 del corpus sta a 0,41.
+ * 0,25 (primo valore) lasciava passare il rumore come se fosse una risposta.
+ */
+export const MIN_SIMILARITY = 0.38;
 export const SNIPPET_CHARS = 280;
 
 /** Dichiarazioni per Gemini (function calling). Le descrizioni sono il vero prompt degli strumenti. */
@@ -32,7 +38,7 @@ export const TOOL_DECLARATIONS = [
     parameters: {
       type: 'OBJECT',
       properties: {
-        query: { type: 'STRING', description: 'What to look for, in the guest own words (any language).' },
+        query: { type: 'STRING', description: 'What to look for, IN ENGLISH: translate the guest words if they wrote in another language, keeping the dish, ingredient or topic they named. The catalogue is indexed in English and a non-English query finds much less.' },
         kind: { type: 'STRING', enum: ['recipes', 'ingredients', 'culture', 'news', 'all'], description: 'Which family of content, or "all".' },
       },
       required: ['query'],
@@ -75,6 +81,16 @@ export function pick(row: Record<string, unknown>, field: string): string {
   if (typeof v === 'string' && v.trim()) return v;
   const base = row[field];
   return typeof base === 'string' ? base : '';
+}
+
+/**
+ * La query non sembra inglese: caratteri fuori dall'alfabeto latino di base, o
+ * lettere latine accentate. Serve solo a suggerire al modello di riprovare in
+ * inglese quando non trova nulla: i vettori del catalogo sono inglesi e una
+ * domanda nativa vale, misurato, 19/30 contro 30/30 (2026-09-07).
+ */
+export function looksNonEnglish(query: string): boolean {
+  return /[^\u0000-\u007F]/.test(query);
 }
 
 export interface SearchHit {

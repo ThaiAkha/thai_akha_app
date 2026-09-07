@@ -88,7 +88,7 @@ export async function buildSystemInstruction({
   // gamification non si escludono a vicenda.
   // Ogni contesto e' avvolto in safeBlock: il Promise.all non puo' piu' rigettare,
   // quindi un contesto rotto costa il suo blocco, non la risposta.
-  const [recipeBlock, cultureBlock, newsBlock, gamificationBlock, bookingBlock, menuBlock, dietBlock] = await Promise.all([
+  const [recipeBlock, cultureBlock, newsBlock, gamificationBlock, bookingBlock, menuBlock, dietBlock, staticKnowledge] = await Promise.all([
     // Il menu del cliente e la conoscenza delle diete non dipendono da nessuno
     // degli altri: stavano in fila per abitudine, e ogni attesa in fila si somma
     // davanti all'ospite che aspetta la risposta. Da cinque giri a due.
@@ -104,6 +104,9 @@ export async function buildSystemInstruction({
     // Conoscenza diete/allergie (DB profili + sostituzioni), su intento, read-only.
     // Mira ai profili citati nel testo + quelli attivi dell'utente.
     safeBlock('diet', () => getDietContextForCherry(userText, { activeProfileIds, lang })),
+    // Sapere statico generato dal DB (classi, punti di ritrovo, azienda, piatti,
+    // diete), nella lingua dell'ospite: un import dinamico la prima volta, poi memoria.
+    safeBlock('static', () => getStaticKnowledge(userText, lang)),
   ]);
 
   // Ingrediente: solo se NESSUNA ricetta ha matchato (le domande sul piatto hanno
@@ -125,8 +128,6 @@ export async function buildSystemInstruction({
   const gamificationText = gamificationBlock ? `\n${gamificationBlock}` : '';
   const bookingText = bookingBlock ? `\n${bookingBlock}` : '';
   const pickupText = pickupResult ? `\n${pickupResult.text}` : '';
-  // Sapere statico (classi, meeting point, business…): in-memory, su intento.
-  const staticKnowledge = getStaticKnowledge(userText);
   const staticText = staticKnowledge ? `\n${staticKnowledge}` : '';
   // Clausole legali (RAG locale sui file generati): in-memory, match su domanda.
   // Gli altri temi arrivano dai contesti dedicati, che leggono le fonti dal DB.

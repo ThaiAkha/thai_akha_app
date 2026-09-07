@@ -14,6 +14,73 @@ export interface CherryKnowledgeModule {
   id: string;
   /** Parole-chiave (lowercase) che attivano l'iniezione del blocco. */
   keywords: string[];
-  /** Costruisce il blocco di prompt dai dati locali. Nessun I/O. */
-  build: () => string;
+  /** Costruisce il blocco di prompt dai fatti generati. Nessun I/O. */
+  build: (facts: CherryFacts) => string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CherryFacts — i fatti canonici GENERATI dal database, uno per lingua
+// (`generated/facts.<lang>.ts`, da `pnpm gen-cherry-facts`). Solo dati: il testo
+// per il prompt lo compongono i moduli qui accanto, cosi' la forma vive in un
+// posto solo e si testa senza database.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface CherryFactsBusiness {
+  name: string;
+  legalName: string | null;
+  foundingYear: number | null;
+  address: string;
+  telephone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  openingHours: string[];
+  priceRange: string | null;
+  areaServed: string[];
+  rating: { value: string; count: string } | null;
+  /** Canali attivi (instagram, youtube, tripadvisor, maps...). */
+  socials: Array<{ type: string; url: string }>;
+}
+
+export interface CherryFactsClass {
+  id: string;
+  title: string;
+  badge: string | null;
+  priceThb: number;
+  currency: string;
+  unit: string;
+  /** HH:MM */
+  startTime: string;
+  endTime: string;
+  durationText: string | null;
+  hasMarketTour: boolean;
+  marketTour: { start: string; end: string } | null;
+  /** zona → ora di inizio finestra (HH:MM), dalla config della sessione. */
+  pickupWindows: Record<string, string>;
+  capacityText: string | null;
+  inclusions: string[];
+  /** Cronologia della giornata: etichetta, orario, nota. */
+  schedule: Array<{ label: string; time: string; description: string }>;
+  /** Punti d'incontro senza pickup (scuola, tempio del mercato) con orario. */
+  walkIn: Array<{ name: string; time: string; note: string }>;
+}
+
+export interface CherryFactsMeetingPoint {
+  id: string;
+  name: string;
+  type: 'pickup' | 'walk_in' | 'dropoff' | string;
+  description: string;
+  dropoffDescription: string | null;
+  isDropoff: boolean;
+  morning: { from: string; to: string | null } | null;
+  evening: { from: string; to: string | null } | null;
+}
+
+export interface CherryFacts {
+  lang: string;
+  generatedAt: string;
+  business: CherryFactsBusiness;
+  classes: CherryFactsClass[];
+  meetingPoints: CherryFactsMeetingPoint[];
+  dishes: Array<{ category: string; categorySlug: string; items: Array<{ slug: string; name: string }> }>;
+  diets: { lifestyle: string[]; religious: string[]; allergies: string[] };
 }

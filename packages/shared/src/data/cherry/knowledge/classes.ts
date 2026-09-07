@@ -1,38 +1,25 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Dati STATICI delle cooking class (fonte: tabella cooking_classes, 2 righe).
-// Allineati a class_sessions (prezzi/orari usati da booking & disponibilità).
-// Cambiano raramente → hardcoded qui, niente query. Aggiornare se cambiano.
+// Classi: prezzi, orari, cronologia, inclusioni, capienza. Dati da CherryFacts
+// (generati dal database: cooking_classes + class_sessions + sidecar). Qui solo
+// la forma del blocco. Le parole chiave restano inglesi come il prompt.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { CherryKnowledgeModule } from './types';
+import type { CherryKnowledgeModule, CherryFacts, CherryFactsClass } from './types';
 
-interface ClassInfo {
-  id: 'morning_class' | 'evening_class';
-  title: string;
-  priceThb: number;
-  time: string;
-  marketTour: boolean;
-  dishes: number;
-  capacity: string;
+const thb = (n: number) => n.toLocaleString('en-US');
+
+function classLine(c: CherryFactsClass): string {
+  const tour = c.marketTour
+    ? `includes a 1-hour local market tour ${c.marketTour.start}-${c.marketTour.end}`
+    : c.hasMarketTour ? 'includes a local market tour' : 'no market tour (straight to cooking)';
+  const head = `- ${c.title}${c.badge ? ` (${c.badge})` : ''}: ${thb(c.priceThb)} ${c.currency} ${c.unit} · ${c.startTime}-${c.endTime}${c.durationText ? ` (${c.durationText})` : ''} · ${tour}${c.capacityText ? ` · capacity: ${c.capacityText}` : ''}.`;
+  const timeline = c.schedule.length ? `  Timeline: ${c.schedule.map((s) => `${s.label} ${s.time}`).join('; ')}.` : '';
+  const zones = Object.entries(c.pickupWindows);
+  const pickup = zones.length ? `  Free hotel pickup windows by zone (start of window, exact time depends on the hotel): ${zones.map(([z, t]) => `${z} ${t}`).join(', ')}.` : '';
+  const walkIn = c.walkIn.length ? `  Walk-in (no pickup): ${c.walkIn.map((w) => `${w.name} at ${w.time}`).join('; ')}.` : '';
+  const includes = c.inclusions.length ? `  Includes: ${c.inclusions.join(', ')}.` : '';
+  return [head, timeline, pickup, walkIn, includes].filter(Boolean).join('\n');
 }
-
-export const COOKING_CLASSES: ClassInfo[] = [
-  // capacity: fonte vincolante = Terms (legal_documents). Privata fino a 28 (12 cucina
-  // A/C · 16 cucina giardino · 17-28 entrambe). NB: cooking_classes.capacity_text nel DB
-  // dice ancora "16" → drift DB da correggere lato /database + /terms.
-  { id: 'morning_class', title: 'Morning Cooking Class', priceThb: 1400, time: '9:00 am - 2:30 pm', marketTour: true, dishes: 11, capacity: 'up to 12 per class; private groups up to 28' },
-  { id: 'evening_class', title: 'Evening Cooking Class', priceThb: 1300, time: '5:00 pm - 9:00 pm', marketTour: false, dishes: 11, capacity: 'up to 12 per class; private groups up to 28' },
-];
-
-/** Inclusioni comuni a entrambe le classi (la morning aggiunge il market tour). */
-export const CLASS_INCLUSIONS = [
-  'free hotel pickup & drop-off',
-  'your own individual cooking station',
-  'a 40-page colour cookbook',
-  'an ingredient gift set',
-  'unlimited Akha mountain coffee, water & teas',
-  'free wifi',
-];
 
 export const classesModule: CherryKnowledgeModule = {
   id: 'classes',
@@ -40,17 +27,11 @@ export const classesModule: CherryKnowledgeModule = {
     'class', 'classes', 'cooking class', 'price', 'cost', 'how much', 'thb', 'baht',
     'include', 'included', 'inclusion', 'what do i get', 'duration', 'how long',
     'what time', 'market tour', 'morning class', 'evening class', 'schedule', 'dishes',
-    'cookbook', 'lesson', 'course',
+    'cookbook', 'lesson', 'course', 'pickup', 'pick-up', 'pick up', 'capacity', 'how many',
   ],
-  build: () => {
-    const lines = COOKING_CLASSES.map((c) =>
-      `- ${c.title}: ${c.priceThb.toLocaleString('en-US')} THB · ${c.time} · ${c.marketTour ? 'includes a 1-hour local market tour · ' : 'no market tour (straight to cooking) · '}cook ${c.dishes} dishes · capacity ${c.capacity}.`,
-    );
-    return [
-      `### CLASS INFO (authoritative - give prices, times and inclusions from here, never invent):`,
-      ...lines,
-      `Both classes include: ${CLASS_INCLUSIONS.join(', ')}.`,
-      `STYLE: warm; answer exactly what is asked (price / time / what's included). Plain text kha.`,
-    ].join('\n');
-  },
+  build: (facts: CherryFacts) => [
+    `### CLASS INFO (authoritative - give prices, times, timeline, pickup windows and inclusions from here, never invent):`,
+    ...facts.classes.map(classLine),
+    `STYLE: warm; answer exactly what is asked (price / time / what's included). Plain text kha.`,
+  ].join('\n'),
 };

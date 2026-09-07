@@ -30,7 +30,9 @@ interface SessionState {
 export const useGeminiLive = (
   userProfile?: UserProfile,
   _sessionId?: string | null,
-  onTurnComplete?: (userText: string, assistantText: string) => void
+  onTurnComplete?: (userText: string, assistantText: string) => void,
+  /** Lingua dell'interfaccia: i fatti statici (classi, punti, piatti) escono in quella lingua. */
+  lang = 'en'
 ) => {
     const [state, setState] = useState<SessionState>({
         status: 'idle',
@@ -154,6 +156,8 @@ export const useGeminiLive = (
 
             // Stessa conoscenza del testo: booking_state + diete/spice mappate leggibili.
             const booking = await getUserBookingState(userProfile?.id);
+            // Stessi fatti del testo, generati dal DB, nella lingua dell'ospite.
+            const staticKnowledge = await getAllStaticKnowledge(lang);
             const resolvedSystemInstruction = overrideInstruction || buildCherryPrompt({
               isLogged: !!userProfile,
               role: userProfile?.role, // #17 Chameleon: modula persona anche in voce
@@ -308,7 +312,7 @@ export const useGeminiLive = (
                             prebuiltVoiceConfig: { voiceName: cherryFront.voiceName }
                         }
                     },
-                    systemInstruction: `${resolvedSystemInstruction}\n${getAllStaticKnowledge()}`,
+                    systemInstruction: `${resolvedSystemInstruction}\n${staticKnowledge}`,
                     outputAudioTranscription: {},
                     inputAudioTranscription: {},
                 }

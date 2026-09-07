@@ -1,28 +1,19 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Dati STATICI dei meeting point (fonte: tabella meeting_points, ~12 righe).
-// Per ospiti walk-in o con hotel fuori dalla zona di pickup gratuito.
-// I link mappa NON sono nel prompt (URL lunghi = spreco token): la posizione
-// esatta la mostra la pagina mappa pickup. Aggiornare se cambiano.
+// Punti di ritrovo: walk-in, punti di pickup designati, riconsegne. Dati da
+// CherryFacts (meeting_points + sidecar). I link mappa restano fuori dal prompt:
+// la posizione esatta la mostra la pagina della mappa.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { CherryKnowledgeModule } from './types';
+import type { CherryKnowledgeModule, CherryFacts, CherryFactsMeetingPoint } from './types';
 
-interface MeetingPoint {
-  name: string;
-  type: 'pickup' | 'walk_in' | 'dropoff';
-  where: string;
+const window = (w: { from: string; to: string | null } | null) => (w ? (w.to ? `${w.from}-${w.to}` : w.from) : null);
+/** Le descrizioni del DB finiscono col punto: si toglie, il separatore lo mette la riga. */
+const tidy = (s: string) => s.trim().replace(/[.\s]+$/, '');
+
+function times(p: CherryFactsMeetingPoint): string {
+  const parts = [window(p.morning) ? `morning ${window(p.morning)}` : null, window(p.evening) ? `evening ${window(p.evening)}` : null].filter(Boolean);
+  return parts.length ? ` (${parts.join(', ')})` : '';
 }
-
-export const MEETING_POINTS: MeetingPoint[] = [
-  { name: 'Thai Akha Kitchen (the school)', type: 'walk_in', where: 'come directly to the school - arrive by 8:50 am (morning) or 4:50 pm (evening)' },
-  { name: 'Wat Pan Whean temple', type: 'walk_in', where: 'morning market meeting point - inside, near the big white pagoda' },
-  { name: 'MAYA Shopping Center', type: 'pickup', where: 'in front of the entrance to ONE Nimman' },
-  { name: 'Central Festival', type: 'pickup', where: 'on the main street, by the bus stop sign' },
-  { name: 'Central Airport Plaza', type: 'pickup', where: 'in front of the Central Plaza gate entrance' },
-  { name: 'MacDonald - Tha Phae Gate', type: 'pickup', where: 'on the main street, in front of the McDonald entrance' },
-  { name: 'North Gate - B2 Hotel', type: 'pickup', where: 'on the main street in front of B2 Hotel' },
-  { name: 'Chiang Mai Train Station', type: 'pickup', where: 'outside the mini-mart next to the clock tower' },
-];
 
 export const meetingPointsModule: CherryKnowledgeModule = {
   id: 'meeting_points',
@@ -30,15 +21,21 @@ export const meetingPointsModule: CherryKnowledgeModule = {
     'meeting point', 'meet you', 'where do we meet', 'where to meet', 'meet at',
     'walk in', 'walk-in', 'come to the school', 'wat pan', 'maya', 'central festival',
     'tha phae', 'train station', 'north gate', 'outside zone', 'outside the zone',
+    'airport', 'drop off', 'drop-off', 'dropoff', 'night market', 'saturday market', 'sunday market',
   ],
-  build: () => {
-    const walkIn = MEETING_POINTS.filter((m) => m.type === 'walk_in').map((m) => `${m.name} (${m.where})`);
-    const pickup = MEETING_POINTS.filter((m) => m.type === 'pickup').map((m) => `${m.name} - ${m.where}`);
+  build: (facts: CherryFacts) => {
+    const walkIn = facts.meetingPoints.filter((p) => p.type === 'walk_in');
+    const pickup = facts.meetingPoints.filter((p) => p.type === 'pickup');
+    const dropOnly = facts.meetingPoints.filter((p) => p.type === 'dropoff');
+    const dropNotes = facts.meetingPoints.filter((p) => p.dropoffDescription);
+    const fmt = (p: CherryFactsMeetingPoint) => `${p.name}: ${tidy(p.description)}${times(p)}`;
     return [
-      `### MEETING POINTS (authoritative - for walk-in guests or hotels outside the free pickup zone):`,
-      `Walk-in (no pickup): ${walkIn.join('; ')}.`,
-      `Designated pickup meeting points: ${pickup.join('; ')}.`,
-      `STYLE: warm; name the relevant point and where to wait. To show the exact spot, offer the pickup map. Plain text kha.`,
-    ].join('\n');
+      `### MEETING POINTS (authoritative - for walk-in guests, hotels outside the free pickup zone, and drop-offs):`,
+      walkIn.length ? `Walk-in (no pickup): ${walkIn.map(fmt).join('; ')}.` : '',
+      pickup.length ? `Designated pickup meeting points: ${pickup.map(fmt).join('; ')}.` : '',
+      dropOnly.length ? `Drop-off only: ${dropOnly.map((p) => `${p.name}: ${tidy(p.description)}`).join('; ')}.` : '',
+      dropNotes.length ? `Drop-off notes: ${dropNotes.map((p) => `${p.name}: ${tidy(p.dropoffDescription ?? '')}`).join('; ')}.` : '',
+      `STYLE: warm; name the relevant point, where to wait and the time window. To show the exact spot, offer the pickup map. Plain text kha.`,
+    ].filter(Boolean).join('\n');
   },
 };

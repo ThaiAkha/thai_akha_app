@@ -13,6 +13,7 @@
     "build": "pnpm --filter front build && pnpm --filter admin build",
     "generate-embeddings": "tsx --env-file=.env scripts/generate-embeddings.ts",
     "gen-legal": "tsx --env-file=.env scripts/gen-legal-data.ts",
+    "gen-cherry-facts": "tsx --env-file=.env scripts/gen-cherry-facts.ts",
     "sync-prompts": "node scripts/sync-prompts.mjs",
     "check-prompts": "node scripts/sync-prompts.mjs --check",
     "check-ui-strings": "node scripts/check-ui-strings.mjs",

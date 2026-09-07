@@ -72,11 +72,6 @@ export const CHERRY_FACTS_ZH: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "每间厨房12人，最多24人同场 · 私人团最多28人",
       "inclusions": [
         "住处往返接送",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_ZH: CherryFacts = {
       "durationText": "5 小时",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "每间厨房12人，最多24人同场 · 私人团最多28人",
       "inclusions": [
         "住处往返接送",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_ZH: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "粉区",
+      "description": "为较远酒店设置的延伸接送区域。请准时在大堂等候。",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "绿区",
+      "description": "覆盖古城（Old City）的常规接送区域。请在大堂等候。",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "天蓝区",
+      "description": "为较远酒店设置的延伸接送区域。请准时在大堂等候。",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "黄区",
+      "description": "交通拥堵路段，接送时间会提前。请在大堂等候。",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

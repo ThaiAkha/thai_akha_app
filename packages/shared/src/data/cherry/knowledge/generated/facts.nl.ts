@@ -72,11 +72,6 @@ export const CHERRY_FACTS_NL: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "12 per keuken, tot 24 samen · privégroepen tot 28",
       "inclusions": [
         "Ophalen bij en terugbrengen naar je verblijf",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_NL: CherryFacts = {
       "durationText": "5 h",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "12 per keuken, tot 24 samen · privégroepen tot 28",
       "inclusions": [
         "Ophalen bij en terugbrengen naar je verblijf",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_NL: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "Roze Zone",
+      "description": "Uitgebreide ophaalzone voor hotels verder weg. Sta op tijd klaar in de lobby.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Groene Zone",
+      "description": "Gewone ophaalzone rond de Old City. Sta klaar in de lobby.",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "Azuurblauwe Zone",
+      "description": "Uitgebreide ophaalzone voor hotels verder weg. Sta op tijd klaar in de lobby.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "Gele Zone",
+      "description": "Drukke zone, daarom halen we je vroeger op. Sta klaar in de lobby.",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

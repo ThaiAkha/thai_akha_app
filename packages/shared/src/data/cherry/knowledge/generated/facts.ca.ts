@@ -72,11 +72,6 @@ export const CHERRY_FACTS_CA: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "12 per cuina, fins a 24 junts · grups privats fins a 28",
       "inclusions": [
         "Recollida i tornada al teu allotjament",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_CA: CherryFacts = {
       "durationText": "5 h",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "12 per cuina, fins a 24 junts · grups privats fins a 28",
       "inclusions": [
         "Recollida i tornada al teu allotjament",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_CA: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "Zona Rosa",
+      "description": "Zona de recollida ampliada per a hotels més allunyats. Espera't puntual al vestíbul, sisplau.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Zona Verda",
+      "description": "Zona de recollida estàndard, cobreix la Old City. Espera't al vestíbul, sisplau.",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "Zona Blau cel",
+      "description": "Zona de recollida ampliada per a hotels més allunyats. Espera't puntual al vestíbul, sisplau.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "Zona Groga",
+      "description": "Zona amb molt trànsit: la recollida s'avança. Espera't al vestíbul, sisplau.",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

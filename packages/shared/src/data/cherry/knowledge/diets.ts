@@ -11,12 +11,12 @@ export const dietsModule: CherryKnowledgeModule = {
   id: 'diets',
   keywords: [
     'vegan', 'vegetarian', 'pescatarian', 'halal', 'kosher', 'jain', 'hindu', 'rastafari',
-    'allerg', 'gluten', 'celiac', 'coeliac', 'diet', 'dietary', 'intoleran', 'peanut', 'tree nut',
+    'allerg', 'gluten', 'celiac', 'coeliac', 'dietary', 'diet ', 'diets', 'intoleran', 'peanut', 'tree nut',
     'shellfish', 'seafood', 'lactose', 'dairy',
   ],
   build: (facts: CherryFacts) => [
     `### DIETS & ALLERGIES WE SUPPORT (authoritative names):`,
     `Lifestyle: ${facts.diets.lifestyle.join(', ')}. Religious: ${facts.diets.religious.join(', ')}. Allergies: ${facts.diets.allergies.join(', ')}.`,
-    `Every guest cooks at their own station with zero cross-contamination. For exact substitutions rely on a DIET & ALLERGY block. Plain text kha.`,
+    `Every guest cooks at their own station with zero cross-contamination. Exact substitutions: only from a DIET & ALLERGY block when present; otherwise invite the guest to tell you their diet or allergy. Plain text kha.`,
   ].join('\n'),
 };

@@ -10,12 +10,12 @@ export const dishesModule: CherryKnowledgeModule = {
   id: 'dishes',
   keywords: [
     'menu', 'dish', 'dishes', 'what do we cook', 'what will we cook', 'what can we cook', 'what do you cook',
-    'which recipes', 'recipes', 'curry', 'curries', 'soup', 'stir', 'dessert', 'appetizer', 'paste',
-    'pad thai', 'akha food', 'choose', 'vegetarian options', 'vegan options',
+    'which recipes', 'recipes', 'curry', 'curries', 'soup', 'stir-fry', 'stir fry', 'dessert', 'appetizer',
+    'curry paste', 'pad thai', 'akha food', 'choose a dish', 'which dishes', 'vegetarian options', 'vegan options',
   ],
   build: (facts: CherryFacts) => [
-    `### DISHES (authoritative - the class menu, names in the guest's language; each student picks their own dishes across the categories):`,
+    `### DISHES (authoritative - the class menu, names in the guest's language. Appetizers, the Akha dishes and desserts are cooked by everyone; each student chooses one curry with its paste, one soup and one stir-fry):`,
     ...facts.dishes.map((d) => `- ${d.category}: ${d.items.map((i) => i.name).join(', ')}`),
-    `STYLE: describe warmly, don't dump the whole list unless asked; for exact ingredients rely ONLY on a RECIPE DATA block. Plain text kha.`,
+    `STYLE: describe warmly, don't dump the whole list unless asked. Exact ingredients: only from a RECIPE DATA block when present; otherwise say you'll check the recipe. Plain text kha.`,
   ].join('\n'),
 };

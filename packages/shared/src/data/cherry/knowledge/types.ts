@@ -14,6 +14,8 @@ export interface CherryKnowledgeModule {
   id: string;
   /** Parole-chiave (lowercase) che attivano l'iniezione del blocco. */
   keywords: string[];
+  /** true = in ogni messaggio, a prescindere dall'intento (il livello base). */
+  always?: boolean;
   /** Costruisce il blocco di prompt dai fatti generati. Nessun I/O. */
   build: (facts: CherryFacts) => string;
 }
@@ -54,8 +56,6 @@ export interface CherryFactsClass {
   durationText: string | null;
   hasMarketTour: boolean;
   marketTour: { start: string; end: string } | null;
-  /** zona → ora di inizio finestra (HH:MM), dalla config della sessione. */
-  pickupWindows: Record<string, string>;
   capacityText: string | null;
   inclusions: string[];
   /** Cronologia della giornata: etichetta, orario, nota. */
@@ -75,11 +75,22 @@ export interface CherryFactsMeetingPoint {
   evening: { from: string; to: string | null } | null;
 }
 
+/** Una zona di pickup (tabella pickup_zones): finestre di mattina e sera, inizio e fine. */
+export interface CherryFactsPickupZone {
+  id: string;
+  name: string;
+  description: string;
+  morning: { from: string; to: string } | null;
+  evening: { from: string; to: string } | null;
+}
+
 export interface CherryFacts {
   lang: string;
   generatedAt: string;
   business: CherryFactsBusiness;
   classes: CherryFactsClass[];
+  /** Solo le zone con una finestra (walk-in e fuori zona stanno nei punti di ritrovo). */
+  pickupZones: CherryFactsPickupZone[];
   meetingPoints: CherryFactsMeetingPoint[];
   dishes: Array<{ category: string; categorySlug: string; items: Array<{ slug: string; name: string }> }>;
   diets: { lifestyle: string[]; religious: string[]; allergies: string[] };

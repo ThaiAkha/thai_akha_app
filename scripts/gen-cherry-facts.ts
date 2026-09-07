@@ -21,7 +21,7 @@ import { createClient } from '@supabase/supabase-js';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { CherryFacts, CherryFactsClass, CherryFactsMeetingPoint } from '../packages/shared/src/data/cherry/knowledge/types';
+import type { CherryFacts, CherryFactsClass, CherryFactsMeetingPoint, CherryFactsPickupZone } from '../packages/shared/src/data/cherry/knowledge/types';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -63,6 +63,11 @@ async function fetchAll(supabase: ReturnType<typeof createClient>) {
     sessions: await get('class_sessions', 'id, price_thb, start_time, end_time, duration_hours, has_market_tour, schedule_config, meeting_points', (q) => q.eq('active', true)),
     points: await get('meeting_points', 'id, name, point_type, is_dropoff_point, description, dropoff_description, morning_pickup_time, morning_pickup_end, evening_pickup_time, evening_pickup_end', (q) => q.eq('active', true).order('name')),
     pointsT: await get('meeting_points_translations', 'point_id, lang, name, description, dropoff_description'),
+    // La STESSA tabella che il blocco PICKUP DATA usa a runtime: inizio e fine per
+    // zona, mattina e sera. Non il blob schedule_config.pickup_windows di
+    // class_sessions, che ha solo l'inizio e non conosce la zona Azure.
+    zones: await get('pickup_zones', 'id, name, description, display_order, morning_pickup_time, morning_pickup_end, evening_pickup_time, evening_pickup_end', (q) => q.order('display_order')),
+    zonesT: await get('pickup_zones_translations', 'zone_id, lang, name, description'),
     business: await get('business_profile', 'name, legal_name, founding_date, street_address, address_locality, address_region, postal_code, address_country, telephone, email, opening_hours, price_range, area_served, aggregate_rating, contact_channels'),
     recipes: await get('recipes', 'id, slug, name, category', (q) => q.eq('recipe_type', 'class').order('name')),
     recipesT: await get('recipes_translations', 'recipe_id, lang, name'),
@@ -105,7 +110,7 @@ function buildFacts(db: Db, lang: string, generatedAt: string): CherryFacts {
     const t = lang === 'en' ? undefined : tr(db.classesT, 'class_id', c.id);
     const s = db.sessions.find((x) => x.id === c.id);
     if (!s) throw new Error(`[gen-cherry-facts] class_sessions senza riga per ${String(c.id)}`);
-    const cfg = (s.schedule_config ?? {}) as { market_tour?: { enabled?: boolean; start?: string; end?: string }; pickup_windows?: Record<string, string> };
+    const cfg = (s.schedule_config ?? {}) as { market_tour?: { enabled?: boolean; start?: string; end?: string } };
     const schedule = (pick(c, t, 'schedule_items') as Array<Record<string, unknown>> | null) ?? [];
     const walkIn = (Array.isArray(s.meeting_points) ? s.meeting_points : []) as Array<Record<string, unknown>>;
     return {
@@ -120,13 +125,26 @@ function buildFacts(db: Db, lang: string, generatedAt: string): CherryFacts {
       durationText: strOrNull(pick(c, t, 'duration_text')),
       hasMarketTour: Boolean(s.has_market_tour),
       marketTour: cfg.market_tour?.enabled && cfg.market_tour.start && cfg.market_tour.end ? { start: cfg.market_tour.start, end: cfg.market_tour.end } : null,
-      pickupWindows: cfg.pickup_windows ?? {},
       capacityText: strOrNull(pick(c, t, 'capacity_text')),
       inclusions: arr(pick(c, t, 'inclusions')),
       schedule: schedule.map((i) => ({ label: str(i.label), time: str(i.time), description: str(i.description) })),
       walkIn: walkIn.map((w) => ({ name: str(w.name), time: str(w.time), note: str(w.note) })),
     };
   });
+
+  const pickupZones: CherryFactsPickupZone[] = db.zones
+    .filter((z) => str(z.morning_pickup_time) || str(z.evening_pickup_time))
+    .map((z) => {
+      const t = lang === 'en' ? undefined : tr(db.zonesT, 'zone_id', z.id);
+      const win = (from: unknown, to: unknown) => (str(from) && str(to) ? { from: hhmm(from), to: hhmm(to) } : null);
+      return {
+        id: str(z.id),
+        name: str(pick(z, t, 'name')),
+        description: str(pick(z, t, 'description')),
+        morning: win(z.morning_pickup_time, z.morning_pickup_end),
+        evening: win(z.evening_pickup_time, z.evening_pickup_end),
+      };
+    });
 
   const meetingPoints: CherryFactsMeetingPoint[] = db.points.map((p) => {
     const t = lang === 'en' ? undefined : tr(db.pointsT, 'point_id', p.id);
@@ -152,6 +170,11 @@ function buildFacts(db: Db, lang: string, generatedAt: string): CherryFacts {
       return { category: label, categorySlug: str(cat.slug), items };
     })
     .filter((c) => c.items.length > 0);
+  // Ogni ricetta di classe deve stare in una categoria: una con categoria nulla o
+  // di un altro dominio sparirebbe dal menu in silenzio, con gli invarianti verdi.
+  const placed = new Set(dishes.flatMap((d) => d.items.map((i) => i.slug)));
+  const unplaced = db.recipes.map((r) => str(r.slug)).filter((slug) => !placed.has(slug));
+  if (unplaced.length) throw new Error(`[gen-cherry-facts] ricette senza categoria di dominio recipe: ${unplaced.join(', ')}`);
 
   const dietName = (d: Row) => str(pick(d, lang === 'en' ? undefined : tr(db.dietsT, 'profile_id', d.id), 'name'));
   const diets = {
@@ -160,7 +183,7 @@ function buildFacts(db: Db, lang: string, generatedAt: string): CherryFacts {
     allergies: db.diets.filter((d) => d.type === 'allergy').map(dietName),
   };
 
-  return { lang, generatedAt, business, classes, meetingPoints, dishes, diets };
+  return { lang, generatedAt, business, classes, pickupZones, meetingPoints, dishes, diets };
 }
 
 const header = (lang: string, generatedAt: string) => [
@@ -183,6 +206,7 @@ async function main() {
   if (db.classes.length < 2) problems.push(`cooking_classes attive: ${db.classes.length} (attese 2)`);
   if (db.business.length !== 1) problems.push(`business_profile: ${db.business.length} righe (attesa 1)`);
   if (db.points.length < 10) problems.push(`meeting_points attivi: ${db.points.length} (attesi almeno 10)`);
+  if (db.zones.filter((z) => str(z.morning_pickup_time)).length < 4) problems.push(`pickup_zones con finestra: ${db.zones.length} (attese almeno 4)`);
   if (db.recipes.length < 20) problems.push(`recipes di classe: ${db.recipes.length} (attese almeno 20)`);
   if (db.diets.length < 15) problems.push(`dietary_profiles: ${db.diets.length} (attesi almeno 15)`);
   if (problems.length) {

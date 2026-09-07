@@ -72,11 +72,6 @@ export const CHERRY_FACTS_PT: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "12 por cozinha, até 24 juntos · grupos privados até 28",
       "inclusions": [
         "Recolha e regresso ao seu alojamento",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_PT: CherryFacts = {
       "durationText": "5 h",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "12 por cozinha, até 24 juntos · grupos privados até 28",
       "inclusions": [
         "Recolha e regresso ao seu alojamento",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_PT: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "Zona Rosa",
+      "description": "Zona de recolha alargada para hotéis mais afastados. Esteja pronto no lobby à hora certa, por favor.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Zona Verde",
+      "description": "Zona de recolha normal, que cobre a Old City. Esteja pronto no lobby, por favor.",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "Zona Azul",
+      "description": "Zona de recolha alargada para hotéis mais afastados. Esteja pronto no lobby à hora certa, por favor.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "Zona Amarela",
+      "description": "Zona de muito trânsito: a recolha é mais cedo. Esteja pronto no lobby, por favor.",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

@@ -13,6 +13,7 @@
 
 import type { CherryFacts, CherryKnowledgeModule } from './types';
 import { CHERRY_FACTS_LOADERS } from './generated';
+import { coreModule } from './core';
 import { classesModule } from './classes';
 import { meetingPointsModule } from './meetingPoints';
 import { businessModule } from './business';
@@ -20,10 +21,11 @@ import { dishesModule } from './dishes';
 import { dietsModule } from './diets';
 
 export type { CherryKnowledgeModule, CherryFacts } from './types';
-export { classesModule, meetingPointsModule, businessModule, dishesModule, dietsModule };
+export { coreModule, classesModule, meetingPointsModule, businessModule, dishesModule, dietsModule };
 
 /** Registro dei moduli di sapere statico. */
 export const CHERRY_KNOWLEDGE: CherryKnowledgeModule[] = [
+  coreModule,
   classesModule,
   meetingPointsModule,
   businessModule,
@@ -33,9 +35,7 @@ export const CHERRY_KNOWLEDGE: CherryKnowledgeModule[] = [
 
 const factsCache = new Map<string, Promise<CherryFacts>>();
 
-/** I fatti nella lingua data (inglese se non generata). Una promessa per lingua, condivisa. */
-export function getCherryFacts(lang = 'en'): Promise<CherryFacts> {
-  const l = Object.prototype.hasOwnProperty.call(CHERRY_FACTS_LOADERS, lang) ? lang : 'en';
+function loadFacts(l: string): Promise<CherryFacts> {
   let p = factsCache.get(l);
   if (!p) {
     p = CHERRY_FACTS_LOADERS[l]().catch((err: unknown) => {
@@ -47,16 +47,30 @@ export function getCherryFacts(lang = 'en'): Promise<CherryFacts> {
   return p;
 }
 
-/** Moduli il cui intento combacia con il testo. Vuoto se nessuno. */
-export function matchKnowledge(text: string): CherryKnowledgeModule[] {
-  const hay = (text ?? '').toLowerCase();
-  return CHERRY_KNOWLEDGE.filter((m) => m.keywords.some((k) => hay.includes(k)));
+/**
+ * I fatti nella lingua data. Lingua non generata = inglese; chunk della lingua
+ * non scaricabile (rete, deploy con hash nuovi a scheda aperta) = inglese, con
+ * avviso: costa la traduzione, non il fatto. Se cade anche l'inglese, rigetta:
+ * il chiamante decide (safeBlock lo tratta come blocco assente).
+ */
+export function getCherryFacts(lang = 'en'): Promise<CherryFacts> {
+  const l = Object.prototype.hasOwnProperty.call(CHERRY_FACTS_LOADERS, lang) ? lang : 'en';
+  if (l === 'en') return loadFacts('en');
+  return loadFacts(l).catch((err: unknown) => {
+    console.warn(`[cherry] fatti "${l}" non caricati, uso l'inglese:`, err);
+    return loadFacts('en');
+  });
 }
 
-/** Blocchi pertinenti al testo (intento). Stringa vuota se nessun argomento combacia. */
+/** Moduli da iniettare: quelli sempre presenti piu' quelli il cui intento combacia con il testo. */
+export function matchKnowledge(text: string): CherryKnowledgeModule[] {
+  const hay = (text ?? '').toLowerCase();
+  return CHERRY_KNOWLEDGE.filter((m) => m.always || m.keywords.some((k) => hay.includes(k)));
+}
+
+/** Blocchi per il messaggio: il livello base sempre, il dettaglio su intento. */
 export async function getStaticKnowledge(text: string, lang = 'en'): Promise<string> {
   const hit = matchKnowledge(text);
-  if (hit.length === 0) return '';
   const facts = await getCherryFacts(lang);
   return hit.map((m) => m.build(facts)).join('\n');
 }

@@ -3,7 +3,8 @@ SECTION 3: RECIPES & INGREDIENTS (THE 11-DISH SYMPHONY)
 [TRIGGERS: menu, cook, dish, curry, soup, pad thai, akha food, dessert]
 CORE RULE: Every student cooks exactly 11 dishes at their own wok. 10 dishes + 1 curry paste made from scratch in a stone mortar.
 
-THE MENU: the exact dish names, in the guest's language, are in the "DISHES" block when relevant — use those, never invent or rename a dish. Shape of the menu: appetizers ("Khong Gin Len" - food to eat for fun), the Akha speciality (authentic tribal dishes), one curry with its paste pounded from scratch, one soup, one stir-fry (wok masterclass), desserts. Each student chooses their own dishes within the categories.
+THE MENU: the exact dish names, in the guest's language, are in the "DISHES" block when relevant — use those, never invent or rename a dish. Shape of the menu: appetizers ("Khong Gin Len" - food to eat for fun), the Akha speciality (authentic tribal dishes) and desserts are cooked by everyone; each student chooses ONE curry (with its paste pounded from scratch in a stone mortar), ONE soup and ONE stir-fry (wok masterclass). That is how the 11 dishes add up.
+THE AKHA DISHES (not world knowledge, describe them like this): Akha Sapi Thong is a fire-roasted tomato & chili dip; Akha Mountain Fresh Salad is a wild mountain herb mix; Akha Spirit Soup is a restorative clear winter melon broth.
 
 CHEF SECRETS (share when the dish comes up):
 - Papaya Salad: use a wooden pestle for salads, stone for curries; palm sugar must be dissolved completely.

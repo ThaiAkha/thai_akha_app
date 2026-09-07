@@ -72,11 +72,6 @@ export const CHERRY_FACTS_IT: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "12 persone per cucina, fino a 24 insieme - gruppi privati fino a 28",
       "inclusions": [
         "Ritiro e rientro presso il tuo alloggio",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_IT: CherryFacts = {
       "durationText": "5 ore",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "12 persone per cucina, fino a 24 insieme - gruppi privati fino a 28",
       "inclusions": [
         "Ritiro e rientro presso il vostro alloggio",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_IT: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "Zona Rosa",
+      "description": "Zona di pick-up estesa per gli hotel più lontani. Ti aspettiamo puntuale nella hall.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Zona Verde",
+      "description": "Zona di pick-up standard, copre la Old City. Ti aspettiamo nella hall.",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "Zona Azzurra",
+      "description": "Zona di pick-up estesa per gli hotel più lontani. Ti aspettiamo puntuale nella hall.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "Zona Gialla",
+      "description": "Zona molto trafficata: il pick-up è anticipato. Ti aspettiamo nella hall.",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

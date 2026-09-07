@@ -72,11 +72,6 @@ export const CHERRY_FACTS_FR: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "12 par cuisine, jusqu'à 24 ensemble · groupes privés jusqu'à 28",
       "inclusions": [
         "Ramassage aller-retour à votre hébergement",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_FR: CherryFacts = {
       "durationText": "5 h",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "12 par cuisine, jusqu'à 24 ensemble · groupes privés jusqu'à 28",
       "inclusions": [
         "Ramassage aller-retour à votre hébergement",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_FR: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "Zone Rose",
+      "description": "Zone de ramassage étendue pour les hôtels excentrés. Merci d'être prêt dans le hall à l'heure.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Zone Verte",
+      "description": "Zone de ramassage standard, qui couvre la Old City. Merci d'être prêt dans le hall.",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "Zone Azur",
+      "description": "Zone de ramassage étendue pour les hôtels excentrés. Merci d'être prêt dans le hall à l'heure.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "Zone Jaune",
+      "description": "Zone très embouteillée : le ramassage est avancé. Merci d'être prêt dans le hall.",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

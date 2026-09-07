@@ -157,7 +157,11 @@ export const useGeminiLive = (
             // Stessa conoscenza del testo: booking_state + diete/spice mappate leggibili.
             const booking = await getUserBookingState(userProfile?.id);
             // Stessi fatti del testo, generati dal DB, nella lingua dell'ospite.
-            const staticKnowledge = await getAllStaticKnowledge(lang);
+            // Un chunk che non arriva costa il blocco, non la sessione voce.
+            const staticKnowledge = await getAllStaticKnowledge(lang).catch((err: unknown) => {
+              console.warn('[cherry voice] fatti statici non caricati, parto senza:', err);
+              return '';
+            });
             const resolvedSystemInstruction = overrideInstruction || buildCherryPrompt({
               isLogged: !!userProfile,
               role: userProfile?.role, // #17 Chameleon: modula persona anche in voce

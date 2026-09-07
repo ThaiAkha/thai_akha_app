@@ -72,11 +72,6 @@ export const CHERRY_FACTS_DE: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "12 pro Küche, bis zu 24 gemeinsam · private Gruppen bis 28",
       "inclusions": [
         "Abholung von und zurück zu deiner Unterkunft",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_DE: CherryFacts = {
       "durationText": "5 h",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "12 pro Küche, bis zu 24 gemeinsam · private Gruppen bis 28",
       "inclusions": [
         "Abholung von und zurück zu deiner Unterkunft",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_DE: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "Rosa Zone",
+      "description": "Erweiterte Abholzone für Hotels außerhalb. Bitte sei pünktlich in der Lobby bereit.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "Grüne Zone",
+      "description": "Übliche Abholzone rund um die Old City. Bitte sei in der Lobby bereit.",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "Azurblaue Zone",
+      "description": "Erweiterte Abholzone für Hotels außerhalb. Bitte sei pünktlich in der Lobby bereit.",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "Gelbe Zone",
+      "description": "Zone mit viel Verkehr, daher holen wir dich früher ab. Bitte sei in der Lobby bereit.",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

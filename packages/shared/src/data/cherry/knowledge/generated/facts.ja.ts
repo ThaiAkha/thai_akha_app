@@ -72,11 +72,6 @@ export const CHERRY_FACTS_JA: CherryFacts = {
         "start": "09:00",
         "end": "10:00"
       },
-      "pickupWindows": {
-        "pink": "08:40",
-        "green": "08:30",
-        "yellow": "08:20"
-      },
       "capacityText": "1キッチン12名、合わせて24名まで · プライベートグループは28名まで",
       "inclusions": [
         "宿泊先までの送迎",
@@ -135,11 +130,6 @@ export const CHERRY_FACTS_JA: CherryFacts = {
       "durationText": "5 時間",
       "hasMarketTour": false,
       "marketTour": null,
-      "pickupWindows": {
-        "pink": "16:40",
-        "green": "16:30",
-        "yellow": "16:20"
-      },
       "capacityText": "1キッチン12名、合わせて24名まで · プライベートグループは28名まで",
       "inclusions": [
         "宿泊先までの送迎",
@@ -174,6 +164,60 @@ export const CHERRY_FACTS_JA: CherryFacts = {
           "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
+    }
+  ],
+  "pickupZones": [
+    {
+      "id": "pink",
+      "name": "ピンクゾーン",
+      "description": "郊外のホテル向けの拡大送迎エリアです。時間どおりにロビーでお待ちください。",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "green",
+      "name": "グリーンゾーン",
+      "description": "旧市街（Old City）をカバーする標準の送迎エリアです。ロビーでお待ちください。",
+      "morning": {
+        "from": "08:30",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:30",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "azure",
+      "name": "アズールゾーン",
+      "description": "郊外のホテル向けの拡大送迎エリアです。時間どおりにロビーでお待ちください。",
+      "morning": {
+        "from": "08:40",
+        "to": "09:00"
+      },
+      "evening": {
+        "from": "16:40",
+        "to": "17:00"
+      }
+    },
+    {
+      "id": "yellow",
+      "name": "イエローゾーン",
+      "description": "渋滞の多いエリアのため、送迎が少し早まります。ロビーでお待ちください。",
+      "morning": {
+        "from": "08:20",
+        "to": "08:40"
+      },
+      "evening": {
+        "from": "16:20",
+        "to": "16:40"
+      }
     }
   ],
   "meetingPoints": [

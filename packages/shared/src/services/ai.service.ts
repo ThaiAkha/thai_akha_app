@@ -10,8 +10,12 @@ export interface ProxyChatPayload {
   message: string;
   history?: GeminiChatMessage[];
   systemInstruction?: string;
-  /** Lingua dell'interfaccia: solo per le metriche della edge, non cambia la risposta. */
+  /** Lingua dell'interfaccia: metriche della edge e lingua dei risultati degli strumenti. */
   lang?: string;
+  /** true = la edge dichiara al modello gli strumenti (ricerca semantica, ricetta). */
+  tools?: boolean;
+  /** Profili dieta/allergia attivi, per le sostituzioni di get_recipe. */
+  profileIds?: string[];
 }
 
 /**

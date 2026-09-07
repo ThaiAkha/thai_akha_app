@@ -37,6 +37,8 @@ interface SystemInstructionParams {
   userText: string;
   /** Lingua dell'interfaccia: i contesti letti dal DB escono in quella lingua. */
   lang: string;
+  /** Strumenti nella edge attivi: i contesti di contenuto non si costruiscono qui. */
+  tools: boolean;
   userProfile?: UserProfile | null;
   bookingState: UserBookingState;
   summary?: string | null;
@@ -51,14 +53,23 @@ interface SystemInstructionParams {
  * proxy, nella forma nativa del modello (vedi shared/lib/cherryHistory).
  * Ritorna anche il pickupResult perché serve al pulsante mappa dinamico.
  */
+/** Come il modello deve usare gli strumenti dichiarati dalla edge (tools.ts). */
+const TOOLS_BLOCK = [
+  `### TOOLS (use them, never guess):`,
+  `- search_content(query, kind): finds the dish, ingredient, Akha culture story or article the guest means. Call it BEFORE answering about any specific dish, ingredient, culture topic or article (kind: recipes | ingredients | culture | news | all).`,
+  `- get_recipe(slug): the real key ingredients of one dish with this guest's substitutions. Call it before listing or discussing ingredients; never list ingredients from memory.`,
+  `Answer ONLY from tool results. If a tool finds nothing relevant, say warmly you'll check with the chef and point to the page. Share the url when useful.`,
+].join('\n');
+
 export async function buildSystemInstruction({
   userText,
   lang,
+  tools,
   userProfile,
   bookingState,
   summary,
   coveredTopics,
-}: SystemInstructionParams): Promise<{ systemInstruction: string; pickupResult: PickupResult }> {
+}: SystemInstructionParams): Promise<{ systemInstruction: string; pickupResult: PickupResult; activeProfileIds: string[] }> {
   const userContext: CherryUserContext = {
     isLogged: !!userProfile,
     role: userProfile?.role,
@@ -92,9 +103,11 @@ export async function buildSystemInstruction({
     // Il menu del cliente e la conoscenza delle diete non dipendono da nessuno
     // degli altri: stavano in fila per abitudine, e ogni attesa in fila si somma
     // davanti all'ospite che aspetta la risposta. Da cinque giri a due.
-    safeBlock('recipe', () => getRecipeContextForCherry(userText, activeProfileIds, lang)),
-    safeBlock('culture', () => getCultureContextForCherry(userText, lang)),
-    safeBlock('news', () => getNewsContextForCherry(userText, lang)),
+    // Con gli strumenti attivi i contenuti li cerca il modello (search_content,
+    // get_recipe): niente riconoscitori a parole chiave e niente fetch anticipati.
+    tools ? Promise.resolve(null) : safeBlock('recipe', () => getRecipeContextForCherry(userText, activeProfileIds, lang)),
+    tools ? Promise.resolve(null) : safeBlock('culture', () => getCultureContextForCherry(userText, lang)),
+    tools ? Promise.resolve(null) : safeBlock('news', () => getNewsContextForCherry(userText, lang)),
     safeBlock('gamification', () => getGamificationContextForCherry(userText)), // esce subito se nessun intento quiz
     safeBlock('booking', () => getBookingContextForCherry(userText, { isLogged: !!userProfile, userId: userProfile?.id })), // booking/availability su intento
     // Menu del cliente (per-utente, read-only): solo loggato + intento menu.
@@ -118,7 +131,7 @@ export async function buildSystemInstruction({
   // sono indipendenti e possono partire insieme.
   const [pickupResult, ingredientBlock] = await Promise.all([
     bookingBlock ? Promise.resolve(null) : safeBlock('pickup', () => getPickupContextForCherry(userText)),
-    recipeBlock ? Promise.resolve(null) : safeBlock('ingredient', () => getIngredientContextForCherry(userText, lang)),
+    recipeBlock || tools ? Promise.resolve(null) : safeBlock('ingredient', () => getIngredientContextForCherry(userText, lang)),
   ]);
 
   const recipeText = recipeBlock ? `\n${recipeBlock}` : '';
@@ -142,8 +155,9 @@ export async function buildSystemInstruction({
   const coveredBlock = buildCoveredTopicsBlock(coveredTopics);
   const coveredText = coveredBlock ? `\n${coveredBlock}` : '';
 
+  const toolsText = tools ? `\n${TOOLS_BLOCK}` : '';
   const systemInstruction =
-    basePrompt + summaryText + recipeText + cultureText + newsText + ingredientText + gamificationText + bookingText + pickupText + staticText + faqText + menuText + dietText + coveredText;
+    basePrompt + summaryText + toolsText + recipeText + cultureText + newsText + ingredientText + gamificationText + bookingText + pickupText + staticText + faqText + menuText + dietText + coveredText;
 
-  return { systemInstruction, pickupResult };
+  return { systemInstruction, pickupResult, activeProfileIds };
 }

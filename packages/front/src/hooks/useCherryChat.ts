@@ -127,11 +127,12 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
       // aperta (messaggio scritto prima del bootstrap) la si aspetta prima.
       const sidPromise = ensureSessionId();
       if (!sessionRef.current) await sidPromise;
-      const [sid, { systemInstruction, pickupResult }] = await Promise.all([
+      const [sid, { systemInstruction, pickupResult, activeProfileIds }] = await Promise.all([
         sidPromise,
         buildSystemInstruction({
           userText,
           lang,
+          tools: CHERRY_CONFIG.TOOLS_ENABLED,
           userProfile,
           bookingState: bookingStateRef.current,
           summary: sessionRef.current?.summary,
@@ -142,7 +143,7 @@ export const useCherryChat = (userProfile?: UserProfile | null, locale: ChatLoca
 
       // Stream from server — push word tokens into the typewriter queue
       const rawResponse = await sendChatMessageStream(
-        { message: userText, systemInstruction, history, lang },
+        { message: userText, systemInstruction, history, lang, tools: CHERRY_CONFIG.TOOLS_ENABLED, profileIds: activeProfileIds },
         (chunk) => {
           // La coda e il testo pieno appartengono al typewriter ATTIVO: se nel
           // frattempo un nodo cliccato ha preso il turno (le pillole restano

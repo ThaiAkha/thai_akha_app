@@ -1,7 +1,11 @@
 // supabase/functions/gemini-proxy-chat/index.ts
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@^0.21.0';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import type { FunctionDeclaration } from 'npm:@google/generative-ai@^0.21.0';
 import { clientIp, rateLimit } from '../_shared/edgeGuard.ts';
+import { TOOL_DECLARATIONS } from './toolsPure.ts';
+import { normalizeHistory, MAX_HISTORY_ITEMS, MAX_HISTORY_PART_CHARS } from './historyPure.ts';
+import { runTool, type ToolContext } from './tools.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,9 +16,17 @@ interface ChatPayload {
   message: string;
   history?: Array<{ role: 'user' | 'model'; parts: string }>;
   systemInstruction?: string;
-  /** Lingua dell'interfaccia del client: solo per le metriche. */
+  /** Lingua dell'interfaccia del client: metriche e lingua dei risultati degli strumenti. */
   lang?: string;
+  /** true = il client nuovo chiede gli strumenti (ricerca semantica, ricetta). Il client vecchio non lo manda. */
+  tools?: boolean;
+  /** Profili dieta/allergia attivi dell'ospite, per le sostituzioni di get_recipe. */
+  profileIds?: string[];
 }
+
+/** Giri di strumenti per messaggio: cerca, poi eventualmente la ricetta. Oltre, si risponde con quel che c'e'. */
+const MAX_TOOL_ROUNDS = 2;
+const MAX_PROFILE_IDS = 10;
 
 // ── Tetti (audit Cherry 2026-09-06) ─────────────────────────────────────────
 // Prima nessun campo aveva un limite: chiunque con la chiave anon poteva mandare
@@ -23,8 +35,6 @@ interface ChatPayload {
 // l'abuso.
 const MAX_MESSAGE_CHARS = 4_000;
 const MAX_SYSTEM_CHARS = 120_000;
-const MAX_HISTORY_ITEMS = 12;
-const MAX_HISTORY_PART_CHARS = 4_000;
 /**
  * Tetto di sicurezza contro le risposte fuori controllo, NON la misura di una
  * risposta: su Gemini 3 i token di ragionamento si scalano da qui, e con 1.024
@@ -143,7 +153,7 @@ const logMetrics = (
   durationMs: number,
   success: boolean,
   error?: string,
-  extra?: { usage?: TokenUsage; lang?: string; model?: string; finish?: string }
+  extra?: { usage?: TokenUsage; lang?: string; model?: string; finish?: string; tools?: string[] }
 ) => {
   const timestamp = new Date().toISOString();
   const message = {
@@ -160,6 +170,7 @@ const logMetrics = (
     ...(extra?.lang && { lang: extra.lang }),
     ...(extra?.model && { model: extra.model }),
     ...(extra?.finish && { finish: extra.finish }),
+    ...(extra?.tools?.length && { tools: extra.tools }),
   };
   console.log('[gemini-proxy-chat]', JSON.stringify(message));
 };
@@ -169,33 +180,17 @@ const readUsage = (
 ): TokenUsage | undefined =>
   u ? { prompt: u.promptTokenCount, output: u.candidatesTokenCount, cached: u.cachedContentTokenCount, thoughts: u.thoughtsTokenCount } : undefined;
 
+/** Somma dei token sui giri di strumenti: il costo del messaggio e' il totale. */
+const addUsage = (a: TokenUsage | undefined, b: TokenUsage | undefined): TokenUsage | undefined => {
+  if (!a) return b;
+  if (!b) return a;
+  const sum = (x?: number, y?: number) => (x === undefined && y === undefined ? undefined : (x ?? 0) + (y ?? 0));
+  return { prompt: sum(a.prompt, b.prompt), output: sum(a.output, b.output), cached: sum(a.cached, b.cached), thoughts: sum(a.thoughts, b.thoughts) };
+};
+
 /** Perche' il modello si e' fermato (STOP, MAX_TOKENS, SAFETY...): dai candidati della risposta aggregata. */
 const readFinish = (r: { candidates?: Array<{ finishReason?: string }> }): string | undefined =>
   r.candidates?.[0]?.finishReason;
-
-/**
- * Lo storico nella forma che il modello accetta: si parte da 'user', i ruoli si
- * alternano, si chiude con 'model' (il messaggio corrente lo aggiunge sendMessage).
- * Gemello di `packages/shared/src/lib/cherryHistory.ts`: il client manda gia'
- * uno storico buono, qui si raddrizza comunque, perche' la chiave anon la
- * possiede chiunque. Se cambia una regola, cambia in tutti e due i posti.
- */
-const normalizeHistory = (
-  history: ChatPayload['history'],
-): Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> => {
-  const out: Array<{ role: 'user' | 'model'; text: string }> = [];
-  for (const h of (history ?? []).slice(-MAX_HISTORY_ITEMS)) {
-    const text = typeof h?.parts === 'string' ? h.parts.trim().slice(0, MAX_HISTORY_PART_CHARS) : '';
-    if (!text) continue;
-    const role = h.role === 'user' ? 'user' : 'model';
-    const last = out[out.length - 1];
-    if (last && last.role === role) last.text += `\n${text}`;
-    else out.push({ role, text });
-  }
-  while (out.length > 0 && out[0].role !== 'user') out.shift();
-  while (out.length > 0 && out[out.length - 1].role !== 'model') out.pop();
-  return out.map((h) => ({ role: h.role, parts: [{ text: h.text }] }));
-};
 
 Deno.serve(async (req: Request) => {
   const startTime = Date.now();
@@ -207,7 +202,7 @@ Deno.serve(async (req: Request) => {
   try {
     // ── PARSE REQUEST ──────────────────────────────────────────────────────
     const payload: ChatPayload = await req.json();
-    const { message, history = [], systemInstruction, lang } = payload;
+    const { message, history = [], systemInstruction, lang, tools = false, profileIds = [] } = payload;
 
     // Tipi controllati a runtime: il tipo TypeScript del payload non ferma
     // nessuno, e un oggetto al posto della stringa passava il tetto (`.length`
@@ -219,6 +214,8 @@ Deno.serve(async (req: Request) => {
       : (systemInstruction?.length ?? 0) > MAX_SYSTEM_CHARS ? 'systemInstruction too long'
       : !Array.isArray(history) ? 'history must be an array'
       : lang !== undefined && (typeof lang !== 'string' || lang.length > 8) ? 'lang must be a short string'
+      : typeof tools !== 'boolean' ? 'tools must be a boolean'
+      : !Array.isArray(profileIds) || profileIds.length > MAX_PROFILE_IDS || profileIds.some((p) => typeof p !== 'string' || p.length > 40) ? 'profileIds must be a short list of ids'
       : null;
     if (rejected) {
       return new Response(
@@ -271,10 +268,17 @@ Deno.serve(async (req: Request) => {
 
     // ── INITIALIZE GEMINI CLIENT ──────────────────────────────────────────
     const genAI = new GoogleGenerativeAI(apiKey);
+    // Strumenti solo se il client li chiede: il client vecchio manda i suoi blocchi
+    // e non deve vedere cambiare nulla. Esecuzione col service role (match_semantic
+    // e dettagli), regole in tools.ts.
+    const toolCtx: ToolContext | null = tools
+      ? { supabase: supabaseService as unknown as ToolContext['supabase'], lang: lang ?? 'en', profileIds, openaiKey: Deno.env.get('OPENAI_API_KEY') }
+      : null;
     const model = genAI.getGenerativeModel({
       model: CHAT_MODEL,
       systemInstruction: systemInstruction,
       generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS },
+      ...(toolCtx && { tools: [{ functionDeclarations: TOOL_DECLARATIONS as unknown as FunctionDeclaration[] }] }),
     });
 
     // ── CONVERSATION HISTORY ──────────────────────────────────────────────
@@ -306,17 +310,33 @@ Deno.serve(async (req: Request) => {
             let usage: TokenUsage | undefined;
             let finish: string | undefined;
             let failure: unknown = null;
+            const toolsUsed: string[] = [];
             try {
-              for await (const chunk of streamResult.stream) {
-                const text = chunk.text();
-                if (text) {
-                  fullText += text;
-                  controller.enqueue(new TextEncoder().encode(text));
+              let result = streamResult;
+              // Giro 0: la risposta al messaggio. Se il modello chiama uno strumento,
+              // lo si esegue e si riparte con i risultati, fino a MAX_TOOL_ROUNDS.
+              // Il testo intanto scorre verso il client come prima.
+              for (let round = 0; ; round++) {
+                const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+                for await (const chunk of result.stream) {
+                  const text = chunk.text();
+                  if (text) {
+                    fullText += text;
+                    controller.enqueue(new TextEncoder().encode(text));
+                  }
+                  const fc = chunk.functionCalls?.();
+                  if (fc?.length) calls.push(...fc.map((c) => ({ name: c.name, args: (c.args ?? {}) as Record<string, unknown> })));
                 }
+                const aggregated = await result.response;
+                usage = addUsage(usage, readUsage(aggregated.usageMetadata));
+                finish = readFinish(aggregated);
+                if (!calls.length || !toolCtx || round >= MAX_TOOL_ROUNDS) break;
+                const responses = await Promise.all(calls.map(async (c) => {
+                  toolsUsed.push(c.name);
+                  return { functionResponse: { name: c.name, response: await runTool(toolCtx, c.name, c.args) } };
+                }));
+                result = await chat.sendMessageStream(responses, { signal: abort.signal });
               }
-              const aggregated = await streamResult.response;
-              usage = readUsage(aggregated.usageMetadata);
-              finish = readFinish(aggregated);
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
               if (!fullText.trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
@@ -328,7 +348,7 @@ Deno.serve(async (req: Request) => {
               // Niente consegnato (nemmeno un carattere che non sia spazio):
               // errore vero, il client lo tratta come tale.
               const reason = failure instanceof Error ? failure.message : 'stream failed';
-              logMetrics(userId, message.length, 0, Date.now() - startTime, false, reason, { ...metricsExtra, usage, finish });
+              logMetrics(userId, message.length, 0, Date.now() - startTime, false, reason, { ...metricsExtra, usage, finish, tools: toolsUsed });
               controller.error(failure);
               return;
             }
@@ -339,7 +359,7 @@ Deno.serve(async (req: Request) => {
             // Tetto di uscita toccato: il testo parte comunque (e' quello che
             // c'e'), ma nei numeri conta come guasto, cosi' si vede quante volte.
             const truncated = finish === 'MAX_TOKENS';
-            logMetrics(userId, message.length, fullText.length, Date.now() - startTime, !truncated, truncated ? 'MAX_TOKENS: answer truncated' : undefined, { ...metricsExtra, usage, finish });
+            logMetrics(userId, message.length, fullText.length, Date.now() - startTime, !truncated, truncated ? 'MAX_TOKENS: answer truncated' : undefined, { ...metricsExtra, usage, finish, tools: toolsUsed });
             controller.close();
           },
         });

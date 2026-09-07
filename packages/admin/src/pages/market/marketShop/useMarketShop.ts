@@ -77,7 +77,12 @@ export function useMarketShop() {
   const fetchData = useCallback(async () => {
     try {
       const [libRes, runRes] = await Promise.all([
-        supabase.from('ingredients_library').select('*, cover:media_assets!image_asset_id(image_url)').order('name'),
+        // Le 12 colonne dichiarate da LibraryItem, non `*`: con l'asterisco arrivavano
+        // 5.287.199 B, quasi tutti `semantic_vector` (vector 1536 su 204 righe), contro
+        // gli 81.559 B che la pagina usa davvero (misurato il 2026-09-08). Campo nuovo nel tipo = aggiungerlo qui.
+        supabase.from('ingredients_library')
+          .select('id, name, name_th, default_unit, purchase_group, purchase_pack_size, purchase_pack_label, logistics_shop, teacher_shop, is_logistics_item, is_teacher_item, cover:media_assets!image_asset_id(image_url)')
+          .order('name'),
         supabase.from('market_runs').select('*').order('run_date', { ascending: false })
       ]);
       // Resolve image from image_asset_id → media_assets; keep the image_url alias

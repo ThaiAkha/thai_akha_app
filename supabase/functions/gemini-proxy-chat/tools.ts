@@ -45,7 +45,7 @@ const tr = (table: string, fields: string, lang: string) => (lang === 'en' ? '' 
 /** Colonne esplicite per famiglia (mai `*`: semantic_vector). */
 const DETAIL_SELECT: Record<SearchKind, (lang: string) => string> = {
   recipes: (l) => `id, slug, name, excerpt, summary_ai${tr('recipes_translations', 'name, excerpt, summary_ai', l)}`,
-  ingredients: (l) => `id, slug, name, description, summary_ai, category_id${tr('ingredients_library_translations', 'name, description, summary_ai', l)}`,
+  ingredients: (l) => `id, slug, name, description, summary_ai${tr('ingredients_library_translations', 'name, description, summary_ai', l)}`,
   culture: (l) => `id, slug, title, summary_ai${tr('culture_sections_translations', 'title, summary_ai', l)}`,
   news: (l) => `id, slug, title, excerpt, summary_ai${tr('akha_news_translations', 'title, excerpt, summary_ai', l)}`,
 };
@@ -71,7 +71,7 @@ async function searchKind(ctx: ToolContext, kind: SearchKind, vector: number[], 
       slug: String(r.slug ?? ''),
       name,
       summary,
-      url: contentUrl(kind, String(r.slug ?? ''), ctx.lang, kind === 'ingredients' ? (r.category_id as string | null) : null),
+      url: contentUrl(kind, String(r.slug ?? ''), ctx.lang),
       similarity: byId.get(String(r.id)) ?? 0,
     };
   });

@@ -14,7 +14,8 @@ const { contentUrl, snippet, pick, rankHits, buildRecipeResult, looksNonEnglish,
 test('url: slug inglese con prefisso lingua; ingredienti a tre livelli', () => {
   assert.equal(contentUrl('recipes', 'pad-thai', 'en'), '/authentic-thai-akha-recipes/pad-thai');
   assert.equal(contentUrl('recipes', 'pad-thai', 'es'), '/es/authentic-thai-akha-recipes/pad-thai');
-  assert.equal(contentUrl('ingredients', 'galangal', 'th', 'roots-rhizomes'), '/th/thai-cooking-ingredients/roots-rhizomes/galangal');
+  // Due livelli anche per gli ingredienti: la pagina legge solo il secondo segmento.
+  assert.equal(contentUrl('ingredients', 'galangal', 'th'), '/th/thai-cooking-ingredients/galangal');
   assert.equal(contentUrl('culture', 'spirit-gate', 'ja'), '/ja/akha-culture-highland-heritage/spirit-gate');
 });
 

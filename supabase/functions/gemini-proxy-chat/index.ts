@@ -315,9 +315,22 @@ Deno.serve(async (req: Request) => {
       // si rimanda con le parti ESATTE arrivate nello stream.
       const contents: Content[] = [...conversationHistory, { role: 'user', parts: [{ text: message }] }];
 
+      /**
+       * `generateContentStream` torna una promessa `response` GIA' IN CORSO su una
+       * copia del corpo. Se il corpo fallisce a meta' (timeout, connessione caduta,
+       * riga malformata) quella promessa rigetta senza nessuno in ascolto, e Deno
+       * abbatte l'isolato: cade anche ogni altra richiesta in volo. ChatSession
+       * questa rete ce l'aveva dentro; qui la mettiamo noi, e teniamo la versione
+       * addomesticata per leggere comunque i numeri del giro.
+       */
+      const startRound = async (request: { contents: Content[]; toolConfig?: { functionCallingConfig: { mode: FunctionCallingMode } } }) => {
+        const r = await model.generateContentStream(request, { signal: abort.signal });
+        return { stream: r.stream, response: r.response.then((x) => x, () => undefined) };
+      };
+
       if (wantsStream) {
         // ── STREAMING PATH ────────────────────────────────────────────────
-        const streamResult = await model.generateContentStream({ contents }, { signal: abort.signal });
+        const streamResult = await startRound({ contents });
         const readable = new ReadableStream({
           async start(controller) {
             let fullText = '';
@@ -325,6 +338,14 @@ Deno.serve(async (req: Request) => {
             let finish: string | undefined;
             let failure: unknown = null;
             const toolsUsed: string[] = [];
+            /** Il testo che vale come risposta: quello dopo gli strumenti, se ci sono stati. */
+            const answerText = () => (textBeforeTools === null ? fullText : fullText.slice(textBeforeTools));
+            /**
+             * Quanto testo era gia' uscito quando e' partito il primo strumento.
+             * Prima di quel punto c'e' solo l'apertura ("fammi controllare"): se il
+             * giro dopo fallisce, consegnarla come risposta e' peggio di un errore.
+             */
+            let textBeforeTools: number | null = null;
             try {
               let result = streamResult;
               // Giro 0: la risposta al messaggio. Se il modello chiama uno strumento,
@@ -347,10 +368,11 @@ Deno.serve(async (req: Request) => {
                   }
                 }
                 const aggregated = await result.response;
-                usage = addUsage(usage, readUsage(aggregated.usageMetadata));
-                finish = readFinish(aggregated);
+                usage = addUsage(usage, readUsage(aggregated?.usageMetadata));
+                if (aggregated) finish = readFinish(aggregated);
                 if (!calls.length || !toolCtx || round >= MAX_TOOL_ROUNDS) break;
                 stopIfAborted();
+                if (textBeforeTools === null) textBeforeTools = fullText.length;
                 contents.push({ role: 'model', parts: modelParts });
                 const responses: Part[] = await Promise.all(calls.map(async (c) => {
                   toolsUsed.push(c.name);
@@ -360,19 +382,19 @@ Deno.serve(async (req: Request) => {
                 stopIfAborted();
                 // Esecuzioni esaurite: il turno che arriva deve SCRIVERE, non chiedere.
                 const noMoreTools = round + 1 >= MAX_TOOL_ROUNDS;
-                result = await model.generateContentStream({
+                result = await startRound({
                   contents,
                   ...(noMoreTools && { toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } } }),
-                }, { signal: abort.signal });
+                });
               }
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
-              if (!fullText.trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
+              if (!answerText().trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
             } catch (err) {
               failure = err;
             }
             clearTimeout(timeoutId);
-            if (failure && !fullText.trim()) {
+            if (failure && !answerText().trim()) {
               // Niente consegnato (nemmeno un carattere che non sia spazio):
               // errore vero, il client lo tratta come tale.
               const reason = failure instanceof Error ? failure.message : 'stream failed';

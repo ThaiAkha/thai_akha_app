@@ -58,11 +58,15 @@ export const TOOL_DECLARATIONS = [
 
 export const TOOL_NAMES = TOOL_DECLARATIONS.map((t) => t.name);
 
-/** URL della pagina: slug INGLESE con il prefisso lingua (negli slug tradotti th/zh/ja/ko sono nulli). */
-export function contentUrl(kind: SearchKind, slug: string, lang: string, categoryId?: string | null): string {
+/**
+ * URL della pagina: slug INGLESE con il prefisso lingua (negli slug tradotti
+ * th/zh/ja/ko sono nulli). SEMPRE due livelli, ingredienti compresi: la pagina
+ * legge solo il secondo segmento e decide da quello se e' una categoria o un
+ * ingrediente, quindi un terzo segmento aprirebbe la griglia della categoria.
+ */
+export function contentUrl(kind: SearchKind, slug: string, lang: string): string {
   const prefix = !lang || lang === 'en' ? '' : `/${lang}`;
-  const path = kind === 'ingredients' && categoryId ? `${KIND_META[kind].hub}/${categoryId}/${slug}` : `${KIND_META[kind].hub}/${slug}`;
-  return `${prefix}/${path}`;
+  return `${prefix}/${KIND_META[kind].hub}/${slug}`;
 }
 
 /** Testo corto, senza HTML e senza spezzare l'ultima parola. */

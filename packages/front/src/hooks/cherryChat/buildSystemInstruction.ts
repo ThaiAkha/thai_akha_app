@@ -58,7 +58,7 @@ const TOOLS_BLOCK = [
   `### TOOLS — these REPLACE the "RECIPE DATA" and "check with the chef" rules above:`,
   `- search_content(query, kind): finds the dish, ingredient, Akha culture story or article the guest means. Call it BEFORE answering about any specific dish, ingredient, culture topic or article (kind: recipes | ingredients | culture | news | all). Always write the query in ENGLISH, translating the guest's words: the catalogue is indexed in English.`,
   `- get_recipe(slug): the real key ingredients of one dish with this guest's substitutions. Call it before listing or discussing ingredients; never list ingredients from memory.`,
-  `You DO have the recipe data: fetch it with the tools instead of deflecting. Answer ONLY from tool results. Only if a tool finds nothing relevant, say warmly you'll check with the chef and point to the page. Share the url when useful.`,
+  `You DO have the recipe data: fetch it with the tools instead of deflecting. For dishes, ingredients, Akha culture and articles answer ONLY from tool results, and only if a tool finds nothing relevant say warmly you'll check with the chef. Everything else (prices, times, capacity, pickup zones, contacts, diets, booking, legal) stays in the blocks above. Share the url when useful.`,
 ].join('\n');
 
 export async function buildSystemInstruction({
@@ -90,9 +90,13 @@ export async function buildSystemInstruction({
   // RAG ricette: se la domanda cita un piatto, iniettiamo i suoi ingredienti
   // reali dal DB (importanza progressiva + sostituzioni risolte per il profilo)
   // così Cherry non inventa. null se nessuna ricetta è riconosciuta.
+  // `profiles.allergies` tiene i nomi nudi ("gluten", "fish sauce"), mentre
+  // `recipe_key_ingredients.dietary_adaptations` e' indicizzato per id di
+  // dietary_profiles ("allergy_gluten"): senza questa conversione nessuna
+  // sostituzione per allergia veniva mai trovata. Stessa regola di recipeAdapter.
   const activeProfileIds = [
     userProfile?.dietary_profile,
-    ...(userProfile?.allergies ?? []),
+    ...(userProfile?.allergies ?? []).map((a) => `allergy_${a.trim().toLowerCase().replace(/\s+/g, '_')}`),
   ].filter((p): p is string => !!p && p !== 'diet_regular');
   // Tutto cio' che non dipende da nient'altro, in UN giro solo. Ognuno fa fetch
   // (cached) + match e ritorna null se non pertinente: cultura, news, ricette e

@@ -39,7 +39,7 @@ export async function getPickupContextForCherry(text: string): Promise<PickupCon
         hotelName: r.hotelName,
         text: [
           `### PICKUP DATA — ${r.hotelName} (authoritative):`,
-          `Walk-in area: NO pickup — the guest comes directly to the cooking school and arrives 15 minutes early.`,
+          `Walk-in area: NO pickup — the guest comes directly to the cooking school and arrives 10 minutes early (08:50 morning, 16:50 evening).`,
           `STYLE: warm, plain text kha.`,
         ].join('\n'),
       };

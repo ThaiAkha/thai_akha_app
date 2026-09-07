@@ -1,5 +1,5 @@
 // GENERATO DA gen-legal-data.ts - NON EDITARE A MANO
-// generato: 2026-09-03
+// generato: 2026-09-07
 
 export * from './legalFrontTerms';
 export * from './legalFrontPolicy';

@@ -160,8 +160,8 @@ export const CHERRY_FACTS_EN: CherryFacts = {
       "walkIn": [
         {
           "name": "Thai Akha Kitchen (School)",
-          "time": "17:00",
-          "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
+          "time": "16:50",
+          "note": "Meet us at our kitchen by 4:50 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
     }
@@ -373,7 +373,7 @@ export const CHERRY_FACTS_EN: CherryFacts = {
       "id": "mp_school",
       "name": "Thai Akha Kitchen - Chiang Mai",
       "type": "walk_in",
-      "description": "Go directly to school. Please arrive by 8:50 am for morning class or 5:00 pm for evening class.",
+      "description": "Go directly to school. Please arrive by 8:50 am for morning class or 4:50 pm for evening class.",
       "dropoffDescription": null,
       "isDropoff": false,
       "morning": {
@@ -447,7 +447,7 @@ export const CHERRY_FACTS_EN: CherryFacts = {
       ]
     },
     {
-      "category": "Hand-Pounded Curry Pastes",
+      "category": "Hand-Pounded Thai Curries",
       "categorySlug": "authentic-thai-curry-recipes",
       "items": [
         {

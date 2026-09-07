@@ -160,8 +160,8 @@ export const CHERRY_FACTS_PT: CherryFacts = {
       "walkIn": [
         {
           "name": "Thai Akha Kitchen (School)",
-          "time": "17:00",
-          "note": "Meet us at our kitchen by 5:00 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
+          "time": "16:50",
+          "note": "Meet us at our kitchen by 4:50 pm. Our Cooking School is located just a 5-minute walk from Chiang Mai South Gate."
         }
       ]
     }
@@ -373,7 +373,7 @@ export const CHERRY_FACTS_PT: CherryFacts = {
       "id": "mp_school",
       "name": "Thai Akha Kitchen - Chiang Mai",
       "type": "walk_in",
-      "description": "Vá diretamente para a escola. Chegue às 08:50 para a aula de manhã ou às 17:00 para a aula da tarde.",
+      "description": "Vá diretamente para a escola. Chegue às 08:50 para a aula de manhã ou às 16:50 para a aula da tarde.",
       "dropoffDescription": null,
       "isDropoff": false,
       "morning": {

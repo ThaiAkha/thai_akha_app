@@ -1,15 +1,15 @@
 // GENERATO DA legal_documents - NON EDITARE A MANO
-// doc_key: front_terms | versione: 1.6 | generato: 2026-09-03
+// doc_key: front_terms | versione: 1.7 | generato: 2026-09-07
 // Per cambiare il testo: aggiorna il DB (master nel brain), poi `pnpm gen-legal`.
 
 import type { LegalDocument } from '../../types/legal.types';
 
 export const TERMS_OF_SERVICE: LegalDocument = {
   "id": "front_terms",
-  "version": "1.6",
+  "version": "1.7",
   "title": "Terms of Service - Thai Akha Kitchen",
   "effectiveDate": "2026-01-01",
-  "lastUpdated": "2026-08-26",
+  "lastUpdated": "2026-09-07",
   "sections": [
     {
       "title": "Definitions",
@@ -132,7 +132,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
       "content": [
         "We want your journey to the kitchen to be as smooth as the cooking itself. We offer **complimentary pick-up and drop-off** if your accommodation is within approximately a **3-kilometer radius** of the Chiang Mai Old City walls.",
         "• **Pick-up times and readiness:** Morning pick-ups run between 8:15 AM and 9:00 AM, and Evening pick-ups between 4:15 PM and 5:00 PM, according to our pick-up areas. Please be ready in your hotel lobby; out of respect for other guests, our driver can only wait for a maximum of 5 minutes.",
-        "• **Drop-off:** After class we take you back. The Morning Class finishes at 2:30 PM and the Evening Class at 9:30 PM, with drop-off at your hotel within the following half hour - by 3:00 PM and 10:00 PM respectively.",
+        "• **Drop-off:** After class we take you back. The Morning Class finishes at 2:30 PM and the Evening Class at 9:00 PM, with drop-off at your hotel within the following half hour - by 3:00 PM and 9:30 PM respectively.",
         "• **Your responsibility:** Please double-check your hotel name and address when booking. If we cannot locate it, we will email you to confirm. If we do not receive a reply, we unfortunately cannot take responsibility for your transport.",
         "• **Outside the zone and meeting points:** Staying outside the free area? No problem. You can easily meet us at one of our designated meeting points, come directly to the school, or let us organize private transport for an extra fee. Arriving by your own transport does not reduce the class price.",
         "**Timing and tight schedules.** These times are a commitment, not an estimate: we plan the day around them. Even so, a class moves with the people in it - a lively group, a curious question, an extra round of tasting - and Chiang Mai traffic has a mind of its own. Small shifts of a few minutes can happen, in the kitchen and on the road.",

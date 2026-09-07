@@ -106,7 +106,7 @@ const PACKS: Record<Lang, Pack> = {
     pickup: {
       ready: { morning_class: '8:15 am', evening_class: '4:15 pm' },
       window: { morning_class: 'between 8:15 am and 9:00 am', evening_class: 'between 4:15 pm and 5:00 pm' },
-      kitchen: { morning_class: 'We look forward to welcoming you at our kitchen at 9:00 am.', evening_class: 'We look forward to welcoming you at our kitchen at 5:00 pm.' },
+      kitchen: { morning_class: 'We look forward to welcoming you at our kitchen at 8:50 am.', evening_class: 'We look forward to welcoming you at our kitchen at 4:50 pm.' },
       hotel: (hotel, ready, window) => `Please be ready in the lobby of ${hotel} at ${ready}. Our driver will arrive ${window}.`,
       around: (time) => `around ${time}`,
     },
@@ -157,7 +157,7 @@ const PACKS: Record<Lang, Pack> = {
     pickup: {
       ready: { morning_class: '8:15', evening_class: '16:15' },
       window: { morning_class: 'entre las 8:15 y las 9:00', evening_class: 'entre las 16:15 y las 17:00' },
-      kitchen: { morning_class: 'Te esperamos en nuestra escuela a las 9:00.', evening_class: 'Te esperamos en nuestra escuela a las 17:00.' },
+      kitchen: { morning_class: 'Te esperamos en nuestra escuela a las 8:50.', evening_class: 'Te esperamos en nuestra escuela a las 16:50.' },
       hotel: (hotel, ready, window) => `Espera preparado en el vestíbulo de ${hotel} a las ${ready}. Nuestro conductor llegará ${window}.`,
       around: (time) => `alrededor de las ${time}`,
     },
@@ -208,7 +208,7 @@ const PACKS: Record<Lang, Pack> = {
     pickup: {
       ready: { morning_class: '8:15', evening_class: '16:15' },
       window: { morning_class: 'ระหว่าง 8:15 ถึง 9:00', evening_class: 'ระหว่าง 16:15 ถึง 17:00' },
-      kitchen: { morning_class: 'เราตั้งตารอต้อนรับคุณที่ครัวของเราเวลา 9:00', evening_class: 'เราตั้งตารอต้อนรับคุณที่ครัวของเราเวลา 17:00' },
+      kitchen: { morning_class: 'เราตั้งตารอต้อนรับคุณที่ครัวของเราเวลา 8:50', evening_class: 'เราตั้งตารอต้อนรับคุณที่ครัวของเราเวลา 16:50' },
       hotel: (hotel, ready, window) => `กรุณารอที่ล็อบบี้ของ ${hotel} เวลา ${ready} คนขับของเราจะมาถึง${window}`,
       around: (time) => `ประมาณ ${time}`,
     },
@@ -259,7 +259,7 @@ const PACKS: Record<Lang, Pack> = {
     pickup: {
       ready: { morning_class: '8:15', evening_class: '16:15' },
       window: { morning_class: '在 8:15 至 9:00 之间', evening_class: '在 16:15 至 17:00 之间' },
-      kitchen: { morning_class: '我们期待 9:00 在厨房迎接你。', evening_class: '我们期待 17:00 在厨房迎接你。' },
+      kitchen: { morning_class: '我们期待 8:50 在厨房迎接你。', evening_class: '我们期待 16:50 在厨房迎接你。' },
       hotel: (hotel, ready, window) => `请于 ${ready} 在 ${hotel} 大堂等候，司机将${window}到达。`,
       around: (time) => `在 ${time} 左右`,
     },

@@ -1,7 +1,7 @@
 // supabase/functions/gemini-proxy-chat/index.ts
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@^0.21.0';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import type { FunctionDeclaration } from 'npm:@google/generative-ai@^0.21.0';
+import { FunctionCallingMode, type Content, type FunctionDeclaration, type Part } from 'npm:@google/generative-ai@^0.21.0';
 import { clientIp, rateLimit } from '../_shared/edgeGuard.ts';
 import { TOOL_DECLARATIONS } from './toolsPure.ts';
 import { normalizeHistory, MAX_HISTORY_ITEMS, MAX_HISTORY_PART_CHARS } from './historyPure.ts';
@@ -24,7 +24,12 @@ interface ChatPayload {
   profileIds?: string[];
 }
 
-/** Giri di strumenti per messaggio: cerca, poi eventualmente la ricetta. Oltre, si risponde con quel che c'e'. */
+/**
+ * Esecuzioni di strumenti per messaggio: cerca, poi eventualmente la ricetta.
+ * Il turno che segue l'ultima esecuzione parte con gli strumenti SPENTI
+ * (functionCallingConfig NONE), cosi' il modello deve scrivere la risposta:
+ * altrimenti chiedeva un terzo strumento e usciva il solo testo di apertura.
+ */
 const MAX_TOOL_ROUNDS = 2;
 const MAX_PROFILE_IDS = 10;
 
@@ -45,6 +50,8 @@ const MAX_SYSTEM_CHARS = 120_000;
 const MAX_OUTPUT_TOKENS = 8_192;
 /** Tempo massimo per una risposta, primo token compreso. Prima il timer non fermava nulla. */
 const GEMINI_TIMEOUT_MS = 30_000;
+/** Con gli strumenti ci sono fino a tre turni del modello piu' le ricerche: serve piu' respiro. */
+const GEMINI_TOOLS_TIMEOUT_MS = 60_000;
 /** Il modello si cambia da secret, senza redeploy. */
 const CHAT_MODEL = Deno.env.get('GEMINI_CHAT_MODEL') || 'gemini-3-flash-preview';
 
@@ -290,7 +297,9 @@ Deno.serve(async (req: Request) => {
     // Un timer vero: prima c'era un setTimeout con il corpo vuoto, che non
     // fermava niente. Il segnale ferma sia la chiamata sia lo stream.
     const abort = new AbortController();
-    const timeoutId = setTimeout(() => abort.abort(), GEMINI_TIMEOUT_MS);
+    const timeoutId = setTimeout(() => abort.abort(), toolCtx ? GEMINI_TOOLS_TIMEOUT_MS : GEMINI_TIMEOUT_MS);
+    /** Il segnale non basta: la libreria lo ascolta solo mentre la richiesta e' in volo. */
+    const stopIfAborted = () => { if (abort.signal.aborted) throw new Error('timeout'); };
     const wantsStream = new URL(req.url).searchParams.get('stream') === '1';
     const metricsExtra = { lang, model: CHAT_MODEL };
     // Nel ramo stream il timer lo spegne lo stream stesso: il `finally` in fondo
@@ -299,11 +308,16 @@ Deno.serve(async (req: Request) => {
     let streaming = false;
 
     try {
-      const chat = model.startChat({ history: conversationHistory });
+      // La conversazione la teniamo NOI, non ChatSession: nel ramo streaming la
+      // libreria ricostruisce il turno del modello parte per parte e tiene solo
+      // text/functionCall, buttando la `thoughtSignature` che Gemini 3 pretende
+      // indietro sulle chiamate di strumento (400 al secondo giro). Qui il turno
+      // si rimanda con le parti ESATTE arrivate nello stream.
+      const contents: Content[] = [...conversationHistory, { role: 'user', parts: [{ text: message }] }];
 
       if (wantsStream) {
         // ── STREAMING PATH ────────────────────────────────────────────────
-        const streamResult = await chat.sendMessageStream(message, { signal: abort.signal });
+        const streamResult = await model.generateContentStream({ contents }, { signal: abort.signal });
         const readable = new ReadableStream({
           async start(controller) {
             let fullText = '';
@@ -318,24 +332,38 @@ Deno.serve(async (req: Request) => {
               // Il testo intanto scorre verso il client come prima.
               for (let round = 0; ; round++) {
                 const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+                const modelParts: Part[] = [];
                 for await (const chunk of result.stream) {
-                  const text = chunk.text();
-                  if (text) {
-                    fullText += text;
-                    controller.enqueue(new TextEncoder().encode(text));
+                  for (const part of chunk.candidates?.[0]?.content?.parts ?? []) {
+                    // Le parti si conservano com'e' (firma di ragionamento compresa);
+                    // al client va solo il testo, e mai un eventuale riassunto di pensiero.
+                    modelParts.push(part);
+                    const p = part as { text?: string; thought?: boolean; functionCall?: { name?: string; args?: Record<string, unknown> } };
+                    if (p.text && !p.thought) {
+                      fullText += p.text;
+                      controller.enqueue(new TextEncoder().encode(p.text));
+                    }
+                    if (p.functionCall?.name) calls.push({ name: p.functionCall.name, args: p.functionCall.args ?? {} });
                   }
-                  const fc = chunk.functionCalls?.();
-                  if (fc?.length) calls.push(...fc.map((c) => ({ name: c.name, args: (c.args ?? {}) as Record<string, unknown> })));
                 }
                 const aggregated = await result.response;
                 usage = addUsage(usage, readUsage(aggregated.usageMetadata));
                 finish = readFinish(aggregated);
                 if (!calls.length || !toolCtx || round >= MAX_TOOL_ROUNDS) break;
-                const responses = await Promise.all(calls.map(async (c) => {
+                stopIfAborted();
+                contents.push({ role: 'model', parts: modelParts });
+                const responses: Part[] = await Promise.all(calls.map(async (c) => {
                   toolsUsed.push(c.name);
-                  return { functionResponse: { name: c.name, response: await runTool(toolCtx, c.name, c.args) } };
+                  return { functionResponse: { name: c.name, response: await runTool(toolCtx, c.name, c.args, abort.signal) } };
                 }));
-                result = await chat.sendMessageStream(responses, { signal: abort.signal });
+                contents.push({ role: 'function', parts: responses });
+                stopIfAborted();
+                // Esecuzioni esaurite: il turno che arriva deve SCRIVERE, non chiedere.
+                const noMoreTools = round + 1 >= MAX_TOOL_ROUNDS;
+                result = await model.generateContentStream({
+                  contents,
+                  ...(noMoreTools && { toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } } }),
+                }, { signal: abort.signal });
               }
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
@@ -371,7 +399,8 @@ Deno.serve(async (req: Request) => {
       }
 
       // ── NON-STREAMING PATH (used by auto-summary etc.) ────────────────
-      const result = await chat.sendMessage(message, { signal: abort.signal });
+      // Ramo non stream (riassunto della sessione): nessuno strumento, un turno solo.
+      const result = await model.generateContent({ contents }, { signal: abort.signal });
       const response = await result.response;
       const responseText = response.text();
       const finish = readFinish(response);

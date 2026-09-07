@@ -55,10 +55,10 @@ interface SystemInstructionParams {
  */
 /** Come il modello deve usare gli strumenti dichiarati dalla edge (tools.ts). */
 const TOOLS_BLOCK = [
-  `### TOOLS (use them, never guess):`,
+  `### TOOLS — these REPLACE the "RECIPE DATA" and "check with the chef" rules above:`,
   `- search_content(query, kind): finds the dish, ingredient, Akha culture story or article the guest means. Call it BEFORE answering about any specific dish, ingredient, culture topic or article (kind: recipes | ingredients | culture | news | all).`,
   `- get_recipe(slug): the real key ingredients of one dish with this guest's substitutions. Call it before listing or discussing ingredients; never list ingredients from memory.`,
-  `Answer ONLY from tool results. If a tool finds nothing relevant, say warmly you'll check with the chef and point to the page. Share the url when useful.`,
+  `You DO have the recipe data: fetch it with the tools instead of deflecting. Answer ONLY from tool results. Only if a tool finds nothing relevant, say warmly you'll check with the chef and point to the page. Share the url when useful.`,
 ].join('\n');
 
 export async function buildSystemInstruction({
@@ -155,9 +155,12 @@ export async function buildSystemInstruction({
   const coveredBlock = buildCoveredTopicsBlock(coveredTopics);
   const coveredText = coveredBlock ? `\n${coveredBlock}` : '';
 
+  // In fondo, non in mezzo: e' l'istruzione che deve vincere sulle regole del
+  // prompt fisso e sui blocchi statici (le une e gli altri parlano di un blocco
+  // RECIPE DATA che con gli strumenti non esiste piu').
   const toolsText = tools ? `\n${TOOLS_BLOCK}` : '';
   const systemInstruction =
-    basePrompt + summaryText + toolsText + recipeText + cultureText + newsText + ingredientText + gamificationText + bookingText + pickupText + staticText + faqText + menuText + dietText + coveredText;
+    basePrompt + summaryText + recipeText + cultureText + newsText + ingredientText + gamificationText + bookingText + pickupText + staticText + faqText + menuText + dietText + coveredText + toolsText;
 
   return { systemInstruction, pickupResult, activeProfileIds };
 }

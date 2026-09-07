@@ -27,11 +27,12 @@ export interface ToolContext {
 
 type Row = Record<string, unknown>;
 
-async function embedQuery(text: string, key: string): Promise<number[]> {
+async function embedQuery(text: string, key: string, signal?: AbortSignal): Promise<number[]> {
   const res = await fetch('https://api.openai.com/v1/embeddings', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
     body: JSON.stringify({ model: EMBED_MODEL, input: text.slice(0, 1000) }),
+    signal,
   });
   if (!res.ok) throw new Error(`OpenAI ${res.status}`);
   const data = await res.json();
@@ -49,18 +50,19 @@ const DETAIL_SELECT: Record<SearchKind, (lang: string) => string> = {
   news: (l) => `id, slug, title, excerpt, summary_ai${tr('akha_news_translations', 'title, excerpt, summary_ai', l)}`,
 };
 
-async function searchKind(ctx: ToolContext, kind: SearchKind, vector: number[], limit: number): Promise<SearchHit[]> {
+async function searchKind(ctx: ToolContext, kind: SearchKind, vector: number[], limit: number, signal?: AbortSignal): Promise<SearchHit[]> {
   const { table } = KIND_META[kind];
-  const { data: matches, error } = await ctx.supabase.rpc('match_semantic', {
+  const rpc = ctx.supabase.rpc('match_semantic', {
     query_embedding: `[${vector.join(',')}]`,
     match_table: table,
     match_count: limit,
   });
+  const { data: matches, error } = await (signal ? rpc.abortSignal(signal) : rpc);
   if (error || !matches?.length) return [];
   const byId = new Map((matches as Array<{ id: string; similarity: number }>).map((m) => [m.id, m.similarity]));
   let q = ctx.supabase.from(table).select(DETAIL_SELECT[kind](ctx.lang)).in('id', Array.from(byId.keys()));
   if (ctx.lang !== 'en') q = q.eq('translations.lang', ctx.lang);
-  const { data: rows } = await q;
+  const { data: rows } = await (signal ? q.abortSignal(signal) : q);
   return ((rows ?? []) as unknown as Row[]).map((r) => {
     const name = pick(r, 'name') || pick(r, 'title');
     const summary = snippet(pick(r, 'summary_ai') || pick(r, 'excerpt') || pick(r, 'description'));
@@ -75,18 +77,18 @@ async function searchKind(ctx: ToolContext, kind: SearchKind, vector: number[], 
   });
 }
 
-export async function searchContent(ctx: ToolContext, args: { query?: string; kind?: string }): Promise<Row> {
+export async function searchContent(ctx: ToolContext, args: { query?: string; kind?: string }, signal?: AbortSignal): Promise<Row> {
   const query = String(args.query ?? '').trim();
   if (!query) return { error: 'empty query' };
   if (!ctx.openaiKey) return { error: 'search unavailable' };
   const kinds: SearchKind[] = SEARCH_KINDS.includes(args.kind as SearchKind) ? [args.kind as SearchKind] : [...SEARCH_KINDS];
-  const vector = await embedQuery(query, ctx.openaiKey);
-  const perKind = await Promise.all(kinds.map((k) => searchKind(ctx, k, vector, PER_KIND_LIMIT)));
+  const vector = await embedQuery(query, ctx.openaiKey, signal);
+  const perKind = await Promise.all(kinds.map((k) => searchKind(ctx, k, vector, PER_KIND_LIMIT, signal)));
   const hits = rankHits(perKind.flat(), kinds.length === 1 ? PER_KIND_LIMIT : ALL_KINDS_LIMIT);
   return hits.length ? { results: hits } : { results: [], note: 'nothing relevant found: say you will check with the chef, do not invent' };
 }
 
-export async function getRecipe(ctx: ToolContext, args: { slug?: string }): Promise<Row> {
+export async function getRecipe(ctx: ToolContext, args: { slug?: string }, signal?: AbortSignal): Promise<Row> {
   const slug = String(args.slug ?? '').trim();
   if (!slug) return { error: 'missing slug' };
   let q = ctx.supabase
@@ -95,7 +97,8 @@ export async function getRecipe(ctx: ToolContext, args: { slug?: string }): Prom
     .eq('slug', slug)
     .eq('recipe_type', 'class');
   if (ctx.lang !== 'en') q = q.eq('translations.lang', ctx.lang);
-  const { data: recipe } = await q.maybeSingle();
+  // `abortSignal` vive sul builder, non su quello che torna da `maybeSingle()`.
+  const { data: recipe } = await (signal ? q.abortSignal(signal) : q).maybeSingle();
   if (!recipe) return { error: 'recipe not found' };
   const ings = ((recipe as unknown as Row).recipe_key_ingredients as Array<{ ingredient_id: string | null; dietary_adaptations?: Record<string, { substitute_id?: string | null }> | null }> | null) ?? [];
   const wanted = new Set<string>();
@@ -111,16 +114,16 @@ export async function getRecipe(ctx: ToolContext, args: { slug?: string }): Prom
     .select(`id, name, description${tr('ingredients_library_translations', 'name, description', ctx.lang)}`)
     .in('id', Array.from(wanted));
   if (ctx.lang !== 'en') iq = iq.eq('translations.lang', ctx.lang);
-  const { data: lib } = wanted.size ? await iq : { data: [] as Row[] };
+  const { data: lib } = wanted.size ? await (signal ? iq.abortSignal(signal) : iq) : { data: [] as Row[] };
   const byId = new Map(((lib ?? []) as unknown as Row[]).map((r) => [String(r.id), r]));
   return buildRecipeResult(recipe as unknown as Row, byId, ctx.profileIds, ctx.lang) as unknown as Row;
 }
 
 /** Dispatcher: nome → esecutore. Mai un throw verso il modello. */
-export async function runTool(ctx: ToolContext, name: string, args: Row): Promise<Row> {
+export async function runTool(ctx: ToolContext, name: string, args: Row, signal?: AbortSignal): Promise<Row> {
   try {
-    if (name === 'search_content') return await searchContent(ctx, args as { query?: string; kind?: string });
-    if (name === 'get_recipe') return await getRecipe(ctx, args as { slug?: string });
+    if (name === 'search_content') return await searchContent(ctx, args as { query?: string; kind?: string }, signal);
+    if (name === 'get_recipe') return await getRecipe(ctx, args as { slug?: string }, signal);
     return { error: `unknown tool ${name}` };
   } catch (err) {
     console.warn(`[gemini-proxy-chat] tool ${name} failed:`, err instanceof Error ? err.message : err);

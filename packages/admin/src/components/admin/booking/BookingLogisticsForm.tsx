@@ -157,7 +157,7 @@ const BookingLogisticsForm: React.FC<BookingLogisticsFormProps> = ({
                 >
                   <option value="">{t('logistics.selectMeetingPoint')}</option>
                   {meetingPoints.map(point => (
-                    <option key={point.id} value={point.name}>
+                    <option key={point.id} value={point.id}>
                       {point.name}
                     </option>
                   ))}

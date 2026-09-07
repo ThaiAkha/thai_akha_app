@@ -83,15 +83,15 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                         </div>
 
                         {/* Row 2: Location Info */}
-                        {(item.hotel_name || item.meeting_point) && (
+                        {(item.hotel_name || item.meeting_point_name) && (
                             <div className="flex items-center gap-2 mb-2">
                                 <MapPin className="w-4 h-4 shrink-0 text-sub" />
-                                <Tooltip content={item.hotel_name || item.meeting_point || 'No location'} position="bottom">
+                                <Tooltip content={item.hotel_name || item.meeting_point_name || 'No location'} position="bottom">
                                     <div className={cn(
                                         'flex-1 px-3 py-2 rounded-lg border-2 text-sm font-medium truncate',
                                         getZoneColorClasses(item.pickup_zone_color)
                                     )}>
-                                        {item.hotel_name || item.meeting_point}
+                                        {item.hotel_name || item.meeting_point_name}
                                     </div>
                                 </Tooltip>
                             </div>

@@ -139,7 +139,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                         <button
                             type="button"
-                            onClick={() => onUpdateLocal(selectedBooking.id, { meeting_point: null })}
+                            onClick={() => onUpdateLocal(selectedBooking.id, { meeting_point: null, meeting_point_name: null })}
                             className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.meeting_point
                                 ? 'bg-primary-500 text-white'
                                 : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -150,8 +150,11 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => {
+                                // '' = modalita' punto d'incontro senza scelta (mostra la select);
+                                // al salvataggio diventa null, mai '' nel DB.
                                 const updates: Partial<LogisticsItem> = {
                                     meeting_point: '',
+                                    meeting_point_name: null,
                                     hotel_name: '',
                                     pickup_zone: 'walk-in',
                                 };
@@ -188,7 +191,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             onChange={(e) => {
                                 const mpId = e.target.value;
                                 const mp = meetingPoints.find(m => m.id === mpId);
-                                const updates: Partial<LogisticsItem> = { meeting_point: mpId };
+                                const updates: Partial<LogisticsItem> = { meeting_point: mpId, meeting_point_name: mp?.name ?? null };
                                 if (mp) {
                                     const mpTime = selectedBooking.session_id === 'morning_class'
                                         ? mp.morning_pickup_time

@@ -30,7 +30,10 @@ export interface LogisticsItem {
     dropoff_sequence: number;
     pickup_sequence: number;
     // Meeting point
+    /** ID di meeting_points (o '' = modalita' punto d'incontro senza scelta, mai salvato). */
     meeting_point: string | null;
+    /** Nome del punto, solo per la UI: non si salva. */
+    meeting_point_name: string | null;
     // Zone color
     pickup_zone_color: string | null;
     // Luggage
@@ -201,7 +204,10 @@ export function useManagerLogistic() {
             if (bookingData) {
                 // Join non inferibile (vedi LogisticBookingRow): cast unico alla sorgente
                 setItems((bookingData as unknown as LogisticBookingRow[]).map((b) => {
-                    // Resolve meeting point name from ID
+                    // Nome del punto dall'ID, solo per mostrarlo: l'item tiene l'ID.
+                    // Fino al 2026-09-07 l'item portava il NOME e il salvataggio lo
+                    // riscriveva nella colonna (4 prenotazioni con "Thai Akha Kitchen
+                    // (School)" al posto di mp_school): con la FK sarebbe un errore.
                     const meetingPointName = b.meeting_point
                         ? meetingPoints.find(mp => mp.id === b.meeting_point)?.name || b.meeting_point
                         : null;
@@ -234,7 +240,8 @@ export function useManagerLogistic() {
                         dropoff_driver_uid: b.dropoff_driver_uid,
                         dropoff_sequence: b.dropoff_sequence ?? 99,
                         pickup_sequence: b.pickup_sequence ?? 99,
-                        meeting_point: meetingPointName,
+                        meeting_point: b.meeting_point ?? null,
+                        meeting_point_name: meetingPointName,
                         pickup_zone_color: zoneColor,
                         has_luggage: b.has_luggage ?? false,
                     };
@@ -278,6 +285,7 @@ export function useManagerLogistic() {
                 customer_note: item.customer_note || null,
                 agency_note: item.agency_note || null,
                 phone_number: item.phone_number || null,
+                // '' e' il sentinello UI "punto d'incontro, non ancora scelto": al DB va null.
                 meeting_point: item.meeting_point || null,
                 requires_dropoff: item.requires_dropoff,
                 dropoff_hotel: item.dropoff_hotel || null,

@@ -243,7 +243,6 @@ export interface ChatNode {
   options: ChatOption[]; // Always exactly 4
   /** Blocchi ricchi (linkCard/gallery) mostrati in coda — tipicamente solo a L3. */
   blocks?: NodeBlock[];
-  hasRandomOption?: boolean;
 }
 
 /**

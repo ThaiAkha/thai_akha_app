@@ -8,7 +8,7 @@
 // Read-only.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { resolveHotelPickup } from '../services/pickup.service';
+import { resolveHotelPickup, getWalkInTimes } from '../services/pickup.service';
 
 const PICKUP_INTENT = [
   'pickup', 'pick up', 'pick me', 'what time', 'my hotel', 'which zone', 'pickup zone',
@@ -35,11 +35,16 @@ export async function getPickupContextForCherry(text: string): Promise<PickupCon
 
   if (r.found) {
     if (r.isWalkIn) {
+      // Orari dalla riga mp_school, non scritti qui: se mancano, si dice "prima della classe".
+      const w = await getWalkInTimes();
+      const when = w.morning || w.evening
+        ? `arrives by ${[w.morning ? `${w.morning} for the morning class` : null, w.evening ? `${w.evening} for the evening class` : null].filter(Boolean).join(' or ')}`
+        : 'arrives shortly before the class starts';
       return {
         hotelName: r.hotelName,
         text: [
           `### PICKUP DATA — ${r.hotelName} (authoritative):`,
-          `Walk-in area: NO pickup — the guest comes directly to the cooking school and arrives 10 minutes early (08:50 morning, 16:50 evening).`,
+          `Walk-in area: NO pickup — the guest comes directly to the cooking school and ${when}.`,
           `STYLE: warm, plain text kha.`,
         ].join('\n'),
       };

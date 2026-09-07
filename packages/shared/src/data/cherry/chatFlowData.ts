@@ -6,8 +6,13 @@
 // askCherry_*.ts. Per aggiungere domande/risposte, modifica il modulo giusto.
 // I tipi vivono in chatFlowTypes.ts e sono ri-esportati qui per retro-compatibilità.
 //
-//   askCherry_General   → ROOT, Pickup, Meeting Point, Booking, Gifts
-//   (askCherry_Classes rimosso il 2026-09-07: i suoi tre nodi erano oscurati dalle bozze L1/L2 e portavano orari e prezzi vecchi)
+//   askCherry_General   → ROOT, BOOK_NOW, GIFT_CERTIFICATE (ROOT e GIFT_CERTIFICATE sono
+//                         sovrascritti dalle bozze L1/L2, che vincono sui nodi omonimi)
+//   _drafts/askCherry_L1, L2, L3 → i nodi VIVI del nuovo standard: classi, pickup, punto
+//                         d'incontro, hub. Non portano numeri: prezzi e orari li dice
+//                         Cherry dai fatti generati (knowledge/generated).
+//   (askCherry_Classes rimosso il 2026-09-07: i suoi tre nodi erano oscurati dalle bozze e
+//   portavano orari e prezzi vecchi)
 //   askCherry_Recipes   → Menu, Diete, Allergie, Akha dishes, Curry
 //   askCherry_News      → Guide pratiche How-To
 //   askCherry_History   → Cultura Akha, Zang, Dress, Festival, Spirit Gate, Philosophy, Origins, Learn Thai
@@ -16,7 +21,7 @@
 // Last updated: 2026-06-08
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { ChatNode, ChatOption } from './chatFlowTypes';
+import type { ChatNode } from './chatFlowTypes';
 import { flowGeneral } from './askCherry_General';
 import { flowRecipes } from './askCherry_Recipes';
 import { flowNews } from './askCherry_News';
@@ -39,16 +44,6 @@ export * from './chatFlowTypes';
 // senza aggiungere una nuova entry alla exports map.
 export { getCherryCTA } from './cherryCTAs';
 export type { CtaLevel } from './cherryCTAs';
-
-// ─── Random option pool (shown when hasRandomOption: true) ────────────────────
-export const RANDOM_CHAT_OPTIONS: ChatOption[] = [
-  { label: '🎁 Gifts & Certificate', nextId: 'GIFT_CERTIFICATE' },
-  { label: '⛰️ Akha Culture',        nextId: 'AKHA_CULTURE_HUB' },
-  { label: '📍 Meeting Point',        nextId: 'MEETING_POINT' },
-  { label: '🗣️ Learn Thai',           nextId: 'LEARN_THAI_HUB' },
-  { label: '🎮 Play Quiz',            nextId: 'QUIZ_TEASER' },
-  { label: '🌿 Akha Dishes',          nextId: 'AKHA_DISHES_INFO' },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CHAT FLOW — merge trasparente di tutti i moduli

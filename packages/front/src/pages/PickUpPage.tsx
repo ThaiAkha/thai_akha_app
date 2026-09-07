@@ -189,19 +189,26 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
       const timeOf = (p: { morning_pickup_time?: string | null; evening_pickup_time?: string | null } | undefined) =>
         (p ? (loc.selectedClass === 'morning' ? p.morning_pickup_time : p.evening_pickup_time) : null) ?? null;
       const school = meetingData.meetingPoints.find(m => m.id === 'mp_school');
-      let pickupTime: string | null;
-      if (loc.transportMode === 'pickup' && loc.pickupLoc.zoneId && zones[loc.pickupLoc.zoneId]) {
-        pickupTime = timeOf(zones[loc.pickupLoc.zoneId]) ?? timeOf(school);
-      } else if (loc.transportMode === 'self') {
-        const mp = meetingData.meetingPoints.find(m => m.id === loc.pickupLoc!.zoneId || m.name === loc.pickupLoc!.name);
-        pickupTime = timeOf(mp) ?? timeOf(school);
-      } else {
-        pickupTime = timeOf(school);
-      }
+      // Un punto d'incontro (scuola, tempio, aeroporto, stazione, fuori zona) ha il
+      // SUO orario, in qualunque modalita': prima `zones[...]` lo cercava fra le zone
+      // e cadeva sulla scuola (aeroporto 08:20 salvato come 08:50).
+      const chosenPoint = loc.pickupLoc.type === 'meeting_point'
+        ? meetingData.meetingPoints.find(m => m.id === loc.pickupLoc!.zoneId || m.name === loc.pickupLoc!.name)
+        : undefined;
+      const chosenZone = loc.pickupLoc.zoneId ? zones[loc.pickupLoc.zoneId] : undefined;
+      const pickupTime: string | null = timeOf(chosenPoint) ?? timeOf(chosenZone) ?? timeOf(school);
+      // bookings.pickup_zone accetta solo le zone (CHECK del DB): l'id di un punto
+      // d'incontro va in `meeting_point`, con zona 'walk-in' se si viene da soli e
+      // 'outside' se e' un punto di pickup fuori zona. Prima l'id del punto finiva
+      // nella zona, il DB rifiutava e la pagina navigava come se avesse salvato.
+      const pickupZone = loc.transportMode === 'self' ? 'walk-in'
+        : chosenPoint ? 'outside'
+        : (chosenZone ? loc.pickupLoc.zoneId! : 'outside');
 
       const payload = {
         hotel_name:      loc.pickupLoc.name,
-        pickup_zone:     loc.transportMode === 'self' ? 'walk-in' : (loc.pickupLoc.zoneId ?? 'outside'),
+        pickup_zone:     pickupZone,
+        meeting_point:   chosenPoint?.id ?? null,
         pickup_lat:      loc.pickupLoc.lat,
         pickup_lng:      loc.pickupLoc.lng,
         pickup_time:     pickupTime,
@@ -214,7 +221,9 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
       };
 
       if (isEditMode) {
-        await supabase.from('bookings').update(payload).eq('internal_id', bookingId);
+        // L'esito va letto: supabase-js non lancia, ritorna { error }.
+        const { error } = await supabase.from('bookings').update(payload).eq('internal_id', bookingId);
+        if (error) throw error;
         localStorage.removeItem('current_booking_id');
         onNavigate('user');
       } else {

@@ -1,5 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// askCherry_L2 — DRAFT (2026-06-10) · nodi L2 riscritti al nuovo standard.
+// askCherry_L2 — nodi L2 del nuovo standard (2026-06-10). NON e' una bozza: e'
+// cablato in chatFlowData DOPO i moduli storici e vince sui nodi omonimi (dal 2026-09-07
+// e' la sola definizione di INFO_CLASSES, MORNING/EVENING_DETAILS, PICKUP_*, MEETING_POINT).
 //
 // L2 = livello PROFILATO + MEDIA (vedi Cherry_Master_Schema.md):
 //   • FILTRATO per dieta/allergia via filterOptionsForProfile / filterBlocksForProfile
@@ -7,10 +9,6 @@
 //   • MEDIA ammessi: `blocks` linkCard (→ pagina) e gallery (foto). [audio = quando
 //     NodeAudio entra nella union — vedi TASK_Quiz_Hints_Preset §2a.]
 //   • Titolo in **bold SENZA icona**. 4 opzioni. Inglese, voce Digital Elder.
-//
-// ⚠️ DRAFT non importato: NON cablato in chatFlowData.ts. Collega tu (merge +
-//    cherry_button_ids + L3 target + assetId reali). I `nextId`/asset sono
-//    indicativi: verifica con validateChatFlow e con media_assets reali.
 //
 // NOTE MEDIA: gli `assetId` foto-ricetta/cultura + le gallery ingredienti usano
 // `assetIds` (media_assets). Ingredienti = pattern `{slug}-01` (es. tomato-01,

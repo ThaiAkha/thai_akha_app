@@ -42,6 +42,36 @@ export interface HotelPickupResult {
  * Token-search su hotel_locations.name (forward ILIKE), poi zona da pickup_zones.
  * found:false se nessun match (→ Cherry chiede il nome esatto / fallback fase 2).
  */
+/** Orari di arrivo per chi viene da solo alla scuola (meeting_points.mp_school), HH:MM. */
+export interface WalkInTimes { morning: string | null; evening: string | null }
+
+let walkInTimesCache: Promise<WalkInTimes> | null = null;
+
+/**
+ * La fonte unica dell'orario walk-in e' la riga mp_school di meeting_points
+ * (decisione owner 07/09/2026: 08:50 / 16:50). Una lettura per sessione di pagina;
+ * se fallisce, nessun orario: chi legge non deve inventarne uno.
+ */
+export const getWalkInTimes = (): Promise<WalkInTimes> => {
+  if (!walkInTimesCache) {
+    walkInTimesCache = (async (): Promise<WalkInTimes> => {
+      const { data } = await supabase
+        .from('meeting_points')
+        .select('morning_pickup_time, evening_pickup_time')
+        .eq('id', 'mp_school')
+        .maybeSingle();
+      return {
+        morning: hhmm((data?.morning_pickup_time as string | null) ?? '') || null,
+        evening: hhmm((data?.evening_pickup_time as string | null) ?? '') || null,
+      };
+    })().catch((): WalkInTimes => {
+      walkInTimesCache = null; // un guasto di rete non resta in cache
+      return { morning: null, evening: null };
+    });
+  }
+  return walkInTimesCache;
+};
+
 export const resolveHotelPickup = async (text: string): Promise<HotelPickupResult> => {
   const toks = tokens(text);
   if (toks.length === 0) return { found: false };

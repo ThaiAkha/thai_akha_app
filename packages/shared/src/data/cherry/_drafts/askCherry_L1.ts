@@ -1,5 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// askCherry_L1 — DRAFT (2026-06-10) · nodi L1 riscritti al nuovo standard.
+// askCherry_L1 — nodi L1 del nuovo standard (2026-06-10). NON e' una bozza: e'
+// cablato in chatFlowData DOPO i moduli storici e vince sui nodi omonimi (dal 2026-09-07
+// e' la sola definizione di INFO_CLASSES, MORNING/EVENING_DETAILS, PICKUP_*, MEETING_POINT).
 //
 // Regole L1 (vedi Cherry_Master_Schema.md):
 //   • Titolo in **bold SENZA icona** (l'icona resta solo sull'entry-point DB).
@@ -9,9 +11,6 @@
 //   • Esattamente 4 opzioni. Le label dei bottoni possono tenere l'icona (chip).
 //   • Inglese, voce Digital Elder.
 //
-// ⚠️ Questo file è un DRAFT non importato: NON è cablato in chatFlowData.ts.
-// Collega tu i nodi (merge nei moduli giusti + cherry_button_ids + L2/L3).
-// I `nextId` sono indicativi: verifica i target con validateChatFlow.
 // ─────────────────────────────────────────────────────────────────────────────
 import type { ChatNode } from '../chatFlowTypes';
 

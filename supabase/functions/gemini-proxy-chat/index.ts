@@ -22,6 +22,8 @@ interface ChatPayload {
   tools?: boolean;
   /** Profili dieta/allergia attivi dell'ospite, per le sostituzioni di get_recipe. */
   profileIds?: string[];
+  /** Diagnostica: intercala nello stream i tempi dei giri e degli strumenti. Solo per le prove. */
+  debug?: boolean;
 }
 
 /**
@@ -31,6 +33,20 @@ interface ChatPayload {
  * altrimenti chiedeva un terzo strumento e usciva il solo testo di apertura.
  */
 const MAX_TOOL_ROUNDS = 2;
+
+/**
+ * ⚠️ STATO DEGLI STRUMENTI (2026-09-08). Il codice c'e' ed e' deployato, ma il
+ * client NON li chiede (`CHERRY_CONFIG.TOOLS_ENABLED = false`): sulla edge in
+ * produzione, il turno che segue le chiamate di strumento si pianta in circa una
+ * risposta su tre. Misurato: i due strumenti girano (2-8 s), il terzo giro viene
+ * agganciato, e poi lo stream non consegna niente e il worker viene terminato.
+ * Ne' l'AbortController ne' una scadenza nostra svegliano quella lettura, mentre
+ * un `setTimeout` di prova nello stesso punto scatta: quindi non e' il timer, e'
+ * la lettura del corpo. Da riprendere con: turni di strumento NON in streaming
+ * (`generateContent`) e streaming solo sull'ultimo turno, oppure il passaggio a
+ * `@google/genai`. Senza `tools: true` nel payload questa parte non si esegue e
+ * la chat si comporta come prima.
+ */
 const MAX_PROFILE_IDS = 10;
 
 // ── Tetti (audit Cherry 2026-09-06) ─────────────────────────────────────────
@@ -209,7 +225,7 @@ Deno.serve(async (req: Request) => {
   try {
     // ── PARSE REQUEST ──────────────────────────────────────────────────────
     const payload: ChatPayload = await req.json();
-    const { message, history = [], systemInstruction, lang, tools = false, profileIds = [] } = payload;
+    const { message, history = [], systemInstruction, lang, tools = false, profileIds = [], debug = false } = payload;
 
     // Tipi controllati a runtime: il tipo TypeScript del payload non ferma
     // nessuno, e un oggetto al posto della stringa passava il tetto (`.length`
@@ -305,7 +321,28 @@ Deno.serve(async (req: Request) => {
     // Un timer vero: prima c'era un setTimeout con il corpo vuoto, che non
     // fermava niente. Il segnale ferma sia la chiamata sia lo stream.
     const abort = new AbortController();
-    const timeoutId = setTimeout(() => abort.abort(), toolCtx ? GEMINI_TOOLS_TIMEOUT_MS : GEMINI_TIMEOUT_MS);
+    const budgetMs = toolCtx ? GEMINI_TOOLS_TIMEOUT_MS : GEMINI_TIMEOUT_MS;
+    const deadlineAt = Date.now() + budgetMs;
+    const timeoutId = setTimeout(() => abort.abort(), budgetMs);
+    /**
+     * Attesa con scadenza. Il solo `AbortController` non basta: misurato il
+     * 2026-09-08 sulla edge deployata, un corpo di risposta che non si chiude
+     * lascia la lettura appesa e il segnale non la sveglia. Qui la scadenza e'
+     * nostra e vale per ogni singola attesa.
+     */
+    const withDeadline = async <T>(p: Promise<T>): Promise<T> => {
+      let timer: number | undefined;
+      try {
+        return await Promise.race([
+          p,
+          new Promise<never>((_, reject) => {
+            timer = setTimeout(() => reject(new Error('timeout')), Math.max(0, deadlineAt - Date.now()));
+          }),
+        ]);
+      } finally {
+        if (timer !== undefined) clearTimeout(timer);
+      }
+    };
     /** Il segnale non basta: la libreria lo ascolta solo mentre la richiesta e' in volo. */
     const stopIfAborted = () => { if (abort.signal.aborted) throw new Error('timeout'); };
     const wantsStream = new URL(req.url).searchParams.get('stream') === '1';
@@ -331,7 +368,7 @@ Deno.serve(async (req: Request) => {
        * questa rete ce l'aveva dentro; qui la mettiamo noi, e teniamo la versione
        * addomesticata per leggere comunque i numeri del giro.
        */
-      const startRound = async (request: { contents: Content[]; toolConfig?: { functionCallingConfig: { mode: FunctionCallingMode } } }) => {
+      const startRound = async (request: { contents: Content[]; toolConfig?: { functionCallingConfig: { mode: FunctionCallingMode } }; tools?: [] }) => {
         const r = await model.generateContentStream(request, { signal: abort.signal });
         return { stream: r.stream, response: r.response.then((x) => x, () => undefined) };
       };
@@ -354,15 +391,28 @@ Deno.serve(async (req: Request) => {
              * giro dopo fallisce, consegnarla come risposta e' peggio di un errore.
              */
             let textBeforeTools: number | null = null;
+            const t0 = Date.now();
+            const trace = (m: string) => { if (debug) controller.enqueue(new TextEncoder().encode(`\n[${Date.now() - t0}ms ${m}]\n`)); };
             try {
               let result = streamResult;
               // Giro 0: la risposta al messaggio. Se il modello chiama uno strumento,
               // lo si esegue e si riparte con i risultati, fino a MAX_TOOL_ROUNDS.
               // Il testo intanto scorre verso il client come prima.
               for (let round = 0; ; round++) {
+                trace(`giro ${round}: leggo lo stream`);
                 const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
                 const modelParts: Part[] = [];
-                for await (const chunk of result.stream) {
+                // Si legge a mano, con la scadenza a ogni passo, e si esce appena il
+                // modello dichiara di aver finito (`finishReason`): aspettare che il
+                // corpo si chiuda da solo lascia appesa una risposta su tre (misurato).
+                let roundUsage: TokenUsage | undefined;
+                const it = result.stream[Symbol.asyncIterator]();
+                for (;;) {
+                  const step = await withDeadline(it.next());
+                  if (step.done) break;
+                  const chunk = step.value;
+                  if (chunk.usageMetadata) roundUsage = readUsage(chunk.usageMetadata);
+                  const stop = chunk.candidates?.[0]?.finishReason;
                   for (const part of chunk.candidates?.[0]?.content?.parts ?? []) {
                     // Le parti si conservano com'e' (firma di ragionamento compresa);
                     // al client va solo il testo, e mai un eventuale riassunto di pensiero.
@@ -374,29 +424,35 @@ Deno.serve(async (req: Request) => {
                     }
                     if (p.functionCall?.name) calls.push({ name: p.functionCall.name, args: p.functionCall.args ?? {} });
                   }
+                  if (stop) { finish = stop; break; }
                 }
-                const aggregated = await result.response;
-                usage = addUsage(usage, readUsage(aggregated?.usageMetadata));
-                if (aggregated) finish = readFinish(aggregated);
+                usage = addUsage(usage, roundUsage);
+                trace(`giro ${round}: finito (${finish ?? 'senza stop'}), ${calls.length} chiamate, ${modelParts.length} parti`);
                 if (!calls.length || !toolCtx || round >= MAX_TOOL_ROUNDS) break;
                 stopIfAborted();
                 if (textBeforeTools === null) textBeforeTools = fullText.length;
                 contents.push({ role: 'model', parts: modelParts });
                 const responses: Part[] = await Promise.all(calls.map(async (c) => {
                   toolsUsed.push(c.name);
-                  return { functionResponse: { name: c.name, response: await runTool(toolCtx, c.name, c.args, abort.signal) } };
+                  const a = Date.now();
+                  const response = await runTool(toolCtx, c.name, c.args, abort.signal);
+                  trace(`strumento ${c.name}(${JSON.stringify(c.args).slice(0, 60)}) in ${Date.now() - a}ms`);
+                  return { functionResponse: { name: c.name, response } };
                 }));
                 contents.push({ role: 'function', parts: responses });
                 stopIfAborted();
                 // Esecuzioni esaurite: il turno che arriva deve SCRIVERE, non chiedere.
                 const noMoreTools = round + 1 >= MAX_TOOL_ROUNDS;
+                trace(`chiedo il giro ${round + 1}${noMoreTools ? ' con gli strumenti spenti' : ''}, ${contents.length} turni`);
                 result = await startRound({
                   contents,
                   ...(noMoreTools && { toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } } }),
                 });
+                trace(`giro ${round + 1}: risposta agganciata`);
               }
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
+              trace('fine ciclo');
               if (!answerText().trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
             } catch (err) {
               failure = err;

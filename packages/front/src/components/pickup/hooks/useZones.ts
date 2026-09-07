@@ -27,10 +27,12 @@ export const pickupZonesQueryKey = (lang = 'en') =>
  * query, stessa fusione; in piu' la cache TanStack, cosi' la pagina Pickup e chiunque
  * altro chieda le zone condividono UNA chiamata.
  */
-export function useZones(): UseZonesResult {
+export function useZones(options: { enabled?: boolean } = {}): UseZonesResult {
   const { lang } = useLanguage();
+  const enabled = options.enabled ?? true;
   const query = useQuery({
     queryKey: pickupZonesQueryKey(lang),
+    enabled,
     queryFn: async () => {
       const q = sidecarFilter(supabase.from('pickup_zones')
         .select('*' + sidecarJoin('pickup_zones_translations', PICKUP_ZONE_T_FIELDS, lang)), lang);
@@ -43,5 +45,6 @@ export function useZones(): UseZonesResult {
       return mergeZonesWithGeoJson(zoneRows, features);
     },
   });
-  return { zones: query.data ?? NO_ZONES, loading: query.isPending };
+  // `enabled &&`: una query spenta resterebbe per sempre in attesa.
+  return { zones: query.data ?? NO_ZONES, loading: enabled && query.isPending };
 }

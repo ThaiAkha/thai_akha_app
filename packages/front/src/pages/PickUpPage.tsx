@@ -183,18 +183,20 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
 
     setSaving(true);
     try {
-      // Compute pickup time
-      let pickupTime = '08:50:00';
+      // Orario dal database, mai da un numero scritto qui (fino al 2026-09-07 il
+      // fallback era '08:50:00' / '16:50:00' nel codice): la zona scelta, altrimenti
+      // il punto scuola (walk-in), altrimenti nessun orario, che il driver conferma.
+      const timeOf = (p: { morning_pickup_time?: string | null; evening_pickup_time?: string | null } | undefined) =>
+        (p ? (loc.selectedClass === 'morning' ? p.morning_pickup_time : p.evening_pickup_time) : null) ?? null;
+      const school = meetingData.meetingPoints.find(m => m.id === 'mp_school');
+      let pickupTime: string | null;
       if (loc.transportMode === 'pickup' && loc.pickupLoc.zoneId && zones[loc.pickupLoc.zoneId]) {
-        const z = zones[loc.pickupLoc.zoneId];
-        pickupTime = loc.selectedClass === 'morning' ? (z.morning_pickup_time ?? '08:50:00') : (z.evening_pickup_time ?? '16:50:00');
+        pickupTime = timeOf(zones[loc.pickupLoc.zoneId]) ?? timeOf(school);
       } else if (loc.transportMode === 'self') {
         const mp = meetingData.meetingPoints.find(m => m.id === loc.pickupLoc!.zoneId || m.name === loc.pickupLoc!.name);
-        if (mp) {
-          pickupTime = loc.selectedClass === 'morning'
-            ? (mp.morning_pickup_time ?? '08:50:00')
-            : (mp.evening_pickup_time ?? '16:50:00');
-        }
+        pickupTime = timeOf(mp) ?? timeOf(school);
+      } else {
+        pickupTime = timeOf(school);
       }
 
       const payload = {

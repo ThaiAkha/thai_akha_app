@@ -7,7 +7,7 @@
 // I tipi vivono in chatFlowTypes.ts e sono ri-esportati qui per retro-compatibilità.
 //
 //   askCherry_General   → ROOT, Pickup, Meeting Point, Booking, Gifts
-//   askCherry_Classes   → Morning / Evening class
+//   (askCherry_Classes rimosso il 2026-09-07: i suoi tre nodi erano oscurati dalle bozze L1/L2 e portavano orari e prezzi vecchi)
 //   askCherry_Recipes   → Menu, Diete, Allergie, Akha dishes, Curry
 //   askCherry_News      → Guide pratiche How-To
 //   askCherry_History   → Cultura Akha, Zang, Dress, Festival, Spirit Gate, Philosophy, Origins, Learn Thai
@@ -18,7 +18,6 @@
 
 import type { ChatNode, ChatOption } from './chatFlowTypes';
 import { flowGeneral } from './askCherry_General';
-import { flowClasses } from './askCherry_Classes';
 import { flowRecipes } from './askCherry_Recipes';
 import { flowNews } from './askCherry_News';
 import { flowHistory } from './askCherry_History';
@@ -56,7 +55,6 @@ export const RANDOM_CHAT_OPTIONS: ChatOption[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 export const CHAT_FLOW: Record<string, ChatNode> = {
   ...flowGeneral,
-  ...flowClasses,
   ...flowRecipes,
   ...flowNews,
   ...flowHistory,

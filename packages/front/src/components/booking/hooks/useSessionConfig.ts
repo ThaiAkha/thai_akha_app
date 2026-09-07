@@ -8,8 +8,10 @@
 import { useMemo } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { contentService } from '@thaiakha/shared/services';
+import { pickupWindowSpan, classTimeSpan } from '@thaiakha/shared/lib/pickupWindow';
 import { t } from '../../../i18n';
 import type { SessionInfo } from '../booking.types';
+import { useZones } from '../../pickup/hooks/useZones';
 
 export interface UseSessionConfigResult {
   sessionConfig: Record<string, SessionInfo>;
@@ -35,6 +37,10 @@ export function useSessionConfig(options: { enabled?: boolean } = {}): UseSessio
     queryFn: () => contentService.getClassSessions(),
     enabled,
   });
+  // Finestra pickup dalle zone (stessa query della pagina Pickup, in cache condivisa):
+  // fino al 2026-09-07 orario classe e finestra erano scritti qui a mano.
+  const { zones, loading: zonesLoading } = useZones({ enabled });
+  const zoneRows = useMemo(() => Object.values(zones), [zones]);
 
   const sessionConfig = useMemo(() => {
     if (!query.data) return NO_CONFIG;
@@ -48,15 +54,15 @@ export function useSessionConfig(options: { enabled?: boolean } = {}): UseSessio
         basePrice:   s.price_thb,
         icon:        isMorning ? 'wb_sunny' : 'dark_mode',
         color:       isMorning ? 'text-primary' : 'text-secondary',
-        pickupTime:  isMorning ? '08:30 - 09:00' : '16:30 - 17:00',
-        classTime:   isMorning ? '09:00 - 14:30' : '17:00 - 21:00',
+        pickupTime:  pickupWindowSpan(zoneRows, isMorning ? 'morning' : 'evening'),
+        classTime:   classTimeSpan(s.start_time, s.end_time),
         marketTour:  s.has_market_tour,
       };
     });
     return config;
-  }, [query.data]);
+  }, [query.data, zoneRows]);
 
   // `enabled &&`: una query spenta e senza dati resta per sempre in attesa, e chi
   // legge questo flag ci resterebbe appeso.
-  return { sessionConfig, loading: enabled && query.isPending };
+  return { sessionConfig, loading: enabled && (query.isPending || zonesLoading) };
 }

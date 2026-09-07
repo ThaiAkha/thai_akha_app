@@ -38,7 +38,7 @@ const SPICINESS_T_FIELDS = [
  * pagherebbe una seconda chiamata.
  * Colonna nuova nel DB = va aggiunta qui a mano.
  */
-const RECIPE_PUBLIC_COLUMNS =
+export const RECIPE_PUBLIC_COLUMNS =
     'allergen_adaptations, audio_asset_id, author_id, author_note, breadcrumbs,' +
     'canonical_url, category, cherry_button_ids, cherry_prompt, cherry_response,' +
     'content_quality_score, cook_time_min, cooks_tip, cover_asset_id, created_at,' +

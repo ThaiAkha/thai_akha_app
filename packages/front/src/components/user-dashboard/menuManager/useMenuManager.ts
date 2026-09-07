@@ -12,6 +12,7 @@ import { sidecarJoin, sidecarFilter, mergeSidecarRows } from '@thaiakha/shared/l
 import type { RecipeData } from '../../menu/RecipeView';
 import { useContentCategories } from '../../../hooks/useContentCategories';
 import { normalizeCatKey, FALLBACK_CATEGORY_INFO, MENU_RECIPE_T_FIELDS } from './menuHelpers';
+import { RECIPE_PUBLIC_COLUMNS } from '@thaiakha/shared/services';
 import type { MenuManagerProps } from './types';
 import { useLanguage } from '../../../context/LanguageContext';
 
@@ -43,7 +44,9 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
     queryFn: async () => {
       const q = sidecarFilter(supabase
         .from('recipes')
-        .select('*, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)'
+        // Colonne esplicite, mai `*`: `semantic_vector` (vector 1536) e' il 42% della
+        // riga. La lista e' quella del servizio ricette, una sola per tutta l'app.
+        .select(`${RECIPE_PUBLIC_COLUMNS}, recipe_key_ingredients(ingredient), cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
           + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .eq('is_fixed_dish', true)
@@ -64,7 +67,7 @@ export function useMenuManager({ bookingId, menuSelection, onNavigate }: Pick<Me
     queryFn: async () => {
       const q = sidecarFilter(supabase
         .from('recipes')
-        .select('*, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)'
+        .select(`${RECIPE_PUBLIC_COLUMNS}, cover:media_assets!cover_asset_id(asset_id, image_url, alt_text)`
           + sidecarJoin('recipes_translations', MENU_RECIPE_T_FIELDS, lang))
         .eq('recipe_type', 'class')
         .in('id', ids), lang);

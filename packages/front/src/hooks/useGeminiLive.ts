@@ -4,7 +4,7 @@ import type { LiveServerMessage, LiveSendClientContentParameters, LiveSendRealti
 import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
 import { checkRateLimit, getGuestSessionToken, getUserBookingState } from '@thaiakha/shared/services';
 import { tObj } from '../i18n';
-import { getAllStaticKnowledge } from '@thaiakha/shared/data/cherryKnowledge';
+import { getAllStaticKnowledge, STATIC_KNOWLEDGE_UNAVAILABLE } from '@thaiakha/shared/data/cherryKnowledge';
 import type { UserProfile } from '@thaiakha/shared/types';
 import { encodeAudio, decodeAudio, decodeAudioDataToBuffer } from '../lib/audioUtils';
 
@@ -160,7 +160,7 @@ export const useGeminiLive = (
             // Un chunk che non arriva costa il blocco, non la sessione voce.
             const staticKnowledge = await getAllStaticKnowledge(lang).catch((err: unknown) => {
               console.warn('[cherry voice] fatti statici non caricati, parto senza:', err);
-              return '';
+              return STATIC_KNOWLEDGE_UNAVAILABLE;
             });
             const resolvedSystemInstruction = overrideInstruction || buildCherryPrompt({
               isLogged: !!userProfile,

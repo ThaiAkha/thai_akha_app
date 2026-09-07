@@ -9,7 +9,7 @@ import { getIngredientContextForCherry } from '@thaiakha/shared/lib/cherryIngred
 import { getGamificationContextForCherry } from '@thaiakha/shared/lib/cherryGamificationContext';
 import { getBookingContextForCherry } from '@thaiakha/shared/lib/cherryBookingContext';
 import { getPickupContextForCherry } from '@thaiakha/shared/lib/cherryPickupContext';
-import { getStaticKnowledge } from '@thaiakha/shared/data/cherryKnowledge';
+import { getStaticKnowledge, STATIC_KNOWLEDGE_UNAVAILABLE } from '@thaiakha/shared/data/cherryKnowledge';
 import { getLegalContext } from '@thaiakha/shared/lib/cherryLegalContext';
 import { getMenuContextForCherry } from '@thaiakha/shared/lib/cherryMenuContext';
 import { getDietContextForCherry } from '@thaiakha/shared/lib/cherryDietContext';
@@ -128,7 +128,9 @@ export async function buildSystemInstruction({
   const gamificationText = gamificationBlock ? `\n${gamificationBlock}` : '';
   const bookingText = bookingBlock ? `\n${bookingBlock}` : '';
   const pickupText = pickupResult ? `\n${pickupResult.text}` : '';
-  const staticText = staticKnowledge ? `\n${staticKnowledge}` : '';
+  // Fatti non caricati (chunk assente): lo si dice al modello, che altrimenti
+  // cercherebbe blocchi promessi dal prompt e mai arrivati.
+  const staticText = `\n${staticKnowledge || STATIC_KNOWLEDGE_UNAVAILABLE}`;
   // Clausole legali (RAG locale sui file generati): in-memory, match su domanda.
   // Gli altri temi arrivano dai contesti dedicati, che leggono le fonti dal DB.
   const faqBlock = getLegalContext(userText);

@@ -12,7 +12,8 @@ function classLine(c: CherryFactsClass): string {
   const tour = c.marketTour
     ? `includes a 1-hour local market tour ${c.marketTour.start}-${c.marketTour.end}`
     : c.hasMarketTour ? 'includes a local market tour' : 'no market tour (straight to cooking)';
-  const head = `- ${c.title}${c.badge ? ` (${c.badge})` : ''}: ${thb(c.priceThb)} ${c.currency} ${c.unit} · ${c.startTime}-${c.endTime}${c.durationText ? ` (${c.durationText})` : ''} · ${tour}${c.capacityText ? ` · capacity: ${c.capacityText}` : ''}.`;
+  // duration_text e' porta a porta (pickup compreso), non la lunghezza dell'orario in classe.
+  const head = `- ${c.title}${c.badge ? ` (${c.badge})` : ''}: ${thb(c.priceThb)} ${c.currency} ${c.unit} · class ${c.startTime}-${c.endTime}${c.durationText ? ` · about ${c.durationText} door to door incl. pickup` : ''} · ${tour}${c.capacityText ? ` · capacity: ${c.capacityText}` : ''}.`;
   const timeline = c.schedule.length ? `  Timeline: ${c.schedule.map((s) => `${s.label} ${s.time}`).join('; ')}.` : '';
   const walkIn = c.walkIn.length ? `  Walk-in (no pickup): ${c.walkIn.map((w) => `${w.name} at ${w.time}`).join('; ')}.` : '';
   const includes = c.inclusions.length ? `  Includes: ${c.inclusions.join(', ')}.` : '';

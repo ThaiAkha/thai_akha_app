@@ -54,6 +54,10 @@ test('punti di ritrovo: aeroporti e riconsegne, che prima mancavano', async () =
 test('nessun intento: solo il livello base; la voce prende tutto', async () => {
   assert.deepEqual(matchKnowledge('hello').map((m) => m.id), ['core']);
   const all = await getAllStaticKnowledge('es');
-  for (const m of CHERRY_KNOWLEDGE) assert.ok(all.includes(`### `), m.id);
+  const facts = await getCherryFacts('es');
+  for (const m of CHERRY_KNOWLEDGE) {
+    const head = m.build(facts).split('\n')[0];
+    assert.ok(head.startsWith('### ') && all.includes(head), m.id);
+  }
   assert.ok(all.includes('Clase de cocina por la mañana'));
 });

@@ -75,6 +75,14 @@ export async function getStaticKnowledge(text: string, lang = 'en'): Promise<str
   return hit.map((m) => m.build(facts)).join('\n');
 }
 
+/**
+ * Riga da mettere nel prompt quando i fatti NON si sono caricati: il prompt
+ * fisso rimanda ai blocchi generati e vieta i numeri a memoria, quindi
+ * l'assenza deve essere detta, non taciuta.
+ */
+export const STATIC_KNOWLEDGE_UNAVAILABLE =
+  '### CORE FACTS unavailable this turn: do not state prices, times, capacity or pickup windows; invite the guest to the Cooking Classes page or to contact the school kha.';
+
 /** Tutti i blocchi statici concatenati (per la voce, una volta a sessione). */
 export async function getAllStaticKnowledge(lang = 'en'): Promise<string> {
   const facts = await getCherryFacts(lang);

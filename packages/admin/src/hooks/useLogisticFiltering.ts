@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { LogisticsItem, DriverProfile, needsDriver } from './useManagerLogistic';
+import { LogisticsItem, DriverProfile, needsDriver, dropoffDriverOf } from './useManagerLogistic';
 
 interface UseLogisticFilteringProps {
     items: LogisticsItem[];
@@ -29,7 +29,9 @@ export function useLogisticFiltering({
             // Drop-off: use dropoff_driver_uid, fallback to pickup_driver_uid
             return items
                 .filter(i => {
-                    const driverUid = i.dropoff_driver_uid || i.pickup_driver_uid;
+                    // Il ripiego sull'autista del ritiro non vale per i walk-in: vedi
+                    // dropoffDriverOf, regola dell'owner.
+                    const driverUid = dropoffDriverOf(i);
                     // NIENTE needsDriver qui: quello dice se serve un autista di
                     // RITIRO. Chi arriva da se' viene comunque riportato indietro, quindi
                     // in riconsegna il criterio e' `requires_dropoff` e basta. Col filtro
@@ -78,7 +80,7 @@ export function useLogisticFiltering({
             ? needsDriver(i) && !i.pickup_driver_uid
             // Riconsegna: serve una riconsegna e non c'e' nessuno dei due autisti.
             // I walk-in sono INCLUSI, a differenza del ritiro: tornano a casa anche loro.
-            : i.requires_dropoff && !i.dropoff_driver_uid && !i.pickup_driver_uid);
+            : i.requires_dropoff && !dropoffDriverOf(i));
         // Nessun ordine di percorso da rispettare (non ne hanno ancora uno): l'ordine
         // utile a chi smista e' l'orario, poi il nome per non ballare fra un giro e l'altro.
         return [...rows].sort((a, b) =>

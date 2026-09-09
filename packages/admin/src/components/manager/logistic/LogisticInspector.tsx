@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import LeaderHeader from '../../common/LeaderHeader';
 import SelectField from '../../form/input/SelectField';
@@ -51,6 +51,28 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 }) => {
     const { t } = useTranslation('logistics');
 
+    /**
+     * Posizione scelta col click, quando c'e'. I dati dicono da dove si PARTE; il click
+     * dice dove sei andato.
+     *
+     * Serve perche' la derivazione pura non regge per la posizione HOTEL, e il buco era
+     * uno stallo: premendo Hotel si scriveva `meeting_point: null` e non si toccava
+     * `hotel_name`, che le altre due posizioni avevano appena svuotato. Quindi
+     * `pickupPosition` tornava NULL ("da decidere"), il campo di ricerca hotel non si
+     * montava — e' condizionato a `position === 'hotel'` — e senza quel campo non si
+     * poteva scegliere un hotel, quindi la posizione non diventava mai 'hotel'.
+     * Dopo aver usato lo switch UNA volta, Hotel restava inutilizzabile per quella
+     * prenotazione: funzionava solo dove un hotel c'era gia', cioe' dove non serviva.
+     *
+     * Le altre due posizioni hanno un sentinello nei dati (`meeting_point: ''` piu' il
+     * tipo); Hotel non ne ha, e dargliene uno vorrebbe dire mettere una seconda stringa
+     * magica in `hotel_name` — proprio il campo che soffre gia' di 'Update in profile'.
+     * Meglio uno stato locale, azzerato quando cambia la prenotazione selezionata.
+     */
+    const [chosenPosition, setChosenPosition] = useState<PickupPosition | undefined>(undefined);
+    const selectedId = selectedBooking?.id ?? null;
+    useEffect(() => { setChosenPosition(undefined); }, [selectedId]);
+
     if (!selectedBooking) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-sub">
@@ -65,7 +87,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
     // nessuna scelta fatta. La regola, il perche' non si deriva dalla verita' di
     // `meeting_point` e il caso delle prenotazioni nate dal sito stanno in
     // shared/lib/pickupCategory.ts con i test.
-    const position = pickupPosition(
+    const position = chosenPosition ?? pickupPosition(
         selectedBooking.meeting_point,
         selectedBooking.meeting_point_type,
         selectedBooking.hotel_name
@@ -73,13 +95,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
     /** Ogni posizione riparte da zero sull'orario: ognuna lo prende dalla propria fonte. */
     const goToPosition = (next: Exclude<PickupPosition, null>) => {
+        setChosenPosition(next);
         const common = { meeting_point_name: null, pickup_time: '' };
         if (next === 'hotel') {
             onUpdateLocal(selectedBooking.id, {
                 ...common,
                 meeting_point: null,
                 meeting_point_type: null,
-                // La zona walk-in va toglita: e' la categoria che stiamo lasciando.
+                // La zona walk-in va tolta: e' la categoria che stiamo lasciando.
                 // Le righe nate col vecchio difetto ce l'hanno ancora, e un punto
                 // walk-in la mette per davvero. Sara' l'hotel scelto a rimetterne una.
                 ...(selectedBooking.pickup_zone === WALK_IN_ZONE ? { pickup_zone: ZONE_UNSET } : {}),
@@ -112,6 +135,21 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
             pickup_driver_uid: null,
         });
     };
+
+    // REGOLA DELL'OWNER (2026-09-09): nel walk-in la riconsegna non puo' essere "stesso
+    // posto del ritiro" ne' "stesso autista del ritiro". "Stesso posto" per chi arriva da
+    // se' vorrebbe dire riportarlo alla cucina o al tempio da cui esce; e non c'e' nessun
+    // autista del ritiro da ereditare. Quindi in walk-in il luogo di riconsegna si chiede
+    // sempre, e l'autista del ritorno va detto.
+    const isWalkIn = position === 'walk_in';
+    // `!== null` e non la verita' del campo: '' significa "luogo diverso, non ancora
+    // scelto" ed e' falso, quindi il pulsante premuto restava spento e si accendeva
+    // l'altro — la stessa trappola del comando del ritiro, terza volta in questo file.
+    const dropoffElsewhere = isWalkIn || (selectedBooking.dropoff_hotel ?? null) !== null;
+    /** Un walk-in che chiede il rientro senza destinazione non e' consegnabile. */
+    const dropoffMissing = isWalkIn
+        && selectedBooking.requires_dropoff
+        && !(selectedBooking.dropoff_hotel ?? '').trim();
 
     /** Orario del punto per la sessione di questa prenotazione, se ce l'ha. */
     const pointTime = (mp: MeetingPointOption) =>
@@ -328,7 +366,21 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         >
                             <option value="">{t('inspector.selectMP')}</option>
                             {meetingPoints
-                                .filter(mp => mp.point_type === (position === 'walk_in' ? 'walk_in' : 'pickup'))
+                                .filter(mp => {
+                                    if (mp.point_type !== (position === 'walk_in' ? 'walk_in' : 'pickup')) return false;
+                                    // Il punto GIA' scelto resta sempre in elenco, anche se
+                                    // per questa sessione non ha orario: togliendolo, la
+                                    // tendina non troverebbe il proprio valore, mostrerebbe
+                                    // vuoto, e un click distratto lo sostituirebbe.
+                                    if (mp.id === selectedBooking.meeting_point) return true;
+                                    // Un punto senza orario per la sessione scelta non puo'
+                                    // servirla: Wat Pan Whaen ha il mattino (08:50) e la
+                                    // sera NULL, quindi in classe serale offrirlo voleva
+                                    // dire farlo scegliere e poi non riuscire a riempire
+                                    // l'orario. Il front questo caso lo scarta a monte
+                                    // (useMeetingPoints): ora anche l'admin.
+                                    return pointTime(mp) !== null;
+                                })
                                 .map(mp => {
                                     // L'orario mostrato e' quello della SESSIONE di questa
                                     // prenotazione: Wat Pan Whaen ha il mattino e non la
@@ -372,12 +424,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
                     </SectionTitle>
 
-                    {/* Same / Different Location toggle */}
+                    {/* Same / Different Location toggle. In walk-in non si offre: "stesso
+                        posto del ritiro" non esiste per chi arriva da se'. */}
+                    {!isWalkIn && (
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                         <button
                             type="button"
                             onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: null, dropoff_zone: null, dropoff_driver_uid: null })}
-                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.dropoff_hotel
+                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!dropoffElsewhere
                                 ? 'bg-primary-500 text-white'
                                 : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
@@ -387,7 +441,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <button
                             type="button"
                             onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: selectedBooking.hotel_name || '' })}
-                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${selectedBooking.dropoff_hotel
+                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${dropoffElsewhere
                                 ? 'bg-primary-500 text-white'
                                 : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
@@ -395,9 +449,13 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             {t('inspector.differentLocation')}
                         </button>
                     </div>
+                    )}
 
-                    {selectedBooking.dropoff_hotel !== null && selectedBooking.dropoff_hotel !== undefined && (
+                    {dropoffElsewhere && (
                         <>
+                            {dropoffMissing && (
+                                <Caption className="text-error">{t('inspector.dropoffRequired')}</Caption>
+                            )}
                             {/* Drop-off Hotel */}
                             <SearchableHotelSelect
                                 label={t('inspector.fieldDropoffHotel')}
@@ -414,7 +472,10 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 value={selectedBooking.dropoff_driver_uid || ''}
                                 onChange={(e) => onUpdateLocal(selectedBooking.id, { dropoff_driver_uid: e.target.value || null })}
                             >
-                                <option value="">{t('inspector.sameAsPickup')}</option>
+                                {/* "Same as pickup" non si offre sui walk-in: non c'e'
+                                    nessun autista del ritiro da ereditare, e la regola
+                                    dell'owner lo esclude. Li' l'assenza e' "da assegnare". */}
+                                <option value="">{isWalkIn ? t('inspector.unassigned') : t('inspector.sameAsPickup')}</option>
                                 {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
                             </SelectField>
                         </>
@@ -425,7 +486,9 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                 `type="submit"`: chiude il <form> radice, quindi Enter continua a salvare e
                 non serve piu' alcun evento fabbricato dall'header. */}
             <InspectorFooter>
-                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving} startIcon={<Save className="w-4 h-4" />}>
+                {/* Bloccato SOLO su questa invariante: un walk-in che chiede il rientro
+                    senza destinazione non e' consegnabile, e salvarlo non aiuta nessuno. */}
+                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving || dropoffMissing} startIcon={<Save className="w-4 h-4" />}>
                     {isSaving ? t('actions.saving') : t('actions.save')}
                 </InspectorPrimaryButton>
             </InspectorFooter>

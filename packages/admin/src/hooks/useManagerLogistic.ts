@@ -27,6 +27,22 @@ export const ZONE_UNSET = 'pending';
 export const needsDriver = (item: LogisticsItem): boolean =>
     zoneNeedsDriver(item.meeting_point, item.meeting_point_type, item.pickup_zone);
 
+/**
+ * Chi riporta a casa questa prenotazione.
+ *
+ * REGOLA DELL'OWNER (2026-09-09): **nel walk-in la riconsegna non puo' avere "driver same
+ * as pickup"**. Il ripiego `dropoff_driver_uid || pickup_driver_uid` e' legittimo per le
+ * altre due categorie — lo stesso autista che ti ha preso ti riporta — ma per chi arriva
+ * da se' non c'e' nessun autista da ereditare: attribuire il ritorno all'autista del
+ * ritiro significherebbe darlo a qualcuno che non e' mai passato. E succede per davvero,
+ * perche' la console admin assegnava l'autista di default anche sui walk-in (corretto
+ * oggi, ma le righe nate cosi' esistono). Per un walk-in il ritorno va detto, non dedotto.
+ */
+export const dropoffDriverOf = (item: LogisticsItem): string | null =>
+    needsDriver(item)
+        ? (item.dropoff_driver_uid || item.pickup_driver_uid)
+        : item.dropoff_driver_uid;
+
 export { WALK_IN_ZONE };
 
 // --- TYPES ---

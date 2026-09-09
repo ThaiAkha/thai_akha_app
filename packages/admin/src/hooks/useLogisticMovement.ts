@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { LogisticsItem } from './useManagerLogistic';
+import { LogisticsItem, dropoffDriverOf } from './useManagerLogistic';
 
 interface UseLogisticMovementProps {
     logisticsMode: 'pickup' | 'dropoff';
@@ -29,7 +29,8 @@ export function useLogisticMovement({
         // Get current driver based on mode
         const currentDriver = logisticsMode === 'pickup'
             ? item.pickup_driver_uid
-            : (item.dropoff_driver_uid || item.pickup_driver_uid);
+            // Niente ripiego sull'autista del ritiro per i walk-in: vedi dropoffDriverOf.
+            : dropoffDriverOf(item);
 
         if (direction === 'to-driver' && targetDriverId && targetDriverId !== currentDriver) {
             // Move to different driver
@@ -47,16 +48,12 @@ export function useLogisticMovement({
 
             // Find insertion point in target driver's list
             const targetItems = items.filter(i => {
-                const dId = logisticsMode === 'pickup'
-                    ? i.pickup_driver_uid
-                    : (i.dropoff_driver_uid || i.pickup_driver_uid);
+                const dId = logisticsMode === 'pickup' ? i.pickup_driver_uid : dropoffDriverOf(i);
                 return dId === targetDriverId;
             });
 
             const insertIndex = items.findIndex(i => {
-                const dId = logisticsMode === 'pickup'
-                    ? i.pickup_driver_uid
-                    : (i.dropoff_driver_uid || i.pickup_driver_uid);
+                const dId = logisticsMode === 'pickup' ? i.pickup_driver_uid : dropoffDriverOf(i);
                 return dId === targetDriverId;
             });
 
@@ -70,9 +67,7 @@ export function useLogisticMovement({
             // Reorder within same driver/group
             const sameGroupItems = items
                 .map((i, idx) => {
-                    const dId = logisticsMode === 'pickup'
-                        ? i.pickup_driver_uid
-                        : (i.dropoff_driver_uid || i.pickup_driver_uid);
+                    const dId = logisticsMode === 'pickup' ? i.pickup_driver_uid : dropoffDriverOf(i);
                     return { item: i, idx, driverId: dId };
                 })
                 .filter(x => x.driverId === currentDriver);

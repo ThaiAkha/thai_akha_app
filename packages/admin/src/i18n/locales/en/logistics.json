@@ -42,6 +42,7 @@
     "positionHotel": "Hotel",
     "positionMeetingPoint": "Meeting Point",
     "positionWalkIn": "Walk-in",
+    "dropoffRequired": "Walk-in guests are not collected anywhere, so the return needs its own destination. Pick where to drop them off.",
     "positionUndecided": "Pickup not chosen yet. Pick one of the three above: the guest booked online and has not told us where to collect them.",
     "fieldHotel": "Hotel / Location",
     "fieldMP": "Meeting Point",

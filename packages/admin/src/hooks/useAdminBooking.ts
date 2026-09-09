@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase, getFunctionErrorMessage } from '@thaiakha/shared/lib/supabase';
+import { WALK_IN_ZONE } from '@thaiakha/shared/lib/pickupCategory';
 import { useAuth } from '../context/AuthContext';
 import { getSmartAvatarUrlSafe } from '@thaiakha/shared/lib/avatarSystem';
 import { getSessionCapacity, getSessionPrice } from '@thaiakha/shared/lib/sessionUtils';
@@ -37,7 +38,7 @@ export interface BookingHotel {
     lng?: number;
     pickup_zones?: BookingPickupZone;
 }
-export type BookingMeetingPoint = Pick<Tables<'meeting_points'>, 'id' | 'name'>;
+export type BookingMeetingPoint = Pick<Tables<'meeting_points'>, 'id' | 'name' | 'point_type'>;
 
 export interface NewUser {
     fullName: string;
@@ -217,7 +218,7 @@ export const useAdminBooking = () => {
     useEffect(() => {
         const fetchMeetingPoints = async () => {
             try {
-                const { data, error } = await supabase.from('meeting_points').select('id, name').order('name');
+                const { data, error } = await supabase.from('meeting_points').select('id, name, point_type').order('name');
                 console.log("[useAdminBooking] Meeting Points query result:", { data, error });
                 if (error) {
                     console.error("Meeting Points error:", error);
@@ -305,6 +306,21 @@ export const useAdminBooking = () => {
             // BYPASS-PAYOUT (driver mapping) — default pickup driver booking-based = "At" (profilo driver reale).
             const defaultDriverId = '5629d491-6cd1-4344-9254-9bf8ccbba45f'; // At
 
+            // La zona di una prenotazione col punto d'incontro dipende dal TIPO del punto,
+            // non dal fatto che un punto sia stato scelto. Qui prima era
+            // `pickupZone?.id || (meetingPoint ? 'walk-in' : null)`: un punto di citta'
+            // dove l'autista PASSA a prendere (aeroporto, stazione, McDonald's Tha Phae
+            // Gate) nasceva marcato walk-in, e nel Driver Planner spariva da ogni colonna
+            // autista. Era lo stesso difetto dell'ispettore della logistica, ma alla
+            // SORGENTE: correggere solo la' avrebbe lasciato le prenotazioni nuove
+            // sbagliate dalla nascita. Vedi shared/lib/pickupCategory.ts per le tre
+            // categorie e i loro test.
+            const chosenPoint = meetingPoint
+                ? meetingPoints.find(mp => mp.id === meetingPoint) ?? null
+                : null;
+            const zoneForBooking = pickupZone?.id
+                ?? (chosenPoint?.point_type === 'walk_in' ? WALK_IN_ZONE : null);
+
             const { error: bError } = await supabase.from('bookings').insert({
                 user_id: userMode === 'internal' ? authUser?.id : userId,
                 guest_name: userMode === 'new' ? newUser.fullName : (userMode === 'internal' ? (authUser?.full_name || 'Staff') : selectedUser?.full_name),
@@ -319,13 +335,13 @@ export const useAdminBooking = () => {
                 payment_method: userMode === 'agency' ? 'agency_invoice' : (paymentStatus === 'paid' ? 'cash' : 'pay_on_arrival'),
                 hotel_name: hotel?.name || hotelSearchQuery || null,
                 meeting_point: meetingPoint || null,
-                pickup_zone: pickupZone?.id || (meetingPoint ? 'walk-in' : null),
+                pickup_zone: zoneForBooking,
                 pickup_time: pickupTime || null,
                 pickup_lat: hotel?.lat || null,
                 pickup_lng: hotel?.lng || null,
                 pickup_driver_uid: defaultDriverId,
                 dropoff_hotel: hotel?.name || hotelSearchQuery || null,
-                dropoff_zone: pickupZone?.id || (meetingPoint ? 'walk-in' : null),
+                dropoff_zone: zoneForBooking,
                 dropoff_lat: hotel?.lat || null,
                 dropoff_lng: hotel?.lng || null,
                 dropoff_driver_uid: defaultDriverId,

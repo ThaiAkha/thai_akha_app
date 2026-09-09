@@ -1,6 +1,7 @@
 import { t } from '../../i18n';
-import { Typography, Icon } from '../ui';
+import { Typography, Icon, AkhaThemedLine } from '../ui';
 import { SmartHeaderSection } from '../layout';
+import MapBlock from '../modal/MapBlock';
 import { SkeletonBase } from '../skeleton/atoms';
 import { useBusinessProfile } from '../../hooks/useBusinessProfile';
 import { useContactLocationData } from '../../hooks/useContactLocationData';
@@ -15,6 +16,11 @@ function fmtTime(hms: string | null | undefined): string | null {
   return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
 }
 
+interface ContactLocationProps {
+  /** Embed della mappa (business_profile geo). Renderizzata sotto il titolo di sezione. */
+  mapUrl?: string | null;
+}
+
 /**
  * ContactLocation — Location & Pickup interamente da DB:
  *  · meeting point walk-in da `meeting_points` (point_type='walk_in')
@@ -22,7 +28,7 @@ function fmtTime(hms: string | null | undefined): string | null {
  *  · Business & Billing da `business_profile`
  * Header sezioni: page_sections contact-03/04/05.
  */
-export default function ContactLocation() {
+export default function ContactLocation({ mapUrl }: ContactLocationProps) {
   const { profile: bp } = useBusinessProfile();
   const { points, zones, loading } = useContactLocationData();
 
@@ -42,6 +48,8 @@ export default function ContactLocation() {
         gradientTo="deep-ocean"
         dividerTheme="block_faq"
       />
+
+      {mapUrl && <MapBlock url={mapUrl} />}
 
       <div className="flex flex-col [gap:var(--space-fluid-l)]">
         {/* Meeting Points (walk-in) — da meeting_points */}
@@ -86,6 +94,8 @@ export default function ContactLocation() {
           </div>
         )}
 
+        <AkhaThemedLine theme="block_faq" />
+
         {/* Pickup Service — header da page_sections contact-04; zone reali da pickup_zones */}
         <div className="flex flex-col [gap:var(--space-fluid-m)]">
           <SmartHeaderSection
@@ -126,6 +136,8 @@ export default function ContactLocation() {
             )}
           </div>
         </div>
+
+        <AkhaThemedLine theme="block_faq" />
 
         {/* Business & Billing — header da page_sections contact-05; dati da business_profile */}
         {bp && (

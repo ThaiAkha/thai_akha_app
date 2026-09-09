@@ -1,7 +1,6 @@
 import React from 'react';
 import { t } from '../../i18n';
 import { Typography, Icon } from '../ui';
-import { SmartHeaderSection } from '../layout';
 import { useBusinessProfile } from '../../hooks/useBusinessProfile';
 
 // "Mo-Su 08:00-22:00" (schema.org, business_profile.opening_hours) → riga leggibile.
@@ -18,9 +17,14 @@ function formatOpeningHours(spec: string): { days: string; hours: string } {
 }
 
 /**
- * ContactHeader — header (page_sections contact-01) + quick info bar.
- * Tutto da DB: titolo/sottotitolo da page_sections, orari/telefono/email da
- * business_profile (fonte unica identità).
+ * ContactHeader — quick info bar: orari e contatti diretti da business_profile
+ * (fonte unica identità).
+ *
+ * L'header di sezione (page_sections `contact-01`, "Get in Touch & Connect") è
+ * stato rimosso il 2026-09-06: ripeteva titolo e promessa dell'hero di pagina a
+ * due schermate di distanza, e due "Get in Touch" nella stessa colonna leggono
+ * come un errore di montaggio. La riga resta nel DB, non serve piu' a nessuna
+ * pagina: si puo' archiviare quando si fa pulizia di page_sections.
  */
 export default function ContactHeader() {
   const { profile: bp } = useBusinessProfile();
@@ -29,53 +33,42 @@ export default function ContactHeader() {
   const hours = ((bp?.opening_hours ?? []) as unknown as string[]).map(formatOpeningHours);
 
   return (
-    <section className="flex flex-col [gap:var(--space-fluid-l)]">
-      <SmartHeaderSection
-        sectionId="contact-01"
-        variant="section"
-        align="left"
-        gradientFrom="ocean-blue"
-        gradientTo="deep-ocean"
-        dividerTheme="block_faq"
-      />
-
-      {/* Quick Info Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 [gap:var(--space-fluid-m)]">
-        {hours.length > 0 && (
-          <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
-            <div className="flex items-center [gap:var(--space-fluid-xs)] mb-2">
-              <Icon name="schedule" className="text-primary" />
-              <Typography variant="h5" as="h3" color="title">{t('contact:labelHours')}</Typography>
-            </div>
-            {hours.map((h, i) => (
-              <React.Fragment key={i}>
-                <Typography variant="paragraphS" color="default">{h.days}</Typography>
-                {h.hours && <Typography variant="paragraphS" color="muted">{h.hours}</Typography>}
-              </React.Fragment>
-            ))}
+    /* Quick Info Bar — la <section> con l'ancora #contact-info la mette la pagina */
+    <div className="grid grid-cols-1 sm:grid-cols-2 [gap:var(--space-fluid-m)]">
+      {hours.length > 0 && (
+        <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
+          <div className="flex items-center [gap:var(--space-fluid-xs)] mb-2">
+            <Icon name="schedule" className="text-primary" />
+            <Typography variant="h5" as="h3" color="title">{t('contact:labelHours')}</Typography>
           </div>
-        )}
+          {hours.map((h, i) => (
+            <React.Fragment key={i}>
+              <Typography variant="paragraphS" color="default">{h.days}</Typography>
+              {h.hours && <Typography variant="paragraphS" color="muted">{h.hours}</Typography>}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
 
-        {(phone || email) && (
-          <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
-            <div className="flex items-center [gap:var(--space-fluid-xs)] mb-2">
-              <Icon name="call" className="text-primary" />
-              <Typography variant="h5" as="h3" color="title">{t('contact:directContacts')}</Typography>
-            </div>
-            {/* Tap target reali: telefono → chiama, email → mail (min-h 44px iOS/Android) */}
-            {phone && (
-              <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center min-h-[44px] -mx-1.5 px-1.5 rounded-lg hover:bg-primary/5 active:scale-[0.99] transition-colors">
-                <Typography variant="paragraphS" color="default" className="font-semibold">{phone}</Typography>
-              </a>
-            )}
-            {email && (
-              <a href={`mailto:${email}`} className="flex items-center min-h-[44px] -mx-1.5 px-1.5 rounded-lg hover:bg-primary/5 active:scale-[0.99] transition-colors break-all">
-                <Typography variant="paragraphS" color="muted">{email}</Typography>
-              </a>
-            )}
+      {(phone || email) && (
+        <div className="flex flex-col [gap:var(--space-fluid-xs)] [padding:var(--space-fluid-m)] rounded-2xl bg-surface border border-border">
+          <div className="flex items-center [gap:var(--space-fluid-xs)] mb-2">
+            <Icon name="call" className="text-primary" />
+            <Typography variant="h5" as="h3" color="title">{t('contact:directContacts')}</Typography>
           </div>
-        )}
-      </div>
-    </section>
+          {/* Tap target reali: telefono → chiama, email → mail (min-h 44px iOS/Android) */}
+          {phone && (
+            <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center min-h-[44px] -mx-1.5 px-1.5 rounded-lg hover:bg-primary/5 active:scale-[0.99] transition-colors">
+              <Typography variant="paragraphS" color="default" className="font-semibold">{phone}</Typography>
+            </a>
+          )}
+          {email && (
+            <a href={`mailto:${email}`} className="flex items-center min-h-[44px] -mx-1.5 px-1.5 rounded-lg hover:bg-primary/5 active:scale-[0.99] transition-colors break-all">
+              <Typography variant="paragraphS" color="muted">{email}</Typography>
+            </a>
+          )}
+        </div>
+    )}
+    </div>
   );
 }

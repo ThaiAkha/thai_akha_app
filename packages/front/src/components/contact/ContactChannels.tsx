@@ -41,7 +41,12 @@ export const ContactChannels: React.FC<{ className?: string }> = ({ className })
     <div className={cn('flex flex-col [gap:var(--space-fluid-m)]', className)}>
       {/* CTA grandi (highlight) */}
       {ctas.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 [gap:var(--space-fluid-s)]">
+        <div className={cn(
+          'grid grid-cols-1 [gap:var(--space-fluid-s)]',
+          // Due colonne solo quando ci sono davvero due CTA: con un canale solo
+          // (oggi WhatsApp, finche' LINE non ha un url) mezza riga resterebbe vuota.
+          ctas.length > 1 && 'sm:grid-cols-2',
+        )}>
           {ctas.map(c => {
             const meta = CHANNEL_STYLE[c.type];
             return (

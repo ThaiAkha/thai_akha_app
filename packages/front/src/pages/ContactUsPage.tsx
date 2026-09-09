@@ -1,9 +1,8 @@
 import React from 'react';
 import { PageLayout, InfoPageHero, PageEssentials, SmartHeaderSection, SiblingInfoSection } from '../components/layout';
 import { InfoPageSidebar } from '../components/layout/sidebar-info';
-import { FaqBottomPage, Card } from '../components/ui';
+import { FaqBottomPage, Card, AkhaThemedLine } from '../components/ui';
 import { CherryInlineChat, CherryIntroCard } from '../components/chat';
-import MapBlock from '../components/modal/MapBlock';
 import ContactHeader from '../components/contact/ContactHeader';
 import ContactChannels from '../components/contact/ContactChannels';
 import ContactForm from '../components/contact/ContactForm';
@@ -17,7 +16,7 @@ interface ContactUsPageProps {
 
 /**
  * Contact Us v2 — layout "azione → consultazione":
- *  · FULL-WIDTH: quick info (contact-01) → canali (contact-06) → blocco Cherry (contact-02)
+ *  · FULL-WIDTH: quick info (business_profile) → blocco Cherry (contact-02) → canali (contact-06)
  *  · CON SIDEBAR (dal form in giù): form (contact-07) → mappa + location/pickup/billing
  * Fonti: page_sections (header) · business_profile (contatti/canali/geo) ·
  * contact_messages via la edge submit-contact (form) · universal_cherry (card+chat).
@@ -33,10 +32,10 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
 
   const contactToc = [
     { id: 'contact-info', label: 'Contact & Hours' },
-    { id: 'channels', label: 'Find Us Online' },
     { id: 'ask-cherry', label: 'Ask Cherry' },
+    { id: 'channels', label: 'Find Us Online' },
     { id: 'send-message', label: 'Send a Message' },
-    { id: 'location', label: 'Location & Pickup' },
+    { id: 'location', label: 'Location and Meeting Point' },
   ];
 
   return (
@@ -57,30 +56,19 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
 
         {/* ══ ZONA FULL-WIDTH — azione rapida ══════════════════════════════ */}
 
-        {/* 1 · Quick info (contact-01 + business_profile) */}
+        {/* 1 · Quick info (business_profile) — header di sezione rimosso, era il gemello dell'hero */}
         <section id="contact-info" className="scroll-mt-24">
           <ContactHeader />
         </section>
 
-        {/* 2 · Canali (contact-06 + business_profile.contact_channels) */}
-        <section id="channels" className="flex flex-col [gap:var(--space-fluid-l)] scroll-mt-24">
-          <SmartHeaderSection
-            sectionId="contact-06"
-            variant="section"
-            align="left"
-            gradientFrom="ocean-blue"
-            gradientTo="deep-ocean"
-            dividerTheme="block_faq"
-          />
-          <ContactChannels />
-        </section>
+        <AkhaThemedLine theme="block_faq" />
 
-        {/* 3 · Blocco Cherry (contact-02 + universal_cherry) — come FAQ page */}
+        {/* 2 · Blocco Cherry (contact-02 + universal_cherry) — come FAQ page */}
         <section id="ask-cherry" className="flex flex-col [gap:var(--space-fluid-l)] scroll-mt-24">
           <SmartHeaderSection
             sectionId="contact-02"
             variant="section"
-            align="left"
+            align="center"
             gradientFrom="ocean-blue"
             gradientTo="deep-ocean"
             dividerTheme="block_faq"
@@ -94,6 +82,23 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
             </div>
           </div>
         </section>
+
+        <AkhaThemedLine theme="block_faq" />
+
+        {/* 3 · Canali (contact-06 + business_profile.contact_channels) */}
+        <section id="channels" className="flex flex-col [gap:var(--space-fluid-l)] scroll-mt-24">
+          <SmartHeaderSection
+            sectionId="contact-06"
+            variant="section"
+            align="center"
+            gradientFrom="ocean-blue"
+            gradientTo="deep-ocean"
+            dividerTheme="block_faq"
+          />
+          <ContactChannels />
+        </section>
+
+        <AkhaThemedLine theme="block_faq" />
 
         {/* ══ ZONA CON SIDEBAR — consultazione (dal form alla fine) ═════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,18rem)_1fr] [gap:var(--space-fluid-l)] items-start">
@@ -123,10 +128,11 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
               </Card>
             </section>
 
-            {/* 5 · Mappa (business_profile geo) + Location & Pickup + Billing */}
-            <section id="location" className="flex flex-col [gap:var(--space-fluid-l)] scroll-mt-24">
-              {mapEmbedUrl && <MapBlock url={mapEmbedUrl} />}
-              <ContactLocation />
+            <AkhaThemedLine theme="block_faq" />
+
+            {/* 5 · Location & Meeting Point (mappa sotto il titolo) + Pickup + Billing */}
+            <section id="location" className="scroll-mt-24">
+              <ContactLocation mapUrl={mapEmbedUrl} />
             </section>
           </div>
         </div>

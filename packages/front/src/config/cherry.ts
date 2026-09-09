@@ -14,11 +14,15 @@ export const CHERRY_CONFIG = {
    * e ricetta su richiesta del modello. true = i quattro contesti di contenuto
    * (ricette, ingredienti, cultura, news) NON partono piu' dal client.
    *
-   * PARTE SPENTO di proposito. Acceso qui, un front deployato prima della edge
-   * nuova toglierebbe i quattro contesti e la edge vecchia ignorerebbe il campo
-   * `tools`: Cherry resterebbe senza contenuti, con un prompt che le dice di
-   * usare strumenti che nessuno le ha dichiarato. Ordine: prima si deploya la
-   * edge, si verifica, POI si accende qui e si deploya il front.
+   * ACCESO il 2026-09-09, dopo il deploy della edge e la verifica sul modello
+   * vero: 14 prove su 14 sulla domanda che prima falliva (ingredienti esatti di
+   * un piatto) e 7 su 7 sulla gamma, in cinque lingue. Se questa costante torna
+   * a false, il client rimette i quattro contesti a parole chiave: e' la via di
+   * ritorno, e non richiede toccare la edge.
+   *
+   * L'ORDINE RESTA: la edge si deploya PRIMA del front. Con questa accesa e la
+   * edge vecchia, Cherry resterebbe senza contenuti e con un prompt che le dice
+   * di usare strumenti che nessuno le ha dichiarato.
    */
-  TOOLS_ENABLED: false,
+  TOOLS_ENABLED: true,
 } as const;

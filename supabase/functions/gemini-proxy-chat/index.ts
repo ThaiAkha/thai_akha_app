@@ -434,7 +434,8 @@ Deno.serve(async (req: Request) => {
                   }
                 }
                 usage = addUsage(usage, roundUsage);
-                trace(`giro ${round}: finito (${finish ?? 'senza stop'}), ${calls.length} chiamate, ${modelParts.length} parti`);
+                const thoughtParts = modelParts.filter((p) => (p as { thought?: boolean }).thought).length;
+                trace(`giro ${round}: finito (${finish ?? 'senza stop'}), ${calls.length} chiamate, ${modelParts.length} parti di cui ${thoughtParts} di pensiero`);
                 if (!calls.length || !toolCtx || round >= MAX_TOOL_ROUNDS) break;
                 stopIfAborted();
                 if (textBeforeTools === null) textBeforeTools = fullText.length;
@@ -449,13 +450,37 @@ Deno.serve(async (req: Request) => {
                 contents.push({ role: 'function', parts: responses });
                 stopIfAborted();
                 // Esecuzioni esaurite: il turno che arriva deve SCRIVERE, non chiedere.
+                // Si tolgono le DICHIARAZIONI invece di vietarle con `NONE`: col divieto
+                // il modello, misurato il 2026-09-09, in cinque casi su sei pensava e si
+                // fermava senza produrre testo (75 token di uscita, tutti di pensiero).
                 const noMoreTools = round + 1 >= MAX_TOOL_ROUNDS;
-                trace(`chiedo il giro ${round + 1}${noMoreTools ? ' con gli strumenti spenti' : ''}, ${contents.length} turni`);
-                result = await startRound({
-                  contents,
-                  ...(noMoreTools && { toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } } }),
-                });
+                trace(`chiedo il giro ${round + 1}${noMoreTools ? ' senza strumenti' : ''}, ${contents.length} turni`);
+                result = await startRound({ contents, ...(noMoreTools && { tools: [] }) });
                 trace(`giro ${round + 1}: risposta agganciata`);
+              }
+              // Il turno finale a volte pensa e si ferma senza scrivere: una spinta
+              // esplicita, una volta sola, invece di lasciare l'ospite senza risposta.
+              if (!answerText().trim() && toolsUsed.length > 0) {
+                trace('turno finale muto: chiedo esplicitamente di rispondere');
+                contents.push({ role: 'user', parts: [{ text: 'Now write the answer for the guest, in plain text, using the tool results above.' }] });
+                const retry = await startRound({ contents, tools: [] });
+                const rit = retry.stream[Symbol.asyncIterator]();
+                for (;;) {
+                  const step = await withDeadline(rit.next());
+                  if (step.done) break;
+                  const chunk = step.value;
+                  if (chunk.usageMetadata) usage = addUsage(usage, readUsage(chunk.usageMetadata));
+                  const stop = chunk.candidates?.[0]?.finishReason;
+                  for (const part of chunk.candidates?.[0]?.content?.parts ?? []) {
+                    const p = part as { text?: string; thought?: boolean };
+                    if (p.text && !p.thought) {
+                      fullText += p.text;
+                      controller.enqueue(new TextEncoder().encode(p.text));
+                    }
+                  }
+                  if (stop) { finish = stop; await rit.return?.(undefined as never); break; }
+                }
+                trace(`dopo la spinta: ${answerText().trim() ? 'ha risposto' : 'ancora muto'}`);
               }
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
@@ -466,11 +491,16 @@ Deno.serve(async (req: Request) => {
             }
             clearTimeout(timeoutId);
             if (failure && !answerText().trim()) {
-              // Niente consegnato (nemmeno un carattere che non sia spazio):
-              // errore vero, il client lo tratta come tale.
+              // Niente da consegnare. Le intestazioni 200 sono gia' partite, quindi
+              // `controller.error` NON diventa un errore per chi legge: il client
+              // resta senza dati e senza chiusura pulita finche' non scade lui, e
+              // all'ospite la chat sembra bloccata (misurato il 2026-09-09: la
+              // funzione era morta da 35 secondi e curl aspettava ancora). Si manda
+              // la frase che il client mostrerebbe comunque, e si chiude.
               const reason = failure instanceof Error ? failure.message : 'stream failed';
               logMetrics(userId, message.length, 0, Date.now() - startTime, false, reason, { ...metricsExtra, usage, finish, tools: toolsUsed });
-              controller.error(failure);
+              controller.enqueue(new TextEncoder().encode('The kitchen is very busy kha! Please try again.'));
+              controller.close();
               return;
             }
             if (failure) {

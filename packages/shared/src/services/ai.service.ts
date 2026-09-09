@@ -71,12 +71,22 @@ export const sendChatMessageProxy = async (payload: ProxyChatPayload): Promise<s
  * Send a chat message via streaming Edge Function proxy.
  * Calls onChunk for each text chunk as it arrives, returns the full response.
  */
+/**
+ * Tetto di attesa del client. La edge ha il suo (60 s con gli strumenti), ma le
+ * intestazioni partono subito: se poi qualcosa va storto a valle, senza questo
+ * tetto la bolla di Cherry gira all'infinito. Misurato il 2026-09-09: la
+ * funzione era gia' morta da 35 secondi e il client aspettava ancora.
+ */
+const STREAM_TIMEOUT_MS = 90_000;
+
 export const sendChatMessageStream = async (
   payload: ProxyChatPayload,
   onChunk: (chunk: string) => void
 ): Promise<string> => {
   const url = `${supabaseUrl}/functions/v1/gemini-proxy-chat?stream=1`;
 
+  const abort = new AbortController();
+  const timeoutId = setTimeout(() => abort.abort(), STREAM_TIMEOUT_MS);
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -85,9 +95,11 @@ export const sendChatMessageStream = async (
       'Authorization': `Bearer ${await bearerToken()}`,
     },
     body: JSON.stringify(payload),
-  });
+    signal: abort.signal,
+  }).catch((err: unknown) => { clearTimeout(timeoutId); throw err; });
 
   if (!response.ok) {
+    clearTimeout(timeoutId);
     const err = await response.json().catch(() => ({}));
     throw new Error((err as any).error || `HTTP ${response.status}`);
   }
@@ -96,12 +108,16 @@ export const sendChatMessageStream = async (
   const decoder = new TextDecoder();
   let fullText = '';
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value, { stream: true });
-    fullText += chunk;
-    onChunk(chunk);
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      fullText += chunk;
+      onChunk(chunk);
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   return fullText;

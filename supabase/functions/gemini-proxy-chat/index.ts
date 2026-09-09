@@ -424,7 +424,14 @@ Deno.serve(async (req: Request) => {
                     }
                     if (p.functionCall?.name) calls.push({ name: p.functionCall.name, args: p.functionCall.args ?? {} });
                   }
-                  if (stop) { finish = stop; break; }
+                  if (stop) {
+                    finish = stop;
+                    // Si chiude l'iteratore prima di uscire: la libreria fa `tee()` del
+                    // corpo, e un ramo abbandonato lascia la connessione non rilasciata
+                    // mentre gia' se ne apre un'altra (segnalato da /database, 09/09).
+                    await it.return?.(undefined as never);
+                    break;
+                  }
                 }
                 usage = addUsage(usage, roundUsage);
                 trace(`giro ${round}: finito (${finish ?? 'senza stop'}), ${calls.length} chiamate, ${modelParts.length} parti`);

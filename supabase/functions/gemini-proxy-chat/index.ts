@@ -58,12 +58,13 @@ const MAX_MESSAGE_CHARS = 4_000;
 const MAX_SYSTEM_CHARS = 120_000;
 /**
  * Tetto di sicurezza contro le risposte fuori controllo, NON la misura di una
- * risposta: su Gemini 3 i token di ragionamento si scalano da qui, e con 1.024
- * (primo valore) una risposta poteva uscire vuota o tronca con stato di
- * successo. 8.192 lascia spazio al ragionamento; `finish` nei log dice se il
- * tetto viene toccato davvero.
+ * risposta: su Gemini 3 i token di RAGIONAMENTO si scalano da qui. Con 1.024
+ * (primo valore) la risposta usciva vuota. Alzato a 16.384 il 2026-09-09: in
+ * produzione una richiesta con strumenti ha bruciato 6.813 token di pensiero
+ * (misura di /database sui log), e con 8.192 restavano poco piu' di mille token
+ * per la risposta vera. `finish` nei log dice se il tetto viene toccato.
  */
-const MAX_OUTPUT_TOKENS = 8_192;
+const MAX_OUTPUT_TOKENS = 16_384;
 /** Tempo massimo per una risposta, primo token compreso. Prima il timer non fermava nulla. */
 const GEMINI_TIMEOUT_MS = 30_000;
 /** Con gli strumenti ci sono fino a tre turni del modello piu' le ricerche: serve piu' respiro. */
@@ -308,7 +309,11 @@ Deno.serve(async (req: Request) => {
     const model = genAI.getGenerativeModel({
       model: CHAT_MODEL,
       systemInstruction: systemInstruction,
-      generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS },
+      // `thinkingLevel` non e' nei tipi della libreria (0.21 e' precedente a Gemini 3)
+      // ma `generationConfig` viaggia com'e' nel corpo della richiesta. Misurato il
+      // 2026-09-09: sul ramo con strumenti il ragionamento arrivava a 5.400 token per
+      // una risposta di 300, ed e' il grosso del costo di una domanda su un piatto.
+      generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS, thinkingConfig: { thinkingBudget: 512 } } as unknown as { maxOutputTokens: number },
       ...(toolCtx && { tools: [{ functionDeclarations: TOOL_DECLARATIONS as unknown as FunctionDeclaration[] }] }),
     });
 
@@ -484,7 +489,7 @@ Deno.serve(async (req: Request) => {
               }
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
-              trace('fine ciclo');
+              trace(`fine ciclo · token prompt ${usage?.prompt ?? '-'} pensiero ${usage?.thoughts ?? '-'} uscita ${usage?.output ?? '-'}`);
               if (!answerText().trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
             } catch (err) {
               failure = err;

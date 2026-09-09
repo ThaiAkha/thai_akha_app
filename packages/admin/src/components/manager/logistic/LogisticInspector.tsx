@@ -21,6 +21,7 @@ import {
     ZONE_UNSET,
     needsDriver,
 } from '../../../hooks/useManagerLogistic';
+import { pickupPosition, type PickupPosition } from '@thaiakha/shared/lib/pickupCategory';
 import { Caption, SectionTitle } from '../../typography';
 
 // ---------- Main Inspector ----------
@@ -59,6 +60,62 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
             </div>
         );
     }
+
+    // Posizione del comando a tre: hotel / punto d'incontro / walk-in, oppure NULL =
+    // nessuna scelta fatta. La regola, il perche' non si deriva dalla verita' di
+    // `meeting_point` e il caso delle prenotazioni nate dal sito stanno in
+    // shared/lib/pickupCategory.ts con i test.
+    const position = pickupPosition(
+        selectedBooking.meeting_point,
+        selectedBooking.meeting_point_type,
+        selectedBooking.hotel_name
+    );
+
+    /** Ogni posizione riparte da zero sull'orario: ognuna lo prende dalla propria fonte. */
+    const goToPosition = (next: Exclude<PickupPosition, null>) => {
+        const common = { meeting_point_name: null, pickup_time: '' };
+        if (next === 'hotel') {
+            onUpdateLocal(selectedBooking.id, {
+                ...common,
+                meeting_point: null,
+                meeting_point_type: null,
+                // La zona walk-in va toglita: e' la categoria che stiamo lasciando.
+                // Le righe nate col vecchio difetto ce l'hanno ancora, e un punto
+                // walk-in la mette per davvero. Sara' l'hotel scelto a rimetterne una.
+                ...(selectedBooking.pickup_zone === WALK_IN_ZONE ? { pickup_zone: ZONE_UNSET } : {}),
+            });
+            return;
+        }
+        // '' = modalita' scelta, punto non ancora selezionato: al salvataggio diventa
+        // NULL, mai '' nel database. Il TIPO porta l'intenzione dell'operatore, ed e'
+        // quello che tiene accesa la posizione giusta mentre sceglie (vedi pickupPosition).
+        if (next === 'meeting_point') {
+            onUpdateLocal(selectedBooking.id, {
+                ...common,
+                meeting_point: '',
+                meeting_point_type: 'pickup',
+                hotel_name: '',
+                // Un punto non prende dati dalle zone: la zona del luogo precedente
+                // non vale piu' (regola dell'owner del 2026-09-09).
+                pickup_zone: ZONE_UNSET,
+            });
+            return;
+        }
+        onUpdateLocal(selectedBooking.id, {
+            ...common,
+            meeting_point: '',
+            meeting_point_type: 'walk_in',
+            hotel_name: '',
+            pickup_zone: WALK_IN_ZONE,
+            // Chi arriva da se' non ha autista di RITIRO. La RICONSEGNA non si tocca:
+            // viene comunque riportato indietro.
+            pickup_driver_uid: null,
+        });
+    };
+
+    /** Orario del punto per la sessione di questa prenotazione, se ce l'ha. */
+    const pointTime = (mp: MeetingPointOption) =>
+        (selectedBooking.session_id === 'morning_class' ? mp.morning_pickup_time : mp.evening_pickup_time) ?? null;
 
     const currentZone = pickupZones.find(z => z.id === selectedBooking.pickup_zone);
     const zoneDefaultTime = selectedBooking.session_id === 'morning_class'
@@ -164,69 +221,44 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <MapPin className="w-3.5 h-3.5" /> {t('inspector.pickupDetails')}
                     </SectionTitle>
 
-                    {/* Pickup / Walk-in toggle */}
+                    {/* Comando a TRE posizioni (richiesta owner, 2026-09-09). Prima erano
+                        due, e il secondo copriva due categorie diverse: la distinzione
+                        avveniva implicitamente dopo, nella tendina, sul tipo del punto.
+                        Ora la posizione la sceglie l'operatore e la tendina mostra SOLO i
+                        punti di quella categoria: non si puo' piu' sbagliare categoria.
+                        L'accensione viene da `position`, non dalla verita' di
+                        `meeting_point`: quel campo vale '' mentre si sceglie, che e' falso,
+                        e accendeva "Hotel" mentre il corpo mostrava i punti. */}
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                        <button
-                            type="button"
-                            onClick={() => onUpdateLocal(selectedBooking.id, {
-                                meeting_point: null,
-                                meeting_point_name: null,
-                                meeting_point_type: null,
-                                // ASIMMETRIA CORRETTA il 2026-09-09. Il pulsante accanto
-                                // scriveva `pickup_zone: 'walk-in'` e questo non la
-                                // toccava: una prenotazione diventata walk-in non tornava
-                                // piu' indietro e restava walk-in per sempre, con l'unica
-                                // via d'uscita di scegliere un hotel dal campo di ricerca.
-                                // Ora quel pulsante non scrive piu' la zona, ma la pulizia
-                                // qui resta necessaria: le righe nate col vecchio difetto
-                                // hanno ancora quella zona, e un punto walk-in la mette
-                                // per davvero. L'orario se ne va con la zona: quello che
-                                // c'era arrivava dal punto d'incontro e qui non significa
-                                // piu' niente (scegliendo l'hotel lo rimette la zona).
-                                ...(selectedBooking.pickup_zone === WALK_IN_ZONE
-                                    ? { pickup_zone: ZONE_UNSET, pickup_time: '' }
-                                    : {}),
-                            })}
-                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.meeting_point
-                                ? 'bg-primary-500 text-white'
-                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
-                        >
-                            {t('inspector.pickupAtHotel')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                // '' = modalita' punto d'incontro senza scelta (mostra la select);
-                                // al salvataggio diventa null, mai '' nel DB.
-                                // NON scrive piu' `pickup_zone: 'walk-in'`. Era il difetto:
-                                // questo pulsante copre DUE categorie diverse (punto di
-                                // citta' dove l'autista passa a prendere, e punto walk-in
-                                // dove l'ospite arriva da se'), e marcarle entrambe walk-in
-                                // faceva sparire le prime da ogni colonna autista. La
-                                // categoria la decide il TIPO del punto, alla sua scelta,
-                                // perche' e' un dato del punto e non dell'operatore.
-                                const updates: Partial<LogisticsItem> = {
-                                    meeting_point: '',
-                                    meeting_point_name: null,
-                                    meeting_point_type: null,
-                                    hotel_name: '',
-                                };
-                                // Auto-fill pickup time from meeting point if one is set
-                                onUpdateLocal(selectedBooking.id, updates);
-                            }}
-
-                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${selectedBooking.meeting_point
-                                ? 'bg-primary-500 text-white'
-                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
-                        >
-                            {t('inspector.walkInMP')}
-                        </button>
+                        {([
+                            ['hotel', t('inspector.positionHotel')],
+                            ['meeting_point', t('inspector.positionMeetingPoint')],
+                            ['walk_in', t('inspector.positionWalkIn')],
+                        ] as const).map(([key, label], i) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => goToPosition(key)}
+                                className={`flex-1 py-2.5 px-1 text-xs font-bold uppercase tracking-wide transition-colors ${i > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''} ${position === key
+                                    ? 'bg-primary-500 text-white'
+                                    : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
+                                    }`}
+                            >
+                                {label}
+                            </button>
+                        ))}
                     </div>
 
+                    {/* Nessuna posizione: la prenotazione non ha ancora una scelta di
+                        ritiro (nata dal sito col segnaposto). Si dice, invece di far
+                        cadere il comando su walk-in e trasformare una supposizione in
+                        una decisione al primo salvataggio. */}
+                    {position === null && (
+                        <Caption>{t('inspector.positionUndecided')}</Caption>
+                    )}
+
                     {/* Hotel Search - only when Pickup at Hotel */}
-                    {selectedBooking.meeting_point === null && (
+                    {position === 'hotel' && (
                         <SearchableHotelSelect
                             label={t('inspector.fieldHotel')}
                             value={selectedBooking.hotel_name || ''}
@@ -237,8 +269,11 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         />
                     )}
 
-                    {/* Meeting Point - only when Walk-in */}
-                    {selectedBooking.meeting_point !== null && (
+                    {/* La tendina mostra SOLO i punti della posizione scelta: gli 8 di
+                        citta' dove l'autista passa a prendere, oppure i 2 dove l'ospite
+                        arriva da se'. I mercati del weekend, che sono di sola riconsegna,
+                        non stanno in nessuno dei due. */}
+                    {(position === 'meeting_point' || position === 'walk_in') && (
                         <SelectField
                             label={t('inspector.fieldMP')}
                             value={selectedBooking.meeting_point || ''}
@@ -248,13 +283,19 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                 const updates: Partial<LogisticsItem> = {
                                     meeting_point: mpId,
                                     meeting_point_name: mp?.name ?? null,
-                                    meeting_point_type: mp?.point_type ?? null,
+                                    // Svuotando la tendina non c'e' punto, ma la POSIZIONE
+                                    // resta quella scelta dall'operatore: senza questo, un
+                                    // tipo nullo farebbe saltare il comando da "walk-in" a
+                                    // "punto d'incontro" da solo (la posizione si deriva
+                                    // dal tipo, vedi pickupPosition).
+                                    meeting_point_type: mp?.point_type ?? (position === 'walk_in' ? 'walk_in' : 'pickup'),
                                 };
                                 if (mp) {
-                                    const mpTime = selectedBooking.session_id === 'morning_class'
-                                        ? mp.morning_pickup_time
-                                        : mp.evening_pickup_time;
-                                    if (mpTime) updates.pickup_time = mpTime;
+                                    // Sempre assegnato, anche vuoto: Wat Pan Whaen non ha
+                                    // orario serale, e prima in classe serale restava
+                                    // l'orario di PRIMA — che poteva essere quello di un
+                                    // aeroporto. Meglio nessun orario che uno falso.
+                                    updates.pickup_time = pointTime(mp) ?? '';
                                     // La zona segue il TIPO. Un punto walk-in mette la zona
                                     // walk-in; un punto di citta' NON la mette, e se c'era
                                     // (scelta precedente, o il vecchio difetto) la toglie,
@@ -286,17 +327,19 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             }}
                         >
                             <option value="">{t('inspector.selectMP')}</option>
-                            {/* I punti di sola RICONSEGNA (i due mercati del weekend) non
-                                sono luoghi di ritiro: non hanno orari di ritiro, e uno
-                                scelto qui manderebbe un autista al mercato della domenica
-                                per una classe del mattino. La FK non li ferma, guarda l'id
-                                e non il tipo. Il front questo filtro ce l'ha da tempo
-                                (useMeetingPoints), l'admin no. */}
-                            {meetingPoints.filter(mp => mp.point_type !== 'dropoff').map(mp => (
-                                <option key={mp.id} value={mp.id}>
-                                    {mp.name}{mp.morning_pickup_time ? ` · ${selectedBooking.session_id === 'morning_class' ? mp.morning_pickup_time.slice(0, 5) : (mp.evening_pickup_time?.slice(0, 5) ?? '')}` : ''}
-                                </option>
-                            ))}
+                            {meetingPoints
+                                .filter(mp => mp.point_type === (position === 'walk_in' ? 'walk_in' : 'pickup'))
+                                .map(mp => {
+                                    // L'orario mostrato e' quello della SESSIONE di questa
+                                    // prenotazione: Wat Pan Whaen ha il mattino e non la
+                                    // sera, e prima l'etichetta stampava " · " vuoto.
+                                    const time = pointTime(mp);
+                                    return (
+                                        <option key={mp.id} value={mp.id}>
+                                            {mp.name}{time ? ` · ${time.slice(0, 5)}` : ''}
+                                        </option>
+                                    );
+                                })}
                         </SelectField>
                     )}
 

@@ -78,3 +78,37 @@ export function zoneNeedsDriver(
     if (meetingPointId) return meetingPointType !== 'walk_in';
     return (pickupZone ?? '') !== WALK_IN_ZONE;
 }
+
+/**
+ * Le tre posizioni del comando "dove prendiamo l'ospite" nell'ispettore della logistica,
+ * piu' una quarta che non e' una posizione: NULL = nessuna scelta fatta.
+ *
+ * PERCHE' NON SI DERIVA DALLA VERITA'/FALSITA' DI `meeting_point`. Il sentinello della
+ * modalita' "punto d'incontro, punto non ancora scelto" e' la stringa VUOTA, che in
+ * JavaScript e' falsa: il comando a due pulsanti accendeva quindi "Pickup at Hotel" per
+ * tutto il tempo in cui l'operatore stava scegliendo il punto, cioe' il pulsante premuto
+ * restava spento e si illuminava l'altro. Con tre posizioni lo stesso errore ne
+ * accenderebbe una sbagliata in modo stabile. Qui la posizione si deriva da una CATEGORIA
+ * esplicita: presenza della modalita' (`meeting_point` non nullo, '' compreso) e tipo.
+ *
+ * E LA QUARTA. Una prenotazione nata dal sito ha il segnaposto nel campo hotel e la zona
+ * 'walk-in': non e' un walk-in scelto, e' l'ASSENZA di una scelta. Derivandola dai dati
+ * si aprirebbe pre-posizionata su WALK-IN, che e' proprio la posizione che toglie
+ * l'autista, e il primo salvataggio trasformerebbe una supposizione in una decisione.
+ * Quindi torna NULL, e il pannello mostra "da decidere" invece di una scelta che nessuno
+ * ha fatto.
+ */
+export type PickupPosition = 'hotel' | 'meeting_point' | 'walk_in' | null;
+
+export function pickupPosition(
+    meetingPointId: string | null | undefined,
+    meetingPointType: MeetingPointType | null | undefined,
+    hotelName: string | null | undefined
+): PickupPosition {
+    // Modalita' punto d'incontro scelta: vale anche col punto non ancora selezionato ('').
+    if (meetingPointId !== null && meetingPointId !== undefined) {
+        return meetingPointType === 'walk_in' ? 'walk_in' : 'meeting_point';
+    }
+    if (pickupPlaceUnset(hotelName, meetingPointId)) return null;
+    return 'hotel';
+}

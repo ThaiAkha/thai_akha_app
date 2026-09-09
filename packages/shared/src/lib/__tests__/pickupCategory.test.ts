@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const loaded = await import('../pickupCategory.ts');
-const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL } =
+const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL, pickupPosition } =
     (loaded as { default?: typeof import('../pickupCategory.ts') }).default ?? loaded;
 
 // 1. RITIRO IN HOTEL: nessun punto d'incontro, una zona vera. L'autista serve.
@@ -78,4 +78,37 @@ test('un punto d\'incontro e\' un luogo: basta da solo', () => {
 
 test('il sentinello "" del punto non e\' un punto', () => {
     assert.equal(pickupPlaceUnset(PLACEHOLDER_HOTEL, ''), true);
+});
+
+// ── le tre posizioni del comando, piu' il "da decidere" ─────────────────────
+test('hotel vero -> posizione hotel', () => {
+    assert.equal(pickupPosition(null, null, 'Rimping Village'), 'hotel');
+});
+
+test('punto di citta\' -> posizione punto d\'incontro', () => {
+    assert.equal(pickupPosition('mp_cen_airport', 'pickup', null), 'meeting_point');
+});
+
+test('punto walk-in -> posizione walk-in', () => {
+    assert.equal(pickupPosition('mp_school', 'walk_in', null), 'walk_in');
+});
+
+test('IL CASO CHE ROMPEVA IL COMANDO: modalita\' scelta, punto ancora no', () => {
+    // '' e' falso in JS: il vecchio comando accendeva "hotel" mentre mostrava la
+    // tendina dei punti. La posizione la porta il TIPO, non la verita' della stringa.
+    assert.equal(pickupPosition('', 'pickup', ''), 'meeting_point');
+    assert.equal(pickupPosition('', 'walk_in', ''), 'walk_in');
+    // e non cade su "da decidere" solo perche' il campo hotel e' stato svuotato
+    assert.notEqual(pickupPosition('', 'pickup', ''), null);
+});
+
+test('prenotazione nata dal sito -> NESSUNA posizione, non walk-in', () => {
+    // il segnaposto piu' la zona walk-in non sono una scelta: sono la sua assenza
+    assert.equal(pickupPosition(null, null, PLACEHOLDER_HOTEL), null);
+    assert.equal(pickupPosition(null, null, null), null);
+    assert.equal(pickupPosition(undefined, undefined, ''), null);
+});
+
+test('punto con tipo sconosciuto -> punto d\'incontro, cioe\' assegnabile', () => {
+    assert.equal(pickupPosition('mp_spento', null, null), 'meeting_point');
 });

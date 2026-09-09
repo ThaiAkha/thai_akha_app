@@ -163,7 +163,11 @@ const checkRateLimit = async (
     return { allowed: true };
   }
 
-  // Guests don't have rate limits per session in this implementation
+  // OSPITE: nessun tetto QUI, e non e' una dimenticanza. Il tetto degli ospiti non puo' vivere in
+  // questa funzione, che conta righe di chat_messages per sessione: l'ospite non manda alla edge
+  // nessun token di sessione, quindi non c'e' niente da contare. Il suo tetto sta PRIMA di questa
+  // chiamata ed e' sull'IP (cerca `chat-guest:` nel gestore). Chi legge solo questa funzione
+  // conclude che gli ospiti siano illimitati: e' successo il 2026-09-09, durante un audit.
   return { allowed: true };
 };
 

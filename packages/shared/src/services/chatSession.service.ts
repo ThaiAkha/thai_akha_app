@@ -153,27 +153,3 @@ export const updateSummary = async (sessionId: string, summary: string): Promise
   if (sessionId.startsWith('ephemeral_')) return;
   await supabase.from('chat_sessions').update({ summary }).eq('id', sessionId);
 };
-
-export const checkRateLimit = async (
-  userId?: string,
-  sessionToken?: string
-): Promise<{ allowed: boolean; reason?: string }> => {
-  try {
-    const { data, error } = await supabase.rpc('check_chat_rate_limit', {
-      p_user_id: (userId ?? null) as string,
-      p_session_token: (sessionToken ?? null) as string,
-    });
-
-    if (error) throw error;
-
-    const row = Array.isArray(data) ? data[0] : data;
-    return {
-      allowed: row.allowed,
-      reason: row.reason ?? undefined,
-    };
-  } catch (err) {
-    // Fallback silenzioso: non bloccare l'utente se la RPC fallisce
-    console.warn('[checkRateLimit] RPC failed, allowing by default:', err);
-    return { allowed: true };
-  }
-};

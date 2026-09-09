@@ -9,7 +9,6 @@ import {
   loadRecentMessages,
   saveMessage,
   updateSummary,
-  checkRateLimit,
   type ChatSession,
   type DbChatMessage,
 } from '@thaiakha/shared/services';
@@ -115,14 +114,6 @@ export const useCherryChat = (userProfile?: UserProfile | null) => {
     if (!userText.trim() || isLoading) return;
 
     const sid = sessionRef.current?.id ?? null;
-
-    if (sid) {
-      const rateLimit = await checkRateLimit(userProfile?.id, sessionRef.current?.session_token ?? undefined);
-      if (!rateLimit.allowed) {
-        setError(rateLimit.reason ?? 'Limit reached.');
-        return;
-      }
-    }
 
     const userMsgId = `user-${Date.now()}`;
     const modelMsgId = `model-${Date.now()}`;

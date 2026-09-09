@@ -27,6 +27,7 @@
     "./lib/cherryTextUtils": "./src/lib/cherryTextUtils.ts",
     "./lib/cherryLimits": "./src/lib/cherryLimits.ts",
     "./lib/pickupWindow": "./src/lib/pickupWindow.ts",
+    "./lib/pickupCategory": "./src/lib/pickupCategory.ts",
     "./lib/cherryCoveredTopics": "./src/lib/cherryCoveredTopics.ts",
     "./lib/cherryCultureContext": "./src/lib/cherryCultureContext.ts",
     "./lib/cherryNewsContext": "./src/lib/cherryNewsContext.ts",

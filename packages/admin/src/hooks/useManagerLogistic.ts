@@ -1,8 +1,33 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
-import type { Tables } from '@thaiakha/shared/types';
+import type { Tables, MeetingPointType } from '@thaiakha/shared/types';
+import { zoneNeedsDriver, WALK_IN_ZONE } from '@thaiakha/shared/lib/pickupCategory';
 import { SessionType } from '../components/common/ClassPicker';
+
+// --- COSTANTI DI DOMINIO ---
+
+/**
+ * Sentinello UI per "nessuna zona": la colonna nel DB e' NULL, ma la UI confronta
+ * stringhe e ha bisogno di un valore. Non e' una zona e **non deve mai tornare nel
+ * database**: `pickup_zone` ha una FK verso `pickup_zones(id)`, e nessuna riga ha
+ * quell'id.
+ * Fino al 2026-09-09 il salvataggio rimandava indietro 'pending' tale e quale, quindi
+ * salvare una prenotazione senza zona falliva - e falliva in silenzio, perche' l'errore
+ * non veniva ne' letto ne' mostrato. Sono esattamente le righe che questa pagina ha
+ * iniziato a mostrare lo stesso giorno.
+ */
+export const ZONE_UNSET = 'pending';
+
+/**
+ * Serve un autista a questa prenotazione? Le tre categorie, la loro storia e i casi
+ * limite stanno in `@thaiakha/shared/lib/pickupCategory` con i loro test: qui c'e' solo
+ * l'adattamento all'item di questa pagina.
+ */
+export const needsDriver = (item: LogisticsItem): boolean =>
+    zoneNeedsDriver(item.meeting_point, item.meeting_point_type, item.pickup_zone);
+
+export { WALK_IN_ZONE };
 
 // --- TYPES ---
 export interface LogisticsItem {
@@ -34,6 +59,8 @@ export interface LogisticsItem {
     meeting_point: string | null;
     /** Nome del punto, solo per la UI: non si salva. */
     meeting_point_name: string | null;
+    /** Tipo del punto, solo per la UI: decide se serve un autista. Vedi needsDriver. */
+    meeting_point_type: MeetingPointType | null;
     // Zone color
     pickup_zone_color: string | null;
     // Luggage
@@ -82,6 +109,9 @@ export interface HotelOption {
 export interface MeetingPointOption {
     id: string;
     name: string;
+    /** 'pickup' | 'walk_in' | 'dropoff': non era caricato, e senza di lui la pagina
+        non poteva distinguere le tre categorie di ritiro. */
+    point_type: MeetingPointType;
     morning_pickup_time: string | null;
     evening_pickup_time: string | null;
 }
@@ -111,7 +141,7 @@ async function fetchLogisticReference() {
             .order('name', { ascending: true }),
         supabase
             .from('meeting_points')
-            .select('id, name, morning_pickup_time, evening_pickup_time')
+            .select('id, name, point_type, morning_pickup_time, evening_pickup_time')
             .eq('active', true)
             .order('name', { ascending: true }),
         supabase
@@ -132,6 +162,8 @@ export function useManagerLogistic() {
     const [items, setItems] = useState<LogisticsItem[]>([]);
     const [drivers, setDrivers] = useState<DriverProfile[]>([]);
     const [upcomingSessions, setUpcomingSessions] = useState<SessionSummary[]>([]);
+    /** Ultimo errore di scrittura, da mostrare: prima venivano scartati in silenzio. */
+    const [actionError, setActionError] = useState<string | null>(null);
 
     // Reference data
     // Dati di riferimento: alberghi, punti di ritrovo e zone. Non cambiano quasi
@@ -160,7 +192,7 @@ export function useManagerLogistic() {
             const today = new Date().toISOString().split('T')[0];
             const { data: upcomingData } = await supabase
                 .from('bookings')
-                .select('booking_date, session_id, pickup_driver_uid')
+                .select('booking_date, session_id, pickup_driver_uid, pickup_zone, meeting_point')
                 .gte('booking_date', today)
                 .neq('status', 'cancelled')
                 .order('booking_date', { ascending: true });
@@ -172,7 +204,15 @@ export function useManagerLogistic() {
                     if (!summaries[key]) {
                         summaries[key] = { date: b.booking_date || '', session_id: b.session_id || '', unassigned_count: 0 };
                     }
-                    if (!b.pickup_driver_uid) summaries[key].unassigned_count++;
+                    // Un walk-in non ha autista PER COSTRUZIONE: contarlo fra i "da
+                    // assegnare" gonfia il numero. Stesso criterio della colonna, tipo
+                    // del punto compreso, altrimenti il numero e la colonna divergono.
+                    const mpType = b.meeting_point
+                        ? meetingPoints.find(mp => mp.id === b.meeting_point)?.point_type ?? null
+                        : null;
+                    if (!b.pickup_driver_uid && zoneNeedsDriver(b.meeting_point, mpType, b.pickup_zone)) {
+                        summaries[key].unassigned_count++;
+                    }
                 });
                 setUpcomingSessions(Object.values(summaries).slice(0, 10));
             }
@@ -208,8 +248,11 @@ export function useManagerLogistic() {
                     // Fino al 2026-09-07 l'item portava il NOME e il salvataggio lo
                     // riscriveva nella colonna (4 prenotazioni con "Thai Akha Kitchen
                     // (School)" al posto di mp_school): con la FK sarebbe un errore.
+                    const meetingPoint = b.meeting_point
+                        ? meetingPoints.find(mp => mp.id === b.meeting_point) ?? null
+                        : null;
                     const meetingPointName = b.meeting_point
-                        ? meetingPoints.find(mp => mp.id === b.meeting_point)?.name || b.meeting_point
+                        ? meetingPoint?.name || b.meeting_point
                         : null;
 
                     // Resolve pickup zone color
@@ -223,7 +266,7 @@ export function useManagerLogistic() {
                         pax: b.pax_count,
                         hotel_name: b.hotel_name || '',
                         pickup_time: b.pickup_time || '',
-                        pickup_zone: b.pickup_zone || 'pending',
+                        pickup_zone: b.pickup_zone || ZONE_UNSET,
                         route_order: b.route_order || 0,
                         avatar_url: b.profiles?.avatar_url,
                         pickup_driver_uid: b.pickup_driver_uid,
@@ -242,6 +285,7 @@ export function useManagerLogistic() {
                         pickup_sequence: b.pickup_sequence ?? 99,
                         meeting_point: b.meeting_point ?? null,
                         meeting_point_name: meetingPointName,
+                        meeting_point_type: meetingPoint?.point_type ?? null,
                         pickup_zone_color: zoneColor,
                         has_luggage: b.has_luggage ?? false,
                     };
@@ -261,6 +305,9 @@ export function useManagerLogistic() {
             .update({ pickup_driver_uid: driverId, route_order: 99 })
             .eq('internal_id', bookingId);
 
+        // Prima il ramo d'errore non esisteva: se il DB rifiutava, la pagina restava
+        // identica e chi assegnava non aveva modo di sapere che non era successo niente.
+        setActionError(error ? error.message : null);
         if (!error) fetchData();
     }, [fetchData]);
 
@@ -280,20 +327,31 @@ export function useManagerLogistic() {
             .update({
                 hotel_name: item.hotel_name || null,
                 pickup_time: item.pickup_time || null,
-                // pickup_zone has a CHECK constraint — only send valid values or null
-                pickup_zone: item.pickup_zone || null,
+                // pickup_zone ha una FK verso pickup_zones(id) (migration 20260907170000,
+                // prima era un CHECK con la lista delle zone copiata a mano). ZONE_UNSET e'
+                // un sentinello della UI, non una zona: torna indietro come NULL, altrimenti
+                // il rifiuto arriva come 23503 (violazione di chiave esterna).
+                pickup_zone: item.pickup_zone && item.pickup_zone !== ZONE_UNSET ? item.pickup_zone : null,
                 customer_note: item.customer_note || null,
                 agency_note: item.agency_note || null,
                 phone_number: item.phone_number || null,
                 // '' e' il sentinello UI "punto d'incontro, non ancora scelto": al DB va null.
                 meeting_point: item.meeting_point || null,
+                // I DUE AUTISTI erano fuori dal payload. Effetto: l'ispettore faceva
+                // scegliere l'autista di riconsegna, il salvataggio riusciva, e la
+                // rilettura riportava il valore di prima. Una tendina che non fa niente,
+                // senza dirlo. (Quello di ritiro ha anche la sua scrittura immediata in
+                // handleAssign: le due vie scrivono lo stesso valore, non si pestano.)
+                pickup_driver_uid: item.pickup_driver_uid,
+                dropoff_driver_uid: item.dropoff_driver_uid,
                 requires_dropoff: item.requires_dropoff,
                 dropoff_hotel: item.dropoff_hotel || null,
-                // dropoff_zone also has a CHECK constraint — same guard
+                // dropoff_zone: stessa guardia (anche qui il vincolo e' una FK)
                 dropoff_zone: item.dropoff_zone || null,
             })
             .eq('internal_id', selectedBookingId);
 
+        setActionError(error ? error.message : null);
         if (!error) {
             fetchData();
         }
@@ -301,15 +359,34 @@ export function useManagerLogistic() {
     }, [selectedBookingId, items, fetchData]);
 
     const updateLocalItem = useCallback((id: string, updates: Partial<LogisticsItem>) => {
-        setItems(prev => prev.map(i => i.id === id ? { ...i, ...updates } : i));
-    }, []);
+        setItems(prev => prev.map(i => {
+            if (i.id !== id) return i;
+            const next = { ...i, ...updates };
+            // Il colore del riquadro zona veniva risolto solo alla lettura dal database:
+            // cambiando zona dall'ispettore (scegliendo un hotel) la scheda nella colonna
+            // restava del colore della zona VECCHIA fino al salvataggio, mentre il badge
+            // dell'ispettore mostrava gia' la nuova. Due colori per la stessa riga.
+            if (updates.pickup_zone !== undefined) {
+                next.pickup_zone_color = pickupZones.find(z => z.id === next.pickup_zone)?.color_code ?? null;
+            }
+            return next;
+        }));
+    }, [pickupZones]);
+
+    const clearActionError = useCallback(() => setActionError(null), []);
+    /** Per chi scrive fuori da questo hook (il salvataggio dell'ordine sta nella pagina). */
+    const reportActionError = useCallback((message: string | null) => setActionError(message), []);
 
     const closeInspector = useCallback(() => {
         setSelectedBookingId(null);
     }, []);
 
     // --- COMPUTED ---
-    const unassignedItems = useMemo(() => items.filter(i => !i.pickup_driver_uid), [items]);
+    // I walk-in sono fuori: non hanno autista per costruzione, non sono "da assegnare".
+    const unassignedItems = useMemo(
+        () => items.filter(i => !i.pickup_driver_uid && needsDriver(i)),
+        [items]
+    );
     const selectedBooking = useMemo(() => items.find(i => i.id === selectedBookingId) || null, [items, selectedBookingId]);
 
     return {
@@ -318,6 +395,9 @@ export function useManagerLogistic() {
         drivers,
         upcomingSessions,
         unassignedItems,
+        actionError,
+        clearActionError,
+        reportActionError,
         selectedBooking,
         hotels,
         meetingPoints,

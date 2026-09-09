@@ -1,13 +1,14 @@
 import React from 'react';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { useTranslation } from 'react-i18next';
-import { ChevronUp, ChevronDown, MapPin } from 'lucide-react';
+import { ChevronUp, ChevronDown, MapPin, Clock } from 'lucide-react';
 import Avatar from '../../ui/avatar/Avatar';
 import BadgePaxNumber from '../../ui/badge/BadgePaxNumber';
 import BadgeLuggageStatus from '../../ui/badge/BadgeLuggageStatus';
 import Tooltip from '../../ui/Tooltip';
 import Paragraph from '../../typography/Paragraph';
 import { LogisticsItem, DriverProfile } from '../../../hooks/useManagerLogistic';
+import { ZONE_BOX_CLASSES, zoneBoxStyle } from './zoneColor';
 
 export interface LogisticItemListProps {
     items: LogisticsItem[];
@@ -17,26 +18,19 @@ export interface LogisticItemListProps {
     onMoveItem: (itemId: string, direction: 'up' | 'down' | 'to-driver', targetDriverId?: string) => void;
     showAvatar?: boolean;
     showAssignDriver?: boolean;
+    /**
+     * Orario di ritiro sulla scheda. Acceso per il gruppo "da assegnare", che e' ordinato
+     * per orario: un ordine il cui criterio non si vede sembra un ordine casuale.
+     */
+    showTime?: boolean;
+    /**
+     * Frecce su/giu' per l'ordine di percorso. Si spengono per il gruppo "da assegnare":
+     * quelle righe non hanno ancora un percorso, quindi riordinarle non significa niente
+     * e metterebbe in coda un salvataggio che non cambia nulla di utile.
+     */
+    showMove?: boolean;
 }
 
-// Helper function to map zone colors to Tailwind classes
-const getZoneColorClasses = (colorCode: string | null): string => {
-    if (!colorCode) return 'border-gray-200 dark:border-gray-700 text-body';
-
-    const colorMap: Record<string, string> = {
-        'yellow': 'border-yellow-400 dark:border-yellow-600 text-body',
-        'green': 'border-green-400 dark:border-green-600 text-body',
-        'pink': 'border-pink-400 dark:border-pink-600 text-body',
-        'blue': 'border-blue-400 dark:border-blue-600 text-body',
-        'purple': 'border-purple-400 dark:border-purple-600 text-body',
-        'orange': 'border-orange-400 dark:border-orange-600 text-body',
-        'red': 'border-red-400 dark:border-red-600 text-body',
-        'cyan': 'border-cyan-400 dark:border-cyan-600 text-body',
-        'gray': 'border-gray-300 dark:border-gray-600 text-body',
-    };
-
-    return colorMap[colorCode.toLowerCase()] || colorMap['gray'];
-};
 
 export const LogisticItemList: React.FC<LogisticItemListProps> = ({
     items,
@@ -45,7 +39,9 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
     onSelectBooking,
     onMoveItem,
     showAvatar = true,
-    showAssignDriver = true
+    showAssignDriver = true,
+    showMove = true,
+    showTime = false
 }) => {
     const { t } = useTranslation('common');
 
@@ -93,18 +89,23 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                             <div className="flex items-center gap-2 mb-2">
                                 <MapPin className="w-4 h-4 shrink-0 text-sub" />
                                 <Tooltip content={item.hotel_name || item.meeting_point_name || 'No location'} position="bottom">
-                                    <div className={cn(
-                                        'flex-1 px-3 py-2 rounded-lg border-2 text-sm font-medium truncate',
-                                        getZoneColorClasses(item.pickup_zone_color)
-                                    )}>
+                                    <div className={ZONE_BOX_CLASSES} style={zoneBoxStyle(item.pickup_zone_color)}>
                                         {item.hotel_name || item.meeting_point_name}
                                     </div>
                                 </Tooltip>
                             </div>
                         )}
 
+                        {showTime && item.pickup_time && (
+                            <div className="flex items-center gap-2 mb-2 text-sm text-sub font-mono">
+                                <Clock className="w-4 h-4 shrink-0" />
+                                {item.pickup_time}
+                            </div>
+                        )}
+
                         {/* Row 3: Move Buttons */}
                         <div className="flex gap-1.5">
+                            {showMove && (<>
                             <button
                                 type="button"
                                 onClick={(e) => {
@@ -137,6 +138,7 @@ export const LogisticItemList: React.FC<LogisticItemListProps> = ({
                             >
                                 <ChevronDown className="w-4 h-4" />
                             </button>
+                            </>)}
 
                             {/* Assign Driver Select */}
                             {showAssignDriver && drivers.length > 0 && (

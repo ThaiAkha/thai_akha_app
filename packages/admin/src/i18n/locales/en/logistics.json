@@ -16,6 +16,14 @@
     "booking_one": "Booking",
     "booking_other": "Bookings"
   },
+  "toAssign": {
+    "title": "To Assign",
+    "removeDriver": "Remove driver",
+    "walkInHasNoDriver": "Walk-in guests come to the meeting point on their own, so they take no driver. To give this booking a driver, switch to \"Pickup at Hotel\" and choose the hotel first: the hotel sets the zone, and the zone sets the pickup time."
+  },
+  "errors": {
+    "writeFailed": "Not saved"
+  },
   "list": {
     "empty": "Empty",
     "assign": "Assign",

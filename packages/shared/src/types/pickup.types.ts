@@ -3,6 +3,18 @@
  * Shared between front (PickUpPage) and admin (useAdminHotels)
  */
 
+/**
+ * Ruolo di un punto d'incontro. Tre categorie, non due: e' la distinzione che decide
+ * se serve un autista.
+ *  - 'pickup'  -> punto di citta' dove l'autista PASSA a prendere (aeroporto, stazione,
+ *                 McDonald's Tha Phae Gate...). Orari da autista (08:15-08:30 / 16:15-16:30).
+ *  - 'walk_in' -> l'ospite arriva da se' (la cucina, Wat Pan Whaen). Nessun autista.
+ *                 Orari "arriva entro" (08:50 / 16:50).
+ *  - 'dropoff' -> solo destinazione di riconsegna (mercati del weekend).
+ */
+export type MeetingPointType = 'pickup' | 'walk_in' | 'dropoff';
+
+
 export interface PickupZone {
   id: string;
   name: string;
@@ -41,7 +53,7 @@ export interface MeetingPoint {
    * - 'walk_in' → client arrives independently (school, temple)
    * - 'dropoff' → drop-off destination only (markets, etc.)
    */
-  point_type?: 'pickup' | 'walk_in' | 'dropoff';
+  point_type?: MeetingPointType;
   /**
    * True if this point can also be selected as a drop-off destination
    * (airport gates, train station, Saturday/Sunday markets).

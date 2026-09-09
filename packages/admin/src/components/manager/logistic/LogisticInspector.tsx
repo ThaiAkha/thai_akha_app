@@ -17,6 +17,9 @@ import {
     HotelOption,
     MeetingPointOption,
     PickupZoneOption,
+    WALK_IN_ZONE,
+    ZONE_UNSET,
+    needsDriver,
 } from '../../../hooks/useManagerLogistic';
 import { Caption, SectionTitle } from '../../typography';
 
@@ -119,14 +122,40 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     <SectionTitle as="h6" tone="sub" className="tracking-wide flex items-center gap-2">
                         <User className="w-3.5 h-3.5" /> {t('inspector.routeAssignment')}
                     </SectionTitle>
-                    <SelectField
-                        label={t('inspector.fieldPickupDriver')}
-                        value={selectedBooking.pickup_driver_uid || ''}
-                        onChange={(e) => onAssign(selectedBooking.id, e.target.value || null)}
-                    >
-                        <option value="">{t('inspector.unassigned')}</option>
-                        {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
-                    </SelectField>
+                    {!needsDriver(selectedBooking) ? (
+                        /* Su un walk-in il selettore c'era e non produceva nessun effetto
+                           visibile: il salvataggio andava a buon fine, ma l'appartenenza
+                           alla colonna la decide la ZONA, non l'autista, quindi la scheda
+                           non si spostava e nessuno spiegava perche'. Ora lo dice. Per dare
+                           un autista serve prima un luogo di ritiro: e' anche l'ordine
+                           giusto, perche' la zona del luogo porta con se' l'orario.
+                           Se un autista c'e' GIA' (stato che esiste nei dati, nato proprio
+                           da quel selettore muto) serve un modo per toglierlo, altrimenti
+                           nascondendo il selettore lo si lascerebbe nel database senza
+                           nessuna via d'uscita dalla UI. Un solo comando, non una tendina:
+                           su uno stato anomalo l'unica operazione sensata e' annullarlo. */
+                        <div className="space-y-2">
+                            <Caption>{t('toAssign.walkInHasNoDriver')}</Caption>
+                            {selectedBooking.pickup_driver_uid && (
+                                <button
+                                    type="button"
+                                    onClick={() => onAssign(selectedBooking.id, null)}
+                                    className="px-3 py-2 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-700 text-title hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                >
+                                    {t('toAssign.removeDriver')}
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        <SelectField
+                            label={t('inspector.fieldPickupDriver')}
+                            value={selectedBooking.pickup_driver_uid || ''}
+                            onChange={(e) => onAssign(selectedBooking.id, e.target.value || null)}
+                        >
+                            <option value="">{t('inspector.unassigned')}</option>
+                            {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}</option>)}
+                        </SelectField>
+                    )}
                 </div>
 
                 {/* ── Pickup Details ── */}
@@ -139,7 +168,25 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                         <button
                             type="button"
-                            onClick={() => onUpdateLocal(selectedBooking.id, { meeting_point: null, meeting_point_name: null })}
+                            onClick={() => onUpdateLocal(selectedBooking.id, {
+                                meeting_point: null,
+                                meeting_point_name: null,
+                                meeting_point_type: null,
+                                // ASIMMETRIA CORRETTA il 2026-09-09. Il pulsante accanto
+                                // scriveva `pickup_zone: 'walk-in'` e questo non la
+                                // toccava: una prenotazione diventata walk-in non tornava
+                                // piu' indietro e restava walk-in per sempre, con l'unica
+                                // via d'uscita di scegliere un hotel dal campo di ricerca.
+                                // Ora quel pulsante non scrive piu' la zona, ma la pulizia
+                                // qui resta necessaria: le righe nate col vecchio difetto
+                                // hanno ancora quella zona, e un punto walk-in la mette
+                                // per davvero. L'orario se ne va con la zona: quello che
+                                // c'era arrivava dal punto d'incontro e qui non significa
+                                // piu' niente (scegliendo l'hotel lo rimette la zona).
+                                ...(selectedBooking.pickup_zone === WALK_IN_ZONE
+                                    ? { pickup_zone: ZONE_UNSET, pickup_time: '' }
+                                    : {}),
+                            })}
                             className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!selectedBooking.meeting_point
                                 ? 'bg-primary-500 text-white'
                                 : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -152,11 +199,18 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             onClick={() => {
                                 // '' = modalita' punto d'incontro senza scelta (mostra la select);
                                 // al salvataggio diventa null, mai '' nel DB.
+                                // NON scrive piu' `pickup_zone: 'walk-in'`. Era il difetto:
+                                // questo pulsante copre DUE categorie diverse (punto di
+                                // citta' dove l'autista passa a prendere, e punto walk-in
+                                // dove l'ospite arriva da se'), e marcarle entrambe walk-in
+                                // faceva sparire le prime da ogni colonna autista. La
+                                // categoria la decide il TIPO del punto, alla sua scelta,
+                                // perche' e' un dato del punto e non dell'operatore.
                                 const updates: Partial<LogisticsItem> = {
                                     meeting_point: '',
                                     meeting_point_name: null,
+                                    meeting_point_type: null,
                                     hotel_name: '',
-                                    pickup_zone: 'walk-in',
                                 };
                                 // Auto-fill pickup time from meeting point if one is set
                                 onUpdateLocal(selectedBooking.id, updates);
@@ -191,12 +245,34 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             onChange={(e) => {
                                 const mpId = e.target.value;
                                 const mp = meetingPoints.find(m => m.id === mpId);
-                                const updates: Partial<LogisticsItem> = { meeting_point: mpId, meeting_point_name: mp?.name ?? null };
+                                const updates: Partial<LogisticsItem> = {
+                                    meeting_point: mpId,
+                                    meeting_point_name: mp?.name ?? null,
+                                    meeting_point_type: mp?.point_type ?? null,
+                                };
                                 if (mp) {
                                     const mpTime = selectedBooking.session_id === 'morning_class'
                                         ? mp.morning_pickup_time
                                         : mp.evening_pickup_time;
                                     if (mpTime) updates.pickup_time = mpTime;
+                                    // La zona segue il TIPO. Un punto walk-in mette la zona
+                                    // walk-in; un punto di citta' NON la mette, e se c'era
+                                    // (scelta precedente, o il vecchio difetto) la toglie,
+                                    // altrimenti la prenotazione resterebbe fuori dalle
+                                    // colonne autista pur avendo bisogno dell'autista.
+                                    if (mp.point_type === 'walk_in') {
+                                        updates.pickup_zone = WALK_IN_ZONE;
+                                        // Un walk-in non ha autista di RITIRO: se ce n'era
+                                        // uno, se ne va con la categoria, altrimenti si
+                                        // fabbrica proprio lo stato contraddittorio che
+                                        // abbiamo appena finito di ripulire (autista su una
+                                        // riga che nessuna colonna autista mostra).
+                                        // La riconsegna NON si tocca: chi arriva da se'
+                                        // viene comunque riportato indietro.
+                                        updates.pickup_driver_uid = null;
+                                    } else if (selectedBooking.pickup_zone === WALK_IN_ZONE) {
+                                        updates.pickup_zone = ZONE_UNSET;
+                                    }
                                 }
                                 onUpdateLocal(selectedBooking.id, updates);
                             }}

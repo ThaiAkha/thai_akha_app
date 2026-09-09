@@ -8,25 +8,8 @@ import BadgeLuggageStatus from '../../ui/badge/BadgeLuggageStatus';
 import Tooltip from '../../ui/Tooltip';
 import Paragraph from '../../typography/Paragraph';
 import { LogisticsItem } from '../../../hooks/useManagerLogistic';
+import { ZONE_BOX_CLASSES, zoneBoxStyle } from './zoneColor';
 
-// Helper function to map zone colors to Tailwind classes
-const getZoneColorClasses = (colorCode: string | null): string => {
-    if (!colorCode) return 'border-gray-200 dark:border-gray-700 text-body';
-
-    const colorMap: Record<string, string> = {
-        'yellow': 'border-yellow-400 dark:border-yellow-600 text-body',
-        'green': 'border-green-400 dark:border-green-600 text-body',
-        'pink': 'border-pink-400 dark:border-pink-600 text-body',
-        'blue': 'border-blue-400 dark:border-blue-600 text-body',
-        'purple': 'border-purple-400 dark:border-purple-600 text-body',
-        'orange': 'border-orange-400 dark:border-orange-600 text-body',
-        'red': 'border-red-400 dark:border-red-600 text-body',
-        'cyan': 'border-cyan-400 dark:border-cyan-600 text-body',
-        'gray': 'border-gray-300 dark:border-gray-600 text-body',
-    };
-
-    return colorMap[colorCode.toLowerCase()] || colorMap['gray'];
-};
 
 export interface LogisticWalkInItemListProps {
     items: LogisticsItem[];
@@ -87,10 +70,7 @@ export const LogisticWalkInItemList: React.FC<LogisticWalkInItemListProps> = ({
                             <div className="flex items-center gap-2 mb-2">
                                 <MapPin className="w-4 h-4 shrink-0 text-sub" />
                                 <Tooltip content={item.hotel_name || item.meeting_point_name || 'No location'} position="bottom">
-                                    <div className={cn(
-                                        'flex-1 px-3 py-2 rounded-lg border-2 text-sm font-medium truncate',
-                                        getZoneColorClasses(item.pickup_zone_color)
-                                    )}>
+                                    <div className={ZONE_BOX_CLASSES} style={zoneBoxStyle(item.pickup_zone_color)}>
                                         {item.hotel_name || item.meeting_point_name}
                                     </div>
                                 </Tooltip>

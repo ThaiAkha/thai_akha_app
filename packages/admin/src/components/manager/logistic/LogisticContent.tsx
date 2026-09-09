@@ -39,7 +39,7 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
     }, [items]);
 
     // Filtering hook
-    const { visibleDrivers, getDriverItems, getWalkInItems } = useLogisticFiltering({
+    const { visibleDrivers, getDriverItems, getWalkInItems, getUnassignedItems } = useLogisticFiltering({
         items: reorderedItems,
         drivers,
         selectedDriverIds,
@@ -61,6 +61,7 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
     }, [reorderedItems, moveItemLogic]);
 
     const walkInItems = getWalkInItems();
+    const unassignedItems = getUnassignedItems();
 
     return (
         <div className="flex flex-col h-full overflow-hidden">
@@ -70,14 +71,17 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
             {/* Columns Grid */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden p-4 no-scrollbar">
                 <div className="flex h-full gap-4 min-w-max">
-                    {/* Walk-In Column */}
-                    {walkInItems.length > 0 && (
-                        <LogisticWalkInColumn
-                            items={walkInItems}
-                            selectedBookingId={selectedBookingId}
-                            onSelectBooking={onSelectBooking}
-                        />
-                    )}
+                    {/* Walk-In Column — sempre visibile, anche a zero: il manager
+                        deve poter vedere a colpo d'occhio che nessuno arriva da solo,
+                        non dedurlo dall'assenza della colonna. */}
+                    <LogisticWalkInColumn
+                        items={walkInItems}
+                        unassignedItems={unassignedItems}
+                        drivers={drivers}
+                        selectedBookingId={selectedBookingId}
+                        onSelectBooking={onSelectBooking}
+                        onMoveItem={moveItem}
+                    />
 
                     {/* Driver Columns */}
                     {visibleDrivers.map(driver => {

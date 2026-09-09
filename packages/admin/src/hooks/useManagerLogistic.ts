@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { Tables, MeetingPointType } from '@thaiakha/shared/types';
-import { zoneNeedsDriver, WALK_IN_ZONE } from '@thaiakha/shared/lib/pickupCategory';
+import { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset } from '@thaiakha/shared/lib/pickupCategory';
 import { SessionType } from '../components/common/ClassPicker';
 
 // --- COSTANTI DI DOMINIO ---
@@ -270,7 +270,13 @@ export function useManagerLogistic() {
                         route_order: b.route_order || 0,
                         avatar_url: b.profiles?.avatar_url,
                         pickup_driver_uid: b.pickup_driver_uid,
-                        has_missing_info: !b.hotel_name && !b.meeting_point,
+                        // Non e' `!hotel_name && !meeting_point`: il front scrive un
+                        // SEGNAPOSTO nel campo hotel, quindi le prenotazioni davvero
+                        // incomplete avevano quel campo pieno e risultavano complete.
+                        // Misurato il 09/09: le due righe dichiarate incomplete non erano
+                        // le due incomplete. Il criterio, e il perche', stanno in
+                        // shared/lib/pickupCategory.ts con i test.
+                        has_missing_info: pickupPlaceUnset(b.hotel_name, b.meeting_point),
                         customer_note: b.customer_note,
                         agency_note: b.agency_note,
                         phone_number: b.phone_number,

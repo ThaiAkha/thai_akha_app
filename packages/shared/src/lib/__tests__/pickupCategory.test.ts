@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const loaded = await import('../pickupCategory.ts');
-const { zoneNeedsDriver, WALK_IN_ZONE } =
+const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL } =
     (loaded as { default?: typeof import('../pickupCategory.ts') }).default ?? loaded;
 
 // 1. RITIRO IN HOTEL: nessun punto d'incontro, una zona vera. L'autista serve.
@@ -50,4 +50,32 @@ test('un tipo assente o inatteso resta assegnabile: mai far scomparire una riga'
 test('nessuna zona e nessun punto: va assegnato', () => {
     assert.equal(zoneNeedsDriver(null, null, null), true);
     assert.equal(zoneNeedsDriver(undefined, undefined, undefined), true);
+});
+
+// ── il luogo di ritiro: "non scelto" ha DUE forme ───────────────────────────
+test('il segnaposto del front conta come "non scelto", anche se il campo e\' pieno', () => {
+    // e' il caso che il vecchio calcolo sbagliava: campo pieno, luogo assente
+    assert.equal(pickupPlaceUnset(PLACEHOLDER_HOTEL, null), true);
+    assert.equal(pickupPlaceUnset('  Update in profile  ', null), true);
+});
+
+test('campo vuoto o assente: non scelto', () => {
+    assert.equal(pickupPlaceUnset('', null), true);
+    assert.equal(pickupPlaceUnset(null, null), true);
+    assert.equal(pickupPlaceUnset(undefined, undefined), true);
+    assert.equal(pickupPlaceUnset('   ', null), true);
+});
+
+test('un hotel vero e\' un luogo scelto', () => {
+    assert.equal(pickupPlaceUnset('Rimping Village', null), false);
+});
+
+test('un punto d\'incontro e\' un luogo: basta da solo', () => {
+    assert.equal(pickupPlaceUnset(null, 'mp_school'), false);
+    // anche col segnaposto nel campo hotel: il punto vince
+    assert.equal(pickupPlaceUnset(PLACEHOLDER_HOTEL, 'mp_cen_airport'), false);
+});
+
+test('il sentinello "" del punto non e\' un punto', () => {
+    assert.equal(pickupPlaceUnset(PLACEHOLDER_HOTEL, ''), true);
 });

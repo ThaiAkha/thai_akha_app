@@ -71,9 +71,15 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
             {/* Columns Grid */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden p-4 no-scrollbar">
                 <div className="flex h-full gap-4 min-w-max">
-                    {/* Walk-In Column — sempre visibile, anche a zero: il manager
-                        deve poter vedere a colpo d'occhio che nessuno arriva da solo,
-                        non dedurlo dall'assenza della colonna. */}
+                    {/* Walk-In Column. Fino al 2026-09-09 questa colonna SPARIVA quando
+                        non c'erano walk-in (`if (items.length === 0) return null`). Ora deve
+                        restare, e non e' una preferenza: il gruppo "da assegnare" vive qui
+                        dentro, e quello e' lo stato in cui NASCE ogni prenotazione. Con la
+                        colonna che si nasconde a zero walk-in - il caso piu' comune - le
+                        righe da assegnare tornerebbero invisibili proprio quando sono le
+                        uniche presenti, che e' il difetto da cui parte questo lavoro.
+                        Di guadagnato: a zero il manager lo vede scritto, invece di dedurlo
+                        dall'assenza di una colonna. */}
                     <LogisticWalkInColumn
                         items={walkInItems}
                         unassignedItems={unassignedItems}

@@ -13,6 +13,42 @@ import type { MeetingPointType } from '../types/pickup.types';
 export const WALK_IN_ZONE = 'walk-in';
 
 /**
+ * Segnaposto che il FRONT scrive nel campo hotel alla creazione della prenotazione,
+ * finche' il cliente non sceglie il ritiro (`useBookingSubmit.buildBookingPayload`).
+ *
+ * Non e' un nome di hotel: e' uno STATO codificato in una frase inglese dentro un campo
+ * di testo libero, e confrontato con `===`. Chiunque scriva quella frase a mano nel campo,
+ * o la traduca, cambia lo stato della prenotazione senza saperlo. Va detto qui perche' chi
+ * legge `hotel_name` non pieno non sospetta che "pieno" possa voler dire "vuoto".
+ *
+ * La edge ha per necessita' la SUA copia (Deno non importa dal workspace pnpm):
+ * `supabase/functions/_shared/b2cEmailI18n.ts`, costante `PLACEHOLDER_HOTEL`, dove decide
+ * cosa l'email dice al cliente. Se questa stringa cambia, vanno cambiate entrambe.
+ */
+export const PLACEHOLDER_HOTEL = 'Update in profile';
+
+/**
+ * Il luogo di ritiro non e' ancora stato scelto?
+ *
+ * Serve perche' "non scelto" in questo database ha DUE forme: il campo davvero vuoto, e
+ * il segnaposto qui sopra. La pagina della logistica calcolava `!hotel_name &&
+ * !meeting_point`, che prende solo la prima: le prenotazioni nate dal sito hanno il
+ * segnaposto, quindi risultavano COMPLETE proprio mentre erano le uniche incomplete
+ * (misurato il 2026-09-09: le due righe dichiarate incomplete non erano le due righe
+ * incomplete). Un segnale sbagliato che sembra funzionare e' peggio di un segnale assente.
+ *
+ * Un punto d'incontro scelto e' un luogo: chi ce l'ha non e' incompleto, anche senza hotel.
+ */
+export function pickupPlaceUnset(
+    hotelName: string | null | undefined,
+    meetingPointId: string | null | undefined
+): boolean {
+    if (meetingPointId) return false;
+    const name = (hotelName ?? '').trim();
+    return name === '' || name === PLACEHOLDER_HOTEL;
+}
+
+/**
  * Serve un autista a questa prenotazione?
  *
  *   1. ritiro in hotel     meeting_point NULL, zona vera dell'hotel          -> SI

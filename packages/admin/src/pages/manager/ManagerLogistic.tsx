@@ -215,7 +215,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                     {/* Barre di fondo impilate: l'errore sopra, l'ordine in sospeso sotto.
                         Prima la barra gialla era l'unica ed era `absolute bottom-0`: due
                         barre assolute si sarebbero coperte a vicenda. */}
-                    <div className="absolute bottom-0 left-0 right-0 flex flex-col">
+                    <div className="absolute bottom-0 left-0 right-0 flex flex-col bg-surface">
                     {/* Barra d'errore a fondo OPACO: col fondo al 10% le schede si
                         leggevano attraverso il testo dell'errore, cioe' l'unico messaggio
                         che deve essere leggibile senza sforzo. Il rosso resta nel bordo e

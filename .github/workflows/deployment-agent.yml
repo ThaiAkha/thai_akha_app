@@ -88,6 +88,14 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          # Chiave PUBBLICA del widget Turnstile (form contatti). Sta qui e non in
+          # `packages/front/.env.production` perche' quel file e' gitignorato e in CI
+          # NON ESISTE: senza questa riga il build produce un bundle senza chiave, il
+          # riquadro non compare e il form non si puo' inviare - senza nessun errore.
+          # E' la stessa forma dell'incidente della chiave Maps (31/08): tutto a posto
+          # in apparenza, e un pezzo muto. Il SEGRETO (`TURNSTILE_SECRET_KEY`) non e'
+          # qui e non deve esserci mai: vive solo come secret della edge `submit-contact`.
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
 
   check_changes:
     name: Check what to deploy
@@ -159,6 +167,14 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          # Chiave PUBBLICA del widget Turnstile (form contatti). Sta qui e non in
+          # `packages/front/.env.production` perche' quel file e' gitignorato e in CI
+          # NON ESISTE: senza questa riga il build produce un bundle senza chiave, il
+          # riquadro non compare e il form non si puo' inviare - senza nessun errore.
+          # E' la stessa forma dell'incidente della chiave Maps (31/08): tutto a posto
+          # in apparenza, e un pezzo muto. Il SEGRETO (`TURNSTILE_SECRET_KEY`) non e'
+          # qui e non deve esserci mai: vive solo come secret della edge `submit-contact`.
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
 
       # Auth SENZA CHIAVI (Workload Identity Federation), non piu' FIREBASE_TOKEN.
       #

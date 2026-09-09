@@ -112,3 +112,35 @@ export function pickupPosition(
     if (pickupPlaceUnset(hotelName, meetingPointId)) return null;
     return 'hotel';
 }
+
+/**
+ * Le tre posizioni del comando "come torna a casa": se ne va da se', lo riportiamo dove
+ * l'abbiamo preso, oppure altrove.
+ *
+ * WALK-OFF era un comando MANCANTE, non un doppione: nell'admin **nessuno scriveva
+ * `requires_dropoff`** (l'unica scrittura era il passaggio di cio' che era stato letto),
+ * quindi il manager non aveva modo di dire che un ospite non ha bisogno del ritorno. Nei
+ * dati lo stato esiste — 12 prenotazioni su 62 senza rientro — e arrivava da fuori: da
+ * questa pagina non si raggiungeva. E' la simmetria del ritiro: walk-in = arriva da se',
+ * walk-off = se ne va da se'.
+ *
+ * Come per il ritiro, la posizione NON si deriva dalla verita' di `dropoff_hotel`: quel
+ * campo vale '' mentre si scegle la destinazione, e '' e' falso. Sarebbe la quarta volta
+ * che lo stesso errore accende il pulsante sbagliato, e con tre stati invece di due.
+ *
+ * `sameAsPickupAllowed` e' falso quando il ritiro e' un walk-in: "riportalo dove l'abbiamo
+ * preso" non esiste per chi non e' stato preso da nessuna parte (regola dell'owner).
+ */
+export type DropoffPosition = 'walk_off' | 'same' | 'elsewhere';
+
+export function dropoffPosition(
+    requiresDropoff: boolean | null | undefined,
+    dropoffHotel: string | null | undefined,
+    sameAsPickupAllowed: boolean
+): DropoffPosition {
+    // Solo un `false` esplicito significa "se ne va da se'": NULL nel database vale
+    // "il ritorno serve", come fa il lettore della pagina.
+    if (requiresDropoff === false) return 'walk_off';
+    if ((dropoffHotel ?? null) !== null) return 'elsewhere';
+    return sameAsPickupAllowed ? 'same' : 'elsewhere';
+}

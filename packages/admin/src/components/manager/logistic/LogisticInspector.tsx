@@ -21,7 +21,10 @@ import {
     ZONE_UNSET,
     needsDriver,
 } from '../../../hooks/useManagerLogistic';
-import { pickupPosition, type PickupPosition } from '@thaiakha/shared/lib/pickupCategory';
+import {
+    pickupPosition, type PickupPosition,
+    dropoffPosition, type DropoffPosition,
+} from '@thaiakha/shared/lib/pickupCategory';
 import { Caption, SectionTitle } from '../../typography';
 
 // ---------- Main Inspector ----------
@@ -130,6 +133,17 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
             meeting_point_type: 'walk_in',
             hotel_name: '',
             pickup_zone: WALK_IN_ZONE,
+            // REGOLA DELL'OWNER: il walk-off e' lo stato standard del ritorno per un
+            // walk-in. Corregge un difetto di nascita: `requires_dropoff` ha DEFAULT true
+            // nel database, quindi ogni prenotazione nasce chiedendo il ritorno, walk-in
+            // compresi, e il comando per dire il contrario non esisteva.
+            // MA solo se nessuno ha ancora deciso il ritorno: una riconsegna configurata
+            // apposta (destinazione o autista) non si disfa da sola. Se la macchina
+            // cancellasse una scelta dell'operatore sarebbe lo stesso guasto del comando
+            // che cambiava posizione da solo.
+            ...(dropoffUntouched
+                ? { requires_dropoff: false, dropoff_hotel: null, dropoff_zone: null, dropoff_driver_uid: null }
+                : {}),
             // Chi arriva da se' non ha autista di RITIRO. La RICONSEGNA non si tocca:
             // viene comunque riportato indietro.
             pickup_driver_uid: null,
@@ -142,14 +156,49 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
     // autista del ritiro da ereditare. Quindi in walk-in il luogo di riconsegna si chiede
     // sempre, e l'autista del ritorno va detto.
     const isWalkIn = position === 'walk_in';
-    // `!== null` e non la verita' del campo: '' significa "luogo diverso, non ancora
-    // scelto" ed e' falso, quindi il pulsante premuto restava spento e si accendeva
-    // l'altro — la stessa trappola del comando del ritiro, terza volta in questo file.
-    const dropoffElsewhere = isWalkIn || (selectedBooking.dropoff_hotel ?? null) !== null;
+    /** Posizione del ritorno. Mai dalla verita' di `dropoff_hotel`: vedi dropoffPosition. */
+    const dropoffPos = dropoffPosition(
+        selectedBooking.requires_dropoff,
+        selectedBooking.dropoff_hotel,
+        // "riportalo dove l'abbiamo preso" non esiste per chi non e' stato preso
+        !isWalkIn
+    );
     /** Un walk-in che chiede il rientro senza destinazione non e' consegnabile. */
     const dropoffMissing = isWalkIn
-        && selectedBooking.requires_dropoff
+        && dropoffPos === 'elsewhere'
         && !(selectedBooking.dropoff_hotel ?? '').trim();
+    /** Nessuno ha ancora deciso il ritorno: niente destinazione e niente autista. */
+    const dropoffUntouched = !(selectedBooking.dropoff_hotel ?? '').trim()
+        && !selectedBooking.dropoff_driver_uid;
+
+    const goToDropoff = (next: DropoffPosition) => {
+        if (next === 'walk_off') {
+            // Se ne va da se': via destinazione e via autista, altrimenti resterebbe un
+            // autista assegnato a un ritorno che non esiste piu'.
+            onUpdateLocal(selectedBooking.id, {
+                requires_dropoff: false,
+                dropoff_hotel: null,
+                dropoff_zone: null,
+                dropoff_driver_uid: null,
+            });
+            return;
+        }
+        if (next === 'same') {
+            onUpdateLocal(selectedBooking.id, {
+                requires_dropoff: true,
+                dropoff_hotel: null,
+                dropoff_zone: null,
+                dropoff_driver_uid: null,
+            });
+            return;
+        }
+        // '' = destinazione scelta ma non ancora compilata. Si parte da dove dorme, se
+        // lo sappiamo: per un walk-in quel campo e' vuoto, e l'avviso lo dira'.
+        onUpdateLocal(selectedBooking.id, {
+            requires_dropoff: true,
+            dropoff_hotel: selectedBooking.hotel_name || '',
+        });
+    };
 
     /** Orario del punto per la sessione di questa prenotazione, se ce l'ha. */
     const pointTime = (mp: MeetingPointOption) =>
@@ -424,34 +473,34 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
                     </SectionTitle>
 
-                    {/* Same / Different Location toggle. In walk-in non si offre: "stesso
-                        posto del ritiro" non esiste per chi arriva da se'. */}
-                    {!isWalkIn && (
+                    {/* Comando del RITORNO, tre posizioni. "Walk-off" era un comando
+                        MANCANTE, non un doppione: nell'admin nessuno scriveva
+                        `requires_dropoff`, quindi non c'era modo di dire che un ospite se
+                        ne va da se'. Nei dati quello stato esiste (12 prenotazioni su 62)
+                        e arrivava da fuori. E' la simmetria del ritiro: walk-in = arriva
+                        da se', walk-off = se ne va da se'.
+                        "Stesso posto" non si offre quando il ritiro e' walk-in: non c'e'
+                        nessun posto in cui l'abbiamo preso. */}
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                        <button
-                            type="button"
-                            onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: null, dropoff_zone: null, dropoff_driver_uid: null })}
-                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${!dropoffElsewhere
-                                ? 'bg-primary-500 text-white'
-                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
-                        >
-                            {t('inspector.sameLocation')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onUpdateLocal(selectedBooking.id, { dropoff_hotel: selectedBooking.hotel_name || '' })}
-                            className={`flex-1 py-2.5 text-sm font-bold transition-colors ${dropoffElsewhere
-                                ? 'bg-primary-500 text-white'
-                                : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
-                        >
-                            {t('inspector.differentLocation')}
-                        </button>
+                        {(isWalkIn
+                            ? ([['walk_off', t('inspector.dropoffWalkOff')], ['elsewhere', t('inspector.dropoffElsewhere')]] as const)
+                            : ([['walk_off', t('inspector.dropoffWalkOff')], ['same', t('inspector.dropoffSame')], ['elsewhere', t('inspector.dropoffElsewhere')]] as const)
+                        ).map(([key, label], i) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => goToDropoff(key)}
+                                className={`flex-1 py-2.5 px-1 text-xs font-bold uppercase tracking-wide transition-colors ${i > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''} ${dropoffPos === key
+                                    ? 'bg-primary-500 text-white'
+                                    : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
+                                    }`}
+                            >
+                                {label}
+                            </button>
+                        ))}
                     </div>
-                    )}
 
-                    {dropoffElsewhere && (
+                    {dropoffPos === 'elsewhere' && (
                         <>
                             {dropoffMissing && (
                                 <Caption className="text-error">{t('inspector.dropoffRequired')}</Caption>

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const loaded = await import('../pickupCategory.ts');
-const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL, pickupPosition } =
+const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL, pickupPosition, dropoffPosition } =
     (loaded as { default?: typeof import('../pickupCategory.ts') }).default ?? loaded;
 
 // 1. RITIRO IN HOTEL: nessun punto d'incontro, una zona vera. L'autista serve.
@@ -111,4 +111,37 @@ test('prenotazione nata dal sito -> NESSUNA posizione, non walk-in', () => {
 
 test('punto con tipo sconosciuto -> punto d\'incontro, cioe\' assegnabile', () => {
     assert.equal(pickupPosition('mp_spento', null, null), 'meeting_point');
+});
+
+// ── le tre posizioni del ritorno ────────────────────────────────────────────
+test('requires_dropoff false -> walk-off', () => {
+    assert.equal(dropoffPosition(false, null, true), 'walk_off');
+    // vince su tutto: anche con una destinazione scritta, il ritorno non serve
+    assert.equal(dropoffPosition(false, 'Rimping Village', true), 'walk_off');
+});
+
+test('nessuna destinazione -> lo riportiamo dove l\'abbiamo preso', () => {
+    assert.equal(dropoffPosition(true, null, true), 'same');
+    // NULL nel database vale "il ritorno serve", come fa il lettore della pagina
+    assert.equal(dropoffPosition(null, null, true), 'same');
+    assert.equal(dropoffPosition(undefined, null, true), 'same');
+});
+
+test('una destinazione -> altrove', () => {
+    assert.equal(dropoffPosition(true, 'Shangri-La', true), 'elsewhere');
+});
+
+test('IL SENTINELLO: destinazione scelta ma non ancora compilata', () => {
+    // '' e' falso in JS: guardando la verita' del campo il comando si sarebbe acceso
+    // su "stesso posto" mentre l'operatore aveva premuto "altrove".
+    assert.equal(dropoffPosition(true, '', true), 'elsewhere');
+});
+
+test('col ritiro walk-in "stesso posto" non esiste: si cade su altrove', () => {
+    // chi non e' stato preso da nessuna parte non puo' essere riportato "dove l'abbiamo
+    // preso": la regola dell'owner del 2026-09-09.
+    assert.equal(dropoffPosition(true, null, false), 'elsewhere');
+    assert.equal(dropoffPosition(null, null, false), 'elsewhere');
+    // ma walk-off resta raggiungibile anche da un walk-in: se ne va da se'
+    assert.equal(dropoffPosition(false, null, false), 'walk_off');
 });

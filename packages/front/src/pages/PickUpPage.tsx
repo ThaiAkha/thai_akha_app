@@ -197,13 +197,24 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
         : undefined;
       const chosenZone = loc.pickupLoc.zoneId ? zones[loc.pickupLoc.zoneId] : undefined;
       const pickupTime: string | null = timeOf(chosenPoint) ?? timeOf(chosenZone) ?? timeOf(school);
-      // bookings.pickup_zone accetta solo le zone (CHECK del DB): l'id di un punto
-      // d'incontro va in `meeting_point`, con zona 'walk-in' se si viene da soli e
-      // 'outside' se e' un punto di pickup fuori zona. Prima l'id del punto finiva
-      // nella zona, il DB rifiutava e la pagina navigava come se avesse salvato.
+      // `pickup_zone` e `dropoff_zone` hanno una FK verso `pickup_zones(id)` (migration
+      // 20260907170000; prima era un CHECK con la lista delle zone copiata a mano): ci
+      // entra SOLO una zona vera, oppure NULL. L'id di un punto d'incontro va in
+      // `meeting_point`. Prima l'id del punto finiva nella zona, il DB rifiutava e la
+      // pagina navigava come se avesse salvato.
+      //
+      // Questa guardia esiste perche' quel bug e' stato corretto per il RITIRO e lasciato
+      // sulla RICONSEGNA, tre righe piu' sotto, sotto il commento che lo descriveva
+      // (trovato il 2026-09-09 dai dati: scegliere un punto di riconsegna veniva
+      // rifiutato e l'ospite vedeva solo "errore generico"). Chiuderlo su una riga sola
+      // avrebbe lasciato la stessa trappola alla terza. Ora la regola e' una funzione:
+      // in una colonna di zona ci va una zona, altrimenti niente.
+      const legalZone = (id: string | null | undefined): string | null =>
+        id && zones[id] ? id : null;
+
       const pickupZone = loc.transportMode === 'self' ? 'walk-in'
         : chosenPoint ? 'outside'
-        : (chosenZone ? loc.pickupLoc.zoneId! : 'outside');
+        : (legalZone(loc.pickupLoc.zoneId) ?? 'outside');
 
       const payload = {
         hotel_name:      loc.pickupLoc.name,
@@ -214,7 +225,11 @@ const PickUpPage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNaviga
         pickup_time:     pickupTime,
         requires_dropoff: !loc.isDropoffSame && !!loc.dropoffLoc,
         dropoff_hotel:   !loc.isDropoffSame ? finalDropoff?.name : null,
-        dropoff_zone:    !loc.isDropoffSame ? finalDropoff?.zoneId : null,
+        // Un punto d'incontro scelto per la riconsegna (aeroporto, stazione, i due
+        // mercati) porta il proprio id in `zoneId`: qui diventa NULL, non un id di
+        // punto in una colonna di zone. Il nome resta in `dropoff_hotel`, che e'
+        // l'unico posto dove oggi `bookings` sa tenere un punto di riconsegna.
+        dropoff_zone:    !loc.isDropoffSame ? legalZone(finalDropoff?.zoneId) : null,
         dropoff_lat:     !loc.isDropoffSame ? finalDropoff?.lat : null,
         dropoff_lng:     !loc.isDropoffSame ? finalDropoff?.lng : null,
         customer_note:   loc.pickupLoc.isUnknown ? `Manual Pin: ${loc.pickupLoc.name}` : undefined,

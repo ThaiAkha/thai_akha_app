@@ -161,7 +161,9 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
         selectedBooking.requires_dropoff,
         selectedBooking.dropoff_hotel,
         // "riportalo dove l'abbiamo preso" non esiste per chi non e' stato preso
-        !isWalkIn
+        !isWalkIn,
+        // per riconoscere le copie: vedi dropoffPosition
+        selectedBooking.hotel_name
     );
     /** Un walk-in che chiede il rientro senza destinazione non e' consegnabile. */
     const dropoffMissing = isWalkIn
@@ -192,11 +194,13 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
             });
             return;
         }
-        // '' = destinazione scelta ma non ancora compilata. Si parte da dove dorme, se
-        // lo sappiamo: per un walk-in quel campo e' vuoto, e l'avviso lo dira'.
+        // '' = destinazione scelta e non ancora compilata. Si parte VUOTO, non dal luogo
+        // di ritiro: precompilando, premere questo pulsante voleva dire confermare una
+        // COPIA del ritiro invece di scegliere una destinazione, ed e' cosi' che sono nate
+        // le 40 righe con la destinazione identica al ritiro. Chi lo preme scegle.
         onUpdateLocal(selectedBooking.id, {
             requires_dropoff: true,
-            dropoff_hotel: selectedBooking.hotel_name || '',
+            dropoff_hotel: '',
         });
     };
 

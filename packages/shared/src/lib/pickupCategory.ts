@@ -136,11 +136,27 @@ export type DropoffPosition = 'walk_off' | 'same' | 'elsewhere';
 export function dropoffPosition(
     requiresDropoff: boolean | null | undefined,
     dropoffHotel: string | null | undefined,
-    sameAsPickupAllowed: boolean
+    sameAsPickupAllowed: boolean,
+    /**
+     * Luogo del RITIRO. Serve perche' una destinazione identica al ritiro non e' una
+     * destinazione diversa: e' "stesso posto" scritto due volte. La console di
+     * prenotazione le fabbricava (40 righe su 62 il 2026-09-09), e senza questo confronto
+     * l'ispettore accendeva "luogo diverso" su tutto. Il front la stessa domanda la fa
+     * da tempo: `dropoff_hotel && dropoff_hotel !== hotel_name` (useBookingLoader).
+     */
+    pickupHotel?: string | null
 ): DropoffPosition {
     // Solo un `false` esplicito significa "se ne va da se'": NULL nel database vale
     // "il ritorno serve", come fa il lettore della pagina.
     if (requiresDropoff === false) return 'walk_off';
-    if ((dropoffHotel ?? null) !== null) return 'elsewhere';
-    return sameAsPickupAllowed ? 'same' : 'elsewhere';
+    const dest = (dropoffHotel ?? null);
+    if (dest === null) return sameAsPickupAllowed ? 'same' : 'elsewhere';
+    const d = dest.trim();
+    // '' = destinazione scelta e non ancora compilata: la posizione e' quella premuta.
+    if (d === '') return 'elsewhere';
+    const p = (pickupHotel ?? '').trim();
+    if (p !== '' && d.toLowerCase() === p.toLowerCase()) {
+        return sameAsPickupAllowed ? 'same' : 'elsewhere';
+    }
+    return 'elsewhere';
 }

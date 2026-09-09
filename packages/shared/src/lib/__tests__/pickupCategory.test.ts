@@ -145,3 +145,21 @@ test('col ritiro walk-in "stesso posto" non esiste: si cade su altrove', () => {
     // ma walk-off resta raggiungibile anche da un walk-in: se ne va da se'
     assert.equal(dropoffPosition(false, null, false), 'walk_off');
 });
+
+test('una COPIA del luogo di ritiro non e\' una destinazione diversa', () => {
+    // 40 righe su 62 erano cosi': la console le fabbricava copiando il ritiro.
+    assert.equal(dropoffPosition(true, 'Rimping Village', true, 'Rimping Village'), 'same');
+    // confronto tollerante su spazi e maiuscole: e' testo scritto a mano
+    assert.equal(dropoffPosition(true, '  rimping village ', true, 'Rimping Village'), 'same');
+    // una destinazione davvero diversa resta "altrove"
+    assert.equal(dropoffPosition(true, 'Shangri-La', true, 'Rimping Village'), 'elsewhere');
+});
+
+test('la copia col ritiro walk-in resta "altrove": "stesso posto" non esiste', () => {
+    assert.equal(dropoffPosition(true, 'Rimping Village', false, 'Rimping Village'), 'elsewhere');
+});
+
+test('senza sapere il luogo di ritiro, una destinazione vale come diversa', () => {
+    assert.equal(dropoffPosition(true, 'Rimping Village', true, null), 'elsewhere');
+    assert.equal(dropoffPosition(true, 'Rimping Village', true), 'elsewhere');
+});

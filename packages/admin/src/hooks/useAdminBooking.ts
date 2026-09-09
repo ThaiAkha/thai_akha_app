@@ -350,10 +350,20 @@ export const useAdminBooking = () => {
                 // autista) mentre la fermata compariva comunque sul telefono dell'autista.
                 // La RICONSEGNA resta: chi arriva da se' viene comunque riportato indietro.
                 pickup_driver_uid: zoneForBooking === WALK_IN_ZONE ? null : defaultDriverId,
-                dropoff_hotel: hotel?.name || hotelSearchQuery || null,
-                dropoff_zone: zoneForBooking,
-                dropoff_lat: hotel?.lat || null,
-                dropoff_lng: hotel?.lng || null,
+                // NULL = "stesso posto del ritiro", ed e' la forma giusta: **segue** il
+                // ritiro per costruzione, via il ripiego `dropoff_hotel || hotel_name` che
+                // fanno tutti i lettori. Prima qui si COPIAVA il luogo di ritiro, e questo
+                // form non ha nemmeno un campo per la destinazione: nessuno l'aveva scelta.
+                // Una copia non e' un riferimento: dal momento in cui esiste non segue piu'
+                // l'originale. Misurato il 2026-09-09 su 62 prenotazioni: 40 avevano
+                // `dropoff_hotel` identico a `hotel_name`, e **30 di quelle 40 avevano una
+                // `dropoff_zone` DIVERSA** pur nominando lo stesso albergo. Stesso posto,
+                // due zone: una delle due era gia' sbagliata, ed e' la zona a decidere la
+                // fascia oraria del giro di ritorno.
+                dropoff_hotel: null,
+                dropoff_zone: null,
+                dropoff_lat: null,
+                dropoff_lng: null,
                 dropoff_driver_uid: defaultDriverId,
                 customer_note: notes || null,
                 has_luggage: hasLuggage,

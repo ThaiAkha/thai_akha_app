@@ -489,7 +489,10 @@ Deno.serve(async (req: Request) => {
               }
               // Nessun testo con una ragione di stop: tetto raggiunto dal solo
               // ragionamento o blocco di sicurezza. Non e' una risposta.
-              trace(`fine ciclo · token prompt ${usage?.prompt ?? '-'} pensiero ${usage?.thoughts ?? '-'} uscita ${usage?.output ?? '-'}`);
+              // `usage.output` somma TUTTI i giri: comprende il preambolo e gli
+              // argomenti delle chiamate di funzione, quindi non e' la lunghezza della
+              // risposta. Per quella c'e' `responseLength` (segnalato da /database).
+              trace(`fine ciclo · token prompt ${usage?.prompt ?? '-'} pensiero ${usage?.thoughts ?? '-'} uscita ${usage?.output ?? '-'} (tutti i giri) · risposta ${answerText().trim().length} caratteri`);
               if (!answerText().trim()) throw new Error(`empty answer (${finish ?? 'no candidate'})`);
             } catch (err) {
               failure = err;

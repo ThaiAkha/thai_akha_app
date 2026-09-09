@@ -20,7 +20,7 @@ interface ContactUsPageProps {
  *  · FULL-WIDTH: quick info (contact-01) → canali (contact-06) → blocco Cherry (contact-02)
  *  · CON SIDEBAR (dal form in giù): form (contact-07) → mappa + location/pickup/billing
  * Fonti: page_sections (header) · business_profile (contatti/canali/geo) ·
- * contact_messages (form) · universal_cherry (card+chat).
+ * contact_messages via la edge submit-contact (form) · universal_cherry (card+chat).
  */
 const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
   const { section: cherrySection, loading: cherryLoading } = usePageSection('universal_cherry');
@@ -108,7 +108,7 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigate }) => {
           />
 
           <div className="min-w-0 flex flex-col [gap:var(--space-fluid-xl)]">
-            {/* 4 · Form (contact-07 → contact_messages) */}
+            {/* 4 · Form (contact-07 → edge submit-contact → contact_messages) */}
             <section id="send-message" className="flex flex-col [gap:var(--space-fluid-l)] scroll-mt-24">
               <SmartHeaderSection
                 sectionId="contact-07"

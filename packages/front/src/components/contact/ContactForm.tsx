@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import { cn } from '@thaiakha/shared/lib/utils';
 import { t } from '../../i18n';
 import { Typography, Icon, Button } from '../ui';
+import { renderTurnstile, turnstileConfigured, type TurnstileHandle } from '../../lib/turnstile';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
- * ContactForm — form Contact Us: INSERT in contact_messages (RLS anon insert).
- * Persistenza prima di tutto: il messaggio è salvato anche se la notifica email
- * (edge, dominio /email) non è ancora attiva. Honeypot invisibile anti-spam.
+ * ContactForm — form Contact Us.
+ *
+ * Dal 2026-09-09 NON scrive piu' in tabella: manda alla edge `submit-contact`,
+ * che verifica il gettone Cloudflare Turnstile, rivalida le lunghezze e
+ * inserisce col service role. Prima l'INSERT era diretto con la chiave anon, e
+ * un captcha qui sarebbe stato decorativo: chi abusa chiama l'API REST, non il
+ * form. La policy `anon can insert` viene tolta dopo il deploy di entrambi.
+ * L'esca invisibile resta: costa nulla e ferma i robot piu' semplici prima
+ * ancora della verifica.
  */
 
 type Topic = 'general' | 'agency' | 'press' | 'other';
@@ -31,6 +39,23 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
   const [website, setWebsite] = useState(''); // honeypot: gli umani non lo vedono
   const [status, setStatus] = useState<Status>('idle');
   const [feedback, setFeedback] = useState('');
+  const [token, setToken] = useState('');
+  const { lang } = useLanguage();
+  const widgetRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<TurnstileHandle | null>(null);
+
+  // Il widget si disegna una volta sola, quando il form e' sullo schermo. Se la
+  // chiave pubblica non c'e' ancora (o lo script non arriva) il form resta
+  // usabile: e' la edge a decidere, e senza gettone rifiuta solo se il segreto
+  // e' configurato dall'altra parte.
+  useEffect(() => {
+    if (!turnstileConfigured() || !widgetRef.current || handleRef.current) return;
+    let alive = true;
+    renderTurnstile(widgetRef.current, setToken, lang)
+      .then((h) => { if (alive) handleRef.current = h; else h.remove(); })
+      .catch((err) => console.warn('[ContactForm] turnstile non disponibile:', err));
+    return () => { alive = false; };
+  }, [lang]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,21 +66,23 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
       return;
     }
     setStatus('sending');
-    const { error } = await supabase.from('contact_messages').insert({
-      name: name.trim(),
-      email: email.trim(),
-      topic,
-      message: message.trim(),
+    const { data, error } = await supabase.functions.invoke('submit-contact', {
+      body: { name: name.trim(), email: email.trim(), topic, message: message.trim(), website, token },
     });
-    if (error) {
-      console.error('[ContactForm] insert:', error);
+    if (error || !(data as { ok?: boolean } | null)?.ok) {
+      console.error('[ContactForm] submit-contact:', error);
       setStatus('error');
       setFeedback(t('contact:form.error'));
+      handleRef.current?.reset();
+      setToken('');
       return;
     }
     setStatus('success');
     setFeedback(t('contact:form.success'));
     setName(''); setEmail(''); setMessage('');
+    // Un gettone vale un invio: si riparte con uno nuovo per il messaggio dopo.
+    handleRef.current?.reset();
+    setToken('');
   };
 
   return (
@@ -131,6 +158,10 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
         aria-hidden="true"
         className="absolute opacity-0 pointer-events-none h-0 w-0"
       />
+
+      {/* Verifica anti-abuso: il riquadro resta vuoto finche' la chiave pubblica
+          non e' configurata nel pannello Cloudflare. */}
+      <div ref={widgetRef} className="[margin-block:var(--space-fluid-xs)]" />
 
       {/* Submit + feedback */}
       <div className="flex flex-wrap items-center justify-between [gap:var(--space-fluid-s)]">

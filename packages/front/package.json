@@ -14,7 +14,6 @@
     "@google/genai": "^1.39.0",
     "@supabase/supabase-js": "^2.95.3",
     "@thaiakha/shared": "workspace:*",
-    "@types/react-google-recaptcha": "^2.1.9",
     "dompurify": "^3.4.13",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.38.0",
@@ -24,7 +23,6 @@
     "lucide-react": "^0.474.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-google-recaptcha": "^3.1.0",
     "react-i18next": "^15.7.4",
     "react-swipeable": "^7.0.2"
   },

@@ -30,7 +30,13 @@ export function useLogisticFiltering({
             return items
                 .filter(i => {
                     const driverUid = i.dropoff_driver_uid || i.pickup_driver_uid;
-                    return driverUid === driverId && i.requires_dropoff && needsDriver(i);
+                    // NIENTE needsDriver qui: quello dice se serve un autista di
+                    // RITIRO. Chi arriva da se' viene comunque riportato indietro, quindi
+                    // in riconsegna il criterio e' `requires_dropoff` e basta. Col filtro
+                    // sbagliato un walk-in non stava in nessuna colonna autista, non stava
+                    // fra le "da assegnare", e nella sua colonna non ha comandi: non era
+                    // assegnabile da nessuna parte.
+                    return driverUid === driverId && i.requires_dropoff;
                 })
                 .sort((a, b) => a.dropoff_sequence - b.dropoff_sequence);
         }
@@ -42,8 +48,11 @@ export function useLogisticFiltering({
     // gruppo qui sotto. E il filtro precedente guardava la ZONA, che e' sbagliato:
     // vedi needsDriver, tre categorie e non due.
     const getWalkInItems = useCallback((): LogisticsItem[] => {
+        // "Walk-in" e' una categoria del RITIRO: in riconsegna non significa niente, e
+        // mostrarne l'elenco la' direbbe che quelle persone non hanno bisogno di nessuno.
+        if (logisticsMode !== 'pickup') return [];
         return items.filter(i => !needsDriver(i));
-    }, [items]);
+    }, [items, logisticsMode]);
 
     /**
      * DA ASSEGNARE: ha bisogno di un autista e non ce l'ha.
@@ -64,12 +73,12 @@ export function useLogisticFiltering({
      * entrambi prima restavano invisibili - il secondo perche' la UI lo marcava walk-in.
      */
     const getUnassignedItems = useCallback((): LogisticsItem[] => {
-        const rows = items.filter(i => {
-            if (!needsDriver(i)) return false;
-            return logisticsMode === 'pickup'
-                ? !i.pickup_driver_uid
-                : i.requires_dropoff && !i.dropoff_driver_uid && !i.pickup_driver_uid;
-        });
+        const rows = items.filter(i => logisticsMode === 'pickup'
+            // Ritiro: serve un autista di ritiro (tre categorie) e non c'e'.
+            ? needsDriver(i) && !i.pickup_driver_uid
+            // Riconsegna: serve una riconsegna e non c'e' nessuno dei due autisti.
+            // I walk-in sono INCLUSI, a differenza del ritiro: tornano a casa anche loro.
+            : i.requires_dropoff && !i.dropoff_driver_uid && !i.pickup_driver_uid);
         // Nessun ordine di percorso da rispettare (non ne hanno ancora uno): l'ordine
         // utile a chi smista e' l'orario, poi il nome per non ballare fra un giro e l'altro.
         return [...rows].sort((a, b) =>

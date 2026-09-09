@@ -3,6 +3,7 @@ import { Button, Icon, Badge, Typography } from '../ui';
 import { UserProfile } from '../../services/auth.service';
 import { useActiveProfile } from '../../context/ActiveProfileContext';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { pickupPlaceUnset } from '@thaiakha/shared/lib/pickupCategory';
 import type { UserDashboardBooking, PickupRouteStop } from '@thaiakha/shared/types';
 
 interface DashboardTabProps {
@@ -50,7 +51,12 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   const bookingDate = new Date(activeBooking.booking_date);
   const isPast = bookingDate < today;
 
-  const hasHotel = activeBooking.hotel_name && activeBooking.hotel_name !== 'To be selected';
+  // Confrontava `hotel_name` con 'To be selected', stringa che NESSUNO scrive: esiste
+  // solo come etichetta i18n. Quindi hasHotel era sempre vero, il richiamo "scegli dove
+  // ti prendiamo" restava nascosto, e chi non aveva scelto vedeva il ritiro come gia'
+  // sistemato — e si presentava in cucina. Il segnaposto vero e' 'Update in profile'
+  // (lo scrive il front alla prenotazione): il criterio, con i test, sta in shared.
+  const hasHotel = !pickupPlaceUnset(activeBooking.hotel_name, activeBooking.meeting_point);
   const hotelPending = !hasHotel && !isPast;
   const isMorning = activeBooking.session_id?.includes('morning');
   const isWalkIn = activeBooking.pickup_zone === 'walk-in';

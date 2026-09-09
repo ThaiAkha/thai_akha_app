@@ -19,6 +19,13 @@ interface LogisticWalkInColumnProps {
     selectedBookingId: string | null;
     onSelectBooking: (id: string) => void;
     onMoveItem: (itemId: string, direction: 'up' | 'down' | 'to-driver', targetDriverId?: string) => void;
+    /**
+     * In RICONSEGNA la meta' walk-in di questa colonna non si mostra: "walk-in" e' una
+     * categoria del ritiro, e un elenco vuoto la' avrebbe detto "nessuno arriva da se'"
+     * mentre la verita' e' che la domanda non si applica. Il gruppo "da assegnare" resta,
+     * perche' in riconsegna serve a tutti, walk-in compresi.
+     */
+    showWalkIn: boolean;
 }
 
 export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
@@ -27,12 +34,14 @@ export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
     drivers,
     selectedBookingId,
     onSelectBooking,
-    onMoveItem
+    onMoveItem,
+    showWalkIn
 }) => {
     const { t } = useTranslation('logistics');
 
     return (
         <div className="w-[320px] flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 bg-surface shadow-sm overflow-hidden">
+            {showWalkIn && (<>
             {/* Header walk-in */}
             <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
                 <div className="flex items-center gap-2">
@@ -63,6 +72,7 @@ export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
                     onSelectBooking={onSelectBooking}
                 />
             </div>
+            </>)}
 
             {/* Intestazione "da assegnare": e' un'intestazione vera, non appiccicata in
                 cima allo scroll, quindi resta leggibile anche con la lista lunga. Porta

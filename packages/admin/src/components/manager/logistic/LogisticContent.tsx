@@ -87,6 +87,7 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
                         selectedBookingId={selectedBookingId}
                         onSelectBooking={onSelectBooking}
                         onMoveItem={moveItem}
+                        showWalkIn={logisticsMode === 'pickup'}
                     />
 
                     {/* Driver Columns */}

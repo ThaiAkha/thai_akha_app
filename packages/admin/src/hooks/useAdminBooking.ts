@@ -218,7 +218,13 @@ export const useAdminBooking = () => {
     useEffect(() => {
         const fetchMeetingPoints = async () => {
             try {
-                const { data, error } = await supabase.from('meeting_points').select('id, name, point_type').order('name');
+                // Solo punti ATTIVI e non di sola riconsegna: qui si scegle un luogo di RITIRO.
+                // Prima la lista prendeva tutti e 12 i punti, spenti e mercati compresi.
+                const { data, error } = await supabase.from('meeting_points')
+                    .select('id, name, point_type')
+                    .eq('active', true)
+                    .neq('point_type', 'dropoff')
+                    .order('name');
                 console.log("[useAdminBooking] Meeting Points query result:", { data, error });
                 if (error) {
                     console.error("Meeting Points error:", error);
@@ -339,7 +345,11 @@ export const useAdminBooking = () => {
                 pickup_time: pickupTime || null,
                 pickup_lat: hotel?.lat || null,
                 pickup_lng: hotel?.lng || null,
-                pickup_driver_uid: defaultDriverId,
+                // Un walk-in non ha autista di ritiro: assegnarlo per default creava
+                // proprio lo stato che il planner nasconde (riga invisibile nelle colonne
+                // autista) mentre la fermata compariva comunque sul telefono dell'autista.
+                // La RICONSEGNA resta: chi arriva da se' viene comunque riportato indietro.
+                pickup_driver_uid: zoneForBooking === WALK_IN_ZONE ? null : defaultDriverId,
                 dropoff_hotel: hotel?.name || hotelSearchQuery || null,
                 dropoff_zone: zoneForBooking,
                 dropoff_lat: hotel?.lat || null,

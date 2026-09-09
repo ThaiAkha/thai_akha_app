@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Calendar, CheckCircle, BookOpen, Star, Award, AlertTriangle } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { pickupPlaceUnset } from '@thaiakha/shared/lib/pickupCategory';
 import type { UserDashboardBooking, DashboardMenuSelection } from '@thaiakha/shared/types';
 
 interface ContextualStatsViewProps {
@@ -46,7 +47,9 @@ const ContextualStatsView: React.FC<ContextualStatsViewProps> = ({
     [activeBooking?.booking_date]
   );
 
-  const hotelPending = activeBooking?.hotel_name === 'To be selected';
+  // Vedi DashboardTab: confronto con una stringa mai scritta, quindi questo allarme
+  // non si e' mai acceso.
+  const hotelPending = !!activeBooking && pickupPlaceUnset(activeBooking.hotel_name, activeBooking.meeting_point);
 
   const dishCount = useMemo(() => {
     if (!menuSelection) return 0;

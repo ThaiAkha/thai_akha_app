@@ -270,7 +270,15 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                                         // La riconsegna NON si tocca: chi arriva da se'
                                         // viene comunque riportato indietro.
                                         updates.pickup_driver_uid = null;
-                                    } else if (selectedBooking.pickup_zone === WALK_IN_ZONE) {
+                                    } else {
+                                        // Un punto di citta' NON ha zona, e la zona del
+                                        // luogo precedente non va tenuta: prima si puliva
+                                        // solo se valeva 'walk-in', quindi passando da un
+                                        // hotel in zona vera a un punto la zona sopravviveva.
+                                        // Effetto: scheda colorata come l'hotel di prima,
+                                        // badge con quella zona e il suo orario, e il
+                                        // pulsante "Reset to zone" che offriva l'orario
+                                        // dell'hotel a una fermata che e' all'aeroporto.
                                         updates.pickup_zone = ZONE_UNSET;
                                     }
                                 }
@@ -278,7 +286,13 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                             }}
                         >
                             <option value="">{t('inspector.selectMP')}</option>
-                            {meetingPoints.map(mp => (
+                            {/* I punti di sola RICONSEGNA (i due mercati del weekend) non
+                                sono luoghi di ritiro: non hanno orari di ritiro, e uno
+                                scelto qui manderebbe un autista al mercato della domenica
+                                per una classe del mattino. La FK non li ferma, guarda l'id
+                                e non il tipo. Il front questo filtro ce l'ha da tempo
+                                (useMeetingPoints), l'admin no. */}
+                            {meetingPoints.filter(mp => mp.point_type !== 'dropoff').map(mp => (
                                 <option key={mp.id} value={mp.id}>
                                     {mp.name}{mp.morning_pickup_time ? ` · ${selectedBooking.session_id === 'morning_class' ? mp.morning_pickup_time.slice(0, 5) : (mp.evening_pickup_time?.slice(0, 5) ?? '')}` : ''}
                                 </option>

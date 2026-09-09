@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, Circle, Copy } from 'lucide-react';
 import { cn } from '@thaiakha/shared/lib/utils';
+import { pickupPlaceUnset } from '@thaiakha/shared/lib/pickupCategory';
 import { Button, Icon } from '../ui';
 import Typography from '../ui/Typography';
 import type { UserProfile, UserDashboardBooking, DashboardMenuSelection } from '@thaiakha/shared/types';
@@ -30,7 +31,9 @@ const CardOverviewBooking: React.FC<CardOverviewBookingProps> = ({
     || (booking.session_id?.includes('morning') ? 'Morning Class' : 'Evening Class');
 
   const menuDone     = menuSelection?.booking_id === booking.internal_id;
-  const pickupDone   = booking.hotel_name && booking.hotel_name !== 'To be selected';
+  // Vedi DashboardTab: il confronto era con una stringa che nessuno scrive, quindi il
+  // passo "pickup" risultava spuntato anche a chi non aveva scelto niente.
+  const pickupDone   = !pickupPlaceUnset(booking.hotel_name, booking.meeting_point);
   const passportDone = userProfile?.dietary_profile && userProfile.dietary_profile !== 'diet_regular';
 
   const paxCount       = booking.pax_count ?? 1;

@@ -24,8 +24,14 @@ const DriverRoute: React.FC = () => {
     const { confirmId, phase, setPhase, showPayoutModal, setShowPayoutModal, payoutAmount, startRouteClicks, activeDate, setActiveDate, sessionFilter, setSessionFilter, STATUS_CONFIG, visibleStops, completedPax, totalPax, isRouteStarted, firstIncompleteIndex, handleClickAction, handleStartRoute } = route;
 
     // 9. UTILS
-    const openMap = (hotel: string) =>
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel + " Chiang Mai")}`, '_blank');
+    // `hotel_name` e' nullable nel database anche se l'interfaccia Stop lo dichiara
+    // string: sulle prenotazioni con punto d'incontro e' vuoto, e la query diventava
+    // letteralmente "null Chiang Mai" o " Chiang Mai". Senza un luogo non si apre niente.
+    const openMap = (hotel: string | null | undefined) => {
+        const place = (hotel ?? '').trim();
+        if (!place) return;
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place} Chiang Mai`)}`, '_blank');
+    };
 
     const handleWhatsApp = (phone: string) =>
         window.open(`https://wa.me/${phone?.replace(/[^0-9]/g, '')}?text=Sawasdee%20kha%20Driver%20is%20at%20lobby`, '_blank');

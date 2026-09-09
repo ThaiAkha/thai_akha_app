@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { getLiveGeminiClient } from '../services/geminiClient';
 import type { LiveServerMessage, LiveSendClientContentParameters, LiveSendRealtimeInputParameters, Session } from '@google/genai';
 import { buildCherryPrompt, cherryFront } from '../prompts/cherryPrompt';
-import { checkRateLimit, getGuestSessionToken, getUserBookingState } from '@thaiakha/shared/services';
+import { getUserBookingState } from '@thaiakha/shared/services';
 import { tObj } from '../i18n';
 import { getAllStaticKnowledge, STATIC_KNOWLEDGE_UNAVAILABLE } from '@thaiakha/shared/data/cherryKnowledge';
 import type { UserProfile } from '@thaiakha/shared/types';
@@ -127,12 +127,13 @@ export const useGeminiLive = (
     const startSession = async (overrideInstruction?: string, initialPrompt?: string) => {
         if (state.status !== 'idle') stopSession();
 
-        // Rate limit check before connecting
-        const rateLimit = await checkRateLimit(userProfile?.id, getGuestSessionToken() ?? undefined);
-        if (!rateLimit.allowed) {
-            setState(prev => ({ ...prev, status: 'error', error: rateLimit.reason ?? 'Voice limit reached.' }));
-            return;
-        }
+        // Il tetto per la voce NON esiste piu' qui, e non e' una rimozione: non
+        // esisteva. La RPC `check_chat_rate_limit` risponde da mesi
+        // "limits disabled, 999999" (nel suo sorgente c'e' il commento "BYPASS
+        // TEMPORANEO - rimuovere queste 2 righe per riattivare i limiti"), quindi
+        // questa chiamata costava un giro di rete a ogni apertura della voce e
+        // rispondeva sempre di si'. La chat testo l'ha persa il 2026-09-07, la
+        // voce oggi. Un tetto vero, se serve, va nella edge come per i contatti.
 
         setState(prev => ({ ...prev, status: 'connecting', error: null }));
 

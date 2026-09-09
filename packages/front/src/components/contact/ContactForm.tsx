@@ -72,7 +72,10 @@ export const ContactForm: React.FC<{ className?: string }> = ({ className }) => 
     if (error || !(data as { ok?: boolean } | null)?.ok) {
       console.error('[ContactForm] submit-contact:', error);
       setStatus('error');
-      setFeedback(t('contact:form.error'));
+      // 503 = il form non e' configurato (manca il segreto della verifica): il
+      // messaggio tradotto offre gia' WhatsApp, qui si aggiunge l'email.
+      const status = (error as { context?: { status?: number } } | null)?.context?.status;
+      setFeedback(status === 503 ? `${t('contact:form.error')} office@thaiakhakitchen.com` : t('contact:form.error'));
       handleRef.current?.reset();
       setToken('');
       return;

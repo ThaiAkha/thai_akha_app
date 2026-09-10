@@ -163,3 +163,49 @@ test('senza sapere il luogo di ritiro, una destinazione vale come diversa', () =
     assert.equal(dropoffPosition(true, 'Rimping Village', true, null), 'elsewhere');
     assert.equal(dropoffPosition(true, 'Rimping Village', true), 'elsewhere');
 });
+
+// ── lo stato per NOME (bookings.dropoff_mode), dal 2026-09-10 ───────────────
+// Quando il nome c'e', decide lui: i quattro parametri di prima sono SINTOMI, e i
+// sintomi sbagliano. Ogni caso qui sotto passa di proposito dei vecchi valori che
+// da soli darebbero una risposta diversa: e' la prova che il nome vince.
+
+test('nome "none" -> walk-off, anche se i vecchi campi direbbero altro', () => {
+    assert.equal(dropoffPosition(true, null, true, null, { mode: 'none' }), 'walk_off');
+});
+
+test('nome "hotel" -> luogo diverso', () => {
+    assert.equal(dropoffPosition(true, 'Shangri-La', true, null, { mode: 'hotel' }), 'elsewhere');
+});
+
+test('nome "point" -> luogo diverso ANCHE senza dropoff_hotel', () => {
+    // E' il caso che si sbagliava: la destinazione vive in dropoff_meeting_point e
+    // dropoff_hotel e' NULL, quindi il vecchio ramo rispondeva "stesso posto" e il
+    // pannello diceva «riportalo dove l'hai preso» a chi va all'aeroporto (TAK00189).
+    assert.equal(
+        dropoffPosition(true, null, true, null, { mode: 'point', meetingPoint: 'mp_airport_gate1' }),
+        'elsewhere'
+    );
+    // controprova: senza il nome, gli stessi identici valori sbagliano
+    assert.equal(dropoffPosition(true, null, true, null), 'same');
+});
+
+test('nome "to_define" -> NESSUNA posizione accesa', () => {
+    // Come pickupPosition per il ritiro non scelto: e' il valore di partenza di ogni
+    // prenotazione con punto d'incontro, e accendere un pulsante vorrebbe dire
+    // scegliere al posto del manager, in massa.
+    assert.equal(dropoffPosition(true, null, true, null, { mode: 'to_define' }), null);
+    assert.equal(dropoffPosition(false, 'Shangri-La', true, null, { mode: 'to_define' }), null);
+});
+
+test('nome "same" -> stesso posto, e degrada solo se il ritiro non lo permette', () => {
+    assert.equal(dropoffPosition(true, null, true, null, { mode: 'same' }), 'same');
+    // walk-in: "riportami dove mi avete preso" non vuol dire niente per chi e'
+    // arrivato a piedi. Vietato nel database dal 10/09; qui resta la difesa.
+    assert.equal(dropoffPosition(true, null, false, null, { mode: 'same' }), 'elsewhere');
+});
+
+test('nome assente -> si ripiega sui vecchi campi, comportamento invariato', () => {
+    assert.equal(dropoffPosition(false, null, true, null, undefined), 'walk_off');
+    assert.equal(dropoffPosition(true, null, true, null, {}), 'same');
+    assert.equal(dropoffPosition(true, null, true, null, { mode: null }), 'same');
+});

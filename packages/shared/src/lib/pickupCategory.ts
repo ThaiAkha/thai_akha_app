@@ -131,7 +131,26 @@ export function pickupPosition(
  * `sameAsPickupAllowed` e' falso quando il ritiro e' un walk-in: "riportalo dove l'abbiamo
  * preso" non esiste per chi non e' stato preso da nessuna parte (regola dell'owner).
  */
-export type DropoffPosition = 'walk_off' | 'same' | 'elsewhere';
+/** `null` = nessuna posizione accesa: la riconsegna non e' ancora stata decisa. */
+export type DropoffPosition = 'walk_off' | 'same' | 'elsewhere' | null;
+
+/**
+ * Lo stato della riconsegna come lo tiene il database, per NOME.
+ *
+ * Dal 2026-09-10 `bookings.dropoff_mode` porta cinque nomi invece di una booleana che
+ * significava due cose opposte (nel sito "spento" voleva dire «riportami dove mi avete
+ * preso», nel planner `false` voleva dire «non riportarmi»: 11 righe su 61 erano in uno
+ * stato che nessuno aveva scelto).
+ */
+export type DropoffMode = 'same' | 'to_define' | 'none' | 'point' | 'hotel';
+
+/** Cio' che il database sa della riconsegna di una prenotazione. */
+export interface DropoffState {
+    /** `bookings.dropoff_mode`. Assente = riga non ancora convertita: si ripiega sui vecchi campi. */
+    mode?: DropoffMode | string | null;
+    /** `bookings.dropoff_meeting_point`. Vale solo con mode 'point'. */
+    meetingPoint?: string | null;
+}
 
 export function dropoffPosition(
     requiresDropoff: boolean | null | undefined,
@@ -144,8 +163,44 @@ export function dropoffPosition(
      * l'ispettore accendeva "luogo diverso" su tutto. Il front la stessa domanda la fa
      * da tempo: `dropoff_hotel && dropoff_hotel !== hotel_name` (useBookingLoader).
      */
-    pickupHotel?: string | null
+    pickupHotel?: string | null,
+    /**
+     * Lo stato scritto per NOME. Quando c'e', decide lui: e' il dato, non un indizio.
+     *
+     * Aggiunto in coda e facoltativo di proposito, per non rompere i chiamanti mentre
+     * migrano. Non e' la forma definitiva: quando tutti passano il nome, i quattro
+     * parametri di sopra diventano il ripiego e questa firma va accorciata.
+     */
+    stato?: DropoffState
 ): DropoffPosition {
+    // ── IL NOME, quando c'e', VIENE PRIMA DI TUTTO ────────────────────────────
+    // Non e' una preferenza di stile: i vecchi parametri sono SINTOMI, e i sintomi
+    // sbagliano. Una riga diretta a un punto di riconsegna ha la destinazione in
+    // `dropoff_meeting_point` e `dropoff_hotel` NULL: dedotta dai sintomi diventa
+    // "stesso posto", cioe' il pannello dice «riportalo dove l'hai preso» a chi va
+    // all'aeroporto. Misurato su TAK00189 il 2026-09-10.
+    const mode = stato?.mode ?? null;
+    if (mode) {
+        switch (mode) {
+            case 'none':      return 'walk_off';
+            case 'hotel':     return 'elsewhere';
+            case 'point':     return 'elsewhere';
+            // 'to_define' NON accende nessuna posizione, come `pickupPosition` per il
+            // ritiro non ancora scelto: e' il valore di partenza di OGNI prenotazione con
+            // punto d'incontro, e accendere un pulsante vorrebbe dire scegliere al posto
+            // del manager, in massa. Il pannello mostra "da definire" e una riga che dice
+            // di chi e' il turno - mai il vuoto muto, che si legge come guasto.
+            case 'to_define': return null;
+            case 'same':
+                // `sameAsPickupAllowed` resta come difesa, non come traduttore: dal
+                // 2026-09-10 "stesso posto" con ritiro walk-in e' vietato nel database
+                // (non si riporta dove non si e' preso nessuno). Se arriva lo stesso,
+                // meglio "luogo diverso" che una posizione che la UI non sa disegnare.
+                return sameAsPickupAllowed ? 'same' : 'elsewhere';
+        }
+    }
+
+    // ── RIPIEGO per le righe non ancora convertite (mode assente) ─────────────
     // Solo un `false` esplicito significa "se ne va da se'": NULL nel database vale
     // "il ritorno serve", come fa il lettore della pagina.
     if (requiresDropoff === false) return 'walk_off';

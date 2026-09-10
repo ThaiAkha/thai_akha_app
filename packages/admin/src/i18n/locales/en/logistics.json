@@ -50,6 +50,7 @@
     "fieldHotel": "Hotel / Location",
     "fieldMP": "Meeting Point",
     "selectMP": "-- Select meeting point --",
+    "pickupPlaceRequired": "Pick the exact place from the list before saving. Without it the booking keeps only its zone, and nobody can tell where the guest is waiting.",
     "pickupTime": "Pickup Time",
     "resetToZone": "Reset to zone ({{time}})",
     "pickup": "Pickup",

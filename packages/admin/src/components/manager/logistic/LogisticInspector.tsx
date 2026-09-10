@@ -23,9 +23,10 @@ import {
 } from '../../../hooks/useManagerLogistic';
 import {
     pickupPosition, type PickupPosition,
+    pickupPlaceUnset,
     dropoffPosition, type DropoffPosition,
 } from '@thaiakha/shared/lib/pickupCategory';
-import { Caption, SectionTitle } from '../../typography';
+import { Caption, Paragraph, SectionTitle } from '../../typography';
 
 // ---------- Main Inspector ----------
 interface LogisticInspectorProps {
@@ -95,6 +96,40 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
         selectedBooking.meeting_point_type,
         selectedBooking.hotel_name
     );
+
+    /**
+     * REGOLA DEL PROPRIETARIO (2026-09-10): «qualunque punto, hotel meeting e walkin, non
+     * possono esistere senza aver definito il punto esatto tra le liste, mai vuoto, se
+     * vuoto messaggio errore».
+     *
+     * Il sentinello `''` resta legittimo MENTRE si sceglie - e' quello che tiene accesa la
+     * posizione giusta invece di far saltare il comando (vedi `pickupPosition`). Quello che
+     * non deve piu' poter accadere e' SALVARLO: al salvataggio `''` diventa NULL
+     * (`useManagerLogistic`, payload `meeting_point: item.meeting_point || null`), la
+     * modalita' si perde, e la riga resta segnata **solo dalla zona** - cioe' invisibile a
+     * ogni regola basata sul tipo del punto, che e' il criterio canonico del ritiro. E'
+     * esattamente cosi' che sono nate le 4 righe walk-in senza punto misurate il
+     * 2026-09-10, tutte finite in uno stato che nessuno aveva scelto.
+     *
+     * Non e' quindi un pulsante che scrive a meta': e' un salvataggio permesso a meta'
+     * strada. La rete va sul Save, non sulla scrittura.
+     *
+     * Sull'HOTEL non serve verificare che venga dall'elenco: `SearchableHotelSelect` chiama
+     * `onChange` **solo** quando si sceglie una voce (digitare aggiorna la sua query
+     * interna, non la prenotazione). Resta da escludere il vuoto e il segnaposto che il
+     * sito scrive alla nascita, che e' precisamente cio' che `pickupPlaceUnset` riconosce.
+     *
+     * POSIZIONE NULL NON SI BLOCCA. «Mai vuoto» vale per una posizione SCELTA; "nessuno ha
+     * ancora deciso" e' uno stato di partenza legittimo (ogni prenotazione nata dal sito
+     * ci passa). Bloccarlo vorrebbe dire non poter piu' salvare un telefono o una nota su
+     * una prenotazione nuova, e trasformerebbe un guardiano in un blocco del lavoro.
+     */
+    const pickupPlaceMissing =
+        position === 'hotel'
+            ? pickupPlaceUnset(selectedBooking.hotel_name, null)
+            : (position === 'meeting_point' || position === 'walk_in')
+                ? !(selectedBooking.meeting_point ?? '').trim()
+                : false;
 
     /** Ogni posizione riparte da zero sull'orario: ognuna lo prende dalla propria fonte. */
     const goToPosition = (next: Exclude<PickupPosition, null>) => {
@@ -448,6 +483,18 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         </SelectField>
                     )}
 
+                    {/* Il motivo del blocco sta sotto il campo che lo risolve: delle tre
+                        posizioni ne rende una sola alla volta, quindi questo messaggio
+                        cade sempre accanto al controllo giusto. Il proprietario ha chiesto
+                        un "messaggio errore", non un pulsante spento in silenzio: uno
+                        spegnimento muto si legge come guasto dell'app, non come una cosa
+                        che manca. Taglia `text-sm`: nei planner il pavimento e' 14px
+                        (ADMIN_PLANNER_UX), e un testo che spiega perche' non si salva e'
+                        informativo, non di contorno. */}
+                    {pickupPlaceMissing && (
+                        <Paragraph size="sm" className="text-error">{t('inspector.pickupPlaceRequired')}</Paragraph>
+                    )}
+
                     {/* Pickup Time */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -506,8 +553,12 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
 
                     {dropoffPos === 'elsewhere' && (
                         <>
+                            {/* Stessa taglia del gemello del ritiro: sono lo stesso ruolo
+                                (spiegare perche' il Save non passa) e non possono stare a
+                                due misure nello stesso pannello. Da `Caption` (12px) a
+                                `text-sm`, che e' il pavimento dei planner. */}
                             {dropoffMissing && (
-                                <Caption className="text-error">{t('inspector.dropoffRequired')}</Caption>
+                                <Paragraph size="sm" className="text-error">{t('inspector.dropoffRequired')}</Paragraph>
                             )}
                             {/* Drop-off Hotel */}
                             <SearchableHotelSelect
@@ -539,9 +590,13 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                 `type="submit"`: chiude il <form> radice, quindi Enter continua a salvare e
                 non serve piu' alcun evento fabbricato dall'header. */}
             <InspectorFooter>
-                {/* Bloccato SOLO su questa invariante: un walk-in che chiede il rientro
-                    senza destinazione non e' consegnabile, e salvarlo non aiuta nessuno. */}
-                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving || dropoffMissing} startIcon={<Save className="w-4 h-4" />}>
+                {/* DUE invarianti, entrambe col motivo scritto accanto al campo che le
+                    risolve (vedi `pickupPlaceMissing` e `dropoffMissing`):
+                    · il ritiro ha una posizione scelta ma non il luogo esatto - salvarlo
+                      cancella la posizione e lascia la riga segnata solo dalla zona;
+                    · un walk-in che chiede il rientro senza destinazione non e'
+                      consegnabile, e salvarlo non aiuta nessuno. */}
+                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving || pickupPlaceMissing || dropoffMissing} startIcon={<Save className="w-4 h-4" />}>
                     {isSaving ? t('actions.saving') : t('actions.save')}
                 </InspectorPrimaryButton>
             </InspectorFooter>

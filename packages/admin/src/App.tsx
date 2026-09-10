@@ -99,7 +99,16 @@ function App() {
               <Route path="/manager-booking" element={<ProtectedRoute allowedRoles={['manager']}><ManagerBooking /></ProtectedRoute>} />
               <Route path="/manager-reports" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ManagerReports /></ProtectedRoute>} />
               <Route path="/manager-home" element={<ProtectedRoute allowedRoles={['manager']}><ManagerHome /></ProtectedRoute>} />
-              <Route path="/manager-logistics" element={<ProtectedRoute allowedRoles={['manager', 'logistics']}><ManagerLogistic onNavigate={() => { }} /></ProtectedRoute>} />
+              {/* DECISIONE DEL PROPRIETARIO (2026-09-10): il Driver Planner e' di admin e
+                  manager, e basta. `logistics` esce: e' l'account della spesa al mercato
+                  (logistic@thaiakha.com), e la parola nomina due mestieri diversi nel
+                  progetto. Non gli toglie niente, perche' non puo' nemmeno LEGGERE le
+                  prenotazioni: la policy di lettura di `bookings` ammette il proprietario
+                  della riga, chi si e' unito al gruppo, e admin/manager/kitchen. La rotta
+                  era quindi una porta su una stanza vuota. `admin` entra: ha priorita' 1
+                  sulle decisioni di ritiro e riconsegna, e fino a oggi non poteva aprire
+                  la pagina dove quella priorita' si esercita. */}
+              <Route path="/manager-logistics" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ManagerLogistic onNavigate={() => { }} /></ProtectedRoute>} />
               <Route path="/driver" element={<ProtectedRoute allowedRoles={['admin', 'manager', 'driver']}><DriverRoute /></ProtectedRoute>} />
               <Route path="/market-shop" element={<ProtectedRoute allowedRoles={['manager', 'kitchen', 'logistics']}><MarketShop /></ProtectedRoute>} />
               <Route path="/admin-market-plan" element={<ProtectedRoute allowedRoles={['manager', 'kitchen', 'logistics']}><MarketShop /></ProtectedRoute>} />

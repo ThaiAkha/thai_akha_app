@@ -186,9 +186,17 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
             // nel database, quindi ogni prenotazione nasce chiedendo il ritorno, walk-in
             // compresi, e il comando per dire il contrario non esisteva.
             // MA solo se nessuno ha ancora deciso il ritorno: una riconsegna configurata
-            // apposta (destinazione o autista) non si disfa da sola. Se la macchina
-            // cancellasse una scelta dell'operatore sarebbe lo stesso guasto del comando
-            // che cambiava posizione da solo.
+            // apposta (destinazione o autista) non si disfa da sola.
+            //
+            // ATTENZIONE, LA GARANZIA E' PIU' DEBOLE DI COME SUONA, dal 2026-09-10: da
+            // quando "stesso posto" si scrive come un'ASSENZA (nome `same`, destinazione
+            // vuota, per non rifabbricare le copie), questo controllo non distingue piu'
+            // "nessuno ha deciso" da "stesso posto, deciso apposta". Quindi un `same`
+            // voluto viene convertito in `none` senza dirlo.
+            // Oggi l'esito e' comunque giusto - per un walk-in "stesso posto" non vuol
+            // dire niente e "se ne va da se'" e' il default - ma chi aggiungera' la
+            // PROSSIMA transizione appoggiandosi a questa promessa la trovera' falsa:
+            // per distinguere davvero serve guardare `dropoff_mode`, non l'assenza.
             // Il nome va scritto INSIEME alla booleana: `dropoffPlace` da' la precedenza
             // al nome, quindi spegnere il ritorno lasciando `dropoff_mode` com'era
             // significa che il nome vecchio continua a vincere sul dato fresco.
@@ -232,6 +240,14 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
      * mai toccata ha `dropoff_hotel` NULL e non viene bloccata - altrimenti non si potrebbe
      * piu' salvare un telefono su una prenotazione normale, e un guardiano diventerebbe un
      * blocco del lavoro.
+     *
+     * UNA GUARDIA E' STATA TOLTA, DI PROPOSITO. Prima un walk-in che chiedeva il rientro
+     * senza destinazione non si poteva salvare. Ora "da definire" e' salvabile da tutti,
+     * walk-in compresi, perche' e' uno stato di riposo legittimo e non un errore: e' quello
+     * in cui nasce ogni prenotazione con punto d'incontro (TAK00148 ci sta da luglio).
+     * Vietarlo avrebbe voluto dire non poter piu' salvare NIENTE su quelle righe finche'
+     * qualcuno non decideva il ritorno al posto dell'ospite. Cio' che resta vietato e'
+     * l'altra cosa: dire "hotel" o "punto" e non dire QUALE.
      */
     const dropoffPlaceMissing =
         dropoffPlaceNow === 'hotel'
@@ -713,11 +729,11 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                 non serve piu' alcun evento fabbricato dall'header. */}
             <InspectorFooter>
                 {/* DUE invarianti, entrambe col motivo scritto accanto al campo che le
-                    risolve (vedi `pickupPlaceMissing` e `dropoffMissing`):
+                    risolve (vedi `pickupPlaceMissing` e `dropoffPlaceMissing`):
                     · il ritiro ha una posizione scelta ma non il luogo esatto - salvarlo
                       cancella la posizione e lascia la riga segnata solo dalla zona;
-                    · un walk-in che chiede il rientro senza destinazione non e'
-                      consegnabile, e salvarlo non aiuta nessuno. */}
+                    · il ritorno ha un TIPO di luogo scelto ma non il posto preciso - una
+                      riconsegna senza destinazione non si puo' guidare. */}
                 <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving || pickupPlaceMissing || dropoffPlaceMissing} startIcon={<Save className="w-4 h-4" />}>
                     {isSaving ? t('actions.saving') : t('actions.save')}
                 </InspectorPrimaryButton>

@@ -9,6 +9,7 @@ import { supabase } from '@thaiakha/shared/lib/supabase';
 import { authService, UserProfile } from '../../../services/auth.service';
 import type { Stop, TransportStatus } from '../../../components/driver/TransportStopCard';
 import { STATUS_STATIC, type Phase, type SessionFilter } from './driverRouteConfig';
+import { DRIVER_PAYOUT_AUTO } from '../../../config/driver';
 
 export function useDriverRoute() {
     const { t, i18n } = useTranslation('driver');
@@ -233,8 +234,10 @@ export function useDriverRoute() {
 
             if (error) throw error;
 
-            // All drop-offs complete → trigger payout
-            if (nextStatus === 'dropped_off' && phase === 'DROPOFF') {
+            // Ultima riconsegna confermata -> payout, SE l'interruttore e' acceso.
+            // `calculate_driver_payout` non calcola e basta: scrive in `driver_payments`.
+            // Vedi `config/driver.ts` per il perche' oggi parte spento.
+            if (DRIVER_PAYOUT_AUTO && nextStatus === 'dropped_off' && phase === 'DROPOFF') {
                 const allComplete = stops
                     .filter(s => s.session_id === sessionFilter && s.requires_dropoff !== false)
                     .every(s => s.internal_id === stop.internal_id || s.transport_status === 'dropped_off');

@@ -1,5 +1,5 @@
 // GENERATO DA gen-cherry-facts - NON EDITARE A MANO
-// generato: 2026-09-07
+// generato: 2026-09-10
 // Un caricatore per lingua: import dinamico, cosi' il bundle porta solo la lingua che serve.
 
 import type { CherryFacts } from '../types';

@@ -1,5 +1,5 @@
 // GENERATO DA gen-cherry-facts - NON EDITARE A MANO
-// lang: it | generato: 2026-09-07
+// lang: it | generato: 2026-09-10
 // Sorgenti: cooking_classes, class_sessions, meeting_points, business_profile,
 // recipes + content_categories, dietary_profiles e i sidecar *_translations
 // (campo per campo, con ricaduta sull inglese). Per cambiare un fatto: aggiorna
@@ -9,7 +9,7 @@ import type { CherryFacts } from '../types';
 
 export const CHERRY_FACTS_IT: CherryFacts = {
   "lang": "it",
-  "generatedAt": "2026-09-07",
+  "generatedAt": "2026-09-10",
   "business": {
     "name": "Thai Akha Kitchen",
     "legalName": "Thai Akha Kitchen Limited Partnership",
@@ -393,8 +393,8 @@ export const CHERRY_FACTS_IT: CherryFacts = {
       "dropoffDescription": null,
       "isDropoff": false,
       "morning": {
-        "from": "08:50",
-        "to": "09:00"
+        "from": "09:00",
+        "to": null
       },
       "evening": null
     }

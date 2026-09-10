@@ -48,7 +48,23 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
     const { days } = useDaysOverview(6); // nav giorni riusabile (oggi → +6)
     const daySession: DaySession = selectedSessionId === 'evening_class' ? 'evening_class' : 'morning_class';
 
-    const [pendingReorder, setPendingReorder] = useState<LogisticsItem[] | null>(null);
+    /**
+     * Il riordino in sospeso si porta dietro LA GAMBA in cui e' nato.
+     *
+     * Prima era il solo elenco, e `handleSaveOrder` leggeva `logisticsMode` **al momento
+     * del salvataggio**. Siccome il riordino sopravvive al cambio di modalita' e di
+     * giorno (si azzera solo salvando o annullando), bastava riordinare il ritorno e poi
+     * aprire una scheda - che riportava la lavagna al ritiro - perche' il salvataggio
+     * scrivesse `route_order`, cioe' l'ordine del RITIRO, con la sequenza del ritorno.
+     * Nessun errore, nessun avviso: il giro del mattino riordinato di nascosto.
+     *
+     * La modalita' corrente e' lo stato della VISTA e cambia mentre si guarda. La gamba
+     * di un riordino e' un fatto di quel riordino, deciso quando e' avvenuto: va tenuta
+     * con lui, non riletta dopo.
+     */
+    const [pendingReorder, setPendingReorder] = useState<
+        { items: LogisticsItem[]; mode: 'pickup' | 'dropoff' } | null
+    >(null);
     const [isSavingOrder, setIsSavingOrder] = useState(false);
     const [logisticsMode, setLogisticsMode] = useState<'pickup' | 'dropoff'>('pickup');
     const [selectedDriverIds, setSelectedDriverIds] = useState<Set<string>>(new Set());
@@ -76,8 +92,11 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
     }, [drivers, selectedDriverIds.size]);
 
     const handleReorder = useCallback((reorderedItems: LogisticsItem[], mode: 'pickup' | 'dropoff') => {
-        setPendingReorder(reorderedItems);
-        setLogisticsMode(mode);
+        // `setLogisticsMode(mode)` era qui e non faceva niente: il riordino puo' nascere
+        // solo dalla modalita' che si sta guardando (`useLogisticMovement` passa la
+        // propria `logisticsMode`), quindi riassegnava il valore che c'era gia'. Ora che
+        // la gamba viaggia col riordino, tenerlo sarebbe anche fuorviante.
+        setPendingReorder({ items: reorderedItems, mode });
     }, []);
 
     const handleActivateDriver = useCallback((driverId: string) => {
@@ -100,9 +119,10 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
         setIsSavingOrder(true);
 
         try {
-            // Batch update based on logistics mode
-            for (const [idx, item] of pendingReorder.entries()) {
-                const dbUpdate = logisticsMode === 'pickup'
+            // La gamba viene dal riordino, NON da `logisticsMode`: quest'ultima e' la
+            // vista di adesso, che puo' essere cambiata dopo il riordino.
+            for (const [idx, item] of pendingReorder.items.entries()) {
+                const dbUpdate = pendingReorder.mode === 'pickup'
                     ? {
                         route_order: idx,
                         pickup_driver_uid: item.pickup_driver_uid,
@@ -128,7 +148,7 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
         } finally {
             setIsSavingOrder(false);
         }
-    }, [pendingReorder, fetchData, logisticsMode, reportActionError]);
+    }, [pendingReorder, fetchData, reportActionError]);
 
 
     return (
@@ -147,7 +167,13 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                         days={days}
                         selectedDate={selectedDate}
                         selectedSession={daySession}
-                        onSelect={(date, session) => { initialDayRef.current = true; setSelectedDate(date); setSelectedSessionId(session); setLogisticsMode('pickup'); }}
+                        // Cambiare giorno NON riporta al ritiro: chi guarda i ritorni di
+                        // lunedi' vuole vedere i ritorni di martedi'. Il
+                        // `setLogisticsMode('pickup')` che stava qui e' gemello di quello
+                        // sul clic della scheda, ed e' stato tolto insieme a lui:
+                        // sistemarne uno solo lasciava il salto a volte si' e a volte no,
+                        // che e' peggio di un salto sempre.
+                        onSelect={(date, session) => { initialDayRef.current = true; setSelectedDate(date); setSelectedSessionId(session); }}
                     />
                 }
                 toolbar={
@@ -202,10 +228,13 @@ const ManagerLogistic: React.FC<{ onNavigate: (page: string) => void }> = ({ onN
                         items={items}
                         drivers={drivers}
                         selectedBookingId={selectedBookingId}
-                        onSelectBooking={(id) => {
-                            setSelectedBookingId(id);
-                            setLogisticsMode('pickup');
-                        }}
+                        // Aprire una scheda NON cambia la gamba che si sta guardando.
+                        // Il `setLogisticsMode('pickup')` che stava qui riportava la
+                        // lavagna al ritiro a OGNI clic in riconsegna (segnalato dal
+                        // proprietario il 2026-09-10). Se la ragione era che l'ispettore
+                        // nasceva per il solo ritiro, e' scaduta: da ieri ha il blocco
+                        // della riconsegna con le sue tre posizioni.
+                        onSelectBooking={setSelectedBookingId}
                         onReorder={handleReorder}
                         logisticsMode={logisticsMode}
                         selectedDriverIds={selectedDriverIds}

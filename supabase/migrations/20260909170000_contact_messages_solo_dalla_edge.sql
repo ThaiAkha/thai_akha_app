@@ -39,7 +39,7 @@
 drop policy if exists "anon can insert" on public.contact_messages;
 
 comment on table public.contact_messages is
-  'Messaggi del form Contact Us. Dal 2026-09-09 NESSUNA scrittura anonima diretta: si entra solo dalla edge `submit-contact`, che verifica il gettone Cloudflare Turnstile e poi scrive col service_role. La validazione delle lunghezze vive nella edge, non piu' in una policy. Lo staff legge e gestisce (policy staff can read / staff can update); il trigger send-contact-notification manda la notifica.';
+  'Messaggi del form Contact Us. Dal 2026-09-09 NESSUNA scrittura anonima diretta: si entra solo dalla edge `submit-contact`, che verifica il gettone Cloudflare Turnstile e poi scrive col service_role. La validazione delle lunghezze vive nella edge, non piu'' in una policy. Lo staff legge e gestisce (policy staff can read / staff can update); il trigger send-contact-notification manda la notifica.';
 
 -- VERIFICA DOPO (attesi):
 -- begin; set local role anon;

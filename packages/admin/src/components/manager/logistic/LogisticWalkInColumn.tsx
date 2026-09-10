@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, UserX } from 'lucide-react';
+import { MapPin, LogOut, UserX } from 'lucide-react';
 import { LogisticsItem, DriverProfile } from '../../../hooks/useManagerLogistic';
 import LogisticWalkInItemList from './LogisticWalkInItemList';
 import LogisticItemList from './LogisticItemList';
@@ -20,12 +20,19 @@ interface LogisticWalkInColumnProps {
     onSelectBooking: (id: string) => void;
     onMoveItem: (itemId: string, direction: 'up' | 'down' | 'to-driver', targetDriverId?: string) => void;
     /**
-     * In RICONSEGNA la meta' walk-in di questa colonna non si mostra: "walk-in" e' una
-     * categoria del ritiro, e un elenco vuoto la' avrebbe detto "nessuno arriva da se'"
-     * mentre la verita' e' che la domanda non si applica. Il gruppo "da assegnare" resta,
-     * perche' in riconsegna serve a tutti, walk-in compresi.
+     * Quale GAMBA si sta guardando. La colonna e' la stessa e cambia significato:
+     * in ritiro tiene chi ARRIVA da se' (walk-in), in riconsegna chi SE NE VA da se'
+     * (walk-off). Sono due domande diverse sulla stessa persona, non la stessa domanda
+     * con due etichette.
+     *
+     * Prima qui c'era `showWalkIn: boolean`, e in riconsegna spegneva questa meta' senza
+     * metterci niente al posto: giusto non mostrare i walk-in la' (quella domanda non si
+     * applica), ma lo specchio non era mai stato costruito, e chi se ne andava da solo
+     * spariva dalla pagina. Vedi `getWalkOffItems` per la misura.
+     *
+     * Il gruppo "da assegnare" resta sotto in ENTRAMBE le gambe: serve a tutti.
      */
-    showWalkIn: boolean;
+    mode: 'pickup' | 'dropoff';
 }
 
 export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
@@ -35,31 +42,33 @@ export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
     selectedBookingId,
     onSelectBooking,
     onMoveItem,
-    showWalkIn
+    mode
 }) => {
     const { t } = useTranslation('logistics');
+    const isPickup = mode === 'pickup';
 
     return (
         <div className="w-[320px] flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 bg-surface shadow-sm overflow-hidden">
-            {showWalkIn && (<>
-            {/* Header walk-in */}
+            {/* Header: walk-in in ritiro, walk-off in riconsegna. */}
             <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
                 <div className="flex items-center gap-2">
                     <Avatar
                         size="xlarge"
-                        fallback={<MapPin className="w-6 h-6 text-orange-100 dark:text-orange-400" />}
+                        fallback={isPickup
+                            ? <MapPin className="w-6 h-6 text-orange-100 dark:text-orange-400" />
+                            : <LogOut className="w-6 h-6 text-orange-100 dark:text-orange-400" />}
                         fallbackClassName="bg-orange-400 dark:bg-btn-p-900/30"
                     />
                     <div className="flex-1 min-w-0 space-y-0.5">
                         <div className="font-bold text-title uppercase text-base tracking-wider truncate leading-tight">
-                            {t('walkIn.title')}
+                            {t(isPickup ? 'walkIn.title' : 'walkOff.title')}
                         </div>
-                        <div className="text-sm text-sub font-mono">{items.length} {t('walkIn.booking', { count: items.length })}</div>
+                        <div className="text-sm text-sub font-mono">{items.length} {t(isPickup ? 'walkIn.booking' : 'walkOff.booking', { count: items.length })}</div>
                     </div>
                 </div>
             </div>
 
-            {/* Walk-in: chi arriva da se'. `flex-auto` e non `flex-1`: con `flex-1` i due
+            {/* La lista del gruppo. `flex-auto` e non `flex-1`: con `flex-1` i due
                 riquadri si dividono l'altezza a META' anche quando uno e' vuoto, e in una
                 giornata con 0 walk-in e 3 da assegnare metà colonna restava bianca mentre
                 la lista utile scrollava in 230px. `flex-auto` parte dal contenuto, quindi
@@ -72,7 +81,6 @@ export const LogisticWalkInColumn: React.FC<LogisticWalkInColumnProps> = ({
                     onSelectBooking={onSelectBooking}
                 />
             </div>
-            </>)}
 
             {/* Intestazione "da assegnare": e' un'intestazione vera, non appiccicata in
                 cima allo scroll, quindi resta leggibile anche con la lista lunga. Porta

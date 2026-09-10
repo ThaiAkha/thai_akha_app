@@ -20,11 +20,12 @@ import {
     WALK_IN_ZONE,
     ZONE_UNSET,
     needsDriver,
+    dropoffStateOf,
 } from '../../../hooks/useManagerLogistic';
 import {
     pickupPosition, type PickupPosition,
     pickupPlaceUnset,
-    dropoffPosition, type DropoffPosition,
+    dropoffPlace, type DropoffPlace,
 } from '@thaiakha/shared/lib/pickupCategory';
 import { Caption, Paragraph, SectionTitle } from '../../typography';
 
@@ -74,8 +75,20 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
      * Meglio uno stato locale, azzerato quando cambia la prenotazione selezionata.
      */
     const [chosenPosition, setChosenPosition] = useState<PickupPosition | undefined>(undefined);
+    /**
+     * Stessa cosa per il RITORNO, e per la stessa ragione. Premendo "hotel" si scrive
+     * `dropoff_mode: 'to_define'` - il nome onesto di «so che e' un hotel, non ancora
+     * quale» - ma `dropoffPlace` con quel nome torna NULL, quindi senza questo stato il
+     * pulsante si spegnerebbe da solo nell'istante in cui lo premi, il campo di ricerca
+     * non si monterebbe (e' condizionato al pulsante acceso) e non si potrebbe piu'
+     * scegliere: lo stallo identico a quello del ritiro descritto qui sopra.
+     *
+     * L'alternativa - scrivere subito 'hotel' - fabbricherebbe una riga che il vincolo
+     * «'hotel' vuole una destinazione non vuota» rifiutera' appena arrivera'.
+     */
+    const [chosenDropoff, setChosenDropoff] = useState<DropoffPlace | undefined>(undefined);
     const selectedId = selectedBooking?.id ?? null;
-    useEffect(() => { setChosenPosition(undefined); }, [selectedId]);
+    useEffect(() => { setChosenPosition(undefined); setChosenDropoff(undefined); }, [selectedId]);
 
     if (!selectedBooking) {
         return (
@@ -176,8 +189,15 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
             // apposta (destinazione o autista) non si disfa da sola. Se la macchina
             // cancellasse una scelta dell'operatore sarebbe lo stesso guasto del comando
             // che cambiava posizione da solo.
+            // Il nome va scritto INSIEME alla booleana: `dropoffPlace` da' la precedenza
+            // al nome, quindi spegnere il ritorno lasciando `dropoff_mode` com'era
+            // significa che il nome vecchio continua a vincere sul dato fresco.
             ...(dropoffUntouched
-                ? { requires_dropoff: false, dropoff_hotel: null, dropoff_zone: null, dropoff_driver_uid: null }
+                ? {
+                    requires_dropoff: false, dropoff_mode: 'none',
+                    dropoff_hotel: null, dropoff_zone: null,
+                    dropoff_meeting_point: null, dropoff_driver_uid: null,
+                }
                 : {}),
             // Chi arriva da se' non ha autista di RITIRO. La RICONSEGNA non si tocca:
             // viene comunque riportato indietro.
@@ -191,51 +211,86 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
     // autista del ritiro da ereditare. Quindi in walk-in il luogo di riconsegna si chiede
     // sempre, e l'autista del ritorno va detto.
     const isWalkIn = position === 'walk_in';
-    /** Posizione del ritorno. Mai dalla verita' di `dropoff_hotel`: vedi dropoffPosition. */
-    const dropoffPos = dropoffPosition(
+    /**
+     * Quale dei TRE pulsanti del ritorno e' acceso. Il click vince sui dati mentre si
+     * sceglie (vedi `chosenDropoff`); il resto lo decide il NOME in `dropoff_mode`.
+     */
+    const dropoffPlaceNow = chosenDropoff ?? dropoffPlace(
         selectedBooking.requires_dropoff,
         selectedBooking.dropoff_hotel,
-        // "riportalo dove l'abbiamo preso" non esiste per chi non e' stato preso
-        !isWalkIn,
         // per riconoscere le copie: vedi dropoffPosition
-        selectedBooking.hotel_name
+        selectedBooking.hotel_name,
+        dropoffStateOf(selectedBooking)
     );
-    /** Un walk-in che chiede il rientro senza destinazione non e' consegnabile. */
-    const dropoffMissing = isWalkIn
-        && dropoffPos === 'elsewhere'
-        && !(selectedBooking.dropoff_hotel ?? '').trim();
+    /**
+     * Luogo del ritorno scelto come TIPO ma non come posto preciso: e' lo stesso patto
+     * del ritiro (regola del proprietario del 2026-09-10, «mai vuoto, se vuoto messaggio
+     * errore»), applicato al ritorno.
+     *
+     * Blocca solo dopo una scelta ESPLICITA: per l'hotel il segnale e' il sentinello `''`
+     * (destinazione scelta, non compilata), che nasce solo premendo il pulsante. Una riga
+     * mai toccata ha `dropoff_hotel` NULL e non viene bloccata - altrimenti non si potrebbe
+     * piu' salvare un telefono su una prenotazione normale, e un guardiano diventerebbe un
+     * blocco del lavoro.
+     */
+    const dropoffPlaceMissing =
+        dropoffPlaceNow === 'hotel'
+            ? (selectedBooking.dropoff_hotel ?? null) === ''
+            : dropoffPlaceNow === 'meeting_point'
+                ? !selectedBooking.dropoff_meeting_point
+                : false;
     /** Nessuno ha ancora deciso il ritorno: niente destinazione e niente autista. */
     const dropoffUntouched = !(selectedBooking.dropoff_hotel ?? '').trim()
+        && !selectedBooking.dropoff_meeting_point
         && !selectedBooking.dropoff_driver_uid;
 
-    const goToDropoff = (next: DropoffPosition) => {
+    /**
+     * `Exclude<..., null>`: "non deciso" e' uno STATO in cui ci si trova, non una
+     * posizione in cui si va. Il gemello del ritiro lo dichiara cosi' da sempre; qui il
+     * `null` era ammesso senza un ramo che lo gestisse, e sarebbe caduto in fondo
+     * scrivendo l'ultimo caso.
+     *
+     * Ogni ramo scrive il NOME e azzera `dropoff_meeting_point`: il vincolo
+     * `bookings_dropoff_point_coerente_chk` lega quella colonna a mode 'point', quindi
+     * lasciarla piena passando a un'altra posizione fa RIFIUTARE il salvataggio dal
+     * database - un errore rosso su un gesto legittimo.
+     */
+    const goToDropoff = (next: Exclude<DropoffPlace, null>) => {
+        setChosenDropoff(next);
         if (next === 'walk_off') {
             // Se ne va da se': via destinazione e via autista, altrimenti resterebbe un
             // autista assegnato a un ritorno che non esiste piu'.
             onUpdateLocal(selectedBooking.id, {
                 requires_dropoff: false,
+                dropoff_mode: 'none',
                 dropoff_hotel: null,
                 dropoff_zone: null,
+                dropoff_meeting_point: null,
                 dropoff_driver_uid: null,
             });
             return;
         }
-        if (next === 'same') {
+        if (next === 'meeting_point') {
             onUpdateLocal(selectedBooking.id, {
                 requires_dropoff: true,
+                // 'point' lo scrivera' la scelta del punto: il vincolo del database vuole
+                // i due valori insieme, e qui il punto non c'e' ancora.
+                dropoff_mode: 'to_define',
                 dropoff_hotel: null,
                 dropoff_zone: null,
-                dropoff_driver_uid: null,
+                dropoff_meeting_point: null,
             });
             return;
         }
-        // '' = destinazione scelta e non ancora compilata. Si parte VUOTO, non dal luogo
-        // di ritiro: precompilando, premere questo pulsante voleva dire confermare una
-        // COPIA del ritiro invece di scegliere una destinazione, ed e' cosi' che sono nate
-        // le 40 righe con la destinazione identica al ritiro. Chi lo preme scegle.
+        // HOTEL. '' = destinazione scelta e non ancora compilata. Si parte VUOTO, non dal
+        // luogo di ritiro: precompilando, premere questo pulsante voleva dire confermare
+        // una COPIA del ritiro invece di scegliere una destinazione, ed e' cosi' che sono
+        // nate le 40 righe con la destinazione identica al ritiro. Chi lo preme sceglie.
         onUpdateLocal(selectedBooking.id, {
             requires_dropoff: true,
+            dropoff_mode: 'to_define',
             dropoff_hotel: '',
+            dropoff_meeting_point: null,
         });
     };
 
@@ -264,11 +319,23 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
         onUpdateLocal(selectedBooking.id, updates);
     };
 
+    /**
+     * Scegliendo come destinazione l'hotel DEL RITIRO non si scrive una copia del nome:
+     * si scrive il nome 'same', e la colonna della destinazione resta vuota. E' cio' che
+     * distingue «riportalo dove l'ho preso» da «portalo in quell'hotel, che per caso e'
+     * lo stesso», e cio' che evita di rifabbricare le 40 righe ripulite il 2026-09-09.
+     */
     const handleDropoffHotelChange = (hotelName: string, zoneId: string | null) => {
-        onUpdateLocal(selectedBooking.id, {
-            dropoff_hotel: hotelName,
-            ...(zoneId && { dropoff_zone: zoneId }),
-        });
+        const pickupName = (selectedBooking.hotel_name ?? '').trim();
+        const isSame = pickupName !== '' && hotelName.trim().toLowerCase() === pickupName.toLowerCase();
+        onUpdateLocal(selectedBooking.id, isSame
+            ? { dropoff_mode: 'same', dropoff_hotel: null, dropoff_zone: null, dropoff_meeting_point: null }
+            : {
+                dropoff_mode: 'hotel',
+                dropoff_hotel: hotelName,
+                dropoff_meeting_point: null,
+                ...(zoneId && { dropoff_zone: zoneId }),
+            });
     };
 
     // Shell con overflow-visible: il corpo di DataExplorerInspector e' un blocco (non flex),
@@ -524,7 +591,15 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         <Truck className="w-3.5 h-3.5" /> {t('inspector.dropoff')}
                     </SectionTitle>
 
-                    {/* Comando del RITORNO, tre posizioni. "Walk-off" era un comando
+                    {/* Comando del RITORNO: TRE luoghi, gli stessi tre assi del ritiro
+                        (decisione del proprietario, 2026-09-10). Prima erano "stesso posto
+                        / luogo diverso / walk-off", che non e' lo stesso asse - "stesso
+                        posto" e' una scorciatoia, non un luogo - e per chi arriva a piedi
+                        quel pulsante spariva, lasciandone due invece di tre.
+                        Il punto d'incontro per il RITORNO (aeroporto, stazione, i due
+                        mercati del weekend) da qui non era scrivibile affatto: la colonna
+                        esisteva e nessuno poteva riempirla.
+                        Storia del comando: "Walk-off" era un comando
                         MANCANTE, non un doppione: nell'admin nessuno scriveva
                         `requires_dropoff`, quindi non c'era modo di dire che un ospite se
                         ne va da se'. Nei dati quello stato esiste (12 prenotazioni su 62)
@@ -533,15 +608,16 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         "Stesso posto" non si offre quando il ritiro e' walk-in: non c'e'
                         nessun posto in cui l'abbiamo preso. */}
                     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                        {(isWalkIn
-                            ? ([['walk_off', t('inspector.dropoffWalkOff')], ['elsewhere', t('inspector.dropoffElsewhere')]] as const)
-                            : ([['walk_off', t('inspector.dropoffWalkOff')], ['same', t('inspector.dropoffSame')], ['elsewhere', t('inspector.dropoffElsewhere')]] as const)
-                        ).map(([key, label], i) => (
+                        {([
+                            ['hotel', t('inspector.positionHotel')],
+                            ['meeting_point', t('inspector.positionMeetingPoint')],
+                            ['walk_off', t('inspector.dropoffWalkOff')],
+                        ] as const).map(([key, label], i) => (
                             <button
                                 key={key}
                                 type="button"
                                 onClick={() => goToDropoff(key)}
-                                className={`flex-1 py-2.5 px-1 text-xs font-bold uppercase tracking-wide transition-colors ${i > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''} ${dropoffPos === key
+                                className={`flex-1 py-2.5 px-1 text-xs font-bold uppercase tracking-wide transition-colors ${i > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''} ${dropoffPlaceNow === key
                                     ? 'bg-primary-500 text-white'
                                     : 'text-sub hover:bg-gray-50 dark:hover:bg-gray-800'
                                     }`}
@@ -551,24 +627,70 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                         ))}
                     </div>
 
-                    {dropoffPos === 'elsewhere' && (
+                    {/* "Da definire" e' uno stato vero, non un vuoto: e' il valore di
+                        partenza di ogni prenotazione con punto d'incontro. Senza questa
+                        riga il pannello, per quelle prenotazioni, non mostrerebbe NIENTE -
+                        nessun pulsante acceso, nessun campo - e il vuoto muto si legge
+                        come un guasto, non come "tocca a te". Gemello di positionUndecided
+                        sul ritiro. */}
+                    {dropoffPlaceNow === null && (
+                        <Paragraph size="sm" className="text-sub">{t('inspector.dropoffUndecided')}</Paragraph>
+                    )}
+
+                    {(dropoffPlaceNow === 'hotel' || dropoffPlaceNow === 'meeting_point') && (
                         <>
                             {/* Stessa taglia del gemello del ritiro: sono lo stesso ruolo
                                 (spiegare perche' il Save non passa) e non possono stare a
                                 due misure nello stesso pannello. Da `Caption` (12px) a
                                 `text-sm`, che e' il pavimento dei planner. */}
-                            {dropoffMissing && (
+                            {dropoffPlaceMissing && (
                                 <Paragraph size="sm" className="text-error">{t('inspector.dropoffRequired')}</Paragraph>
                             )}
-                            {/* Drop-off Hotel */}
-                            <SearchableHotelSelect
-                                label={t('inspector.fieldDropoffHotel')}
-                                value={selectedBooking.dropoff_hotel || ''}
-                                hotels={hotels}
-                                zones={pickupZones}
-                                placeholder={t('inspector.searchHotel')}
-                                onChange={handleDropoffHotelChange}
-                            />
+                            {dropoffPlaceNow === 'hotel' && (
+                                <SearchableHotelSelect
+                                    label={t('inspector.fieldDropoffHotel')}
+                                    // Con il nome 'same' la destinazione e' vuota di
+                                    // proposito (non si copia il nome del ritiro): il campo
+                                    // mostra comunque DOVE va questa persona, che e'
+                                    // l'hotel del ritiro. Mostrarlo vuoto direbbe il falso.
+                                    value={selectedBooking.dropoff_hotel
+                                        || (selectedBooking.dropoff_mode === 'same' ? selectedBooking.hotel_name : '')
+                                        || ''}
+                                    hotels={hotels}
+                                    zones={pickupZones}
+                                    placeholder={t('inspector.searchHotel')}
+                                    onChange={handleDropoffHotelChange}
+                                />
+                            )}
+                            {dropoffPlaceNow === 'meeting_point' && (
+                                <SelectField
+                                    label={t('inspector.fieldDropoffMP')}
+                                    value={selectedBooking.dropoff_meeting_point || ''}
+                                    onChange={(e) => {
+                                        const mpId = e.target.value;
+                                        // I due valori partono SEMPRE insieme: il vincolo
+                                        // del database dice che 'point' e il punto o ci
+                                        // sono entrambi o nessuno dei due.
+                                        onUpdateLocal(selectedBooking.id, mpId
+                                            ? {
+                                                dropoff_mode: 'point',
+                                                dropoff_meeting_point: mpId,
+                                                dropoff_hotel: null,
+                                                dropoff_zone: null,
+                                            }
+                                            : { dropoff_mode: 'to_define', dropoff_meeting_point: null });
+                                    }}
+                                >
+                                    <option value="">{t('inspector.selectDropoffMP')}</option>
+                                    {meetingPoints
+                                        // Il criterio e' `is_dropoff_point`, non il tipo:
+                                        // aeroporto e stazione sono di tipo 'pickup' e
+                                        // valgono per tutte e due le gambe, i due mercati
+                                        // del weekend sono di sola riconsegna.
+                                        .filter(mp => mp.is_dropoff_point || mp.id === selectedBooking.dropoff_meeting_point)
+                                        .map(mp => <option key={mp.id} value={mp.id}>{mp.name}</option>)}
+                                </SelectField>
+                            )}
 
                             {/* Drop-off Driver */}
                             <SelectField
@@ -596,7 +718,7 @@ const LogisticInspector: React.FC<LogisticInspectorProps> = ({
                       cancella la posizione e lascia la riga segnata solo dalla zona;
                     · un walk-in che chiede il rientro senza destinazione non e'
                       consegnabile, e salvarlo non aiuta nessuno. */}
-                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving || pickupPlaceMissing || dropoffMissing} startIcon={<Save className="w-4 h-4" />}>
+                <InspectorPrimaryButton type="submit" isLoading={isSaving} disabled={isSaving || pickupPlaceMissing || dropoffPlaceMissing} startIcon={<Save className="w-4 h-4" />}>
                     {isSaving ? t('actions.saving') : t('actions.save')}
                 </InspectorPrimaryButton>
             </InspectorFooter>

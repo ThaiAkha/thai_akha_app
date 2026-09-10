@@ -39,7 +39,8 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
     }, [items]);
 
     // Filtering hook
-    const { visibleDrivers, getDriverItems, getWalkInItems, getUnassignedItems } = useLogisticFiltering({
+    const { visibleDrivers, getDriverItems, getWalkInItems,
+        getWalkOffItems, getUnassignedItems } = useLogisticFiltering({
         items: reorderedItems,
         drivers,
         selectedDriverIds,
@@ -60,7 +61,10 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
         setReorderedItems(updated);
     }, [reorderedItems, moveItemLogic]);
 
+    // Uno dei due e' sempre vuoto per costruzione (ognuno si spegne nella gamba che non
+    // e' la sua): la colonna ne riceve uno solo, quello della gamba che si sta guardando.
     const walkInItems = getWalkInItems();
+    const walkOffItems = getWalkOffItems();
     const unassignedItems = getUnassignedItems();
 
     return (
@@ -81,13 +85,13 @@ const LogisticContent: React.FC<LogisticContentProps> = ({
                         Di guadagnato: a zero il manager lo vede scritto, invece di dedurlo
                         dall'assenza di una colonna. */}
                     <LogisticWalkInColumn
-                        items={walkInItems}
+                        items={logisticsMode === 'pickup' ? walkInItems : walkOffItems}
                         unassignedItems={unassignedItems}
                         drivers={drivers}
                         selectedBookingId={selectedBookingId}
                         onSelectBooking={onSelectBooking}
                         onMoveItem={moveItem}
-                        showWalkIn={logisticsMode === 'pickup'}
+                        mode={logisticsMode}
                     />
 
                     {/* Driver Columns */}

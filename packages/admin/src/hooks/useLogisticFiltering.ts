@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { LogisticsItem, DriverProfile, needsDriver, dropoffDriverOf } from './useManagerLogistic';
+import { LogisticsItem, DriverProfile, needsDriver, dropoffDriverOf, walkOffOf } from './useManagerLogistic';
 
 interface UseLogisticFilteringProps {
     items: LogisticsItem[];
@@ -38,7 +38,12 @@ export function useLogisticFiltering({
                     // sbagliato un walk-in non stava in nessuna colonna autista, non stava
                     // fra le "da assegnare", e nella sua colonna non ha comandi: non era
                     // assegnabile da nessuna parte.
-                    return driverUid === driverId && i.requires_dropoff;
+                    // NON `i.requires_dropoff`: quella booleana significa due cose
+                    // opposte a seconda di chi l'ha scritta. Il criterio e' il NOME
+                    // (`walkOffOf`, con i test in shared): serve un ritorno a tutti
+                    // tranne a chi se ne va da se'. `to_define` resta dentro - non
+                    // deciso non vuol dire no.
+                    return driverUid === driverId && !walkOffOf(i);
                 })
                 .sort((a, b) => a.dropoff_sequence - b.dropoff_sequence);
         }
@@ -54,6 +59,24 @@ export function useLogisticFiltering({
         // mostrarne l'elenco la' direbbe che quelle persone non hanno bisogno di nessuno.
         if (logisticsMode !== 'pickup') return [];
         return items.filter(i => !needsDriver(i));
+    }, [items, logisticsMode]);
+
+    /**
+     * CHI SE NE VA DA SE' (walk-off): lo specchio del walk-in sulla gamba del ritorno.
+     *
+     * Fino al 2026-09-10 questo gruppo non esisteva, e non era "nascosto": la meta'
+     * walk-in della colonna veniva spenta in riconsegna - giustamente, perche' la' quella
+     * domanda non si applica - e al suo posto non era stato messo niente. Nel frattempo
+     * chi se ne va da solo veniva filtrato fuori da OGNI colonna: non con un autista, non
+     * fra i "da assegnare". Spariva dalla pagina.
+     *
+     * Il caso peggiore misurato (TAK00190, 14/09) e' un ritiro in HOTEL: l'autista lo va
+     * a prendere la mattina, e nel pomeriggio quella persona non compare da nessuna
+     * parte. Nessun errore, nessun elenco vuoto: proprio assente.
+     */
+    const getWalkOffItems = useCallback((): LogisticsItem[] => {
+        if (logisticsMode !== 'dropoff') return [];
+        return items.filter(walkOffOf);
     }, [items, logisticsMode]);
 
     /**
@@ -80,7 +103,7 @@ export function useLogisticFiltering({
             ? needsDriver(i) && !i.pickup_driver_uid
             // Riconsegna: serve una riconsegna e non c'e' nessuno dei due autisti.
             // I walk-in sono INCLUSI, a differenza del ritiro: tornano a casa anche loro.
-            : i.requires_dropoff && !dropoffDriverOf(i));
+            : !walkOffOf(i) && !dropoffDriverOf(i));
         // Nessun ordine di percorso da rispettare (non ne hanno ancora uno): l'ordine
         // utile a chi smista e' l'orario, poi il nome per non ballare fra un giro e l'altro.
         return [...rows].sort((a, b) =>
@@ -93,6 +116,7 @@ export function useLogisticFiltering({
         visibleDrivers,
         getDriverItems,
         getWalkInItems,
+        getWalkOffItems,
         getUnassignedItems
     };
 }

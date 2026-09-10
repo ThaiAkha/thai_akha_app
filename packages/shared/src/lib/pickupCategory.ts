@@ -215,3 +215,73 @@ export function dropoffPosition(
     }
     return 'elsewhere';
 }
+
+/**
+ * I TRE LUOGHI della riconsegna, specchio esatto dei tre del ritiro.
+ *
+ * DECISIONE DEL PROPRIETARIO (2026-09-10): il comando del ritorno ha tre posizioni «come
+ * pickup», cioe' i tre TIPI DI LUOGO - un hotel, un punto d'incontro, oppure se ne va da
+ * se'. Prima erano "stesso posto / luogo diverso / walk-off", che NON e' lo stesso asse:
+ * "stesso posto" e' una scorciatoia, non un luogo. E la differenza si vedeva: per chi
+ * arriva a piedi "riportalo dove l'abbiamo preso" non vuol dire niente, quel pulsante
+ * spariva, e li' il comando ne mostrava due invece di tre.
+ *
+ * Il guadagno vero non e' la simmetria: e' che il PUNTO D'INCONTRO per il ritorno
+ * (aeroporto, stazione, i due mercati del weekend) dal pannello **non era scrivibile
+ * affatto**. La colonna `dropoff_meeting_point` esisteva e nessuno poteva riempirla.
+ *
+ * "Stesso posto" non sparisce dai dati: resta il nome `same`, e si ottiene scegliendo
+ * come destinazione l'hotel del ritiro. Non si scrive una COPIA del nome nella colonna
+ * della destinazione - quella e' l'abitudine che aveva prodotto 40 righe con destinazione
+ * identica al ritiro, ripulite il 2026-09-09.
+ */
+export type DropoffPlace = 'hotel' | 'meeting_point' | 'walk_off' | null;
+
+/**
+ * Quale dei tre pulsanti e' acceso. `null` = nessuno: il ritorno non e' stato deciso
+ * ('to_define'), ed e' uno stato legittimo che il pannello deve DIRE, non lasciare muto.
+ *
+ * Costruita sopra `dropoffPosition` invece che accanto: la regola su cosa vince (il nome
+ * prima dei sintomi, il riconoscimento delle copie) resta scritta una volta sola.
+ */
+export function dropoffPlace(
+    requiresDropoff: boolean | null | undefined,
+    dropoffHotel: string | null | undefined,
+    pickupHotel: string | null | undefined,
+    stato?: DropoffState
+): DropoffPlace {
+    if ((stato?.mode ?? null) === 'point') return 'meeting_point';
+    // `sameAsPickupAllowed` sempre vero: in QUESTO comando 'same' ed 'elsewhere'
+    // finiscono comunque sullo stesso pulsante (sono entrambi un hotel), quindi la
+    // distinzione non cambia la risposta e non serve passare la categoria del ritiro.
+    const pos = dropoffPosition(requiresDropoff, dropoffHotel, true, pickupHotel, stato);
+    if (pos === null) return null;
+    return pos === 'walk_off' ? 'walk_off' : 'hotel';
+}
+
+/**
+ * Se ne va da se'? (walk-off)
+ *
+ * E' la domanda del FILTRO della pagina della logistica, e ha una risposta sola in un
+ * posto solo per lo stesso motivo delle tre categorie del ritiro: prima stava scritta
+ * come `item.requires_dropoff` sparsa in tre punti, su una booleana che significa due
+ * cose opposte a seconda di chi l'ha scritta (nel sito "spento" = «riportami dove mi
+ * avete preso», nel planner `false` = «non riportarmi»).
+ *
+ * Stessa precedenza di `dropoffPosition`: **il nome prima dei sintomi**. Quando
+ * `dropoff_mode` c'e', decide lui e la booleana non ha voce; quando manca (riga non
+ * ancora convertita) vale il ripiego di prima, dove solo un `false` esplicito significa
+ * "se ne va da se'" e NULL vale "il ritorno serve".
+ *
+ * `to_define` NON e' walk-off: e' "non deciso", e chi non ha deciso va comunque
+ * mostrato a chi smista, nel gruppo da assegnare. Confondere "non lo so" con "no" e'
+ * il modo esatto in cui una persona sparisce da una pagina.
+ */
+export function isWalkOff(
+    requiresDropoff: boolean | null | undefined,
+    stato?: DropoffState
+): boolean {
+    const mode = stato?.mode ?? null;
+    if (mode) return mode === 'none';
+    return requiresDropoff === false;
+}

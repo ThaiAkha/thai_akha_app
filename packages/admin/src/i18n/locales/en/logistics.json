@@ -16,6 +16,11 @@
     "booking_one": "Booking",
     "booking_other": "Bookings"
   },
+  "walkOff": {
+    "title": "Walk Off",
+    "booking_one": "Booking",
+    "booking_other": "Bookings"
+  },
   "toAssign": {
     "title": "To Assign",
     "removeDriver": "Remove driver",
@@ -43,9 +48,10 @@
     "positionMeetingPoint": "Meeting Point",
     "positionWalkIn": "Walk-in",
     "dropoffWalkOff": "Walk-off",
-    "dropoffSame": "Same place",
-    "dropoffElsewhere": "Different place",
-    "dropoffRequired": "Walk-in guests are not collected anywhere, so the return needs its own destination. Pick where to drop them off.",
+    "dropoffRequired": "Pick the exact drop-off place from the list before saving. A return with no destination cannot be driven.",
+    "dropoffUndecided": "Return not chosen yet. Pick one of the three above: the guest booked online and has not told us where to bring them back.",
+    "fieldDropoffMP": "Drop-off Point",
+    "selectDropoffMP": "-- Select drop-off point --",
     "positionUndecided": "Pickup not chosen yet. Pick one of the three above: the guest booked online and has not told us where to collect them.",
     "fieldHotel": "Hotel / Location",
     "fieldMP": "Meeting Point",

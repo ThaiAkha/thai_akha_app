@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery } from '@thaiakha/shared/query';
 import { supabase } from '@thaiakha/shared/lib/supabase';
 import type { Tables, MeetingPointType } from '@thaiakha/shared/types';
-import { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset } from '@thaiakha/shared/lib/pickupCategory';
+import { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, isWalkOff } from '@thaiakha/shared/lib/pickupCategory';
+import type { DropoffState } from '@thaiakha/shared/lib/pickupCategory';
 import { SessionType } from '../components/common/ClassPicker';
 
 // --- COSTANTI DI DOMINIO ---
@@ -43,6 +44,26 @@ export const dropoffDriverOf = (item: LogisticsItem): string | null =>
         ? (item.dropoff_driver_uid || item.pickup_driver_uid)
         : item.dropoff_driver_uid;
 
+/**
+ * Lo stato della riconsegna di questa riga, nella forma che legge il criterio condiviso.
+ *
+ * Esiste perche' `dropoff_mode` e' arrivata nel database il 2026-09-10 e per un giorno
+ * intero NESSUNO l'ha letta: la pagina non la chiedeva nemmeno nella select, e girava
+ * ancora sulla booleana che significa due cose opposte. Il lettore condiviso aveva gia'
+ * il parametro per riceverla, facoltativo "per non rompere i chiamanti mentre migrano",
+ * e l'unico chiamante non glielo passava. Un parametro facoltativo aggiunto per migrare
+ * dolcemente e' una migrazione che non parte mai.
+ */
+export const dropoffStateOf = (item: LogisticsItem): DropoffState =>
+    ({ mode: item.dropoff_mode, meetingPoint: item.dropoff_meeting_point });
+
+/**
+ * Se ne va da se'? Criterio unico della pagina, il nome prima dei sintomi.
+ * Regola, casi limite e test in `@thaiakha/shared/lib/pickupCategory` (`isWalkOff`).
+ */
+export const walkOffOf = (item: LogisticsItem): boolean =>
+    isWalkOff(item.requires_dropoff, dropoffStateOf(item));
+
 export { WALK_IN_ZONE };
 
 // --- TYPES ---
@@ -65,6 +86,15 @@ export interface LogisticsItem {
     transport_status: string;
     // Drop-off fields
     requires_dropoff: boolean;
+    /**
+     * `bookings.dropoff_mode`: i cinque nomi ('same' | 'to_define' | 'none' | 'point' |
+     * 'hotel'). NULL = riga non ancora convertita, si ripiega su `requires_dropoff`.
+     * Non e' tipizzata `DropoffMode` di proposito: dal database arriva `string | null`,
+     * e restringerla qui vorrebbe dire un cast che afferma una cosa non verificata.
+     */
+    dropoff_mode: string | null;
+    /** `bookings.dropoff_meeting_point`: il vincolo del DB lo lega a mode 'point'. */
+    dropoff_meeting_point: string | null;
     dropoff_hotel: string | null;
     dropoff_zone: string | null;
     dropoff_driver_uid: string | null;
@@ -93,6 +123,7 @@ type LogisticBookingRow = Omit<Pick<Tables<'bookings'>,
     | 'customer_note' | 'agency_note' | 'pickup_driver_uid' | 'phone_number' | 'session_id'
     | 'booking_date' | 'transport_status' | 'guest_name' | 'guest_email'
     | 'requires_dropoff' | 'dropoff_hotel' | 'dropoff_zone' | 'dropoff_driver_uid'
+    | 'dropoff_mode' | 'dropoff_meeting_point'
     | 'dropoff_sequence' | 'pickup_sequence' | 'meeting_point' | 'has_luggage'
 >, 'pax_count' | 'session_id' | 'transport_status' | 'customer_note' | 'agency_note' | 'phone_number'> & {
     pax_count: number;
@@ -128,6 +159,13 @@ export interface MeetingPointOption {
     /** 'pickup' | 'walk_in' | 'dropoff': non era caricato, e senza di lui la pagina
         non poteva distinguere le tre categorie di ritiro. */
     point_type: MeetingPointType;
+    /**
+     * Serve anche per la RICONSEGNA? Non e' deducibile da `point_type`: l'aeroporto e la
+     * stazione sono di tipo 'pickup' e valgono per entrambe le gambe, mentre i due
+     * mercati del weekend sono di sola riconsegna. E' la colonna che dice quali punti
+     * puo' offrire il comando del ritorno.
+     */
+    is_dropoff_point: boolean;
     morning_pickup_time: string | null;
     evening_pickup_time: string | null;
 }
@@ -157,7 +195,7 @@ async function fetchLogisticReference() {
             .order('name', { ascending: true }),
         supabase
             .from('meeting_points')
-            .select('id, name, point_type, morning_pickup_time, evening_pickup_time')
+            .select('id, name, point_type, is_dropoff_point, morning_pickup_time, evening_pickup_time')
             .eq('active', true)
             .order('name', { ascending: true }),
         supabase
@@ -249,6 +287,7 @@ export function useManagerLogistic() {
                     customer_note, agency_note, pickup_driver_uid, phone_number, session_id,
                     booking_date, transport_status, guest_name, guest_email,
                     requires_dropoff, dropoff_hotel, dropoff_zone, dropoff_driver_uid,
+                    dropoff_mode, dropoff_meeting_point,
                     dropoff_sequence, pickup_sequence, meeting_point, has_luggage,
                     profiles:user_id(full_name, avatar_url)
                 `)
@@ -300,6 +339,8 @@ export function useManagerLogistic() {
                         booking_date: b.booking_date,
                         transport_status: b.transport_status,
                         requires_dropoff: b.requires_dropoff ?? true,
+                        dropoff_mode: b.dropoff_mode,
+                        dropoff_meeting_point: b.dropoff_meeting_point,
                         dropoff_hotel: b.dropoff_hotel,
                         dropoff_zone: b.dropoff_zone,
                         dropoff_driver_uid: b.dropoff_driver_uid,
@@ -367,6 +408,16 @@ export function useManagerLogistic() {
                 pickup_driver_uid: item.pickup_driver_uid,
                 dropoff_driver_uid: item.dropoff_driver_uid,
                 requires_dropoff: item.requires_dropoff,
+                // Il NOME si salva insieme ai vecchi campi, e non e' ridondanza: finche'
+                // i vecchi lettori sono vivi (il telefono dell'autista, i report) devono
+                // trovare la loro verita'. Ma scrivere il nome e' OBBLIGATORIO, non
+                // facoltativo: `dropoffPosition` gli da' la precedenza, quindi un nome
+                // rimasto indietro VINCE sul dato fresco. Leggere questa colonna senza
+                // scriverla e' peggio che non leggerla.
+                dropoff_mode: item.dropoff_mode,
+                // Il vincolo `bookings_dropoff_point_coerente_chk` lega questa colonna a
+                // mode 'point': i due valori partono sempre insieme, mai uno solo.
+                dropoff_meeting_point: item.dropoff_meeting_point,
                 dropoff_hotel: item.dropoff_hotel || null,
                 // dropoff_zone: stessa guardia (anche qui il vincolo e' una FK)
                 dropoff_zone: item.dropoff_zone || null,

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const loaded = await import('../pickupCategory.ts');
-const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL, pickupPosition, dropoffPosition } =
+const { zoneNeedsDriver, WALK_IN_ZONE, pickupPlaceUnset, PLACEHOLDER_HOTEL, pickupPosition, dropoffPosition, isWalkOff, dropoffPlace } =
     (loaded as { default?: typeof import('../pickupCategory.ts') }).default ?? loaded;
 
 // 1. RITIRO IN HOTEL: nessun punto d'incontro, una zona vera. L'autista serve.
@@ -208,4 +208,74 @@ test('nome assente -> si ripiega sui vecchi campi, comportamento invariato', () 
     assert.equal(dropoffPosition(false, null, true, null, undefined), 'walk_off');
     assert.equal(dropoffPosition(true, null, true, null, {}), 'same');
     assert.equal(dropoffPosition(true, null, true, null, { mode: null }), 'same');
+});
+
+
+// ── isWalkOff: il criterio del filtro della pagina, il nome prima dei sintomi ──
+
+test('walk-off: il nome "none" vince anche su una booleana che dice il contrario', () => {
+    // Il caso che ha fatto sparire le persone: la riga dice "none", il vecchio campo
+    // e' rimasto a true. Senza il nome, il filtro la teneva fra chi va riportato.
+    assert.equal(isWalkOff(true, { mode: 'none' }), true);
+    assert.equal(isWalkOff(false, { mode: 'none' }), true);
+});
+
+test('walk-off: "to_define" NON e\' walk-off - non deciso non vuol dire no', () => {
+    // Chi non ha deciso va mostrato a chi smista, altrimenti sparisce dalla pagina
+    // esattamente come sparivano i walk-off prima di questa colonna.
+    assert.equal(isWalkOff(true, { mode: 'to_define' }), false);
+    assert.equal(isWalkOff(false, { mode: 'to_define' }), false);
+});
+
+test('walk-off: gli altri tre nomi vogliono un viaggio di ritorno', () => {
+    assert.equal(isWalkOff(false, { mode: 'same' }), false);
+    assert.equal(isWalkOff(false, { mode: 'hotel' }), false);
+    assert.equal(isWalkOff(false, { mode: 'point' }), false);
+});
+
+test('walk-off: senza nome si ripiega sulla booleana, comportamento invariato', () => {
+    assert.equal(isWalkOff(false), true);
+    assert.equal(isWalkOff(true), false);
+    // NULL non e' "se ne va da se'": e' "nessuno l'ha ancora detto", e il ritorno serve.
+    assert.equal(isWalkOff(null), false);
+    assert.equal(isWalkOff(undefined), false);
+    assert.equal(isWalkOff(false, { mode: null }), true);
+});
+
+
+// ── dropoffPlace: i tre pulsanti del ritorno (decisione owner 2026-09-10) ──
+
+test('tre luoghi: il punto d\'incontro ha il suo pulsante, che prima non esisteva', () => {
+    // TAK00189 va a MAYA: prima il pannello non aveva modo di dirlo, e dedotto dai
+    // sintomi diventava "stesso posto" - cioe' «riportalo dove l'hai preso» a chi
+    // aveva chiesto una fermata diversa.
+    assert.equal(
+        dropoffPlace(true, null, 'Amiri Place Hotel', { mode: 'point', meetingPoint: 'mp_maya' }),
+        'meeting_point'
+    );
+});
+
+test('tre luoghi: "stesso posto" e "altro hotel" premono lo STESSO pulsante', () => {
+    // Non e' una perdita di informazione: la differenza resta nel nome salvato, e
+    // 'same' NON scrive una copia del nome nella colonna della destinazione.
+    assert.equal(dropoffPlace(true, null, 'Asa Hotel', { mode: 'same' }), 'hotel');
+    assert.equal(dropoffPlace(true, 'Shangri-La', 'Asa Hotel', { mode: 'hotel' }), 'hotel');
+});
+
+test('tre luoghi: se ne va da se\'', () => {
+    assert.equal(dropoffPlace(false, null, 'Asa Hotel', { mode: 'none' }), 'walk_off');
+    // anche contro una booleana rimasta indietro
+    assert.equal(dropoffPlace(true, null, null, { mode: 'none' }), 'walk_off');
+});
+
+test('tre luoghi: "to_define" non accende niente, e il pannello deve dirlo', () => {
+    assert.equal(dropoffPlace(true, null, 'Asa Hotel', { mode: 'to_define' }), null);
+});
+
+test('tre luoghi: riga non convertita -> hotel, e una copia resta una copia', () => {
+    // destinazione identica al ritiro: e' "stesso posto" scritto due volte, non un
+    // luogo diverso. In questo comando e' comunque il pulsante hotel.
+    assert.equal(dropoffPlace(true, 'Asa Hotel', 'Asa Hotel'), 'hotel');
+    assert.equal(dropoffPlace(true, null, 'Asa Hotel'), 'hotel');
+    assert.equal(dropoffPlace(false, null, 'Asa Hotel'), 'walk_off');
 });

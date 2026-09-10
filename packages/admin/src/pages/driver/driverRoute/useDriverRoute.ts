@@ -11,7 +11,7 @@ import type { Stop, TransportStatus } from '../../../components/driver/Transport
 import { STATUS_STATIC, type Phase, type SessionFilter } from './driverRouteConfig';
 
 export function useDriverRoute() {
-    const { t } = useTranslation('driver');
+    const { t, i18n } = useTranslation('driver');
 
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [stops, setStops] = useState<Stop[]>([]);
@@ -71,12 +71,19 @@ export function useDriverRoute() {
             // (20260728000200_profiles_privilege_guard), diventata funzione con lo stesso
             // filtro nella migration 20260902200000_driver_route_rpc (advisor 0010). Si
             // auto-scopa come bookings_select_scoped, quindi i filtri qui restano identici.
+            // `p_lang`: la descrizione del punto arriva nella lingua dell'autista (il
+            // sidecar copre 12 lingue e il thai ha tutti i punti). Codice corto, perche'
+            // 'en-US' non e' una lingua del sidecar; una lingua sconosciuta ricade
+            // sull'inglese dentro la funzione.
+            const lang = (i18n.language || 'en').split('-')[0];
             const { data, error } = await supabase
-                .rpc('driver_route')
+                .rpc('driver_route', { p_lang: lang })
                 .select(`
                     internal_id, status, pax_count, hotel_name, pickup_zone, pickup_time, phone_number, customer_note, session_id, route_order,
                     pickup_driver_uid, transport_status, dropoff_hotel, requires_dropoff,
-                    guest_name, avatar_url
+                    guest_name, avatar_url,
+                    meeting_point, meeting_point_name, meeting_point_type,
+                    meeting_point_description, meeting_point_maps_link
                 `)
                 .eq('booking_date', activeDate)
                 .neq('status', 'cancelled')
@@ -91,7 +98,7 @@ export function useDriverRoute() {
         } catch (error) {
             console.error("Supabase Fetch Error:", error);
         }
-    }, [userProfile, activeDate]);
+    }, [userProfile, activeDate, i18n.language]);
 
     // Auto-refresh: 30s interval
     useEffect(() => {

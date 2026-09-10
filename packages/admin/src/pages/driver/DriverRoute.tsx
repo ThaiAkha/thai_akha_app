@@ -27,7 +27,12 @@ const DriverRoute: React.FC = () => {
     // `hotel_name` e' nullable nel database anche se l'interfaccia Stop lo dichiara
     // string: sulle prenotazioni con punto d'incontro e' vuoto, e la query diventava
     // letteralmente "null Chiang Mai" o " Chiang Mai". Senza un luogo non si apre niente.
-    const openMap = (hotel: string | null | undefined) => {
+    const openMap = (hotel: string | null | undefined, link?: string | null) => {
+        // Il link del punto d'incontro viene dal database e indica il posto esatto: una
+        // ricerca per nome su "Central Airport Plaza" porta al centro commerciale, non
+        // all'ingresso dove si aspetta.
+        const direct = (link ?? '').trim();
+        if (direct) { window.open(direct, '_blank'); return; }
         const place = (hotel ?? '').trim();
         if (!place) return;
         window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place} Chiang Mai`)}`, '_blank');
@@ -113,7 +118,11 @@ const DriverRoute: React.FC = () => {
                             key={stop.internal_id}
                             stop={stop}
                             phase={phase}
-                            displayHotel={phase === 'DROPOFF' ? (stop.dropoff_hotel || stop.hotel_name) : stop.hotel_name}
+                            // In RITIRO il luogo e' il punto d'incontro quando c'e': su quelle
+                            // fermate `hotel_name` e' vuoto, ed era il motivo per cui l'autista
+                            // non vedeva nessun luogo. In RICONSEGNA no: il punto dice dove si
+                            // prende, non dove si riporta.
+                            displayHotel={phase === 'DROPOFF' ? (stop.dropoff_hotel || stop.hotel_name) : (stop.meeting_point_name || stop.hotel_name)}
                             isOnBoard={stop.transport_status === 'on_board'}
                             isActiveStep={index === firstIncompleteIndex && isRouteStarted}
                             isConfirming={confirmId === stop.internal_id}

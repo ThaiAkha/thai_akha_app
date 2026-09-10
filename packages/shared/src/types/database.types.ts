@@ -270,6 +270,8 @@ export type Database = {
       }
       akha_news_translations: {
         Row: {
+          cherry_prompt: string | null
+          cherry_response: string | null
           content: string | null
           created_at: string | null
           excerpt: string | null
@@ -295,6 +297,8 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           content?: string | null
           created_at?: string | null
           excerpt?: string | null
@@ -320,6 +324,8 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           content?: string | null
           created_at?: string | null
           excerpt?: string | null
@@ -604,6 +610,8 @@ export type Database = {
           dropoff_hotel: string | null
           dropoff_lat: number | null
           dropoff_lng: number | null
+          dropoff_meeting_point: string | null
+          dropoff_mode: string | null
           dropoff_sequence: number | null
           dropoff_zone: string | null
           email_reference: string | null
@@ -660,6 +668,8 @@ export type Database = {
           dropoff_hotel?: string | null
           dropoff_lat?: number | null
           dropoff_lng?: number | null
+          dropoff_meeting_point?: string | null
+          dropoff_mode?: string | null
           dropoff_sequence?: number | null
           dropoff_zone?: string | null
           email_reference?: string | null
@@ -716,6 +726,8 @@ export type Database = {
           dropoff_hotel?: string | null
           dropoff_lat?: number | null
           dropoff_lng?: number | null
+          dropoff_meeting_point?: string | null
+          dropoff_mode?: string | null
           dropoff_sequence?: number | null
           dropoff_zone?: string | null
           email_reference?: string | null
@@ -766,6 +778,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_dropoff_meeting_point_fkey"
+            columns: ["dropoff_meeting_point"]
+            isOneToOne: false
+            referencedRelation: "meeting_points"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_dropoff_zone_fkey"
+            columns: ["dropoff_zone"]
+            isOneToOne: false
+            referencedRelation: "pickup_zones"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_guest_user_id_fkey"
             columns: ["guest_user_id"]
             isOneToOne: false
@@ -780,6 +806,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_meeting_point_fkey"
+            columns: ["meeting_point"]
+            isOneToOne: false
+            referencedRelation: "meeting_points"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_parent_booking_id_fkey"
             columns: ["parent_booking_id"]
             isOneToOne: false
@@ -791,6 +824,13 @@ export type Database = {
             columns: ["pickup_driver_uid"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_pickup_zone_fkey"
+            columns: ["pickup_zone"]
+            isOneToOne: false
+            referencedRelation: "pickup_zones"
             referencedColumns: ["id"]
           },
           {
@@ -1435,6 +1475,8 @@ export type Database = {
       content_categories_translations: {
         Row: {
           category_id: string
+          cherry_prompt: string | null
+          cherry_response: string | null
           content_body: string | null
           created_at: string | null
           description: string | null
@@ -1463,6 +1505,8 @@ export type Database = {
         }
         Insert: {
           category_id: string
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           content_body?: string | null
           created_at?: string | null
           description?: string | null
@@ -1491,6 +1535,8 @@ export type Database = {
         }
         Update: {
           category_id?: string
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           content_body?: string | null
           created_at?: string | null
           description?: string | null
@@ -1620,6 +1666,8 @@ export type Database = {
         Row: {
           badge: string | null
           capacity_text: string | null
+          cherry_prompt: string | null
+          cherry_response: string | null
           class_id: string
           created_at: string | null
           description: string | null
@@ -1643,6 +1691,8 @@ export type Database = {
         Insert: {
           badge?: string | null
           capacity_text?: string | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           class_id: string
           created_at?: string | null
           description?: string | null
@@ -1666,6 +1716,8 @@ export type Database = {
         Update: {
           badge?: string | null
           capacity_text?: string | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           class_id?: string
           created_at?: string | null
           description?: string | null
@@ -1858,6 +1910,8 @@ export type Database = {
       }
       culture_sections_translations: {
         Row: {
+          cherry_prompt: string | null
+          cherry_response: string | null
           content: string | null
           created_at: string | null
           human_reviewed: boolean
@@ -1883,6 +1937,8 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           content?: string | null
           created_at?: string | null
           human_reviewed?: boolean
@@ -1908,6 +1964,8 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           content?: string | null
           created_at?: string | null
           human_reviewed?: boolean
@@ -3319,6 +3377,8 @@ export type Database = {
       }
       ingredients_library_translations: {
         Row: {
+          cherry_prompt: string | null
+          cherry_response: string | null
           conclusion: string | null
           created_at: string | null
           culinary_uses: string | null
@@ -3349,6 +3409,8 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           conclusion?: string | null
           created_at?: string | null
           culinary_uses?: string | null
@@ -3379,6 +3441,8 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           conclusion?: string | null
           created_at?: string | null
           culinary_uses?: string | null
@@ -4016,6 +4080,8 @@ export type Database = {
           bullets: Json | null
           button_text: string | null
           cards: Json | null
+          cherry_prompt: string | null
+          cherry_response: string | null
           created_at: string | null
           description: string | null
           highlight: string | null
@@ -4038,6 +4104,8 @@ export type Database = {
           bullets?: Json | null
           button_text?: string | null
           cards?: Json | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           created_at?: string | null
           description?: string | null
           highlight?: string | null
@@ -4060,6 +4128,8 @@ export type Database = {
           bullets?: Json | null
           button_text?: string | null
           cards?: Json | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           created_at?: string | null
           description?: string | null
           highlight?: string | null
@@ -4994,6 +5064,8 @@ export type Database = {
       recipes_translations: {
         Row: {
           author_note: string | null
+          cherry_prompt: string | null
+          cherry_response: string | null
           cooks_tip: string | null
           created_at: string | null
           description: string | null
@@ -5028,6 +5100,8 @@ export type Database = {
         }
         Insert: {
           author_note?: string | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           cooks_tip?: string | null
           created_at?: string | null
           description?: string | null
@@ -5062,6 +5136,8 @@ export type Database = {
         }
         Update: {
           author_note?: string | null
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           cooks_tip?: string | null
           created_at?: string | null
           description?: string | null
@@ -5788,6 +5864,8 @@ export type Database = {
       }
       site_metadata_translations: {
         Row: {
+          cherry_prompt: string | null
+          cherry_response: string | null
           created_at: string | null
           header_badge: string | null
           header_title_highlight: string | null
@@ -5815,6 +5893,8 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           created_at?: string | null
           header_badge?: string | null
           header_title_highlight?: string | null
@@ -5842,6 +5922,8 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
+          cherry_prompt?: string | null
+          cherry_response?: string | null
           created_at?: string | null
           header_badge?: string | null
           header_title_highlight?: string | null
@@ -6182,6 +6264,9 @@ export type Database = {
           sidecar: string | null
           sidecar_autonomo: boolean | null
           sidecar_fk_col: string | null
+          sidecar_misto: boolean | null
+          solo_sidecar: string[] | null
+          sorgente_madre: string[] | null
           traducibili: string[] | null
         }
         Relationships: []
@@ -6244,6 +6329,7 @@ export type Database = {
         Args: { p_invoice_ids: string[]; p_proof_url?: string }
         Returns: Json
       }
+      allowed_langs: { Args: never; Returns: string[] }
       approve_hotel_location: {
         Args: { target_hotel_id: string }
         Returns: undefined
@@ -6277,19 +6363,35 @@ export type Database = {
         Returns: undefined
       }
       driver_route: {
-        Args: never
+        Args: { p_date?: string; p_lang?: string }
         Returns: {
           avatar_url: string
           booking_date: string
           customer_note: string
           dropoff_driver_uid: string
           dropoff_hotel: string
+          dropoff_lat: number
+          dropoff_lng: number
+          dropoff_sequence: number
+          dropoff_zone: string
           guest_name: string
+          has_luggage: boolean
           hotel_name: string
           internal_id: string
+          meeting_point: string
+          meeting_point_description: string
+          meeting_point_lat: number
+          meeting_point_lng: number
+          meeting_point_maps_link: string
+          meeting_point_name: string
+          meeting_point_type: string
+          my_leg: string
           pax_count: number
           phone_number: string
           pickup_driver_uid: string
+          pickup_lat: number
+          pickup_lng: number
+          pickup_sequence: number
           pickup_time: string
           pickup_zone: string
           requires_dropoff: boolean
@@ -6429,6 +6531,14 @@ export type Database = {
       record_legal_acceptance: {
         Args: { p_doc_key: string; p_lang: string; p_shown_version?: string }
         Returns: Json
+      }
+      refresh_media_usage: {
+        Args: never
+        Returns: {
+          immagini: number
+          pagine: number
+          righe: number
+        }[]
       }
       reject_hotel_location: {
         Args: { reason: string; target_hotel_id: string }

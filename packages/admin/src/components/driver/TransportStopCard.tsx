@@ -25,6 +25,19 @@ export interface Stop {
     requires_dropoff?: boolean;
     guest_name: string;
     avatar_url?: string;
+    /**
+     * Punto d'incontro, dalla RPC `driver_route` (migration 20260909200000). Fino ad
+     * allora la rotta non lo riceveva affatto: su una fermata con punto d'incontro
+     * `hotel_name` e' vuoto, quindi l'autista vedeva **nessun luogo**, l'etichetta della
+     * ZONA (che diceva "WALK-IN" proprio dove doveva andare) e un pulsante mappa che
+     * cercava una stringa vuota. Tre informazioni mancanti sulla stessa scheda.
+     */
+    meeting_point?: string | null;
+    meeting_point_name?: string | null;
+    meeting_point_type?: string | null;
+    /** Dove esattamente aspettare: "davanti all'ingresso", "vicino alla pagoda bianca". */
+    meeting_point_description?: string | null;
+    meeting_point_maps_link?: string | null;
 }
 
 interface TransportStopCardProps {
@@ -41,7 +54,8 @@ interface TransportStopCardProps {
         next: TransportStatus | null;
     };
     onAction: (stop: Stop) => void;
-    onOpenMap: (hotel: string) => void;
+    /** `link` = indirizzo mappa del punto d'incontro, quando c'e': meglio di una ricerca. */
+    onOpenMap: (place: string | null | undefined, link?: string | null) => void;
     onWhatsApp: (phone: string) => void;
 }
 
@@ -89,7 +103,14 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
             )}>
                 <div className="px-5 py-4 flex items-center gap-3">
                     <span className="font-mono text-2xl font-black tracking-tighter text-title">{stop.pickup_time?.slice(0, 5)}</span>
-                    <Badge variant="light" color="light" className="text-xs px-2 h-5 bg-gray-200 dark:bg-white/5 text-gray-700 dark:text-white/60">{stop.pickup_zone?.toUpperCase()}</Badge>
+                    {/* Con un punto d'incontro l'etichetta dice il PUNTO, non la zona: la
+                        zona di una prenotazione con punto e' NULL o un residuo, e prima
+                        stampava "WALK-IN" sulle fermate dove l'autista deve andare.
+                        Solo in RITIRO: il punto dice dove si PRENDE, e in riconsegna
+                        nominarlo indicherebbe il posto sbagliato. */}
+                    <Badge variant="light" color="light" className="text-xs px-2 h-5 bg-gray-200 dark:bg-white/5 text-gray-700 dark:text-white/60">
+                        {((phase === 'DROPOFF' ? null : stop.meeting_point_name) || stop.pickup_zone || '').toUpperCase()}
+                    </Badge>
                 </div>
                 <div className="px-5 flex items-center justify-center bg-gray-200 dark:bg-black/20 border-l border-gray-300 dark:border-white/5 min-w-[5rem]">
                     <span className={cn("text-3xl font-black", isOnBoard ? "text-success" : "text-title")}>{stop.pax_count} <span className="text-base">{t('stopCard.pax')}</span></span>
@@ -109,10 +130,17 @@ const TransportStopCard: React.FC<TransportStopCardProps> = ({
                 </div>
 
                 <div className="flex gap-2">
-                    <button onClick={() => onOpenMap(displayHotel)} className="flex-1 flex items-center gap-3 p-4 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-black/40 hover:bg-gray-200 dark:hover:bg-white/5 transition-all text-left group">
+                    <button onClick={() => onOpenMap(displayHotel, phase === 'DROPOFF' ? null : stop.meeting_point_maps_link)} className="flex-1 flex items-center gap-3 p-4 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-black/40 hover:bg-gray-200 dark:hover:bg-white/5 transition-all text-left group">
                         <Map className="w-5 h-5 text-primary-500 dark:text-primary-400 shrink-0 group-hover:scale-110 transition-transform" />
                         <div className="min-w-0">
                             <span className="text-sm font-bold truncate text-title block">{displayHotel}</span>
+                            {/* DOVE aspettare, non solo dove andare: "Central Airport Plaza"
+                                e' un posto grande, e la riga che dice il marciapiede e'
+                                quella che serve a chi guida. Arriva tradotta nella lingua
+                                dell'autista (p_lang della RPC). */}
+                            {phase !== 'DROPOFF' && stop.meeting_point_description && (
+                                <span className="text-xs text-sub dark:text-white/50 block leading-snug mt-0.5">{stop.meeting_point_description}</span>
+                            )}
                             {phase === 'DROPOFF' && stop.dropoff_hotel && (
                                 <span className="text-xs text-success uppercase font-bold">{t('stopCard.destination')}</span>
                             )}
